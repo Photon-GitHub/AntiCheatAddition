@@ -75,8 +75,7 @@ public class AACAdditionPro extends JavaPlugin
     public void onEnable()
     {
         try {
-            // Enable verbose sender
-            VerboseSender.setState(true);
+            // Enabled message
             VerboseSender.sendVerboseMessage("Enabling plugin...", true, false);
 
             // ------------------------------------------------------------------------------------------------------ //
@@ -176,15 +175,15 @@ public class AACAdditionPro extends JavaPlugin
     @Override
     public void onDisable()
     {
+        // Plugin is already disabled -> VerboseSender is not allowed to register a task
+        VerboseSender.setAllowedToRegisterTasks(false);
+
         // Disable all checks
         CheckManager.checkManagerInstance.managedObjects.forEach(AACAdditionProCheck::disable);
 
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
         HandlerList.unregisterAll(this);
-
-        // Cancel all tasks of AACAdditionPro
-        this.getServer().getScheduler().cancelTasks(this);
 
         VerboseSender.sendVerboseMessage("AACAdditionPro disabled.", true, false);
         VerboseSender.sendVerboseMessage(" ", true, false);

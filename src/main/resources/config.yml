@@ -1,0 +1,584 @@
+# ------------------------------------------------------------------------------------------------------------------- #
+#                               _____               _      _  _  _    _                _____                          #
+#              /\        /\    / ____|    /\       | |    | |(_)| |  (_)              |  __ \                         #
+#             /  \      /  \  | |        /  \    __| |  __| | _ | |_  _   ___   _ __  | |__) |_ __  ___               #
+#            / /\ \    / /\ \ | |       / /\ \  / _` | / _` || || __|| | / _ \ | '_ \ |  ___/| '__|/ _ \              #
+#           / ____ \  / ____ \| |____  / ____ \| (_| || (_| || || |_ | || (_) || | | || |    | |  | (_) |             #
+#          /_/    \_\/_/    \_\\_____|/_/    \_\\__,_| \__,_||_| \__||_| \___/ |_| |_||_|    |_|   \___/              #
+#                                                                                                                     #
+#                           __  __         _       _           ___ _        _                                         #
+#                          |  \/  |__ _ __| |___  | |__ _  _  | _ \ |_  ___| |_ ___ _ _                               #
+#                          | |\/| / _` / _` / -_) | '_ \ || | |  _/ ' \/ _ \  _/ _ \ ' \                              #
+#                          |_|  |_\__,_\__,_\___| |_.__/\_, | |_| |_||_\___/\__\___/_||_|                             #
+#                                                       |__/                                                          #
+# ------------------------------------------------------------------------------------------------------------------- #
+
+
+# ------------------------------------------------------------------------------------------------------------------- #
+#                                               ___ _           _                                                     #
+#                                              / __| |_  ___ __| |__ ___                                              #
+#                                             | (__| ' \/ -_) _| / /(_-<                                              #
+#                                              \___|_||_\___\__|_\_\/__/                                              #
+#                                                                                                                     #
+# ------------------------------------------------------------------------------------------------------------------- #
+
+# If you have modified fishing time and/or behaviour please test if this check is compatible with your setup.
+# This check does only work on minecraft versions 1.10 and beyond and auto-disables itself on other versions.
+AutoFish:
+   # Do you want to enable the AutoFish check
+   enabled: true
+   # Violation before AACAdditionPro starts to cancel the fishing.
+   # Set this to 0 to never cancel fishing.
+   # Please think of potential luck, thus I do not recommend to set this to 1-2.
+   cancel_vl: 5
+   # Control the different solutions of AutoFish
+   parts:
+      # The inhuman_reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
+      # This might cause some false positives with experienced fishers.
+      inhuman_reaction:
+         # Should this part of the check be enabled
+         enabled: true
+         # How many milliseconds should have passed before a fishing action counts as legit.
+         # This also influences the given vl according to this formula:
+         # < 0.42 * fishing_milliseconds  | 3 VL
+         # < 0.68 * fishing_milliseconds  | 2 VL
+         # < fishing_milliseconds         | 1 VL
+         fishing_milliseconds: 145
+      # The consistency part recognizes static times between a successful catch and fishing again.
+      # This check has less to none false positives, especially with a high event count
+      consistency:
+         # Should this part of the check be enabled
+         enabled: true
+         # How many FishEvents should be checked by the consistency check
+         consistency_events: 5
+         # The offset that will be flagged as cheating
+         # Measured in ms
+         violation_offset: 25
+         # How many violation-levels should be given for failing this part
+         weight: 4
+   # Map of violation levels to command
+   thresholds:
+      5: "aacstaffnotify {player} in {world} is suspected for AutoFish"
+      7: "aacstaffnotify {player} in {world} is highly suspected for AutoFish"
+      10: "aackick {player} AutoFish"
+
+# AutoPotion detects automated bots which splash the player with potions that have positive effects
+# This check does only work on minecraft versions 1.10 and beyond and auto-disables itself on other versions.
+AutoPotion:
+   # Do you want to enable the AutoPotion check
+   enabled: true
+   # Violation before AACAdditionPro starts to cancel throwing potions.
+   # Set this to 0 to never cancel throwing potions.
+   cancel_vl: 2
+   # After a detection which surpasses cancel_vl AACAdditionPro cancels all potion throws to effectively
+   # prevent the cheat (measured in ms)
+   timeout: 1000
+   # How much time in milliseconds must pass between
+   # 1) rotation and throwing a potion
+   # 2) throwing a potion and backwards-rotation
+   # for the check to count as not failed
+   time_offset: 150
+   # How much offset measured in degrees is allowed when comparing the previous angle to the angle of the back-rotation
+   # to continue the check
+   angle_offset: 5
+   # The initial pitch-difference, measured in degrees, to start the check
+   angle_start_threshold: 40
+   # The minimum angle, measured in degrees, that is counted as looking down
+   # Negative values represent looking upwards in Spigot and will break the check
+   # It is strongly recommended to test value changes as they have a huge impact on the check
+   look_down_angle: 80
+   # Map of violation levels to command
+   thresholds:
+      1: "aacstaffnotify {player} in {world} is suspected for AutoPotion"
+      2: "aacstaffnotify {player} in {world} is highly suspected for AutoPotion"
+      4: "aackick {player} AutoPotion"
+
+# BlindnessSprint checks if a player is sprinting while having the blindness-potion-effect.
+# Please be aware that players can trigger this check without cheats if they get the effect during/shortly after
+# a server change and were sprinting before.
+BlindnessSprint:
+   # Do you want to enable the BlindnessSprint check
+   enabled: true
+   # Violation before AACAdditionPro starts to cancel the movements.
+   # Set this to 0 to never cancel movements.
+   cancel_vl: 5
+   # Map of violation levels to command
+   thresholds:
+      6: "aacstaffnotify {player} in {world} is suspected for Sprint (BlindnessSprint)"
+      11: "aacstaffnotify {player} in {world} is highly suspected for Sprint (BlindnessSprint)"
+      20: "aackick {player} Sprint"
+
+# EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
+# This will catch several Scaffold, Tower, Killaura and Aimbot mods
+EqualRotation:
+   # Do you want to enable the EqualRotation check
+   enabled: true
+   # Violation before AACAdditionPro starts to cancel the rotations.
+   # Set this to 0 to never cancel rotations.
+   cancel_vl: 15
+   # After a detection which surpasses cancel_vl AACAdditionPro cancels all (head-)movement to effectively
+   # prevent the cheat for this amount of milliseconds
+   timeout: 1000
+   # Map of violation levels to command
+   thresholds:
+      10: "aacstaffnotify {player} in {world} is suspected for EqualRotation"
+      20: "aacstaffnotify {player} in {world} is highly suspected for EqualRotation"
+      30: "aackick {player} Invalid rotations"
+
+# This module uses advanced mathematics to determine if players can see each other.
+# It also thinks of the 3rd person camera modes and uses accurate hitbox-models.
+# If the players cannot see each other several actions will be taken to hide information on packet-level.
+# Up from version 1.7 AACAdditionPro is able to automatically read the spigot-file to auto-configure itself.
+#
+# MAIN FUNCTIONS:
+# - Sneaking-Hider:  A sneaking player who cannot be directly seen by another player will be completely hidden from
+#                    the second player. (This will make esp / tracers / radar / similar useless if the player who
+#                    should be shown is sneaking)
+#
+# - Equipment-Hider: If a player cannot be directly seen by another player his equipment (hand, armour) will be hidden
+#                    from the observer. (This will make the life of cheaters harder as they cannot properly estimate
+#                    the combat strength of a player)
+Esp:
+   # Do you want to enable the ESP check
+   #
+   # If your server has over 30 players on average you might want to disable this check because of the huge cpu load.
+   #
+   enabled: true
+   # After this amount of ticks the positions will be updated again
+   update_ticks: 5
+
+# The Fastswitch check prevents players from switching their hotbar-selection too quickly
+Fastswitch:
+   # Do you want to enable the Fastswitch check
+   enabled: true
+   # Violation before AACAdditionPro starts to cancel the interacts.
+   # Set this to 0 to never cancel interacts.
+   cancel_vl: 3
+   # If a player has a ping higher than that value he bypasses the check
+   # Please make sure that you have some pingspoofer protection enabled if you use this feature
+   # Set this to -1 to disable
+   max_ping: 400
+   # The minimum time between switches that are not considered scrolling
+   switch_milliseconds: 50
+   # Map of violation levels to command
+   thresholds:
+      3: "aacstaffnotify {player} in {world} may be using Fastswitch"
+      5: "aacstaffnotify {player} in {world} is suspected for Fastswitch"
+      10: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
+      15: "aackick {player} Fastswitch"
+
+# This check will block most Freecam cheats
+# Your Players will recognize small jumps when they are standing completely still and are not moving their mouse.
+# This behaviour will teleport freecam-users on every jump back to their original position.
+Freecam:
+   # Do you want to enable the Anti-Freecam
+   enabled: true
+   # The time in ms before AACAdditonPro starts to initiate teleports for an idling player
+   idle_time: 1000
+
+# InventoryHit checks if a player modifies his inventory while hitting at the same time.
+InventoryHit:
+   # Do you want to enable the InventoryHit check
+   enabled: true
+   # Violation before AACAdditionPro starts to cancel the hits.
+   # Set this to 0 to never cancel hits.
+   cancel_vl: 3
+   # Map of violation levels to command
+   thresholds:
+      3: "aacstaffnotify {player} in {world} is suspected for Killaura/Autoarmor (InventoryHit)"
+      6: "aacstaffnotify {player} in {world} is highly suspected for Killaura/Autoarmor (InventoryHit)"
+      10: "aackick {player} Killaura/Triggerbot"
+
+# The InventoryChat check detects sending chat messages while being in an inventory
+InventoryChat:
+   # Do you want to enable the InventoryChat check
+   # Few people will use this, thus it is deactivated in the default config but it is perfectly safe to use
+   enabled: false
+   # Violation before AACAdditionPro starts to cancel the messages.
+   # Set this to 0 to never cancel messages.
+   cancel_vl: 2
+   # Map of violation levels to command
+   thresholds:
+      2: "aacstaffnotify {player} in {world} is suspected for InventoryChat"
+      5: "aacstaffnotify {player} in {world} is highly suspected for InventoryChat"
+      8: "aackick {player} InventoryChat"
+
+# The InventoryHeuristics check uses a neural network to detect cheats
+# This is not functional right now!
+InventoryHeuristics:
+   # Do you want to enable the InventoryHeuristics check
+   enabled: false
+
+# The InventoryMove check detects inventory clicks while moving
+InventoryMove:
+   # Do you want to enable the InventoryMove check
+   enabled: true
+   # The minimum TPS the server must have to activate this check
+   # Low TPS will cause an extreme amount of false positives.
+   min_tps: 19.5
+   # Violation before AACAdditionPro starts to cancel the movements.
+   # Set this to 0 to never cancel movement.
+   cancel_vl: 10
+   # Map of violation levels to command
+   # The sprint/sneak module will generate 4 vl when failed.
+   # The packet module will generate 1 vl when failed.
+   thresholds:
+      10: "aacstaffnotify {player} in {world} is suspected for InventoryMove"
+      20: "aacstaffnotify {player} in {world} is highly suspected for InventoryMove"
+      32: "aackick {player} InventoryMove"
+
+# InventoryRotation checks if a player is moving his head while being in an inventory.
+InventoryRotation:
+   # Do you want to enable the InventoryRotation check
+   enabled: true
+   # Map of violation levels to commands
+   thresholds:
+      12: "aacstaffnotify {player} in {world} is suspected for Killaura/Autoarmor (InventoryRotation)"
+      24: "aacstaffnotify {player} in {world} is highly suspected for Killaura/Autoarmor (InventoryRotation)"
+      35: "aackick {player} Killaura/Autoarmor"
+
+# Brings back an entity check of the old AAC 1.9.10 times
+# but much more advanced.
+# ------------------------------------------------------------------------------ #
+# HIGHLY EXPERIMENTAL. DO NOT ENABLE UNLESS YOU EXACTLY KNOW WHAT YOU ARE DOING! #
+# ------------------------------------------------------------------------------ #
+KillauraEntity:
+   # Do you want to enable the Anti-Freecam
+   enabled: false
+   # Here you can choose the equipment of your entity.
+   # For the best setup only choose equipment a normal player can get.
+   equipment:
+      # The weapons the entities will use in a fake fight
+      weapons:
+         # Types
+         sword: true
+         axe: true
+         # Materials
+         wood: true
+         gold: true
+         stone: true
+         iron: true
+         diamond: true
+      # The armor the entities will spawn with
+      armor:
+         # Types
+         helmet: true
+         chestplate: true
+         leggings: true
+         boots: true
+         # Materials
+         leather: true
+         gold: true
+         iron: true
+         diamond: true
+   thresholds:
+      2: "aacstaffnotify {player} in {world} is suspected for Killaura"
+      4: "aackick {player} Killaura"
+
+# The MultiInteraction check prevents players from moving more than one item per tick
+MultiInteraction:
+   # Do you want to enable the MultiInteraction check
+   enabled: true
+   # Violation before AACAdditionPro starts to cancel the interacts.
+   # Set this to 0 to never cancel interacts.
+   cancel_vl: 6
+   # If a player has a ping higher than that value he bypasses the check
+   # Please make sure that you have some pingspoofer protection enabled if you use this feature
+   # Set this to -1 to disable
+   max_ping: 400
+   # The minimum TPS the server must have to activate this check
+   # Low TPS will cause an extreme amount of false positives.
+   min_tps: 18.5
+   # The time AACAdditionPro should force between two interactions in milliseconds
+   min_time: 51
+   # Map of violation levels to command
+   thresholds:
+      6: "aacstaffnotify {player} in {world} may be using MultiInteraction"
+      12: "aacstaffnotify {player} in {world} is suspected for MultiInteraction"
+      22: "aacstaffnotify {player} in {world} is highly suspected for MultiInteraction"
+      34: "aackick {player} MultiInteraction"
+
+# The Pingspoof check tries to identify cheaters who try to intentionally increase their ping to bypass
+# AntiCheat-setups. It is a longtime check and will detect cheaters very slowly.
+Pingspoof:
+   # Do you want to enable the Pingspoof check
+   enabled: true
+   # This is the ping-offset. Increase if you have false pos.
+   ping_offset: 3.0
+   # If the measured real-ping of a player is higher than this, he will be ignored
+   # (A real high-ping player)
+   max_real_ping: 100
+   # Map of violation levels to command
+   thresholds:
+      4: "aacstaffnotify {player} in {world} is suspected for Pingspoofer"
+      8: "aacstaffnotify {player} in {world} is highly suspected for Pingspoofer"
+      12: "aackick {player} Pingspoofer"
+
+# The Scaffold check detects Scaffold cheats
+Scaffold:
+   # Do you want to enable the Scaffold check
+   enabled: true
+   # Violation before AACAdditionPro starts to cancel the block-places.
+   # Set this to 0 to never cancel block-places.
+   cancel_vl: 5
+   # Over how many values should AACAdditionPro take the average for the check
+   buffer_size: 6
+   # The minimum delay between blockplaces that will be enforced by AACAdditionPro
+   scaffold_delay: 300
+   # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
+   # to prevent further scaffolding (measured in ms)
+   timeout: 1000
+   # This check adds vl 5 when failed!
+   # Map of violation levels to command
+   thresholds:
+      5: "aacstaffnotify {player} in {world} is suspected for Scaffold"
+      10: "aacstaffnotify {player} in {world} is highly suspected for Scaffold"
+      15: "aackick {player} Scaffold"
+
+# The Skinblinker check detects Skinblinker cheats when the player sprints/sneaks.
+Skinblinker:
+   # Do you want to enable the Skinblinker check
+   enabled: true
+   # Map of violation levels to command
+   thresholds:
+      1: "aacstaffnotify {player} in {world} is suspected for Skinblinker"
+      5: "aackick {player} Skinblinker"
+
+# This check tries to alert you of teamers
+# This is safe to enable, just make sure that you configure this check for your own needs.
+Teaming:
+   # Do you want to enable the Teaming check
+   enabled: false
+   # How much delay should be between the check-waves
+   # This must be below 15000 milliseconds.
+   # Measured in milliseconds.
+   delay: 5000
+   # How far in blocks should players at most be away to count as teaming
+   proximity_range: 4.5
+   # If you only want to allow teams with a certain member-cap you can change this value appropriately.
+   # Setting it to one flags all teams.
+   allowed_size: 1
+   # Non-pvp time to count as teaming
+   # Measured in milliseconds.
+   no_pvp_time: 6000
+   # This contains all worlds the check should be enabled in.
+   enabled_worlds:
+    - "world"
+    - "world_nether"
+    - "world_the_end"
+   # Here you can define zones in which the check should not be run
+   # An entry is formatted as following:
+   # - <affected_world> <x1> <z1> <x2> <z2>
+   safe_zones:
+      - "world -15 -15 15 15"
+   # These ViolationLevel are cumulative for a team.
+   # E.g. a potential team of 6 members will generate 6 vl after every delay.
+   thresholds:
+      4: "aacstaffnotify {team} in {world} may be Teaming"
+      10: "aacstaffnotify {team} in {world} are suspected for Teaming"
+      15: "aacstaffnotify {team} in {world} are highly suspected for Teaming"
+
+# The Tower check detects Tower cheats
+Tower:
+   # Do you want to enable the Tower check
+   enabled: true
+   # Violation before AACAdditionPro starts to cancel the block-places.
+   # Set this to 0 to never cancel block-places.
+   cancel_vl: 6
+   # Over how much values should AACAdditionPro make a check
+   buffer_size: 6
+   # If you have false positives increase this SLIGHTLY.
+   tower_leniency: 0.075
+   # How much leniency should be applied additionally if the player has the jump_boost effect
+   jump_boost_leniency: 0.09
+   # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
+   # to prevent further towering (measured in ms)
+   timeout: 5500
+   # Map of violation levels to command
+   thresholds:
+      5: "aacstaffnotify {player} in {world} is suspected for Tower"
+      12: "aackick {player} Tower"
+
+# ------------------------------------------------------------------------------------------------------------------- #
+#                                     ___ _ _         _    ___         _           _                                  #
+#                                    / __| (_)___ _ _| |_ / __|___ _ _| |_ _ _ ___| |                                 #
+#                                   | (__| | / -_) ' \  _| (__/ _ \ ' \  _| '_/ _ \ |                                 #
+#                                    \___|_|_\___|_||_\__|\___\___/_||_\__|_| \___/_|                                 #
+#                                                                                                                     #
+# ------------------------------------------------------------------------------------------------------------------- #
+
+# This gives you full control over the clients who can join
+# ------------------------------------------------------------------------------------------------------------------- #
+# WARNING: DO _NOT_ ENABLE THIS IF YOU DID NOT CONFIGURE IT PROPERLY !
+# ------------------------------------------------------------------------------------------------------------------- #
+ClientControl:
+   # This is a popular PVP modification granting additional information in various HUDs, such as potion effects.
+   # Also has a TS3 module for easier communication, just like LabyMod
+   5zig:
+      # Do you want to enable the 5zig-Control
+      enabled: false
+      # This mod provides a method to disable parts of it.
+      # Set the corresponding value to true if you want to block a part of the mod
+      disable:
+         # This renders the potion effect of the player on the display in form of a HUD
+         potion_effect_hud: false
+         # This displays a vignette with different colors depending on the potion effects you have:
+         # If your potion effects are positive it will have a green color else a red color
+         potion_indicator_vignette: false
+         # This displays the current armour of a player (including durability) in a HUD
+         armour_hud: false
+         # This renders the saturation of a player additional to the current food.
+         # Even though this is sometimes considered as an unfair advantage it is often just handy information
+         # which is not really affecting the gameplay.
+         player_saturation: false
+         # This displays the health of entities.
+         # Recommended to disable as newer versions of 5zig do not support this anymore and it is often considered
+         # an unfair advantage
+         entity_health_indicator: true
+         # A feature of 5zig to automatically reconnect to a server
+         auto_reconnect: false
+      commands_on_detection:
+         - "aacstaffnotify {player} in {world} uses 5zig"
+
+   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
+   BetterSprinting:
+      # Do you want to enable the BetterSprinting-Control
+      enabled: false
+      # This mod provides a method to disable it.
+      # Do you want to disable this mod
+      disable: true
+      commands_on_detection:
+         - "aacstaffnotify {player} in {world} uses BetterSprinting"
+
+   # A very popular mod-loader.
+   Forge:
+      # Do you want to enable the Forge-Control
+      # This cannot be blocked; I recommend to kick if desired
+      enabled: false
+      commands_on_detection:
+         - "aacstaffnotify {player} in {world} uses Forge"
+
+   # A very popular PvP modification similar to 5zig but with more features and TS3 support
+   LabyMod:
+      # Do you want to enable the LabyMod-Control
+      enabled: false
+      # This mod provides a method to disable parts of it.
+      # Set the corresponding value to true if you want to block a part of the mod
+      disable:
+         # This renders the saturation of a player additional to the current food.
+         # Even though this is sometimes considered as an unfair advantage it is often just handy information
+         # which is not really affecting the gameplay.
+         player_saturation: false
+         # gui
+         gui: false
+         # Provides custom nicknames for a person.
+         # Purely cosmetic
+         nick: false
+         # blockbuild
+         blockbuild: false
+         # This is an internal chat that connects LabyMod users.
+         # Purely cosmetic
+         chat: false
+         # Cosmetics inside the mod
+         extras: false
+         # Purely cosmetic feature to switch back to the old animations of MC 1.7
+         # Not recommended to disable as no advantage is given
+         old_animations: false
+         # This renders the potion effect of the player on the display in form of a HUD
+         potion_effect_hud: false
+         # This displays the current armour of a player (including durability) in a HUD
+         armour_hud: false
+         # This displays the health of entities and players.
+         # Recommended to disable as newer versions of 5zig do not support this anymore and it is often considered
+         # an unfair advantage
+         damage_indicator: true
+         # This shows the map from above as well as information about the locations of players and entities,
+         # thus being considered as a huge advantage and recommended to disable.
+         minimap_radar: true
+       # The mod cannot be detected, just disabled
+
+   # LiteLoader is alternative mod-loader to forge.
+   # Many ghost clients exist for LiteLoader, therefore I recommend to block it.
+   LiteLoader:
+      # Do you want to enable the LiteLoader-Control
+      # This cannot be blocked; I recommend to kick if desired
+      enabled: false
+      commands_on_detection:
+         - "aackick {player} LiteLoader"
+
+   # A mod that lets you display (clientside) holograms to improve building, but also has
+   # a module to download worlds.
+   Schematica:
+      # Do you want to enable the Schematica-Control
+      enabled: false
+      # This mod provides a method to disable parts of it.
+      # Set the corresponding value to true if you want to block a part of the mod
+      disable:
+         # Automatically builds based on a schematic.
+         # This is also called a building-bot sometimes.
+         printer: true
+         # This saves a part of the world as a schematic for later use thus being a small version
+         # of the full WorldDownloader mod.
+         save: true
+         # This allows to load a schematic on your server for printing or a hologram.
+         load: false
+       # The mod cannot be detected, just disabled
+
+   # WorldDownloader is a popular modification to get the maps of a server
+   WorldDownloader:
+      # Do you want to enable the WorldDownloader-Control
+      # This cannot be blocked; I recommend to kick if desired
+      enabled: false
+      commands_on_detection:
+         - "aackick {player} WorldDownloader"
+
+
+# ------------------------------------------------------------------------------------------------------------------- #
+#                                           _      _    _ _ _   _                                                     #
+#                                          /_\  __| |__| (_) |_(_)___ _ _  ___                                        #
+#                                         / _ \/ _` / _` | |  _| / _ \ ' \(_-<                                        #
+#                                        /_/ \_\__,_\__,_|_|\__|_\___/_||_/__/                                        #
+#                                                                                                                     #
+# ------------------------------------------------------------------------------------------------------------------- #
+
+# This automatically deletes old log files of both AAC and AACAdditionPro
+# It activates automatically on restart and after that in a 12 hour cycle.
+LogBot:
+   # Do you want to enable the LogBot
+   enabled: false
+   # The time in days that should pass before an unmodified file will be deleted
+   days_until_delete: 10
+
+# This allows you to run different commands on different confidences
+# IN ORDER TO USE THIS you MUST change your heuristics - confidence in AAC's config to 50
+# and delete all
+# thresholds: {}
+#
+Heuristic-Addition:
+   enabled: false
+   confidences:
+      50: "aacstaffnotify {player} in {world} may be using Killaura (Heuristics)"
+      75: "aacstaffnotify {player} in {world} is suspected for using Killaura (Heuristics)"
+      90: "aacstaffnotify {player} in {world} is highly suspected for using Killaura (Heuristics)"
+      97:
+       - "aacstaffnotify {player} was banned for Killaura (Heuristics)"
+       - "ban {player} Cheating"
+
+
+# ------------------------------------------------------------------------------------------------------------------- #
+#                                           __   __       _                                                           #
+#                                           \ \ / /__ _ _| |__  ___ ___ ___                                           #
+#                                            \ V / -_) '_| '_ \/ _ (_-</ -_)                                          #
+#                                             \_/\___|_| |_.__/\___/__/\___|                                          #
+#                                                                                                                     #
+# ------------------------------------------------------------------------------------------------------------------- #
+
+# Should players with the aac.verbose permission get the AACAdditionPro-verbose messages
+Verbose:
+   # Do you want AACAdditionPro to log into a log-file
+   file: true
+   # Should players be able to get Verbose-Messages, if they have the aac.verbose permission
+   # Players can toggle the verbose-output with the command /aacadditionpro verbose
+   players: false
+   # Should the verbose output be logged in the console (very spammy, only recommended for testing purposes)
+   console: false

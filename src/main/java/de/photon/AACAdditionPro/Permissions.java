@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro;
 
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 public enum Permissions
 {
@@ -18,15 +18,15 @@ public enum Permissions
     }
 
     /**
-     * This checks if a {@link Player} has a certain permission.
+     * This checks if a {@link CommandSender} has a certain permission.
      *
-     * @param player     the {@link Player} who should be checked
+     * @param sender     the {@link CommandSender} who should be checked
      * @param permission the permission that he should be checked for
      *
      * @return true if the player has the permission, otherwise false
      */
-    public boolean hasPermission(final Player player, final Permissions permission)
+    public static boolean hasPermission(final CommandSender sender, final Permissions permission)
     {
-        return player.hasPermission(permission.realPermission);
+        return sender.hasPermission(permission.realPermission);
     }
 }

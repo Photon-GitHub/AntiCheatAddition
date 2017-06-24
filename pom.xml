@@ -58,6 +58,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.0.13.Final</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>net.konsolas</groupId>
             <artifactId>aac</artifactId>
             <version>3.2.1</version>

@@ -183,7 +183,6 @@ public class AACAdditionPro extends JavaPlugin
 
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
-        HandlerList.unregisterAll(this);
 
         VerboseSender.sendVerboseMessage("AACAdditionPro disabled.", true, false);
         VerboseSender.sendVerboseMessage(" ", true, false);

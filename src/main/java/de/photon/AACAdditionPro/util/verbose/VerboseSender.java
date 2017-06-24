@@ -7,11 +7,11 @@ import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.commands.Placeholders;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.server.PluginDisableEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,8 @@ import java.time.format.DateTimeFormatter;
 @SuppressWarnings("MethodMayBeStatic")
 public final class VerboseSender implements Listener
 {
-    private static boolean enabled;
+    @Setter
+    private static boolean allowedToRegisterTasks;
     private static final String NON_COLORED_PRE_STRING = "[AACAdditionPro] ";
     private static final String PRE_STRING = ChatColor.DARK_RED + NON_COLORED_PRE_STRING + ChatColor.GRAY;
 
@@ -32,7 +33,7 @@ public final class VerboseSender implements Listener
 
     private VerboseSender()
     {
-        setState(true);
+        allowedToRegisterTasks = true;
         AACAdditionPro.getInstance().registerListener(this);
     }
 
@@ -59,27 +60,26 @@ public final class VerboseSender implements Listener
     public static void sendVerboseMessage(final String s, final boolean force_console, final boolean error)
     {
         // Prevent errors on disable as of scheduling
-        if (enabled) {
-            final String logMessage = ChatColor.stripColor(s);
+        final String logMessage = ChatColor.stripColor(s);
 
-            if (verboseOptions[0]) {
-                // Remove color codes
-                log(logMessage);
+        if (verboseOptions[0]) {
+            // Remove color codes
+            log(logMessage);
+        }
+
+        if (verboseOptions[1] || force_console) {
+            if (error) {
+                Bukkit.getLogger().severe(NON_COLORED_PRE_STRING + logMessage);
+            } else {
+                Bukkit.getLogger().info(NON_COLORED_PRE_STRING + logMessage);
             }
+        }
 
-            if (verboseOptions[1] || force_console) {
-                if (error) {
-                    Bukkit.getLogger().severe(NON_COLORED_PRE_STRING + logMessage);
-                } else {
-                    Bukkit.getLogger().info(NON_COLORED_PRE_STRING + logMessage);
-                }
-            }
-
-            if (verboseOptions[2]) {
-                for (final User user : UserManager.getUsers()) {
-                    if (user.verbose) {
-                        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> user.getPlayer().sendMessage(PRE_STRING + s));
-                    }
+        // Prevent error on disable
+        if (allowedToRegisterTasks && verboseOptions[2]) {
+            for (final User user : UserManager.getUsers()) {
+                if (user.verbose) {
+                    Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> user.getPlayer().sendMessage(PRE_STRING + s));
                 }
             }
         }
@@ -123,23 +123,5 @@ public final class VerboseSender implements Listener
     public void on(final ClientControlEvent event)
     {
         sendVerboseMessage(Placeholders.applyPlaceholders(ChatColor.GOLD + "{player} " + ChatColor.GRAY + event.getMessage(), event.getPlayer()));
-    }
-
-    /**
-     * Enables or disables the {@link VerboseSender}.
-     *
-     * @param flag whether to enable (true) or disable (false)
-     */
-    public static void setState(final boolean flag)
-    {
-        enabled = flag;
-    }
-
-    @EventHandler
-    public void on(final PluginDisableEvent event)
-    {
-        if (event.getPlugin().getName().equals(AACAdditionPro.getInstance().getName())) {
-            setState(false);
-        }
     }
 }

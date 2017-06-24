@@ -7,7 +7,6 @@ import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.commands.Placeholders;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -16,6 +15,8 @@ import org.bukkit.event.server.PluginDisableEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -106,7 +107,7 @@ public final class VerboseSender implements Listener
             time.append("\n");
 
             // Log the message
-            FileUtils.write(log_File, time.toString(), true);
+            Files.write(log_File.toPath(), time.toString().getBytes(), StandardOpenOption.APPEND);
         } catch (final IOException e) {
             e.printStackTrace();
         }

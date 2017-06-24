@@ -1,0 +1,12 @@
+name: AACAdditionPro
+version: '${project.version}'
+description: This plugin provides niche checks for cheats which are not covered by AAC
+author: Photon
+
+depend: [AAC, ProtocolLib]
+main: de.photon.AACAdditionPro.AACAdditionPro
+
+commands:
+  aacadditionpro:
+    description: The main command of AACAdditionPro.
+    usage: /aacadditionpro

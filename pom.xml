@@ -40,7 +40,7 @@
         </repository>
         <repository>
             <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/nexus/repository/releases/</url>
+            <url>http://repo.dmulloy2.net/nexus/content/groups/public/</url>
         </repository>
     </repositories>
 
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.10</version>
+            <version>1.16.14</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

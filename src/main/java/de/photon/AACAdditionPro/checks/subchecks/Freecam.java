@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 
 public class Freecam implements AACAdditionProCheck
 {
+    @LoadFromConfiguration(configPath = ".idle_time")
     private static int idle_time;
     private int task_number;
 
@@ -26,8 +28,6 @@ public class Freecam implements AACAdditionProCheck
     @Override
     public void subEnable()
     {
-        idle_time = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".idle_time");
-
         task_number = Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
                 () ->

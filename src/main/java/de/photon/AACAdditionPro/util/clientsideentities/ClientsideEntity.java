@@ -25,7 +25,9 @@ public abstract class ClientsideEntity
     @Getter
     protected int entityID = 0;
 
-    /**Determines whether this {@link ClientsideEntity} is already spawned.*/
+    /**
+     * Determines whether this {@link ClientsideEntity} is already spawned.
+     */
     @Getter
     private boolean spawned;
 

@@ -4,7 +4,6 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import org.bukkit.event.Listener;
 
-@SuppressWarnings("MethodMayBeStatic")
 public class KillauraEntity implements AACAdditionProCheck, Listener
 {
     // ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 300);

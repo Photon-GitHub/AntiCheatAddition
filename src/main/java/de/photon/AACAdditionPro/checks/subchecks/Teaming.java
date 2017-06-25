@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.TeamViolationLevelManagement;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.EntityUtils;
@@ -26,9 +27,12 @@ public class Teaming implements Listener, AACAdditionProCheck
 
     // Config
     private double proximity_range_squared;
+    @LoadFromConfiguration(configPath = ".no_pvp_time")
     private int no_pvp_time;
+    @LoadFromConfiguration(configPath = ".allowed_size")
     private int allowed_size;
 
+    // Region handling
     private final List<World> enabled_worlds = new ArrayList<>(3);
     private final List<Region> safe_zones = new ArrayList<>(3);
 
@@ -41,9 +45,6 @@ public class Teaming implements Listener, AACAdditionProCheck
         proximity_range_squared = AACAdditionPro.getInstance().getConfig().getDouble(this.getAdditionHackType().getConfigString() + ".proximity_range");
         // square it
         proximity_range_squared *= proximity_range_squared;
-
-        no_pvp_time = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".no_pvp_time");
-        allowed_size = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".allowed_size");
 
         // Enabled worlds init
         for (final String nameOfWorld : ConfigUtils.loadStringOrStringList(this.getAdditionHackType().getConfigString() + ".enabled_worlds")) {

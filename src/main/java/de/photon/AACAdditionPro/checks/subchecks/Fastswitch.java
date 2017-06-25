@@ -8,6 +8,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Bukkit;
@@ -16,8 +17,11 @@ public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 120);
 
+    @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
+    @LoadFromConfiguration(configPath = "max_ping")
     private double max_ping;
+    @LoadFromConfiguration(configPath = "switch_milliseconds")
     private int switch_milliseconds;
 
     public Fastswitch()
@@ -76,13 +80,5 @@ public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
     public AdditionHackType getAdditionHackType()
     {
         return AdditionHackType.FASTSWITCH;
-    }
-
-    @Override
-    public void subEnable()
-    {
-        this.cancel_vl = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".cancel_vl");
-        this.max_ping = AACAdditionPro.getInstance().getConfig().getDouble(this.getAdditionHackType().getConfigString() + ".max_ping");
-        this.switch_milliseconds = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".switch_milliseconds");
     }
 }

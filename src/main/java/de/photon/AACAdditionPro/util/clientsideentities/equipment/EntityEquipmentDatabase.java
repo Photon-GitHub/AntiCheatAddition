@@ -188,7 +188,4 @@ public final class EntityEquipmentDatabase
         return enchantments.get(ThreadLocalRandom.current().nextInt(enchantments.size()));
     }
 
-    public static void init()
-    {
-    }
 }

@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.storage.management.Buffer;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
@@ -21,6 +22,7 @@ public class AutoFish implements Listener, AACAdditionProCheck
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 3600);
 
+    @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
 
     /**
@@ -31,10 +33,14 @@ public class AutoFish implements Listener, AACAdditionProCheck
     private final boolean[] parts = new boolean[2];
 
     // Inhuman reaction
+    @LoadFromConfiguration(configPath = ".parts.inhuman_reaction.fishing_milliseconds")
     private int fishing_milliseconds;
 
     // Consistency
+    @LoadFromConfiguration(configPath = ".parts.consistency.violation_offset")
     private int violation_offset;
+
+    @LoadFromConfiguration(configPath = ".parts.consistency.weight")
     private int weight;
     private Buffer<Long> consistencyData;
 
@@ -125,21 +131,12 @@ public class AutoFish implements Listener, AACAdditionProCheck
     @Override
     public void subEnable()
     {
-        // Cancel-VL
-        this.cancel_vl = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".cancel_vl");
-
         // Parts
         this.parts[0] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".parts.inhuman_reaction.enabled");
         this.parts[1] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".parts.consistency.enabled");
 
         VerboseSender.sendVerboseMessage("AutoFish-Parts: inhuman reaction: " + parts[0] + " | consistency: " + parts[1]);
 
-        // Inhuman reaction
-        this.fishing_milliseconds = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".parts.inhuman_reaction.fishing_milliseconds");
-
-        // Consistency
-        this.violation_offset = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".parts.consistency.violation_offset");
-        this.weight = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".parts.consistency.weight");
         // Create a buffer with the limit of consistency_events
         this.consistencyData = new Buffer<Long>(AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".parts.consistency.consistency_events"))
         {

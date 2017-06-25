@@ -75,87 +75,88 @@ public class Esp implements AACAdditionProCheck
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
-        taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(),
-                                                                     () -> {
-                                                                         //All users
-                                                                         final Set<User> users = UserManager.getUsers();
+        taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(
+                AACAdditionPro.getInstance(),
+                () -> {
+                    //All users
+                    final Set<User> users = UserManager.getUsers();
 
-                                                                         //Iterate through all player-constellations
-                                                                         for (final User observer : users) {
-                                                                             // Not bypassed
-                                                                             if (!observer.isBypassed() &&
-                                                                                 // Not logged in recently (to prevent bugs)
-                                                                                 !observer.getLoginData().recentlyUpdated(3500))
-                                                                             {
-                                                                                 // All users can potentially be seen
-                                                                                 for (final User watched_player : users) {
-                                                                                     // The user are not the same
-                                                                                     if (!observer.getPlayer().getUniqueId().equals(watched_player.getPlayer().getUniqueId())) {
-                                                                                         playerConnections.add(new Pair(observer, watched_player));
-                                                                                     }
-                                                                                 }
-                                                                             }
-                                                                         }
+                    //Iterate through all player-constellations
+                    for (final User observer : users) {
+                        // Not bypassed
+                        if (!observer.isBypassed() &&
+                            // Not logged in recently (to prevent bugs)
+                            !observer.getLoginData().recentlyUpdated(3500))
+                        {
+                            // All users can potentially be seen
+                            for (final User watched_player : users) {
+                                // The user are not the same
+                                if (!observer.getPlayer().getUniqueId().equals(watched_player.getPlayer().getUniqueId())) {
+                                    playerConnections.add(new Pair(observer, watched_player));
+                                }
+                            }
+                        }
+                    }
 
-                                                                         for (final Pair pair : playerConnections) {
-                                                                             // Are the players in the same world
-                                                                             if (pair.a.getPlayer().getLocation().getWorld().equals(pair.b.getPlayer().getLocation().getWorld()) &&
-                                                                                 // Are the players inside the render_distance
-                                                                                 pair.a.getPlayer().getLocation().distanceSquared(pair.b.getPlayer().getLocation()) <= render_distance_squared)
-                                                                             {
-                                                                                 // Players could see each other
+                    for (final Pair pair : playerConnections) {
+                        // Are the players in the same world
+                        if (pair.a.getPlayer().getLocation().getWorld().equals(pair.b.getPlayer().getLocation().getWorld()) &&
+                            // Are the players inside the render_distance
+                            pair.a.getPlayer().getLocation().distanceSquared(pair.b.getPlayer().getLocation()) <= render_distance_squared)
+                        {
+                            // Players could see each other
 
-                                                                                 final boolean spectatorA = pair.a.getPlayer().getGameMode() == GameMode.SPECTATOR;
-                                                                                 final boolean spectatorB = pair.b.getPlayer().getGameMode() == GameMode.SPECTATOR;
+                            final boolean spectatorA = pair.a.getPlayer().getGameMode() == GameMode.SPECTATOR;
+                            final boolean spectatorB = pair.b.getPlayer().getGameMode() == GameMode.SPECTATOR;
 
-                                                                                 // Gamemode 3 handling
-                                                                                 if (spectatorA || spectatorB) {
-                                                                                     if (spectatorA) {
-                                                                                         updateHideMode(pair.a, pair.b.getPlayer(), HideMode.NONE);
+                            // Gamemode 3 handling
+                            if (spectatorA || spectatorB) {
+                                if (spectatorA) {
+                                    updateHideMode(pair.a, pair.b.getPlayer(), HideMode.NONE);
 
-                                                                                         if (spectatorB) {
-                                                                                             updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
-                                                                                         } else {
-                                                                                             updateHideMode(pair.b, pair.a.getPlayer(), HideMode.FULL);
-                                                                                         }
-                                                                                     } else {
-                                                                                         // spectatorB must be true here as spectatorA == false and one of spectatorA and spectatorB must be true !
-                                                                                         // -> spectatorB == true; spectatorA == false
-                                                                                         updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
-                                                                                         updateHideMode(pair.a, pair.b.getPlayer(), HideMode.FULL);
-                                                                                     }
+                                    if (spectatorB) {
+                                        updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
+                                    } else {
+                                        updateHideMode(pair.b, pair.a.getPlayer(), HideMode.FULL);
+                                    }
+                                } else {
+                                    // spectatorB must be true here as spectatorA == false and one of spectatorA and spectatorB must be true !
+                                    // -> spectatorB == true; spectatorA == false
+                                    updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
+                                    updateHideMode(pair.a, pair.b.getPlayer(), HideMode.FULL);
+                                }
 
-                                                                                     // Normal handling without spectators
-                                                                                 } else {
-                                                                                     if (canDirectlySee(pair.a.getPlayer(), pair.b.getPlayer())) {
-                                                                                         updateHideMode(pair.a, pair.b.getPlayer(), HideMode.NONE);
-                                                                                         updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
-                                                                                     } else {
-                                                                                         updateHideMode(pair.b, pair.a.getPlayer(), pair.a.getPlayer().isSneaking() ?
-                                                                                                                                    HideMode.FULL :
-                                                                                                                                    HideMode.INFORMATION_ONLY);
+                                // Normal handling without spectators
+                            } else {
+                                if (canDirectlySee(pair.a.getPlayer(), pair.b.getPlayer())) {
+                                    updateHideMode(pair.a, pair.b.getPlayer(), HideMode.NONE);
+                                    updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
+                                } else {
+                                    updateHideMode(pair.b, pair.a.getPlayer(), pair.a.getPlayer().isSneaking() ?
+                                                                               HideMode.FULL :
+                                                                               HideMode.INFORMATION_ONLY);
 
-                                                                                         updateHideMode(pair.a, pair.b.getPlayer(), pair.b.getPlayer().isSneaking() ?
-                                                                                                                                    HideMode.FULL :
-                                                                                                                                    HideMode.INFORMATION_ONLY);
-                                                                                     }
-                                                                                 }
+                                    updateHideMode(pair.a, pair.b.getPlayer(), pair.b.getPlayer().isSneaking() ?
+                                                                               HideMode.FULL :
+                                                                               HideMode.INFORMATION_ONLY);
+                                }
+                            }
 
-                                                                                 // Players cannot see each other
-                                                                             } else if (hide_after_render_distance) {
-                                                                                 updateHideMode(pair.b, pair.a.getPlayer(), HideMode.FULL);
-                                                                                 updateHideMode(pair.a, pair.b.getPlayer(), HideMode.FULL);
-                                                                             } else {
-                                                                                 updateHideMode(pair.a, pair.b.getPlayer(), HideMode.NONE);
-                                                                                 updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
-                                                                             }
-                                                                         }
+                            // Players cannot see each other
+                        } else if (hide_after_render_distance) {
+                            updateHideMode(pair.b, pair.a.getPlayer(), HideMode.FULL);
+                            updateHideMode(pair.a, pair.b.getPlayer(), HideMode.FULL);
+                        } else {
+                            updateHideMode(pair.a, pair.b.getPlayer(), HideMode.NONE);
+                            updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
+                        }
+                    }
 
-                                                                         //Clear the HashSet for a new Run
-                                                                         playerConnections.clear();
+                    //Clear the HashSet for a new Run
+                    playerConnections.clear();
 
-                                                                         //Update_Ticks: the refresh-rate of the check.
-                                                                     }, 0L, AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".update_ticks"));
+                    //Update_Ticks: the refresh-rate of the check.
+                }, 0L, AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".update_ticks"));
     }
 
     @Override

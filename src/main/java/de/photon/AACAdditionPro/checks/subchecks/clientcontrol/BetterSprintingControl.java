@@ -8,6 +8,7 @@ import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -16,6 +17,8 @@ import java.util.List;
 public class BetterSprintingControl implements PluginMessageListener, ClientControlCheck
 {
     private List<String> commandsOnDetection;
+
+    @LoadFromConfiguration(configPath = ".disable")
     private boolean disable;
 
     @Override
@@ -49,8 +52,7 @@ public class BetterSprintingControl implements PluginMessageListener, ClientCont
     @Override
     public void subEnable()
     {
-        disable = AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".disable");
-        commandsOnDetection = ConfigUtils.loadStringOrStringList(getAdditionHackType().getConfigString() + ".commands_on_detection");
+        commandsOnDetection = ConfigUtils.loadStringOrStringList(this.getAdditionHackType().getConfigString() + ".commands_on_detection");
     }
 
     @Override

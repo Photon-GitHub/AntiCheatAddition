@@ -9,6 +9,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLook;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
@@ -18,7 +19,9 @@ public class EqualRotation extends PacketAdapter implements AACAdditionProCheck
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 100);
 
+    @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
+    @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
     public EqualRotation()
@@ -90,13 +93,6 @@ public class EqualRotation extends PacketAdapter implements AACAdditionProCheck
     public ViolationLevelManagement getViolationLevelManagement()
     {
         return vlManager;
-    }
-
-    @Override
-    public void subEnable()
-    {
-        this.cancel_vl = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".cancel_vl");
-        this.timeout = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".timeout");
     }
 
     @Override

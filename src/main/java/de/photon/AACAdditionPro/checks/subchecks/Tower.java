@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.datawrappers.BlockPlace;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
@@ -22,9 +23,13 @@ public class Tower implements Listener, AACAdditionProCheck
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 120L);
 
+    @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
+    @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
+    @LoadFromConfiguration(configPath = ".tower_leniency")
     private double tower_leniency;
+    @LoadFromConfiguration(configPath = ".jump_boost_leniency")
     private double jump_boost_leniency;
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -201,14 +206,5 @@ public class Tower implements Listener, AACAdditionProCheck
     public AdditionHackType getAdditionHackType()
     {
         return AdditionHackType.TOWER;
-    }
-
-    @Override
-    public void subEnable()
-    {
-        this.cancel_vl = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".cancel_vl");
-        this.timeout = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".timeout");
-        this.tower_leniency = 1 - AACAdditionPro.getInstance().getConfig().getDouble(this.getAdditionHackType().getConfigString() + ".tower_leniency");
-        this.jump_boost_leniency = 1 - AACAdditionPro.getInstance().getConfig().getDouble(this.getAdditionHackType().getConfigString() + ".jump_boost_leniency");
     }
 }

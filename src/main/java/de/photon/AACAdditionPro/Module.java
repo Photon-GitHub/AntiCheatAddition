@@ -3,11 +3,18 @@ package de.photon.AACAdditionPro;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketListener;
+import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
+import org.bukkit.Color;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.bukkit.util.Vector;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +31,65 @@ public interface Module
      */
     default void enable()
     {
+        // Config-Annotation processing
+        for (Field field : this.getClass().getDeclaredFields()) {
+            final LoadFromConfiguration annotation = field.getAnnotation(LoadFromConfiguration.class);
+
+            if (annotation != null) {
+                // Make it possible to modify the field
+                final boolean accessible = field.isAccessible();
+                field.setAccessible(true);
+
+                // Load the value from the config
+                Class clazz = field.getType();
+
+                String prePath = "";
+
+                if (this instanceof AACAdditionProCheck) {
+                    prePath = ((AACAdditionProCheck) this).getAdditionHackType().getConfigString();
+                }
+
+                // The different classes
+                try {
+                    // Boolean
+                    if (clazz == boolean.class || clazz == Boolean.class) {
+                        field.setBoolean(this, AACAdditionPro.getInstance().getConfig().getBoolean(prePath + annotation.configPath()));
+
+                        // Numbers
+                    } else if (clazz == double.class || clazz == Double.class) {
+                        field.setDouble(this, AACAdditionPro.getInstance().getConfig().getDouble(prePath + annotation.configPath()));
+                    } else if (clazz == int.class || clazz == Integer.class) {
+                        field.setInt(this, AACAdditionPro.getInstance().getConfig().getInt(prePath + annotation.configPath()));
+                    } else if (clazz == long.class || clazz == Long.class) {
+                        field.setLong(this, AACAdditionPro.getInstance().getConfig().getLong(prePath + annotation.configPath()));
+
+                        // Strings
+                    } else if (clazz == String.class) {
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getString(prePath + annotation.configPath()));
+
+                        // Special stuff
+                    } else if (clazz == ItemStack.class) {
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getItemStack(prePath + annotation.configPath()));
+                    } else if (clazz == Color.class) {
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getColor(prePath + annotation.configPath()));
+                    } else if (clazz == OfflinePlayer.class) {
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getOfflinePlayer(prePath + annotation.configPath()));
+                    } else if (clazz == Vector.class) {
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getVector(prePath + annotation.configPath()));
+
+                        // No special type found
+                    } else {
+                        field.set(this, AACAdditionPro.getInstance().getConfig().get(prePath + annotation.configPath()));
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+
+                // Set the field's accessible value again
+                field.setAccessible(accessible);
+            }
+        }
+
         // Bukkit event listener
         if (this instanceof Listener) {
             AACAdditionPro.getInstance().registerListener((Listener) this);

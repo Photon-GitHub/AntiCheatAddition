@@ -1,29 +1,52 @@
 package de.photon.AACAdditionPro.util.clientsideentities;
 
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
+import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityDestroy;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityTeleport;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMove;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMoveLook;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 
 public abstract class ClientsideEntity
 {
+
+    private static final Vector GRAVITY_VECTOR = new Vector(0, -.08, 0);
+    private static Field entityCountField;
+
+    static {
+        try {
+            final String version = ReflectionUtils.getVersionString();
+            Class<?> entityClass = Class.forName("net.minecraft.server." + version + ".Entity");
+            entityCountField = entityClass.getDeclaredField("entityCount");
+            entityCountField.setAccessible(true);
+        } catch (ReflectiveOperationException ex) {
+            throw new IllegalStateException("Server version is not supported", ex);
+        }
+    }
+
     @Getter
-    protected int entityID = 0;
+    protected final int entityID;
+
+    @Getter
+    @Setter
+    private boolean sprinting;
 
     /**
      * Determines whether this {@link ClientsideEntity} is already spawned.
@@ -46,7 +69,8 @@ public abstract class ClientsideEntity
      */
     private Vector velocity = new Vector(0, 0, 0);
 
-    public Location currentLocation;
+    @Getter
+    protected Location location;
 
     @Getter
     protected final Player observedPlayer;
@@ -57,28 +81,11 @@ public abstract class ClientsideEntity
 
         // Get a valid entity ID
         try {
-            //Get the String representing the version, e.g. v1_11_R1
-            final String version = ReflectionUtils.getVersionString();
 
-            // Get the class
-            final Class entityPlayerClazz = ReflectionUtils.loadClassFromPath("net.minecraft.server." + version + ".Entity");
+            this.entityID = getNextEntityID();
 
-            // Get the wanted field
-            final Field entityCountField = entityPlayerClazz.getDeclaredField("entityCount");
-            entityCountField.setAccessible(true);
-
-            // Set the correct entityCount
-            this.entityID = entityCountField.getInt(null);
-
-            // Set the field value
-            entityCountField.setInt(null, entityID + 1);
-
-        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        if (entityID == 0) {
-            throw new RuntimeException("Could not create ClientsideEntity for player " + observedPlayer.getName());
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException("Could not create ClientsideEntity for player " + observedPlayer.getName(), ex);
         }
     }
 
@@ -87,127 +94,139 @@ public abstract class ClientsideEntity
      *
      * @param location the target {@link Location} this {@link ClientsideEntity} should be moved to.
      */
-    private void move(final Location location)
+    public void move(final Location location)
     {
-        if (this.spawned) {
-            /*Depicts the different movement actions in decreasing priority, teleport is handled directly:
-              [0] == movement
-              [1] == rotation*/
-            final boolean[] movement = new boolean[3];
+        if (!this.spawned) {
+            return;
+        }
+        double xDiff = location.getX() - this.location.getX();
+        double yDiff = location.getY() - this.location.getY();
+        double zDiff = location.getZ() - this.location.getZ();
 
-            /*Stores the location differences:
-              [0] == x-Difference
-              [1] == y-Difference
-              [2] == z-Difference*/
-            final double[] loc_Diff = new double[3];
-            loc_Diff[0] = location.getX() - this.currentLocation.getX();
-            loc_Diff[1] = location.getY() - this.currentLocation.getY();
-            loc_Diff[2] = location.getZ() - this.currentLocation.getZ();
+        final boolean onGround = location.clone().add(0, -0.1, 0).getBlock().getType() != Material.AIR;
 
-            final boolean onGround = location.clone().add(0, -0.1, 0).getBlock().getType() != Material.AIR;
+        // Teleport needed ?
+        int teleportThreshold;
+        switch (AACAdditionPro.getInstance().getServerVersion()) {
+            case MC188:
+                teleportThreshold = 4;
+                break;
+            default:
+                teleportThreshold = 8;
+                break;
+        }
+        if (xDiff > teleportThreshold || yDiff > teleportThreshold || zDiff > teleportThreshold || needsTeleport) {
+            final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
+            // EntityID
+            teleportWrapper.setEntityID(this.entityID);
+            // Position
+            teleportWrapper.setX(location.getX());
+            teleportWrapper.setY(location.getY());
+            teleportWrapper.setZ(location.getZ());
+            // Angle
+            teleportWrapper.setYaw(location.getYaw());
+            teleportWrapper.setPitch(location.getPitch());
+            // OnGround
+            teleportWrapper.setOnGround(onGround);
+            // Send the packet
+            teleportWrapper.sendPacket(this.observedPlayer);
+            this.needsTeleport = false;
+            System.out.println("Sent TP to: " + location.getX() + " | " + location.getY() + " | " + location.getZ());
+        } else {
+            //Sending relative movement
+            boolean move = xDiff == 0 && yDiff == 0 && zDiff == 0;
+            boolean look = location.getPitch() == this.location.getPitch() && location.getYaw() == this.location.getYaw();
 
-            // Teleport needed ?
-            for (final double diff : loc_Diff) {
-                if (diff > 8 || needsTeleport) {
-                    final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
-                    // EntityID
-                    teleportWrapper.setEntityID(this.entityID);
-                    // Position
-                    teleportWrapper.setX(location.getX());
-                    teleportWrapper.setY(location.getY());
-                    teleportWrapper.setZ(location.getZ());
+            WrapperPlayServerEntity packetWrapper;
+
+            if (move) {
+                WrapperPlayServerRelEntityMove movePacketWrapper;
+
+                if (look) {
+                    WrapperPlayServerRelEntityMoveLook moveLookPacketWrapper = new WrapperPlayServerRelEntityMoveLook();
+
                     // Angle
-                    teleportWrapper.setYaw(MathUtils.getFixRotation(location.getYaw()));
-                    teleportWrapper.setPitch(MathUtils.getFixRotation(location.getPitch()));
-                    // OnGround
-                    teleportWrapper.setOnGround(onGround);
-                    // Send the packet
-                    teleportWrapper.sendPacket(this.observedPlayer);
-                    this.needsTeleport = false;
-                    System.out.println("Sent TP to: " + location.getX() + " | " + location.getY() + " | " + location.getZ());
-                    break;
-                } else if (diff > 0) {
-                    movement[0] = true;
-                }
-            }
+                    moveLookPacketWrapper.setYaw(location.getYaw());
+                    moveLookPacketWrapper.setPitch(location.getPitch());
 
-            System.out.println("Movement");
-
-            // Movement
-            if (movement[0]) {
-                final double[] move_loc_Diff = new double[3];
-
-                for (byte b = 0; b < move_loc_Diff.length; b++) {
-                    move_loc_Diff[b] = loc_Diff[b] /* * 32*/;
-                }
-
-                // Movement + Rotation
-                if (movement[1]) {
-                    final WrapperPlayServerRelEntityMoveLook relEntityMoveLookWrapper = new WrapperPlayServerRelEntityMoveLook();
-                    // EntityID
-                    relEntityMoveLookWrapper.setEntityID(this.entityID);
-                    // Relative movement
-                    relEntityMoveLookWrapper.setDx(move_loc_Diff[0]);
-                    relEntityMoveLookWrapper.setDy(move_loc_Diff[1]);
-                    relEntityMoveLookWrapper.setDz(move_loc_Diff[2]);
-                    // Angle
-                    relEntityMoveLookWrapper.setYaw(MathUtils.getFixRotation(location.getYaw()));
-                    relEntityMoveLookWrapper.setPitch(MathUtils.getFixRotation(location.getPitch()));
-                    // OnGround
-                    relEntityMoveLookWrapper.setOnGround(onGround);
-                    // Send packet
-                    relEntityMoveLookWrapper.sendPacket(this.observedPlayer);
-                    System.out.println("Sent RotMove");
-                    // Only Movement
+                    movePacketWrapper = moveLookPacketWrapper;
+                    System.out.println("Sending movelook");
                 } else {
-                    final WrapperPlayServerRelEntityMove relEntityMoveWrapper = new WrapperPlayServerRelEntityMove();
-                    // EntityID
-                    relEntityMoveWrapper.setEntityID(this.entityID);
-                    // Relative movement
-                    relEntityMoveWrapper.setDx((int) move_loc_Diff[0]);
-                    relEntityMoveWrapper.setDy((int) move_loc_Diff[1]);
-                    relEntityMoveWrapper.setDz((int) move_loc_Diff[2]);
-                    // OnGround
-                    relEntityMoveWrapper.setOnGround(onGround);
-                    // Send packet
-                    relEntityMoveWrapper.sendPacket(this.observedPlayer);
-                    System.out.println("Sent Move");
+                    movePacketWrapper = new WrapperPlayServerRelEntityMove();
+                    System.out.println("Sending move");
                 }
+                movePacketWrapper.setOnGround(onGround);
+                movePacketWrapper.setDiffs(xDiff, yDiff, zDiff);
+                packetWrapper = movePacketWrapper;
+            } else if (look) {
+                WrapperPlayServerEntityLook lookPacketWrapper = new WrapperPlayServerEntityLook();
 
-                // Only Rotation
-            } else if (movement[1]) {
-                final WrapperPlayServerEntityLook entityLookWrapper = new WrapperPlayServerEntityLook();
-                // EntityID
-                entityLookWrapper.setEntityID(this.entityID);
                 // Angles
-                entityLookWrapper.setYaw(MathUtils.getFixRotation(location.getYaw()));
-                entityLookWrapper.setPitch(MathUtils.getFixRotation(location.getPitch()));
+                lookPacketWrapper.setYaw(location.getYaw());
+                lookPacketWrapper.setPitch(location.getPitch());
                 // OnGround
-                entityLookWrapper.setOnGround(onGround);
-                // Send packet
-                entityLookWrapper.sendPacket(this.observedPlayer);
-                System.out.println("Sent Rot");
-            }
+                lookPacketWrapper.setOnGround(onGround);
 
-            this.currentLocation = location;
+                packetWrapper = lookPacketWrapper;
+                System.out.println("Sending look");
+            } else {
+                packetWrapper = new WrapperPlayServerEntity();
+                System.out.println("Sending idle");
+            }
+            packetWrapper.setEntityID(this.entityID);
+            packetWrapper.sendPacket(this.observedPlayer);
+        }
+
+        this.location = location.clone();
+    }
+
+    public void tick()
+    {
+        //TODO ground calculations, pressing button simulation, etc?
+        location.add(velocity);
+
+        velocity.subtract(GRAVITY_VECTOR).multiply(.98);
+    }
+
+    public void jump()
+    {
+        velocity.setY(.42);
+
+        if (sprinting) {
+            velocity.add(location.getDirection().setY(0).normalize().multiply(.2F));
         }
     }
 
-    public void fakeHit()
+    /**
+     * Fake being hurt by the observedPlayer in the next sync server tick
+     */
+    public void hurtByObserved()
     {
         Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
             lastHit = System.currentTimeMillis();
             hurt();
 
-            // Fake knockback
-            double motX = (-Math.sin(observedPlayer.getLocation().getYaw() * Math.PI / 180.0F) * 0.5F);
-            final double motY = 0.1D;
-            double motZ = (Math.cos(observedPlayer.getLocation().getYaw() * Math.PI / 180.0F) * 0.5F);
+            Location observedLoc = observedPlayer.getLocation();
+            observedLoc.setPitch(0);
+            
+            //Calculate knockback strength
+            int knockbackStrength = 0;
+            if (observedPlayer.isSprinting()) {
+                knockbackStrength = 1;
+            }
+            ItemStack itemInHand = observedPlayer.getItemInHand();
+            if (itemInHand != null) {
+                knockbackStrength += itemInHand.getEnchantmentLevel(Enchantment.KNOCKBACK);
+            }
 
-            motX *= 0.6D;
-            motZ *= 0.6D;
+            //Apply velocity
+            if (knockbackStrength > 0) {
+                velocity.add(observedLoc.getDirection().normalize().setY(.1).multiply(knockbackStrength * .5));
 
-            velocity = new Vector(motX, motY, motZ);
+                //TODO wrong code, its not applied generally, needs to be moved into the method the fake entity hits another entity and apply knockback + sprinting options
+//                    motX *= 0.6D;
+//                    motZ *= 0.6D;
+            }
         });
     }
 
@@ -222,7 +241,7 @@ public abstract class ClientsideEntity
     /**
      * Fakes the swing - animation to make the entity look like it is a real, fighting {@link Player}.
      */
-    protected void swing()
+    public void swing()
     {
         fakeAnimation(0);
     }
@@ -230,7 +249,7 @@ public abstract class ClientsideEntity
     /**
      * Fakes the hurt - animation to make the entity look like it was hurt
      */
-    protected void hurt()
+    public void hurt()
     {
         fakeAnimation(1);
     }
@@ -245,16 +264,23 @@ public abstract class ClientsideEntity
         }
     }
 
-    protected abstract void spawn();
+    public abstract void spawn();
 
-    protected void despawn()
+    public void despawn()
     {
         final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
         entityDestroyWrapper.setEntityIds(new int[]{this.entityID});
         entityDestroyWrapper.sendPacket(observedPlayer);
         this.spawned = false;
-        postDespawn();
     }
 
-    protected abstract void postDespawn();
+    private static int getNextEntityID() throws IllegalAccessException
+    {
+        // Get entity id for next entity (this one)
+        int entityID = entityCountField.getInt(null);
+
+        // Increase entity id for next entity
+        entityCountField.setInt(null, entityID + 1);
+        return entityID;
+    }
 }

@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.datawrappers.BlockPlace;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
@@ -22,8 +23,11 @@ public class Scaffold implements Listener, AACAdditionProCheck
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 100L);
 
+    @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
+    @LoadFromConfiguration(configPath = ".scaffold_delay")
     private int scaffold_delay;
+    @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
     @EventHandler(priority = EventPriority.LOWEST)

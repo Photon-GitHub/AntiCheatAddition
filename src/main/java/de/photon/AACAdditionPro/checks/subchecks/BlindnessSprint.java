@@ -1,10 +1,10 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,6 +15,7 @@ public class BlindnessSprint implements Listener, AACAdditionProCheck
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 100L);
 
+    @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
 
     @EventHandler
@@ -26,7 +27,7 @@ public class BlindnessSprint implements Listener, AACAdditionProCheck
         if (user == null || user.isBypassed()) {
             return;
         }
-        
+
         // No flying check as Blindness also applies to the flying behaviour
         // The player has Blindness
         if (user.getPlayer().hasPotionEffect(PotionEffectType.BLINDNESS) &&
@@ -49,11 +50,5 @@ public class BlindnessSprint implements Listener, AACAdditionProCheck
     public AdditionHackType getAdditionHackType()
     {
         return AdditionHackType.BLINDNESS_SPRINT;
-    }
-
-    @Override
-    public void subEnable()
-    {
-        this.cancel_vl = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".cancel_vl");
     }
 }

@@ -20,7 +20,6 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@SuppressWarnings("MethodMayBeStatic")
 public final class VerboseSender implements Listener
 {
     @Setter

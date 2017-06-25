@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Bukkit;
@@ -20,9 +21,13 @@ public class MultiInteraction implements Listener, AACAdditionProCheck
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 120L);
 
+    @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
+    @LoadFromConfiguration(configPath = ".max_ping")
     private double max_ping;
+    @LoadFromConfiguration(configPath = ".min_tps")
     private double min_tps;
+    @LoadFromConfiguration(configPath = ".min_time")
     private int min_time;
 
     //Priority below the priority in InventoryData of the InvClickListener required, otherwise every click will be flagged
@@ -123,14 +128,5 @@ public class MultiInteraction implements Listener, AACAdditionProCheck
     public AdditionHackType getAdditionHackType()
     {
         return AdditionHackType.MULTI_INTERACTION;
-    }
-
-    @Override
-    public void subEnable()
-    {
-        this.cancel_vl = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".cancel_vl");
-        this.max_ping = AACAdditionPro.getInstance().getConfig().getDouble(this.getAdditionHackType().getConfigString() + ".max_ping");
-        this.min_tps = AACAdditionPro.getInstance().getConfig().getDouble(this.getAdditionHackType().getConfigString() + ".min_tps");
-        this.min_time = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".min_time");
     }
 }

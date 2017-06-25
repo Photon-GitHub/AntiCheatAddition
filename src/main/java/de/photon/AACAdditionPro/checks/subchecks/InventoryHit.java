@@ -1,10 +1,10 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,6 +17,7 @@ public class InventoryHit implements Listener, AACAdditionProCheck
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 100L);
 
+    @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -52,11 +53,5 @@ public class InventoryHit implements Listener, AACAdditionProCheck
     public AdditionHackType getAdditionHackType()
     {
         return AdditionHackType.INVENTORY_HIT;
-    }
-
-    @Override
-    public void subEnable()
-    {
-        cancel_vl = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".cancel_vl");
     }
 }

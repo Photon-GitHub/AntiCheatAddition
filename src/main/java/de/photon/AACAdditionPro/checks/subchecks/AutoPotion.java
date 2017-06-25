@@ -1,10 +1,10 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
@@ -23,7 +23,10 @@ public class AutoPotion implements Listener, AACAdditionProCheck
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 120L);
 
+    @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
+
+    @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
     /**
@@ -32,21 +35,25 @@ public class AutoPotion implements Listener, AACAdditionProCheck
      * 2) throwing a potion and backwards-rotation
      * so that the check is NOT failed
      */
+    @LoadFromConfiguration(configPath = ".time_offset")
     private int time_offset;
 
     /**
      * How much offset is allowed when comparing the previous angle to the angle of the back-rotation to continue the check
      */
+    @LoadFromConfiguration(configPath = ".angle_offset")
     private double angle_offset;
 
     /**
      * The initial pitch-difference, measured in degrees, to start the check
      */
+    @LoadFromConfiguration(configPath = ".angle_start_threshold")
     private double angle_start_threshold;
 
     /**
      * The minimum angle that is counted as looking down
      */
+    @LoadFromConfiguration(configPath = ".look_down_angle")
     private double look_down_angle;
 
     @EventHandler
@@ -124,17 +131,6 @@ public class AutoPotion implements Listener, AACAdditionProCheck
     public AdditionHackType getAdditionHackType()
     {
         return AdditionHackType.AUTO_POTION;
-    }
-
-    @Override
-    public void subEnable()
-    {
-        this.cancel_vl = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".cancel_vl");
-        this.timeout = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".timeout");
-        this.time_offset = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".time_offset");
-        this.angle_offset = AACAdditionPro.getInstance().getConfig().getDouble(this.getAdditionHackType().getConfigString() + ".angle_offset");
-        this.angle_start_threshold = AACAdditionPro.getInstance().getConfig().getDouble(this.getAdditionHackType().getConfigString() + ".angle_start_threshold");
-        this.look_down_angle = AACAdditionPro.getInstance().getConfig().getDouble(this.getAdditionHackType().getConfigString() + ".look_down_angle");
     }
 
     @Override

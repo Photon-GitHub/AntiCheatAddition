@@ -9,6 +9,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
@@ -33,7 +34,9 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 100);
 
+    @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
+    @LoadFromConfiguration(configPath = ".min_tps")
     private double min_tps;
 
     private Field motXField;
@@ -190,10 +193,6 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
     @Override
     public void subEnable()
     {
-        // Config
-        this.cancel_vl = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".cancel_vl");
-        this.min_tps = AACAdditionPro.getInstance().getConfig().getDouble(this.getAdditionHackType().getConfigString() + ".min_tps");
-
         // Reflection stuff
         try {
             //Get the String representing the version, e.g. v1_11_R1

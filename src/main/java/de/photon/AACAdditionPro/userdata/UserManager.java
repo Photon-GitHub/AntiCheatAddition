@@ -12,7 +12,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 
-@SuppressWarnings("MethodMayBeStatic")
 public class UserManager implements Listener
 {
     public UserManager()

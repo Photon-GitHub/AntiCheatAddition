@@ -12,13 +12,11 @@ import de.photon.AACAdditionPro.util.world.BlockUtils;
 public abstract class BlockPlaceData extends TimeData
 {
     protected final Buffer<BlockPlace> blockPlaces;
-    private final boolean horizontal;
     private final int buffer_size;
 
     protected BlockPlaceData(final boolean horizontal, final int buffer_size, final User theUser)
     {
         super(false, theUser);
-        this.horizontal = horizontal;
         this.buffer_size = buffer_size;
 
         blockPlaces = new Buffer<BlockPlace>(buffer_size)

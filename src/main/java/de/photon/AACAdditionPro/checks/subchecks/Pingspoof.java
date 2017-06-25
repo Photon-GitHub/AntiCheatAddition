@@ -8,6 +8,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
@@ -20,7 +21,9 @@ public class Pingspoof extends PacketAdapter implements Listener, AACAdditionPro
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 500L);
 
+    @LoadFromConfiguration(configPath = ".ping_offset")
     private double ping_offset;
+    @LoadFromConfiguration(configPath = ".max_real_ping")
     private double max_real_ping;
 
     private int task_number;
@@ -91,10 +94,6 @@ public class Pingspoof extends PacketAdapter implements Listener, AACAdditionPro
     @Override
     public void subEnable()
     {
-        // Config
-        this.ping_offset = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".ping_offset");
-        this.max_real_ping = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".max_real_ping");
-
         // Task
         task_number = Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),

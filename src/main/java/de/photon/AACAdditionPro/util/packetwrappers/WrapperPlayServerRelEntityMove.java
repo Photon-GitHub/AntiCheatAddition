@@ -2,12 +2,9 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
 
-public class WrapperPlayServerRelEntityMove extends AbstractPacket
+public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity implements IWrapperPlayServerEntityOnGround
 {
     public static final PacketType TYPE =
             PacketType.Play.Server.REL_ENTITY_MOVE;
@@ -23,109 +20,82 @@ public class WrapperPlayServerRelEntityMove extends AbstractPacket
         super(packet, TYPE);
     }
 
-    /**
-     * Retrieve Entity ID.
-     * <p>
-     * Notes: entity's ID
-     *
-     * @return The current Entity ID
-     */
-    public int getEntityID()
+    protected WrapperPlayServerRelEntityMove(PacketContainer packet, PacketType packetType)
     {
-        return handle.getIntegers().read(0);
+        super(packet, packetType);
     }
 
-    /**
-     * Set Entity ID.
-     *
-     * @param value - new value.
-     */
-    public void setEntityID(int value)
-    {
-        handle.getIntegers().write(0, value);
-    }
-
-    /**
-     * Retrieve the entity of the painting that will be spawned.
-     *
-     * @param world - the current world of the entity.
-     *
-     * @return The spawned entity.
-     */
-    public Entity getEntity(World world)
-    {
-        return handle.getEntityModifier(world).read(0);
-    }
-
-    /**
-     * Retrieve the entity of the painting that will be spawned.
-     *
-     * @param event - the packet event.
-     *
-     * @return The spawned entity.
-     */
-    public Entity getEntity(PacketEvent event)
-    {
-        return getEntity(event.getPlayer().getWorld());
-    }
-
-    public int getDx()
-    {
-        return handle.getIntegers().read(1);
-    }
-
-    public void setDx(int value)
+    public double getDx()
     {
         switch (AACAdditionPro.getInstance().getServerVersion()) {
             case MC188:
-                //value *= 32;
-                handle.getBytes().write(0, (byte) value);
+                return handle.getBytes().read(0) / 32D;
+            default:
+                return handle.getIntegers().read(1) / 4096D;
+        }
+    }
+
+    public void setDx(double value)
+    {
+        switch (AACAdditionPro.getInstance().getServerVersion()) {
+            case MC188:
+                handle.getBytes().write(0, (byte) (value * 32));
                 break;
-            case MC110:
-            case MC111:
-                handle.getIntegers().write(1, value);
+            default:
+                handle.getIntegers().write(1, (int) (value * 4096));
                 break;
         }
     }
 
-    public int getDy()
-    {
-        return handle.getIntegers().read(2);
-    }
-
-    public void setDy(int value)
+    public double getDy()
     {
         switch (AACAdditionPro.getInstance().getServerVersion()) {
             case MC188:
-                //value *= 32;
-                handle.getBytes().write(1, (byte) value);
+                return handle.getBytes().read(1) / 32D;
+            default:
+                return handle.getIntegers().read(2) / 4096D;
+        }
+    }
+
+    public void setDy(double value)
+    {
+        switch (AACAdditionPro.getInstance().getServerVersion()) {
+            case MC188:
+                handle.getBytes().write(1, (byte) (value * 32));
                 break;
-            case MC110:
-            case MC111:
-                handle.getIntegers().write(2, value);
+            default:
+                handle.getIntegers().write(2, (int) (value * 4096));
                 break;
         }
     }
 
-    public int getDz()
-    {
-        return handle.getIntegers().read(3);
-    }
-
-    public void setDz(int value)
+    public double getDz()
     {
         switch (AACAdditionPro.getInstance().getServerVersion()) {
             case MC188:
-                //value *= 32;
-                handle.getBytes().write(2, (byte) value);
+                return handle.getBytes().read(2) / 32D;
+            default:
+                return handle.getIntegers().read(3) / 4096D;
+        }
+    }
+
+    public void setDz(double value)
+    {
+        switch (AACAdditionPro.getInstance().getServerVersion()) {
+            case MC188:
+                handle.getBytes().write(2, (byte) (value * 32));
                 break;
-            case MC110:
-            case MC111:
-                handle.getIntegers().write(3, value);
+            default:
+                handle.getIntegers().write(3, (int) (value * 4096));
                 break;
         }
     }
 
+    public void setDiffs(double xDiff, double yDiff, double zDiff) {
+        setDx(xDiff);
+        setDy(yDiff);
+        setDz(zDiff);
+    }
     /**
      * Retrieve On Ground.
      *

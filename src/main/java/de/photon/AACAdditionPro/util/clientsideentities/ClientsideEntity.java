@@ -1,6 +1,5 @@
 package de.photon.AACAdditionPro.util.clientsideentities;
 
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -208,7 +207,7 @@ public abstract class ClientsideEntity
 
             Location observedLoc = observedPlayer.getLocation();
             observedLoc.setPitch(0);
-            
+
             //Calculate knockback strength
             int knockbackStrength = 0;
             if (observedPlayer.isSprinting()) {

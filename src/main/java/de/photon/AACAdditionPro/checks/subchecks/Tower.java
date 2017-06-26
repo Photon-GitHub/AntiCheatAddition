@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.clientsideentities.movement.Jumping;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.datawrappers.BlockPlace;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
@@ -134,7 +135,7 @@ public class Tower implements Listener, AACAdditionProCheck
                 final double tick_step = 0.25;
 
                 // The velocity in the beginning
-                final double starting_velocity = Tower.getJumpYMotion(amplifier);
+                final double starting_velocity = Jumping.getJumpYMotion(amplifier);
 
                 // The acceleration of the gravitation in
                 // blocks / tick
@@ -176,19 +177,6 @@ public class Tower implements Listener, AACAdditionProCheck
                 // Too high movement; no checking
                 return 0;
         }
-    }
-
-    //Client code-copy
-    private static double getJumpYMotion(final short amplifier)
-    {
-        double motionY = (double) 0.42F;
-
-        // If the amplifier is -1 no effect is there
-        if (amplifier != Short.MIN_VALUE) {
-            motionY += (double) ((float) (amplifier * 0.1F));
-        }
-
-        return motionY;
     }
 
     private static void updateInventoryNextTick(final User user)

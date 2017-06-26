@@ -4,6 +4,8 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.clientsideentities.equipment.Equipment;
+import de.photon.AACAdditionPro.util.clientsideentities.movement.Gravitation;
+import de.photon.AACAdditionPro.util.clientsideentities.movement.Jumping;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
@@ -29,7 +31,7 @@ import java.lang.reflect.Field;
 public abstract class ClientsideEntity
 {
 
-    private static final Vector GRAVITY_VECTOR = new Vector(0, -.08, 0);
+    private static final Vector GRAVITY_VECTOR = Gravitation.PLAYER.getGravitationalVector();
     private static Field entityCountField;
 
     static {
@@ -181,7 +183,7 @@ public abstract class ClientsideEntity
             this.needsTeleport = false;
             System.out.println("Sent TP to: " + this.location.getX() + " | " + this.location.getY() + " | " + this.location.getZ());
         } else {
-            //Sending relative movement
+            // Sending relative movement
             boolean move = xDiff == 0 && yDiff == 0 && zDiff == 0;
             boolean look = this.location.getPitch() == this.lastLocation.getPitch() && this.location.getYaw() == this.lastLocation.getYaw();
 
@@ -203,9 +205,11 @@ public abstract class ClientsideEntity
                     movePacketWrapper = new WrapperPlayServerRelEntityMove();
                     System.out.println("Sending move");
                 }
+
                 movePacketWrapper.setOnGround(onGround);
                 movePacketWrapper.setDiffs(xDiff, yDiff, zDiff);
                 packetWrapper = movePacketWrapper;
+
             } else if (look) {
                 WrapperPlayServerEntityLook lookPacketWrapper = new WrapperPlayServerEntityLook();
 
@@ -217,10 +221,12 @@ public abstract class ClientsideEntity
 
                 packetWrapper = lookPacketWrapper;
                 System.out.println("Sending look");
+
             } else {
                 packetWrapper = new WrapperPlayServerEntity();
                 System.out.println("Sending idle");
             }
+
             packetWrapper.setEntityID(this.entityID);
             packetWrapper.sendPacket(this.observedPlayer);
         }
@@ -235,7 +241,7 @@ public abstract class ClientsideEntity
 
     public void jump()
     {
-        velocity.setY(.42);
+        velocity.setY(Jumping.getJumpYMotion(Short.MIN_VALUE));
 
         if (sprinting) {
             velocity.add(location.getDirection().setY(0).normalize().multiply(.2F));
@@ -294,54 +300,30 @@ public abstract class ClientsideEntity
 
     private void fakeAnimation(final int animationType)
     {
-        if (!this.spawned) {
-            return;
+        // Entity is already spawned.
+        if (this.isSpawned()) {
+            final WrapperPlayServerAnimation animationWrapper = new WrapperPlayServerAnimation();
+            animationWrapper.setEntityID(this.entityID);
+            animationWrapper.setAnimation(animationType);
+            animationWrapper.sendPacket(this.observedPlayer);
         }
-        final WrapperPlayServerAnimation animationWrapper = new WrapperPlayServerAnimation();
-        animationWrapper.setEntityID(this.entityID);
-        animationWrapper.setAnimation(animationType);
-        animationWrapper.sendPacket(this.observedPlayer);
     }
 
     private void sendHeadYaw()
     {
-        if (!isSpawned()) {
-            return;
+        // The entity is already spawned
+        if (this.isSpawned() &&
+            // and has moved it's head.
+            this.headYaw != this.lastHeadYaw)
+        {
+            final WrapperPlayServerEntityHeadRotation headRotationWrapper = new WrapperPlayServerEntityHeadRotation();
+
+            headRotationWrapper.setEntityID(entityID);
+            headRotationWrapper.setHeadYaw(MathUtils.getFixRotation(headYaw));
+
+            headRotationWrapper.sendPacket(observedPlayer);
+            lastHeadYaw = headYaw;
         }
-        if (headYaw == lastHeadYaw) {
-            return;
-        }
-        final WrapperPlayServerEntityHeadRotation headRotationWrapper = new WrapperPlayServerEntityHeadRotation();
-
-        headRotationWrapper.setEntityID(entityID);
-        headRotationWrapper.setHeadYaw(MathUtils.getFixRotation(headYaw));
-
-        headRotationWrapper.sendPacket(observedPlayer);
-        lastHeadYaw = headYaw;
-    }
-
-    // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //
-
-    public abstract void spawn(Location location);
-
-    // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //
-
-    public void despawn()
-    {
-        final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
-        entityDestroyWrapper.setEntityIds(new int[]{this.entityID});
-        entityDestroyWrapper.sendPacket(observedPlayer);
-        this.spawned = false;
-    }
-
-    private static int getNextEntityID() throws IllegalAccessException
-    {
-        // Get entity id for next entity (this one)
-        int entityID = entityCountField.getInt(null);
-
-        // Increase entity id for next entity
-        entityCountField.setInt(null, entityID + 1);
-        return entityID;
     }
 
     public Location getLocation()
@@ -366,5 +348,29 @@ public abstract class ClientsideEntity
     public void setVelocity(Vector velocity)
     {
         this.velocity = velocity.clone();
+    }
+
+    // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //
+
+    public abstract void spawn(Location location);
+
+    private static int getNextEntityID() throws IllegalAccessException
+    {
+        // Get entity id for next entity (this one)
+        int entityID = entityCountField.getInt(null);
+
+        // Increase entity id for next entity
+        entityCountField.setInt(null, entityID + 1);
+        return entityID;
+    }
+
+    // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //
+
+    public void despawn()
+    {
+        final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
+        entityDestroyWrapper.setEntityIds(new int[]{this.entityID});
+        entityDestroyWrapper.sendPacket(observedPlayer);
+        this.spawned = false;
     }
 }

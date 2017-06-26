@@ -29,7 +29,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     public Team currentTeam;
 
-    private int[] tasks = new int[2];
+    private int task;
 
     public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile)
     {
@@ -37,12 +37,12 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // Get skin data and name
         this.gameProfile = gameProfile;
 
-        tasks[0] = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () ->
+        task = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () ->
         {
             // TODO: INVOKE checkRespawn() and checkScoreboard() every tick!
         }, 0L, 1L);
 
-        DisplayInformation.updatePing(this);
+        recursiveUpdatePing();
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //
@@ -128,9 +128,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     public void despawn()
     {
         // Cancel all tasks of this entity
-        for (int i : tasks) {
-            Bukkit.getScheduler().cancelTask(i);
-        }
+        Bukkit.getScheduler().cancelTask(task);
         super.despawn();
         removeFromTab();
     }

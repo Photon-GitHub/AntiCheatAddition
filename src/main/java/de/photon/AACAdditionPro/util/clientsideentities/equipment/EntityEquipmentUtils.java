@@ -5,7 +5,6 @@ import de.photon.AACAdditionPro.util.clientsideentities.ClientsideEntity;
 import de.photon.AACAdditionPro.util.clientsideentities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public final class EntityEquipmentUtils
@@ -22,11 +21,10 @@ public final class EntityEquipmentUtils
     /**
      * This equips a {@link ClientsideEntity} with the according randomized items.
      *
-     * @param receiver      the player who can see the {@link ClientsideEntity}
      * @param playerEntity  the {@link ClientsideEntity} itself
      * @param equipmentType what parts of the {@link ClientsideEntity} should be equipped
      */
-    public static void equipPlayerEntity(final Player receiver, final ClientsidePlayerEntity playerEntity, final EquipmentType equipmentType)
+    public static void equipPlayerEntity(final ClientsidePlayerEntity playerEntity, final EquipmentType equipmentType)
     {
         // Material for the hand, not needed for ARMOR.
         Material handMaterial = Material.AIR;
@@ -45,7 +43,7 @@ public final class EntityEquipmentUtils
                     entityEquipmentWrapper.setSlot(armorSlots[b]);
                     entityEquipmentWrapper.setItem(new ItemStack(armor[b]));
 
-                    entityEquipmentWrapper.sendPacket(receiver);
+                    entityEquipmentWrapper.sendPacket(playerEntity.getObservedPlayer());
                 }
                 // Return here, the other equipmentTypes need more than the switch-statement
                 return;
@@ -64,6 +62,6 @@ public final class EntityEquipmentUtils
         entityEquipmentWrapper.setSlot(handSlot);
         entityEquipmentWrapper.setItem(new ItemStack(handMaterial));
 
-        entityEquipmentWrapper.sendPacket(receiver);
+        entityEquipmentWrapper.sendPacket(playerEntity.getObservedPlayer());
     }
 }

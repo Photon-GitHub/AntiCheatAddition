@@ -13,6 +13,7 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -27,7 +28,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     @Setter
     private int ping;
 
-    public Team currentTeam;
+    @Getter
+    @Setter
+    private Team currentTeam; //TODO use
 
     private int task;
 
@@ -69,8 +72,10 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //
 
     @Override
-    public void spawn()
+    public void spawn(Location location)
     {
+        this.lastLocation = location.clone();
+        this.location = location.clone();
         // Add the player with PlayerInfo
         final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
 
@@ -104,12 +109,21 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         DisplayInformation.applyTeams(this);
 
         // Entity equipment + armor
-        EntityEquipmentUtils.equipPlayerEntity(observedPlayer, this, EquipmentType.ARMOR);
-        EntityEquipmentUtils.equipPlayerEntity(observedPlayer, this, EquipmentType.NORMAL);
+        EntityEquipmentUtils.equipPlayerEntity(this, EquipmentType.ARMOR);
+        EntityEquipmentUtils.equipPlayerEntity(this, EquipmentType.NORMAL);
     }
 
-
     // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //
+
+    @Override
+    public void despawn()
+    {
+        super.despawn();
+        // Cancel all tasks of this entity
+        Bukkit.getScheduler().cancelTask(task);
+
+        removeFromTab();
+    }
 
     private void removeFromTab()
     {
@@ -122,14 +136,5 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
 
         playerInfoWrapper.sendPacket(observedPlayer);
-    }
-
-    @Override
-    public void despawn()
-    {
-        // Cancel all tasks of this entity
-        Bukkit.getScheduler().cancelTask(task);
-        super.despawn();
-        removeFromTab();
     }
 }

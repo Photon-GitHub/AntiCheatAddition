@@ -3,10 +3,13 @@ package de.photon.AACAdditionPro.util.clientsideentities;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.clientsideentities.equipment.Equipment;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityDestroy;
+import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityHeadRotation;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityTeleport;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMove;
@@ -61,15 +64,22 @@ public abstract class ClientsideEntity
     /**
      * Stores the last timestamp this {@link ClientsideEntity} was hit.
      */
-    private long lastHit;
+    private long lastHurtMillis;
 
     /**
      * The current velocity of this {@link ClientsideEntity}.
      */
     private Vector velocity = new Vector(0, 0, 0);
 
-    @Getter
+    protected Location lastLocation;
     protected Location location;
+
+    @Getter
+    protected float lastHeadYaw;
+    @Getter
+    protected float headYaw;
+
+    private Equipment equipment = new Equipment();
 
     @Getter
     protected final Player observedPlayer;
@@ -106,20 +116,42 @@ public abstract class ClientsideEntity
     // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //
 
     /**
+     * Should be called every tick once, updates physics + sends movement packets
+     */
+    public void tick()
+    {
+        //TODO ground calculations, pressing button simulation, etc?
+        location.add(velocity);
+
+        sendMove();
+        sendHeadYaw();
+
+        velocity.subtract(GRAVITY_VECTOR).multiply(.98);
+    }
+
+    /**
      * Moves the {@link ClientsideEntity} somewhere
      *
      * @param location the target {@link Location} this {@link ClientsideEntity} should be moved to.
      */
-    public void move(final Location location)
+    public void move(Location location)
+    {
+        this.location = location;
+    }
+
+    /**
+     * sends a fitting movement to from the last location to the current location
+     */
+    private void sendMove()
     {
         if (!this.spawned) {
             return;
         }
-        double xDiff = location.getX() - this.location.getX();
-        double yDiff = location.getY() - this.location.getY();
-        double zDiff = location.getZ() - this.location.getZ();
+        double xDiff = this.location.getX() - this.lastLocation.getX();
+        double yDiff = this.location.getY() - this.lastLocation.getY();
+        double zDiff = this.location.getZ() - this.lastLocation.getZ();
 
-        final boolean onGround = location.clone().add(0, -0.1, 0).getBlock().getType() != Material.AIR;
+        final boolean onGround = isOnGround();
 
         // Teleport needed ?
         int teleportThreshold;
@@ -136,22 +168,22 @@ public abstract class ClientsideEntity
             // EntityID
             teleportWrapper.setEntityID(this.entityID);
             // Position
-            teleportWrapper.setX(location.getX());
-            teleportWrapper.setY(location.getY());
-            teleportWrapper.setZ(location.getZ());
+            teleportWrapper.setX(this.location.getX());
+            teleportWrapper.setY(this.location.getY());
+            teleportWrapper.setZ(this.location.getZ());
             // Angle
-            teleportWrapper.setYaw(location.getYaw());
-            teleportWrapper.setPitch(location.getPitch());
+            teleportWrapper.setYaw(this.location.getYaw());
+            teleportWrapper.setPitch(this.location.getPitch());
             // OnGround
             teleportWrapper.setOnGround(onGround);
             // Send the packet
             teleportWrapper.sendPacket(this.observedPlayer);
             this.needsTeleport = false;
-            System.out.println("Sent TP to: " + location.getX() + " | " + location.getY() + " | " + location.getZ());
+            System.out.println("Sent TP to: " + this.location.getX() + " | " + this.location.getY() + " | " + this.location.getZ());
         } else {
             //Sending relative movement
             boolean move = xDiff == 0 && yDiff == 0 && zDiff == 0;
-            boolean look = location.getPitch() == this.location.getPitch() && location.getYaw() == this.location.getYaw();
+            boolean look = this.location.getPitch() == this.lastLocation.getPitch() && this.location.getYaw() == this.lastLocation.getYaw();
 
             WrapperPlayServerEntity packetWrapper;
 
@@ -162,8 +194,8 @@ public abstract class ClientsideEntity
                     WrapperPlayServerRelEntityMoveLook moveLookPacketWrapper = new WrapperPlayServerRelEntityMoveLook();
 
                     // Angle
-                    moveLookPacketWrapper.setYaw(location.getYaw());
-                    moveLookPacketWrapper.setPitch(location.getPitch());
+                    moveLookPacketWrapper.setYaw(this.location.getYaw());
+                    moveLookPacketWrapper.setPitch(this.location.getPitch());
 
                     movePacketWrapper = moveLookPacketWrapper;
                     System.out.println("Sending movelook");
@@ -178,8 +210,8 @@ public abstract class ClientsideEntity
                 WrapperPlayServerEntityLook lookPacketWrapper = new WrapperPlayServerEntityLook();
 
                 // Angles
-                lookPacketWrapper.setYaw(location.getYaw());
-                lookPacketWrapper.setPitch(location.getPitch());
+                lookPacketWrapper.setYaw(this.location.getYaw());
+                lookPacketWrapper.setPitch(this.location.getPitch());
                 // OnGround
                 lookPacketWrapper.setOnGround(onGround);
 
@@ -193,15 +225,12 @@ public abstract class ClientsideEntity
             packetWrapper.sendPacket(this.observedPlayer);
         }
 
-        this.location = location.clone();
+        this.lastLocation = this.location.clone();
     }
 
-    public void tick()
+    private boolean isOnGround()
     {
-        //TODO ground calculations, pressing button simulation, etc?
-        location.add(velocity);
-
-        velocity.subtract(GRAVITY_VECTOR).multiply(.98);
+        return location.clone().add(0, -0.1, 0).getBlock().getType() != Material.AIR;
     }
 
     public void jump()
@@ -219,7 +248,7 @@ public abstract class ClientsideEntity
     public void hurtByObserved()
     {
         Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-            lastHit = System.currentTimeMillis();
+            lastHurtMillis = System.currentTimeMillis();
             hurt();
 
             Location observedLoc = observedPlayer.getLocation();
@@ -265,17 +294,45 @@ public abstract class ClientsideEntity
 
     private void fakeAnimation(final int animationType)
     {
-        if (this.spawned) {
-            final WrapperPlayServerAnimation animationWrapper = new WrapperPlayServerAnimation();
-            animationWrapper.setEntityID(this.entityID);
-            animationWrapper.setAnimation(animationType);
-            animationWrapper.sendPacket(this.observedPlayer);
+        if (!this.spawned) {
+            return;
         }
+        final WrapperPlayServerAnimation animationWrapper = new WrapperPlayServerAnimation();
+        animationWrapper.setEntityID(this.entityID);
+        animationWrapper.setAnimation(animationType);
+        animationWrapper.sendPacket(this.observedPlayer);
+    }
+
+    private void sendHeadYaw()
+    {
+        if (!isSpawned()) {
+            return;
+        }
+        if (headYaw == lastHeadYaw) {
+            return;
+        }
+        final WrapperPlayServerEntityHeadRotation headRotationWrapper = new WrapperPlayServerEntityHeadRotation();
+
+        headRotationWrapper.setEntityID(entityID);
+        headRotationWrapper.setHeadYaw(MathUtils.getFixRotation(headYaw));
+
+        headRotationWrapper.sendPacket(observedPlayer);
+        lastHeadYaw = headYaw;
     }
 
     // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //
 
-    public abstract void spawn();
+    public abstract void spawn(Location location);
+
+    // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //
+
+    public void despawn()
+    {
+        final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
+        entityDestroyWrapper.setEntityIds(new int[]{this.entityID});
+        entityDestroyWrapper.sendPacket(observedPlayer);
+        this.spawned = false;
+    }
 
     private static int getNextEntityID() throws IllegalAccessException
     {
@@ -287,13 +344,27 @@ public abstract class ClientsideEntity
         return entityID;
     }
 
-    // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //
-
-    public void despawn()
+    public Location getLocation()
     {
-        final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
-        entityDestroyWrapper.setEntityIds(new int[]{this.entityID});
-        entityDestroyWrapper.sendPacket(observedPlayer);
-        this.spawned = false;
+        return location == null ?
+               null :
+               location.clone();
+    }
+
+    public Location getLastLocation()
+    {
+        return lastLocation == null ?
+               null :
+               location.clone();
+    }
+
+    public Vector getVelocity()
+    {
+        return velocity.clone();
+    }
+
+    public void setVelocity(Vector velocity)
+    {
+        this.velocity = velocity.clone();
     }
 }

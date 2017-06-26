@@ -1,10 +1,7 @@
 package de.photon.AACAdditionPro.util.packetwrappers;
 
-import com.comphenix.protocol.events.PacketContainer;
-
 public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOnGround
 {
-
     /**
      * Retrieve the yaw of the current entity.
      *

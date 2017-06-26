@@ -1,6 +1,5 @@
 package de.photon.AACAdditionPro.util.clientsideentities;
 
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -88,6 +87,23 @@ public abstract class ClientsideEntity
             throw new RuntimeException("Could not create ClientsideEntity for player " + observedPlayer.getName(), ex);
         }
     }
+
+    // --------------------------------------------------------------- General -------------------------------------------------------------- //
+
+    /**
+     * This is used to check if this {@link ClientsideEntity} is attached to an {@link User} and therefore valid
+     *
+     * @return true if this {@link ClientsideEntity} is attached to an {@link User}, false otherwise
+     */
+    public boolean isValid()
+    {
+        final User user = UserManager.getUser(observedPlayer.getUniqueId());
+
+        return (user != null) &&
+               (user.getClientSideEntityData().clientSidePlayerEntity.getEntityID() == this.entityID);
+    }
+
+    // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //
 
     /**
      * Moves the {@link ClientsideEntity} somewhere
@@ -208,12 +224,13 @@ public abstract class ClientsideEntity
 
             Location observedLoc = observedPlayer.getLocation();
             observedLoc.setPitch(0);
-            
+
             //Calculate knockback strength
             int knockbackStrength = 0;
             if (observedPlayer.isSprinting()) {
                 knockbackStrength = 1;
             }
+
             ItemStack itemInHand = observedPlayer.getItemInHand();
             if (itemInHand != null) {
                 knockbackStrength += itemInHand.getEnchantmentLevel(Enchantment.KNOCKBACK);
@@ -228,14 +245,6 @@ public abstract class ClientsideEntity
 //                    motZ *= 0.6D;
             }
         });
-    }
-
-    public boolean isValid()
-    {
-        final User user = UserManager.getUser(observedPlayer.getUniqueId());
-
-        return (user != null) &&
-               (user.getClientSideEntityData().clientSidePlayerEntity.getEntityID() == this.entityID);
     }
 
     /**
@@ -264,15 +273,9 @@ public abstract class ClientsideEntity
         }
     }
 
-    public abstract void spawn();
+    // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //
 
-    public void despawn()
-    {
-        final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
-        entityDestroyWrapper.setEntityIds(new int[]{this.entityID});
-        entityDestroyWrapper.sendPacket(observedPlayer);
-        this.spawned = false;
-    }
+    public abstract void spawn();
 
     private static int getNextEntityID() throws IllegalAccessException
     {
@@ -282,5 +285,15 @@ public abstract class ClientsideEntity
         // Increase entity id for next entity
         entityCountField.setInt(null, entityID + 1);
         return entityID;
+    }
+
+    // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //
+
+    public void despawn()
+    {
+        final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
+        entityDestroyWrapper.setEntityIds(new int[]{this.entityID});
+        entityDestroyWrapper.sendPacket(observedPlayer);
+        this.spawned = false;
     }
 }

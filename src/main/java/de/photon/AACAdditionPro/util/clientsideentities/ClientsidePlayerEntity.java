@@ -4,17 +4,19 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.util.clientsideentities.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.clientsideentities.equipment.EntityEquipmentUtils;
 import de.photon.AACAdditionPro.util.clientsideentities.equipment.EquipmentType;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
-import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ClientsidePlayerEntity extends ClientsideEntity
@@ -27,20 +29,44 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     public Team currentTeam;
 
+    private int[] tasks = new int[2];
+
     public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile)
     {
         super(observedPlayer);
         // Get skin data and name
         this.gameProfile = gameProfile;
 
-        // TODO: INVOKE checkRespawn() and checkScoreboard() every tick!
-        // TODO: UPDATE THE PING REGULARY (DISPLAYINFORMATION HAS A METHOD FOR THIS)
+        tasks[0] = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () ->
+        {
+            // TODO: INVOKE checkRespawn() and checkScoreboard() every tick!
+        }, 0L, 1L);
+
+        DisplayInformation.updatePing(this);
     }
+
+    // --------------------------------------------------------------- General -------------------------------------------------------------- //
 
     public String getName()
     {
         return this.gameProfile.getName();
     }
+
+    // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //
+
+    /**
+     * This changes the Ping of the {@link ClientsidePlayerEntity}.
+     * The recursive call is needed to randomize the ping-update
+     */
+    private void recursiveUpdatePing()
+    {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> {
+            DisplayInformation.updatePing(this);
+            recursiveUpdatePing();
+        }, 10 + ThreadLocalRandom.current().nextInt(35));
+    }
+
+    // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //
 
     @Override
     public void spawn()
@@ -74,17 +100,16 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         spawnEntityWrapper.sendPacket(observedPlayer);
 
+        // Set the team (most common on respawn)
+        DisplayInformation.applyTeams(this);
+
         // Entity equipment + armor
         EntityEquipmentUtils.equipPlayerEntity(observedPlayer, this, EquipmentType.ARMOR);
         EntityEquipmentUtils.equipPlayerEntity(observedPlayer, this, EquipmentType.NORMAL);
     }
 
-    @Override
-    public void despawn()
-    {
-        super.despawn();
-        removeFromTab();
-    }
+
+    // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //
 
     private void removeFromTab()
     {
@@ -97,5 +122,16 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
 
         playerInfoWrapper.sendPacket(observedPlayer);
+    }
+
+    @Override
+    public void despawn()
+    {
+        // Cancel all tasks of this entity
+        for (int i : tasks) {
+            Bukkit.getScheduler().cancelTask(i);
+        }
+        super.despawn();
+        removeFromTab();
     }
 }

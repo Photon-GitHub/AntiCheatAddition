@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.clientsideentities.equipment;
+package de.photon.AACAdditionPro.util.entities.equipment;
 
 
 import de.photon.AACAdditionPro.AACAdditionPro;
@@ -123,21 +123,30 @@ public final class EntityEquipmentDatabase
             Material.DIAMOND_SWORD,
             Material.DIAMOND_AXE));
 
-    static
-    {
+    static {
         // --------------------------------------------------------------- Weapons --------------------------------------------------------------- //
 
         // Filter out all kinds (swords, axes) and materials (WOOD, GOLD, STONE, IRON, DIAMOND) that are disabled in the config
         final Set<String> optionKeys = ConfigUtils.loadKeys(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".equipment.weapons");
-        
-        for(final String optionKey : optionKeys)
-        {
-            if(!AACAdditionPro.getInstance().getConfig().getBoolean(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".equipment.weapons." + optionKey))
-            {
+
+        for (final String optionKey : optionKeys) {
+            if (!AACAdditionPro.getInstance().getConfig().getBoolean(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".equipment.weapons." + optionKey)) {
                 // Filter out swords
                 weaponMaterials.removeIf((material -> material.name().contains(optionKey.toUpperCase())));
             }
         }
+    }
+
+    /**
+     * @param fightingEquipment determines whether the entity should hold a weapon or not.
+     *
+     * @return some random {@link Equipment} according to the situation
+     */
+    public static Equipment getRandomEquipment(boolean fightingEquipment)
+    {
+        return new Equipment(fightingEquipment ?
+                             getRandomWeaponMaterial() :
+                             getRandomNormalMaterial(), getRandomNormalMaterial(), getRandomArmorMaterials());
     }
 
     /**
@@ -187,5 +196,4 @@ public final class EntityEquipmentDatabase
     {
         return enchantments.get(ThreadLocalRandom.current().nextInt(enchantments.size()));
     }
-
 }

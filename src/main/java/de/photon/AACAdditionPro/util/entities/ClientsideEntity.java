@@ -1,11 +1,10 @@
-package de.photon.AACAdditionPro.util.clientsideentities;
+package de.photon.AACAdditionPro.util.entities;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.clientsideentities.equipment.Equipment;
-import de.photon.AACAdditionPro.util.clientsideentities.movement.Gravitation;
-import de.photon.AACAdditionPro.util.clientsideentities.movement.Jumping;
+import de.photon.AACAdditionPro.util.entities.movement.Gravitation;
+import de.photon.AACAdditionPro.util.entities.movement.Jumping;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
@@ -80,8 +79,6 @@ public abstract class ClientsideEntity
     protected float lastHeadYaw;
     @Getter
     protected float headYaw;
-
-    private Equipment equipment = new Equipment();
 
     @Getter
     protected final Player observedPlayer;

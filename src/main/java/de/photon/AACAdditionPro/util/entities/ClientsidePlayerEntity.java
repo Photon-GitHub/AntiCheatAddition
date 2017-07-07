@@ -1,13 +1,12 @@
-package de.photon.AACAdditionPro.util.clientsideentities;
+package de.photon.AACAdditionPro.util.entities;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.util.clientsideentities.displayinformation.DisplayInformation;
-import de.photon.AACAdditionPro.util.clientsideentities.equipment.EntityEquipmentUtils;
-import de.photon.AACAdditionPro.util.clientsideentities.equipment.EquipmentType;
+import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
+import de.photon.AACAdditionPro.util.entities.equipment.EntityEquipmentDatabase;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import lombok.Getter;
@@ -109,8 +108,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         DisplayInformation.applyTeams(this);
 
         // Entity equipment + armor
-        EntityEquipmentUtils.equipPlayerEntity(this, EquipmentType.ARMOR);
-        EntityEquipmentUtils.equipPlayerEntity(this, EquipmentType.NORMAL);
+        EntityEquipmentDatabase.getRandomEquipment(false).equipPlayerEntity(this);
     }
 
     // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //

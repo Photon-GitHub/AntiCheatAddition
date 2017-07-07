@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.userdata.data;
 
 import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.util.clientsideentities.ClientsidePlayerEntity;
+import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 
 public class ClientSideEntityData extends TimeData
 {

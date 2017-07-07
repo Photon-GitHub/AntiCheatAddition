@@ -1,9 +1,9 @@
-package de.photon.AACAdditionPro.util.clientsideentities.displayinformation;
+package de.photon.AACAdditionPro.util.entities.displayinformation;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import de.photon.AACAdditionPro.util.clientsideentities.ClientsidePlayerEntity;
+import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;

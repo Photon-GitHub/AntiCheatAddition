@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.clientsideentities.movement;
+package de.photon.AACAdditionPro.util.entities.movement;
 
 public final class Jumping
 {

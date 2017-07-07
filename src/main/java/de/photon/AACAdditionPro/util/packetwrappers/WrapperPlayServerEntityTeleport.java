@@ -41,7 +41,6 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
     {
         switch (AACAdditionPro.getInstance().getServerVersion()) {
             case MC188:
-                // value *= 32;
                 handle.getIntegers().write(1, (int) value * 32);
                 break;
             case MC110:

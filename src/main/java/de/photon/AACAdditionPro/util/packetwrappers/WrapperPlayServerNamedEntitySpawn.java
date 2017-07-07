@@ -129,8 +129,11 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
                 break;
             case MC110:
             case MC111:
+            case MC112:
                 handle.getDoubles().write(0, value);
                 break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
         }
     }
 
@@ -147,8 +150,11 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
                 break;
             case MC110:
             case MC111:
+            case MC112:
                 handle.getDoubles().write(1, value);
                 break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
         }
     }
 
@@ -165,8 +171,11 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
                 break;
             case MC110:
             case MC111:
+            case MC112:
                 handle.getDoubles().write(2, value);
                 break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
         }
     }
 

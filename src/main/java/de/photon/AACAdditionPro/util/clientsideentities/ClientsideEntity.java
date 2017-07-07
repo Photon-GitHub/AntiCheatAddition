@@ -161,10 +161,15 @@ public abstract class ClientsideEntity
             case MC188:
                 teleportThreshold = 4;
                 break;
-            default:
+            case MC110:
+            case MC111:
+            case MC112:
                 teleportThreshold = 8;
                 break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
         }
+
         if (xDiff > teleportThreshold || yDiff > teleportThreshold || zDiff > teleportThreshold || needsTeleport) {
             final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
             // EntityID
@@ -266,7 +271,22 @@ public abstract class ClientsideEntity
                 knockbackStrength = 1;
             }
 
-            ItemStack itemInHand = observedPlayer.getItemInHand();
+            switch (AACAdditionPro.getInstance().getServerVersion()) {
+
+                case MC188:
+                    break;
+                case MC110:
+                    break;
+                case MC111:
+                    break;
+                case MC112:
+                    break;
+                default:
+                    throw new IllegalStateException("Unknown minecraft version");
+            }
+            //ItemStack itemInHand = observedPlayer.getItemInHand();
+            ItemStack itemInHand = observedPlayer.getInventory().getItemInMainHand();
+
             if (itemInHand != null) {
                 knockbackStrength += itemInHand.getEnchantmentLevel(Enchantment.KNOCKBACK);
             }
@@ -354,6 +374,11 @@ public abstract class ClientsideEntity
 
     public abstract void spawn(Location location);
 
+    /**
+     * Prevents bypasses based on the EntityID, especially for higher numbers
+     *
+     * @return the next free EntityID
+     */
     private static int getNextEntityID() throws IllegalAccessException
     {
         // Get entity id for next entity (this one)

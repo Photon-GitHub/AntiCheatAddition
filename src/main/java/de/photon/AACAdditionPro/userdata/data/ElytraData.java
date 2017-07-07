@@ -25,8 +25,10 @@ public class ElytraData extends Data
                 return true;
             case MC110:
             case MC111:
+            case MC112:
                 return !theUser.getPlayer().isGliding();
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
         }
-        return true;
     }
 }

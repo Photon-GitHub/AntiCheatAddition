@@ -65,7 +65,7 @@ public abstract class ClientsideEntity
     /**
      * Stores the last timestamp this {@link ClientsideEntity} was hit.
      */
-    private long lastHurtMillis;
+    public long lastHurtMillis;
 
     /**
      * The current velocity of this {@link ClientsideEntity}.
@@ -89,9 +89,7 @@ public abstract class ClientsideEntity
 
         // Get a valid entity ID
         try {
-
             this.entityID = getNextEntityID();
-
         } catch (IllegalAccessException ex) {
             throw new RuntimeException("Could not create ClientsideEntity for player " + observedPlayer.getName(), ex);
         }

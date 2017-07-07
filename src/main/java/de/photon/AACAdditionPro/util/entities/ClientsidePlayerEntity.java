@@ -41,7 +41,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         task = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () ->
         {
-            // TODO: INVOKE checkRespawn() and checkScoreboard() every tick!
+            DisplayInformation.applyTeams(this);
+            // TODO: INVOKE checkRespawn() every tick!
+
         }, 0L, 1L);
 
         recursiveUpdatePing();

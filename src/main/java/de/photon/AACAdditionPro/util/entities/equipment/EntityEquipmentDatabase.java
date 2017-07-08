@@ -177,16 +177,16 @@ public final class EntityEquipmentDatabase
         final Material[] armor = new Material[4];
 
         for (byte b = 0; b < (byte) 6; b++) {
-            final Material randomMaterial = armorMaterials.get(ThreadLocalRandom.current().nextInt(armorMaterials.size()));
+            final Material randomArmorMaterial = armorMaterials.get(ThreadLocalRandom.current().nextInt(armorMaterials.size()));
 
-            if (randomMaterial.name().contains("HELMET")) {
-                armor[0] = randomMaterial;
-            } else if (randomMaterial.name().contains("CHESTPLATE")) {
-                armor[1] = randomMaterial;
-            } else if (randomMaterial.name().contains("LEGGINGS")) {
-                armor[2] = randomMaterial;
+            if (randomArmorMaterial.name().contains("HELMET")) {
+                armor[0] = randomArmorMaterial;
+            } else if (randomArmorMaterial.name().contains("CHESTPLATE")) {
+                armor[1] = randomArmorMaterial;
+            } else if (randomArmorMaterial.name().contains("LEGGINGS")) {
+                armor[2] = randomArmorMaterial;
             } else {
-                armor[3] = randomMaterial;
+                armor[3] = randomArmorMaterial;
             }
         }
         return armor;

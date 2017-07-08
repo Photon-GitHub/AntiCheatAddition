@@ -94,7 +94,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
                 // Spawn-Location
 
-                Vector spawnOffset = user.getPlayer().getLocation().getDirection().clone().multiply(-15);
+                Vector spawnOffset = user.getPlayer().getLocation().getDirection().clone().multiply(-5);
 
                 Location spawnLocation = user.getPlayer().getLocation();
                 spawnLocation.add(spawnOffset);

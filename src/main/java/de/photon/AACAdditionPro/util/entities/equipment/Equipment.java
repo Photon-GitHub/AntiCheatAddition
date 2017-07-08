@@ -44,11 +44,26 @@ public class Equipment implements Cloneable
         this.equipment.put(EnumWrappers.ItemSlot.MAINHAND, new ItemStack(itemInMainHand));
         this.equipment.put(EnumWrappers.ItemSlot.OFFHAND, new ItemStack(itemInOffHand));
 
-        // Armor
-        this.equipment.put(EnumWrappers.ItemSlot.HEAD, new ItemStack(armor[0]));
-        this.equipment.put(EnumWrappers.ItemSlot.CHEST, new ItemStack(armor[1]));
-        this.equipment.put(EnumWrappers.ItemSlot.LEGS, new ItemStack(armor[2]));
-        this.equipment.put(EnumWrappers.ItemSlot.FEET, new ItemStack(armor[3]));
+
+        for (byte b = 0; b < 4; b++) {
+            if (armor[b] != Material.AIR) {
+                EnumWrappers.ItemSlot currentSlot = EnumWrappers.ItemSlot.FEET;
+                switch (b) {
+                    case 0:
+                        currentSlot = EnumWrappers.ItemSlot.HEAD;
+                        break;
+                    case 1:
+                        currentSlot = EnumWrappers.ItemSlot.CHEST;
+                        break;
+                    case 2:
+                        currentSlot = EnumWrappers.ItemSlot.LEGS;
+                        break;
+                    // FEET is not required as of the default.
+                }
+
+                this.equipment.put(currentSlot, new ItemStack(armor[b]));
+            }
+        }
     }
 
     /**

@@ -15,67 +15,50 @@ public class Equipment implements Cloneable
 {
     /**
      * The {@link HashMap} with all {@link ItemStack}s.
-     * All equipment is mapped to the slot it should be applied to.
+     * All equipmentMap is mapped to the slot it should be applied to.
      */
-    private final Map<EnumWrappers.ItemSlot, ItemStack> equipment;
+    private final Map<EnumWrappers.ItemSlot, ItemStack> equipmentMap;
 
     public Equipment(Material itemInMainHand, Material itemInOffHand, Material helmet, Material chestPlate, Material leggings, Material boots)
     {
         // 6 slots
-        equipment = new HashMap<>(6, 1);
+        equipmentMap = new HashMap<>(6, 1);
 
         // Hands
-        this.equipment.put(EnumWrappers.ItemSlot.MAINHAND, new ItemStack(itemInMainHand));
-        this.equipment.put(EnumWrappers.ItemSlot.OFFHAND, new ItemStack(itemInOffHand));
+        this.equipmentMap.put(EnumWrappers.ItemSlot.MAINHAND, new ItemStack(itemInMainHand));
+        this.equipmentMap.put(EnumWrappers.ItemSlot.OFFHAND, new ItemStack(itemInOffHand));
 
         // Armor
-        this.equipment.put(EnumWrappers.ItemSlot.HEAD, new ItemStack(helmet));
-        this.equipment.put(EnumWrappers.ItemSlot.CHEST, new ItemStack(chestPlate));
-        this.equipment.put(EnumWrappers.ItemSlot.LEGS, new ItemStack(leggings));
-        this.equipment.put(EnumWrappers.ItemSlot.FEET, new ItemStack(boots));
+        this.equipmentMap.put(EnumWrappers.ItemSlot.HEAD, new ItemStack(helmet));
+        this.equipmentMap.put(EnumWrappers.ItemSlot.CHEST, new ItemStack(chestPlate));
+        this.equipmentMap.put(EnumWrappers.ItemSlot.LEGS, new ItemStack(leggings));
+        this.equipmentMap.put(EnumWrappers.ItemSlot.FEET, new ItemStack(boots));
     }
 
     public Equipment(Material itemInMainHand, Material itemInOffHand, Material[] armor)
     {
         // 6 slots
-        equipment = new HashMap<>(6, 1);
+        equipmentMap = new HashMap<>(6, 1);
 
         // Hands
-        this.equipment.put(EnumWrappers.ItemSlot.MAINHAND, new ItemStack(itemInMainHand));
-        this.equipment.put(EnumWrappers.ItemSlot.OFFHAND, new ItemStack(itemInOffHand));
+        this.equipmentMap.put(EnumWrappers.ItemSlot.MAINHAND, new ItemStack(itemInMainHand));
+        this.equipmentMap.put(EnumWrappers.ItemSlot.OFFHAND, new ItemStack(itemInOffHand));
 
-
-        for (byte b = 0; b < 4; b++) {
-            if (armor[b] != Material.AIR) {
-                EnumWrappers.ItemSlot currentSlot = EnumWrappers.ItemSlot.FEET;
-                switch (b) {
-                    case 0:
-                        currentSlot = EnumWrappers.ItemSlot.HEAD;
-                        break;
-                    case 1:
-                        currentSlot = EnumWrappers.ItemSlot.CHEST;
-                        break;
-                    case 2:
-                        currentSlot = EnumWrappers.ItemSlot.LEGS;
-                        break;
-                    // FEET is not required as of the default.
-                }
-
-                this.equipment.put(currentSlot, new ItemStack(armor[b]));
-            }
+        for (Material material : armor) {
+            this.equipmentMap.put(EquipmentMapping.getEquipmentMappingOfMaterial(material).getSlotOfItem(), new ItemStack(material));
         }
     }
 
     /**
-     * This method automatically filters out the equipment that will cause errors on this {@link de.photon.AACAdditionPro.util.multiversion.ServerVersion}.
+     * This method automatically filters out the equipmentMap that will cause errors on this {@link de.photon.AACAdditionPro.util.multiversion.ServerVersion}.
      *
-     * @return all the equipment for the current {@link de.photon.AACAdditionPro.util.multiversion.ServerVersion}.
+     * @return all the equipmentMap for the current {@link de.photon.AACAdditionPro.util.multiversion.ServerVersion}.
      */
     private Map<EnumWrappers.ItemSlot, ItemStack> getEquipmentForServerVersion()
     {
         switch (AACAdditionPro.getInstance().getServerVersion()) {
             case MC188:
-                this.equipment.remove(EnumWrappers.ItemSlot.OFFHAND);
+                this.equipmentMap.remove(EnumWrappers.ItemSlot.OFFHAND);
                 break;
             case MC110:
             case MC111:
@@ -85,7 +68,7 @@ public class Equipment implements Cloneable
                 throw new IllegalStateException("Unknown minecraft version");
         }
 
-        return this.equipment;
+        return this.equipmentMap;
     }
 
     /**

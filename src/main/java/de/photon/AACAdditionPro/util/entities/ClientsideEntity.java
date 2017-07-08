@@ -87,6 +87,8 @@ public abstract class ClientsideEntity
     {
         this.observedPlayer = observedPlayer;
 
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::tick, 1L, 1L);
+
         // Get a valid entity ID
         try {
             this.entityID = getNextEntityID();
@@ -115,7 +117,7 @@ public abstract class ClientsideEntity
     /**
      * Should be called every tick once, updates physics + sends movement packets
      */
-    public void tick()
+    private void tick()
     {
         //TODO ground calculations, pressing button simulation, etc?
         location.add(velocity);

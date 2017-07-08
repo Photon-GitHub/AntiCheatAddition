@@ -146,7 +146,9 @@ public final class EntityEquipmentDatabase
     {
         return new Equipment(fightingEquipment ?
                              getRandomWeaponMaterial() :
-                             getRandomNormalMaterial(), getRandomNormalMaterial(), getRandomArmorMaterials());
+                             getRandomNormalMaterial(),
+                             getRandomNormalMaterial(),
+                             getRandomArmorMaterials());
     }
 
     /**
@@ -179,15 +181,8 @@ public final class EntityEquipmentDatabase
         for (byte b = 0; b < (byte) 6; b++) {
             final Material randomArmorMaterial = armorMaterials.get(ThreadLocalRandom.current().nextInt(armorMaterials.size()));
 
-            if (randomArmorMaterial.name().contains("HELMET")) {
-                armor[0] = randomArmorMaterial;
-            } else if (randomArmorMaterial.name().contains("CHESTPLATE")) {
-                armor[1] = randomArmorMaterial;
-            } else if (randomArmorMaterial.name().contains("LEGGINGS")) {
-                armor[2] = randomArmorMaterial;
-            } else {
-                armor[3] = randomArmorMaterial;
-            }
+            // The armor is always in the first place, therefore the ordinal works here.
+            armor[EquipmentMapping.getEquipmentMappingOfMaterial(randomArmorMaterial).ordinal()] = randomArmorMaterial;
         }
         return armor;
     }

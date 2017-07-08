@@ -6,10 +6,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.UUID;
 
 public class UserManager implements Listener
@@ -19,7 +17,7 @@ public class UserManager implements Listener
         ProtocolLibrary.getProtocolManager().addPacketListener(new BeaconListener());
     }
 
-    private static final SortedSet<User> users = Collections.synchronizedSortedSet(new TreeSet<>());
+    private static final HashSet<User> users = new HashSet<>(15);
 
     public static synchronized User getUser(final UUID uuid)
     {

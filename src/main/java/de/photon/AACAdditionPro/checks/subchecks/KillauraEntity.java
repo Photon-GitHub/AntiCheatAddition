@@ -11,7 +11,6 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
-import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;

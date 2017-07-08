@@ -1,7 +1,5 @@
 package de.photon.AACAdditionPro.util.packetwrappers;
 
-import com.comphenix.protocol.events.PacketContainer;
-
 public interface IWrapperPlayServerEntityOnGround extends IWrapperPlayServerEntity
 {
 

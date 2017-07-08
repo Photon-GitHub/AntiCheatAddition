@@ -14,7 +14,7 @@ public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOn
      */
     default float getYaw()
     {
-        return getHandle().getBytes().read(0 + getByteOffset()) * 360.0F / 256.0F;
+        return getHandle().getBytes().read(getByteOffset()) * 360.0F / 256.0F;
     }
 
     /**
@@ -24,7 +24,7 @@ public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOn
      */
     default void setYaw(float value)
     {
-        getHandle().getBytes().write(0 + getByteOffset(), (byte) (value * 256.0F / 360.0F));
+        getHandle().getBytes().write(getByteOffset(), (byte) (value * 256.0F / 360.0F));
     }
 
     /**

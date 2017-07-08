@@ -2,10 +2,7 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
 
 public class WrapperPlayServerEntityTeleport extends AbstractPacket implements IWrapperPlayServerEntityLook
 {

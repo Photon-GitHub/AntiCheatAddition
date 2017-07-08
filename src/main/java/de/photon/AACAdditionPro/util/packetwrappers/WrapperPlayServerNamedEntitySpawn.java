@@ -118,14 +118,23 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public double getX()
     {
-        return handle.getDoubles().read(0);
+        switch (AACAdditionPro.getInstance().getServerVersion()) {
+            case MC188:
+                return handle.getIntegers().read(1) / 32.0D;
+            case MC110:
+            case MC111:
+            case MC112:
+                return handle.getDoubles().read(0);
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
     }
 
     public void setX(double value)
     {
         switch (AACAdditionPro.getInstance().getServerVersion()) {
             case MC188:
-                handle.getIntegers().write(0, (int) value /* * 32*/);
+                handle.getIntegers().write(1, (int) (value * 32));
                 break;
             case MC110:
             case MC111:
@@ -139,14 +148,23 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public double getY()
     {
-        return handle.getDoubles().read(1);
+        switch (AACAdditionPro.getInstance().getServerVersion()) {
+            case MC188:
+                return handle.getIntegers().read(2) / 32.0D;
+            case MC110:
+            case MC111:
+            case MC112:
+                return handle.getDoubles().read(1);
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
     }
 
     public void setY(double value)
     {
         switch (AACAdditionPro.getInstance().getServerVersion()) {
             case MC188:
-                handle.getIntegers().write(1, (int) value /* * 32*/);
+                handle.getIntegers().write(2, (int) (value * 32));
                 break;
             case MC110:
             case MC111:
@@ -160,14 +178,23 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public double getZ()
     {
-        return handle.getDoubles().read(2);
+        switch (AACAdditionPro.getInstance().getServerVersion()) {
+            case MC188:
+                return handle.getIntegers().read(3) / 32.0D;
+            case MC110:
+            case MC111:
+            case MC112:
+                return handle.getDoubles().read(2);
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
     }
 
     public void setZ(double value)
     {
         switch (AACAdditionPro.getInstance().getServerVersion()) {
             case MC188:
-                handle.getIntegers().write(2, (int) value/* * 32*/);
+                handle.getIntegers().write(3, (int) (value * 32));
                 break;
             case MC110:
             case MC111:
@@ -186,7 +213,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
      */
     public float getYaw()
     {
-        return (handle.getBytes().read(0) * 360.F) / 256.0F;
+        return handle.getBytes().read(0) * 360.F / 256.0F;
     }
 
     /**
@@ -206,7 +233,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
      */
     public float getPitch()
     {
-        return (handle.getBytes().read(1) * 360.F) / 256.0F;
+        return handle.getBytes().read(1) * 360.F / 256.0F;
     }
 
     /**

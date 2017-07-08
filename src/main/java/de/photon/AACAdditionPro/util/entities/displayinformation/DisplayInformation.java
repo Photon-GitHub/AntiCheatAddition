@@ -80,8 +80,7 @@ public final class DisplayInformation
     {
         if (clientsidePlayerEntity.isSpawned()) {
             // Send player info first
-            final WrappedGameProfile gameProfile = WrappedGameProfile.fromHandle(clientsidePlayerEntity.getGameProfile());
-            final PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
+            final PlayerInfoData playerInfoData = new PlayerInfoData(clientsidePlayerEntity.getGameProfile(), ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
 
             final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
             playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY);

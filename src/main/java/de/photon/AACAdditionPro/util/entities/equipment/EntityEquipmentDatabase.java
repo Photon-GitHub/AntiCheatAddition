@@ -144,11 +144,15 @@ public final class EntityEquipmentDatabase
      */
     public static Equipment getRandomEquipment(boolean fightingEquipment)
     {
-        return new Equipment(fightingEquipment ?
-                             getRandomWeaponMaterial() :
-                             getRandomNormalMaterial(),
-                             getRandomNormalMaterial(),
-                             getRandomArmorMaterials());
+        if (fightingEquipment) {
+            return new Equipment(getRandomWeaponMaterial(),
+                                 getRandomNormalMaterial(),
+                                 getRandomArmorMaterials());
+        } else {
+            return new Equipment(getRandomNormalMaterial(),
+                                 getRandomNormalMaterial(),
+                                 getRandomArmorMaterials());
+        }
     }
 
     /**
@@ -180,6 +184,9 @@ public final class EntityEquipmentDatabase
 
         for (byte b = 0; b < (byte) 6; b++) {
             final Material randomArmorMaterial = armorMaterials.get(ThreadLocalRandom.current().nextInt(armorMaterials.size()));
+            if (randomArmorMaterial == null) {
+                continue;
+            }
 
             // The armor is always in the first place, therefore the ordinal works here.
             armor[EquipmentMapping.getEquipmentMappingOfMaterial(randomArmorMaterial).ordinal()] = randomArmorMaterial;

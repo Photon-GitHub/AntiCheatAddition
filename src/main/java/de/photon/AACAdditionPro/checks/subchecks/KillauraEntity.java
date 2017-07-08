@@ -23,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.StringUtil;
 import org.bukkit.util.Vector;
@@ -92,6 +93,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
                 final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(event.getPlayer(), gameProfile);
+                user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
 
                 // Spawn-Location
 
@@ -103,10 +105,24 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
                 playerEntity.spawn(spawnLocation);
 
-                user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
                 checkForHitAndReschedule(user.getPlayer());
             });
         }, 2L);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onQuit(PlayerQuitEvent event) {
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        // User not there
+        if (user == null) { //dont check bypassed since it might change and it would run forever
+            System.out.println("no user there");
+            return;
+        }
+        ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+        if (clientSidePlayerEntity != null) {
+            clientSidePlayerEntity.despawn();
+        }
     }
 
     private void checkForHitAndReschedule(final Player player)

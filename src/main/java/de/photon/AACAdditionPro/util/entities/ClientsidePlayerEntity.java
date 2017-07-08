@@ -42,7 +42,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         task = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () ->
         {
             DisplayInformation.applyTeams(this);
-            this.move(this.observedPlayer.getLocation().clone().add(0, 2.5, 0));
+            this.move(this.observedPlayer.getLocation().add(0, 2.5, 0));
         }, 0L, 1L);
 
         recursiveUpdatePing();
@@ -74,6 +74,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     @Override
     public void spawn(Location location)
     {
+        super.spawn(location);
         this.lastLocation = location.clone();
         this.location = location.clone();
         // Add the player with PlayerInfo
@@ -84,9 +85,6 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
 
         playerInfoWrapper.sendPacket(observedPlayer);
-
-        // Debug
-        System.out.println("Spawned bot " + this.entityID + " for " + observedPlayer.getName() + " @ " + location);
 
         // DataWatcher
         final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
@@ -104,6 +102,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         spawnEntityWrapper.setPitch(ThreadLocalRandom.current().nextInt(15));
 
         spawnEntityWrapper.sendPacket(observedPlayer);
+
+        // Debug
+        System.out.println("Sent player spawn of bot " + this.entityID + " for " + observedPlayer.getName() + " @ " + location);
 
         // Set the team (most common on respawn)
         DisplayInformation.applyTeams(this);
@@ -127,8 +128,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private void removeFromTab()
     {
         // Remove the player with PlayerInfo
-        final WrappedGameProfile gameProfile = WrappedGameProfile.fromHandle(this.gameProfile);
-        final PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, 0, EnumWrappers.NativeGameMode.SURVIVAL, null);
+        final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, 0, EnumWrappers.NativeGameMode.SURVIVAL, null);
 
         final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
         playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);

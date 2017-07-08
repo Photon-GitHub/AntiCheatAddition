@@ -82,12 +82,13 @@ public abstract class ClientsideEntity
 
     @Getter
     protected final Player observedPlayer;
+    private int tickTask = -1;
 
     public ClientsideEntity(final Player observedPlayer)
     {
         this.observedPlayer = observedPlayer;
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::tick, 1L, 1L);
+        tickTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::tick, 1L, 1L);
 
         // Get a valid entity ID
         try {
@@ -142,7 +143,7 @@ public abstract class ClientsideEntity
      */
     public void move(Location location)
     {
-        this.location = location;
+        this.location = location.clone();
     }
 
     /**
@@ -193,8 +194,8 @@ public abstract class ClientsideEntity
             System.out.println("Sent TP to: " + this.location.getX() + " | " + this.location.getY() + " | " + this.location.getZ());
         } else {
             // Sending relative movement
-            boolean move = xDiff == 0 && yDiff == 0 && zDiff == 0;
-            boolean look = this.location.getPitch() == this.lastLocation.getPitch() && this.location.getYaw() == this.lastLocation.getYaw();
+            boolean move = xDiff != 0 || yDiff != 0 || zDiff != 0;
+            boolean look = this.location.getPitch() != this.lastLocation.getPitch() || this.location.getYaw() != this.lastLocation.getYaw();
 
             WrapperPlayServerEntity packetWrapper;
 
@@ -375,7 +376,9 @@ public abstract class ClientsideEntity
 
     // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //
 
-    public abstract void spawn(Location location);
+    public void spawn(Location location) {
+        this.spawned = true;
+    }
 
     /**
      * Prevents bypasses based on the EntityID, especially for higher numbers
@@ -396,6 +399,8 @@ public abstract class ClientsideEntity
 
     public void despawn()
     {
+        Bukkit.getScheduler().cancelTask(tickTask);
+        this.tickTask = -1;
         final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
         entityDestroyWrapper.setEntityIds(new int[]{this.entityID});
         entityDestroyWrapper.sendPacket(observedPlayer);

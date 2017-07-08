@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public class Equipment implements Cloneable
     public Equipment(Material itemInMainHand, Material itemInOffHand, Material helmet, Material chestPlate, Material leggings, Material boots)
     {
         // 6 slots
-        equipmentMap = new HashMap<>(6, 1);
+        equipmentMap = new EnumMap<>(EnumWrappers.ItemSlot.class);
 
         // Hands
         this.equipmentMap.put(EnumWrappers.ItemSlot.MAINHAND, new ItemStack(itemInMainHand));
@@ -38,14 +39,16 @@ public class Equipment implements Cloneable
     public Equipment(Material itemInMainHand, Material itemInOffHand, Material[] armor)
     {
         // 6 slots
-        equipmentMap = new HashMap<>(6, 1);
+        equipmentMap = new EnumMap<>(EnumWrappers.ItemSlot.class);
 
         // Hands
         this.equipmentMap.put(EnumWrappers.ItemSlot.MAINHAND, new ItemStack(itemInMainHand));
         this.equipmentMap.put(EnumWrappers.ItemSlot.OFFHAND, new ItemStack(itemInOffHand));
 
         for (Material material : armor) {
-            this.equipmentMap.put(EquipmentMapping.getEquipmentMappingOfMaterial(material).getSlotOfItem(), new ItemStack(material));
+            if (material != null) {
+                this.equipmentMap.put(EquipmentMapping.getEquipmentMappingOfMaterial(material).getSlotOfItem(), new ItemStack(material));
+            }
         }
     }
 

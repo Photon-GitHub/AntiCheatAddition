@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import de.photon.AACAdditionPro.AACAdditionPro;
 
 public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEntityMove implements IWrapperPlayServerEntityLook
 {
@@ -17,5 +18,20 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
     public WrapperPlayServerRelEntityMoveLook(PacketContainer packet)
     {
         super(packet, TYPE);
+    }
+
+    @Override
+    public int getByteOffset()
+    {
+        switch (AACAdditionPro.getInstance().getServerVersion()) {
+            case MC188:
+                return 3;
+            case MC110:
+            case MC111:
+            case MC112:
+                return 0;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
     }
 }

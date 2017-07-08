@@ -33,7 +33,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     private int task;
 
-    public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile)
+    public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange)
     {
         super(observedPlayer);
         // Get skin data and name
@@ -41,12 +41,15 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         task = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () ->
         {
+            // Teams + Scoreboard
             DisplayInformation.applyTeams(this);
 
+            // Location
             Location moveToLocation = this.observedPlayer.getLocation().clone();
 
             // Move behind the player to make the entity not disturb players
-            moveToLocation.add(moveToLocation.getDirection().clone().normalize().multiply(-1));
+            // Important: the negative offset!
+            moveToLocation.add(moveToLocation.getDirection().clone().setY(0).normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
 
             this.move(moveToLocation);
         }, 0L, 1L);

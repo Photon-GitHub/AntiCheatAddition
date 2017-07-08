@@ -245,6 +245,10 @@ InventoryRotation:
 KillauraEntity:
    # Do you want to enable the KillauraEntity check
    enabled: true
+   # How far should the entity at least be away from the player
+   entityOffset: 3.1
+   # How much randomized offset should at most be added to entityOffset
+   offsetRandomizationRange: 0.2
    # Here you can choose the equipment of your entity.
    # For the best setup only choose equipment a normal player can get.
    equipment:

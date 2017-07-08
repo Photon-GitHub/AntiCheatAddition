@@ -11,6 +11,7 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -32,6 +33,13 @@ import java.util.concurrent.ThreadLocalRandom;
 public class KillauraEntity implements AACAdditionProCheck, Listener
 {
     ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 300);
+
+    @LoadFromConfiguration(configPath = ".entityOffset")
+    private double entityOffset;
+
+    @LoadFromConfiguration(configPath = ".offsetRandomizationRange")
+    private double offsetRandomizationRange;
+
 
     @EventHandler
     public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)
@@ -90,14 +98,15 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             final WrappedGameProfile gameProfile = new WrappedGameProfile(UUID.randomUUID(), "BOT");
 
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(event.getPlayer(), gameProfile);
+                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(event.getPlayer(), gameProfile, entityOffset, offsetRandomizationRange);
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
 
                 // Spawning-Location
                 Location spawnLocation = user.getPlayer().getLocation().clone();
 
                 // Move behind the player to make the entity not disturb players
-                spawnLocation.add(spawnLocation.getDirection().clone().normalize().multiply(-1));
+                // Important: the negative offset!
+                spawnLocation.add(spawnLocation.getDirection().clone().setY(0).normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
 
                 playerEntity.spawn(spawnLocation);
 

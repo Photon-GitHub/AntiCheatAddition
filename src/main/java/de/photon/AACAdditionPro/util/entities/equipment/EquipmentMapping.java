@@ -32,7 +32,7 @@ public enum EquipmentMapping
         final String nameOfMaterial = material.name();
         for (EquipmentMapping equipmentMapping : EquipmentMapping.values()) {
             // endsWith here as of the better performance and all categories (SWORDS, AXES, etc.) are suffixes.
-            if (equipmentMapping.getKey().endsWith(nameOfMaterial)) {
+            if (nameOfMaterial.endsWith(equipmentMapping.getKey())) {
                 return equipmentMapping;
             }
         }

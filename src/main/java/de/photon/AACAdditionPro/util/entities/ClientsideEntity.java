@@ -108,8 +108,15 @@ public abstract class ClientsideEntity
     {
         final User user = UserManager.getUser(observedPlayer.getUniqueId());
 
-        return (user != null) &&
-               (user.getClientSideEntityData().clientSidePlayerEntity.getEntityID() == this.entityID);
+        if (user != null) {
+            ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+            if (clientSidePlayerEntity != null) {
+                if (clientSidePlayerEntity.getEntityID() == this.entityID) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //

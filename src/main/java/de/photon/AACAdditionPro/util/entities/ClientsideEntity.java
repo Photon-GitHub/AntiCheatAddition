@@ -133,7 +133,7 @@ public abstract class ClientsideEntity
         sendMove();
         sendHeadYaw();
 
-        velocity.subtract(GRAVITY_VECTOR).multiply(.98);
+        velocity.add(GRAVITY_VECTOR).multiply(.98);
     }
 
     /**

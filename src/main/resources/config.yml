@@ -239,12 +239,12 @@ InventoryRotation:
 
 # Brings back an entity check of the old AAC 1.9.10 times
 # but much more advanced.
-# ------------------------------------------------------------------------------ #
-# HIGHLY EXPERIMENTAL. DO NOT ENABLE UNLESS YOU EXACTLY KNOW WHAT YOU ARE DOING! #
-# ------------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------------------------------------------------- #
+# Still somewhat EXPERIMENTAL! Please use with caution and report bugs.
+# ------------------------------------------------------------------------------------------------------------------- #
 KillauraEntity:
-   # Do you want to enable the Anti-Freecam
-   enabled: false
+   # Do you want to enable the KillauraEntity check
+   enabled: true
    # Here you can choose the equipment of your entity.
    # For the best setup only choose equipment a normal player can get.
    equipment:

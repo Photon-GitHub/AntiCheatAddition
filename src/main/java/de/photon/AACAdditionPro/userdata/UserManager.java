@@ -6,9 +6,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class UserManager implements Listener
 {
@@ -17,7 +17,8 @@ public class UserManager implements Listener
         ProtocolLibrary.getProtocolManager().addPacketListener(new BeaconListener());
     }
 
-    private static final HashSet<User> users = new HashSet<>(15);
+    // Concurrency to tackle some ConcurrentModificationExceptions
+    private static final Set<User> users = ConcurrentHashMap.newKeySet();
 
     public static synchronized User getUser(final UUID uuid)
     {

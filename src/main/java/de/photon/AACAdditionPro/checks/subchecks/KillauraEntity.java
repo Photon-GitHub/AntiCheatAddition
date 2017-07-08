@@ -2,7 +2,6 @@ package de.photon.AACAdditionPro.checks.subchecks;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
@@ -12,6 +11,7 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
+import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -26,7 +26,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.StringUtil;
-import org.bukkit.util.Vector;
 
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -95,13 +94,11 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(event.getPlayer(), gameProfile);
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
 
-                // Spawn-Location
+                // Spawning-Location
+                Location spawnLocation = user.getPlayer().getLocation().clone();
 
-                Vector spawnOffset = user.getPlayer().getLocation().getDirection().clone().multiply(-5);
-
-                Location spawnLocation = user.getPlayer().getLocation();
-                spawnLocation.add(spawnOffset);
-                spawnLocation.add(ThreadLocalRandom.current().nextDouble(2D), ThreadLocalRandom.current().nextDouble(2D), ThreadLocalRandom.current().nextDouble(2D));
+                // Move behind the player to make the entity not disturb players
+                spawnLocation.add(spawnLocation.getDirection().clone().normalize().multiply(-1));
 
                 playerEntity.spawn(spawnLocation);
 
@@ -111,7 +108,8 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onQuit(PlayerQuitEvent event) {
+    public void onQuit(PlayerQuitEvent event)
+    {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // User not there

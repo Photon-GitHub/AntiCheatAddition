@@ -29,7 +29,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     @Getter
     @Setter
-    private Team currentTeam; //TODO use
+    private Team currentTeam;
 
     private int task;
 
@@ -42,7 +42,13 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         task = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () ->
         {
             DisplayInformation.applyTeams(this);
-            this.move(this.observedPlayer.getLocation().add(0, 2.5, 0));
+
+            Location moveToLocation = this.observedPlayer.getLocation().clone();
+
+            // Move behind the player to make the entity not disturb players
+            moveToLocation.add(moveToLocation.getDirection().clone().normalize().multiply(-1));
+
+            this.move(moveToLocation);
         }, 0L, 1L);
 
         recursiveUpdatePing();

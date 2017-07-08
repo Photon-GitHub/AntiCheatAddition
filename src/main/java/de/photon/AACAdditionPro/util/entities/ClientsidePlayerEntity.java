@@ -39,7 +39,11 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // Get skin data and name
         this.gameProfile = gameProfile;
 
-        task = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () -> DisplayInformation.applyTeams(this), 0L, 1L);
+        task = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () ->
+        {
+            DisplayInformation.applyTeams(this);
+            this.move(this.observedPlayer.getLocation().clone().add(0, 2.5, 0));
+        }, 0L, 1L);
 
         recursiveUpdatePing();
     }

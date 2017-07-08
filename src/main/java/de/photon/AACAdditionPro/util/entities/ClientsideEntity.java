@@ -266,21 +266,20 @@ public abstract class ClientsideEntity
                 knockbackStrength = 1;
             }
 
-            switch (AACAdditionPro.getInstance().getServerVersion()) {
+            final ItemStack itemInHand;
 
+            switch (AACAdditionPro.getInstance().getServerVersion()) {
                 case MC188:
+                    itemInHand = observedPlayer.getItemInHand();
                     break;
                 case MC110:
-                    break;
                 case MC111:
-                    break;
                 case MC112:
+                    itemInHand = observedPlayer.getInventory().getItemInMainHand();
                     break;
                 default:
                     throw new IllegalStateException("Unknown minecraft version");
             }
-            //ItemStack itemInHand = observedPlayer.getItemInHand();
-            ItemStack itemInHand = observedPlayer.getInventory().getItemInMainHand();
 
             if (itemInHand != null) {
                 knockbackStrength += itemInHand.getEnchantmentLevel(Enchantment.KNOCKBACK);

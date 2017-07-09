@@ -212,7 +212,7 @@ public abstract class ClientsideEntity
                     // System.out.println("Sending movelook");
                 } else {
                     movePacketWrapper = new WrapperPlayServerRelEntityMove();
-                    System.out.println("Sending move");
+                    // System.out.println("Sending move");
                 }
 
                 movePacketWrapper.setOnGround(onGround);
@@ -229,11 +229,11 @@ public abstract class ClientsideEntity
                 lookPacketWrapper.setOnGround(onGround);
 
                 packetWrapper = lookPacketWrapper;
-                System.out.println("Sending look");
+                // System.out.println("Sending look");
 
             } else {
                 packetWrapper = new WrapperPlayServerEntity();
-                System.out.println("Sending idle");
+                // System.out.println("Sending idle");
             }
 
             packetWrapper.setEntityID(this.entityID);

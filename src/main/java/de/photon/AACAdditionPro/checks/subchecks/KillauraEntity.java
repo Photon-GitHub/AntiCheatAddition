@@ -122,7 +122,6 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
         // User not there
         if (user == null) { //dont check bypassed since it might change and it would run forever
-            System.out.println("no user there");
             return;
         }
         ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;

@@ -113,7 +113,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         spawnEntityWrapper.sendPacket(observedPlayer);
 
         // Debug
-        System.out.println("Sent player spawn of bot " + this.entityID + " for " + observedPlayer.getName() + " @ " + location);
+        // System.out.println("Sent player spawn of bot " + this.entityID + " for " + observedPlayer.getName() + " @ " + location);
 
         // Set the team (most common on respawn)
         DisplayInformation.applyTeams(this);

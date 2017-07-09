@@ -29,8 +29,6 @@ import java.lang.reflect.Field;
 
 public abstract class ClientsideEntity
 {
-
-    private static final Vector GRAVITY_VECTOR = Gravitation.PLAYER.getGravitationalVector();
     private static Field entityCountField;
 
     static {
@@ -127,13 +125,14 @@ public abstract class ClientsideEntity
      */
     private void tick()
     {
-        //TODO ground calculations, pressing button simulation, etc?
+        // TODO ground calculations, pressing button simulation, etc?
         location.add(velocity);
 
         sendMove();
         sendHeadYaw();
 
-        velocity.add(GRAVITY_VECTOR).multiply(.98);
+        // TODO: Actual system with gravity enabled to prevent bypasses
+        // velocity.add(Gravitation.PLAYER.getGravitationalVector()).multiply(.98);
     }
 
     /**
@@ -210,7 +209,7 @@ public abstract class ClientsideEntity
                     moveLookPacketWrapper.setPitch(this.location.getPitch());
 
                     movePacketWrapper = moveLookPacketWrapper;
-                    System.out.println("Sending movelook");
+                    // System.out.println("Sending movelook");
                 } else {
                     movePacketWrapper = new WrapperPlayServerRelEntityMove();
                     System.out.println("Sending move");
@@ -376,7 +375,8 @@ public abstract class ClientsideEntity
 
     // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //
 
-    public void spawn(Location location) {
+    public void spawn(Location location)
+    {
         this.spawned = true;
     }
 

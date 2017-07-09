@@ -53,10 +53,10 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
         final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
 
-        if (playerEntity != null) {
-            if (StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken())) {
-                event.getTabCompletions().add(playerEntity.getName());
-            }
+        if (playerEntity != null &&
+            StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken()))
+        {
+            event.getTabCompletions().add(playerEntity.getName());
         }
     }
 
@@ -186,11 +186,11 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
                 final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
 
-                if (playerEntity != null) {
-                    if (entityId == playerEntity.getEntityID()) {
-                        playerEntity.hurtByObserved();
-                        event.setCancelled(true);
-                    }
+                if (playerEntity != null &&
+                    entityId == playerEntity.getEntityID())
+                {
+                    playerEntity.hurtByObserved();
+                    event.setCancelled(true);
                 }
             }
         });

@@ -148,11 +148,11 @@ public final class EntityEquipmentDatabase
             return new Equipment(getRandomWeaponMaterial(),
                                  getRandomNormalMaterial(),
                                  getRandomArmorMaterials());
-        } else {
-            return new Equipment(getRandomNormalMaterial(),
-                                 getRandomNormalMaterial(),
-                                 getRandomArmorMaterials());
         }
+
+        return new Equipment(getRandomNormalMaterial(),
+                             getRandomNormalMaterial(),
+                             getRandomArmorMaterials());
     }
 
     /**

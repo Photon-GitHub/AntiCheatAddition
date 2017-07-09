@@ -62,7 +62,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
                     final Location noPitchLocation = location.clone();
                     noPitchLocation.setPitch(0);
 
-                    moveToLocation.add(noPitchLocation.getDirection().normalize().multiply(minXZDifference));
+                    moveToLocation.add(noPitchLocation.getDirection().normalize().multiply(-minXZDifference));
                 } else {
                     // The y-value should be the same
                     final double preY = moveToLocation.getY();

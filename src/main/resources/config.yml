@@ -245,10 +245,15 @@ InventoryRotation:
 KillauraEntity:
    # Do you want to enable the KillauraEntity check
    enabled: true
-   # How far should the entity at least be away from the player
-   entityOffset: 3.1
-   # How much randomized offset should at most be added to entityOffset
-   offsetRandomizationRange: 0.2
+   # Here you can find all options regarding the position of the entity
+   position:
+      # How far should the entity at least be away from the player (measured in blocks)
+      entityOffset: 3.1
+      # How much randomized offset should at most be added to entityOffset (measured in blocks)
+      offsetRandomizationRange: 0.2
+      # This prevents the entity from floating directly over / under a player, therefore preventing distraction and
+      # willingly caused false positives (measured in blocks)
+      minXZDifference: 0.25
    # Here you can choose the equipment of your entity.
    # For the best setup only choose equipment a normal player can get.
    equipment:

@@ -33,7 +33,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     private int task;
 
-    public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange)
+    public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange, double minXZDifference)
     {
         super(observedPlayer);
         // Get skin data and name
@@ -45,11 +45,31 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             DisplayInformation.applyTeams(this);
 
             // Location
-            Location moveToLocation = this.observedPlayer.getLocation().clone();
+            final Location playerLocation = this.observedPlayer.getLocation();
+
+            Location moveToLocation = playerLocation.clone();
 
             // Move behind the player to make the entity not disturb players
             // Important: the negative offset!
             moveToLocation.add(moveToLocation.getDirection().clone().normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
+
+            final double currentXZDifference = Math.sqrt(Math.pow(moveToLocation.getX() - playerLocation.getX(), 2) + Math.pow(moveToLocation.getZ() - playerLocation.getZ(), 2));
+
+            // To prevent willingly causing false positives and reducing the entities' visibility for legit players
+            if (currentXZDifference < minXZDifference) {
+                // Special case if both values are zero
+                if (currentXZDifference == 0) {
+                    final Location noPitchLocation = location.clone();
+                    noPitchLocation.setPitch(0);
+
+                    moveToLocation.add(noPitchLocation.getDirection().normalize().multiply(minXZDifference));
+                } else {
+                    // The y-value should be the same
+                    final double preY = moveToLocation.getY();
+                    moveToLocation.multiply(minXZDifference / currentXZDifference);
+                    moveToLocation.setY(preY);
+                }
+            }
 
             this.move(moveToLocation);
         }, 0L, 1L);

@@ -16,11 +16,9 @@ import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -34,12 +32,14 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 {
     ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 300);
 
-    @LoadFromConfiguration(configPath = ".entityOffset")
+    @LoadFromConfiguration(configPath = ".position.entityOffset")
     private double entityOffset;
 
-    @LoadFromConfiguration(configPath = ".offsetRandomizationRange")
+    @LoadFromConfiguration(configPath = ".position.offsetRandomizationRange")
     private double offsetRandomizationRange;
 
+    @LoadFromConfiguration(configPath = ".position.minXZDifference")
+    private double minXZDifference;
 
     @EventHandler
     public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)
@@ -98,7 +98,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             final WrappedGameProfile gameProfile = new WrappedGameProfile(UUID.randomUUID(), "BOT");
 
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(event.getPlayer(), gameProfile, entityOffset, offsetRandomizationRange);
+                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(event.getPlayer(), gameProfile, entityOffset, offsetRandomizationRange, minXZDifference);
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
 
                 // Spawning-Location
@@ -109,8 +109,6 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 spawnLocation.add(spawnLocation.getDirection().clone().normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
 
                 playerEntity.spawn(spawnLocation);
-
-                checkForHitAndReschedule(user.getPlayer());
             });
         }, 2L);
     }
@@ -127,41 +125,6 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
         ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
         if (clientSidePlayerEntity != null) {
             clientSidePlayerEntity.despawn();
-        }
-    }
-
-    private void checkForHitAndReschedule(final Player player)
-    {
-        Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> {
-            final User user = UserManager.getUser(player.getUniqueId());
-
-            // Not bypassed
-            if (user == null || user.isBypassed()) {
-                return;
-            }
-
-            final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-
-            if (System.currentTimeMillis() - playerEntity.lastHurtMillis < 2000) {
-                checkForHitAndReschedule(player);
-            }
-        }, 5 + ThreadLocalRandom.current().nextInt(35));
-    }
-
-    @EventHandler
-    public void onEntityDamage(final EntityDamageByEntityEvent event)
-    {
-        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-            final Player player = (Player) event.getDamager();
-            final User user = UserManager.getUser(player.getUniqueId());
-
-            // Not bypassed
-            if (user == null || user.isBypassed()) {
-                return;
-            }
-
-            vlManager.flag(player, -1, () -> {}, () -> {});
-            checkForHitAndReschedule(player);
         }
     }
 
@@ -189,6 +152,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                     entityId == playerEntity.getEntityID())
                 {
                     playerEntity.hurtByObserved();
+                    vlManager.flag(event.getPlayer(), -1, () -> {}, () -> {});
                     event.setCancelled(true);
                 }
             }

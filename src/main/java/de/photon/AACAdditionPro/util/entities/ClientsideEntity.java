@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.util.entities;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.entities.movement.Gravitation;
 import de.photon.AACAdditionPro.util.entities.movement.Jumping;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
@@ -190,7 +189,7 @@ public abstract class ClientsideEntity
             // Send the packet
             teleportWrapper.sendPacket(this.observedPlayer);
             this.needsTeleport = false;
-            System.out.println("Sent TP to: " + this.location.getX() + " | " + this.location.getY() + " | " + this.location.getZ());
+            // System.out.println("Sent TP to: " + this.location.getX() + " | " + this.location.getY() + " | " + this.location.getZ());
         } else {
             // Sending relative movement
             boolean move = xDiff != 0 || yDiff != 0 || zDiff != 0;

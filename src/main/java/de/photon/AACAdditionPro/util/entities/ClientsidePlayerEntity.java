@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.util.Vector;
 
 import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
@@ -47,28 +48,17 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             // Location
             final Location playerLocation = this.observedPlayer.getLocation();
 
-            Location moveToLocation = playerLocation.clone();
+            final Location moveToLocation = playerLocation.clone();
 
             // Move behind the player to make the entity not disturb players
             // Important: the negative offset!
             moveToLocation.add(moveToLocation.getDirection().clone().normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
 
-            final double currentXZDifference = Math.sqrt(Math.pow(moveToLocation.getX() - playerLocation.getX(), 2) + Math.pow(moveToLocation.getZ() - playerLocation.getZ(), 2));
+            final double currentXZDifference = Math.hypot(moveToLocation.getX() - playerLocation.getX(), moveToLocation.getZ() - playerLocation.getZ());
 
-            // To prevent willingly causing false positives and reducing the entities' visibility for legit players
             if (currentXZDifference < minXZDifference) {
-                // Special case if both values are zero
-                if (currentXZDifference == 0) {
-                    final Location noPitchLocation = location.clone();
-                    noPitchLocation.setPitch(0);
-
-                    moveToLocation.add(noPitchLocation.getDirection().normalize().multiply(-minXZDifference));
-                } else {
-                    // The y-value should be the same
-                    final double preY = moveToLocation.getY();
-                    moveToLocation.multiply(minXZDifference / currentXZDifference);
-                    moveToLocation.setY(preY);
-                }
+                final Vector moveAddVector = new Vector(-Math.sin(Math.toRadians(playerLocation.getYaw())), 0, Math.cos(Math.toRadians(playerLocation.getYaw())));
+                moveToLocation.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
             }
 
             this.move(moveToLocation);

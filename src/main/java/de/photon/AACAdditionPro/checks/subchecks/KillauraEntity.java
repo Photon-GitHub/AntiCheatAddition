@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.StringUtil;
+import org.bukkit.util.Vector;
 
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -102,11 +103,20 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
 
                 // Spawning-Location
-                Location spawnLocation = user.getPlayer().getLocation().clone();
+                final Location playerLocation = event.getPlayer().getLocation();
+
+                final Location spawnLocation = playerLocation.clone();
 
                 // Move behind the player to make the entity not disturb players
                 // Important: the negative offset!
                 spawnLocation.add(spawnLocation.getDirection().clone().normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
+
+                final double currentXZDifference = Math.hypot(spawnLocation.getX() - playerLocation.getX(), spawnLocation.getZ() - playerLocation.getZ());
+
+                if (currentXZDifference < minXZDifference) {
+                    final Vector moveAddVector = new Vector(-Math.sin(Math.toRadians(playerLocation.getYaw())), 0, Math.cos(Math.toRadians(playerLocation.getYaw())));
+                    spawnLocation.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
+                }
 
                 playerEntity.spawn(spawnLocation);
             });

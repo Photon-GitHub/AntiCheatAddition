@@ -47,7 +47,6 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
             // Location
             final Location playerLocation = this.observedPlayer.getLocation();
-
             final Location moveToLocation = playerLocation.clone();
 
             // Move behind the player to make the entity not disturb players

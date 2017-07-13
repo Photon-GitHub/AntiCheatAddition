@@ -281,8 +281,9 @@ KillauraEntity:
          iron: true
          diamond: true
    thresholds:
-      2: "aacstaffnotify {player} in {world} is suspected for Killaura"
-      4: "aackick {player} Killaura"
+      5: "aacstaffnotify {player} in {world} is suspected for Killaura"
+      10: "aacstaffnotify {player} in {world} is highly suspected for Killaura"
+      15: "aackick {player} Killaura"
 
 # The MultiInteraction check prevents players from moving more than one item per tick
 MultiInteraction:

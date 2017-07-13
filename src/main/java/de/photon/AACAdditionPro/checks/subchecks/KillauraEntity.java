@@ -16,6 +16,7 @@ import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -26,7 +27,6 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.StringUtil;
 import org.bukkit.util.Vector;
 
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class KillauraEntity implements AACAdditionProCheck, Listener
@@ -91,12 +91,16 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             // Not bypassed
-            if (user == null || user.isBypassed()) {
+            if (user == null || user.isBypassed() ||
+                // There are valid profiles that can serve the need for entities.
+                Bukkit.getOfflinePlayers().length < 1)
+            {
                 return;
             }
 
             //TODO: REAL NAMES AND PROFILES
-            final WrappedGameProfile gameProfile = new WrappedGameProfile(UUID.randomUUID(), "BOT");
+            final OfflinePlayer chosenOfflinePlayer = Bukkit.getOfflinePlayers()[ThreadLocalRandom.current().nextInt(Bukkit.getOfflinePlayers().length)];
+            final WrappedGameProfile gameProfile = new WrappedGameProfile(chosenOfflinePlayer.getUniqueId(), chosenOfflinePlayer.getName());
 
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
                 final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(event.getPlayer(), gameProfile, entityOffset, offsetRandomizationRange, minXZDifference);

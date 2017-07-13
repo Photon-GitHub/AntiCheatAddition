@@ -121,5 +121,4 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
         setDy(yDiff);
         setDz(zDiff);
     }
-
 }

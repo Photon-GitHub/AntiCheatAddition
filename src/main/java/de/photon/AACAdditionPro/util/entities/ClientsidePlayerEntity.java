@@ -94,7 +94,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         super.spawn(location);
         this.lastLocation = location.clone();
-        this.location = location.clone();
+        this.move(location);
         // Add the player with PlayerInfo
         final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
 

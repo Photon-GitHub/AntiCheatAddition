@@ -217,7 +217,6 @@ public abstract class ClientsideEntity
                 movePacketWrapper.setOnGround(onGround);
                 movePacketWrapper.setDiffs(xDiff, yDiff, zDiff);
                 packetWrapper = movePacketWrapper;
-
             } else if (look) {
                 WrapperPlayServerEntityLook lookPacketWrapper = new WrapperPlayServerEntityLook();
 

@@ -52,7 +52,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
             // Move behind the player to make the entity not disturb players
             // Important: the negative offset!
-            location.add(location.getDirection().normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
+            location.add(location.getDirection().setY(0).normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
 
             final double currentXZDifference = Math.hypot(location.getX() - origX, location.getZ() - origZ);
 

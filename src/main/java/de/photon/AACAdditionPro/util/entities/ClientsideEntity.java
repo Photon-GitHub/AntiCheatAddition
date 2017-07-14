@@ -173,7 +173,7 @@ public abstract class ClientsideEntity
                 throw new IllegalStateException("Unknown minecraft version");
         }
 
-        if (xDiff > teleportThreshold || yDiff > teleportThreshold || zDiff > teleportThreshold || needsTeleport) {
+        if (Math.abs(xDiff) > teleportThreshold || Math.abs(yDiff) > teleportThreshold || Math.abs(zDiff) > teleportThreshold || needsTeleport) {
             final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
             // EntityID
             teleportWrapper.setEntityID(this.entityID);

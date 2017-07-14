@@ -83,8 +83,11 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
                 break;
             case MC110:
             case MC111:
+            case MC112:
                 handle.getItemSlots().write(0, value);
                 break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
         }
     }
 

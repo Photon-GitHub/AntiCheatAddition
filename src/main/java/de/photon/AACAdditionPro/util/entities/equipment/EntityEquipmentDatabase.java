@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.clientsideentities.equipment;
+package de.photon.AACAdditionPro.util.entities.equipment;
 
 
 import de.photon.AACAdditionPro.AACAdditionPro;
@@ -123,21 +123,36 @@ public final class EntityEquipmentDatabase
             Material.DIAMOND_SWORD,
             Material.DIAMOND_AXE));
 
-    static
-    {
+    static {
         // --------------------------------------------------------------- Weapons --------------------------------------------------------------- //
 
         // Filter out all kinds (swords, axes) and materials (WOOD, GOLD, STONE, IRON, DIAMOND) that are disabled in the config
         final Set<String> optionKeys = ConfigUtils.loadKeys(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".equipment.weapons");
-        
-        for(final String optionKey : optionKeys)
-        {
-            if(!AACAdditionPro.getInstance().getConfig().getBoolean(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".equipment.weapons." + optionKey))
-            {
+
+        for (final String optionKey : optionKeys) {
+            if (!AACAdditionPro.getInstance().getConfig().getBoolean(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".equipment.weapons." + optionKey)) {
                 // Filter out swords
                 weaponMaterials.removeIf((material -> material.name().contains(optionKey.toUpperCase())));
             }
         }
+    }
+
+    /**
+     * @param fightingEquipment determines whether the entity should hold a weapon or not.
+     *
+     * @return some random {@link Equipment} according to the situation
+     */
+    public static Equipment getRandomEquipment(boolean fightingEquipment)
+    {
+        if (fightingEquipment) {
+            return new Equipment(getRandomWeaponMaterial(),
+                                 getRandomNormalMaterial(),
+                                 getRandomArmorMaterials());
+        }
+
+        return new Equipment(getRandomNormalMaterial(),
+                             getRandomNormalMaterial(),
+                             getRandomArmorMaterials());
     }
 
     /**
@@ -168,17 +183,13 @@ public final class EntityEquipmentDatabase
         final Material[] armor = new Material[4];
 
         for (byte b = 0; b < (byte) 6; b++) {
-            final Material randomMaterial = armorMaterials.get(ThreadLocalRandom.current().nextInt(armorMaterials.size()));
-
-            if (randomMaterial.name().contains("HELMET")) {
-                armor[0] = randomMaterial;
-            } else if (randomMaterial.name().contains("CHESTPLATE")) {
-                armor[1] = randomMaterial;
-            } else if (randomMaterial.name().contains("LEGGINGS")) {
-                armor[2] = randomMaterial;
-            } else {
-                armor[3] = randomMaterial;
+            final Material randomArmorMaterial = armorMaterials.get(ThreadLocalRandom.current().nextInt(armorMaterials.size()));
+            if (randomArmorMaterial == null) {
+                continue;
             }
+
+            // The armor is always in the first place, therefore the ordinal works here.
+            armor[EquipmentMapping.getEquipmentMappingOfMaterial(randomArmorMaterial).ordinal()] = randomArmorMaterial;
         }
         return armor;
     }
@@ -187,5 +198,4 @@ public final class EntityEquipmentDatabase
     {
         return enchantments.get(ThreadLocalRandom.current().nextInt(enchantments.size()));
     }
-
 }

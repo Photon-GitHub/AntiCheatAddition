@@ -239,12 +239,21 @@ InventoryRotation:
 
 # Brings back an entity check of the old AAC 1.9.10 times
 # but much more advanced.
-# ------------------------------------------------------------------------------ #
-# HIGHLY EXPERIMENTAL. DO NOT ENABLE UNLESS YOU EXACTLY KNOW WHAT YOU ARE DOING! #
-# ------------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------------------------------------------------- #
+# Still somewhat EXPERIMENTAL! Please use with caution and report bugs.
+# ------------------------------------------------------------------------------------------------------------------- #
 KillauraEntity:
-   # Do you want to enable the Anti-Freecam
-   enabled: false
+   # Do you want to enable the KillauraEntity check
+   enabled: true
+   # Here you can find all options regarding the position of the entity
+   position:
+      # How far should the entity at least be away from the player (measured in blocks)
+      entityOffset: 3.4
+      # How much randomized offset should at most be added to entityOffset (measured in blocks)
+      offsetRandomizationRange: 0.2
+      # This prevents the entity from floating directly over / under a player, therefore preventing distraction and
+      # willingly caused false positives (measured in blocks)
+      minXZDifference: 1.55
    # Here you can choose the equipment of your entity.
    # For the best setup only choose equipment a normal player can get.
    equipment:
@@ -272,8 +281,9 @@ KillauraEntity:
          iron: true
          diamond: true
    thresholds:
-      2: "aacstaffnotify {player} in {world} is suspected for Killaura"
-      4: "aackick {player} Killaura"
+      5: "aacstaffnotify {player} in {world} is suspected for Killaura"
+      10: "aacstaffnotify {player} in {world} is highly suspected for Killaura"
+      15: "aackick {player} Killaura"
 
 # The MultiInteraction check prevents players from moving more than one item per tick
 MultiInteraction:

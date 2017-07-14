@@ -25,9 +25,11 @@ public class PotionData extends Data
                 return null;
             case MC110:
             case MC111:
+            case MC112:
                 return theUser.getPlayer().getPotionEffect(type);
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
         }
-        return null;
     }
 
     /**

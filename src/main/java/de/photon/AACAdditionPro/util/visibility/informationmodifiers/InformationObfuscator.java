@@ -44,6 +44,8 @@ public class InformationObfuscator extends PlayerInformationModifier
                     wrapperPlayServerEntityEquipment.sendPacket(observer);
                 }
                 break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
         }
     }
 

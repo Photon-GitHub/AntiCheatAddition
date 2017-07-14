@@ -15,6 +15,7 @@ import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHit;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryMove;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryRotation;
+import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
 import de.photon.AACAdditionPro.checks.subchecks.MultiInteraction;
 import de.photon.AACAdditionPro.checks.subchecks.Pingspoof;
 import de.photon.AACAdditionPro.checks.subchecks.Scaffold;
@@ -60,7 +61,7 @@ public final class CheckManager extends Manager<AACAdditionProCheck>
                 new InventoryHit(),
                 new InventoryMove(),
                 new InventoryRotation(),
-                // new KillauraEntity(),
+                new KillauraEntity(),
                 new MultiInteraction(),
                 new Pingspoof(),
                 new Scaffold(),

@@ -62,7 +62,7 @@ public final class MathUtils
     }
 
     /**
-     * Fixes the rotation for the {@link de.photon.AACAdditionPro.util.clientsideentities.ClientsideEntity}s
+     * Fixes the rotation for the {@link de.photon.AACAdditionPro.util.entities.ClientsideEntity}s
      */
     public static byte getFixRotation(final float yawpitch)
     {

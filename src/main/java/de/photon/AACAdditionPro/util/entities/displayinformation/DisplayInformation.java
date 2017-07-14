@@ -1,9 +1,8 @@
-package de.photon.AACAdditionPro.util.clientsideentities.displayinformation;
+package de.photon.AACAdditionPro.util.entities.displayinformation;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
-import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import de.photon.AACAdditionPro.util.clientsideentities.ClientsidePlayerEntity;
+import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
@@ -31,7 +30,7 @@ public final class DisplayInformation
             }
         }
 
-        if (teamsWithPlayers.size() == 0) {
+        if (teamsWithPlayers.isEmpty()) {
             for (final Team team1 : clientsidePlayerEntity.getObservedPlayer().getScoreboard().getTeams()) {
                 if (team1.getSuffix().isEmpty()) {
                     teamsWithPlayers.add(team1);
@@ -39,7 +38,7 @@ public final class DisplayInformation
             }
         }
 
-        if (clientsidePlayerEntity.currentTeam == null || !teamsWithPlayers.contains(clientsidePlayerEntity.currentTeam)) {
+        if (clientsidePlayerEntity.getCurrentTeam() == null || !teamsWithPlayers.contains(clientsidePlayerEntity.getCurrentTeam())) {
             final Iterator<Team> iterator = teamsWithPlayers.iterator();
             if (iterator.hasNext()) {
                 Team team;
@@ -49,12 +48,12 @@ public final class DisplayInformation
                 }
                 while (iterator.hasNext() && team.getEntries().contains(clientsidePlayerEntity.getObservedPlayer().getName()));
 
-                if (clientsidePlayerEntity.currentTeam != null) {
-                    clientsidePlayerEntity.currentTeam.removeEntry(clientsidePlayerEntity.getGameProfile().getName());
+                if (clientsidePlayerEntity.getCurrentTeam() != null) {
+                    clientsidePlayerEntity.getCurrentTeam().removeEntry(clientsidePlayerEntity.getGameProfile().getName());
                 }
 
                 team.addEntry(clientsidePlayerEntity.getGameProfile().getName());
-                clientsidePlayerEntity.currentTeam = team;
+                clientsidePlayerEntity.setCurrentTeam(team);
             }
         }
     }
@@ -80,8 +79,7 @@ public final class DisplayInformation
     {
         if (clientsidePlayerEntity.isSpawned()) {
             // Send player info first
-            final WrappedGameProfile gameProfile = WrappedGameProfile.fromHandle(clientsidePlayerEntity.getGameProfile());
-            final PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
+            final PlayerInfoData playerInfoData = new PlayerInfoData(clientsidePlayerEntity.getGameProfile(), ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
 
             final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
             playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY);

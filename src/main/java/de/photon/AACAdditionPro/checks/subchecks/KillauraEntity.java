@@ -1,37 +1,46 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.userdata.User;
+import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.util.StringUtil;
+import org.bukkit.util.Vector;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 public class KillauraEntity implements AACAdditionProCheck, Listener
 {
-    // ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 300);
+    ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 300);
 
-    /*@EventHandler
-    public void onRespawn(final PlayerRespawnEvent event)
-    {
-        Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+    @LoadFromConfiguration(configPath = ".position.entityOffset")
+    private double entityOffset;
 
-            // Not bypassed
-            if (user == null || !user.isNotBypassed()) {
-                return;
-            }
+    @LoadFromConfiguration(configPath = ".position.offsetRandomizationRange")
+    private double offsetRandomizationRange;
 
-            final Old_PlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-
-            if (playerEntity != null) {
-                if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
-                    playerEntity.respawn();
-                    playerEntity.needsToTeleport();
-                } else {
-                    playerEntity.despawn();
-                    user.getClientSideEntityData().clientSidePlayerEntity = null;
-                }
-            }
-        }, 20);
-    }
+    @LoadFromConfiguration(configPath = ".position.minXZDifference")
+    private double minXZDifference;
 
     @EventHandler
     public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)
@@ -39,34 +48,16 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || !user.isNotBypassed()) {
+        if (user == null || user.isBypassed()) {
             return;
         }
 
-        final Old_PlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+        final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
 
-        if (playerEntity != null) {
-            if (StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken())) {
-                event.getTabCompletions().add(playerEntity.getName());
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerTeleport(final PlayerTeleportEvent event)
-    {
-        // Add velocity to the bot so the bot does never stand inside or in front of the player
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        // Not bypassed
-        if (user == null || !user.isNotBypassed()) {
-            return;
-        }
-
-        final Old_PlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-
-        if (playerEntity != null && playerEntity.isChecking()) {
-            playerEntity.needsToTeleport();
+        if (playerEntity != null &&
+            StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken()))
+        {
+            event.getTabCompletions().add(playerEntity.getName());
         }
     }
 
@@ -77,13 +68,13 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || !user.isNotBypassed()) {
+        if (user == null || user.isBypassed()) {
             return;
         }
 
-        final Old_PlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+        final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
 
-        if (playerEntity != null && playerEntity.isChecking()) {
+        if (playerEntity != null) {
             playerEntity.setVelocity(event.getVelocity());
         }
     }
@@ -100,61 +91,54 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             // Not bypassed
-            if (user == null || !user.isNotBypassed()) {
+            if (user == null || user.isBypassed() ||
+                // There are valid profiles that can serve the need for entities.
+                Bukkit.getOfflinePlayers().length < 1)
+            {
                 return;
             }
 
             //TODO: REAL NAMES AND PROFILES
-            final GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "BOT");
+            final OfflinePlayer chosenOfflinePlayer = Bukkit.getOfflinePlayers()[ThreadLocalRandom.current().nextInt(Bukkit.getOfflinePlayers().length)];
+            final WrappedGameProfile gameProfile = new WrappedGameProfile(chosenOfflinePlayer.getUniqueId(), chosenOfflinePlayer.getName());
 
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-                final Old_PlayerEntity playerEntity = new Old_PlayerEntity(event.getPlayer(), gameProfile);
-                playerEntity.spawn();
+                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(event.getPlayer(), gameProfile, entityOffset, offsetRandomizationRange, minXZDifference);
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
-                playerEntity.setChecking(true);
-                checkForHitAndReschedule(user.getPlayer());
+
+                // Spawning-Location
+                final Location location = event.getPlayer().getLocation();
+                final double origX = location.getX();
+                final double origZ = location.getZ();
+
+                // Move behind the player to make the entity not disturb players
+                // Important: the negative offset!
+                location.add(location.getDirection().setY(0).normalize().multiply(-(entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange))));
+
+                final double currentXZDifference = Math.hypot(location.getX() - origX, location.getZ() - origZ);
+
+                if (currentXZDifference < minXZDifference) {
+                    final Vector moveAddVector = new Vector(-Math.sin(Math.toRadians(location.getYaw())), 0, Math.cos(Math.toRadians(location.getYaw())));
+                    location.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
+                }
+
+                playerEntity.spawn(location);
             });
         }, 2L);
     }
 
-    private void checkForHitAndReschedule(final Player player)
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onQuit(PlayerQuitEvent event)
     {
-        Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> {
-            final User user = UserManager.getUser(player.getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            // Not bypassed
-            if (user == null || !user.isNotBypassed()) {
-                return;
-            }
-
-            final Old_PlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-
-            if (System.currentTimeMillis() - playerEntity.getLastHit() < 2000) {
-                checkForHitAndReschedule(player);
-            } else {
-                playerEntity.setChecking(false);
-            }
-        }, 5 + ThreadLocalRandom.current().nextInt(35));
-    }
-
-    @EventHandler
-    public void onEntityDamage(final EntityDamageByEntityEvent event)
-    {
-        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-            final Player player = (Player) event.getDamager();
-            final User user = UserManager.getUser(player.getUniqueId());
-
-            // Not bypassed
-            if (user == null || !user.isNotBypassed()) {
-                return;
-            }
-
-            final Old_PlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-
-            if (!playerEntity.isChecking()) {
-                playerEntity.setChecking(true);
-                checkForHitAndReschedule(player);
-            }
+        // User not there
+        if (user == null) { //dont check bypassed since it might change and it would run forever
+            return;
+        }
+        ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+        if (clientSidePlayerEntity != null) {
+            clientSidePlayerEntity.despawn();
         }
     }
 
@@ -172,22 +156,23 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
                 // Not bypassed
-                if (user == null || !user.isNotBypassed()) {
+                if (user == null || user.isBypassed()) {
                     return;
                 }
 
-                final Old_PlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+                final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
 
-                if (playerEntity != null) {
-                    if (entityId == playerEntity.getEntityId()) {
-                        playerEntity.fakeHit();
-
-                    }
+                if (playerEntity != null &&
+                    entityId == playerEntity.getEntityID())
+                {
+                    playerEntity.hurtByObserved();
+                    vlManager.flag(event.getPlayer(), -1, () -> {}, () -> {});
+                    event.setCancelled(true);
                 }
             }
         });
     }
-*/
+
     @Override
     public AdditionHackType getAdditionHackType()
     {

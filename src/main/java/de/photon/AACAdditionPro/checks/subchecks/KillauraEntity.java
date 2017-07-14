@@ -113,7 +113,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
                 // Move behind the player to make the entity not disturb players
                 // Important: the negative offset!
-                spawnLocation.add(spawnLocation.getDirection().clone().normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
+                spawnLocation.add(spawnLocation.getDirection().normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
 
                 final double currentXZDifference = Math.hypot(spawnLocation.getX() - playerLocation.getX(), spawnLocation.getZ() - playerLocation.getZ());
 

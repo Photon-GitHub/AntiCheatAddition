@@ -108,12 +108,12 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
                 // Spawning-Location
                 final Location location = event.getPlayer().getLocation();
-                double origX = location.getX();
-                double origZ = location.getZ();
+                final double origX = location.getX();
+                final double origZ = location.getZ();
 
                 // Move behind the player to make the entity not disturb players
                 // Important: the negative offset!
-                location.add(location.getDirection().setY(0).normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
+                location.add(location.getDirection().setY(0).normalize().multiply(-(entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange))));
 
                 final double currentXZDifference = Math.hypot(location.getX() - origX, location.getZ() - origZ);
 

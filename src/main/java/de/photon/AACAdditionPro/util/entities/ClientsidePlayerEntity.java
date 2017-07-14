@@ -46,21 +46,22 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             DisplayInformation.applyTeams(this);
 
             // Location
-            final Location playerLocation = this.observedPlayer.getLocation();
-            final Location moveToLocation = playerLocation.clone();
+            final Location location = this.observedPlayer.getLocation();
+            final double origX = location.getX();
+            final double origZ = location.getZ();
 
             // Move behind the player to make the entity not disturb players
             // Important: the negative offset!
-            moveToLocation.add(moveToLocation.getDirection().normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
+            location.add(location.getDirection().normalize().multiply(-entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange)));
 
-            final double currentXZDifference = Math.hypot(moveToLocation.getX() - playerLocation.getX(), moveToLocation.getZ() - playerLocation.getZ());
+            final double currentXZDifference = Math.hypot(location.getX() - origX, location.getZ() - origZ);
 
             if (currentXZDifference < minXZDifference) {
-                final Vector moveAddVector = new Vector(-Math.sin(Math.toRadians(playerLocation.getYaw())), 0, Math.cos(Math.toRadians(playerLocation.getYaw())));
-                moveToLocation.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
+                final Vector moveAddVector = new Vector(-Math.sin(Math.toRadians(location.getYaw())), 0, Math.cos(Math.toRadians(location.getYaw())));
+                location.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
             }
 
-            this.move(moveToLocation);
+            this.move(location);
         }, 0L, 1L);
 
         recursiveUpdatePing();

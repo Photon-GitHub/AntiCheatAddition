@@ -10,6 +10,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.userdata.data.ClientSideEntityData;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
@@ -17,6 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -171,6 +173,22 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 }
             }
         });
+        //Show entity for already online players on reload
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            onJoin(new PlayerJoinEvent(player, null));
+        }
+    }
+
+    @Override
+    public void subDisable()
+    {
+        //Despawn on reload
+        for (User user : UserManager.getUsers()) {
+            ClientSideEntityData csed = user.getClientSideEntityData();
+            if (csed.clientSidePlayerEntity != null) {
+                csed.clientSidePlayerEntity.despawn();
+            }
+        }
     }
 
     @Override

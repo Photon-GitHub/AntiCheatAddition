@@ -397,11 +397,15 @@ public abstract class ClientsideEntity
 
     public void despawn()
     {
-        Bukkit.getScheduler().cancelTask(tickTask);
-        this.tickTask = -1;
-        final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
-        entityDestroyWrapper.setEntityIds(new int[]{this.entityID});
-        entityDestroyWrapper.sendPacket(observedPlayer);
-        this.spawned = false;
+        if (tickTask > 0) {
+            Bukkit.getScheduler().cancelTask(tickTask);
+            this.tickTask = -1;
+        }
+        if (spawned) {
+            final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
+            entityDestroyWrapper.setEntityIds(new int[]{this.entityID});
+            entityDestroyWrapper.sendPacket(observedPlayer);
+            this.spawned = false;
+        }
     }
 }

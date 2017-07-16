@@ -91,7 +91,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 case ADVENTURE:
                     break;
                 default:
-                    throw new IllegalStateException("Unknown Gamemode: " + event.getPlayer().getGameMode());
+                    throw new IllegalStateException("Unknown Gamemode: " + event.getPlayer().getGameMode().name());
             }
 
             // Add velocity to the bot so the bot does never stand inside or in front of the player

@@ -14,12 +14,12 @@ import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -83,8 +83,15 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     public void onJoin(final PlayerJoinEvent event)
     {
         Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), () -> {
-            if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) {
-                return;
+            switch (event.getPlayer().getGameMode()) {
+                case CREATIVE:
+                case SPECTATOR:
+                    return;
+                case SURVIVAL:
+                case ADVENTURE:
+                    break;
+                default:
+                    throw new IllegalStateException("Unknown Gamemode: " + event.getPlayer().getGameMode());
             }
 
             // Add velocity to the bot so the bot does never stand inside or in front of the player
@@ -125,6 +132,15 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 playerEntity.spawn(location);
             });
         }, 2L);
+    }
+
+    @EventHandler
+    public void onWorldChange(PlayerChangedWorldEvent event)
+    {
+        // Despawn the old entity
+        this.onQuit(new PlayerQuitEvent(event.getPlayer(), null));
+        // Spawn another entity after the world was changed
+        this.onJoin(new PlayerJoinEvent(event.getPlayer(), null));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

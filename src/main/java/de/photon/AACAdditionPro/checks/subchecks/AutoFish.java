@@ -22,6 +22,13 @@ public class AutoFish implements Listener, AACAdditionProCheck
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 3600);
 
+    // Must be sorted from high to low
+    private static final float[] autofishPercentageThresholds = {
+            1F,
+            0.68F,
+            0.42F
+    };
+
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
 
@@ -97,14 +104,14 @@ public class AutoFish implements Listener, AACAdditionProCheck
                     // THe normal reaction speed check
                     // In the HashMap (Detection)
                     if (user.getFishingData().recentlyUpdated(fishing_milliseconds)) {
-                        if (user.getFishingData().recentlyUpdated((long) (0.42 * fishing_milliseconds))) {
-                            vlManager.flag(event.getPlayer(), 3, cancel_vl, () -> event.setCancelled(true), () -> {});
-                        } else if (user.getFishingData().recentlyUpdated((long) (0.68 * fishing_milliseconds))) {
-                            vlManager.flag(event.getPlayer(), 2, cancel_vl, () -> event.setCancelled(true), () -> {});
-                        } else {
-                            vlManager.flag(event.getPlayer(), cancel_vl, () -> event.setCancelled(true), () -> {});
+                        for (byte b = (byte) (autofishPercentageThresholds.length - 1); b >= 0; b--) {
+                            if (user.getFishingData().recentlyUpdated((long) (autofishPercentageThresholds[b] * fishing_milliseconds))) {
+                                vlManager.flag(event.getPlayer(), b + 1, cancel_vl, () -> event.setCancelled(true), () -> {});
+                                break;
+                            }
                         }
                     }
+
                     user.getFishingData().nullifyTimeStamp();
 
                     // Consistency check

@@ -42,7 +42,7 @@ public class MultiInteraction implements Listener, AACAdditionProCheck
         }
 
         // Creative-clear might trigger this.
-        if ((user.getPlayer().getGameMode() == GameMode.ADVENTURE || user.getPlayer().getGameMode() == GameMode.SURVIVAL) &&
+        if ((user.getPlayer().getGameMode() == GameMode.SURVIVAL || user.getPlayer().getGameMode() == GameMode.ADVENTURE) &&
             // Minimum TPS before the check is activated as of a huge amount of fps
             AACAPIProvider.getAPI().getTPS() > min_tps &&
             // Minimum ping

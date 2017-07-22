@@ -20,8 +20,8 @@ import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 public class Esp implements AACAdditionProCheck
 {
@@ -79,7 +79,7 @@ public class Esp implements AACAdditionProCheck
                 AACAdditionPro.getInstance(),
                 () -> {
                     //All users
-                    final Set<User> users = UserManager.getUsers();
+                    final Collection<User> users = UserManager.getUsers();
 
                     //Iterate through all player-constellations
                     for (final User observer : users) {

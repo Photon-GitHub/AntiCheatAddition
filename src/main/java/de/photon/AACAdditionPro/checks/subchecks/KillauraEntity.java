@@ -189,6 +189,13 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
         });
     }
 
+
+    @Override
+    public ViolationLevelManagement getViolationLevelManagement()
+    {
+        return vlManager;
+    }
+
     @Override
     public AdditionHackType getAdditionHackType()
     {

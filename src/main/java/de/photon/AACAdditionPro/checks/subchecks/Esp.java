@@ -114,11 +114,10 @@ public class Esp implements AACAdditionProCheck
                                 if (spectatorA) {
                                     updateHideMode(pair.a, pair.b.getPlayer(), HideMode.NONE);
 
-                                    if (spectatorB) {
-                                        updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
-                                    } else {
-                                        updateHideMode(pair.b, pair.a.getPlayer(), HideMode.FULL);
-                                    }
+                                    // If both players are in spectator mode noone should be hidden -> HideMode.NONE
+                                    updateHideMode(pair.b, pair.a.getPlayer(), spectatorB ?
+                                                                               HideMode.NONE :
+                                                                               HideMode.FULL);
                                 } else {
                                     // spectatorB must be true here as spectatorA == false and one of spectatorA and spectatorB must be true !
                                     // -> spectatorB == true; spectatorA == false
@@ -152,10 +151,10 @@ public class Esp implements AACAdditionProCheck
                         }
                     }
 
-                    //Clear the HashSet for a new Run
+                    // Clear the HashSet for a new Run
                     playerConnections.clear();
 
-                    //Update_Ticks: the refresh-rate of the check.
+                    // Update_Ticks: the refresh-rate of the check.
                 }, 0L, AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".update_ticks"));
     }
 
@@ -172,7 +171,7 @@ public class Esp implements AACAdditionProCheck
                 if (observer.getEspInformationData().hiddenPlayers.get(object.getUniqueId()) != HideMode.FULL) {
                     observer.getEspInformationData().hiddenPlayers.put(object.getUniqueId(), HideMode.FULL);
 
-                    //FULL: fullHider active, informationOnlyHider inactive
+                    // FULL: fullHider active, informationOnlyHider inactive
                     informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
                     fullHider.modifyInformation(observer.getPlayer(), object);
                 }
@@ -181,7 +180,7 @@ public class Esp implements AACAdditionProCheck
                 if (observer.getEspInformationData().hiddenPlayers.get(object.getUniqueId()) != HideMode.INFORMATION_ONLY) {
                     observer.getEspInformationData().hiddenPlayers.put(object.getUniqueId(), HideMode.INFORMATION_ONLY);
 
-                    //INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
+                    // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
                     fullHider.unModifyInformation(observer.getPlayer(), object);
                     informationOnlyHider.modifyInformation(observer.getPlayer(), object);
                 }
@@ -190,7 +189,7 @@ public class Esp implements AACAdditionProCheck
                 if (observer.getEspInformationData().hiddenPlayers.containsKey(object.getUniqueId())) {
                     observer.getEspInformationData().hiddenPlayers.remove(object.getUniqueId());
 
-                    //NONE: fullHider inactive, informationOnlyHider inactive
+                    // NONE: fullHider inactive, informationOnlyHider inactive
                     informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
                     fullHider.unModifyInformation(observer.getPlayer(), object);
                 }

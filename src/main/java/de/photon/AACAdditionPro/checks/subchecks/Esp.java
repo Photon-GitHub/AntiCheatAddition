@@ -151,6 +151,8 @@ public class Esp implements AACAdditionProCheck
                         }
                     }
 
+                    // TODO: You neither need to clear the connections every second nor to add all connections again (exeption: on the first start)... event usage
+
                     // Clear the HashSet for a new Run
                     playerConnections.clear();
 

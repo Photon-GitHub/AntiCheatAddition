@@ -9,6 +9,7 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Bukkit;
@@ -67,7 +68,7 @@ public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
      */
     private static boolean canBeLegit(final int currentSlot, final int newHeldItemSlot)
     {
-        return (currentSlot == 8 || currentSlot == 0) && (newHeldItemSlot == 8 || newHeldItemSlot == 0) || !(newHeldItemSlot + 1 > currentSlot || newHeldItemSlot - 1 < currentSlot);
+        return (currentSlot == 8 || currentSlot == 0) && (newHeldItemSlot == 8 || newHeldItemSlot == 0) || MathUtils.isInRange(currentSlot, newHeldItemSlot, 1);
     }
 
     @Override

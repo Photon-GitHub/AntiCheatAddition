@@ -68,7 +68,7 @@ public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
      */
     private static boolean canBeLegit(final int currentSlot, final int newHeldItemSlot)
     {
-        return (currentSlot == 8 || currentSlot == 0) && (newHeldItemSlot == 8 || newHeldItemSlot == 0) || MathUtils.isInRange(currentSlot, newHeldItemSlot, 1);
+        return (currentSlot == 0 && newHeldItemSlot == 8) || (currentSlot == 8 && newHeldItemSlot == 0) || MathUtils.isInRange(currentSlot, newHeldItemSlot, 1);
     }
 
     @Override

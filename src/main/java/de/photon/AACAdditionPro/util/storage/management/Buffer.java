@@ -48,12 +48,14 @@ public abstract class Buffer<T> extends ArrayList<T>
      */
     public void clearLastObjectIteration(final BiConsumer<T, T> code)
     {
-        T last = this.remove(this.size());
-        T current;
-        while (!this.isEmpty()) {
-            current = this.remove(this.size());
-            code.accept(last, current);
-            last = current;
+        if (!this.isEmpty()) {
+            T last = this.remove(this.size() - 1);
+            T current;
+            while (!this.isEmpty()) {
+                current = this.remove(this.size() - 1);
+                code.accept(last, current);
+                last = current;
+            }
         }
     }
 }

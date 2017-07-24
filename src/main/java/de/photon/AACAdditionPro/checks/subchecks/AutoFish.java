@@ -90,7 +90,7 @@ public class AutoFish implements Listener, AACAdditionProCheck
                         }
                     }
 
-                    // Clear the consistency data for further
+                    // Clear the consistency data for new runs
                     user.getFishingData().consistencyBuffer.clear();
 
                     // No legit -> flag

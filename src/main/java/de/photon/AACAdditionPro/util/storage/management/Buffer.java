@@ -1,15 +1,16 @@
 package de.photon.AACAdditionPro.util.storage.management;
 
+import java.util.ArrayList;
 import java.util.Stack;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
-public abstract class Buffer<T> extends Stack<T>
+public abstract class Buffer<T> extends ArrayList<T>
 {
     private final int buffer_size;
 
     protected Buffer(final int buffer_size)
     {
+        super(buffer_size);
         this.buffer_size = buffer_size;
     }
 
@@ -31,23 +32,11 @@ public abstract class Buffer<T> extends Stack<T>
     public boolean bufferObject(final T object)
     {
         if (verifyObject(object)) {
-            this.push(object);
+            this.add(object);
         } else {
             this.clear();
         }
         return this.size() >= this.buffer_size;
-    }
-
-    /**
-     * Iterates through the buffer and clears it at the same time
-     *
-     * @param code the code which should be run in each cycle
-     */
-    public void clearIteration(final Consumer<T> code)
-    {
-        while (!this.isEmpty()) {
-            code.accept(this.pop());
-        }
     }
 
     /**
@@ -59,10 +48,10 @@ public abstract class Buffer<T> extends Stack<T>
      */
     public void clearLastObjectIteration(final BiConsumer<T, T> code)
     {
-        T last = this.pop();
+        T last = this.remove(this.size());
         T current;
         while (!this.isEmpty()) {
-            current = this.pop();
+            current = this.remove(this.size());
             code.accept(last, current);
             last = current;
         }

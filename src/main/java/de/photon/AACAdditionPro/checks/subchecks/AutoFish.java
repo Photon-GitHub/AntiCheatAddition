@@ -6,8 +6,8 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
-import de.photon.AACAdditionPro.util.storage.management.Buffer;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import org.bukkit.event.EventHandler;
@@ -49,7 +49,6 @@ public class AutoFish implements Listener, AACAdditionProCheck
 
     @LoadFromConfiguration(configPath = ".parts.consistency.weight")
     private int weight;
-    private Buffer<Long> consistencyData;
 
     @EventHandler
     public void on(final PlayerFishEvent event)
@@ -71,25 +70,28 @@ public class AutoFish implements Listener, AACAdditionProCheck
                     return;
                 }
 
-                // Add the delta to the
-                if (consistencyData.bufferObject(System.currentTimeMillis() - user.getFishingData().getTimeStamp(1))) {
+                // Add the delta to the consistencyBuffer of the user.
+                if (user.getFishingData().bufferConsistencyData()) {
                     // Enough data, now checking
                     // Calculating the average
                     double average = 0D;
-                    for (final Long deltaTime : consistencyData) {
+                    for (final Long deltaTime : user.getFishingData().consistencyBuffer) {
                         average += deltaTime;
                     }
-
-                    average /= consistencyData.size();
+                    average /= user.getFishingData().consistencyBuffer.size();
 
                     // Test if the average is exceeded by the violation_offset
                     boolean legit = false;
-                    for (final Long deltaTime : consistencyData) {
-                        if (deltaTime > average - violation_offset && deltaTime < average + violation_offset) {
+                    for (final Long deltaTime : user.getFishingData().consistencyBuffer) {
+                        // If the value is not in range the data is not consistent enough for a flag.
+                        if (!MathUtils.isInRange(deltaTime, average, violation_offset)) {
                             legit = true;
                             break;
                         }
                     }
+
+                    // Clear the consistency data for further
+                    user.getFishingData().consistencyBuffer.clear();
 
                     // No legit -> flag
                     if (!legit) {
@@ -101,9 +103,10 @@ public class AutoFish implements Listener, AACAdditionProCheck
             case CAUGHT_FISH:
                 // Only check if inhuman reaction is enabled
                 if (parts[0]) {
-                    // THe normal reaction speed check
-                    // In the HashMap (Detection)
+                    // Too few time has passed since the fish bit.
                     if (user.getFishingData().recentlyUpdated(fishing_milliseconds)) {
+
+                        // Get the correct amount of vl.
                         for (byte b = (byte) (autofishPercentageThresholds.length - 1); b >= 0; b--) {
                             if (user.getFishingData().recentlyUpdated((long) (autofishPercentageThresholds[b] * fishing_milliseconds))) {
                                 vlManager.flag(event.getPlayer(), b + 1, cancel_vl, () -> event.setCancelled(true), () -> {});
@@ -112,6 +115,7 @@ public class AutoFish implements Listener, AACAdditionProCheck
                         }
                     }
 
+                    // Reset the bite-timestamp to be ready for the next one
                     user.getFishingData().nullifyTimeStamp();
 
                     // Consistency check
@@ -143,16 +147,6 @@ public class AutoFish implements Listener, AACAdditionProCheck
         this.parts[1] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".parts.consistency.enabled");
 
         VerboseSender.sendVerboseMessage("AutoFish-Parts: inhuman reaction: " + parts[0] + " | consistency: " + parts[1]);
-
-        // Create a buffer with the limit of consistency_events
-        this.consistencyData = new Buffer<Long>(AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".parts.consistency.consistency_events"))
-        {
-            @Override
-            public boolean verifyObject(final Long object)
-            {
-                return consistencyData.isEmpty() || object < consistencyData.peek() + (2 * violation_offset) && object > consistencyData.peek() - (2 * violation_offset);
-            }
-        };
     }
 
     @Override

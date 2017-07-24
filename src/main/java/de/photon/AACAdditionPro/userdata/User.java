@@ -8,6 +8,7 @@ import de.photon.AACAdditionPro.userdata.data.BlockPlaceData;
 import de.photon.AACAdditionPro.userdata.data.ClientSideEntityData;
 import de.photon.AACAdditionPro.userdata.data.ElytraData;
 import de.photon.AACAdditionPro.userdata.data.EspInformationData;
+import de.photon.AACAdditionPro.userdata.data.FishingData;
 import de.photon.AACAdditionPro.userdata.data.InventoryData;
 import de.photon.AACAdditionPro.userdata.data.LookPacketData;
 import de.photon.AACAdditionPro.userdata.data.PingData;
@@ -96,7 +97,7 @@ public class User
     private final ElytraData elytraData = new ElytraData(this);
     private final EspInformationData espInformationData = new EspInformationData(this);
     private final TimeData fastSwitchData = new TimeData(false, this);
-    private final TimeData fishingData = new TimeData(false, this, 0, 0);
+    private final FishingData fishingData = new FishingData(this);
     private final InventoryData inventoryData = new InventoryData(this);
     private final LookPacketData lookPacketData = new LookPacketData(this);
     private final TimeData loginData;

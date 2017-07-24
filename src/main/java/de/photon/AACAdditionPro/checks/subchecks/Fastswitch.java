@@ -66,9 +66,9 @@ public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
      * Used to acknowledge if somebody can be legit.
      * I.e. that players can scroll very fast, but then the neighbor slot is always the one that gets called next.
      */
-    private static boolean canBeLegit(final int currentSlot, final int newHeldItemSlot)
+    private static boolean canBeLegit(final int oldSlot, final int newHeldItemSlot)
     {
-        return (currentSlot == 0 && newHeldItemSlot == 8) || (currentSlot == 8 && newHeldItemSlot == 0) || MathUtils.isInRange(currentSlot, newHeldItemSlot, 1);
+        return (oldSlot == 0 && newHeldItemSlot == 8) || (oldSlot == 8 && newHeldItemSlot == 0) || MathUtils.isInRange(oldSlot, newHeldItemSlot, 1);
     }
 
     @Override

@@ -3,14 +3,14 @@ package de.photon.AACAdditionPro.userdata.data;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.util.storage.management.Buffer;
+import de.photon.AACAdditionPro.util.storage.management.DoubleBuffer;
 
 public class FishingData extends TimeData
 {
-    public Buffer<Long> consistencyBuffer = new Buffer<Long>(AACAdditionPro.getInstance().getConfig().getInt(AdditionHackType.AUTO_FISH.getConfigString() + ".parts.consistency.consistency_events"))
+    public DoubleBuffer consistencyBuffer = new DoubleBuffer(AACAdditionPro.getInstance().getConfig().getInt(AdditionHackType.AUTO_FISH.getConfigString() + ".parts.consistency.consistency_events"))
     {
         @Override
-        public boolean verifyObject(Long object)
+        public boolean verifyObject(Double object)
         {
             return true;
         }
@@ -23,7 +23,7 @@ public class FishingData extends TimeData
      */
     public boolean bufferConsistencyData()
     {
-        return this.consistencyBuffer.bufferObject(System.currentTimeMillis() - this.getTimeStamp(1));
+        return this.consistencyBuffer.bufferObject((double) (System.currentTimeMillis() - this.getTimeStamp(1)));
     }
 
     public FishingData(User theUser)

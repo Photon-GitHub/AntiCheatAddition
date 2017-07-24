@@ -2,14 +2,19 @@ package de.photon.AACAdditionPro;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import de.photon.AACAdditionPro.addition.AdditionManager;
+import de.photon.AACAdditionPro.api.KillauraEntityAddon;
+import de.photon.AACAdditionPro.api.KillauraEntityController;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.CheckManager;
 import de.photon.AACAdditionPro.command.MainCommand;
 import de.photon.AACAdditionPro.events.APILoadedEvent;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
@@ -17,6 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 public class AACAdditionPro extends JavaPlugin
 {
@@ -33,6 +39,24 @@ public class AACAdditionPro extends JavaPlugin
      * cannot be caused by an incompatible AAC version.
      */
     private static final String minimumAACVersion = "3.1.5";
+
+    private static final Field killauraEntityControllerField;
+    private static final Field delegatingKillauraEntityControllerField;
+
+    static {
+        killauraEntityControllerField = KillauraEntityAddon.class.getDeclaredFields()[0];
+        killauraEntityControllerField.setAccessible(true);
+
+        delegatingKillauraEntityControllerField = DelegatingKillauraEntityController.class.getDeclaredFields()[0];
+        delegatingKillauraEntityControllerField.setAccessible(true);
+    }
+
+    @Getter
+    private KillauraEntityAddon killauraEntityAddon;
+    private KillauraEntityController currentDelegatingKillauraEntityController;
+    @Setter
+    private KillauraEntityController killauraEntityController;
+
 
     /**
      * This will get the object of the plugin registered on the server.
@@ -188,6 +212,51 @@ public class AACAdditionPro extends JavaPlugin
 
         // Task scheduling
         loaded = false;
+    }
+
+    public void setKillauraEntityAddon(KillauraEntityAddon killauraEntityAddon)
+    {
+        // Check input
+        if (killauraEntityAddon == null) {
+            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: killauraEntityAddon is null");
+        }
+        // Check provided plugin (Required for better exception messages)
+        JavaPlugin plugin = killauraEntityAddon.getPlugin();
+        if (plugin == null || plugin.getName() == null) {
+            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin argument for killauraEntityAddon given: " + plugin);
+        } else if (plugin.getDescription() == null || plugin.getDescription().getName() == null || plugin.getName().equalsIgnoreCase(AACAdditionPro.getInstance().getName())) {
+            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin argument for killauraEntityAddon given: " + plugin.getName() + " - " + plugin);
+        }
+        // Check KillauraEntity-API being available
+        if (killauraEntityController == null) {
+            throw new IllegalStateException("KillauraEntity-API not ready, enable the KillauraEntity check");
+        }
+        // Set up the new KillauraEntityAddon
+        this.killauraEntityAddon = killauraEntityAddon;
+        currentDelegatingKillauraEntityController = new DelegatingKillauraEntityController(killauraEntityController);
+        try {
+            killauraEntityControllerField.set(this.killauraEntityAddon, currentDelegatingKillauraEntityController);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void disableKillauraEntityAPI()
+    {
+        if (this.killauraEntityAddon != null) {
+            try {
+                killauraEntityControllerField.set(this.killauraEntityAddon, null);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (this.currentDelegatingKillauraEntityController != null) {
+            try {
+                delegatingKillauraEntityControllerField.set(currentDelegatingKillauraEntityController, null);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**

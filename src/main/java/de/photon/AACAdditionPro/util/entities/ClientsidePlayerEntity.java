@@ -5,6 +5,7 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
 import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.entities.equipment.EntityEquipmentDatabase;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
@@ -15,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
-import org.bukkit.util.Vector;
 
 import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
@@ -45,21 +45,8 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             // Teams + Scoreboard
             DisplayInformation.applyTeams(this);
 
-            // Location
-            final Location location = this.observedPlayer.getLocation();
-            final double origX = location.getX();
-            final double origZ = location.getZ();
-
-            // Move behind the player to make the entity not disturb players
-            // Important: the negative offset!
-            location.add(location.getDirection().setY(0).normalize().multiply(-(entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange))));
-
-            final double currentXZDifference = Math.hypot(location.getX() - origX, location.getZ() - origZ);
-
-            if (currentXZDifference < minXZDifference) {
-                final Vector moveAddVector = new Vector(-Math.sin(Math.toRadians(location.getYaw())), 0, Math.cos(Math.toRadians(location.getYaw())));
-                location.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
-            }
+            //TODO differnet movement patterns
+            Location location = KillauraEntity.calculateLocationBehindPlayer(this.observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference);
 
             this.move(location);
         }, 0L, 1L);
@@ -138,10 +125,14 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     public void despawn()
     {
         super.despawn();
-        // Cancel all tasks of this entity
-        Bukkit.getScheduler().cancelTask(task);
+        if (task > 0) {
+            // Cancel all tasks of this entity
+            Bukkit.getScheduler().cancelTask(task);
+        }
 
-        removeFromTab();
+        if (isSpawned()) {
+            removeFromTab();
+        }
     }
 
     private void removeFromTab()

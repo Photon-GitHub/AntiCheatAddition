@@ -77,20 +77,19 @@ public class AutoFish implements Listener, AACAdditionProCheck
                     final double average = user.getFishingData().consistencyBuffer.average();
 
                     // Test if the average is exceeded by the violation_offset
-                    boolean legit = false;
+                    boolean cheating = true;
                     for (final Double deltaTime : user.getFishingData().consistencyBuffer) {
                         // If the value is not in range the data is not consistent enough for a flag.
                         if (!MathUtils.isInRange(deltaTime, average, violation_offset)) {
-                            legit = true;
+                            cheating = false;
                             break;
                         }
                     }
 
                     // Clear the consistency data for new runs
                     user.getFishingData().consistencyBuffer.clear();
-
-                    // No legit -> flag
-                    if (!legit) {
+                    
+                    if (cheating) {
                         vlManager.flag(event.getPlayer(), this.weight, cancel_vl, () -> event.setCancelled(true), () -> {});
                     }
                 }

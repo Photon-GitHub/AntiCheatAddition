@@ -38,7 +38,7 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
     {
         return vl;
     }
-    
+
     @Override
     public HandlerList getHandlers()
     {

@@ -24,8 +24,13 @@ public final class VerboseSender implements Listener
 {
     @Setter
     private static boolean allowedToRegisterTasks;
+
+    // Used for sendVerboseMessage
     private static final String NON_COLORED_PRE_STRING = "[AACAdditionPro] ";
     private static final String PRE_STRING = ChatColor.DARK_RED + NON_COLORED_PRE_STRING + ChatColor.GRAY;
+
+    // Used for the Events-Verbose
+    private static final String eventPreString = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
 
     @SuppressWarnings("unused")
     private static final VerboseSender instance = new VerboseSender();
@@ -115,12 +120,12 @@ public final class VerboseSender implements Listener
     @EventHandler
     public void on(final PlayerAdditionViolationEvent event)
     {
-        sendVerboseMessage(Placeholders.applyPlaceholders(ChatColor.GOLD + "{player} " + ChatColor.GRAY + event.getMessage() + " | Vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer()));
+        sendVerboseMessage(Placeholders.applyPlaceholders(eventPreString + event.getMessage() + " | Vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer()));
     }
 
     @EventHandler
     public void on(final ClientControlEvent event)
     {
-        sendVerboseMessage(Placeholders.applyPlaceholders(ChatColor.GOLD + "{player} " + ChatColor.GRAY + event.getMessage(), event.getPlayer()));
+        sendVerboseMessage(Placeholders.applyPlaceholders(eventPreString + event.getMessage(), event.getPlayer()));
     }
 }

@@ -20,8 +20,8 @@ import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 public class Esp implements AACAdditionProCheck
 {
@@ -79,7 +79,7 @@ public class Esp implements AACAdditionProCheck
                 AACAdditionPro.getInstance(),
                 () -> {
                     //All users
-                    final Set<User> users = UserManager.getUsers();
+                    final Collection<User> users = UserManager.getUsers();
 
                     //Iterate through all player-constellations
                     for (final User observer : users) {
@@ -114,11 +114,10 @@ public class Esp implements AACAdditionProCheck
                                 if (spectatorA) {
                                     updateHideMode(pair.a, pair.b.getPlayer(), HideMode.NONE);
 
-                                    if (spectatorB) {
-                                        updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
-                                    } else {
-                                        updateHideMode(pair.b, pair.a.getPlayer(), HideMode.FULL);
-                                    }
+                                    // If both players are in spectator mode noone should be hidden -> HideMode.NONE
+                                    updateHideMode(pair.b, pair.a.getPlayer(), spectatorB ?
+                                                                               HideMode.NONE :
+                                                                               HideMode.FULL);
                                 } else {
                                     // spectatorB must be true here as spectatorA == false and one of spectatorA and spectatorB must be true !
                                     // -> spectatorB == true; spectatorA == false
@@ -152,10 +151,12 @@ public class Esp implements AACAdditionProCheck
                         }
                     }
 
-                    //Clear the HashSet for a new Run
+                    // TODO: You neither need to clear the connections every second nor to add all connections again (exeption: on the first start)... event usage
+
+                    // Clear the HashSet for a new Run
                     playerConnections.clear();
 
-                    //Update_Ticks: the refresh-rate of the check.
+                    // Update_Ticks: the refresh-rate of the check.
                 }, 0L, AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".update_ticks"));
     }
 
@@ -172,7 +173,7 @@ public class Esp implements AACAdditionProCheck
                 if (observer.getEspInformationData().hiddenPlayers.get(object.getUniqueId()) != HideMode.FULL) {
                     observer.getEspInformationData().hiddenPlayers.put(object.getUniqueId(), HideMode.FULL);
 
-                    //FULL: fullHider active, informationOnlyHider inactive
+                    // FULL: fullHider active, informationOnlyHider inactive
                     informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
                     fullHider.modifyInformation(observer.getPlayer(), object);
                 }
@@ -181,7 +182,7 @@ public class Esp implements AACAdditionProCheck
                 if (observer.getEspInformationData().hiddenPlayers.get(object.getUniqueId()) != HideMode.INFORMATION_ONLY) {
                     observer.getEspInformationData().hiddenPlayers.put(object.getUniqueId(), HideMode.INFORMATION_ONLY);
 
-                    //INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
+                    // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
                     fullHider.unModifyInformation(observer.getPlayer(), object);
                     informationOnlyHider.modifyInformation(observer.getPlayer(), object);
                 }
@@ -190,7 +191,7 @@ public class Esp implements AACAdditionProCheck
                 if (observer.getEspInformationData().hiddenPlayers.containsKey(object.getUniqueId())) {
                     observer.getEspInformationData().hiddenPlayers.remove(object.getUniqueId());
 
-                    //NONE: fullHider inactive, informationOnlyHider inactive
+                    // NONE: fullHider inactive, informationOnlyHider inactive
                     informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
                     fullHider.unModifyInformation(observer.getPlayer(), object);
                 }

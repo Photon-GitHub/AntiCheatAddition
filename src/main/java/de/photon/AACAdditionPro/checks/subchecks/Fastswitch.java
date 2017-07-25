@@ -9,6 +9,7 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Bukkit;
@@ -65,9 +66,9 @@ public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
      * Used to acknowledge if somebody can be legit.
      * I.e. that players can scroll very fast, but then the neighbor slot is always the one that gets called next.
      */
-    private static boolean canBeLegit(final int currentSlot, final int newHeldItemSlot)
+    private static boolean canBeLegit(final int oldSlot, final int newHeldItemSlot)
     {
-        return (currentSlot == 8 || currentSlot == 0) && (newHeldItemSlot == 8 || newHeldItemSlot == 0) || !(newHeldItemSlot + 1 > currentSlot || newHeldItemSlot - 1 < currentSlot);
+        return (oldSlot == 0 && newHeldItemSlot == 8) || (oldSlot == 8 && newHeldItemSlot == 0) || MathUtils.isInRange(oldSlot, newHeldItemSlot, 1);
     }
 
     @Override

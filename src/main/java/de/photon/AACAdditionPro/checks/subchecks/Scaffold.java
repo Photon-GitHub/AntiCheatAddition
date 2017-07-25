@@ -120,11 +120,4 @@ public class Scaffold implements Listener, AACAdditionProCheck
         return AdditionHackType.SCAFFOLD;
     }
 
-    @Override
-    public void subEnable()
-    {
-        this.cancel_vl = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".cancel_vl");
-        this.scaffold_delay = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".scaffold_delay");
-        this.timeout = AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".timeout");
-    }
 }

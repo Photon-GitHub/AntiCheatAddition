@@ -121,9 +121,9 @@ EqualRotation:
    timeout: 1000
    # Map of violation levels to command
    thresholds:
-      10: "aacstaffnotify {player} in {world} is suspected for EqualRotation"
-      20: "aacstaffnotify {player} in {world} is highly suspected for EqualRotation"
-      30: "aackick {player} Invalid rotations"
+      9: "aacstaffnotify {player} in {world} is suspected for EqualRotation"
+      16: "aacstaffnotify {player} in {world} is highly suspected for EqualRotation"
+      25: "aackick {player} Invalid rotations"
 
 # This module uses advanced mathematics to determine if players can see each other.
 # It also thinks of the 3rd person camera modes and uses accurate hitbox-models.
@@ -162,10 +162,9 @@ Fastswitch:
    switch_milliseconds: 50
    # Map of violation levels to command
    thresholds:
-      3: "aacstaffnotify {player} in {world} may be using Fastswitch"
-      5: "aacstaffnotify {player} in {world} is suspected for Fastswitch"
-      10: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
-      15: "aackick {player} Fastswitch"
+      4: "aacstaffnotify {player} in {world} is suspected for Fastswitch"
+      8: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
+      12: "aackick {player} Fastswitch"
 
 # This check will block most Freecam cheats
 # Your Players will recognize small jumps when they are standing completely still and are not moving their mouse.

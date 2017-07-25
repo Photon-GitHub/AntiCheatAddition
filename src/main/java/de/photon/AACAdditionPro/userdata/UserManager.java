@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,32 +18,27 @@ public class UserManager implements Listener
     }
 
     // Concurrency to tackle some ConcurrentModificationExceptions
-    private static final Set<User> users = ConcurrentHashMap.newKeySet();
+    private static final ConcurrentHashMap<UUID, User> users = new ConcurrentHashMap<>();
 
-    public static synchronized User getUser(final UUID uuid)
+    public static User getUser(final UUID uuid)
     {
-        for (final User user : users) {
-            if (user.refersToUUID(uuid)) {
-                return user;
-            }
-        }
-        return null;
+        return users.get(uuid);
     }
 
-    public static Set<User> getUsers()
+    public static Collection<User> getUsers()
     {
-        return users;
+        return users.values();
     }
 
     @EventHandler
     public void on(final PlayerJoinEvent event)
     {
-        users.add(new User(event.getPlayer()));
+        users.put(event.getPlayer().getUniqueId(), new User(event.getPlayer()));
     }
 
     @EventHandler
     public void on(final PlayerQuitEvent event)
     {
-        users.remove(getUser(event.getPlayer().getUniqueId()));
+        users.remove(event.getPlayer().getUniqueId());
     }
 }

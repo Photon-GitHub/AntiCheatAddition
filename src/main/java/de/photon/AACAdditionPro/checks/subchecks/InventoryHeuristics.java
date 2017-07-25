@@ -114,7 +114,8 @@ public class InventoryHeuristics implements Listener, AACAdditionProCheck
                 {
                     final TreeMap<String, Double> patternSums = new TreeMap<>();
                     checking = null;
-                    while (!deltaTimes.isEmpty()) {
+                    while (!deltaTimes.isEmpty())
+                    {
                         neuralNetwork.setInput("deltaTimes", Double.valueOf(deltaTimes.pop()));
                         neuralNetwork.setInput("startPositions", Double.valueOf(startPositions.pop()));
                         neuralNetwork.setInput("targetPositions", Double.valueOf(targetPositions.pop()));

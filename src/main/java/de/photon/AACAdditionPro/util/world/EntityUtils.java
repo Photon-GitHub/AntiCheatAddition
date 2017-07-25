@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public final class EntityUtils
 {
@@ -49,18 +50,11 @@ public final class EntityUtils
      */
     public static List<Player> getNearbyPlayers(final Player initialPlayer, final double x, final double y, final double z)
     {
-        final List<Player> nearbyPlayers = new ArrayList<>(5);
-
-        for (final Player player : initialPlayer.getWorld().getPlayers()) {
-            if (!initialPlayer.getUniqueId().equals(player.getUniqueId()) &&
-                // Check coordinates
-                MathUtils.areLocationsInRange(initialPlayer.getLocation(), player.getLocation(), x, y, z))
-            {
-                nearbyPlayers.add(player);
-            }
-        }
-
-        return nearbyPlayers;
+        return initialPlayer.getWorld().getPlayers().parallelStream().filter(
+                (player) -> !initialPlayer.getUniqueId().equals(player.getUniqueId()) &&
+                            // Check coordinates
+                            MathUtils.areLocationsInRange(initialPlayer.getLocation(), player.getLocation(), x, y, z)
+                                                                            ).collect(Collectors.toList());
     }
 
     /**

@@ -35,7 +35,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class KillauraEntity implements AACAdditionProCheck, Listener
 {
-    ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 300);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 300);
 
     @LoadFromConfiguration(configPath = ".position.entityOffset")
     private double entityOffset;
@@ -226,10 +226,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                     return false;
                 }
                 ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-                if (clientSidePlayerEntity == null) {
-                    return false;
-                }
-                return clientSidePlayerEntity.isSpawned();
+                return clientSidePlayerEntity != null && clientSidePlayerEntity.isSpawned();
             }
 
             @Override

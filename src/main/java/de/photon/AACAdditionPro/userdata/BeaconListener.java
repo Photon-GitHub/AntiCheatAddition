@@ -7,7 +7,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
 
-public class BeaconListener extends PacketAdapter
+class BeaconListener extends PacketAdapter
 {
     BeaconListener()
     {

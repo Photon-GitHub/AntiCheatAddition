@@ -78,6 +78,7 @@ public class SchematicaControl implements PluginMessageListener, Listener, Clien
 
             try {
 
+                // TODO: Probably wrong channels, make it work.
                 addChannel = classOfPlayer.getDeclaredMethod("addChannel", String.class);
                 removeChannel = classOfPlayer.getDeclaredMethod("removeChannel", String.class);
 

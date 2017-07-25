@@ -107,7 +107,7 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
      * @param playersOfTeam the {@link Player}s that should be punished and that should be used to apply the placeholders
      * @param teamVL        the ViolationLevel of the team
      */
-    public void punishTeam(final List<Player> playersOfTeam, final Integer teamVL)
+    private void punishTeam(final List<Player> playersOfTeam, final Integer teamVL)
     {
         Integer maxThreshold = -1;
 

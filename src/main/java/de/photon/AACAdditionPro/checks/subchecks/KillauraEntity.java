@@ -143,7 +143,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             });
         }, 2L);
     }
-    
+
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
@@ -157,6 +157,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                     // Spawn another entity after the world was changed
                     this.onJoin(new PlayerJoinEvent(event.getPlayer(), null));
                 });
+    }
 
     public static Location calculateLocationBehindPlayer(Player player, double entityOffset, double offsetRandomizationRange, double minXZDifference)
     {
@@ -187,6 +188,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
         if (user == null) { //dont check bypassed since it might change and it would run forever
             return;
         }
+
         ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
         if (clientSidePlayerEntity != null) {
             clientSidePlayerEntity.despawn();

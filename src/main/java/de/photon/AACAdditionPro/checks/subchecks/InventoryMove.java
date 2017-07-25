@@ -54,7 +54,7 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
@@ -154,7 +154,7 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
         // Flight may trigger this

@@ -11,7 +11,6 @@ import de.photon.AACAdditionPro.api.KillauraEntityAddon;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.userdata.data.ClientSideEntityData;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
@@ -54,7 +53,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
@@ -74,7 +73,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
@@ -105,7 +104,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             final User user = UserManager.getUser(player.getUniqueId());
 
             // Not bypassed
-            if (user == null || user.isBypassed()) {
+            if (AACAdditionProCheck.isUserInvalid(user)) {
                 return;
             }
 
@@ -131,6 +130,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 final OfflinePlayer chosenOfflinePlayer = offlinePlayers[ThreadLocalRandom.current().nextInt(offlinePlayers.length)];
                 gameProfile_ = new WrappedGameProfile(chosenOfflinePlayer.getUniqueId(), chosenOfflinePlayer.getName());
             }
+
             final WrappedGameProfile gameProfile = gameProfile_;
 
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
@@ -222,7 +222,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             public boolean isSpawnedFor(Player player)
             {
                 User user = UserManager.getUser(player.getUniqueId());
-                if (user == null || user.isBypassed()) {
+                if (AACAdditionProCheck.isUserInvalid(user)) {
                     return false;
                 }
                 ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
@@ -232,14 +232,16 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             @Override
             public boolean setSpawnedForPlayer(Player player, boolean spawned)
             {
-                User user = UserManager.getUser(player.getUniqueId());
-                if (user == null || user.isBypassed()) {
+                final User user = UserManager.getUser(player.getUniqueId());
+                if (AACAdditionProCheck.isUserInvalid(user)) {
                     return false;
                 }
-                ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+
+                final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
                 if (clientSidePlayerEntity == null) {
                     return false;
                 }
+
                 if (clientSidePlayerEntity.isSpawned()) {
                     clientSidePlayerEntity.despawn();
                 } else {
@@ -251,14 +253,16 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             @Override
             public boolean setSpawnedForPlayer(Player player, boolean spawned, Location spawnLocation)
             {
-                User user = UserManager.getUser(player.getUniqueId());
-                if (user == null || user.isBypassed()) {
+                final User user = UserManager.getUser(player.getUniqueId());
+                if (AACAdditionProCheck.isUserInvalid(user)) {
                     return false;
                 }
-                ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+
+                final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
                 if (clientSidePlayerEntity == null) {
                     return false;
                 }
+
                 if (clientSidePlayerEntity.isSpawned()) {
                     clientSidePlayerEntity.despawn();
                 } else {
@@ -280,7 +284,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
                 // Not bypassed
-                if (user == null || user.isBypassed()) {
+                if (AACAdditionProCheck.isUserInvalid(user)) {
                     return;
                 }
 
@@ -306,10 +310,12 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     {
         AACAdditionPro.getInstance().setKillauraEntityController(null);
         AACAdditionPro.getInstance().disableKillauraEntityAPI();
+
         //Despawn on reload
         for (User user : UserManager.getUsers()) {
-            ClientSideEntityData csed = user.getClientSideEntityData();
-            ClientsidePlayerEntity clientSidePlayerEntity = csed.clientSidePlayerEntity;
+
+            final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+
             if (clientSidePlayerEntity != null) {
                 clientSidePlayerEntity.despawn();
             }

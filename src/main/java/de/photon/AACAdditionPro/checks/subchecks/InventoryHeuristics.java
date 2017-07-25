@@ -43,7 +43,7 @@ public class InventoryHeuristics implements Listener, AACAdditionProCheck
             final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
             // Not bypassed
-            if (user == null || user.isBypassed()) {
+            if (AACAdditionProCheck.isUserInvalid(user)) {
                 return;
             }
 

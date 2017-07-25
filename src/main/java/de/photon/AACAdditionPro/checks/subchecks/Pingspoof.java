@@ -39,7 +39,7 @@ public class Pingspoof extends PacketAdapter implements Listener, AACAdditionPro
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 

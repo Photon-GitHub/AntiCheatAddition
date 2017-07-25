@@ -137,10 +137,16 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
-        // Despawn the old entity
-        this.onQuit(new PlayerQuitEvent(event.getPlayer(), null));
-        // Spawn another entity after the world was changed
-        this.onJoin(new PlayerJoinEvent(event.getPlayer(), null));
+        // Wait one server tick
+        Bukkit.getScheduler().runTask(
+                AACAdditionPro.getInstance(),
+                () ->
+                {
+                    // Despawn the old entity
+                    this.onQuit(new PlayerQuitEvent(event.getPlayer(), null));
+                    // Spawn another entity after the world was changed
+                    this.onJoin(new PlayerJoinEvent(event.getPlayer(), null));
+                });
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

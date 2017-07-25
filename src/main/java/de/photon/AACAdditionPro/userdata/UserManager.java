@@ -39,9 +39,6 @@ public class UserManager implements Listener
     @EventHandler
     public void on(final PlayerQuitEvent event)
     {
-        // TODO: Figure out whether you need the if here.
-        if (users.get(event.getPlayer().getUniqueId()).getPlayer().equals(event.getPlayer())) {
-            users.remove(event.getPlayer().getUniqueId());
-        }
+        users.remove(event.getPlayer().getUniqueId());
     }
 }

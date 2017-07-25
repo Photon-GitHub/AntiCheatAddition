@@ -77,4 +77,13 @@ public final class AACAdditionProApi
     {
         CheckManager.checkManagerInstance.setStateOfCheck(additionHackType, state);
     }
+
+    /**
+     * Sets an option KillauraEntityAddon for a better and more customizable KillauraEntity check
+     * Only the last registered KillauraEntityAddon is active
+     */
+    public static void setKillauraEntityAddon(KillauraEntityAddon addon)
+    {
+        AACAdditionPro.getInstance().setKillauraEntityAddon(addon);
+    }
 }

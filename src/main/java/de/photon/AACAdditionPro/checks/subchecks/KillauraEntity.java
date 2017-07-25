@@ -7,15 +7,19 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.api.KillauraEntityAddon;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.userdata.data.ClientSideEntityData;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
+import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -41,6 +45,8 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
     @LoadFromConfiguration(configPath = ".position.minXZDifference")
     private double minXZDifference;
+
+    private boolean spawnAtJoin;
 
     @EventHandler
     public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)
@@ -83,7 +89,8 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     public void onJoin(final PlayerJoinEvent event)
     {
         Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), () -> {
-            switch (event.getPlayer().getGameMode()) {
+            final Player player = event.getPlayer();
+            switch (player.getGameMode()) {
                 case CREATIVE:
                 case SPECTATOR:
                     return;
@@ -95,45 +102,48 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             }
 
             // Add velocity to the bot so the bot does never stand inside or in front of the player
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final User user = UserManager.getUser(player.getUniqueId());
 
             // Not bypassed
-            if (user == null || user.isBypassed() ||
-                // There are valid profiles that can serve the need for entities.
-                Bukkit.getOfflinePlayers().length < 1)
-            {
+            if (user == null || user.isBypassed()) {
                 return;
             }
 
-            //TODO: REAL NAMES AND PROFILES
-            final OfflinePlayer chosenOfflinePlayer = Bukkit.getOfflinePlayers()[ThreadLocalRandom.current().nextInt(Bukkit.getOfflinePlayers().length)];
-            final WrappedGameProfile gameProfile = new WrappedGameProfile(chosenOfflinePlayer.getUniqueId(), chosenOfflinePlayer.getName());
+            WrappedGameProfile gameProfile_ = null;
+
+            // Ask API endpoint for valid profiles
+            KillauraEntityAddon killauraEntityAddon = AACAdditionPro.getInstance().getKillauraEntityAddon();
+            if (killauraEntityAddon != null) {
+                try {
+                    gameProfile_ = killauraEntityAddon.getKillauraEntityGameProfile(player);
+                } catch (Throwable t) {
+                    new RuntimeException("Error in plugin " + killauraEntityAddon.getPlugin().getName() + " while trying to get a killaura-entity gameprofile for " + player.getName(), t).printStackTrace();
+                }
+            }
+
+            OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
+            // If the API endpoint can't serve valid profiles, check if we can serve OfflinePlayer profiles.
+            if (gameProfile_ == null && offlinePlayers.length < 1) {
+                return;
+            }
+
+            if (gameProfile_ == null) {
+                final OfflinePlayer chosenOfflinePlayer = offlinePlayers[ThreadLocalRandom.current().nextInt(offlinePlayers.length)];
+                gameProfile_ = new WrappedGameProfile(chosenOfflinePlayer.getUniqueId(), chosenOfflinePlayer.getName());
+            }
+            final WrappedGameProfile gameProfile = gameProfile_;
 
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(event.getPlayer(), gameProfile, entityOffset, offsetRandomizationRange, minXZDifference);
+                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(player, gameProfile, entityOffset, offsetRandomizationRange, minXZDifference);
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
-
-                // Spawning-Location
-                final Location location = event.getPlayer().getLocation();
-                final double origX = location.getX();
-                final double origZ = location.getZ();
-
-                // Move behind the player to make the entity not disturb players
-                // Important: the negative offset!
-                location.add(location.getDirection().setY(0).normalize().multiply(-(entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange))));
-
-                final double currentXZDifference = Math.hypot(location.getX() - origX, location.getZ() - origZ);
-
-                if (currentXZDifference < minXZDifference) {
-                    final Vector moveAddVector = new Vector(-Math.sin(Math.toRadians(location.getYaw())), 0, Math.cos(Math.toRadians(location.getYaw())));
-                    location.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
+                if (spawnAtJoin) {
+                    final Location location = calculateLocationBehindPlayer(player, entityOffset, offsetRandomizationRange, minXZDifference);
+                    playerEntity.spawn(location);
                 }
-
-                playerEntity.spawn(location);
             });
         }, 2L);
     }
-
+    
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
@@ -147,6 +157,25 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                     // Spawn another entity after the world was changed
                     this.onJoin(new PlayerJoinEvent(event.getPlayer(), null));
                 });
+
+    public static Location calculateLocationBehindPlayer(Player player, double entityOffset, double offsetRandomizationRange, double minXZDifference)
+    {
+        // Spawning-Location
+        final Location location = player.getLocation();
+        final double origX = location.getX();
+        final double origZ = location.getZ();
+
+        // Move behind the player to make the entity not disturb players
+        // Important: the negative offset!
+        location.add(location.getDirection().setY(0).normalize().multiply(-(entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange))));
+
+        final double currentXZDifference = Math.hypot(location.getX() - origX, location.getZ() - origZ);
+
+        if (currentXZDifference < minXZDifference) {
+            final Vector moveAddVector = new Vector(-Math.sin(Math.toRadians(location.getYaw())), 0, Math.cos(Math.toRadians(location.getYaw())));
+            location.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
+        }
+        return location;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -167,6 +196,80 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     @Override
     public void subEnable()
     {
+        AACAdditionPro.getInstance().setKillauraEntityController(new DelegatingKillauraEntityController(null) //extending the delegation for obfuscation purposes, does not make any difference at the end
+        {
+            @Override
+            public boolean isValid()
+            {
+                return true;
+            }
+
+            @Override
+            public boolean isSpawnAtJoin()
+            {
+                return spawnAtJoin;
+            }
+
+            @Override
+            public void setSpawnAtJoin(boolean spawnAtJoin)
+            {
+                KillauraEntity.this.spawnAtJoin = spawnAtJoin;
+            }
+
+            @Override
+            public boolean isSpawnedFor(Player player)
+            {
+                User user = UserManager.getUser(player.getUniqueId());
+                if (user == null || user.isBypassed()) {
+                    return false;
+                }
+                ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+                if (clientSidePlayerEntity == null) {
+                    return false;
+                }
+                return clientSidePlayerEntity.isSpawned();
+            }
+
+            @Override
+            public boolean setSpawnedForPlayer(Player player, boolean spawned)
+            {
+                User user = UserManager.getUser(player.getUniqueId());
+                if (user == null || user.isBypassed()) {
+                    return false;
+                }
+                ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+                if (clientSidePlayerEntity == null) {
+                    return false;
+                }
+                if (clientSidePlayerEntity.isSpawned()) {
+                    clientSidePlayerEntity.despawn();
+                } else {
+                    clientSidePlayerEntity.spawn(calculateLocationBehindPlayer(player, KillauraEntity.this.entityOffset, KillauraEntity.this.offsetRandomizationRange, KillauraEntity.this.minXZDifference));
+                }
+                return true;
+            }
+
+            @Override
+            public boolean setSpawnedForPlayer(Player player, boolean spawned, Location spawnLocation)
+            {
+                User user = UserManager.getUser(player.getUniqueId());
+                if (user == null || user.isBypassed()) {
+                    return false;
+                }
+                ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+                if (clientSidePlayerEntity == null) {
+                    return false;
+                }
+                if (clientSidePlayerEntity.isSpawned()) {
+                    clientSidePlayerEntity.despawn();
+                } else {
+                    //Manual location copy to prevent users from inserting locations with a bad copy method
+                    Location location = new Location(spawnLocation.getWorld(), spawnLocation.getX(), spawnLocation.getY(), spawnLocation.getZ(), spawnLocation.getYaw(), spawnLocation.getPitch());
+                    clientSidePlayerEntity.spawn(location);
+                }
+                return true;
+            }
+        });
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), PacketType.Play.Client.USE_ENTITY)
         {
             @Override
@@ -193,6 +296,25 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 }
             }
         });
+        //Show entity for already online players on reload
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            onJoin(new PlayerJoinEvent(player, null));
+        }
+    }
+
+    @Override
+    public void subDisable()
+    {
+        AACAdditionPro.getInstance().setKillauraEntityController(null);
+        AACAdditionPro.getInstance().disableKillauraEntityAPI();
+        //Despawn on reload
+        for (User user : UserManager.getUsers()) {
+            ClientSideEntityData csed = user.getClientSideEntityData();
+            ClientsidePlayerEntity clientSidePlayerEntity = csed.clientSidePlayerEntity;
+            if (clientSidePlayerEntity != null) {
+                clientSidePlayerEntity.despawn();
+            }
+        }
     }
 
 

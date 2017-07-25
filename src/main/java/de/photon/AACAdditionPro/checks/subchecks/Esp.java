@@ -265,6 +265,9 @@ public class Esp implements AACAdditionProCheck
 
         final Location eyeLocation = player.getEyeLocation();
 
+        // Normal
+        vectors[0] = eyeLocation.toVector();
+
         // Do the Cameras intersect with Blocks
         // Get the length of the first intersection or 0 if there is none
         final double frontIntersection = VectorUtils.getFirstVectorIntersectionWithBlock(eyeLocation, vectors[1]);
@@ -279,9 +282,6 @@ public class Esp implements AACAdditionProCheck
         if (behindIntersection != 0) {
             vectors[2].normalize().multiply(behindIntersection);
         }
-
-        // Normal
-        vectors[0] = eyeLocation.toVector();
 
         return vectors;
     }

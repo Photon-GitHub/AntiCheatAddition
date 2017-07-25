@@ -237,9 +237,9 @@ public class Esp implements AACAdditionProCheck
 
                 if (intersect == 0) {
                     return true;
-                } else {
-                    lastIntersectionCache = intersect;
                 }
+
+                lastIntersectionCache = intersect;
             }
         }
 

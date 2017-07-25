@@ -248,40 +248,42 @@ public class Esp implements AACAdditionProCheck
 
     private static Vector[] getCameraVectors(final Player player)
     {
-        // The 3rd person perspective in front of the player       // Use thirdPersonOffset to get the maximum positions
-        final Vector front = player.getLocation().getDirection().clone().normalize().multiply(thirdPersonOffset);
+        /*
+            All the vectors
+            [0] = normal (eyeposition vector)
+            [1] = front
+            [2] = behind
+        */
+        final Vector[] vectors = new Vector[3];
 
-        // The 3rd person perspective behind the player
-        final Vector behind = front.clone().multiply(-1);
+        // Front vector : The 3rd person perspective in front of the player
+        // Use thirdPersonOffset to get the maximum positions
+        vectors[1] = player.getLocation().getDirection().clone().normalize().multiply(thirdPersonOffset);
+
+        // Behind vector : The 3rd person perspective behind the player
+        vectors[2] = vectors[1].clone().multiply(-1);
 
         final Location eyeLocation = player.getEyeLocation();
 
         // Do the Cameras intersect with Blocks
         // Get the length of the first intersection or 0 if there is none
-        final double frontIntersection = VectorUtils.getFirstVectorIntersectionWithBlock(eyeLocation, front);
-        final double behindIntersection = VectorUtils.getFirstVectorIntersectionWithBlock(eyeLocation, behind);
+        final double frontIntersection = VectorUtils.getFirstVectorIntersectionWithBlock(eyeLocation, vectors[1]);
+        final double behindIntersection = VectorUtils.getFirstVectorIntersectionWithBlock(eyeLocation, vectors[2]);
 
         // There is an intersection in the front-vector
         if (frontIntersection != 0) {
-            front.normalize().multiply(frontIntersection);
+            vectors[1].normalize().multiply(frontIntersection);
         }
 
         // There is an intersection in the behind-vector
         if (behindIntersection != 0) {
-            behind.normalize().multiply(behindIntersection);
+            vectors[2].normalize().multiply(behindIntersection);
         }
 
         // Normal
-        final Vector normal = eyeLocation.toVector();
+        vectors[0] = eyeLocation.toVector();
 
-        front.add(normal);
-        behind.add(normal);
-
-        return new Vector[]{
-                normal,
-                front,
-                behind
-        };
+        return vectors;
     }
 
     private static class Pair

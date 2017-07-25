@@ -84,6 +84,7 @@ public class AutoFish implements Listener, AACAdditionProCheck
                         // Get the last element to make the ArrayList-remove as performant as possible
                         double deltaTime = user.getFishingData().consistencyBuffer.get(user.getFishingData().consistencyBuffer.size() - 1);
 
+                        // Not in range anymore -> not consistent enough for a flag.
                         if (!MathUtils.isInRange(deltaTime, average, violation_offset)) {
                             cheating = false;
 

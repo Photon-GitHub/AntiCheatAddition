@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.command.subcommands;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.Permissions;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.CheckManager;
@@ -41,7 +42,9 @@ public class InfoCommand extends InternalCommand
                         return 1;
                     });
 
-            for (final AACAdditionProCheck check : CheckManager.checkManagerInstance.getManagedObjects()) {
+            for (final Module module : CheckManager.checkManagerInstance.getManagedObjects()) {
+                // Casting is ok here as only AACAdditionProChecks will be in the CheckManager.
+                final AACAdditionProCheck check = (AACAdditionProCheck) module;
                 if (check.hasViolationLevelManagement()) {
                     final int vl = check.getViolationLevelManagement().getVL(p.getUniqueId());
                     if (vl > 0) {

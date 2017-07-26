@@ -6,12 +6,13 @@ import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import org.bukkit.Bukkit;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 public class LogBot implements Addition, Runnable
 {
     private static final File AAC_LOG_FOLDER = new File("plugins/AAC", "logs");
     private static final File AACADDITIONPRO_LOG_FOLDER = new File("plugins/AACAdditionPro", "logs");
-    private final int millis_until_delete = (AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".days_until_delete") << 10) * 27 * 3125;
+    private final long millis_until_delete = TimeUnit.DAYS.toMillis((long) AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".days_until_delete"));
 
     private int task_number;
 
@@ -35,7 +36,9 @@ public class LogBot implements Addition, Runnable
             if (files != null) {
                 // The folder is not empty
                 for (final File file : files) {
+                    // Be sure it is a log file
                     if (file.getName().endsWith(".log") &&
+                        // Minimum time
                         current_time - file.lastModified() > millis_until_delete)
                     {
                         if (file.delete()) {

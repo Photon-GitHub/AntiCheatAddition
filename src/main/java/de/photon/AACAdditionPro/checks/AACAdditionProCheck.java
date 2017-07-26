@@ -40,6 +40,12 @@ public interface AACAdditionProCheck extends Module
         return this.getViolationLevelManagement() != null;
     }
 
+    @Override
+    default String getConfigString()
+    {
+        return this.getAdditionHackType().getConfigString();
+    }
+
     /**
      * @return true if the {@link de.photon.AACAdditionPro.userdata.User} is null or bypassed.
      */

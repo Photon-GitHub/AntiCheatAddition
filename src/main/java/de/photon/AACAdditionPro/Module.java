@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public interface Module
+public interface Module extends Comparable<Module>
 {
     /**
      * This enables the check by registering it in all Managers.
@@ -145,6 +145,16 @@ public interface Module
     }
 
     /**
+     * The name of the module as it appears in the logs.
+     */
+    String getName();
+
+    /**
+     * Gets the direct path representing this module in the config.
+     */
+    String getConfigString();
+
+    /**
      * All config values are initialized here and other tasks that are not covered by enable() should be stated here.
      */
     void subEnable();
@@ -174,5 +184,11 @@ public interface Module
     default Set<ServerVersion> getSupportedVersions()
     {
         return new HashSet<>(Arrays.asList(ServerVersion.values()));
+    }
+
+    @Override
+    default int compareTo(Module o)
+    {
+        return this.getName().compareTo(o.getName());
     }
 }

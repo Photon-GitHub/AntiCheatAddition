@@ -29,16 +29,14 @@ public enum AdditionHackType
     // Client control
     BETTERSPRINTING_CONTROL("ClientControl.BetterSprinting", "uses BetterSprinting"),
     FIVEZIG_CONTROL("ClientControl.5zig", "uses 5zig"),
-    FORGE_CONTROL("ClientControl.Forge",  "uses Forge"),
-    LABYMOD_CONTROL("ClientControl.LabyMod",  "uses LabyMod"),
-    LITELOADER_CONTROL("ClientControl.LiteLoader",  "uses LiteLoader"),
-    SCHEMATICA_CONTROL("ClientControl.Schematica",  "uses Schematica"),
-    WORLDDOWNLOAD_CONTROL("ClientControl.WorldDownloader",  "uses WorldDownloader");
+    FORGE_CONTROL("ClientControl.Forge", "uses Forge"),
+    LABYMOD_CONTROL("ClientControl.LabyMod", "uses LabyMod"),
+    LITELOADER_CONTROL("ClientControl.LiteLoader", "uses LiteLoader"),
+    SCHEMATICA_CONTROL("ClientControl.Schematica", "uses Schematica"),
+    WORLDDOWNLOAD_CONTROL("ClientControl.WorldDownloader", "uses WorldDownloader");
 
     private final String configString;
     private final String violationMessage;
-
-    private final static String CLIENTCONTROL_PATTERN = "CONTROL";
 
     AdditionHackType(final String configString, final String violationMessage)
     {

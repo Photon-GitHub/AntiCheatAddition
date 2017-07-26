@@ -43,43 +43,46 @@ public interface Module extends Comparable<Module>
                 // Load the value from the config
                 Class clazz = field.getType();
 
-                String prePath = "";
+                String path = "";
 
                 if (this instanceof AACAdditionProCheck) {
-                    prePath = ((AACAdditionProCheck) this).getAdditionHackType().getConfigString();
+                    path = ((AACAdditionProCheck) this).getAdditionHackType().getConfigString();
                 }
+
+                // Add the annotation-configPath to the whole path
+                path += annotation.configPath();
 
                 // The different classes
                 try {
                     // Boolean
                     if (clazz == boolean.class || clazz == Boolean.class) {
-                        field.setBoolean(this, AACAdditionPro.getInstance().getConfig().getBoolean(prePath + annotation.configPath()));
+                        field.setBoolean(this, AACAdditionPro.getInstance().getConfig().getBoolean(path));
 
                         // Numbers
                     } else if (clazz == double.class || clazz == Double.class) {
-                        field.setDouble(this, AACAdditionPro.getInstance().getConfig().getDouble(prePath + annotation.configPath()));
+                        field.setDouble(this, AACAdditionPro.getInstance().getConfig().getDouble(path));
                     } else if (clazz == int.class || clazz == Integer.class) {
-                        field.setInt(this, AACAdditionPro.getInstance().getConfig().getInt(prePath + annotation.configPath()));
+                        field.setInt(this, AACAdditionPro.getInstance().getConfig().getInt(path));
                     } else if (clazz == long.class || clazz == Long.class) {
-                        field.setLong(this, AACAdditionPro.getInstance().getConfig().getLong(prePath + annotation.configPath()));
+                        field.setLong(this, AACAdditionPro.getInstance().getConfig().getLong(path));
 
                         // Strings
                     } else if (clazz == String.class) {
-                        field.set(this, AACAdditionPro.getInstance().getConfig().getString(prePath + annotation.configPath()));
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getString(path));
 
                         // Special stuff
                     } else if (clazz == ItemStack.class) {
-                        field.set(this, AACAdditionPro.getInstance().getConfig().getItemStack(prePath + annotation.configPath()));
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getItemStack(path));
                     } else if (clazz == Color.class) {
-                        field.set(this, AACAdditionPro.getInstance().getConfig().getColor(prePath + annotation.configPath()));
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getColor(path));
                     } else if (clazz == OfflinePlayer.class) {
-                        field.set(this, AACAdditionPro.getInstance().getConfig().getOfflinePlayer(prePath + annotation.configPath()));
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getOfflinePlayer(path));
                     } else if (clazz == Vector.class) {
-                        field.set(this, AACAdditionPro.getInstance().getConfig().getVector(prePath + annotation.configPath()));
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getVector(path));
 
                         // No special type found
                     } else {
-                        field.set(this, AACAdditionPro.getInstance().getConfig().get(prePath + annotation.configPath()));
+                        field.set(this, AACAdditionPro.getInstance().getConfig().get(path));
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();

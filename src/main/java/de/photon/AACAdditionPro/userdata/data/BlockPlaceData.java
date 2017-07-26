@@ -24,7 +24,7 @@ public abstract class BlockPlaceData extends TimeData
             @Override
             public boolean verifyObject(final BlockPlace object)
             {
-                return blockPlaces.isEmpty() || BlockUtils.isNext(blockPlaces.peek().getBlock(), object.getBlock(), horizontal);
+                return blockPlaces.isEmpty() || BlockUtils.isNext(blockPlaces.get(blockPlaces.size() - 1).getBlock(), object.getBlock(), horizontal);
             }
         };
     }

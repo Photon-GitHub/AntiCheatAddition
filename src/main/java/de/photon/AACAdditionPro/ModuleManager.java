@@ -17,8 +17,9 @@ public abstract class ModuleManager extends ArrayList<Module>
 
     protected void registerObject(Module object)
     {
-        final String verboseName = object.getName().replace(".", ": ");
         try {
+            // Save what should be written in the current path (no error) in this variable.
+            final String pathOutput;
             // Enabled in the config
             if (AACAdditionPro.getInstance().getConfig().getBoolean(object.getConfigString() + ".enabled")) {
 
@@ -26,20 +27,22 @@ public abstract class ModuleManager extends ArrayList<Module>
                 if (object.getSupportedVersions().contains(AACAdditionPro.getInstance().getServerVersion())) {
                     // Enable
                     object.enable();
-                    VerboseSender.sendVerboseMessage(verboseName + " has been enabled.", true, false);
+                    pathOutput = " has been enabled.";
                 } else {
                     // Auto-Disable as of the wrong server version
                     Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> this.remove(object), 1L);
-                    VerboseSender.sendVerboseMessage(verboseName + " is not compatible with the server-version.", true, false);
+                    pathOutput = " is not compatible with the server-version.";
                 }
             } else {
                 // Disable as it was chosen so in the config
                 Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> this.remove(object), 1L);
-                VerboseSender.sendVerboseMessage(verboseName + " was chosen not to be enabled.", true, false);
+                pathOutput = " was chosen not to be enabled.";
             }
+
+            VerboseSender.sendVerboseMessage(object.getName() + pathOutput, true, false);
         } catch (final Exception e) {
             // Error handling
-            VerboseSender.sendVerboseMessage(verboseName + " could not be registered.", true, true);
+            VerboseSender.sendVerboseMessage(object.getName() + " could not be registered.", true, true);
             e.printStackTrace();
         }
     }

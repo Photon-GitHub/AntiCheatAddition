@@ -4,7 +4,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import de.photon.AACAdditionPro.addition.AdditionManager;
 import de.photon.AACAdditionPro.api.KillauraEntityAddon;
 import de.photon.AACAdditionPro.api.KillauraEntityController;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.CheckManager;
 import de.photon.AACAdditionPro.command.MainCommand;
 import de.photon.AACAdditionPro.events.APILoadedEvent;
@@ -202,7 +201,8 @@ public class AACAdditionPro extends JavaPlugin
         VerboseSender.setAllowedToRegisterTasks(false);
 
         // Disable all checks
-        CheckManager.checkManagerInstance.managedObjects.forEach(AACAdditionProCheck::disable);
+        AdditionManager.additionManagerInstance.forEach(Module::disable);
+        CheckManager.checkManagerInstance.forEach(Module::disable);
 
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);

@@ -1,14 +1,13 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -105,9 +104,7 @@ public class MultiInteraction implements Listener, AACAdditionProCheck
                 vlManager.flag(user.getPlayer(), cancel_vl, () ->
                 {
                     event.setCancelled(true);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(
-                            AACAdditionPro.getInstance(),
-                            () -> user.getPlayer().updateInventory(), 1L);
+                    InventoryUtils.syncUpdateInventory(user.getPlayer());
                 }, () -> {});
             }
 

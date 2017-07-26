@@ -10,13 +10,13 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.EntityUtils;
 import me.konsolas.aac.api.AACAPIProvider;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -173,7 +173,7 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
             vlManager.flag(user.getPlayer(), 4, cancel_vl, () ->
             {
                 event.setCancelled(true);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> user.getPlayer().updateInventory(), 1L);
+                InventoryUtils.syncUpdateInventory(user.getPlayer());
             }, () -> {});
         }
     }

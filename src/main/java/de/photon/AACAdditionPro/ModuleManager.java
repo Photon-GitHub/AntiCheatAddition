@@ -30,12 +30,12 @@ public abstract class ModuleManager extends ArrayList<Module>
                     pathOutput = " has been enabled.";
                 } else {
                     // Auto-Disable as of the wrong server version
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> this.remove(object), 1L);
+                    Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> this.remove(object));
                     pathOutput = " is not compatible with the server-version.";
                 }
             } else {
                 // Disable as it was chosen so in the config
-                Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> this.remove(object), 1L);
+                Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> this.remove(object));
                 pathOutput = " was chosen not to be enabled.";
             }
 

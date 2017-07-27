@@ -12,7 +12,7 @@ public class LogBot implements Addition, Runnable
 {
     private static final File AAC_LOG_FOLDER = new File("plugins/AAC", "logs");
     private static final File AACADDITIONPRO_LOG_FOLDER = new File("plugins/AACAdditionPro", "logs");
-    private final long millis_until_delete = TimeUnit.DAYS.toMillis((long) AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".days_until_delete"));
+    private final long millis_until_delete = TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".days_until_delete"));
 
     private int task_number;
 

@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public interface Module extends Comparable<Module>
+public interface Module
 {
     /**
      * This enables the check by registering it in all Managers.
@@ -187,11 +187,5 @@ public interface Module extends Comparable<Module>
     default Set<ServerVersion> getSupportedVersions()
     {
         return new HashSet<>(Arrays.asList(ServerVersion.values()));
-    }
-
-    @Override
-    default int compareTo(Module o)
-    {
-        return this.getName().compareTo(o.getName());
     }
 }

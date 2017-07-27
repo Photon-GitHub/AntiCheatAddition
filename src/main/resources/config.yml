@@ -417,9 +417,8 @@ Tower:
 # ------------------------------------------------------------------------------------------------------------------- #
 
 # This gives you full control over the clients who can join
-# ------------------------------------------------------------------------------------------------------------------- #
-# WARNING: DO _NOT_ ENABLE THIS IF YOU DID NOT CONFIGURE IT PROPERLY !
-# ------------------------------------------------------------------------------------------------------------------- #
+# WARNING: Please configure this for your needs before you enable it, otherwise you might encounter unwanted
+# kicks/disabled mod functions.
 ClientControl:
    # This is a popular PVP modification granting additional information in various HUDs, such as potion effects.
    # Also has a TS3 module for easier communication, just like LabyMod

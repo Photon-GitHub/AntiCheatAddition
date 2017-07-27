@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.addition.Addition;
 import de.photon.AACAdditionPro.events.HeuristicsAdditionViolationEvent;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.files.ConfigUtils;
+import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import me.konsolas.aac.api.HackType;
 import me.konsolas.aac.api.PlayerViolationEvent;
 import org.bukkit.entity.Player;
@@ -47,15 +48,17 @@ public class PerHeuristicCommands implements Listener, Addition
             final Matcher patternMatcher = HEURISTICS_PATTERN.matcher(event.getMessage());
             final Matcher confidenceMatcher = CONFIDENCE_PATTERN.matcher(event.getMessage());
 
+            // Both matchers have found something
             if (patternMatcher.find() && confidenceMatcher.find()) {
+                // Directly remove all whitespaces from the matches.
                 final String pattern = patternMatcher.group(1).trim();
                 final Double confidence = Double.parseDouble(confidenceMatcher.group(1).trim());
 
-                // System.out.println("Pattern: " + pattern);
-                // System.out.println("Confidence: " + confidence);
-
                 // Heuristics-Event
                 AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(new HeuristicsAdditionViolationEvent(event.getPlayer(), confidence, pattern));
+
+                // Full verbose
+                VerboseSender.sendVerboseMessage("Heuristics-Addon-Report | Player: " + event.getPlayer().getName() + " | Pattern: " + pattern + " | Confidence: " + confidence);
 
                 // Commands
                 executeHeuristicsCommands(confidence, event.getPlayer());
@@ -76,7 +79,7 @@ public class PerHeuristicCommands implements Listener, Addition
                     for (final String command : entry.getValue()) {
 
                         if (command == null) {
-                            throw new RuntimeException("Heuristics-Command is null.");
+                            throw new NullPointerException("Heuristics-Command is null.");
                         }
 
                         // Sync command execution

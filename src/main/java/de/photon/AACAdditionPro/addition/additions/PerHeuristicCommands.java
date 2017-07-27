@@ -22,8 +22,6 @@ import java.util.regex.Pattern;
 
 public class PerHeuristicCommands implements Listener, Addition
 {
-    private static final String confidences = "Heuristic-Addition.confidences";
-
     private static final Pattern HEURISTICS_PATTERN = Pattern.compile("P/(\\d{2})");
     private static final Pattern CONFIDENCE_PATTERN = Pattern.compile("confidence (\\d{2}(\\.\\d+)?)");
 
@@ -37,7 +35,7 @@ public class PerHeuristicCommands implements Listener, Addition
     public void subEnable()
     {
         // Load the thresholds
-        thresholds = ConfigUtils.loadThresholds(confidences);
+        thresholds = ConfigUtils.loadThresholds(this.getConfigString() + ".confidences");
     }
 
     @EventHandler

@@ -85,12 +85,13 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
                 user.getElytraData().isNotFlyingWithElytra() &&
                 // Player is in an inventory
                 user.getInventoryData().hasOpenInventory() &&
-                // Open inventory while jumping is covered by the safe-time and the fall distance
-                // This covers the big jumps
+                // Player has not been hit recently
                 user.getPlayer().getNoDamageTicks() == 0 &&
                 // Auto-Disable if TPS are too low
                 AACAPIProvider.getAPI().getTPS() > min_tps)
             {
+                // Open inventory while jumping is covered by the safe-time and the fall distance
+                // This covers the big jumps
                 final boolean currentlyNotJumping = (user.getPlayer().getVelocity().getY() <= 0 && user.getPlayer().getFallDistance() == 0);
 
                 // Not allowed to start another jump in the inventory

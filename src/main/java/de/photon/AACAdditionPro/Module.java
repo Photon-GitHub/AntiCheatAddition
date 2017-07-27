@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketListener;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.Color;
@@ -43,11 +42,8 @@ public interface Module
                 // Load the value from the config
                 Class clazz = field.getType();
 
-                String path = "";
-
-                if (this instanceof AACAdditionProCheck) {
-                    path = ((AACAdditionProCheck) this).getAdditionHackType().getConfigString();
-                }
+                // Load the config-path
+                String path = this.getConfigString();
 
                 // Add the annotation-configPath to the whole path
                 path += annotation.configPath();

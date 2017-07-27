@@ -13,8 +13,7 @@ public abstract class Data implements Listener
     protected Data(final boolean enableListener, final User theUser)
     {
         this.theUser = theUser;
-        if(enableListener)
-        {
+        if (enableListener) {
             AACAdditionPro.getInstance().registerListener(this);
         }
     }
@@ -23,8 +22,7 @@ public abstract class Data implements Listener
     public void on(final PlayerQuitEvent event)
     {
         // Listener cleanup
-        if(event.getPlayer().getUniqueId().equals(theUser.getPlayer().getUniqueId()))
-        {
+        if (this.theUser.refersToUUID(event.getPlayer().getUniqueId())) {
             HandlerList.unregisterAll(this);
         }
     }

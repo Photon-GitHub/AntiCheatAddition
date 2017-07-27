@@ -15,7 +15,7 @@ public abstract class ModuleManager extends ArrayList<Module>
         this.forEach(this::registerObject);
     }
 
-    protected void registerObject(Module object)
+    private void registerObject(Module object)
     {
         try {
             // Save what should be written in the current path (no error) in this variable.

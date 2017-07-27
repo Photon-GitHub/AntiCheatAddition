@@ -6,8 +6,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-/**Used to store a player was teleported
- * The first index of this {@link TimeData} represents the last time a player was teleported.*/
+/**
+ * Used to store a player was teleported
+ * The first index of this {@link TimeData} represents the last time a player was teleported.
+ */
 public class TeleportData extends TimeData
 {
     public TeleportData(final User theUser)

@@ -13,6 +13,8 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import java.util.UUID;
+
 public class InventoryData extends TimeData
 {
     /**
@@ -46,17 +48,13 @@ public class InventoryData extends TimeData
     @EventHandler(priority = EventPriority.MONITOR)
     public void on(final PlayerDeathEvent event)
     {
-        if (theUser.refersToUUID(event.getEntity().getUniqueId())) {
-            this.nullifyTimeStamp(0);
-        }
+        this.nullifyIfRefersToUser(event.getEntity().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void on(final PlayerRespawnEvent event)
     {
-        if (theUser.refersToUUID(event.getPlayer().getUniqueId())) {
-            this.nullifyTimeStamp(0);
-        }
+        this.nullifyIfRefersToUser(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -85,23 +83,24 @@ public class InventoryData extends TimeData
     @EventHandler(priority = EventPriority.MONITOR)
     public void on(final InventoryCloseEvent event)
     {
-        if (theUser.refersToUUID(event.getPlayer().getUniqueId())) {
-            this.nullifyTimeStamp(0);
-        }
+        this.nullifyIfRefersToUser(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void on(final PlayerTeleportEvent event)
     {
-        if (theUser.refersToUUID(event.getPlayer().getUniqueId())) {
-            this.nullifyTimeStamp(0);
-        }
+        this.nullifyIfRefersToUser(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
     public void on(final PlayerChangedWorldEvent event)
     {
-        if (theUser.refersToUUID(event.getPlayer().getUniqueId())) {
+        this.nullifyIfRefersToUser(event.getPlayer().getUniqueId());
+    }
+
+    private void nullifyIfRefersToUser(UUID uuid)
+    {
+        if (theUser.refersToUUID(uuid)) {
             this.nullifyTimeStamp(0);
         }
     }

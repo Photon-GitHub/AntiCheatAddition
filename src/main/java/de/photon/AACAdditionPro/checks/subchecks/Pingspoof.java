@@ -25,6 +25,8 @@ public class Pingspoof extends PacketAdapter implements Listener, AACAdditionPro
     private double ping_offset;
     @LoadFromConfiguration(configPath = ".max_real_ping")
     private double max_real_ping;
+    @LoadFromConfiguration(configPath = ".refresh_at_vl")
+    private int refresh_at_vl;
 
     private int task_number;
 
@@ -65,7 +67,11 @@ public class Pingspoof extends PacketAdapter implements Listener, AACAdditionPro
         final int ping = (int) (System.currentTimeMillis() - user.getPingData().getTimeStamp());
         final int nmsPing = AACAPIProvider.getAPI().getPing(user.getPlayer());
 
-        if (ping > this.max_real_ping) {
+        /*
+            If the measured ping is too high for a sophisticated result or a ping-update is scheduled soon ignore this to
+            prevent false positives
+        */
+        if (ping > this.max_real_ping || user.getPingData().forceUpdatePing) {
             return;
         }
 
@@ -74,7 +80,8 @@ public class Pingspoof extends PacketAdapter implements Listener, AACAdditionPro
                 // Offset between measured ping and nmsping too big
                 nmsPing > ping * this.ping_offset)
         {
-            vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
+            // Use the cancel-system as a refresh system here (cancel has no use regarding pings).
+            vlManager.flag(user.getPlayer(), refresh_at_vl, () -> user.getPingData().forceUpdatePing = true, () -> {});
             //VerboseSender.sendVerboseMessage("NMS: " + nmsPing + " | Measured: " + ping);
         }
     }
@@ -116,12 +123,15 @@ public class Pingspoof extends PacketAdapter implements Listener, AACAdditionPro
                                 user.getPlayer().isOnGround() &&
                                 // Player moving (Freecam compatibility)
                                 user.getPositionData().hasPlayerMovedRecently(Freecam.getIdle_time(), false) &&
-                                // The Player has a high Ping
-                                AACAPIProvider.getAPI().getPing(user.getPlayer()) > max_real_ping * ping_offset &&
+                                // The Player has a high ping or the check is scheduled
+                                (user.getPingData().forceUpdatePing || AACAPIProvider.getAPI().getPing(user.getPlayer()) > max_real_ping * ping_offset) &&
                                 // Safe-Time upon login as of fluctuating ping
                                 !user.getLoginData().recentlyUpdated(10000))
                         {
+                            // Now checking
                             user.getPingData().isCurrentlyChecking = true;
+                            // Update should only be run once.
+                            user.getPingData().forceUpdatePing = false;
 
                             user.getPingData().teleportLocation = user.getPlayer().getLocation();
                             user.getPingData().updateTimeStamp();

@@ -322,6 +322,10 @@ Pingspoof:
    # If the measured real-ping of a player is higher than this, he will be ignored
    # (A real high-ping player)
    max_real_ping: 100
+   # In order to minimize possible false positives with temporarily bad connections a player's ping will be refreshed
+   # once this threshold is reached.
+   # Set to 0 to disable (not recommended)
+   refresh_at_vl: 5
    # Map of violation levels to command
    thresholds:
       4: "aacstaffnotify {player} in {world} is suspected for Pingspoofer"

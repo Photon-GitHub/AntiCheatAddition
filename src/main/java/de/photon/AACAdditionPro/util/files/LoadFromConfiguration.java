@@ -16,4 +16,6 @@ import java.lang.annotation.Target;
 public @interface LoadFromConfiguration
 {
     String configPath();
+
+    Class listType() default Object.class;
 }

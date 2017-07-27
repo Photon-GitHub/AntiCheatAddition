@@ -26,6 +26,7 @@ public class Teaming implements Listener, AACAdditionProCheck
     private final TeamViolationLevelManagement vlManager = new TeamViolationLevelManagement(this.getAdditionHackType(), 300);
 
     // Config
+    @LoadFromConfiguration(configPath = ".proximity_range")
     private double proximity_range_squared;
     @LoadFromConfiguration(configPath = ".no_pvp_time")
     private int no_pvp_time;
@@ -41,9 +42,7 @@ public class Teaming implements Listener, AACAdditionProCheck
     {
         final long period = (AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".delay") * 20) / 1000;
 
-        // Load the value from the config
-        proximity_range_squared = AACAdditionPro.getInstance().getConfig().getDouble(this.getAdditionHackType().getConfigString() + ".proximity_range");
-        // square it
+        // Square it
         proximity_range_squared *= proximity_range_squared;
 
         // Enabled worlds init

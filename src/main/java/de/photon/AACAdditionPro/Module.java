@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketListener;
+import de.photon.AACAdditionPro.util.files.ConfigUtils;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.Color;
@@ -16,6 +17,7 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public interface Module
@@ -75,6 +77,19 @@ public interface Module
                         field.set(this, AACAdditionPro.getInstance().getConfig().getOfflinePlayer(path));
                     } else if (clazz == Vector.class) {
                         field.set(this, AACAdditionPro.getInstance().getConfig().getVector(path));
+
+
+                        // Lists
+                    } else if (clazz == List.class) {
+
+                        // StringLists
+                        if (annotation.listType() == String.class) {
+                            field.set(this, ConfigUtils.loadStringOrStringList(path));
+
+                            // Unknown type
+                        } else {
+                            field.set(this, AACAdditionPro.getInstance().getConfig().getList(path));
+                        }
 
                         // No special type found
                     } else {

@@ -5,7 +5,7 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.files.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -13,6 +13,7 @@ import java.util.List;
 
 public class ForgeControl implements PluginMessageListener, ClientControlCheck
 {
+    @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
     private List<String> commandsOnDetection;
 
     private static final String[] FORGEFLAGS = {
@@ -39,8 +40,7 @@ public class ForgeControl implements PluginMessageListener, ClientControlCheck
         }
 
         // Should flag
-        if (flag)
-        {
+        if (flag) {
             executeThresholds(user.getPlayer());
         }
     }
@@ -58,14 +58,12 @@ public class ForgeControl implements PluginMessageListener, ClientControlCheck
     }
 
     @Override
-    public void subEnable()
-    {
-        commandsOnDetection = ConfigUtils.loadStringOrStringList(getAdditionHackType().getConfigString() + ".commands_on_detection");
-    }
-
-    @Override
     public String[] getPluginMessageChannels()
     {
-        return new String[]{"FML", "FMLHS", MCBRANDCHANNEL};
+        return new String[]{
+                "FML",
+                "FMLHS",
+                MCBRANDCHANNEL
+        };
     }
 }

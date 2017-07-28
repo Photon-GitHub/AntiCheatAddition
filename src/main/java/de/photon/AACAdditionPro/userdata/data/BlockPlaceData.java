@@ -57,7 +57,7 @@ public abstract class BlockPlaceData extends TimeData
         this.blockPlaces.clearLastObjectIteration(
                 (last, current) ->
                 {
-                    fraction[0] += last.getTime() - current.getTime();
+                    fraction[0] += (last.getTime() - current.getTime());
                     fraction[1]++;
                 });
         return fraction[0] / fraction[1];

@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.util.storage.management;
 
 import java.util.ArrayList;
-import java.util.Stack;
 import java.util.function.BiConsumer;
 
 public abstract class Buffer<T> extends ArrayList<T>
@@ -41,8 +40,7 @@ public abstract class Buffer<T> extends ArrayList<T>
 
     /**
      * Iterates through the buffer and clears it at the same time
-     * During the first cycle the first object of the {@link Stack} will be in the last - variable,
-     * the second one in the current - variable
+     * The most recently added element will always be in last.
      *
      * @param code the code which should be run in each cycle
      */

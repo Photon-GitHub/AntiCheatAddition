@@ -128,7 +128,6 @@ EqualRotation:
 # This module uses advanced mathematics to determine if players can see each other.
 # It also thinks of the 3rd person camera modes and uses accurate hitbox-models.
 # If the players cannot see each other several actions will be taken to hide information on packet-level.
-# Up from version 1.7 AACAdditionPro is able to automatically read the spigot-file to auto-configure itself.
 #
 # MAIN FUNCTIONS:
 # - Sneaking-Hider:  A sneaking player who cannot be directly seen by another player will be completely hidden from

@@ -1,8 +1,6 @@
 package de.photon.AACAdditionPro.util.mathematics;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -50,38 +48,6 @@ public enum Hitbox
             vectors.add(new Vector(start.getX(), start.getY() + d, start.getZ()));
         }
         return vectors;
-    }
-
-    /**
-     * Gets the {@link Location} of an {@link Entity} and adds the maximum height of it's {@link Hitbox}
-     */
-    public static Location getLocationWithHeight(final Entity entity)
-    {
-
-        if (entity instanceof Player) {
-            final Player player = (Player) entity;
-            return entity.getLocation().add(0, player.isSneaking() ?
-                                               (SNEAKING_PLAYER.getHeight()) :
-                                               (PLAYER.getHeight()), 0);
-        }
-
-        return entity.getLocation().add(0, entity.getHeight(), 0);
-    }
-
-
-    /**
-     * Gets the middle of an {@link org.bukkit.entity.Entity}
-     */
-    public static Location getMiddleLocationOfPlayer(final Entity entity)
-    {
-        if (entity instanceof Player) {
-            final Player player = (Player) entity;
-            return entity.getLocation().clone().add(0, player.isSneaking() ?
-                                                       (SNEAKING_PLAYER.getHeight() / 2) :
-                                                       (PLAYER.getHeight() / 2), 0);
-        }
-
-        return entity.getLocation().clone().add(0, entity.getHeight() / 2, 0);
     }
 
     public double getHeight()

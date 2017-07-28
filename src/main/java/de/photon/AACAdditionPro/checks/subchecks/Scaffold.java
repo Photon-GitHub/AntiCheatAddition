@@ -83,7 +83,7 @@ public class Scaffold implements Listener, AACAdditionProCheck
             // If the buffer is big enough calculate an average time
             final double average = user.getScaffoldData().calculateRealTime();
 
-            // Too low time
+            // delta-times are too low -> flag
             if (average < scaffold_delay) {
                 VerboseSender.sendVerboseMessage("SCAFFOLD | Player: " + user.getPlayer().getName() + " estimated time: " + scaffold_delay + " | real: " + average);
 

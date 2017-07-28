@@ -84,7 +84,9 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
             this.flag(player, vl_increase, cancel_vl, onCancel, specialCode);
         }
 
-        punishTeam(players, this.getTeamVl(uuids));
+        if (punish) {
+            punishTeam(players, this.getTeamVl(uuids));
+        }
         /*final UUID[] uuids = new UUID[players.length];
 
         for (short s = 0; s < players.length; s++) {

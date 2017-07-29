@@ -62,8 +62,8 @@ public final class AACAdditionProApi
     }
 
     /**
-     * Sets an option KillauraEntityAddon for a better and more customizable KillauraEntity check
-     * Only the last registered KillauraEntityAddon is active
+     * Sets an optional {@link KillauraEntityAddon} to improve and customize your KillauraEntity check.
+     * The {@link KillauraEntityAddon} which has been set most recently is the active one.
      */
     public static void setKillauraEntityAddon(KillauraEntityAddon addon)
     {

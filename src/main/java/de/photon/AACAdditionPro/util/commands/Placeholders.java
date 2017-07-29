@@ -68,7 +68,6 @@ public final class Placeholders
                 }
 
                 // Both team and single player need the following placeholders
-
                 input = applySinglePlaceholder(input, "{tps}", String.valueOf(AACAPIProvider.getAPI().getTPS()), (byte) 5);
 
                 // World

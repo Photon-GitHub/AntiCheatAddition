@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.util.mathematics;
 
+import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -25,7 +26,8 @@ public final class VectorUtils
                 final BlockIterator blockIterator = new BlockIterator(start.getWorld(), start.toVector(), a, 0, length);
                 while (blockIterator.hasNext()) {
                     final Block block = blockIterator.next();
-                    if (block.getType().isOccluding() && block.getType().isSolid()) {
+                    // Account for a Spigot bug: BARRIER and MOB_SPAWNER are not occluding blocks
+                    if (BlockUtils.isReallyOccluding(block.getType())) {
                         return block.getLocation().distance(start);
                     }
                 }

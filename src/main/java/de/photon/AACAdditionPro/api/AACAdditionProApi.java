@@ -2,9 +2,8 @@ package de.photon.AACAdditionPro.api;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.CheckManager;
-import de.photon.AACAdditionPro.exceptions.NoViolationLevelException;
+import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementExeption;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings({
@@ -31,16 +30,11 @@ public final class AACAdditionProApi
      *
      * @return The Violation-Level as an int.
      *
-     * @throws NoViolationLevelException if the check of the given {@link AdditionHackType} does not have violation-levels
+     * @throws NoViolationLevelManagementExeption if the check of the given {@link AdditionHackType} does not have violation-levels
      */
-    public static int getVL(final Player player, final AdditionHackType additionHackType) throws NoViolationLevelException
+    public static int getVL(final Player player, final AdditionHackType additionHackType) throws NoViolationLevelManagementExeption
     {
-        final AACAdditionProCheck check = CheckManager.checkManagerInstance.getCheck(additionHackType);
-
-        if (check.hasViolationLevelManagement()) {
-            return check.getViolationLevelManagement().getVL(player.getUniqueId());
-        }
-        throw new NoViolationLevelException(additionHackType);
+        return CheckManager.checkManagerInstance.getCheck(additionHackType).getViolationLevelManagement().getVL(player.getUniqueId());
     }
 
     /**
@@ -50,16 +44,11 @@ public final class AACAdditionProApi
      * @param additionHackType the Check in which the Violation-Level will be set.
      * @param new_vl           The new Violation-Level of the player.
      *
-     * @throws NoViolationLevelException if the check of the given {@link AdditionHackType} does not have violation-levels
+     * @throws NoViolationLevelManagementExeption if the check of the given {@link AdditionHackType} does not have violation-levels
      */
-    public static void setVl(final Player player, final AdditionHackType additionHackType, final int new_vl) throws NoViolationLevelException
+    public static void setVl(final Player player, final AdditionHackType additionHackType, final int new_vl) throws NoViolationLevelManagementExeption
     {
-        final AACAdditionProCheck check = CheckManager.checkManagerInstance.getCheck(additionHackType);
-
-        if (check.hasViolationLevelManagement()) {
-            check.getViolationLevelManagement().setVL(player, new_vl);
-        }
-        throw new NoViolationLevelException(additionHackType);
+        CheckManager.checkManagerInstance.getCheck(additionHackType).getViolationLevelManagement().setVL(player, new_vl);
     }
 
     /**

@@ -2,13 +2,13 @@ package de.photon.AACAdditionPro.exceptions;
 
 import de.photon.AACAdditionPro.AdditionHackType;
 
-public class NoViolationLevelException extends RuntimeException
+public class NoViolationLevelManagementExeption extends RuntimeException
 {
     private final AdditionHackType additionHackType;
 
-    public NoViolationLevelException(final AdditionHackType additionHackType)
+    public NoViolationLevelManagementExeption(final AdditionHackType additionHackType)
     {
-        super("The check of the additionHackType has no ViolationLevels.");
+        super("The check of the " + additionHackType.name() + " has no ViolationLevels.");
         this.additionHackType = additionHackType;
     }
 

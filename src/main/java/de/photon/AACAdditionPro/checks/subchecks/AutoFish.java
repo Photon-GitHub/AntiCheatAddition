@@ -56,7 +56,7 @@ public class AutoFish implements Listener, AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // User valid and not bypassed
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
@@ -78,17 +78,23 @@ public class AutoFish implements Listener, AACAdditionProCheck
 
                     // Test if the average is exceeded by the violation_offset
                     boolean cheating = true;
-                    for (final Double deltaTime : user.getFishingData().consistencyBuffer) {
-                        // If the value is not in range the data is not consistent enough for a flag.
+
+                    // Partially clear the buffer already in the loop to improve performance (instead of get())
+                    while (!user.getFishingData().consistencyBuffer.isEmpty()) {
+                        // Get the last element to make the ArrayList-remove as performant as possible
+                        double deltaTime = user.getFishingData().consistencyBuffer.get(user.getFishingData().consistencyBuffer.size() - 1);
+
+                        // Not in range anymore -> not consistent enough for a flag.
                         if (!MathUtils.isInRange(deltaTime, average, violation_offset)) {
                             cheating = false;
+
+                            // Clear the rest of the buffer that was not cleared here so the method is not called when the Buffer is emptied by this while-loop
+                            // Clear for a new run.
+                            user.getFishingData().consistencyBuffer.clear();
                             break;
                         }
                     }
 
-                    // Clear the consistency data for new runs
-                    user.getFishingData().consistencyBuffer.clear();
-                    
                     if (cheating) {
                         vlManager.flag(event.getPlayer(), this.weight, cancel_vl, () -> event.setCancelled(true), () -> {});
                     }

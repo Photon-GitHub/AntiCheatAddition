@@ -31,7 +31,7 @@ public class Skinblinker extends PacketAdapter implements AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 

@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -14,8 +15,6 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 public class SchematicaControl implements PluginMessageListener, Listener, ClientControlCheck
@@ -47,7 +46,7 @@ public class SchematicaControl implements PluginMessageListener, Listener, Clien
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
@@ -67,28 +66,9 @@ public class SchematicaControl implements PluginMessageListener, Listener, Clien
         // The message that is sent to disable the plugin
         final byte[] pluginMessage = byteArrayOutputStream.toByteArray();
 
-        // Player reflection
-        final Class<? extends Player> classOfPlayer = event.getPlayer().getClass();
-
-        // Error fix with fake players
-        if (classOfPlayer.getSimpleName().equals("CraftPlayer")) {
-            // Get the methods to register a new channel with reflection
-            final Method addChannel;
-            final Method removeChannel;
-
-            try {
-
-                addChannel = classOfPlayer.getDeclaredMethod("addChannel", String.class);
-                removeChannel = classOfPlayer.getDeclaredMethod("removeChannel", String.class);
-
-                addChannel.invoke(user.getPlayer(), SCHEMATICA_CHANNEL);
-                user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), SCHEMATICA_CHANNEL, pluginMessage);
-                removeChannel.invoke(user.getPlayer(), SCHEMATICA_CHANNEL);
-
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                System.out.println("Could not send Schematica message");
-                e.printStackTrace();
-            }
+        // TODO: Is this working? Maybe have a deeper look into Schematica.
+        if (pluginMessage != null) {
+            user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), SCHEMATICA_CHANNEL, pluginMessage);
         }
     }
 

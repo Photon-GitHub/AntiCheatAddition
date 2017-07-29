@@ -32,7 +32,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     @Setter
     private Team currentTeam;
 
-    private int task;
+    private final int task;
 
     public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange, double minXZDifference)
     {

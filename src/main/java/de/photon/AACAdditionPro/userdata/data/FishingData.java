@@ -7,7 +7,7 @@ import de.photon.AACAdditionPro.util.storage.management.DoubleBuffer;
 
 public class FishingData extends TimeData
 {
-    public DoubleBuffer consistencyBuffer = new DoubleBuffer(AACAdditionPro.getInstance().getConfig().getInt(AdditionHackType.AUTO_FISH.getConfigString() + ".parts.consistency.consistency_events"))
+    public final DoubleBuffer consistencyBuffer = new DoubleBuffer(AACAdditionPro.getInstance().getConfig().getInt(AdditionHackType.AUTO_FISH.getConfigString() + ".parts.consistency.consistency_events"))
     {
         @Override
         public boolean verifyObject(Double object)

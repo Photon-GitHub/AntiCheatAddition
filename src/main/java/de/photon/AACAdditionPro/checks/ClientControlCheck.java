@@ -108,4 +108,10 @@ public interface ClientControlCheck extends AACAdditionProCheck
         }
         return false;
     }
+
+    @Override
+    default String getName()
+    {
+        return this.getConfigString().replace(".", "-");
+    }
 }

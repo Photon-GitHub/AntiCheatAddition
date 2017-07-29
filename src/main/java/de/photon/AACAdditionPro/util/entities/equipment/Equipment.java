@@ -4,7 +4,6 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
-import lombok.SneakyThrows;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -93,8 +92,7 @@ public class Equipment implements Cloneable
     }
 
     @Override
-    @SneakyThrows(CloneNotSupportedException.class)
-    public Equipment clone()
+    public Equipment clone() throws CloneNotSupportedException
     {
         return (Equipment) super.clone();
     }

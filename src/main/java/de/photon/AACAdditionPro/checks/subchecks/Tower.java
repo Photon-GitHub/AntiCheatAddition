@@ -1,17 +1,16 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.entities.movement.Jumping;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.storage.datawrappers.BlockPlace;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
@@ -39,14 +38,14 @@ public class Tower implements Listener, AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
         //To prevent too fast towering -> Timeout
         if (user.getTowerData().recentlyUpdated(timeout)) {
             event.setCancelled(true);
-            updateInventoryNextTick(user);
+            InventoryUtils.syncUpdateInventory(user.getPlayer());
         }
     }
 
@@ -56,7 +55,7 @@ public class Tower implements Listener, AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
@@ -108,7 +107,7 @@ public class Tower implements Listener, AACAdditionProCheck
                     {
                         event.setCancelled(true);
                         user.getTowerData().updateTimeStamp();
-                        updateInventoryNextTick(user);
+                        InventoryUtils.syncUpdateInventory(user.getPlayer());
                         // If not cancelled run the verbose message with additional data
                     }, () -> VerboseSender.sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + finalThreshold + " | real: " + average));
                 }
@@ -177,11 +176,6 @@ public class Tower implements Listener, AACAdditionProCheck
                 // Too high movement; no checking
                 return 0;
         }
-    }
-
-    private static void updateInventoryNextTick(final User user)
-    {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> user.getPlayer().updateInventory(), 1L);
     }
 
     @Override

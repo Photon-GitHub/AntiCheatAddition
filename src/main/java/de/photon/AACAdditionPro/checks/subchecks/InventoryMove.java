@@ -10,13 +10,13 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.EntityUtils;
 import me.konsolas.aac.api.AACAPIProvider;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -54,7 +54,7 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
@@ -85,12 +85,13 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
                 user.getElytraData().isNotFlyingWithElytra() &&
                 // Player is in an inventory
                 user.getInventoryData().hasOpenInventory() &&
-                // Open inventory while jumping is covered by the safe-time and the fall distance
-                // This covers the big jumps
+                // Player has not been hit recently
                 user.getPlayer().getNoDamageTicks() == 0 &&
                 // Auto-Disable if TPS are too low
                 AACAPIProvider.getAPI().getTPS() > min_tps)
             {
+                // Open inventory while jumping is covered by the safe-time and the fall distance
+                // This covers the big jumps
                 final boolean currentlyNotJumping = (user.getPlayer().getVelocity().getY() <= 0 && user.getPlayer().getFallDistance() == 0);
 
                 // Not allowed to start another jump in the inventory
@@ -154,7 +155,7 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
         // Flight may trigger this
@@ -173,7 +174,7 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
             vlManager.flag(user.getPlayer(), 4, cancel_vl, () ->
             {
                 event.setCancelled(true);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> user.getPlayer().updateInventory(), 1L);
+                InventoryUtils.syncUpdateInventory(user.getPlayer());
             }, () -> {});
         }
     }

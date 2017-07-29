@@ -4,10 +4,10 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.files.ConfigUtils;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -16,6 +16,7 @@ import java.util.List;
 
 public class BetterSprintingControl implements PluginMessageListener, ClientControlCheck
 {
+    @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
     private List<String> commandsOnDetection;
 
     @LoadFromConfiguration(configPath = ".disable")
@@ -26,7 +27,7 @@ public class BetterSprintingControl implements PluginMessageListener, ClientCont
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
@@ -47,12 +48,6 @@ public class BetterSprintingControl implements PluginMessageListener, ClientCont
     public String[] getPluginMessageChannels()
     {
         return new String[]{"BSM"};
-    }
-
-    @Override
-    public void subEnable()
-    {
-        commandsOnDetection = ConfigUtils.loadStringOrStringList(this.getAdditionHackType().getConfigString() + ".commands_on_detection");
     }
 
     @Override

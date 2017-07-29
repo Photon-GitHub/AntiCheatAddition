@@ -7,7 +7,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
 
-public class BeaconListener extends PacketAdapter
+class BeaconListener extends PacketAdapter
 {
     BeaconListener()
     {
@@ -18,15 +18,14 @@ public class BeaconListener extends PacketAdapter
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
-        if (!event.isCancelled())
+        if (!event.isCancelled() &&
+            event.getPacket().getStrings().readSafely(0).equalsIgnoreCase("MC|Beacon"))
         {
-            if(event.getPacket().getStrings().readSafely(0).equalsIgnoreCase("MC|Beacon"))
-            {
-                final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-                if(user != null)
-                {
-                    user.getInventoryData().nullifyTimeStamp();
-                }
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            if (user != null) {
+                // User has made a beacon action/transaction so the inventory must internally be closed this way as no
+                // InventoryCloseEvent is fired.
+                user.getInventoryData().nullifyTimeStamp();
             }
         }
     }

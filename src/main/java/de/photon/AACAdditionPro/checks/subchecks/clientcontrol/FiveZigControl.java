@@ -2,10 +2,11 @@ package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.files.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -16,6 +17,7 @@ public class FiveZigControl implements PluginMessageListener, ClientControlCheck
     // Backup: Channel name has to be EXACTLY "5zig_Set"
     private static final String FIVEZIGCHANNEL = "5zig_Set";
 
+    @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
     private List<String> commandsOnDetection;
 
     /**
@@ -35,7 +37,7 @@ public class FiveZigControl implements PluginMessageListener, ClientControlCheck
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
@@ -81,8 +83,6 @@ public class FiveZigControl implements PluginMessageListener, ClientControlCheck
     @Override
     public void subEnable()
     {
-        commandsOnDetection = ConfigUtils.loadStringOrStringList(getAdditionHackType().getConfigString() + ".commands_on_detection");
-
         features[0] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".disable.potion_effect_hud");
         features[1] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".disable.potion_indicator_vignette");
         features[2] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".disable.armour_hud");

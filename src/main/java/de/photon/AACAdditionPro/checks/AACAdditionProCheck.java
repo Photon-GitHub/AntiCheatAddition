@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.checks;
 
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.Module;
+import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 
 public interface AACAdditionProCheck extends Module
@@ -37,5 +38,19 @@ public interface AACAdditionProCheck extends Module
     default boolean hasViolationLevelManagement()
     {
         return this.getViolationLevelManagement() != null;
+    }
+
+    @Override
+    default String getConfigString()
+    {
+        return this.getAdditionHackType().getConfigString();
+    }
+
+    /**
+     * @return true if the {@link de.photon.AACAdditionPro.userdata.User} is null or bypassed.
+     */
+    static boolean isUserInvalid(User user)
+    {
+        return user == null || user.isBypassed();
     }
 }

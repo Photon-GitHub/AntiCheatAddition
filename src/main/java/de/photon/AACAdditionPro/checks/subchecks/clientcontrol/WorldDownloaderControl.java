@@ -1,10 +1,11 @@
 package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
 import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.files.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -12,6 +13,7 @@ import java.util.List;
 
 public class WorldDownloaderControl implements PluginMessageListener, ClientControlCheck
 {
+    @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
     private List<String> commandsOnDetection;
 
     private static final String[] WDLFLAGS = {
@@ -31,17 +33,11 @@ public class WorldDownloaderControl implements PluginMessageListener, ClientCont
     }
 
     @Override
-    public void subEnable()
-    {
-        commandsOnDetection = ConfigUtils.loadStringOrStringList(getAdditionHackType().getConfigString() + ".commands_on_detection");
-    }
-
-    @Override
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
@@ -54,8 +50,7 @@ public class WorldDownloaderControl implements PluginMessageListener, ClientCont
         }
 
         // Should flag
-        if (flag)
-        {
+        if (flag) {
             executeThresholds(user.getPlayer());
         }
     }
@@ -63,6 +58,11 @@ public class WorldDownloaderControl implements PluginMessageListener, ClientCont
     @Override
     public String[] getPluginMessageChannels()
     {
-        return new String[]{"WDL|INIT", "WDL|CONTROL", "WDL|REQUEST", MCBRANDCHANNEL};
+        return new String[]{
+                "WDL|INIT",
+                "WDL|CONTROL",
+                "WDL|REQUEST",
+                MCBRANDCHANNEL
+        };
     }
 }

@@ -58,7 +58,7 @@ public class Freecam implements AACAdditionProCheck
                             setBackPacketWrapper.sendPacket(user.getPlayer());
                         }
                     }
-                }, 0L, 20L);
+                }, 0L, AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".frequency"));
     }
 
     static int getIdle_time()

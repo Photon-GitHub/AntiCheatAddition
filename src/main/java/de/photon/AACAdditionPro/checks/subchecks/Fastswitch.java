@@ -9,10 +9,10 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
-import org.bukkit.Bukkit;
 
 public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
 {
@@ -36,7 +36,7 @@ public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
@@ -54,7 +54,7 @@ public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
                     vlManager.flag(user.getPlayer(),
                                    cancel_vl,
                                    () -> event.setCancelled(true),
-                                   () -> Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> user.getPlayer().updateInventory(), 1L));
+                                   () -> InventoryUtils.syncUpdateInventory(user.getPlayer()));
                 }
             }
 

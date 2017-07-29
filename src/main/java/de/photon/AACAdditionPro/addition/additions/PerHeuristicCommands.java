@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.addition.Addition;
 import de.photon.AACAdditionPro.events.HeuristicsAdditionViolationEvent;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.files.ConfigUtils;
+import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import me.konsolas.aac.api.HackType;
 import me.konsolas.aac.api.PlayerViolationEvent;
 import org.bukkit.entity.Player;
@@ -21,8 +22,6 @@ import java.util.regex.Pattern;
 
 public class PerHeuristicCommands implements Listener, Addition
 {
-    private static final String confidences = "Heuristic-Addition.confidences";
-
     private static final Pattern HEURISTICS_PATTERN = Pattern.compile("P/(\\d{2})");
     private static final Pattern CONFIDENCE_PATTERN = Pattern.compile("confidence (\\d{2}(\\.\\d+)?)");
 
@@ -36,7 +35,7 @@ public class PerHeuristicCommands implements Listener, Addition
     public void subEnable()
     {
         // Load the thresholds
-        thresholds = ConfigUtils.loadThresholds(confidences);
+        thresholds = ConfigUtils.loadThresholds(this.getConfigString() + ".confidences");
     }
 
     @EventHandler
@@ -47,15 +46,17 @@ public class PerHeuristicCommands implements Listener, Addition
             final Matcher patternMatcher = HEURISTICS_PATTERN.matcher(event.getMessage());
             final Matcher confidenceMatcher = CONFIDENCE_PATTERN.matcher(event.getMessage());
 
+            // Both matchers have found something
             if (patternMatcher.find() && confidenceMatcher.find()) {
+                // Directly remove all whitespaces from the matches.
                 final String pattern = patternMatcher.group(1).trim();
                 final Double confidence = Double.parseDouble(confidenceMatcher.group(1).trim());
 
-                // System.out.println("Pattern: " + pattern);
-                // System.out.println("Confidence: " + confidence);
-
                 // Heuristics-Event
                 AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(new HeuristicsAdditionViolationEvent(event.getPlayer(), confidence, pattern));
+
+                // Full verbose
+                VerboseSender.sendVerboseMessage("Heuristics-Addon-Report | Player: " + event.getPlayer().getName() + " | Pattern: " + pattern + " | Confidence: " + confidence);
 
                 // Commands
                 executeHeuristicsCommands(confidence, event.getPlayer());
@@ -76,7 +77,7 @@ public class PerHeuristicCommands implements Listener, Addition
                     for (final String command : entry.getValue()) {
 
                         if (command == null) {
-                            throw new RuntimeException("Heuristics-Command is null.");
+                            throw new NullPointerException("Heuristics-Command is null.");
                         }
 
                         // Sync command execution

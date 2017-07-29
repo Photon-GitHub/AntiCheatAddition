@@ -1,10 +1,11 @@
 package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
 import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.files.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -12,6 +13,7 @@ import java.util.List;
 
 public class LiteloaderControl implements PluginMessageListener, ClientControlCheck
 {
+    @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
     private List<String> commandsOnDetection;
 
     private static final String[] LITELOADERFLAGS = {
@@ -26,7 +28,7 @@ public class LiteloaderControl implements PluginMessageListener, ClientControlCh
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (user == null || user.isBypassed()) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
@@ -56,12 +58,6 @@ public class LiteloaderControl implements PluginMessageListener, ClientControlCh
     public AdditionHackType getAdditionHackType()
     {
         return AdditionHackType.LITELOADER_CONTROL;
-    }
-
-    @Override
-    public void subEnable()
-    {
-        commandsOnDetection = ConfigUtils.loadStringOrStringList(getAdditionHackType().getConfigString() + ".commands_on_detection");
     }
 
     @Override

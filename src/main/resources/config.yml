@@ -128,7 +128,6 @@ EqualRotation:
 # This module uses advanced mathematics to determine if players can see each other.
 # It also thinks of the 3rd person camera modes and uses accurate hitbox-models.
 # If the players cannot see each other several actions will be taken to hide information on packet-level.
-# Up from version 1.7 AACAdditionPro is able to automatically read the spigot-file to auto-configure itself.
 #
 # MAIN FUNCTIONS:
 # - Sneaking-Hider:  A sneaking player who cannot be directly seen by another player will be completely hidden from
@@ -174,6 +173,11 @@ Freecam:
    enabled: true
    # The time in ms before AACAdditonPro starts to initiate teleports for an idling player
    idle_time: 1000
+   # How often should players be checked and possibly teleported
+   # Too low values can cause visual bugs (very frequent wobbles and disappearing chunks in extreme cases)
+   # High values reduce the effectiveness of the check. I do not recommend setting this higher than 80 ticks.
+   # Measured in ticks (please do not use floating points).
+   frequency: 30
 
 # InventoryHit checks if a player modifies his inventory while hitting at the same time.
 InventoryHit:
@@ -317,6 +321,10 @@ Pingspoof:
    # If the measured real-ping of a player is higher than this, he will be ignored
    # (A real high-ping player)
    max_real_ping: 100
+   # In order to minimize possible false positives with temporarily bad connections a player's ping will be refreshed
+   # once this threshold is reached.
+   # Set to 0 to disable (not recommended)
+   refresh_at_vl: 5
    # Map of violation levels to command
    thresholds:
       4: "aacstaffnotify {player} in {world} is suspected for Pingspoofer"
@@ -417,9 +425,8 @@ Tower:
 # ------------------------------------------------------------------------------------------------------------------- #
 
 # This gives you full control over the clients who can join
-# ------------------------------------------------------------------------------------------------------------------- #
-# WARNING: DO _NOT_ ENABLE THIS IF YOU DID NOT CONFIGURE IT PROPERLY !
-# ------------------------------------------------------------------------------------------------------------------- #
+# WARNING: Please configure this for your needs before you enable it, otherwise you might encounter unwanted
+# kicks/disabled mod functions.
 ClientControl:
    # This is a popular PVP modification granting additional information in various HUDs, such as potion effects.
    # Also has a TS3 module for easier communication, just like LabyMod

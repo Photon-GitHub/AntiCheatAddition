@@ -27,7 +27,7 @@ public class InventoryHit implements Listener, AACAdditionProCheck
             final User user = UserManager.getUser(event.getDamager().getUniqueId());
 
             // Not bypassed
-            if (user == null || user.isBypassed()) {
+            if (AACAdditionProCheck.isUserInvalid(user)) {
                 return;
             }
 

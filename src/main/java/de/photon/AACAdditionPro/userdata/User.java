@@ -41,7 +41,6 @@ public class User
             this.blockPlaces.clearLastObjectIteration(
                     (last, current) ->
                     {
-                        //last - current as of the stack- architecture
                         final double speed_modifier;
                         final short speedLevel = (short) (current.getSpeedLevel() + 1);
 
@@ -76,6 +75,7 @@ public class User
                                 break;
                         }
 
+                        // last - current to calculate the delta as the more recent time is always in last.
                         fraction[0] += (last.getTime() - current.getTime()) * speed_modifier;
                         fraction[1]++;
                     });

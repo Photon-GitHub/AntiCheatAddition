@@ -3,7 +3,7 @@ package de.photon.AACAdditionPro;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketListener;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.util.files.ConfigUtils;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.Color;
@@ -17,6 +17,7 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public interface Module
@@ -43,43 +44,56 @@ public interface Module
                 // Load the value from the config
                 Class clazz = field.getType();
 
-                String prePath = "";
+                // Load the config-path
+                String path = this.getConfigString();
 
-                if (this instanceof AACAdditionProCheck) {
-                    prePath = ((AACAdditionProCheck) this).getAdditionHackType().getConfigString();
-                }
+                // Add the annotation-configPath to the whole path
+                path += annotation.configPath();
 
                 // The different classes
                 try {
                     // Boolean
                     if (clazz == boolean.class || clazz == Boolean.class) {
-                        field.setBoolean(this, AACAdditionPro.getInstance().getConfig().getBoolean(prePath + annotation.configPath()));
+                        field.setBoolean(this, AACAdditionPro.getInstance().getConfig().getBoolean(path));
 
                         // Numbers
                     } else if (clazz == double.class || clazz == Double.class) {
-                        field.setDouble(this, AACAdditionPro.getInstance().getConfig().getDouble(prePath + annotation.configPath()));
+                        field.setDouble(this, AACAdditionPro.getInstance().getConfig().getDouble(path));
                     } else if (clazz == int.class || clazz == Integer.class) {
-                        field.setInt(this, AACAdditionPro.getInstance().getConfig().getInt(prePath + annotation.configPath()));
+                        field.setInt(this, AACAdditionPro.getInstance().getConfig().getInt(path));
                     } else if (clazz == long.class || clazz == Long.class) {
-                        field.setLong(this, AACAdditionPro.getInstance().getConfig().getLong(prePath + annotation.configPath()));
+                        field.setLong(this, AACAdditionPro.getInstance().getConfig().getLong(path));
 
                         // Strings
                     } else if (clazz == String.class) {
-                        field.set(this, AACAdditionPro.getInstance().getConfig().getString(prePath + annotation.configPath()));
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getString(path));
 
                         // Special stuff
                     } else if (clazz == ItemStack.class) {
-                        field.set(this, AACAdditionPro.getInstance().getConfig().getItemStack(prePath + annotation.configPath()));
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getItemStack(path));
                     } else if (clazz == Color.class) {
-                        field.set(this, AACAdditionPro.getInstance().getConfig().getColor(prePath + annotation.configPath()));
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getColor(path));
                     } else if (clazz == OfflinePlayer.class) {
-                        field.set(this, AACAdditionPro.getInstance().getConfig().getOfflinePlayer(prePath + annotation.configPath()));
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getOfflinePlayer(path));
                     } else if (clazz == Vector.class) {
-                        field.set(this, AACAdditionPro.getInstance().getConfig().getVector(prePath + annotation.configPath()));
+                        field.set(this, AACAdditionPro.getInstance().getConfig().getVector(path));
+
+
+                        // Lists
+                    } else if (clazz == List.class) {
+
+                        // StringLists
+                        if (annotation.listType() == String.class) {
+                            field.set(this, ConfigUtils.loadStringOrStringList(path));
+
+                            // Unknown type
+                        } else {
+                            field.set(this, AACAdditionPro.getInstance().getConfig().getList(path));
+                        }
 
                         // No special type found
                     } else {
-                        field.set(this, AACAdditionPro.getInstance().getConfig().get(prePath + annotation.configPath()));
+                        field.set(this, AACAdditionPro.getInstance().getConfig().get(path));
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -143,6 +157,16 @@ public interface Module
             }
         }
     }
+
+    /**
+     * The name of the module as it appears in the logs.
+     */
+    String getName();
+
+    /**
+     * Gets the direct path representing this module in the config.
+     */
+    String getConfigString();
 
     /**
      * All config values are initialized here and other tasks that are not covered by enable() should be stated here.

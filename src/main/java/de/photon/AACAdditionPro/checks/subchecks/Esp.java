@@ -64,13 +64,15 @@ public class Esp implements AACAdditionProCheck
 
             if (currentPlayerTrackingRange > render_distance_squared) {
                 render_distance_squared = currentPlayerTrackingRange;
-            }
-        }
 
-        // 19321 == 139^2 as of the maximum range of the block-iterator
-        if (render_distance_squared > 19321) {
-            hide_after_render_distance = false;
-            render_distance_squared = 19321;
+                // Do the maths inside here as reading from a file takes longer than calculating this.
+                // 19321 == 139^2 as of the maximum range of the block-iterator
+                if (render_distance_squared > 19321) {
+                    hide_after_render_distance = false;
+                    render_distance_squared = 19321;
+                    break;
+                }
+            }
         }
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
@@ -89,10 +91,10 @@ public class Esp implements AACAdditionProCheck
                             !observer.getLoginData().recentlyUpdated(3500))
                         {
                             // All users can potentially be seen
-                            for (final User watched_player : users) {
+                            for (final User watchedPlayer : users) {
                                 // The user are not the same
-                                if (!observer.getPlayer().getUniqueId().equals(watched_player.getPlayer().getUniqueId())) {
-                                    playerConnections.add(new Pair(observer, watched_player));
+                                if (!observer.refersToUUID(watchedPlayer.getPlayer().getUniqueId())) {
+                                    playerConnections.add(new Pair(observer, watchedPlayer));
                                 }
                             }
                         }
@@ -100,54 +102,59 @@ public class Esp implements AACAdditionProCheck
 
                     for (final Pair pair : playerConnections) {
                         // Are the players in the same world
-                        if (pair.a.getPlayer().getLocation().getWorld().equals(pair.b.getPlayer().getLocation().getWorld()) &&
+                        if (pair.usersOfPair[0].getPlayer().getLocation().getWorld().equals(pair.usersOfPair[1].getPlayer().getLocation().getWorld()) &&
                             // Are the players inside the render_distance
-                            pair.a.getPlayer().getLocation().distanceSquared(pair.b.getPlayer().getLocation()) <= render_distance_squared)
+                            pair.usersOfPair[0].getPlayer().getLocation().distanceSquared(pair.usersOfPair[1].getPlayer().getLocation()) <= render_distance_squared)
                         {
-                            // Players could see each other
-
-                            final boolean spectatorA = pair.a.getPlayer().getGameMode() == GameMode.SPECTATOR;
-                            final boolean spectatorB = pair.b.getPlayer().getGameMode() == GameMode.SPECTATOR;
+                            /*
+                                Spectator mode needs different handling as a spectator can see through walls and can never be seen by other players who are no spectators as well.
+                                [0]: User a is a spectator
+                                [1]: User b is a spectator
+                            */
+                            final boolean[] spectatorMode = {
+                                    pair.usersOfPair[0].getPlayer().getGameMode() == GameMode.SPECTATOR,
+                                    pair.usersOfPair[1].getPlayer().getGameMode() == GameMode.SPECTATOR
+                            };
 
                             // Gamemode 3 handling
-                            if (spectatorA || spectatorB) {
-                                if (spectatorA) {
-                                    updateHideMode(pair.a, pair.b.getPlayer(), HideMode.NONE);
+                            if (spectatorMode[0] || spectatorMode[1]) {
+                                if (spectatorMode[0]) {
+                                    updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), HideMode.NONE);
 
                                     // If both players are in spectator mode noone should be hidden -> HideMode.NONE
-                                    updateHideMode(pair.b, pair.a.getPlayer(), spectatorB ?
-                                                                               HideMode.NONE :
-                                                                               HideMode.FULL);
+                                    updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), spectatorMode[1] ?
+                                                                                                         HideMode.NONE :
+                                                                                                         HideMode.FULL);
                                 } else {
-                                    // spectatorB must be true here as spectatorA == false and one of spectatorA and spectatorB must be true !
-                                    // -> spectatorB == true; spectatorA == false
-                                    updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
-                                    updateHideMode(pair.a, pair.b.getPlayer(), HideMode.FULL);
+                                    // spectatorMode[1] must be true here as spectatorMode[0] == false and one of spectatorMode[0] and spectatorMode[1] must be true !
+                                    // -> spectatorMode[1] == true; spectatorMode[0] == false
+                                    updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), HideMode.NONE);
+                                    updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), HideMode.FULL);
                                 }
 
                                 // Normal handling without spectators
                             } else {
-                                if (canDirectlySee(pair.a.getPlayer(), pair.b.getPlayer())) {
-                                    updateHideMode(pair.a, pair.b.getPlayer(), HideMode.NONE);
-                                    updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
+                                if (canDirectlySee(pair.usersOfPair[0].getPlayer(), pair.usersOfPair[1].getPlayer())) {
+                                    updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), HideMode.NONE);
+                                    updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), HideMode.NONE);
                                 } else {
-                                    updateHideMode(pair.b, pair.a.getPlayer(), pair.a.getPlayer().isSneaking() ?
-                                                                               HideMode.FULL :
-                                                                               HideMode.INFORMATION_ONLY);
+                                    updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), pair.usersOfPair[0].getPlayer().isSneaking() ?
+                                                                                                         HideMode.FULL :
+                                                                                                         HideMode.INFORMATION_ONLY);
 
-                                    updateHideMode(pair.a, pair.b.getPlayer(), pair.b.getPlayer().isSneaking() ?
-                                                                               HideMode.FULL :
-                                                                               HideMode.INFORMATION_ONLY);
+                                    updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), pair.usersOfPair[1].getPlayer().isSneaking() ?
+                                                                                                         HideMode.FULL :
+                                                                                                         HideMode.INFORMATION_ONLY);
                                 }
                             }
 
                             // Players cannot see each other
                         } else if (hide_after_render_distance) {
-                            updateHideMode(pair.b, pair.a.getPlayer(), HideMode.FULL);
-                            updateHideMode(pair.a, pair.b.getPlayer(), HideMode.FULL);
+                            updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), HideMode.FULL);
+                            updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), HideMode.FULL);
                         } else {
-                            updateHideMode(pair.a, pair.b.getPlayer(), HideMode.NONE);
-                            updateHideMode(pair.b, pair.a.getPlayer(), HideMode.NONE);
+                            updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), HideMode.NONE);
+                            updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), HideMode.NONE);
                         }
                     }
 
@@ -237,9 +244,9 @@ public class Esp implements AACAdditionProCheck
 
                 if (intersect == 0) {
                     return true;
-                } else {
-                    lastIntersectionCache = intersect;
                 }
+
+                lastIntersectionCache = intersect;
             }
         }
 
@@ -248,51 +255,54 @@ public class Esp implements AACAdditionProCheck
 
     private static Vector[] getCameraVectors(final Player player)
     {
-        // The 3rd person perspective in front of the player       // Use thirdPersonOffset to get the maximum positions
-        final Vector front = player.getLocation().getDirection().clone().normalize().multiply(thirdPersonOffset);
+        /*
+            All the vectors
+            [0] = normal (eyeposition vector)
+            [1] = front
+            [2] = behind
+        */
+        final Vector[] vectors = new Vector[3];
 
-        // The 3rd person perspective behind the player
-        final Vector behind = front.clone().multiply(-1);
+        // Front vector : The 3rd person perspective in front of the player
+        // Use thirdPersonOffset to get the maximum positions
+        vectors[1] = player.getLocation().getDirection().clone().normalize().multiply(thirdPersonOffset);
+
+        // Behind vector : The 3rd person perspective behind the player
+        vectors[2] = vectors[1].clone().multiply(-1);
 
         final Location eyeLocation = player.getEyeLocation();
 
+        // Normal
+        vectors[0] = eyeLocation.toVector();
+
         // Do the Cameras intersect with Blocks
         // Get the length of the first intersection or 0 if there is none
-        final double frontIntersection = VectorUtils.getFirstVectorIntersectionWithBlock(eyeLocation, front);
-        final double behindIntersection = VectorUtils.getFirstVectorIntersectionWithBlock(eyeLocation, behind);
+        final double frontIntersection = VectorUtils.getFirstVectorIntersectionWithBlock(eyeLocation, vectors[1]);
+        final double behindIntersection = VectorUtils.getFirstVectorIntersectionWithBlock(eyeLocation, vectors[2]);
 
         // There is an intersection in the front-vector
         if (frontIntersection != 0) {
-            front.normalize().multiply(frontIntersection);
+            vectors[1].normalize().multiply(frontIntersection);
         }
 
         // There is an intersection in the behind-vector
         if (behindIntersection != 0) {
-            behind.normalize().multiply(behindIntersection);
+            vectors[2].normalize().multiply(behindIntersection);
         }
 
-        // Normal
-        final Vector normal = eyeLocation.toVector();
-
-        front.add(normal);
-        behind.add(normal);
-
-        return new Vector[]{
-                normal,
-                front,
-                behind
-        };
+        return vectors;
     }
 
     private static class Pair
     {
-        final User a;
-        final User b;
+        final User[] usersOfPair;
 
         Pair(final User a, final User b)
         {
-            this.a = a;
-            this.b = b;
+            usersOfPair = new User[]{
+                    a,
+                    b
+            };
         }
 
         @Override
@@ -307,15 +317,15 @@ public class Esp implements AACAdditionProCheck
 
             // The other object
             final Pair pair = (Pair) o;
-            return (a.getPlayer().getUniqueId().equals(pair.a.getPlayer().getUniqueId()) || a.getPlayer().getUniqueId().equals(pair.b.getPlayer().getUniqueId())) &&
-                   (b.getPlayer().getUniqueId().equals(pair.b.getPlayer().getUniqueId()) || b.getPlayer().getUniqueId().equals(pair.a.getPlayer().getUniqueId())
+            return (usersOfPair[0].getPlayer().getUniqueId().equals(pair.usersOfPair[0].getPlayer().getUniqueId()) || usersOfPair[0].getPlayer().getUniqueId().equals(pair.usersOfPair[1].getPlayer().getUniqueId())) &&
+                   (usersOfPair[1].getPlayer().getUniqueId().equals(pair.usersOfPair[1].getPlayer().getUniqueId()) || usersOfPair[1].getPlayer().getUniqueId().equals(pair.usersOfPair[0].getPlayer().getUniqueId())
                    );
         }
 
         @Override
         public int hashCode()
         {
-            return a.getPlayer().getUniqueId().hashCode() + b.getPlayer().getUniqueId().hashCode();
+            return usersOfPair[0].getPlayer().getUniqueId().hashCode() + usersOfPair[1].getPlayer().getUniqueId().hashCode();
         }
     }
 }

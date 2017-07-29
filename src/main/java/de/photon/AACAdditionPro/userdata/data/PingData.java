@@ -11,5 +11,6 @@ public class PingData extends TimeData
     }
 
     public boolean isCurrentlyChecking;
+    public boolean forceUpdatePing;
     public Location teleportLocation;
 }

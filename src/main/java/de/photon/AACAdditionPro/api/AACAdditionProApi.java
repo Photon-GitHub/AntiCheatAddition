@@ -2,7 +2,6 @@ package de.photon.AACAdditionPro.api;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.CheckManager;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelException;
@@ -36,16 +35,11 @@ public final class AACAdditionProApi
      */
     public static int getVL(final Player player, final AdditionHackType additionHackType) throws NoViolationLevelException
     {
-        for (final Module module : CheckManager.checkManagerInstance.getManagedObjects()) {
-            // Casting is ok here as only AACAdditionProChecks will be in the CheckManager.
-            final AACAdditionProCheck check = (AACAdditionProCheck) module;
-            if (check.getAdditionHackType() == additionHackType &&
-                check.hasViolationLevelManagement())
-            {
-                return check.getViolationLevelManagement().getVL(player.getUniqueId());
-            }
-        }
+        final AACAdditionProCheck check = CheckManager.checkManagerInstance.getCheck(additionHackType);
 
+        if (check.hasViolationLevelManagement()) {
+            return check.getViolationLevelManagement().getVL(player.getUniqueId());
+        }
         throw new NoViolationLevelException(additionHackType);
     }
 
@@ -60,16 +54,11 @@ public final class AACAdditionProApi
      */
     public static void setVl(final Player player, final AdditionHackType additionHackType, final int new_vl) throws NoViolationLevelException
     {
-        for (final Module module : CheckManager.checkManagerInstance.getManagedObjects()) {
-            // Casting is ok here as only AACAdditionProChecks will be in the CheckManager.
-            final AACAdditionProCheck check = (AACAdditionProCheck) module;
-            if (check.getAdditionHackType() == additionHackType &&
-                check.hasViolationLevelManagement())
-            {
-                check.getViolationLevelManagement().setVL(player, new_vl);
-            }
-        }
+        final AACAdditionProCheck check = CheckManager.checkManagerInstance.getCheck(additionHackType);
 
+        if (check.hasViolationLevelManagement()) {
+            check.getViolationLevelManagement().setVL(player, new_vl);
+        }
         throw new NoViolationLevelException(additionHackType);
     }
 

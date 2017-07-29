@@ -47,6 +47,6 @@ public final class VectorUtils
     public static boolean vectorIntersectsWithBlockAt(final Location start, final Vector a, final double length)
     {
         final Material type = start.clone().add(a.clone().normalize().multiply(length)).getBlock().getType();
-        return type.isOccluding() && type.isSolid();
+        return BlockUtils.isReallyOccluding(type) && type.isSolid();
     }
 }

@@ -49,7 +49,7 @@ public class LogBot implements Addition, Runnable
                     }
                 }
             } else {
-                AACAdditionPro.getInstance().getLogger().severe("Could not find folder.");
+                VerboseSender.sendVerboseMessage("Could not find folder " + logFolder.getName(), true, true);
             }
         }
     }

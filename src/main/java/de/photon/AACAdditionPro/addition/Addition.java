@@ -9,10 +9,4 @@ public interface Addition extends Module
 
     @Override
     default void subDisable() {}
-
-    @Override
-    default String getName()
-    {
-        return this.getConfigString();
-    }
 }

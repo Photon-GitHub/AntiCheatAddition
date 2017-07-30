@@ -8,11 +8,6 @@ import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement
 
 public interface AACAdditionProCheck extends Module
 {
-    default String getName()
-    {
-        return this.getAdditionHackType().getConfigString();
-    }
-
     AdditionHackType getAdditionHackType();
 
     @Override

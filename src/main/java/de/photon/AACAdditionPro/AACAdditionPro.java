@@ -214,26 +214,38 @@ public class AACAdditionPro extends JavaPlugin
         loaded = false;
     }
 
+    /**
+     * Activates an KillauraEntityAddon
+     *
+     * @param killauraEntityAddon the {@link KillauraEntityAddon} that should be activated and possibly override the current one.
+     */
     public void setKillauraEntityAddon(KillauraEntityAddon killauraEntityAddon)
     {
         // Check input
         if (killauraEntityAddon == null) {
             throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: killauraEntityAddon is null");
         }
+
         // Check provided plugin (Required for better exception messages)
         JavaPlugin plugin = killauraEntityAddon.getPlugin();
+
         if (plugin == null || plugin.getName() == null) {
-            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin argument for killauraEntityAddon given: " + plugin);
-        } else if (plugin.getDescription() == null || plugin.getDescription().getName() == null || plugin.getName().equalsIgnoreCase(AACAdditionPro.getInstance().getName())) {
-            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin argument for killauraEntityAddon given: " + plugin.getName() + " - " + plugin);
+            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin provided as KillauraEntityAddon: " + plugin);
         }
+
+        if (plugin.getDescription() == null || plugin.getDescription().getName() == null || plugin.getName().equalsIgnoreCase(AACAdditionPro.getInstance().getName())) {
+            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin provided as KillauraEntityAddon: " + plugin.getName() + " - " + plugin);
+        }
+
         // Check KillauraEntity-API being available
         if (killauraEntityController == null) {
             throw new IllegalStateException("KillauraEntity-API not ready, enable the KillauraEntity check");
         }
+
         // Set up the new KillauraEntityAddon
         this.killauraEntityAddon = killauraEntityAddon;
         currentDelegatingKillauraEntityController = new DelegatingKillauraEntityController(killauraEntityController);
+
         try {
             killauraEntityControllerField.set(this.killauraEntityAddon, currentDelegatingKillauraEntityController);
         } catch (IllegalAccessException e) {
@@ -241,21 +253,21 @@ public class AACAdditionPro extends JavaPlugin
         }
     }
 
+    /**
+     * Disables all addons regarding the {@link de.photon.AACAdditionPro.checks.subchecks.KillauraEntity} check.
+     */
     public void disableKillauraEntityAPI()
     {
-        if (this.killauraEntityAddon != null) {
-            try {
+        try {
+            if (this.killauraEntityAddon != null) {
                 killauraEntityControllerField.set(this.killauraEntityAddon, null);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
             }
-        }
-        if (this.currentDelegatingKillauraEntityController != null) {
-            try {
+
+            if (this.currentDelegatingKillauraEntityController != null) {
                 delegatingKillauraEntityControllerField.set(currentDelegatingKillauraEntityController, null);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
             }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 

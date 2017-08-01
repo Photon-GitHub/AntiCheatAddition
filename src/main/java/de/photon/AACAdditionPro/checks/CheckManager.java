@@ -71,33 +71,49 @@ public final class CheckManager extends ModuleManager
     }
 
     /**
+     * Gets a check from its {@link AdditionHackType}.
+     *
+     * @param additionHackType the {@link AdditionHackType} of the check that should be found
+     *
+     * @return the check if it was found
+     *
+     * @throws IllegalArgumentException if the provided {@link AdditionHackType} parameter is not used in a check
+     */
+    public AACAdditionProCheck getCheck(final AdditionHackType additionHackType)
+    {
+        for (final Module module : this) {
+            // No problem to cast here as only AACAdditionProChecks go here.
+            final AACAdditionProCheck check = (AACAdditionProCheck) module;
+            if (check.getAdditionHackType() == additionHackType) {
+                return check;
+            }
+        }
+        throw new IllegalArgumentException("The AdditionHackType: " + additionHackType.name() + " is not used in any registered check (is the server version compatible with it?).");
+    }
+
+    /**
      * Enables or disables a check in runtime
      *
      * @param additionHackType the {@link AdditionHackType} of the check that should be disabled.
      */
     public void setStateOfCheck(final AdditionHackType additionHackType, final boolean state)
     {
-        for (final Module module : this) {
-            // No problem to cast here as only AACAdditionProChecks go here.
-            if (((AACAdditionProCheck) module).getAdditionHackType() == additionHackType) {
-                // The message that will be printed in the logs / console
-                String message = "Check " + module.getName() + "has been ";
+        final AACAdditionProCheck check = this.getCheck(additionHackType);
 
-                // Should it be enabled or disabled
-                if (state) {
-                    module.enable();
-                    message += "enabled.";
-                } else {
-                    module.disable();
-                    message += "disabled.";
-                }
+        // The message that will be printed in the logs / console
+        String message = "Check " + check.getName() + "has been ";
 
-                // Send / log the message
-                VerboseSender.sendVerboseMessage(message);
-                // Only one check can have an AdditionHackType, therefore this loop can be breaked.
-                break;
-            }
+        // Should it be enabled or disabled
+        if (state) {
+            check.enable();
+            message += "enabled.";
+        } else {
+            check.disable();
+            message += "disabled.";
         }
+
+        // Send / log the message
+        VerboseSender.sendVerboseMessage(message);
     }
 
     public static void startCheckManager() {}

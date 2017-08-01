@@ -161,7 +161,10 @@ public interface Module
     /**
      * The name of the module as it appears in the logs.
      */
-    String getName();
+    default String getName()
+    {
+        return this.getConfigString();
+    }
 
     /**
      * Gets the direct path representing this module in the config.

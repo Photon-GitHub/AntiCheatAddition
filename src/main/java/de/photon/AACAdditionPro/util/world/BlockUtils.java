@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.util.world;
 
 import com.google.common.collect.ImmutableList;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
@@ -66,5 +67,13 @@ public final class BlockUtils
             }
         }
         return count;
+    }
+
+    /**
+     * Fix for Spigot's broken occluding method.
+     */
+    public static boolean isReallyOccluding(Material material)
+    {
+        return material.isOccluding() && material != Material.BARRIER && material != Material.MOB_SPAWNER;
     }
 }

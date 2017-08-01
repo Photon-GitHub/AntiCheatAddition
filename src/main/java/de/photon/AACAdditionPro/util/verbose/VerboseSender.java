@@ -56,11 +56,25 @@ public final class VerboseSender implements Listener
             AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players")
     };
 
+
+    /**
+     * Sets off a standard verbose message (no console forcing and not flagged as an error).
+     *
+     * @param s the message that will be sent
+     */
     public static void sendVerboseMessage(final String s)
     {
         sendVerboseMessage(s, false, false);
     }
 
+
+    /**
+     * This sets off a verbose message.
+     *
+     * @param s             the message that will be sent
+     * @param force_console whether the verbose message should appear in the console even when verbose for console is deactivated.
+     * @param error         whether the message should be marked as an error
+     */
     public static void sendVerboseMessage(final String s, final boolean force_console, final boolean error)
     {
         // Prevent errors on disable as of scheduling

@@ -35,7 +35,7 @@ public abstract class ModuleManager extends ArrayList<Module>
                 }
             } else {
                 // Disable as it was chosen so in the config
-                Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> this.remove(object));
+                // Do not remove here as one might want to enable the check via the API
                 pathOutput = " was chosen not to be enabled.";
             }
 

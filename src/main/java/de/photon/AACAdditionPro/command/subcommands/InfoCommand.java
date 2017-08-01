@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.Permissions;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.CheckManager;
 import de.photon.AACAdditionPro.command.InternalCommand;
+import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementExeption;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -43,13 +44,14 @@ public class InfoCommand extends InternalCommand
                     });
 
             for (final Module module : CheckManager.checkManagerInstance.getManagedObjects()) {
-                // Casting is ok here as only AACAdditionProChecks will be in the CheckManager.
-                final AACAdditionProCheck check = (AACAdditionProCheck) module;
-                if (check.hasViolationLevelManagement()) {
-                    final int vl = check.getViolationLevelManagement().getVL(p.getUniqueId());
-                    if (vl > 0) {
-                        messages.put(vl, check.getName());
+                try {
+                    // Casting is ok here as only AACAdditionProChecks will be in the CheckManager.
+                    Integer vl = ((AACAdditionProCheck) module).getViolationLevelManagement().getVL(p.getUniqueId());
+                    if (vl != 0) {
+                        messages.put(vl, module.getName());
                     }
+                } catch (NoViolationLevelManagementExeption ignore) {
+                    // Ignore the Exception as there are a few checks with no ViolatonLevelManagement
                 }
             }
 

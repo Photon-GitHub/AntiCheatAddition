@@ -4,14 +4,11 @@ import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public final class Placeholders
 {
-    private static final Map<String[], Byte> placeholders = new HashMap<>(4, 1);
-
     /**
      * This method handles the replacement of the placeholders.
      * Supported placeholders: {player}, {ping}, {tps}
@@ -40,70 +37,61 @@ public final class Placeholders
         if (AACAPIProvider.isAPILoaded()) {
             // List is not null and contains at least one player
             if (players != null && !players.isEmpty()) {
-
-                // Determine whether it needs to handle a team
-                // Don't forget to increase the initialCapacity of the HashMap if you add new placeholders
-                // The number at the end represents the maximum length of the variable
-
+                // Team handling
                 if (players.size() > 1) {
 
                     // Team
                     final StringBuilder teamString = new StringBuilder();
-                    for (final Player player : players) {
+
+                    Iterator<Player> playerIterator = players.iterator();
+                    Player player;
+                    while (true) {
+                        player = playerIterator.next();
                         teamString.append(player.getName());
-                        teamString.append(", ");
+
+                        if (playerIterator.hasNext()) {
+                            teamString.append(", ");
+                        } else {
+                            break;
+                        }
                     }
 
-                    placeholders.put(new String[]{
-                            "{team}",
-                            // Remove the last ", "
-                            // Exclusive ending !
-                            teamString.toString().substring(0, teamString.length() - 2)
-                    }, Byte.MAX_VALUE);
+                    input = applySinglePlaceholder(input, "{team}", teamString.toString(), Byte.MAX_VALUE);
+                    // Single-Player handling
                 } else {
 
                     // Player
-                    placeholders.put(new String[]{
-                            "{player}",
-                            players.get(0).getName()
-                    }, (byte) 32);
+                    input = applySinglePlaceholder(input, "{player}", players.get(0).getName(), (byte) 32);
 
                     // Ping
-                    placeholders.put(new String[]{
-                            "{ping}",
-                            String.valueOf(AACAPIProvider.getAPI().getPing(players.get(0)))
-                    }, (byte) 5);
+                    input = applySinglePlaceholder(input, "{ping}", String.valueOf(AACAPIProvider.getAPI().getPing(players.get(0))), (byte) 5);
                 }
 
                 // Both team and single player need the following placeholders
-
-                // TPS
-                placeholders.put(new String[]{
-                        "{tps}",
-                        String.valueOf(AACAPIProvider.getAPI().getTPS())
-                }, (byte) 5);
+                input = applySinglePlaceholder(input, "{tps}", String.valueOf(AACAPIProvider.getAPI().getTPS()), (byte) 5);
 
                 // World
-                placeholders.put(new String[]{
-                        "{world}",
-                        players.get(0).getWorld().getName()
-                }, Byte.MAX_VALUE);
-
-                //Go through all the placeholders
-                for (final Map.Entry<String[], Byte> entry : placeholders.entrySet()) {
-                    String replaceString = entry.getKey()[1];
-
-                    // Make sure that the length is not too big
-                    if (replaceString.length() > entry.getValue()) {
-                        replaceString = replaceString.substring(0, entry.getValue());
-                    }
-
-                    input = input.replace(entry.getKey()[0], replaceString);
-                }
+                input = applySinglePlaceholder(input, "{world}", players.get(0).getWorld().getName(), Byte.MAX_VALUE);
                 return input;
             }
-            throw new RuntimeException("Player is null.");
+            throw new NullPointerException("Placeholder-parsing failed because the list of players is null or empty.");
         }
-        throw new RuntimeException("The placeholder-parsing failed as AAC's API is not loaded.");
+        throw new RuntimeException("Placeholder-parsing failed because AAC's API is not loaded.");
+    }
+
+    /**
+     * Applies a placeholder to a {@link String}.
+     *
+     * @param original     the original {@link String} containing all placeholders
+     * @param placeholder  the placeholder pattern
+     * @param replacement  the {@link String} the placeholder should be replaced with
+     * @param maximumChars after how many chars should the replacement be chopped down
+     *
+     * @return original with the placeholder replaced.
+     */
+    private static String applySinglePlaceholder(String original, String placeholder, String replacement, byte maximumChars)
+    {
+        // No need to reduce replacement.lengh() by 1 as substring's last letter handling is exclusive.
+        return original.replace(placeholder, replacement.substring(0, Math.min(replacement.length(), maximumChars)));
     }
 }

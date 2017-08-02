@@ -42,11 +42,12 @@ public class FlyPatch extends PacketAdapter implements AACAdditionProCheck
         }
 
         try {
-            // Get motX and motZ
+            // Get motY
             final Object nmsHandle = this.getHandle.invoke(user.getPlayer());
             final double motY = this.motYField.getDouble(nmsHandle);
 
             if (motY != 0) {
+                // Count the motion if signum got changed.
                 if (user.getFlyPatchData().countNewChange(Math.signum(motY))) {
                     if (AACAPIProvider.isAPILoaded()) {
                         AACAPIProvider.getAPI().setViolationLevel(user.getPlayer(), HackType.FLY, AACAPIProvider.getAPI().getViolationLevel(user.getPlayer(), HackType.FLY) + vl_increase);

@@ -9,7 +9,7 @@ public class FlyPatchData
     private volatile int secondCounter = 0;
 
     /**
-     * Displays the signum of the last
+     * Displays the signum of the last movement (false = negative or zero)
      */
     private boolean lastSignum = false;
 
@@ -32,6 +32,9 @@ public class FlyPatchData
                 }).start();
     }
 
+    /**
+     * Increases the counter if a change was detected and inverts lastSignum for a new run.
+     */
     public boolean countNewChange(double signum)
     {
         if (signum > 0 && lastSignum || signum < 0 && !lastSignum) {

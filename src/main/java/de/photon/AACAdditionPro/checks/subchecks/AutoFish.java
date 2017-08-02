@@ -81,7 +81,7 @@ public class AutoFish implements Listener, AACAdditionProCheck
 
                     // Partially clear the buffer already in the loop to improve performance (instead of get())
                     while (!user.getFishingData().consistencyBuffer.isEmpty()) {
-                        // Get the last element to make the ArrayList-remove as performant as possible
+                        // Remove the last element to make the ArrayList-remove as performant as possible
                         double deltaTime = user.getFishingData().consistencyBuffer.remove(user.getFishingData().consistencyBuffer.size() - 1);
 
                         // Not in range anymore -> not consistent enough for a flag.

@@ -43,7 +43,7 @@ public class AACAdditionPro extends JavaPlugin
     private static final Field delegatingKillauraEntityControllerField;
 
     static {
-        killauraEntityControllerField = KillauraEntityAddon.class.getDeclaredFields()[0];
+        killauraEntityControllerField = KillauraEntityAddon.class.getDeclaredFields()[1];
         killauraEntityControllerField.setAccessible(true);
 
         delegatingKillauraEntityControllerField = DelegatingKillauraEntityController.class.getDeclaredFields()[0];

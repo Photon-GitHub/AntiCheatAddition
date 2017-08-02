@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.userdata.data;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import org.bukkit.Bukkit;
 
 public class FlyPatchData
 {
@@ -15,21 +16,7 @@ public class FlyPatchData
 
     public FlyPatchData()
     {
-        recursiveStartThread();
-    }
-
-    private void recursiveStartThread()
-    {
-        new Thread(
-                () ->
-                {
-                    secondCounter = 0;
-                    try {
-                        wait(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () -> secondCounter = 0, 0, 20);
     }
 
     /**

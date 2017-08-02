@@ -12,6 +12,7 @@ public enum AdditionHackType
     EQUAL_ROTATION("EqualRotation"),
     ESP("Esp"),
     FASTSWITCH("Fastswitch"),
+    FLYPATCH("FlyPatch"),
     FREECAM("Freecam"),
     INVENTORY_CHAT("InventoryChat", "sent chat message while in Inventory (InventoryChat)"),
     INVENTORY_HEURISTICS("InventoryHeuristics"),

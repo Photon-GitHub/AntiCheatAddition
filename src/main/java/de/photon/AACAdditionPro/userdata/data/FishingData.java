@@ -28,6 +28,6 @@ public class FishingData extends TimeData
 
     public FishingData(User theUser)
     {
-        super(false, theUser, 0);
+        super(false, theUser, 0, 0);
     }
 }

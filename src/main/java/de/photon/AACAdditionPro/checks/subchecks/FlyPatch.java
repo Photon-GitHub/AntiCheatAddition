@@ -11,6 +11,7 @@ import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
+import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import me.konsolas.aac.api.AACAPIProvider;
 import me.konsolas.aac.api.HackType;
 
@@ -50,6 +51,7 @@ public class FlyPatch extends PacketAdapter implements AACAdditionProCheck
                 // Count the motion if signum got changed.
                 if (user.getFlyPatchData().countNewChange(Math.signum(motY))) {
                     if (AACAPIProvider.isAPILoaded()) {
+                        VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " failed fly: toggled velocity too quickly.");
                         AACAPIProvider.getAPI().setViolationLevel(user.getPlayer(), HackType.FLY, AACAPIProvider.getAPI().getViolationLevel(user.getPlayer(), HackType.FLY) + vl_increase);
                     }
                 }

@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 /**
  * Delegates all calls to another KillauraEntityController like a proxy.
- * Provides the benefit of removing the delegated controller out of the filed via reflection
+ * Provides the benefit of removing the delegated controller out of the {@link java.lang.reflect.Field} via reflection
  */
 public class DelegatingKillauraEntityController implements KillauraEntityController
 {

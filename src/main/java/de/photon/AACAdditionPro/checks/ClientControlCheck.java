@@ -23,7 +23,7 @@ public interface ClientControlCheck extends AACAdditionProCheck
      *
      * @param player the player which has triggered ClientControl
      */
-    default void executeThresholds(final Player player)
+    default void executeCommands(final Player player)
     {
         // Call the event
         final ClientControlEvent clientControlEvent = new ClientControlEvent(
@@ -36,26 +36,31 @@ public interface ClientControlCheck extends AACAdditionProCheck
         // The event must not be cancelled
         if (!clientControlEvent.isCancelled()) {
 
-            // Execution of the commands
-            for (final String rawCommand : getCommandsOnDetection()) {
-                final String realCommand = Placeholders.applyPlaceholders(rawCommand, player);
-                //Sync command execution
-                Bukkit.getScheduler().scheduleSyncDelayedTask(
-                        AACAdditionPro.getInstance(), () ->
-                        {
-                            //Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
-                            try {
-                                final PlayerAdditionViolationCommandEvent playerAdditionViolationCommandEvent = new PlayerAdditionViolationCommandEvent(player, realCommand, this.getAdditionHackType());
-                                AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(playerAdditionViolationCommandEvent);
+            // Ensure that commands are not empty for aesthetic reasons (ugly verbose message)
+            final List<String> potentialCommands = this.getCommandsOnDetection();
+            if (!potentialCommands.isEmpty()) {
 
-                                if (!playerAdditionViolationCommandEvent.isCancelled()) {
-                                    AACAdditionPro.getInstance().getServer().dispatchCommand(AACAdditionPro.getInstance().getServer().getConsoleSender(), playerAdditionViolationCommandEvent.getCommand());
-                                    VerboseSender.sendVerboseMessage(ChatColor.GOLD + " Punisher: Executed command /" + playerAdditionViolationCommandEvent.getCommand());
+                // Execution of the commands
+                for (final String rawCommand : potentialCommands) {
+                    final String realCommand = Placeholders.applyPlaceholders(rawCommand, player);
+                    //Sync command execution
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(
+                            AACAdditionPro.getInstance(), () ->
+                            {
+                                //Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
+                                try {
+                                    final PlayerAdditionViolationCommandEvent playerAdditionViolationCommandEvent = new PlayerAdditionViolationCommandEvent(player, realCommand, this.getAdditionHackType());
+                                    AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(playerAdditionViolationCommandEvent);
+
+                                    if (!playerAdditionViolationCommandEvent.isCancelled()) {
+                                        AACAdditionPro.getInstance().getServer().dispatchCommand(AACAdditionPro.getInstance().getServer().getConsoleSender(), playerAdditionViolationCommandEvent.getCommand());
+                                        VerboseSender.sendVerboseMessage(ChatColor.GOLD + " Punisher: Executed command /" + playerAdditionViolationCommandEvent.getCommand());
+                                    }
+                                } catch (final Exception e) {
+                                    VerboseSender.sendVerboseMessage("Could not execute command /" + realCommand + ". If you change the command in the event please take a look at it, the command does not represent the event-command.", true, true);
                                 }
-                            } catch (final Exception e) {
-                                VerboseSender.sendVerboseMessage("Could not execute command /" + realCommand + ". If you change the command in the event please take a look at it, the command does not represent the event-command.", true, true);
-                            }
-                        });
+                            });
+                }
             }
         }
     }

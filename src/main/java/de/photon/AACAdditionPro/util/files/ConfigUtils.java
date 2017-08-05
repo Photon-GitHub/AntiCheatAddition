@@ -28,11 +28,16 @@ public final class ConfigUtils
         if (input.isEmpty()) {
             final String possibleCommand = AACAdditionPro.getInstance().getConfig().getString(path);
 
-            if (possibleCommand.equals("") || possibleCommand.equals("{}")) {
+            if (possibleCommand.equals("{}")) {
                 return Collections.emptyList();
             } else {
                 return Collections.singletonList(AACAdditionPro.getInstance().getConfig().getString(path));
             }
+        }
+
+        // Input is not empty
+        if (input.get(0).equals("{}")) {
+            return Collections.emptyList();
         }
 
         return input;

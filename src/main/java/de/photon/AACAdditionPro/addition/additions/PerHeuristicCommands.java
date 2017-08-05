@@ -76,10 +76,7 @@ public class PerHeuristicCommands implements Listener, Addition
                 if (entry.getKey() > oldConfidence && entry.getKey() <= confidence) {
                     for (final String command : entry.getValue()) {
 
-                        if (command == null) {
-                            throw new NullPointerException("Heuristics-Command is null.");
-                        }
-
+                        // Command cannot be null as of the new loading process.
                         // Sync command execution
                         CommandUtils.executeCommandWithPlaceholders(player, command);
                     }

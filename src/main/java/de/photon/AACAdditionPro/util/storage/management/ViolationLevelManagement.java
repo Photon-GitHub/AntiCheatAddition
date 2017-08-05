@@ -182,36 +182,26 @@ public class ViolationLevelManagement implements Listener
      */
     private void punishPlayer(final Player player, final int fromvl, final int toVl)
     {
-        // Ensure that commands are not empty for aesthetic reasons (ugly verbose message)
-        if (!thresholds.isEmpty()) {
-            // Iterate through all the keys
-            for (final Integer key : thresholds.keySet()) {
-                // If the key should be applied here
-                if (key > fromvl && key <= toVl) {
-                    // Iterate through all the commands that are presented in the threshold of key
-                    for (final String s : thresholds.get(key)) {
+        // Iterate through all the keys
+        for (final Integer key : thresholds.keySet()) {
+            // If the key should be applied here
+            if (key > fromvl && key <= toVl) {
+                // Iterate through all the commands that are presented in the threshold of key
+                for (final String s : thresholds.get(key)) {
 
-                        if (s == null) {
-                            throw new RuntimeException("Violation-Command is null.");
-                        }
+                    // Command cannot be null as of the new loading process.
+                    final String realCommand = Placeholders.applyPlaceholders(s, player);
 
-                        final String realCommand = Placeholders.applyPlaceholders(s, player);
+                    // Only schedule the command execution if the plugin is loaded
+                    if (AACAdditionPro.getInstance().isLoaded()) {
 
-                        // Only schedule the command execution if the plugin is loaded
-                        if (AACAdditionPro.getInstance().isLoaded()) {
+                        final PlayerAdditionViolationCommandEvent playerAdditionViolationCommandEvent = new PlayerAdditionViolationCommandEvent(player, realCommand, this.additionHackType);
+                        AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(playerAdditionViolationCommandEvent);
+
+                        // If the event is not cancelled execute the command
+                        if (!playerAdditionViolationCommandEvent.isCancelled()) {
                             // Sync command execution
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(
-                                    AACAdditionPro.getInstance(), () ->
-                                    {
-                                        //Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
-                                        final PlayerAdditionViolationCommandEvent playerAdditionViolationCommandEvent = new PlayerAdditionViolationCommandEvent(player, realCommand, this.additionHackType);
-                                        AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(playerAdditionViolationCommandEvent);
-
-                                        // If the event is not cancelled execute the command
-                                        if (!playerAdditionViolationCommandEvent.isCancelled()) {
-                                            CommandUtils.executeCommand(realCommand);
-                                        }
-                                    });
+                            CommandUtils.executeCommand(realCommand);
                         }
                     }
                 }

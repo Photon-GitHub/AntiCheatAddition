@@ -269,6 +269,14 @@ KillauraEntity:
    # Here you can choose the equipment of your entity.
    # For the best setup only choose equipment a normal player can get.
    equipment:
+      # Normal items like building blocks and food
+      normal:
+         # Materials
+         wood: true
+         gold: true
+         stone: true
+         iron: true
+         diamond: true
       # The weapons the entities will use in a fake fight
       weapons:
          # Types

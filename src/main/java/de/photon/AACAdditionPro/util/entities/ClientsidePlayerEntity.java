@@ -7,7 +7,9 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
 import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
-import de.photon.AACAdditionPro.util.entities.equipment.EntityEquipmentDatabase;
+import de.photon.AACAdditionPro.util.entities.equipment.EquipmentDatabase;
+import de.photon.AACAdditionPro.util.entities.equipment.Equipment;
+import de.photon.AACAdditionPro.util.entities.equipment.EquipmentSelector;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import lombok.Getter;
@@ -34,11 +36,17 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     private final int task;
 
+    private Equipment equipment;
+
     public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange, double minXZDifference)
     {
         super(observedPlayer);
+
         // Get skin data and name
         this.gameProfile = gameProfile;
+
+        // EquipmentData
+        this.equipment = new Equipment(this);
 
         task = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () ->
         {
@@ -116,7 +124,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         DisplayInformation.applyTeams(this);
 
         // Entity equipment + armor
-        EntityEquipmentDatabase.getRandomEquipment(false).equipPlayerEntity(this);
+        this.equipment.equipArmor();
+        this.equipment.equipInHand();
+        this.equipment.equipPlayerEntity();
     }
 
     // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //

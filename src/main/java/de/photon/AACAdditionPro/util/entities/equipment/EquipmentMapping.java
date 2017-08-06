@@ -36,6 +36,7 @@ public enum EquipmentMapping
                 return equipmentMapping;
             }
         }
+
         throw new IllegalStateException("No EquipmentMapping was found for Material " + material);
     }
 }

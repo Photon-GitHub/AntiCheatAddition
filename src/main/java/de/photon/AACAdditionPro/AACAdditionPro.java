@@ -277,8 +277,13 @@ public class AACAdditionPro extends JavaPlugin
     public void disableKillauraEntityAPI()
     {
         try {
-            killauraEntityControllerField.set(this.killauraEntityAddon, null);
-            delegatingKillauraEntityControllerField.set(this.currentDelegatingKillauraEntityController, null);
+            if (this.killauraEntityAddon != null) {
+                killauraEntityControllerField.set(this.killauraEntityAddon, null);
+            }
+
+            if (this.currentDelegatingKillauraEntityController != null) {
+                delegatingKillauraEntityControllerField.set(currentDelegatingKillauraEntityController, null);
+            }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

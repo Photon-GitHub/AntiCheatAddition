@@ -4,7 +4,6 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.addition.Addition;
 import de.photon.AACAdditionPro.events.HeuristicsAdditionViolationEvent;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
-import de.photon.AACAdditionPro.util.commands.Placeholders;
 import de.photon.AACAdditionPro.util.files.ConfigUtils;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import me.konsolas.aac.api.HackType;
@@ -79,7 +78,7 @@ public class PerHeuristicCommands implements Listener, Addition
 
                         // Command cannot be null as of the new loading process.
                         // Sync command execution
-                        CommandUtils.executeCommand(Placeholders.applyPlaceholders(command, player));
+                        CommandUtils.executeCommandWithPlaceholders(command, player);
                     }
                 }
             }

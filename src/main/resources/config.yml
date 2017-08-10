@@ -262,6 +262,7 @@ KillauraEntity:
       # How far should the entity at least be away from the player (measured in blocks)
       entityOffset: 3.4
       # How much randomized offset should at most be added to entityOffset (measured in blocks)
+      # This must be grater than 0
       offsetRandomizationRange: 0.2
       # This prevents the entity from floating directly over / under a player, therefore preventing distraction and
       # willingly caused false positives (measured in blocks)

@@ -186,7 +186,7 @@ public class AACAdditionPro extends JavaPlugin
             // Managers
             AdditionManager.startAdditionManager();
             CheckManager.startCheckManager();
-            
+
             // Commands
             this.getCommand(MainCommand.instance.commandName).setExecutor(MainCommand.instance);
 

@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.util.commands;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.events.PlayerAdditionViolationCommandEvent;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,17 +15,33 @@ public final class CommandUtils
      * @param player  the player that should be used for the {@link Placeholders}
      * @param command the command with placeholders that should be executed
      */
-    public static void executeCommandWithPlaceholders(final Player player, final String command)
+    public static void executeCommandWithPlaceholders(final String command, final Player player)
     {
-        final String placeholderCommand = Placeholders.applyPlaceholders(command, player);
-        executeCommand(placeholderCommand);
+        executeCommand(Placeholders.applyPlaceholders(command, player));
     }
 
     /**
-     * Executes a command synchronously and sends {@link VerboseSender}'s error messages if something went wrong.
+     * Calls the given {@link PlayerAdditionViolationCommandEvent} and looks up the cancelled state.
+     * <p>
+     * If it is not cancelled, it executes the command synchronously and sends an error message via {@link VerboseSender} if something went wrong.
      * No {@link Placeholders} are allowed to exist in this method, use executeCommandWithPlaceholders() for this.
      *
-     * @param command the command that should be executed
+     * @param commandEvent the {@link PlayerAdditionViolationCommandEvent} that should be called and contains the command.
+     */
+    public static void executeCommand(final PlayerAdditionViolationCommandEvent commandEvent)
+    {
+        Bukkit.getPluginManager().callEvent(commandEvent);
+
+        if (!commandEvent.isCancelled()) {
+            executeCommand(commandEvent.getCommand());
+        }
+    }
+
+    /**
+     * This executes the command synchronously and sends an error message via {@link VerboseSender} if something went wrong.
+     * No {@link Placeholders} are allowed to exist in this method, use executeCommandWithPlaceholders() for this.
+     *
+     * @param command the command that will be run from console.
      */
     public static void executeCommand(final String command)
     {

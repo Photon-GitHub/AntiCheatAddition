@@ -194,15 +194,9 @@ public class ViolationLevelManagement implements Listener
 
                     // Only schedule the command execution if the plugin is loaded
                     if (AACAdditionPro.getInstance().isLoaded()) {
-
-                        final PlayerAdditionViolationCommandEvent playerAdditionViolationCommandEvent = new PlayerAdditionViolationCommandEvent(player, realCommand, this.additionHackType);
-                        AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(playerAdditionViolationCommandEvent);
-
-                        // If the event is not cancelled execute the command
-                        if (!playerAdditionViolationCommandEvent.isCancelled()) {
-                            // Sync command execution
-                            CommandUtils.executeCommand(realCommand);
-                        }
+                        
+                        // Calling of the event + Sync command execution
+                        CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.additionHackType));
                     }
                 }
             }

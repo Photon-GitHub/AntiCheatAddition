@@ -60,7 +60,6 @@ public class AACAdditionPro extends JavaPlugin
     @Setter
     private KillauraEntityController killauraEntityController;
 
-
     /**
      * This will get the object of the plugin registered on the server.
      *

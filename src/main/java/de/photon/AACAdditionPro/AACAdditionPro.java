@@ -183,12 +183,10 @@ public class AACAdditionPro extends JavaPlugin
             // UserManager
             this.registerListener(new UserManager());
 
-            // AdditionManager
+            // Managers
             AdditionManager.startAdditionManager();
-
-            // CheckManager
             CheckManager.startCheckManager();
-
+            
             // Commands
             this.getCommand(MainCommand.instance.commandName).setExecutor(MainCommand.instance);
 
@@ -239,8 +237,7 @@ public class AACAdditionPro extends JavaPlugin
     {
         // Make sure that the provided KillauraEntityAddon is not null and
         // check provided plugin (Required for better exception messages)
-        JavaPlugin plugin = Objects.requireNonNull(killauraEntityAddon, "EXTERNAL PLUGIN ERROR: KillauraEntityAddon is null")
-                                   .getPlugin();
+        JavaPlugin plugin = Objects.requireNonNull(killauraEntityAddon, "EXTERNAL PLUGIN ERROR: KillauraEntityAddon is null").getPlugin();
 
         if (plugin == null || plugin.getName() == null) {
             throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin provided as KillauraEntityAddon: " + plugin);

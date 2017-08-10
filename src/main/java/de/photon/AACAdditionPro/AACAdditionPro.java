@@ -14,6 +14,7 @@ import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
@@ -52,7 +53,9 @@ public class AACAdditionPro extends JavaPlugin
 
     @Getter
     private KillauraEntityAddon killauraEntityAddon;
+
     private KillauraEntityController currentDelegatingKillauraEntityController;
+
     @Setter
     private KillauraEntityController killauraEntityController;
 
@@ -65,6 +68,18 @@ public class AACAdditionPro extends JavaPlugin
     public static AACAdditionPro getInstance()
     {
         return AACAdditionPro.getPlugin(AACAdditionPro.class);
+    }
+
+    /**
+     * Parses an int from a version {@link String} that has numbers and dots in it.
+     *
+     * @param versionString the {@link String} from which the version int should be parsed.
+     *
+     * @return the int representation of all numbers in the {@link String} with the dots filtered out.
+     */
+    private static int getVersionNumber(final String versionString)
+    {
+        return Integer.valueOf(versionString.replace(".", ""));
     }
 
     /**
@@ -101,31 +116,34 @@ public class AACAdditionPro extends JavaPlugin
             VerboseSender.sendVerboseMessage("Enabling plugin...", true, false);
 
             // ------------------------------------------------------------------------------------------------------ //
-            //                                         Get server version                                             //
+            //                                      Validate server version                                           //
             // ------------------------------------------------------------------------------------------------------ //
 
-            // Minecraft-Version
-            final String versionOutput = this.getServer().getVersion();
-            for (final ServerVersion serverVersion : ServerVersion.values()) {
-                if (versionOutput.contains(serverVersion.getVersionOutputString())) {
-                    this.serverVersion = serverVersion;
-                    break;
-                }
+            try {
+                this.serverVersion = ServerVersion.getServerVersion();
             }
 
             // ------------------------------------------------------------------------------------------------------ //
-            //                                    Not supported server version                                        //
+            //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
-
-            if (this.serverVersion == null) {
+            catch (IllegalArgumentException exception) {
                 VerboseSender.sendVerboseMessage("Server version is not supported.", true, true);
 
-                // StringBuilder for the message explaining what versions are supported
-                final StringBuilder supportedMessage = new StringBuilder(44);
+                final ServerVersion[] supportedVersions = ServerVersion.values();
+
+                /*
+                    StringBuilder for the message explaining what versions are supported
+                    19 for "Supported versions:"
+                    5 for every entry (5 is the max.)
+                    2 for " " and "," per entry
+                    -----------------------------------------
+                    -> 19 + 7 * ServerVersion.values().length
+                */
+                final StringBuilder supportedMessage = new StringBuilder(19 + supportedVersions.length * 7);
                 supportedMessage.append("Supported versions:");
 
                 // Automatically get all the supported versions and append them to the message
-                for (final ServerVersion serverVersion : ServerVersion.values()) {
+                for (final ServerVersion serverVersion : supportedVersions) {
                     supportedMessage.append(" ");
                     supportedMessage.append(serverVersion.getVersionOutputString());
                     supportedMessage.append(",");
@@ -143,11 +161,8 @@ public class AACAdditionPro extends JavaPlugin
             //                                       Not supported AAC version                                        //
             // ------------------------------------------------------------------------------------------------------ //
 
-            final String aacVersion = this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion();
-            final int aacVersionInt = Integer.valueOf(aacVersion.replace(".", ""));
-            final int minAACVersionInt = Integer.valueOf(minimumAACVersion.replace(".", ""));
-
-            if (aacVersionInt < minAACVersionInt) {
+            // Is the numerical representation of the min AAC version smaller than the representation of the real version
+            if (getVersionNumber(minimumAACVersion) > getVersionNumber(Bukkit.getPluginManager().getPlugin("AAC").getDescription().getVersion())) {
                 VerboseSender.sendVerboseMessage("AAC version is not supported.", true, true);
                 VerboseSender.sendVerboseMessage("This plugin needs AAC version " + minimumAACVersion + " or newer.", true, true);
                 return;
@@ -223,7 +238,7 @@ public class AACAdditionPro extends JavaPlugin
     {
         // Check input
         if (killauraEntityAddon == null) {
-            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: killauraEntityAddon is null");
+            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: KillauraEntityAddon is null");
         }
 
         // Check provided plugin (Required for better exception messages)

@@ -26,6 +26,7 @@ public class PerHeuristicCommands implements Listener, Addition
     private static final Pattern CONFIDENCE_PATTERN = Pattern.compile("confidence (\\d{2}(\\.\\d+)?)");
 
     private final HashMap<UUID, Double> oldConfidences = new HashMap<>();
+
     /**
      * The map of the command that are defined in the config at certain violation-levels.
      */

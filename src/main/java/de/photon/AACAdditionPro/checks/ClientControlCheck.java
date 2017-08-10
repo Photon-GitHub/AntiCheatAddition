@@ -34,17 +34,12 @@ public interface ClientControlCheck extends AACAdditionProCheck
         // The event must not be cancelled
         if (!clientControlEvent.isCancelled()) {
 
-            // Ensure that commands are not empty for aesthetic reasons (ugly verbose message)
-            final List<String> potentialCommands = this.getCommandsOnDetection();
-            if (!potentialCommands.isEmpty()) {
+            // Execution of the commands
+            for (final String rawCommand : this.getCommandsOnDetection()) {
+                final String realCommand = Placeholders.applyPlaceholders(rawCommand, player);
 
-                // Execution of the commands
-                for (final String rawCommand : potentialCommands) {
-                    final String realCommand = Placeholders.applyPlaceholders(rawCommand, player);
-
-                    // Calling of the event + Sync command execution
-                    CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.getAdditionHackType()));
-                }
+                // Calling of the event + Sync command execution
+                CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.getAdditionHackType()));
             }
         }
     }

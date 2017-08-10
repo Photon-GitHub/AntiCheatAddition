@@ -184,8 +184,10 @@ public class ViolationLevelManagement implements Listener
     {
         // Iterate through all the keys
         for (final Integer key : thresholds.keySet()) {
+
             // If the key should be applied here
             if (key > fromvl && key <= toVl) {
+
                 // Iterate through all the commands that are presented in the threshold of key
                 for (final String s : thresholds.get(key)) {
 
@@ -194,7 +196,7 @@ public class ViolationLevelManagement implements Listener
 
                     // Only schedule the command execution if the plugin is loaded
                     if (AACAdditionPro.getInstance().isLoaded()) {
-                        
+
                         // Calling of the event + Sync command execution
                         CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.additionHackType));
                     }

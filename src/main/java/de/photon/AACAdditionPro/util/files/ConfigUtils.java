@@ -22,11 +22,22 @@ public final class ConfigUtils
     public static List<String> loadStringOrStringList(final String path)
     {
         // Command list
-        List<String> input = AACAdditionPro.getInstance().getConfig().getStringList(path);
+        final List<String> input = AACAdditionPro.getInstance().getConfig().getStringList(path);
 
         // Single command
         if (input.isEmpty()) {
-            input = Collections.singletonList(AACAdditionPro.getInstance().getConfig().getString(path));
+            final String possibleCommand = AACAdditionPro.getInstance().getConfig().getString(path);
+
+            if (possibleCommand.equals("{}")) {
+                return Collections.emptyList();
+            } else {
+                return Collections.singletonList(AACAdditionPro.getInstance().getConfig().getString(path));
+            }
+        }
+
+        // Input is not empty
+        if (input.get(0).equals("{}")) {
+            return Collections.emptyList();
         }
 
         return input;

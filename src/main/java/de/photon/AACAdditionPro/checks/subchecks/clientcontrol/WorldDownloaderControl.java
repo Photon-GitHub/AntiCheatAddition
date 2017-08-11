@@ -51,7 +51,7 @@ public class WorldDownloaderControl implements PluginMessageListener, ClientCont
 
         // Should flag
         if (flag) {
-            executeThresholds(user.getPlayer());
+            executeCommands(user.getPlayer());
         }
     }
 

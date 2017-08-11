@@ -26,6 +26,7 @@ public class PerHeuristicCommands implements Listener, Addition
     private static final Pattern CONFIDENCE_PATTERN = Pattern.compile("confidence (\\d{2}(\\.\\d+)?)");
 
     private final HashMap<UUID, Double> oldConfidences = new HashMap<>();
+
     /**
      * The map of the command that are defined in the config at certain violation-levels.
      */
@@ -76,12 +77,9 @@ public class PerHeuristicCommands implements Listener, Addition
                 if (entry.getKey() > oldConfidence && entry.getKey() <= confidence) {
                     for (final String command : entry.getValue()) {
 
-                        if (command == null) {
-                            throw new NullPointerException("Heuristics-Command is null.");
-                        }
-
+                        // Command cannot be null as of the new loading process.
                         // Sync command execution
-                        CommandUtils.executeCommandWithPlaceholders(player, command);
+                        CommandUtils.executeCommandWithPlaceholders(command, player);
                     }
                 }
             }

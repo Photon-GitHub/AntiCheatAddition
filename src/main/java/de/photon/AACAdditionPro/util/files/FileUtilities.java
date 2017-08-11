@@ -15,26 +15,6 @@ public final class FileUtilities
 {
     public static final File AACADDITIONPRO_DATAFOLDER = AACAdditionPro.getInstance().getDataFolder();
 
-// --Commented out by Inspection START (08.06.17 20:12):
-//    /**
-//     * Creates the DataFolder of AACAdditionPro if it does not exist
-//     *
-//     * @return the DataFolder
-//     */
-//    @SuppressWarnings("SameReturnValue")
-//    private static File createDataFolder() throws IOException
-//    {
-//        // Does the folder exist
-//        if (!AACADDITIONPRO_DATAFOLDER.exists()) {
-//            // Create the folder if it does not exist
-//            if (!AACADDITIONPRO_DATAFOLDER.mkdir()) {
-//                throw new IOException("The DataFolder of AACAdditionPro could not be created.");
-//            }
-//        }
-//        return AACADDITIONPRO_DATAFOLDER;
-//    }
-// --Commented out by Inspection STOP (08.06.17 20:12)
-
     /**
      * This {@link Method} saves a file in the directory of the {@link Plugin}
      * on the server and writes content into it if a default resource exists in this plugin.
@@ -74,8 +54,7 @@ public final class FileUtilities
         final String[] pathParts = path.split("/");
         final StringBuilder currentPath = new StringBuilder(path.length());
 
-        for (final String s : pathParts)
-        {
+        for (final String s : pathParts) {
             currentPath.append(s);
             currentPath.append("/");
 
@@ -104,8 +83,7 @@ public final class FileUtilities
             // Stream to write into the newly created file
             final OutputStream out = new FileOutputStream(resourceFile);
 
-            if(in != null)
-            {
+            if (in != null) {
                 // Write the content of the default file to the newly created file
                 ByteStreams.copy(in, out);
             }

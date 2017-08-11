@@ -273,6 +273,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 return true;
             }
         });
+
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), PacketType.Play.Client.USE_ENTITY)
         {
             @Override
@@ -299,6 +300,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 }
             }
         });
+
         //Show entity for already online players on reload
         for (Player player : Bukkit.getOnlinePlayers()) {
             onJoin(new PlayerJoinEvent(player, null));
@@ -311,7 +313,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
         AACAdditionPro.getInstance().setKillauraEntityController(null);
         AACAdditionPro.getInstance().disableKillauraEntityAPI();
 
-        //Despawn on reload
+        // Despawn on reload
         for (User user : UserManager.getUsers()) {
 
             final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;

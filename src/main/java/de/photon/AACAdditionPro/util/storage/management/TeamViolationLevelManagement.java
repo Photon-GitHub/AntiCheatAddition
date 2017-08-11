@@ -1,10 +1,8 @@
 package de.photon.AACAdditionPro.util.storage.management;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.commands.Placeholders;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -127,13 +125,11 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
         if (maxThreshold > -1) {
             for (final String s : thresholds.get(maxThreshold)) {
 
-                if (s == null) {
-                    throw new RuntimeException("Violation-Command is null.");
-                }
-
+                // Command cannot be null as of the new loading process.
                 final String realCommand = Placeholders.applyPlaceholders(s, playersOfTeam);
-                //Sync command execution
-                Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> CommandUtils.executeCommand(realCommand));
+
+                // Sync command execution
+                CommandUtils.executeCommand(realCommand);
             }
         }
     }

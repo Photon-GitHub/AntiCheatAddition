@@ -25,10 +25,13 @@ public class Tower implements Listener, AACAdditionProCheck
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
+
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
+
     @LoadFromConfiguration(configPath = ".tower_leniency")
     private double tower_leniency;
+
     @LoadFromConfiguration(configPath = ".jump_boost_leniency")
     private double jump_boost_leniency;
 
@@ -92,7 +95,9 @@ public class Tower implements Listener, AACAdditionProCheck
 
                 // Expected Average
                 threshold /= user.getTowerData().getBuffer_size();
-                threshold *= tower_leniency;
+
+                // Apply lenience
+                final double lenientThreshold = threshold * tower_leniency;
 
                 // Real average
                 final double average = user.getTowerData().calculateRealTime();
@@ -102,14 +107,13 @@ public class Tower implements Listener, AACAdditionProCheck
                     final int vlToAdd = (int) Math.min(1 + Math.floor((threshold - average) / 16), 100);
 
                     // Violation-Level handling
-                    final double finalThreshold = threshold;
                     vlManager.flag(event.getPlayer(), vlToAdd, cancel_vl, () ->
                     {
                         event.setCancelled(true);
                         user.getTowerData().updateTimeStamp();
                         InventoryUtils.syncUpdateInventory(user.getPlayer());
                         // If not cancelled run the verbose message with additional data
-                    }, () -> VerboseSender.sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + finalThreshold + " | real: " + average));
+                    }, () -> VerboseSender.sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + lenientThreshold + " | real: " + average));
                 }
             }
         }

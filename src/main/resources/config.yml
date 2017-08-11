@@ -414,8 +414,8 @@ Tower:
    cancel_vl: 6
    # Over how much values should AACAdditionPro make a check
    buffer_size: 6
-   # If you have false positives increase this SLIGHTLY.
-   tower_leniency: 0.075
+   # If you have false positives decrease this SLIGHTLY.
+   tower_leniency: 0.925
    # How much leniency should be applied additionally if the player has the jump_boost effect
    jump_boost_leniency: 0.09
    # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe

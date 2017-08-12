@@ -1,12 +1,22 @@
 package de.photon.AACAdditionPro.util.multiversion;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
+import de.photon.AACAdditionPro.util.reflection.Reflect;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 
-import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ReflectionUtils
 {
+    private static final String versionNumber;
+
+    static {
+        versionNumber = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+    }
+
     /**
      * Used to get the version {@link String} that is necessary for net.minecraft.server reflection
      *
@@ -14,34 +24,53 @@ public final class ReflectionUtils
      */
     public static String getVersionString()
     {
-        return Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+        return versionNumber;
     }
 
-    /**
-     * Loads a {@link Class}, gets a {@link Method} from it and makes it accessible.
-     *
-     * @param path       the class-path of the class with the desired method
-     * @param methodName the name of the method that should be returned
-     * @return the {@link Method} that refers to the parameters or null if no {@link Method} was found.
-     * @throws ClassNotFoundException if there is no class referring to the path
-     * @throws NoSuchMethodException  if there is no method referring to the methodName
-     */
-    public static Method getMethodFromPath(final String path, final String methodName, final boolean accessible) throws ClassNotFoundException, NoSuchMethodException
+    public static List<AxisAlignedBB> getCollisionBoxes(Player player, AxisAlignedBB boundingBox)
     {
-        final Method method = loadClassFromPath(path).getDeclaredMethod(methodName);
-        method.setAccessible(accessible);
-        return method;
+        // First we need a NMS bounding box
+        Object nmsAxisAlignedBB = Reflect
+                .from("net.minecraft.server." + getVersionString() + ".AxisAlignedBB")
+                .constructor(double.class, double.class, double.class, double.class, double.class, double.class)
+                .instance(boundingBox.getMaxX(), boundingBox.getMaxY(), boundingBox.getMaxZ(),
+                        boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMinZ() );
+
+        // Now we need the NMS entity of the player (since the bot has none)
+        Object nmsHandle = Reflect
+                .from("org.bukkit.craftbukkit." + ReflectionUtils.getVersionString() + ".entity.CraftPlayer")
+                .method("getHandle")
+                .invoke(player);
+
+        // Now we need to call getCubes(Entity, AxisAlignedBB) on the world
+        Object nmsWorld = Reflect
+                .from("org.bukkit.craftbukkit." + getVersionString() + ".CraftWorld")
+                .field("world")
+                .from(player.getWorld())
+                .as(Object.class);
+
+        Object returnVal = Reflect
+                .from("net.minecraft.server." + getVersionString() + ".World")
+                .method("getCubes")
+                .invoke(nmsWorld, nmsHandle, nmsAxisAlignedBB);
+
+        // Now lets see what we got
+        List<AxisAlignedBB> boxes = new ArrayList<>();
+        List list = (List) returnVal;
+        for ( Object o : list ) {
+            // o is a NMS AxisAlignedBB
+            double minX = Reflect.from(o.getClass()).field(0).from(o).asDouble();
+            double minY = Reflect.from(o.getClass()).field(1).from(o).asDouble();
+            double minZ = Reflect.from(o.getClass()).field(2).from(o).asDouble();
+            double maxX = Reflect.from(o.getClass()).field(3).from(o).asDouble();
+            double maxY = Reflect.from(o.getClass()).field(4).from(o).asDouble();
+            double maxZ = Reflect.from(o.getClass()).field(5).from(o).asDouble();
+
+            AxisAlignedBB box = new AxisAlignedBB( minX, minY, minZ, maxX, maxY, maxZ );
+            boxes.add( box );
+        }
+
+        return boxes;
     }
 
-    /**
-     * Loads a {@link Class}
-     *
-     * @param path the class-path of the class which should be loaded
-     * @return the {@link Class} that refers to the parameters or null if no {@link Class} was found.
-     * @throws ClassNotFoundException if there is no class referring to the path
-     */
-    public static Class loadClassFromPath(final String path) throws ClassNotFoundException
-    {
-        return AACAdditionPro.getInstance().getClass().getClassLoader().loadClass(path);
-    }
 }

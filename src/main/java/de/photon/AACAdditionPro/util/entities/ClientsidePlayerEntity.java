@@ -5,25 +5,40 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
+import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
-import de.photon.AACAdditionPro.util.entities.equipment.EquipmentDatabase;
 import de.photon.AACAdditionPro.util.entities.equipment.Equipment;
-import de.photon.AACAdditionPro.util.entities.equipment.EquipmentSelector;
+import de.photon.AACAdditionPro.util.entities.movement.BasicMovement;
+import de.photon.AACAdditionPro.util.entities.movement.JumpMovement;
+import de.photon.AACAdditionPro.util.entities.movement.Movement;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ClientsidePlayerEntity extends ClientsideEntity
 {
+    private static final boolean shouldAssignTeam;
+    private static final boolean shouldSwing;
+
+    static
+    {
+        // Init additional behaviour configs
+        shouldAssignTeam = AACAdditionPro.getInstance().getConfig().getBoolean( AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".behaviour.team.enabled" );
+        shouldSwing = AACAdditionPro.getInstance().getConfig().getBoolean( AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swing.enabled" );
+    }
+
     @Getter
     private final WrappedGameProfile gameProfile;
     @Getter
@@ -34,7 +49,14 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     @Setter
     private Team currentTeam;
 
+    // Main ticker for the entity
     private final int task;
+    private byte lastSwing = 0;
+
+    // Movement state machine
+    private Map<String, Movement> movementStates = new HashMap<>(); // HashMap is enough since you write to it once and never rehash it
+    private Movement currentMovementCalculator;
+    private short lastJump = 0;
 
     private Equipment equipment;
 
@@ -42,24 +64,69 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         super(observedPlayer);
 
+        // This needs to match a NMS EntityPlayer hitbox
+        this.size.setX( 0.6 );
+        this.size.setY( 1.8 );
+        this.size.setZ( 0.6 );
+
         // Get skin data and name
         this.gameProfile = gameProfile;
 
         // EquipmentData
         this.equipment = new Equipment(this);
 
+        // Init movement states
+        this.movementStates.put( "basic", new BasicMovement( observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference ) );
+        this.movementStates.put( "jump", new JumpMovement( this ) );
+
+        // Set default movement state
+        this.currentMovementCalculator = this.movementStates.get( "basic" );
+
         task = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () ->
         {
             // Teams + Scoreboard
-            DisplayInformation.applyTeams(this);
+            if ( shouldAssignTeam )
+            {
+                DisplayInformation.applyTeams( this );
+            }
 
-            //TODO differnet movement patterns
-            Location location = KillauraEntity.calculateLocationBehindPlayer(this.observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference);
+            // Get the next position and move
+            Location location = this.currentMovementCalculator.calculate();
+            if ( location == null ) {
+                this.currentMovementCalculator = this.movementStates.get( "basic" );
+                location = this.currentMovementCalculator.calculate();
+            }
 
             this.move(location);
+
+            // Maybe we should switch movement states?
+            if ( this.currentMovementCalculator instanceof BasicMovement ) {
+                if ( lastJump++ > 30 + ThreadLocalRandom.current().nextInt( 80 ) ) {
+                    lastJump = 0;
+                    this.currentMovementCalculator = this.movementStates.get( "jump" );
+                }
+            }
+
+            // Swing items if enabled
+            if ( shouldSwing ) {
+                int should = 15 + ThreadLocalRandom.current().nextInt( 35 );
+                if ( lastSwing++ > should ) {
+                    lastSwing = 0;
+
+                    if (isSwingable(equipment.getMainHand())) {
+                        swing();
+                    }
+                }
+            }
         }, 0L, 1L);
 
         recursiveUpdatePing();
+    }
+
+    private boolean isSwingable( ItemStack itemStack ) {
+        Material material = itemStack.getType();
+        String name = material.name();
+        return name.contains( "SWORD" ) || name.contains( "AXE" ) || name.contains( "HOE" ) || material == Material.FISHING_ROD;
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //

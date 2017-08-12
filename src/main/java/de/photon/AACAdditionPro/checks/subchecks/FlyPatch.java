@@ -11,6 +11,7 @@ import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
+import de.photon.AACAdditionPro.util.reflection.Reflect;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import me.konsolas.aac.api.AACAPIProvider;
 import me.konsolas.aac.api.HackType;
@@ -24,9 +25,6 @@ public class FlyPatch extends PacketAdapter implements AACAdditionProCheck
 {
     @LoadFromConfiguration(configPath = ".vl_increase")
     private int vl_increase;
-
-    private Field motYField;
-    private Method getHandle;
 
     public FlyPatch()
     {
@@ -50,22 +48,18 @@ public class FlyPatch extends PacketAdapter implements AACAdditionProCheck
             // Only in survival or adventure gamemode (due to potential fps in the other gamemodes).
             (user.getPlayer().getGameMode() == GameMode.SURVIVAL || user.getPlayer().getGameMode() == GameMode.ADVENTURE))
         {
-            try {
-                // Get motY
-                final Object nmsHandle = this.getHandle.invoke(user.getPlayer());
-                final double motY = this.motYField.getDouble(nmsHandle);
+            // Get motY
+            final Object nmsHandle = Reflect.from("org.bukkit.craftbukkit." + ReflectionUtils.getVersionString() + ".entity.CraftPlayer").method("getHandle").invoke(user.getPlayer());
+            final double motY = Reflect.from("net.minecraft.server." + ReflectionUtils.getVersionString() + ".Entity").field("motY").from(nmsHandle).asDouble();
 
-                if (motY != 0) {
-                    // Count the motion if signum got changed.
-                    if (user.getFlyPatchData().countNewChange(Math.signum(motY))) {
-                        if (AACAPIProvider.isAPILoaded()) {
-                            VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " failed fly: toggled velocity too quickly.");
-                            AACAPIProvider.getAPI().setViolationLevel(user.getPlayer(), HackType.FLY, AACAPIProvider.getAPI().getViolationLevel(user.getPlayer(), HackType.FLY) + vl_increase);
-                        }
+            if (motY != 0) {
+                // Count the motion if signum got changed.
+                if (user.getFlyPatchData().countNewChange(Math.signum(motY))) {
+                    if (AACAPIProvider.isAPILoaded()) {
+                        VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " failed fly: toggled velocity too quickly.");
+                        AACAPIProvider.getAPI().setViolationLevel(user.getPlayer(), HackType.FLY, AACAPIProvider.getAPI().getViolationLevel(user.getPlayer(), HackType.FLY) + vl_increase);
                     }
                 }
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -76,25 +70,4 @@ public class FlyPatch extends PacketAdapter implements AACAdditionProCheck
         return AdditionHackType.FLYPATCH;
     }
 
-    @Override
-    public void subEnable()
-    {
-        // Reflection stuff
-        try {
-            //Get the String representing the version, e.g. v1_11_R1
-            final String version = ReflectionUtils.getVersionString();
-
-            // Load version class and reflect getHandle() out of it
-            this.getHandle = ReflectionUtils.getMethodFromPath("org.bukkit.craftbukkit." + version + ".entity.CraftPlayer", "getHandle", true);
-
-            // Get the motX and motZ fields
-            final Class entityPlayerClazz = ReflectionUtils.loadClassFromPath("net.minecraft.server." + version + ".Entity");
-
-            //Fields
-            this.motYField = entityPlayerClazz.getDeclaredField("motY");
-            this.motYField.setAccessible(true);
-        } catch (ArrayIndexOutOfBoundsException | NoSuchMethodException | ClassNotFoundException | NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-    }
 }

@@ -120,4 +120,8 @@ public class Equipment implements Cloneable
         return (Equipment) super.clone();
     }
 
+    public ItemStack getMainHand() {
+        return this.equipmentMap.get( EnumWrappers.ItemSlot.MAINHAND );
+    }
+
 }

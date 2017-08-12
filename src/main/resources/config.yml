@@ -257,6 +257,17 @@ InventoryRotation:
 KillauraEntity:
    # Do you want to enable the KillauraEntity check
    enabled: true
+   # How should the entity act?
+   behaviour:
+      # Should the entity join a team?
+      team:
+         enabled: true
+      # Should the entity swing its item (when its a sword) at the target?
+      swing:
+         enabled: true
+      # Should the entity try to touch the target? (This may fix min distance bypasses, but it looks ugly for legits in F5 mode or high DPI)
+      touch:
+         enabled: false
    # Here you can find all options regarding the position of the entity
    position:
       # How far should the entity at least be away from the player (measured in blocks)
@@ -269,14 +280,6 @@ KillauraEntity:
    # Here you can choose the equipment of your entity.
    # For the best setup only choose equipment a normal player can get.
    equipment:
-      # Normal items like building blocks and food
-      normal:
-         # Materials
-         wood: true
-         gold: true
-         stone: true
-         iron: true
-         diamond: true
       # The weapons the entities will use in a fake fight
       weapons:
          # Types
@@ -300,6 +303,39 @@ KillauraEntity:
          gold: true
          iron: true
          diamond: true
+      # Normal equipment will be used when either item switch is enabled or the entity joins
+      normal:
+         # Use food
+         cooked: true
+         # Material of tools
+         wood: true
+         stone: true
+         gold: true
+         diamond: true
+         iron: true
+         # FnS
+         flint_and_steel: true
+         bow: true
+         fishing_rod: true
+         # Building blocks
+         sandstone: true
+         # PvP stuff
+         golden_apple: true
+         bowl: true
+         potion: true
+         glass_bottle: true
+         exp_bottle: true
+         # MC normal blocks
+         dirt: true
+         grass: true
+         stone: true
+         coal: true
+         gold_ore: true
+         iron_ore: true
+         # Working mats
+         ingot: true
+         wood: true
+         diamon: true
    thresholds:
       5: "aacstaffnotify {player} in {world} is suspected for Killaura"
       10: "aacstaffnotify {player} in {world} is highly suspected for Killaura"

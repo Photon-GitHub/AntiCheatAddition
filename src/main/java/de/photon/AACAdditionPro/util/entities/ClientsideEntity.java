@@ -3,7 +3,9 @@ package de.photon.AACAdditionPro.util.entities;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.entities.movement.Gravitation;
 import de.photon.AACAdditionPro.util.entities.movement.Jumping;
+import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
@@ -25,6 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 public abstract class ClientsideEntity
 {
@@ -43,6 +46,7 @@ public abstract class ClientsideEntity
 
     @Getter
     protected final int entityID;
+    protected Vector size = new Vector();
 
     @Getter
     @Setter
@@ -124,14 +128,55 @@ public abstract class ClientsideEntity
      */
     private void tick()
     {
-        // TODO ground calculations, pressing button simulation, etc?
-        location.add(velocity);
+        // Apply motion movement
+        velocity.add(Gravitation.PLAYER.getGravitationalVector()).multiply(.98);
+
+        double dX = velocity.getX();
+        double dY = velocity.getY();
+        double dZ = velocity.getZ();
+
+        // Since we need collision detections now we need the NMS world
+        AxisAlignedBB bb = new AxisAlignedBB(
+            this.location.getX() - ( this.size.getX() / 2 ),
+            this.location.getY(), // Care that the location is based on the feet location
+            this.location.getZ() - ( this.size.getZ() / 2 ),
+            this.location.getX() + ( this.size.getX() / 2 ),
+            this.location.getY() + this.size.getY(), // Care that the location is based on the feet location
+            this.location.getZ() + ( this.size.getZ() / 2 )
+        );
+        List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(observedPlayer, bb);
+
+        // Check if we would hit a y border block
+        for ( AxisAlignedBB axisAlignedBB : collisions ) {
+            dY = axisAlignedBB.calculateYOffset( bb, dY );
+        }
+
+        bb.offset( 0, dY, 0 );
+
+        // Check if we would hit a x border block
+        for ( AxisAlignedBB axisAlignedBB : collisions ) {
+            dX = axisAlignedBB.calculateXOffset( bb, dX );
+        }
+
+        bb.offset( dX, 0, 0 );
+
+        // Check if we would hit a z border block
+        for ( AxisAlignedBB axisAlignedBB : collisions ) {
+            dZ = axisAlignedBB.calculateZOffset( bb, dZ );
+        }
+
+        bb.offset( 0, 0, dZ );
+
+        // Move
+        location = new Location( observedPlayer.getWorld(),
+                bb.getMinX() + (this.size.getX() / 2),
+                bb.getMinY(),
+                bb.getMinZ() + (this.size.getZ() / 2),
+                location.getYaw(),
+                location.getPitch() );
 
         sendMove();
         sendHeadYaw();
-
-        // TODO: Actual system with gravity enabled to prevent bypasses
-        // velocity.add(Gravitation.PLAYER.getGravitationalVector()).multiply(.98);
     }
 
     /**

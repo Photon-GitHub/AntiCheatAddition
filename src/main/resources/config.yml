@@ -265,9 +265,9 @@ KillauraEntity:
       # Should the entity swing its item (when its a sword) at the target?
       swing:
          enabled: true
-      # Should the entity try to touch the target? (This may fix min distance bypasses, but it looks ugly for legits in F5 mode or high DPI)
-      touch:
-         enabled: false
+      # Should the entity swap its item
+      swap:
+         enabled: true
    # Here you can find all options regarding the position of the entity
    position:
       # How far should the entity at least be away from the player (measured in blocks)

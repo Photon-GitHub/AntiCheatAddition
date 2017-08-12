@@ -84,6 +84,7 @@ public abstract class ClientsideEntity
     @Getter
     protected final Player observedPlayer;
     private int tickTask = -1;
+    private int ticks = 0;
 
     public ClientsideEntity(final Player observedPlayer)
     {
@@ -126,7 +127,7 @@ public abstract class ClientsideEntity
     /**
      * Should be called every tick once, updates physics + sends movement packets
      */
-    private void tick()
+    protected void tick()
     {
         // Apply motion movement
         velocity.add(Gravitation.PLAYER.getGravitationalVector()).multiply(.98);
@@ -144,7 +145,7 @@ public abstract class ClientsideEntity
             this.location.getY() + this.size.getY(), // Care that the location is based on the feet location
             this.location.getZ() + ( this.size.getZ() / 2 )
         );
-        List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(observedPlayer, bb);
+        List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(observedPlayer, bb.addCoordinates( dX, dY, dZ ));
 
         // Check if we would hit a y border block
         for ( AxisAlignedBB axisAlignedBB : collisions ) {
@@ -168,12 +169,7 @@ public abstract class ClientsideEntity
         bb.offset( 0, 0, dZ );
 
         // Move
-        location = new Location( observedPlayer.getWorld(),
-                bb.getMinX() + (this.size.getX() / 2),
-                bb.getMinY(),
-                bb.getMinZ() + (this.size.getZ() / 2),
-                location.getYaw(),
-                location.getPitch() );
+        location.add( dX, dY, dZ );
 
         sendMove();
         sendHeadYaw();
@@ -218,7 +214,7 @@ public abstract class ClientsideEntity
                 throw new IllegalStateException("Unknown minecraft version");
         }
 
-        if (Math.abs(xDiff) > teleportThreshold || Math.abs(yDiff) > teleportThreshold || Math.abs(zDiff) > teleportThreshold || needsTeleport) {
+        if (Math.abs(xDiff) + Math.abs(yDiff) + Math.abs(zDiff) > teleportThreshold || needsTeleport) {
             final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
             // EntityID
             teleportWrapper.setEntityID(this.entityID);
@@ -446,6 +442,7 @@ public abstract class ClientsideEntity
             Bukkit.getScheduler().cancelTask(tickTask);
             this.tickTask = -1;
         }
+
         if (spawned) {
             final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
             entityDestroyWrapper.setEntityIds(new int[]{this.entityID});

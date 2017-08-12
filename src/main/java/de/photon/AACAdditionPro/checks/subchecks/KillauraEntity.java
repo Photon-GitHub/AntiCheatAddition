@@ -87,27 +87,27 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(final PlayerJoinEvent event)
     {
-        Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), () -> {
-            final Player player = event.getPlayer();
-            switch (player.getGameMode()) {
-                case CREATIVE:
-                case SPECTATOR:
-                    return;
-                case SURVIVAL:
-                case ADVENTURE:
-                    break;
-                default:
-                    throw new IllegalStateException("Unknown Gamemode: " + event.getPlayer().getGameMode().name());
-            }
-
-            // Add velocity to the bot so the bot does never stand inside or in front of the player
-            final User user = UserManager.getUser(player.getUniqueId());
-
-            // Not bypassed
-            if (AACAdditionProCheck.isUserInvalid(user)) {
+        final Player player = event.getPlayer();
+        switch (player.getGameMode()) {
+            case CREATIVE:
+            case SPECTATOR:
                 return;
-            }
+            case SURVIVAL:
+            case ADVENTURE:
+                break;
+            default:
+                throw new IllegalStateException("Unknown Gamemode: " + event.getPlayer().getGameMode().name());
+        }
 
+        // Add velocity to the bot so the bot does never stand inside or in front of the player
+        final User user = UserManager.getUser(player.getUniqueId());
+
+        // Not bypassed
+        if (user == null) {
+            return;
+        }
+
+        Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), () -> {
             WrappedGameProfile gameProfile_ = null;
 
             // Ask API endpoint for valid profiles

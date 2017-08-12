@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.userdata;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -30,7 +31,7 @@ public class UserManager implements Listener
         return users.values();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void on(final PlayerJoinEvent event)
     {
         users.put(event.getPlayer().getUniqueId(), new User(event.getPlayer()));

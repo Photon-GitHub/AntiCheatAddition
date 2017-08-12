@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.util.entities.equipment;
 import de.photon.AACAdditionPro.util.entities.ClientsideEntity;
 import de.photon.AACAdditionPro.util.entities.equipment.category.ArmorEquipmentCategory;
 import de.photon.AACAdditionPro.util.entities.equipment.category.NormalEquipmentCategory;
+import de.photon.AACAdditionPro.util.entities.equipment.category.WeaponsEquipmentCategory;
 import org.bukkit.Material;
 
 import java.util.List;
@@ -60,7 +61,7 @@ public class EquipmentSelector
         boolean fight = ThreadLocalRandom.current().nextBoolean();
 
         if (fight) {
-            NormalEquipmentCategory category = this.database.getCategory(NormalEquipmentCategory.class, entity);
+            WeaponsEquipmentCategory category = this.database.getCategory(WeaponsEquipmentCategory.class, entity);
             return category != null ? category.getMaterials().get(ThreadLocalRandom.current().nextInt(category.getMaterials().size())) : Material.AIR;
         } else {
             NormalEquipmentCategory category = this.database.getCategory(NormalEquipmentCategory.class, entity);

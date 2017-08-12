@@ -20,7 +20,7 @@ public class BasicMovement extends Movement
     private double minXZDifference;
 
     @Override
-    public Location calculate()
+    public Location calculate( Location old )
     {
         // Spawning-Location
         final Location location = player.getLocation();
@@ -38,6 +38,8 @@ public class BasicMovement extends Movement
             location.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
         }
 
-        return location;
+        old.setX( location.getX() );
+        old.setZ( location.getZ() );
+        return old;
     }
 }

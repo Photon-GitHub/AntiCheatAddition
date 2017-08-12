@@ -13,5 +13,5 @@ public abstract class Movement
      *
      * @return the new position of the entity or null when this state has no more movements to offer
      */
-    public abstract Location calculate();
+    public abstract Location calculate( Location old );
 }

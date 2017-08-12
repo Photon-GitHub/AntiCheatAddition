@@ -1,5 +1,7 @@
 package de.photon.AACAdditionPro.util.mathematics;
 
+import de.photon.AACAdditionPro.util.reflection.ClassReflect;
+import de.photon.AACAdditionPro.util.reflection.Reflect;
 import lombok.Getter;
 import lombok.ToString;
 import org.bukkit.util.Vector;
@@ -19,6 +21,18 @@ public class AxisAlignedBB implements Cloneable {
     private double maxY;
     private double maxZ;
 
+    public static AxisAlignedBB fromNms(Object nmsAABB) {
+        ClassReflect reflectNmsAABB = Reflect.from(nmsAABB.getClass());
+
+        double minX = reflectNmsAABB.field(0).from(nmsAABB).asDouble();
+        double minY = reflectNmsAABB.field(1).from(nmsAABB).asDouble();
+        double minZ = reflectNmsAABB.field(2).from(nmsAABB).asDouble();
+        double maxX = reflectNmsAABB.field(3).from(nmsAABB).asDouble();
+        double maxY = reflectNmsAABB.field(4).from(nmsAABB).asDouble();
+        double maxZ = reflectNmsAABB.field(5).from(nmsAABB).asDouble();
+
+        return new AxisAlignedBB( minX, minY, minZ, maxX, maxY, maxZ );
+    }
     /**
      * Construct a new BoundingBox with the min and max coordinates given
      *

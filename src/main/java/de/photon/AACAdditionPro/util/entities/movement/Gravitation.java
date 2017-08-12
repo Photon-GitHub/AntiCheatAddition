@@ -5,7 +5,7 @@ import org.bukkit.util.Vector;
 
 public enum Gravitation
 {
-    PLAYER(-0.08);
+    NORMAL(-0.08);
 
     /**
      * The gravitation that is applied to that type of entity

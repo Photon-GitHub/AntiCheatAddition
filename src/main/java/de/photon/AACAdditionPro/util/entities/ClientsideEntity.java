@@ -130,7 +130,8 @@ public abstract class ClientsideEntity
     protected void tick()
     {
         // Apply motion movement
-        velocity.add(Gravitation.PLAYER.getGravitationalVector()).multiply(.98);
+        velocity.add(Gravitation.NORMAL.getGravitationalVector())
+                .multiply(.98); //minecraft air resistance
 
         double dX = velocity.getX();
         double dY = velocity.getY();

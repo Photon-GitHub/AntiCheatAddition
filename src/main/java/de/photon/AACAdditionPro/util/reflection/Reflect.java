@@ -1,5 +1,7 @@
 package de.photon.AACAdditionPro.util.reflection;
 
+import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,4 +35,11 @@ public class Reflect {
         return null;
     }
 
+    public static ClassReflect fromNms(String classPath) {
+        return from(("net.minecraft.server." + ReflectionUtils.getVersionString()) + "." + classPath);
+    }
+
+    public static ClassReflect fromObc(String classPath) {
+        return from(("org.bukkit.craftbukkit." + ReflectionUtils.getVersionString()) + "." + classPath);
+    }
 }

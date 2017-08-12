@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class KillauraEntity implements AACAdditionProCheck, Listener
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 300);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 60);
 
     @LoadFromConfiguration(configPath = ".position.entityOffset")
     private double entityOffset;

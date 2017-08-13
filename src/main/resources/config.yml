@@ -550,6 +550,13 @@ ClientControl:
          load: false
        # The mod cannot be detected, just disabled
 
+   # A popular ghost-client.
+   Vape:
+      # Do you want to enable the Vape-Control
+      enabled: true
+      commands_on_detection:
+         - "ban {player} Illegal client modification"
+
    # WorldDownloader is a popular modification to get the maps of a server
    WorldDownloader:
       # Do you want to enable the WorldDownloader-Control

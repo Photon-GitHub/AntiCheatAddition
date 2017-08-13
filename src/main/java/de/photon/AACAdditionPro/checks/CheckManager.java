@@ -29,6 +29,7 @@ import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.ForgeControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LabyModControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LiteloaderControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.SchematicaControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VapeControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.WorldDownloaderControl;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 
@@ -46,6 +47,7 @@ public final class CheckManager extends ModuleManager
                 new LabyModControl(),
                 new LiteloaderControl(),
                 new SchematicaControl(),
+                new VapeControl(),
                 new WorldDownloaderControl(),
 
                 // Normal checks

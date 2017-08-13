@@ -20,8 +20,10 @@ public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
+    
     @LoadFromConfiguration(configPath = "max_ping")
     private double max_ping;
+
     @LoadFromConfiguration(configPath = "switch_milliseconds")
     private int switch_milliseconds;
 

@@ -29,7 +29,7 @@ public class VapeControl implements Listener, PluginMessageListener, ClientContr
     @Override
     public AdditionHackType getAdditionHackType()
     {
-        return AdditionHackType.WORLDDOWNLOAD_CONTROL;
+        return AdditionHackType.VAPE_CONTROL;
     }
 
     @EventHandler

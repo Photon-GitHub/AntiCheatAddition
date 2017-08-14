@@ -550,7 +550,8 @@ ClientControl:
          load: false
        # The mod cannot be detected, just disabled
 
-   # A popular ghost-client.
+   # Vape is a very popular ghost-client, often seen in ranked pvp gameplay and optimized to be especially hard to find
+   # in screenshares
    Vape:
       # Do you want to enable the Vape-Control
       enabled: false

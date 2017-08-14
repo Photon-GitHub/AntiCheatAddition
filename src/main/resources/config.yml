@@ -553,7 +553,7 @@ ClientControl:
    # A popular ghost-client.
    Vape:
       # Do you want to enable the Vape-Control
-      enabled: true
+      enabled: false
       commands_on_detection:
          - "ban {player} Illegal client modification"
 

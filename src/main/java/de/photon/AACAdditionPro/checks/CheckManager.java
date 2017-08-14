@@ -5,7 +5,6 @@ import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.ModuleManager;
 import de.photon.AACAdditionPro.checks.subchecks.AutoFish;
 import de.photon.AACAdditionPro.checks.subchecks.AutoPotion;
-import de.photon.AACAdditionPro.checks.subchecks.BlindnessSprint;
 import de.photon.AACAdditionPro.checks.subchecks.EqualRotation;
 import de.photon.AACAdditionPro.checks.subchecks.Esp;
 import de.photon.AACAdditionPro.checks.subchecks.Fastswitch;
@@ -53,7 +52,6 @@ public final class CheckManager extends ModuleManager
                 // Normal checks
                 new AutoFish(),
                 new AutoPotion(),
-                new BlindnessSprint(),
                 new EqualRotation(),
                 new Esp(),
                 new Fastswitch(),

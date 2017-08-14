@@ -93,21 +93,6 @@ AutoPotion:
       2: "aacstaffnotify {player} in {world} is highly suspected for AutoPotion"
       4: "aackick {player} AutoPotion"
 
-# BlindnessSprint checks if a player is sprinting while having the blindness-potion-effect.
-# Please be aware that players can trigger this check without cheats if they get the effect during/shortly after
-# a server change and were sprinting before.
-BlindnessSprint:
-   # Do you want to enable the BlindnessSprint check
-   enabled: true
-   # Violation before AACAdditionPro starts to cancel the movements.
-   # Set this to 0 to never cancel movements.
-   cancel_vl: 5
-   # Map of violation levels to command
-   thresholds:
-      6: "aacstaffnotify {player} in {world} is suspected for Sprint (BlindnessSprint)"
-      11: "aacstaffnotify {player} in {world} is highly suspected for Sprint (BlindnessSprint)"
-      20: "aackick {player} Sprint"
-
 # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
 # This will catch several Scaffold, Tower, Killaura and Aimbot mods
 EqualRotation:

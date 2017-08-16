@@ -10,6 +10,7 @@ import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.storage.datawrappers.BlockPlace;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -32,9 +33,6 @@ public class Tower implements Listener, AACAdditionProCheck
 
     @LoadFromConfiguration(configPath = ".tower_leniency")
     private double tower_leniency;
-
-    @LoadFromConfiguration(configPath = ".jump_boost_leniency")
-    private double jump_boost_leniency;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPre(final BlockPlaceEvent event)
@@ -100,10 +98,10 @@ public class Tower implements Listener, AACAdditionProCheck
 
                 // Real average
                 final double average = user.getTowerData().calculateRealTime();
-                System.out.println("Average: " + average);
+                // System.out.println("Average: " + average);
 
                 // Real check
-                /*if (average < threshold) {
+                if (average < threshold) {
                     final int vlToAdd = (int) Math.min(1 + Math.floor((threshold - average) / 16), 100);
 
                     // Violation-Level handling
@@ -114,7 +112,7 @@ public class Tower implements Listener, AACAdditionProCheck
                         InventoryUtils.syncUpdateInventory(user.getPlayer());
                         // If not cancelled run the verbose message with additional data
                     }, () -> VerboseSender.sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + lenientThreshold + " | real: " + average));
-                }*/
+                }
             }
         }
     }
@@ -128,7 +126,7 @@ public class Tower implements Listener, AACAdditionProCheck
     private double calculateDelay(final Integer amplifier)
     {
         // No JUMP_BOOST
-        /*if (amplifier == null) {
+        if (amplifier == null) {
             return 478.4;
         }
 
@@ -136,7 +134,7 @@ public class Tower implements Listener, AACAdditionProCheck
         if (amplifier <= 0) {
             // Negative JUMP_BOOST -> Not allowed to place blocks -> Very high delay
             return 1500;
-        }*/
+        }
 
         // How many blocks can potentially be placed during one jump cycle
         short maximumPlacedBlocks = 1;
@@ -155,16 +153,16 @@ public class Tower implements Listener, AACAdditionProCheck
 
             // The maximum placed blocks are the next lower integer of the maximum y-Position of the player
             final short flooredBlocks = (short) Math.floor(currentBlockValue);
-            System.out.println("Real-Blocks: " + currentBlockValue + "Floored-Blocks: " + flooredBlocks);
+            // System.out.println("Real-Blocks: " + currentBlockValue + "Floored-Blocks: " + flooredBlocks);
             if (maximumPlacedBlocks < flooredBlocks) {
                 maximumPlacedBlocks = flooredBlocks;
             } else {
                 // Location must be lower than maximumPlacedBlocks and there is negative velocity (in the beginning there is no negative velocity, but maximumPlacedBlocks > flooredBlocks!)
                 if (maximumPlacedBlocks > flooredBlocks && currentVelocity.getY() < 0) {
                     // Convert ticks to milliseconds
-                    System.out.println("Max-Blocks: " + maximumPlacedBlocks);
-                    System.out.println("TowerReal: " + (ticks * 50) / maximumPlacedBlocks);
-                    return (ticks * 50 * (1 + jump_boost_leniency)) / maximumPlacedBlocks;
+                    // System.out.println("Max-Blocks: " + maximumPlacedBlocks);
+                    // System.out.println("TowerReal: " + (ticks * 50) / maximumPlacedBlocks);
+                    return (ticks * 50) / maximumPlacedBlocks;
                 }
             }
         }

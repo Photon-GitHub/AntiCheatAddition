@@ -5,7 +5,6 @@ import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.ModuleManager;
 import de.photon.AACAdditionPro.checks.subchecks.AutoFish;
 import de.photon.AACAdditionPro.checks.subchecks.AutoPotion;
-import de.photon.AACAdditionPro.checks.subchecks.BlindnessSprint;
 import de.photon.AACAdditionPro.checks.subchecks.EqualRotation;
 import de.photon.AACAdditionPro.checks.subchecks.Esp;
 import de.photon.AACAdditionPro.checks.subchecks.Fastswitch;
@@ -29,6 +28,7 @@ import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.ForgeControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LabyModControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LiteloaderControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.SchematicaControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VapeControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.WorldDownloaderControl;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 
@@ -46,12 +46,12 @@ public final class CheckManager extends ModuleManager
                 new LabyModControl(),
                 new LiteloaderControl(),
                 new SchematicaControl(),
+                new VapeControl(),
                 new WorldDownloaderControl(),
 
                 // Normal checks
                 new AutoFish(),
                 new AutoPotion(),
-                new BlindnessSprint(),
                 new EqualRotation(),
                 new Esp(),
                 new Fastswitch(),

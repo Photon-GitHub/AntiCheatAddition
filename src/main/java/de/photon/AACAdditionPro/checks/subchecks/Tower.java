@@ -4,6 +4,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.entities.movement.Gravitation;
 import de.photon.AACAdditionPro.util.entities.movement.Jumping;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
@@ -18,6 +19,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 public class Tower implements Listener, AACAdditionProCheck
 {
@@ -25,10 +27,13 @@ public class Tower implements Listener, AACAdditionProCheck
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
+
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
+
     @LoadFromConfiguration(configPath = ".tower_leniency")
     private double tower_leniency;
+
     @LoadFromConfiguration(configPath = ".jump_boost_leniency")
     private double jump_boost_leniency;
 
@@ -92,85 +97,78 @@ public class Tower implements Listener, AACAdditionProCheck
 
                 // Expected Average
                 threshold /= user.getTowerData().getBuffer_size();
-                threshold *= tower_leniency;
+
+                // Apply lenience
+                final double lenientThreshold = threshold * tower_leniency;
 
                 // Real average
                 final double average = user.getTowerData().calculateRealTime();
+                System.out.println("Average: " + average);
 
                 // Real check
                 if (average < threshold) {
                     final int vlToAdd = (int) Math.min(1 + Math.floor((threshold - average) / 16), 100);
 
                     // Violation-Level handling
-                    final double finalThreshold = threshold;
                     vlManager.flag(event.getPlayer(), vlToAdd, cancel_vl, () ->
                     {
                         event.setCancelled(true);
                         user.getTowerData().updateTimeStamp();
                         InventoryUtils.syncUpdateInventory(user.getPlayer());
                         // If not cancelled run the verbose message with additional data
-                    }, () -> VerboseSender.sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + finalThreshold + " | real: " + average));
+                    }, () -> VerboseSender.sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + lenientThreshold + " | real: " + average));
                 }
             }
         }
     }
 
-    // The amplifier will be incremented by one (Speed I -> 1) or -1 if the effect is not present
+
+    /**
+     * Calculates the time needed to place one block.
+     *
+     * @param amplifier the JUMP_BOOST amplifier the person had while placing the block,
+     *                  incremented by one (Speed I -> 1) or -1 if the effect is not present
+     */
     private double calculateDelay(final short amplifier)
     {
         switch (amplifier) {
             // No potion-effects at all
-            case Short.MIN_VALUE:
-                return 478.5;
+            //case Short.MIN_VALUE:
+            //    return 478.5;
             default:
                 if (amplifier <= 0) {
-                    // Not allowed to place blocks -> High delay
-                    return 1000;
+                    // Not allowed to place blocks -> Very high delay
+                    return 1500;
                 }
 
-                // How many blocks can potentially be placed
+                // How many blocks can potentially be placed during one jump cycle
                 short maximumPlacedBlocks = 1;
 
                 final double tick_step = 0.25;
 
                 // The velocity in the beginning
-                final double starting_velocity = Jumping.getJumpYMotion(amplifier);
-
-                // The acceleration of the gravitation in
-                // blocks / tick
-                final double gravitational_acceleration = -0.08D;
-
-                // This represents the drag in the form of
-                // (1 - drag) / tick
-                final double formula_drag = 0.98D;
+                Vector currentVelocity = new Vector(0, Jumping.getJumpYMotion(amplifier), 0);
 
                 // The first tick is ignored in the loop
-                double lastBlockValue = 0;
-                double currentBlockValue = starting_velocity;
+                double currentBlockValue = 0;
 
-                double currentYMotion = starting_velocity;
+                for (double ticks = 0D; ticks < 160D; ticks += tick_step) {
+                    currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER, tick_step);
 
-                for (double ticks = 0; ticks < 160; ticks += tick_step) {
-                    // 0.25 * 0.08
-                    currentYMotion += gravitational_acceleration * tick_step;
-                    // x^4 = 0.98
-                    currentYMotion *= Math.pow(formula_drag, tick_step);
-
-                    // Due to the quarter tick
-                    currentBlockValue += (currentYMotion * tick_step);
+                    currentBlockValue += (currentVelocity.getY() * tick_step);
 
                     // The maximum placed blocks are the next lower integer of the maximum y-Position of the player
                     final short flooredBlocks = (short) Math.floor(currentBlockValue);
                     if (maximumPlacedBlocks < flooredBlocks) {
                         maximumPlacedBlocks = flooredBlocks;
+                    } else {
+                        // Location must be lower than maximumPlacedBlocks (negative velocity is automatically granted when breaking the loop)
+                        if (maximumPlacedBlocks > flooredBlocks) {
+                            // Convert ticks to milliseconds
+                            System.out.println("TowerReal: " + ticks * 50);
+                            return (ticks * 50 * (1 + jump_boost_leniency)) / maximumPlacedBlocks;
+                        }
                     }
-
-                    // Second solution
-                    if (lastBlockValue > maximumPlacedBlocks && currentBlockValue <= maximumPlacedBlocks) {
-                        // Apply the leniency here, as a block-wise implementation is needed.
-                        return (ticks * 50 * jump_boost_leniency) / maximumPlacedBlocks;
-                    }
-                    lastBlockValue = currentBlockValue;
                 }
 
                 // Too high movement; no checking

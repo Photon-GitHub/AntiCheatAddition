@@ -461,9 +461,6 @@ Tower:
    # Over how much values should AACAdditionPro take the average used for the check
    # Lower values increase the detection speed but can cause more false positives.
    buffer_size: 6
-   # How accurately should the jump be simulated.
-   # Lower values increase the accuracy of the check, but need more
-   tick_step: 0.20
    # If you have false positives decrease this SLIGHTLY.
    tower_leniency: 0.925
    # How much leniency should be applied additionally if the player has the jump_boost effect

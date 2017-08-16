@@ -41,9 +41,6 @@ public class Tower implements Listener, AACAdditionProCheck
     @LoadFromConfiguration(configPath = ".jump_boost_leniency")
     private double jump_boost_leniency;
 
-    @LoadFromConfiguration(configPath = ".tick_step")
-    private double tick_step;
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPre(final BlockPlaceEvent event)
     {
@@ -162,12 +159,12 @@ public class Tower implements Listener, AACAdditionProCheck
         Vector currentVelocity = new Vector(0, Jumping.getJumpYMotion(amplifier), 0);
 
         // The first step is ignored in the loop
-        double currentBlockValue = currentVelocity.getY() * tick_step;
+        double currentBlockValue = currentVelocity.getY();
 
-        for (double ticks = tick_step; ticks < 160D; ticks += tick_step) {
-            currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER, tick_step);
+        for (double ticks = 1; ticks < 160D; ticks++) {
+            currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER);
 
-            currentBlockValue += (currentVelocity.getY() * tick_step);
+            currentBlockValue += currentVelocity.getY();
 
             // The maximum placed blocks are the next lower integer of the maximum y-Position of the player
             final short flooredBlocks = (short) Math.floor(currentBlockValue);

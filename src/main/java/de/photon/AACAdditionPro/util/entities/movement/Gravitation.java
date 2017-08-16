@@ -33,22 +33,20 @@ public enum Gravitation
      *
      * @param input       the input vector (will not be cloned)
      * @param gravitation the type of the {@link org.bukkit.entity.Entity} the {@link Gravitation} relates to.
-     * @param ticks       the time-frame the calculation should use
      */
-    public static Vector applyGravitation(Vector input, Gravitation gravitation, double ticks)
+    public static Vector applyGravitation(Vector input, Gravitation gravitation)
     {
-        return input.setY(input.getY() + (gravitation.gravitationPerTick * ticks));
+        return input.setY(input.getY() + gravitation.gravitationPerTick);
     }
 
     /**
      * This applies the drag of Minecraft's gravitation system (*= 0.98) to a {@link Vector}
      *
      * @param input the input vector (will not be cloned)
-     * @param ticks the time-frame the calculation should use
      */
-    public static Vector applyAirResistance(Vector input, double ticks)
+    public static Vector applyAirResistance(Vector input)
     {
-        return input.multiply(Math.pow(0.98D, ticks));
+        return input.multiply(0.98D);
     }
 
     /**
@@ -56,10 +54,9 @@ public enum Gravitation
      *
      * @param input       the input vector (will not be cloned)
      * @param gravitation the type of the {@link org.bukkit.entity.Entity} the {@link Gravitation} relates to.
-     * @param ticks       the time-frame the calculation should use
      */
-    public static Vector applyGravitationAndAirResistance(Vector input, Gravitation gravitation, double ticks)
+    public static Vector applyGravitationAndAirResistance(Vector input, Gravitation gravitation)
     {
-        return applyAirResistance(applyGravitation(input, gravitation, ticks), ticks);
+        return applyAirResistance(applyGravitation(input, gravitation));
     }
 }

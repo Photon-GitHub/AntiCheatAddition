@@ -130,7 +130,7 @@ public abstract class ClientsideEntity
     protected void tick()
     {
         // Apply motion movement
-        velocity = Gravitation.applyGravitationAndAirResistance(velocity, Gravitation.PLAYER, 1);
+        velocity = Gravitation.applyGravitationAndAirResistance(velocity, Gravitation.PLAYER);
 
         double dX = velocity.getX();
         double dY = velocity.getY();

@@ -163,7 +163,7 @@ public class Tower implements Listener, AACAdditionProCheck
                 if (maximumPlacedBlocks > flooredBlocks && currentVelocity.getY() < 0) {
                     // Convert ticks to milliseconds
                     System.out.println("Max-Blocks: " + maximumPlacedBlocks);
-                    System.out.println("TowerReal: " + ticks * 50);
+                    System.out.println("TowerReal: " + (ticks * 50) / maximumPlacedBlocks);
                     return (ticks * 50 * (1 + jump_boost_leniency)) / maximumPlacedBlocks;
                 }
             }

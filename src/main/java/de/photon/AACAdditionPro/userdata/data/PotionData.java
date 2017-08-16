@@ -36,15 +36,13 @@ public class PotionData extends Data
      * Used to get the Amplifier of a {@link PotionEffect} a player has.
      *
      * @param type The {@link PotionEffectType} of the {@link PotionEffect}
-     * @return the amplifier of the {@link PotionEffect} incremented by 1.
-     * This is the number the player will see in his inventory (Speed I returns 1).
-     * If there is no {@link PotionEffect} which has the right {@link PotionEffectType} -1 will be returned.
+     * @return the amplifier of the {@link PotionEffect} or null if the player doesn't have it.
      */
-    public short getAmplifier(final PotionEffectType type)
+    public Integer getAmplifier(final PotionEffectType type)
     {
         final PotionEffect effect = this.getPotionEffect(type);
         return effect == null ?
-               Short.MIN_VALUE :
-               (short) (1 + effect.getAmplifier());
+               null :
+               effect.getAmplifier();
     }
 }

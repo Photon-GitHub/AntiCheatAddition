@@ -10,6 +10,6 @@ public class BlockPlace
 {
     private final long time;
     private final Block block;
-    private final short speedLevel;
-    private final short jumpBoostLevel;
+    private final Integer speedLevel;
+    private final Integer jumpBoostLevel;
 }

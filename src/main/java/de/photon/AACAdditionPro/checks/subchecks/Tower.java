@@ -21,6 +21,10 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 public class Tower implements Listener, AACAdditionProCheck
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 120L);
@@ -36,6 +40,9 @@ public class Tower implements Listener, AACAdditionProCheck
 
     @LoadFromConfiguration(configPath = ".jump_boost_leniency")
     private double jump_boost_leniency;
+
+    @LoadFromConfiguration(configPath = ".tick_step")
+    private double tick_step;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPre(final BlockPlaceEvent event)
@@ -81,33 +88,40 @@ public class Tower implements Listener, AACAdditionProCheck
                         new BlockPlace(
                                 System.currentTimeMillis(), blockPlaced,
                                 //Speed is not important for this check
-                                Short.MIN_VALUE,
+                                null,
                                 //Jump boost effect is important
                                 user.getPotionData().getAmplifier(PotionEffectType.JUMP)
                         )))
             {
                 // The buffer is filled to the required degree -> Checking now
-                double threshold = 0;
+                final double[] threshold = {0};
 
                 // Iterate through the buffer
+                ExecutorService executorService = Executors.newWorkStealingPool();
+
                 for (final BlockPlace blockPlace : user.getTowerData().getBlockPlaces()) {
-                    final double addThreshold = calculateDelay(blockPlace.getJumpBoostLevel());
-                    threshold += addThreshold;
+                    executorService.submit(() -> threshold[0] += calculateDelay(blockPlace.getJumpBoostLevel()));
+                }
+
+                try {
+                    executorService.awaitTermination(50, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
 
                 // Expected Average
-                threshold /= user.getTowerData().getBuffer_size();
+                threshold[0] /= user.getTowerData().getBuffer_size();
 
                 // Apply lenience
-                final double lenientThreshold = threshold * tower_leniency;
+                final double lenientThreshold = threshold[0] * tower_leniency;
 
                 // Real average
                 final double average = user.getTowerData().calculateRealTime();
                 System.out.println("Average: " + average);
 
                 // Real check
-                if (average < threshold) {
-                    final int vlToAdd = (int) Math.min(1 + Math.floor((threshold - average) / 16), 100);
+                if (average < threshold[0]) {
+                    final int vlToAdd = (int) Math.min(1 + Math.floor((threshold[0] - average) / 16), 100);
 
                     // Violation-Level handling
                     vlManager.flag(event.getPlayer(), vlToAdd, cancel_vl, () ->
@@ -126,54 +140,51 @@ public class Tower implements Listener, AACAdditionProCheck
     /**
      * Calculates the time needed to place one block.
      *
-     * @param amplifier the JUMP_BOOST amplifier the person had while placing the block,
-     *                  incremented by one (Speed I -> 1) or -1 if the effect is not present
+     * @param amplifier the JUMP_BOOST amplifier the person had while placing the block, or null if he did not have the JUMP_BOOST effect
      */
-    private double calculateDelay(final short amplifier)
+    private double calculateDelay(final Integer amplifier)
     {
-        switch (amplifier) {
-            // No potion-effects at all
-            //case Short.MIN_VALUE:
-            //    return 478.5;
-            default:
-                if (amplifier <= 0) {
-                    // Not allowed to place blocks -> Very high delay
-                    return 1500;
-                }
-
-                // How many blocks can potentially be placed during one jump cycle
-                short maximumPlacedBlocks = 1;
-
-                final double tick_step = 0.25;
-
-                // The velocity in the beginning
-                Vector currentVelocity = new Vector(0, Jumping.getJumpYMotion(amplifier), 0);
-
-                // The first tick is ignored in the loop
-                double currentBlockValue = 0;
-
-                for (double ticks = 0D; ticks < 160D; ticks += tick_step) {
-                    currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER, tick_step);
-
-                    currentBlockValue += (currentVelocity.getY() * tick_step);
-
-                    // The maximum placed blocks are the next lower integer of the maximum y-Position of the player
-                    final short flooredBlocks = (short) Math.floor(currentBlockValue);
-                    if (maximumPlacedBlocks < flooredBlocks) {
-                        maximumPlacedBlocks = flooredBlocks;
-                    } else {
-                        // Location must be lower than maximumPlacedBlocks (negative velocity is automatically granted when breaking the loop)
-                        if (maximumPlacedBlocks > flooredBlocks) {
-                            // Convert ticks to milliseconds
-                            System.out.println("TowerReal: " + ticks * 50);
-                            return (ticks * 50 * (1 + jump_boost_leniency)) / maximumPlacedBlocks;
-                        }
-                    }
-                }
-
-                // Too high movement; no checking
-                return 0;
+        // No JUMP_BOOST
+        /*if (amplifier == null) {
+            return 478.4;
         }
+
+        // Player has JUMP_BOOST
+        if (amplifier <= 0) {
+            // Negative JUMP_BOOST -> Not allowed to place blocks -> Very high delay
+            return 1500;
+        }*/
+
+        // How many blocks can potentially be placed during one jump cycle
+        short maximumPlacedBlocks = 1;
+
+        // The velocity in the beginning
+        Vector currentVelocity = new Vector(0, Jumping.getJumpYMotion(amplifier), 0);
+
+        // The first step is ignored in the loop
+        double currentBlockValue = currentVelocity.getY() * tick_step;
+
+        for (double ticks = tick_step; ticks < 160D; ticks += tick_step) {
+            currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER, tick_step);
+
+            currentBlockValue += (currentVelocity.getY() * tick_step);
+
+            // The maximum placed blocks are the next lower integer of the maximum y-Position of the player
+            final short flooredBlocks = (short) Math.floor(currentBlockValue);
+            if (maximumPlacedBlocks < flooredBlocks) {
+                maximumPlacedBlocks = flooredBlocks;
+            } else {
+                // Location must be lower than maximumPlacedBlocks and there is negative velocity (in the beginning there is no negative velocity, but maximumPlacedBlocks > flooredBlocks!)
+                if (maximumPlacedBlocks > flooredBlocks && currentVelocity.getY() < 0) {
+                    // Convert ticks to milliseconds
+                    System.out.println("TowerReal: " + ticks * 50);
+                    return (ticks * 50 * (1 + jump_boost_leniency)) / maximumPlacedBlocks;
+                }
+            }
+        }
+
+        // Too high movement; no checking
+        return 0;
     }
 
     @Override

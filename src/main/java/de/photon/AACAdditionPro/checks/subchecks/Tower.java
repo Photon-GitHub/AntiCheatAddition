@@ -147,7 +147,7 @@ public class Tower implements Listener, AACAdditionProCheck
         // The first step is ignored in the loop
         double currentBlockValue = currentVelocity.getY();
 
-        for (double ticks = 1; ticks < 160D; ticks++) {
+        for (short ticks = 1; ticks < 160; ticks++) {
             currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER);
 
             currentBlockValue += currentVelocity.getY();

@@ -310,13 +310,13 @@ KillauraEntity:
       normal:
          # Use food
          cooked: true
-         # Material of tools
+         # Materials of wielded tools
          wood: true
          stone: true
          gold: true
          diamond: true
          iron: true
-         # FnS
+         # Flint and Steel
          flint_and_steel: true
          bow: true
          fishing_rod: true
@@ -328,17 +328,17 @@ KillauraEntity:
          potion: true
          glass_bottle: true
          exp_bottle: true
-         # MC normal blocks
+         # Normal Minecraft blocks
          dirt: true
          grass: true
          stone: true
          coal: true
          gold_ore: true
          iron_ore: true
-         # Working mats
+         # Working materials
          ingot: true
          wood: true
-         diamon: true
+         diamond: true
    thresholds:
       5: "aacstaffnotify {player} in {world} is suspected for Killaura"
       10: "aacstaffnotify {player} in {world} is highly suspected for Killaura"

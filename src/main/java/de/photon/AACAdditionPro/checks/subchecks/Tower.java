@@ -144,10 +144,11 @@ public class Tower implements Listener, AACAdditionProCheck
         // The velocity in the beginning
         Vector currentVelocity = new Vector(0, Jumping.getJumpYMotion(amplifier), 0);
 
-        // The first step is ignored in the loop
+        // The first tick (1) happens here
         double currentBlockValue = currentVelocity.getY();
 
-        for (short ticks = 1; ticks < 160; ticks++) {
+        // Start the tick-loop at 2 due to the one tick outside.
+        for (short ticks = 2; ticks < 160; ticks++) {
             currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER);
 
             currentBlockValue += currentVelocity.getY();

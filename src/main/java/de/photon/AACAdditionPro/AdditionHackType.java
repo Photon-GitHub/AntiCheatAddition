@@ -8,7 +8,6 @@ public enum AdditionHackType
     // Normal checks
     AUTO_FISH("AutoFish"),
     AUTO_POTION("AutoPotion"),
-    BLINDNESS_SPRINT("BlindnessSprint", "failed Sprint (Blindness)"),
     EQUAL_ROTATION("EqualRotation"),
     ESP("Esp"),
     FASTSWITCH("Fastswitch"),

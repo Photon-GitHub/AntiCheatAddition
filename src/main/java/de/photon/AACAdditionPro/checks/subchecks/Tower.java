@@ -10,7 +10,6 @@ import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.storage.datawrappers.BlockPlace;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -20,10 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class Tower implements Listener, AACAdditionProCheck
 {
@@ -91,34 +86,25 @@ public class Tower implements Listener, AACAdditionProCheck
                         )))
             {
                 // The buffer is filled to the required degree -> Checking now
-                final double[] threshold = {0};
-
-                // Iterate through the buffer
-                ExecutorService executorService = Executors.newWorkStealingPool();
+                double threshold = 0;
 
                 for (final BlockPlace blockPlace : user.getTowerData().getBlockPlaces()) {
-                    executorService.submit(() -> threshold[0] += calculateDelay(blockPlace.getJumpBoostLevel()));
-                }
-
-                try {
-                    executorService.awaitTermination(50, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    threshold += calculateDelay(blockPlace.getJumpBoostLevel());
                 }
 
                 // Expected Average
-                threshold[0] /= user.getTowerData().getBuffer_size();
+                threshold /= user.getTowerData().getBuffer_size();
 
                 // Apply lenience
-                final double lenientThreshold = threshold[0] * tower_leniency;
+                final double lenientThreshold = threshold * tower_leniency;
 
                 // Real average
                 final double average = user.getTowerData().calculateRealTime();
                 System.out.println("Average: " + average);
 
                 // Real check
-                if (average < threshold[0]) {
-                    final int vlToAdd = (int) Math.min(1 + Math.floor((threshold[0] - average) / 16), 100);
+                /*if (average < threshold) {
+                    final int vlToAdd = (int) Math.min(1 + Math.floor((threshold - average) / 16), 100);
 
                     // Violation-Level handling
                     vlManager.flag(event.getPlayer(), vlToAdd, cancel_vl, () ->
@@ -128,7 +114,7 @@ public class Tower implements Listener, AACAdditionProCheck
                         InventoryUtils.syncUpdateInventory(user.getPlayer());
                         // If not cancelled run the verbose message with additional data
                     }, () -> VerboseSender.sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + lenientThreshold + " | real: " + average));
-                }
+                }*/
             }
         }
     }

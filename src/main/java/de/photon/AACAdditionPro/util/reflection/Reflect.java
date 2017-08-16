@@ -35,11 +35,11 @@ public class Reflect {
         return null;
     }
 
-    public static ClassReflect fromNms(String classPath) {
+    public static ClassReflect fromNMS(String classPath) {
         return from(("net.minecraft.server." + ReflectionUtils.getVersionString()) + "." + classPath);
     }
 
-    public static ClassReflect fromObc(String classPath) {
+    public static ClassReflect fromOBC(String classPath) {
         return from(("org.bukkit.craftbukkit." + ReflectionUtils.getVersionString()) + "." + classPath);
     }
 }

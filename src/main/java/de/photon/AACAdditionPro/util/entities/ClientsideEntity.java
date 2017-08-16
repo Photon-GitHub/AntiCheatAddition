@@ -130,8 +130,7 @@ public abstract class ClientsideEntity
     protected void tick()
     {
         // Apply motion movement
-        velocity.add(Gravitation.NORMAL.getGravitationalVector())
-                .multiply(.98); //minecraft air resistance
+        velocity = Gravitation.applyDrag(velocity.add(Gravitation.PLAYER.getGravitationalVector()));
 
         double dX = velocity.getX();
         double dY = velocity.getY();
@@ -139,38 +138,41 @@ public abstract class ClientsideEntity
 
         // Since we need collision detections now we need the NMS world
         AxisAlignedBB bb = new AxisAlignedBB(
-            this.location.getX() - ( this.size.getX() / 2 ),
-            this.location.getY(), // Care that the location is based on the feet location
-            this.location.getZ() - ( this.size.getZ() / 2 ),
-            this.location.getX() + ( this.size.getX() / 2 ),
-            this.location.getY() + this.size.getY(), // Care that the location is based on the feet location
-            this.location.getZ() + ( this.size.getZ() / 2 )
+                this.location.getX() - (this.size.getX() / 2),
+                // The location is based on the feet location
+                this.location.getY(),
+                this.location.getZ() - (this.size.getZ() / 2),
+
+                this.location.getX() + (this.size.getX() / 2),
+                // The location is based on the feet location
+                this.location.getY() + this.size.getY(),
+                this.location.getZ() + (this.size.getZ() / 2)
         );
-        List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(observedPlayer, bb.addCoordinates( dX, dY, dZ ));
+        List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(observedPlayer, bb.addCoordinates(dX, dY, dZ));
 
         // Check if we would hit a y border block
-        for ( AxisAlignedBB axisAlignedBB : collisions ) {
-            dY = axisAlignedBB.calculateYOffset( bb, dY );
+        for (AxisAlignedBB axisAlignedBB : collisions) {
+            dY = axisAlignedBB.calculateYOffset(bb, dY);
         }
 
-        bb.offset( 0, dY, 0 );
+        bb.offset(0, dY, 0);
 
         // Check if we would hit a x border block
-        for ( AxisAlignedBB axisAlignedBB : collisions ) {
-            dX = axisAlignedBB.calculateXOffset( bb, dX );
+        for (AxisAlignedBB axisAlignedBB : collisions) {
+            dX = axisAlignedBB.calculateXOffset(bb, dX);
         }
 
-        bb.offset( dX, 0, 0 );
+        bb.offset(dX, 0, 0);
 
         // Check if we would hit a z border block
-        for ( AxisAlignedBB axisAlignedBB : collisions ) {
-            dZ = axisAlignedBB.calculateZOffset( bb, dZ );
+        for (AxisAlignedBB axisAlignedBB : collisions) {
+            dZ = axisAlignedBB.calculateZOffset(bb, dZ);
         }
 
-        bb.offset( 0, 0, dZ );
+        bb.offset(0, 0, dZ);
 
         // Move
-        location.add( dX, dY, dZ );
+        location.add(dX, dY, dZ);
 
         sendMove();
         sendHeadYaw();

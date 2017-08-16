@@ -5,27 +5,20 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.api.KillauraEntityEquipmentCategory;
 import de.photon.AACAdditionPro.events.KillauraEntityEquipmentPrepareEvent;
 import de.photon.AACAdditionPro.util.entities.ClientsideEntity;
-import de.photon.AACAdditionPro.util.entities.equipment.category.ArmorEquipmentCategory;
 import de.photon.AACAdditionPro.util.entities.equipment.category.EquipmentCategory;
 import de.photon.AACAdditionPro.util.files.ConfigUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
 
-public final class EquipmentDatabase
+final class EquipmentDatabase
 {
     // We ensure that getCategory can only we called from the main thread. so we are sure only one write at a time can happen
     private final Map<Class<? extends EquipmentCategory>, Constructor<? extends EquipmentCategory>> constructorCache = new HashMap<>();
@@ -36,8 +29,9 @@ public final class EquipmentDatabase
      * {@link KillauraEntityEquipmentPrepareEvent}.
      *
      * @param categoryClass The class of the category
-     * @param entity    For which entity this category is
-     * @param <T>   Type of Category Object
+     * @param entity        For which entity this category is
+     * @param <T>           Type of Category Object
+     *
      * @return a already filtered category with materials ready to choose from
      */
     <T extends EquipmentCategory> T getCategory(Class<T> categoryClass, ClientsideEntity entity)
@@ -64,7 +58,7 @@ public final class EquipmentDatabase
             return reflectedConstructor;
         });
 
-        // Ok now we got the constructor, get a new instance now and let the api handle the materials
+        // Ok now we got the constructor, get a new instance and let the api handle the materials
         try {
             EquipmentCategory category = constructor.newInstance();
             category.load();
@@ -76,15 +70,19 @@ public final class EquipmentDatabase
 
             for (final String optionKey : optionKeys) {
                 if (!AACAdditionPro.getInstance().getConfig().getBoolean(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".equipment." + categoryName + "." + optionKey)) {
-                    // Filter out swords
+                    // Filter out the affected materials
                     materials.removeIf((material -> material.name().contains(optionKey.toUpperCase())));
                 }
             }
 
             // Fire a event which should always be sync
-            KillauraEntityEquipmentCategory entityEquipmentCategory = categoryName.equals("armor") ? KillauraEntityEquipmentCategory.ARMOR : KillauraEntityEquipmentCategory.MAIN_HAND;
-            KillauraEntityEquipmentPrepareEvent event = new KillauraEntityEquipmentPrepareEvent(entity.getObservedPlayer(), entityEquipmentCategory, materials);
-            Bukkit.getPluginManager().callEvent(event);
+            Bukkit.getPluginManager().callEvent(
+                    new KillauraEntityEquipmentPrepareEvent(
+                            entity.getObservedPlayer(),
+                            // Get the category of the config-section name
+                            KillauraEntityEquipmentCategory.getEquipmentByConfigSection(categoryName),
+                            materials)
+                                               );
 
             return (T) category;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {

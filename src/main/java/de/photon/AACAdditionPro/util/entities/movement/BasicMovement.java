@@ -7,10 +7,6 @@ import org.bukkit.util.Vector;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * @author geNAZt
- * @version 1.0
- */
 @AllArgsConstructor
 public class BasicMovement extends Movement
 {
@@ -20,7 +16,7 @@ public class BasicMovement extends Movement
     private double minXZDifference;
 
     @Override
-    public Location calculate( Location old )
+    public Location calculate(Location old)
     {
         // Spawning-Location
         final Location location = player.getLocation();
@@ -38,8 +34,8 @@ public class BasicMovement extends Movement
             location.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
         }
 
-        old.setX( location.getX() );
-        old.setZ( location.getZ() );
+        old.setX(location.getX());
+        old.setZ(location.getZ());
         return old;
     }
 }

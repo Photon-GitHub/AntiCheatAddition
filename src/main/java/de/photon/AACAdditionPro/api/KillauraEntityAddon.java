@@ -17,7 +17,7 @@ public abstract class KillauraEntityAddon
     public abstract WrappedGameProfile getKillauraEntityGameProfile(Player player);
 
     /**
-     * @return Whether the KillauraEntity is enabled and no other plugin overrided your addon
+     * @return Whether the KillauraEntity is enabled and no other plugin overrode your addon
      */
     protected final boolean isActive()
     {

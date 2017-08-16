@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.util.entities.equipment;
 
 import de.photon.AACAdditionPro.util.entities.ClientsideEntity;
 import de.photon.AACAdditionPro.util.entities.equipment.category.ArmorEquipmentCategory;
+import de.photon.AACAdditionPro.util.entities.equipment.category.EquipmentCategory;
 import de.photon.AACAdditionPro.util.entities.equipment.category.NormalEquipmentCategory;
 import de.photon.AACAdditionPro.util.entities.equipment.category.WeaponsEquipmentCategory;
 import org.bukkit.Material;
@@ -9,9 +10,6 @@ import org.bukkit.Material;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * @author geNAZt
- */
 public class EquipmentSelector
 {
     private final EquipmentDatabase database;
@@ -32,7 +30,7 @@ public class EquipmentSelector
     {
         // Check if the state of the armor database is correct
         ArmorEquipmentCategory category = this.database.getCategory(ArmorEquipmentCategory.class, entity);
-        if ( category != null && category.isValid() ) {
+        if (category != null && category.isValid()) {
             final List<Material> armorMaterials = category.getMaterials();
             final Material[] armor = new Material[4];
 
@@ -60,12 +58,11 @@ public class EquipmentSelector
         // Decide from which pool we select (fight or normal)
         boolean fight = ThreadLocalRandom.current().nextBoolean();
 
-        if (fight) {
-            WeaponsEquipmentCategory category = this.database.getCategory(WeaponsEquipmentCategory.class, entity);
-            return category != null ? category.getMaterials().get(ThreadLocalRandom.current().nextInt(category.getMaterials().size())) : Material.AIR;
-        } else {
-            NormalEquipmentCategory category = this.database.getCategory(NormalEquipmentCategory.class, entity);
-            return category != null ? category.getMaterials().get(ThreadLocalRandom.current().nextInt(category.getMaterials().size())) : Material.AIR;
-        }
+        EquipmentCategory category = fight ?
+                                     this.database.getCategory(WeaponsEquipmentCategory.class, entity) :
+                                     this.database.getCategory(NormalEquipmentCategory.class, entity);
+        return category != null ?
+               category.getMaterials().get(ThreadLocalRandom.current().nextInt(category.getMaterials().size())) :
+               Material.AIR;
     }
 }

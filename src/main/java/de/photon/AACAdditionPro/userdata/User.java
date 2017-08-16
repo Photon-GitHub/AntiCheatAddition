@@ -20,7 +20,6 @@ import de.photon.AACAdditionPro.userdata.data.TeamingData;
 import de.photon.AACAdditionPro.userdata.data.TeleportData;
 import de.photon.AACAdditionPro.userdata.data.TimeData;
 import lombok.Getter;
-import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -125,7 +124,7 @@ public class User
 
     public boolean isBypassed()
     {
-        return !AACAPIProvider.isAPILoaded() || AACAPIProvider.getAPI().isBypassed(this.player);
+        return Permissions.hasPermission(this.player, Permissions.BYPASS);
     }
 
     /**

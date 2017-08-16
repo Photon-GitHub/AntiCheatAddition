@@ -1,10 +1,8 @@
 package de.photon.AACAdditionPro.util.multiversion;
 
 import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
-import de.photon.AACAdditionPro.util.reflection.ClassReflect;
 import de.photon.AACAdditionPro.util.reflection.Reflect;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -32,26 +30,26 @@ public final class ReflectionUtils
     {
         // First we need a NMS bounding box
         Object nmsAxisAlignedBB = Reflect
-                .fromNms("AxisAlignedBB")
+                .fromNMS("AxisAlignedBB")
                 .constructor(double.class, double.class, double.class, double.class, double.class, double.class)
                 .instance(boundingBox.getMaxX(), boundingBox.getMaxY(), boundingBox.getMaxZ(),
                         boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMinZ() );
 
         // Now we need the NMS entity of the player (since the bot has none)
         Object nmsHandle = Reflect
-                .fromObc("entity.CraftPlayer")
+                .fromOBC("entity.CraftPlayer")
                 .method("getHandle")
                 .invoke(player);
 
         // Now we need to call getCubes(Entity, AxisAlignedBB) on the world
         Object nmsWorld = Reflect
-                .fromObc("CraftWorld")
+                .fromOBC("CraftWorld")
                 .field("world")
                 .from(player.getWorld())
                 .as(Object.class);
 
         Object returnVal = Reflect
-                .fromNms("World")
+                .fromNMS("World")
                 .method("getCubes")
                 .invoke(nmsWorld, nmsHandle, nmsAxisAlignedBB);
 

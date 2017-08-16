@@ -6,10 +6,6 @@ import lombok.Getter;
 import lombok.ToString;
 import org.bukkit.util.Vector;
 
-/**
- * @author geNAZt
- * @version 1.0
- */
 @Getter
 @ToString
 public class AxisAlignedBB implements Cloneable {

@@ -9,14 +9,13 @@ import org.bukkit.event.player.PlayerEvent;
 import java.util.List;
 
 /**
- * @author geNAZt
- *
- * This event gets fired when a Killaura Entity decides to take a new item in its inventory. The List given
- * represents the Materials it can choose from. The Category shows for what the list is.
- *
- * For example you get a event with Category "Armor" and a list of armor materials, you can decide which
- * armor the entity should take by removing all other options in the list. If you remove all options the entity
- * won't change its inventory.
+ * This event is called once a {@link de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity} modifies an item in
+ * its {@link org.bukkit.inventory.Inventory}. The replacing {@link Material} will be chosen from the provided {@link List}
+ * of {@link Material}s. The {@link KillauraEntityEquipmentCategory} enables you to see the usage of the {@link org.bukkit.entity.Item}.
+ * <p>
+ * E.g. After intercepting an Event with the {@link KillauraEntityEquipmentCategory} ARMOR you can modify the {@link List}
+ * of armor materials you can influence the result by removing or adding {@link Material}s to the {@link List}, or even
+ * force a {@link Material} by removing all other entries.
  */
 public class KillauraEntityEquipmentPrepareEvent extends PlayerEvent
 {
@@ -36,16 +35,18 @@ public class KillauraEntityEquipmentPrepareEvent extends PlayerEvent
      *
      * @return category of the materials
      */
-    public KillauraEntityEquipmentCategory getCategory() {
+    public KillauraEntityEquipmentCategory getCategory()
+    {
         return this.category;
     }
 
     /**
-     * List of materials the entity will select from
+     * List of {@link Material}s the resulting {@link Material} will be chosen from.
      *
      * @return the list is fully mutable, you may add or remove materials
      */
-    public List<Material> getMaterials() {
+    public List<Material> getMaterials()
+    {
         return this.materials;
     }
 

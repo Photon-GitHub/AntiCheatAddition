@@ -48,8 +48,7 @@ public abstract class InternalCommand
     {
         //Permission-Handling
         if (this.permission == null ||
-            Permissions.hasPermission(sender, this.permission) ||
-            sender.isOp())
+            Permissions.hasPermission(sender, this.permission))
         {
             //Command-Help
             if (arguments.size() == 1 && arguments.getFirst() != null && "?".equals(arguments.getFirst())) {

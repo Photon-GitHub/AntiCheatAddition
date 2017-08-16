@@ -10,6 +10,7 @@ import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformat
 import de.photon.AACAdditionPro.util.entities.equipment.Equipment;
 import de.photon.AACAdditionPro.util.entities.movement.BasicMovement;
 import de.photon.AACAdditionPro.util.entities.movement.Movement;
+import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import lombok.Getter;
@@ -26,16 +27,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ClientsidePlayerEntity extends ClientsideEntity {
+public class ClientsidePlayerEntity extends ClientsideEntity
+{
     private static final boolean shouldAssignTeam;
     private static final boolean shouldSwing;
     private static final boolean shouldSwap;
 
     static {
         // Init additional behaviour configs
-        shouldAssignTeam = AACAdditionPro.getInstance().getConfig().getBoolean( AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".behaviour.team.enabled" );
-        shouldSwing = AACAdditionPro.getInstance().getConfig().getBoolean( AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swing.enabled" );
-        shouldSwap = AACAdditionPro.getInstance().getConfig().getBoolean( AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swap.enabled" );
+        shouldAssignTeam = AACAdditionPro.getInstance().getConfig().getBoolean(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".behaviour.team.enabled");
+        shouldSwing = AACAdditionPro.getInstance().getConfig().getBoolean(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swing.enabled");
+        shouldSwap = AACAdditionPro.getInstance().getConfig().getBoolean(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swap.enabled");
     }
 
     @Getter
@@ -59,106 +61,108 @@ public class ClientsidePlayerEntity extends ClientsideEntity {
 
     private Equipment equipment;
 
-    public ClientsidePlayerEntity( final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange, double minXZDifference ) {
-        super( observedPlayer );
+    public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange, double minXZDifference)
+    {
+        super(observedPlayer);
 
         // This needs to match a NMS EntityPlayer hitbox
-        this.size.setX( 0.6 );
-        this.size.setY( 1.8 );
-        this.size.setZ( 0.6 );
+        this.size.setX(2 * Hitbox.PLAYER.getOffset());
+        this.size.setY(Hitbox.PLAYER.getHeight());
+        this.size.setZ(2 * Hitbox.PLAYER.getOffset());
 
         // Get skin data and name
         this.gameProfile = gameProfile;
 
         // EquipmentData
-        this.equipment = new Equipment( this );
+        this.equipment = new Equipment(this);
 
         // Init movement states
-        this.movementStates.put( "basic", new BasicMovement( observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference ) );
+        this.movementStates.put("basic", new BasicMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
 
         // Set default movement state
-        this.currentMovementCalculator = this.movementStates.get( "basic" );
+        this.currentMovementCalculator = this.movementStates.get("basic");
 
         recursiveUpdatePing();
     }
 
     @Override
-    protected void tick() {
+    protected void tick()
+    {
         super.tick();
 
         // Teams + Scoreboard
-        if ( shouldAssignTeam ) {
-            DisplayInformation.applyTeams( this );
+        if (shouldAssignTeam) {
+            DisplayInformation.applyTeams(this);
         }
 
         // Try to look to the target
         Location target = this.observedPlayer.getLocation();
         double diffX = target.getX() - this.location.getX();
-        double diffY = target.getY() + this.observedPlayer.getEyeHeight() * 0.9D - ( this.location.getY() + this.observedPlayer.getEyeHeight() );
+        double diffY = target.getY() + this.observedPlayer.getEyeHeight() * 0.9D - (this.location.getY() + this.observedPlayer.getEyeHeight());
         double diffZ = target.getZ() - this.location.getZ();
-        double dist = Math.sqrt( diffX * diffX + diffZ * diffZ );
+        double dist = Math.hypot(diffX, diffZ);
 
-        float yaw = (float) ( Math.atan2( diffZ, diffX ) * 180.0D / 3.141592653589793D ) - 90.0F;
-        float pitch = (float) ( Math.asin( diffY / dist ) * 180D / Math.PI );
+        float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0F;
+        float pitch = (float) Math.toDegrees(Math.asin(diffY / dist));
 
-        pitch += ThreadLocalRandom.current().nextInt( 5 );
+        pitch += ThreadLocalRandom.current().nextInt(5);
 
-        while ( pitch > 90 ) {
+        while (pitch > 90) {
             pitch -= 90;
         }
 
-        while ( pitch < -90 ) {
+        while (pitch < -90) {
             pitch += 90;
         }
 
         float newHeadYaw;
         do {
-            newHeadYaw = (float) ( yaw + 10 + ThreadLocalRandom.current().nextDouble( 20 ) );
-        } while ( getFixRotation( headYaw ) == getFixRotation( newHeadYaw ) );
+            newHeadYaw = (float) (yaw + 10 + ThreadLocalRandom.current().nextDouble(20));
+        } while (getFixRotation(headYaw) == getFixRotation(newHeadYaw));
 
-        while ( newHeadYaw > 180 ) {
+        while (newHeadYaw > 180) {
             newHeadYaw -= 180;
         }
 
-        while ( newHeadYaw < -180 ) {
+        while (newHeadYaw < -180) {
             newHeadYaw += 180;
         }
 
         this.headYaw = newHeadYaw;
 
         // Get the next position and move
-        Location location = this.currentMovementCalculator.calculate( this.location.clone() );
-        if ( location == null ) {
-            this.currentMovementCalculator = this.movementStates.get( "basic" );
-            location = this.currentMovementCalculator.calculate( this.location.clone() );
+        Location location = this.currentMovementCalculator.calculate(this.location.clone());
+        if (location == null) {
+            this.currentMovementCalculator = this.movementStates.get("basic");
+            location = this.currentMovementCalculator.calculate(this.location.clone());
         }
 
-        location.setYaw( yaw );
-        location.setPitch( pitch );
+        location.setYaw(yaw);
+        location.setPitch(pitch);
         this.move(location);
 
         // Maybe we should switch movement states?
-        if ( lastJump++ > 30 + ThreadLocalRandom.current().nextInt( 80 ) ) {
+        if (lastJump++ > 30 + ThreadLocalRandom.current().nextInt(80)) {
             lastJump = 0;
             jump();
         }
 
         // Swing items if enabled
-        if ( shouldSwing ) {
-            int should = 15 + ThreadLocalRandom.current().nextInt( 35 );
-            if ( lastSwing++ > should ) {
+        if (shouldSwing) {
+            int should = 15 + ThreadLocalRandom.current().nextInt(35);
+            if (lastSwing++ > should) {
                 lastSwing = 0;
 
-                if ( isSwingable( equipment.getMainHand() ) ) {
+                if (isSwingable(equipment.getMainHand())) {
                     swing();
                 }
             }
         }
 
         // Swap items if needed
-        if ( shouldSwap ) {
-            int should = 40 + ThreadLocalRandom.current().nextInt( 65 );
-            if ( lastSwap++ > should ) {
+        if (shouldSwap) {
+            int should = 40 + ThreadLocalRandom.current().nextInt(65);
+            if (lastSwap++ > should) {
                 lastSwap = 0;
                 equipment.equipInHand();
                 equipment.equipPlayerEntity();
@@ -166,19 +170,22 @@ public class ClientsidePlayerEntity extends ClientsideEntity {
         }
     }
 
-    private byte getFixRotation( float yawpitch ) {
-        return (byte) ( (int) ( yawpitch * 256.0F / 360.0F ) );
+    private byte getFixRotation(float yawpitch)
+    {
+        return (byte) ((int) (yawpitch * 256.0F / 360.0F));
     }
 
-    private boolean isSwingable( ItemStack itemStack ) {
+    private boolean isSwingable(ItemStack itemStack)
+    {
         Material material = itemStack.getType();
         String name = material.name();
-        return name.contains( "SWORD" ) || name.contains( "AXE" ) || name.contains( "HOE" ) || material == Material.FISHING_ROD;
+        return name.contains("SWORD") || name.contains("AXE") || name.contains("HOE") || material == Material.FISHING_ROD;
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //
 
-    public String getName() {
+    public String getName()
+    {
         return this.gameProfile.getName();
     }
 
@@ -188,52 +195,54 @@ public class ClientsidePlayerEntity extends ClientsideEntity {
      * This changes the Ping of the {@link ClientsidePlayerEntity}.
      * The recursive call is needed to randomize the ping-update
      */
-    private void recursiveUpdatePing() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask( AACAdditionPro.getInstance(), () -> {
-            DisplayInformation.updatePing( this );
+    private void recursiveUpdatePing()
+    {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> {
+            DisplayInformation.updatePing(this);
             recursiveUpdatePing();
-        }, 10 + ThreadLocalRandom.current().nextInt( 35 ) );
+        }, 10 + ThreadLocalRandom.current().nextInt(35));
     }
 
     // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //
 
     @Override
-    public void spawn( Location location ) {
-        super.spawn( location );
+    public void spawn(Location location)
+    {
+        super.spawn(location);
         this.lastLocation = location.clone();
-        this.move( location );
+        this.move(location);
         // Add the player with PlayerInfo
-        final PlayerInfoData playerInfoData = new PlayerInfoData( this.gameProfile, ping, EnumWrappers.NativeGameMode.SURVIVAL, null );
+        final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
 
         final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
-        playerInfoWrapper.setAction( EnumWrappers.PlayerInfoAction.ADD_PLAYER );
-        playerInfoWrapper.setData( Collections.singletonList( playerInfoData ) );
+        playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
+        playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
 
-        playerInfoWrapper.sendPacket( observedPlayer );
+        playerInfoWrapper.sendPacket(observedPlayer);
 
         // DataWatcher
         final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
-        dataWatcher.setObject( 6, (float) 20 );
-        dataWatcher.setObject( 10, (byte) 127 ); //TODO player's probably do have more things set here
+        dataWatcher.setObject(6, (float) 20);
+        dataWatcher.setObject(10, (byte) 127); //TODO player's probably do have more things set here
 
         // Spawn the entity
         final WrapperPlayServerNamedEntitySpawn spawnEntityWrapper = new WrapperPlayServerNamedEntitySpawn();
 
-        spawnEntityWrapper.setEntityID( this.entityID );
-        spawnEntityWrapper.setMetadata( dataWatcher );
-        spawnEntityWrapper.setPosition( location.toVector() );
-        spawnEntityWrapper.setPlayerUUID( this.gameProfile.getUUID() );
-        spawnEntityWrapper.setYaw( ThreadLocalRandom.current().nextInt( 15 ) );
-        spawnEntityWrapper.setPitch( ThreadLocalRandom.current().nextInt( 15 ) );
+        spawnEntityWrapper.setEntityID(this.entityID);
+        spawnEntityWrapper.setMetadata(dataWatcher);
+        spawnEntityWrapper.setPosition(location.toVector());
+        spawnEntityWrapper.setPlayerUUID(this.gameProfile.getUUID());
+        spawnEntityWrapper.setYaw(ThreadLocalRandom.current().nextInt(15));
+        spawnEntityWrapper.setPitch(ThreadLocalRandom.current().nextInt(15));
 
-        spawnEntityWrapper.sendPacket( observedPlayer );
+        spawnEntityWrapper.sendPacket(observedPlayer);
 
         // Debug
         // System.out.println("Sent player spawn of bot " + this.entityID + " for " + observedPlayer.getName() + " @ " + location);
 
         // Set the team (most common on respawn)
-        if ( shouldAssignTeam ) {
-            DisplayInformation.applyTeams( this );
+        if (shouldAssignTeam) {
+            DisplayInformation.applyTeams(this);
         }
 
         // Entity equipment + armor
@@ -245,22 +254,24 @@ public class ClientsidePlayerEntity extends ClientsideEntity {
     // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //
 
     @Override
-    public void despawn() {
+    public void despawn()
+    {
         super.despawn();
 
-        if ( isSpawned() ) {
+        if (isSpawned()) {
             removeFromTab();
         }
     }
 
-    private void removeFromTab() {
+    private void removeFromTab()
+    {
         // Remove the player with PlayerInfo
-        final PlayerInfoData playerInfoData = new PlayerInfoData( this.gameProfile, 0, EnumWrappers.NativeGameMode.SURVIVAL, null );
+        final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, 0, EnumWrappers.NativeGameMode.SURVIVAL, null);
 
         final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
-        playerInfoWrapper.setAction( EnumWrappers.PlayerInfoAction.REMOVE_PLAYER );
-        playerInfoWrapper.setData( Collections.singletonList( playerInfoData ) );
+        playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);
+        playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
 
-        playerInfoWrapper.sendPacket( observedPlayer );
+        playerInfoWrapper.sendPacket(observedPlayer);
     }
 }

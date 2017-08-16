@@ -103,39 +103,49 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
         final User user = UserManager.getUser(player.getUniqueId());
 
         // Not bypassed
-        if (user == null) {
+        if (AACAdditionProCheck.isUserInvalid(user)) {
             return;
         }
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), () -> {
-            WrappedGameProfile gameProfile_ = null;
+            WrappedGameProfile gameProfile = null;
 
             // Ask API endpoint for valid profiles
             KillauraEntityAddon killauraEntityAddon = AACAdditionPro.getInstance().getKillauraEntityAddon();
             if (killauraEntityAddon != null) {
                 try {
-                    gameProfile_ = killauraEntityAddon.getKillauraEntityGameProfile(player);
+                    gameProfile = killauraEntityAddon.getKillauraEntityGameProfile(player);
                 } catch (Throwable t) {
                     new RuntimeException("Error in plugin " + killauraEntityAddon.getPlugin().getName() + " while trying to get a killaura-entity gameprofile for " + player.getName(), t).printStackTrace();
                 }
             }
 
-            OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
-            // If the API endpoint can't serve valid profiles, check if we can serve OfflinePlayer profiles.
-            if (gameProfile_ == null && offlinePlayers.length < 1) {
-                return;
-            }
+            // No profile was set by the API
+            if (gameProfile == null) {
+                // Use the offline players as a replacement
+                final OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
 
-            if (gameProfile_ == null) {
+                // If the API endpoint can't serve valid profiles, check if we can serve OfflinePlayer profiles.
+                if (offlinePlayers.length < 1) {
+                    // No WrappedGameProfile can be set as there are no valid offline players.
+                    return;
+                }
+
+                // Choose a random OfflinePlayer and get his GameProfile
                 final OfflinePlayer chosenOfflinePlayer = offlinePlayers[ThreadLocalRandom.current().nextInt(offlinePlayers.length)];
-                gameProfile_ = new WrappedGameProfile(chosenOfflinePlayer.getUniqueId(), chosenOfflinePlayer.getName());
+                gameProfile = new WrappedGameProfile(chosenOfflinePlayer.getUniqueId(), chosenOfflinePlayer.getName());
             }
 
-            final WrappedGameProfile gameProfile = gameProfile_;
+            // Make it final for the use in a lambda
+            final WrappedGameProfile resultingGameProfile = gameProfile;
 
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(player, gameProfile, entityOffset, offsetRandomizationRange, minXZDifference);
+                // Create the new Entity with the resultingGameProfile
+                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(player, resultingGameProfile, entityOffset, offsetRandomizationRange, minXZDifference);
+                // Set it as the user's active entity
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
+
+                // Spawn it if necessary
                 if (spawnAtJoin) {
                     final Location location = calculateLocationBehindPlayer(player, entityOffset, offsetRandomizationRange, minXZDifference);
                     playerEntity.spawn(location);

@@ -257,18 +257,20 @@ InventoryRotation:
 KillauraEntity:
    # Do you want to enable the KillauraEntity check
    enabled: true
-   # How should the entity act?
+   # The general behaviour of the entity, mostly important for certain gamemodes.
+   # Please configure this correctly for your server to have the best setup
+   # (e.g. servers who have no teams should disable team)
    behaviour:
-      # Should the entity join a team?
+      # Should the entity join a team
       team:
          enabled: true
-      # Should the entity swing its item (when its a sword) at the target?
+      # Should the entity swing items to simulate an attack
       swing:
          enabled: true
-      # Should the entity swap its item
+      # Should the entity swap the items it is wearing and using
       swap:
          enabled: true
-   # Here you can find all options regarding the position of the entity
+   # Here you can find all options regarding the positioning of the entity
    position:
       # How far should the entity at least be away from the player (measured in blocks)
       entityOffset: 3.4
@@ -278,7 +280,8 @@ KillauraEntity:
       # willingly caused false positives (measured in blocks)
       minXZDifference: 1.55
    # Here you can choose the equipment of your entity.
-   # For the best setup only choose equipment a normal player can get.
+   # For the best setup only choose equipment a normal player can obtain.
+   # If the API is used it will override the decisions you made here.
    equipment:
       # The weapons the entities will use in a fake fight
       weapons:
@@ -303,7 +306,7 @@ KillauraEntity:
          gold: true
          iron: true
          diamond: true
-      # Normal equipment will be used when either item switch is enabled or the entity joins
+      # Normal equipment will be used upon spawning the entity and if behaviour.swap is enabled
       normal:
          # Use food
          cooked: true

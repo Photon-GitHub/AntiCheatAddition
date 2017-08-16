@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 
 public enum Permissions
 {
+    BYPASS("aac.bypass"),
     VERBOSE("aac.verbose"),
     INFO("aacadditionpro.info"),
     NEURAL("aacadditionpro.neural"),
@@ -23,10 +24,10 @@ public enum Permissions
      * @param sender     the {@link CommandSender} who should be checked
      * @param permission the permission that he should be checked for
      *
-     * @return true if the player has the permission, otherwise false
+     * @return true if the player has the permission or is op, otherwise false
      */
     public static boolean hasPermission(final CommandSender sender, final Permissions permission)
     {
-        return sender.hasPermission(permission.realPermission);
+        return sender.isOp() || sender.hasPermission(permission.realPermission);
     }
 }

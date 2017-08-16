@@ -94,7 +94,7 @@ public class Tower implements Listener, AACAdditionProCheck
                 threshold /= user.getTowerData().getBuffer_size();
 
                 // Apply lenience
-                final double lenientThreshold = threshold * tower_leniency;
+                final double lenientThreshold = threshold;
 
                 // Real average
                 final double average = user.getTowerData().calculateRealTime();
@@ -127,7 +127,8 @@ public class Tower implements Listener, AACAdditionProCheck
     {
         // No JUMP_BOOST
         if (amplifier == null) {
-            return 478.4;
+            // 478.4 * 0.925
+            return 442.52;
         }
 
         // Player has JUMP_BOOST
@@ -162,7 +163,27 @@ public class Tower implements Listener, AACAdditionProCheck
                     // Convert ticks to milliseconds
                     // System.out.println("Max-Blocks: " + maximumPlacedBlocks);
                     // System.out.println("TowerReal: " + (ticks * 50) / maximumPlacedBlocks);
-                    return (ticks * 50) / maximumPlacedBlocks;
+
+                    // Leniency:
+                    double leniency;
+                    switch (amplifier) {
+                        case 1:
+                            leniency = 1;
+                            break;
+                        case 2:
+                        case 4:
+                            leniency = 0.9;
+                            break;
+                        case 3:
+                            leniency = 0.87;
+                            break;
+                        default:
+                            leniency = 0.982;
+                            break;
+                    }
+
+                    // If the result is lower here, the detection is more lenient.
+                    return ((ticks * 50) / maximumPlacedBlocks) * leniency * tower_leniency;
                 }
             }
         }

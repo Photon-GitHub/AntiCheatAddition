@@ -98,7 +98,6 @@ public class Tower implements Listener, AACAdditionProCheck
 
                 // Real average
                 final double average = user.getTowerData().calculateRealTime();
-                // System.out.println("Average: " + average);
 
                 // Real check
                 if (average < threshold) {
@@ -154,15 +153,11 @@ public class Tower implements Listener, AACAdditionProCheck
 
             // The maximum placed blocks are the next lower integer of the maximum y-Position of the player
             final short flooredBlocks = (short) Math.floor(currentBlockValue);
-            // System.out.println("Real-Blocks: " + currentBlockValue + "Floored-Blocks: " + flooredBlocks);
             if (maximumPlacedBlocks < flooredBlocks) {
                 maximumPlacedBlocks = flooredBlocks;
             } else {
                 // Location must be lower than maximumPlacedBlocks and there is negative velocity (in the beginning there is no negative velocity, but maximumPlacedBlocks > flooredBlocks!)
                 if (maximumPlacedBlocks > flooredBlocks && currentVelocity.getY() < 0) {
-                    // Convert ticks to milliseconds
-                    // System.out.println("Max-Blocks: " + maximumPlacedBlocks);
-                    // System.out.println("TowerReal: " + (ticks * 50) / maximumPlacedBlocks);
 
                     // Leniency:
                     double leniency;
@@ -183,6 +178,7 @@ public class Tower implements Listener, AACAdditionProCheck
                     }
 
                     // If the result is lower here, the detection is more lenient.
+                    // Convert ticks to milliseconds
                     return ((ticks * 50) / maximumPlacedBlocks) * leniency * tower_leniency;
                 }
             }

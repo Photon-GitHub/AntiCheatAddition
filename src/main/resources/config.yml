@@ -53,12 +53,12 @@ AutoFish:
          # Measured in ms
          violation_offset: 25
          # How many violation-levels should be given for failing this part
-         weight: 8
+         weight: 9
    # Map of violation levels to command
    thresholds:
-      10: "aacstaffnotify {player} in {world} is suspected for AutoFish"
-      14: "aacstaffnotify {player} in {world} is highly suspected for AutoFish"
-      20: "aackick {player} AutoFish"
+      8: "aacstaffnotify {player} in {world} is suspected for AutoFish"
+      12: "aacstaffnotify {player} in {world} is highly suspected for AutoFish"
+      18: "aackick {player} AutoFish"
 
 # AutoPotion detects automated bots which splash the player with potions that have positive effects
 # This check does only work on minecraft versions 1.10 and beyond and auto-disables itself on other versions.

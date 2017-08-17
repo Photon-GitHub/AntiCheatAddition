@@ -9,7 +9,6 @@ import de.photon.AACAdditionPro.checks.subchecks.BlindnessSprint;
 import de.photon.AACAdditionPro.checks.subchecks.EqualRotation;
 import de.photon.AACAdditionPro.checks.subchecks.Esp;
 import de.photon.AACAdditionPro.checks.subchecks.Fastswitch;
-import de.photon.AACAdditionPro.checks.subchecks.FlyPatch;
 import de.photon.AACAdditionPro.checks.subchecks.Freecam;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryChat;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
@@ -55,7 +54,6 @@ public final class CheckManager extends ModuleManager
                 new EqualRotation(),
                 new Esp(),
                 new Fastswitch(),
-                new FlyPatch(),
                 new Freecam(),
                 new InventoryChat(),
                 new InventoryHeuristics(),

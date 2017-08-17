@@ -71,6 +71,14 @@ public class SchematicaControl implements Listener, ClientControlCheck
     }
 
     @Override
+    public String[] getPluginMessageChannels()
+    {
+        return new String[]{
+                SCHEMATICA_CHANNEL
+        };
+    }
+
+    @Override
     public List<String> getCommandsOnDetection()
     {
         return null;

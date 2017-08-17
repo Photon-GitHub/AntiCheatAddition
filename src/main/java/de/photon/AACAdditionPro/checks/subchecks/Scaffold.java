@@ -24,8 +24,10 @@ public class Scaffold implements Listener, AACAdditionProCheck
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
+
     @LoadFromConfiguration(configPath = ".scaffold_delay")
     private int scaffold_delay;
+
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 

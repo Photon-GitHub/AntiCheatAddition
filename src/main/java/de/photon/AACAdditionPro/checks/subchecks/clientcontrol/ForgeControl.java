@@ -41,7 +41,7 @@ public class ForgeControl implements PluginMessageListener, ClientControlCheck
 
         // Should flag
         if (flag) {
-            executeThresholds(user.getPlayer());
+            executeCommands(user.getPlayer());
         }
     }
 

@@ -93,21 +93,6 @@ AutoPotion:
       2: "aacstaffnotify {player} in {world} is highly suspected for AutoPotion"
       4: "aackick {player} AutoPotion"
 
-# BlindnessSprint checks if a player is sprinting while having the blindness-potion-effect.
-# Please be aware that players can trigger this check without cheats if they get the effect during/shortly after
-# a server change and were sprinting before.
-BlindnessSprint:
-   # Do you want to enable the BlindnessSprint check
-   enabled: true
-   # Violation before AACAdditionPro starts to cancel the movements.
-   # Set this to 0 to never cancel movements.
-   cancel_vl: 5
-   # Map of violation levels to command
-   thresholds:
-      6: "aacstaffnotify {player} in {world} is suspected for Sprint (BlindnessSprint)"
-      11: "aacstaffnotify {player} in {world} is highly suspected for Sprint (BlindnessSprint)"
-      20: "aackick {player} Sprint"
-
 # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
 # This will catch several Scaffold, Tower, Killaura and Aimbot mods
 EqualRotation:
@@ -275,6 +260,7 @@ KillauraEntity:
       # How far should the entity at least be away from the player (measured in blocks)
       entityOffset: 3.4
       # How much randomized offset should at most be added to entityOffset (measured in blocks)
+      # This must be greater than 0
       offsetRandomizationRange: 0.2
       # This prevents the entity from floating directly over / under a player, therefore preventing distraction and
       # willingly caused false positives (measured in blocks)
@@ -597,6 +583,14 @@ ClientControl:
          # This allows to load a schematic on your server for printing or a hologram.
          load: false
        # The mod cannot be detected, just disabled
+
+   # Vape is a very popular ghost-client, often seen in ranked pvp gameplay and optimized to be especially hard to find
+   # in screenshares
+   Vape:
+      # Do you want to enable the Vape-Control
+      enabled: false
+      commands_on_detection:
+         - "ban {player} Illegal client modification"
 
    # WorldDownloader is a popular modification to get the maps of a server
    WorldDownloader:

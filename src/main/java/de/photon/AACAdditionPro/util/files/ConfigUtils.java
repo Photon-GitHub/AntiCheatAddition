@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,11 +23,23 @@ public final class ConfigUtils
     public static List<String> loadStringOrStringList(final String path)
     {
         // Command list
-        List<String> input = AACAdditionPro.getInstance().getConfig().getStringList(path);
+        final List<String> input = AACAdditionPro.getInstance().getConfig().getStringList(path);
 
         // Single command
         if (input.isEmpty()) {
-            input = Collections.singletonList(AACAdditionPro.getInstance().getConfig().getString(path));
+            final String possibleCommand = AACAdditionPro.getInstance().getConfig().getString(path);
+
+            // No-command indicator
+            if (possibleCommand.equals("{}")) {
+                return Collections.emptyList();
+            }
+            return Collections.singletonList(possibleCommand);
+        }
+
+        // Input is not empty
+        // No-command indicator
+        if (input.get(0).equals("{}")) {
+            return Collections.emptyList();
         }
 
         return input;
@@ -47,12 +60,8 @@ public final class ConfigUtils
         final ConfigurationSection configurationSection = AACAdditionPro.getInstance().getConfig().getConfigurationSection(sectionPath);
 
         // Loading error when Config-Section is null
-        if (configurationSection == null) {
-            throw new NullPointerException("Severe loading error: Config-Section is null when loading: " + sectionPath);
-        }
-
         // Return the Set of keys
-        return configurationSection.getKeys(false);
+        return Objects.requireNonNull(configurationSection, "Severe loading error: Config-Section is null when loading: " + sectionPath).getKeys(false);
     }
 
     /**
@@ -64,21 +73,14 @@ public final class ConfigUtils
      */
     public static ConcurrentHashMap<Integer, List<String>> loadThresholds(final String thresholdSectionPath)
     {
-        final Set<String> keys = loadKeys(thresholdSectionPath);
-
-        // Loading error when the Set of keys is null
-        if (keys == null) {
-            throw new NullPointerException("Severe loading error: Keys are null when loading: " + thresholdSectionPath);
-        }
+        final Set<String> keys = Objects.requireNonNull(loadKeys(thresholdSectionPath), "Severe loading error: Keys are null when loading: " + thresholdSectionPath);
 
         // Create the Map the thresholds will be put in
         final ConcurrentHashMap<Integer, List<String>> thresholds = new ConcurrentHashMap<>(keys.size(), 1);
 
-        for (final String s : keys) {
-            final int testedConfidence = Integer.parseInt(s);
-
+        for (final String key : keys) {
             //Put the command into thresholds
-            thresholds.put(testedConfidence, loadStringOrStringList(thresholdSectionPath + "." + testedConfidence));
+            thresholds.put(Integer.parseInt(key), loadStringOrStringList(thresholdSectionPath + "." + key));
         }
 
         return thresholds;

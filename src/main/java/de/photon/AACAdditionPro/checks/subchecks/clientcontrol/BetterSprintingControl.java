@@ -41,7 +41,7 @@ public class BetterSprintingControl implements PluginMessageListener, ClientCont
             user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), channel, out1.toByteArray());
         }
 
-        executeThresholds(user.getPlayer());
+        executeCommands(user.getPlayer());
     }
 
     @Override

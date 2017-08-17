@@ -8,7 +8,6 @@ public enum AdditionHackType
     // Normal checks
     AUTO_FISH("AutoFish"),
     AUTO_POTION("AutoPotion"),
-    BLINDNESS_SPRINT("BlindnessSprint", "failed Sprint (Blindness)"),
     EQUAL_ROTATION("EqualRotation"),
     ESP("Esp"),
     FASTSWITCH("Fastswitch"),
@@ -34,6 +33,7 @@ public enum AdditionHackType
     LABYMOD_CONTROL("ClientControl.LabyMod", "uses LabyMod"),
     LITELOADER_CONTROL("ClientControl.LiteLoader", "uses LiteLoader"),
     SCHEMATICA_CONTROL("ClientControl.Schematica", "uses Schematica"),
+    VAPE_CONTROL("ClientControl.Vape", "uses Vape"),
     WORLDDOWNLOAD_CONTROL("ClientControl.WorldDownloader", "uses WorldDownloader");
 
     private final String configString;

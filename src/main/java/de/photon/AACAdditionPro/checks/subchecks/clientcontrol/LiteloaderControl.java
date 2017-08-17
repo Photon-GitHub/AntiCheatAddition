@@ -44,7 +44,7 @@ public class LiteloaderControl implements PluginMessageListener, ClientControlCh
 
         // Should flag
         if (flag) {
-            executeThresholds(user.getPlayer());
+            executeCommands(user.getPlayer());
         }
     }
 

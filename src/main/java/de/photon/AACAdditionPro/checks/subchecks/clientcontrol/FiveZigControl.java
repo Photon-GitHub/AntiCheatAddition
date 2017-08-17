@@ -60,7 +60,7 @@ public class FiveZigControl implements PluginMessageListener, ClientControlCheck
             }
 
             user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), FIVEZIGCHANNEL, new byte[]{disableByte});
-            executeThresholds(user.getPlayer());
+            executeCommands(user.getPlayer());
 
             // ------------------------------------------------ 5zig end -------------------------------------------- //
         } catch (final Exception e) {

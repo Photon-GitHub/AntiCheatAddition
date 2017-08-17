@@ -76,7 +76,7 @@ public final class Placeholders
             }
             throw new NullPointerException("Placeholder-parsing failed because the list of players is null or empty.");
         }
-        throw new RuntimeException("Placeholder-parsing failed because AAC's API is not loaded.");
+        throw new IllegalStateException("Placeholder-parsing failed because AAC's API is not loaded.");
     }
 
     /**

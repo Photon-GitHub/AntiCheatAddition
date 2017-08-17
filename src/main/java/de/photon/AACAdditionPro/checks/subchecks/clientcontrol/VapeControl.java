@@ -6,19 +6,19 @@ import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.util.List;
 
-public class WorldDownloaderControl implements PluginMessageListener, ClientControlCheck
+public class VapeControl implements Listener, PluginMessageListener, ClientControlCheck
 {
     @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
     private List<String> commandsOnDetection;
-
-    private static final String[] WDLFLAGS = {
-            "worlddownloader-vanilla"
-    };
 
     @Override
     public List<String> getCommandsOnDetection()
@@ -29,7 +29,13 @@ public class WorldDownloaderControl implements PluginMessageListener, ClientCont
     @Override
     public AdditionHackType getAdditionHackType()
     {
-        return AdditionHackType.WORLDDOWNLOAD_CONTROL;
+        return AdditionHackType.VAPE_CONTROL;
+    }
+
+    @EventHandler
+    public void on(PlayerJoinEvent event)
+    {
+        event.getPlayer().sendMessage("§8 §8 §1 §3 §3 §7 §8 ");
     }
 
     @Override
@@ -41,28 +47,23 @@ public class WorldDownloaderControl implements PluginMessageListener, ClientCont
             return;
         }
 
-        // Bypassed players are already filtered out.
-        boolean flag = true;
+        String clientData;
 
-        // MC-Brand for vanilla world-downloader
-        if (ClientControlCheck.isBranded(channel)) {
-            flag = ClientControlCheck.brandContains(channel, message, WDLFLAGS);
+        try {
+            clientData = new String(message);
+        } catch (Exception e) {
+            clientData = "";
         }
 
-        // Should flag
-        if (flag) {
-            executeCommands(user.getPlayer());
-        }
+        VerboseSender.sendVerboseMessage("Player " + player.getName() + " joined with Vape | Data: " + clientData);
+        executeCommands(player);
     }
 
     @Override
     public String[] getPluginMessageChannels()
     {
         return new String[]{
-                "WDL|INIT",
-                "WDL|CONTROL",
-                "WDL|REQUEST",
-                MCBRANDCHANNEL
+                "LOLIMAHCKER"
         };
     }
 }

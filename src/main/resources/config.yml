@@ -35,14 +35,12 @@ AutoFish:
    parts:
       # The inhuman_reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
       # This might cause some false positives with experienced fishers.
+      # This will add up to 6 vl, depending on the reaction speed.
       inhuman_reaction:
          # Should this part of the check be enabled
          enabled: true
          # How many milliseconds should have passed before a fishing action counts as legit.
-         # This also influences the given vl according to this formula:
-         # < 0.42 * fishing_milliseconds  | 3 VL
-         # < 0.68 * fishing_milliseconds  | 2 VL
-         # < fishing_milliseconds         | 1 VL
+         # This also influences the given vl according to a linear distribution.
          fishing_milliseconds: 145
       # The consistency part recognizes static times between a successful catch and fishing again.
       # This check has less to none false positives, especially with a high event count
@@ -55,12 +53,12 @@ AutoFish:
          # Measured in ms
          violation_offset: 25
          # How many violation-levels should be given for failing this part
-         weight: 4
+         weight: 8
    # Map of violation levels to command
    thresholds:
-      5: "aacstaffnotify {player} in {world} is suspected for AutoFish"
-      7: "aacstaffnotify {player} in {world} is highly suspected for AutoFish"
-      10: "aackick {player} AutoFish"
+      10: "aacstaffnotify {player} in {world} is suspected for AutoFish"
+      14: "aacstaffnotify {player} in {world} is highly suspected for AutoFish"
+      20: "aackick {player} AutoFish"
 
 # AutoPotion detects automated bots which splash the player with potions that have positive effects
 # This check does only work on minecraft versions 1.10 and beyond and auto-disables itself on other versions.

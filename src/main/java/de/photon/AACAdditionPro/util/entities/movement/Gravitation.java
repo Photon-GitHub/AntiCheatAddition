@@ -19,12 +19,34 @@ public enum Gravitation
     }
 
     /**
-     * Used for {@link Vector}-Calculations.
+     * This applies the {@link Gravitation} of a specific type to a {@link Vector}
      *
-     * @return a new {@link Vector} with the acceleration of the entity (0, gravitationalAcceleration, 0)
+     * @param input       the input vector (will not be cloned)
+     * @param gravitation the type of the {@link org.bukkit.entity.Entity} the {@link Gravitation} relates to.
      */
-    public Vector getGravitationalVector()
+    private static Vector applyGravitation(Vector input, Gravitation gravitation)
     {
-        return new Vector(0, this.gravitationPerTick, 0);
+        return input.setY(input.getY() + gravitation.gravitationPerTick);
+    }
+
+    /**
+     * This applies the drag of Minecraft's gravitation system (*= 0.98) to a {@link Vector}
+     *
+     * @param input the input vector (will not be cloned)
+     */
+    private static Vector applyAirResistance(Vector input)
+    {
+        return input.multiply(0.98D);
+    }
+
+    /**
+     * This applies the {@link Gravitation} and the air resistance of a specific type to a {@link Vector}
+     *
+     * @param input       the input vector (will not be cloned)
+     * @param gravitation the type of the {@link org.bukkit.entity.Entity} the {@link Gravitation} relates to.
+     */
+    public static Vector applyGravitationAndAirResistance(Vector input, Gravitation gravitation)
+    {
+        return applyAirResistance(applyGravitation(input, gravitation));
     }
 }

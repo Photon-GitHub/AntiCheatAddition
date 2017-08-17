@@ -4,6 +4,7 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.entities.movement.Gravitation;
 import de.photon.AACAdditionPro.util.entities.movement.Jumping;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
@@ -18,6 +19,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 public class Tower implements Listener, AACAdditionProCheck
 {
@@ -31,9 +33,6 @@ public class Tower implements Listener, AACAdditionProCheck
 
     @LoadFromConfiguration(configPath = ".tower_leniency")
     private double tower_leniency;
-
-    @LoadFromConfiguration(configPath = ".jump_boost_leniency")
-    private double jump_boost_leniency;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPre(final BlockPlaceEvent event)
@@ -79,7 +78,7 @@ public class Tower implements Listener, AACAdditionProCheck
                         new BlockPlace(
                                 System.currentTimeMillis(), blockPlaced,
                                 //Speed is not important for this check
-                                Short.MIN_VALUE,
+                                null,
                                 //Jump boost effect is important
                                 user.getPotionData().getAmplifier(PotionEffectType.JUMP)
                         )))
@@ -87,17 +86,15 @@ public class Tower implements Listener, AACAdditionProCheck
                 // The buffer is filled to the required degree -> Checking now
                 double threshold = 0;
 
-                // Iterate through the buffer
                 for (final BlockPlace blockPlace : user.getTowerData().getBlockPlaces()) {
-                    final double addThreshold = calculateDelay(blockPlace.getJumpBoostLevel());
-                    threshold += addThreshold;
+                    threshold += calculateDelay(blockPlace.getJumpBoostLevel());
                 }
 
                 // Expected Average
                 threshold /= user.getTowerData().getBuffer_size();
 
                 // Apply lenience
-                final double lenientThreshold = threshold * tower_leniency;
+                final double lenientThreshold = threshold;
 
                 // Real average
                 final double average = user.getTowerData().calculateRealTime();
@@ -119,67 +116,76 @@ public class Tower implements Listener, AACAdditionProCheck
         }
     }
 
-    // The amplifier will be incremented by one (Speed I -> 1) or -1 if the effect is not present
-    private double calculateDelay(final short amplifier)
+
+    /**
+     * Calculates the time needed to place one block.
+     *
+     * @param amplifier the JUMP_BOOST amplifier the person had while placing the block, or null if he did not have the JUMP_BOOST effect
+     */
+    private double calculateDelay(final Integer amplifier)
     {
-        switch (amplifier) {
-            // No potion-effects at all
-            case Short.MIN_VALUE:
-                return 478.5;
-            default:
-                if (amplifier <= 0) {
-                    // Not allowed to place blocks -> High delay
-                    return 1000;
-                }
-
-                // How many blocks can potentially be placed
-                short maximumPlacedBlocks = 1;
-
-                final double tick_step = 0.25;
-
-                // The velocity in the beginning
-                final double starting_velocity = Jumping.getJumpYMotion(amplifier);
-
-                // The acceleration of the gravitation in
-                // blocks / tick
-                final double gravitational_acceleration = -0.08D;
-
-                // This represents the drag in the form of
-                // (1 - drag) / tick
-                final double formula_drag = 0.98D;
-
-                // The first tick is ignored in the loop
-                double lastBlockValue = 0;
-                double currentBlockValue = starting_velocity;
-
-                double currentYMotion = starting_velocity;
-
-                for (double ticks = 0; ticks < 160; ticks += tick_step) {
-                    // 0.25 * 0.08
-                    currentYMotion += gravitational_acceleration * tick_step;
-                    // x^4 = 0.98
-                    currentYMotion *= Math.pow(formula_drag, tick_step);
-
-                    // Due to the quarter tick
-                    currentBlockValue += (currentYMotion * tick_step);
-
-                    // The maximum placed blocks are the next lower integer of the maximum y-Position of the player
-                    final short flooredBlocks = (short) Math.floor(currentBlockValue);
-                    if (maximumPlacedBlocks < flooredBlocks) {
-                        maximumPlacedBlocks = flooredBlocks;
-                    }
-
-                    // Second solution
-                    if (lastBlockValue > maximumPlacedBlocks && currentBlockValue <= maximumPlacedBlocks) {
-                        // Apply the leniency here, as a block-wise implementation is needed.
-                        return (ticks * 50 * jump_boost_leniency) / maximumPlacedBlocks;
-                    }
-                    lastBlockValue = currentBlockValue;
-                }
-
-                // Too high movement; no checking
-                return 0;
+        // No JUMP_BOOST
+        if (amplifier == null) {
+            // 478.4 * 0.925
+            return 442.52;
         }
+
+        // Player has JUMP_BOOST
+        if (amplifier <= 0) {
+            // Negative JUMP_BOOST -> Not allowed to place blocks -> Very high delay
+            return 1500;
+        }
+
+        // How many blocks can potentially be placed during one jump cycle
+        short maximumPlacedBlocks = 1;
+
+        // The velocity in the beginning
+        Vector currentVelocity = new Vector(0, Jumping.getJumpYMotion(amplifier), 0);
+
+        // The first tick (1) happens here
+        double currentBlockValue = currentVelocity.getY();
+
+        // Start the tick-loop at 2 due to the one tick outside.
+        for (short ticks = 2; ticks < 160; ticks++) {
+            currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER);
+
+            currentBlockValue += currentVelocity.getY();
+
+            // The maximum placed blocks are the next lower integer of the maximum y-Position of the player
+            final short flooredBlocks = (short) Math.floor(currentBlockValue);
+            if (maximumPlacedBlocks < flooredBlocks) {
+                maximumPlacedBlocks = flooredBlocks;
+            } else {
+                // Location must be lower than maximumPlacedBlocks and there is negative velocity (in the beginning there is no negative velocity, but maximumPlacedBlocks > flooredBlocks!)
+                if (maximumPlacedBlocks > flooredBlocks && currentVelocity.getY() < 0) {
+
+                    // Leniency:
+                    double leniency;
+                    switch (amplifier) {
+                        case 1:
+                            leniency = 1;
+                            break;
+                        case 2:
+                        case 4:
+                            leniency = 0.9;
+                            break;
+                        case 3:
+                            leniency = 0.87;
+                            break;
+                        default:
+                            leniency = 0.982;
+                            break;
+                    }
+
+                    // If the result is lower here, the detection is more lenient.
+                    // Convert ticks to milliseconds
+                    return ((ticks * 50) / maximumPlacedBlocks) * leniency * tower_leniency;
+                }
+            }
+        }
+
+        // Too high movement; no checking
+        return 0;
     }
 
     @Override

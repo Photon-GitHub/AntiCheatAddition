@@ -3,9 +3,10 @@ package de.photon.AACAdditionPro.util.entities;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.entities.movement.Gravitation;
 import de.photon.AACAdditionPro.util.entities.movement.Jumping;
+import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
-import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityDestroy;
@@ -14,6 +15,7 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityTeleport;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMove;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMoveLook;
+import de.photon.AACAdditionPro.util.reflection.ReflectionUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -25,6 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 public abstract class ClientsideEntity
 {
@@ -43,6 +46,7 @@ public abstract class ClientsideEntity
 
     @Getter
     protected final int entityID;
+    protected Vector size = new Vector();
 
     @Getter
     @Setter
@@ -80,6 +84,7 @@ public abstract class ClientsideEntity
     @Getter
     protected final Player observedPlayer;
     private int tickTask = -1;
+    private int ticks = 0;
 
     public ClientsideEntity(final Player observedPlayer)
     {
@@ -122,16 +127,55 @@ public abstract class ClientsideEntity
     /**
      * Should be called every tick once, updates physics + sends movement packets
      */
-    private void tick()
+    protected void tick()
     {
-        // TODO ground calculations, pressing button simulation, etc?
-        location.add(velocity);
+        // Apply motion movement
+        velocity = Gravitation.applyGravitationAndAirResistance(velocity, Gravitation.PLAYER);
+
+        double dX = velocity.getX();
+        double dY = velocity.getY();
+        double dZ = velocity.getZ();
+
+        // Since we need collision detections now we need the NMS world
+        AxisAlignedBB bb = new AxisAlignedBB(
+                this.location.getX() - (this.size.getX() / 2),
+                // The location is based on the feet location
+                this.location.getY(),
+                this.location.getZ() - (this.size.getZ() / 2),
+
+                this.location.getX() + (this.size.getX() / 2),
+                // The location is based on the feet location
+                this.location.getY() + this.size.getY(),
+                this.location.getZ() + (this.size.getZ() / 2)
+        );
+        List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(observedPlayer, bb.addCoordinates(dX, dY, dZ));
+
+        // Check if we would hit a y border block
+        for (AxisAlignedBB axisAlignedBB : collisions) {
+            dY = axisAlignedBB.calculateYOffset(bb, dY);
+        }
+
+        bb.offset(0, dY, 0);
+
+        // Check if we would hit a x border block
+        for (AxisAlignedBB axisAlignedBB : collisions) {
+            dX = axisAlignedBB.calculateXOffset(bb, dX);
+        }
+
+        bb.offset(dX, 0, 0);
+
+        // Check if we would hit a z border block
+        for (AxisAlignedBB axisAlignedBB : collisions) {
+            dZ = axisAlignedBB.calculateZOffset(bb, dZ);
+        }
+
+        bb.offset(0, 0, dZ);
+
+        // Move
+        location.add(dX, dY, dZ);
 
         sendMove();
         sendHeadYaw();
-
-        // TODO: Actual system with gravity enabled to prevent bypasses
-        // velocity.add(Gravitation.PLAYER.getGravitationalVector()).multiply(.98);
     }
 
     /**
@@ -173,7 +217,7 @@ public abstract class ClientsideEntity
                 throw new IllegalStateException("Unknown minecraft version");
         }
 
-        if (Math.abs(xDiff) > teleportThreshold || Math.abs(yDiff) > teleportThreshold || Math.abs(zDiff) > teleportThreshold || needsTeleport) {
+        if (Math.abs(xDiff) + Math.abs(yDiff) + Math.abs(zDiff) > teleportThreshold || needsTeleport) {
             final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
             // EntityID
             teleportWrapper.setEntityID(this.entityID);
@@ -248,7 +292,7 @@ public abstract class ClientsideEntity
 
     public void jump()
     {
-        velocity.setY(Jumping.getJumpYMotion(Short.MIN_VALUE));
+        velocity.setY(Jumping.getJumpYMotion(null));
 
         if (sprinting) {
             velocity.add(location.getDirection().setY(0).normalize().multiply(.2F));
@@ -401,6 +445,7 @@ public abstract class ClientsideEntity
             Bukkit.getScheduler().cancelTask(tickTask);
             this.tickTask = -1;
         }
+
         if (spawned) {
             final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
             entityDestroyWrapper.setEntityIds(new int[]{this.entityID});

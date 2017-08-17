@@ -3,7 +3,7 @@ package de.photon.AACAdditionPro.api;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.CheckManager;
-import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementExeption;
+import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings({
@@ -30,9 +30,9 @@ public final class AACAdditionProApi
      *
      * @return The Violation-Level as an int.
      *
-     * @throws NoViolationLevelManagementExeption if the check of the given {@link AdditionHackType} does not have violation-levels
+     * @throws NoViolationLevelManagementException if the check of the given {@link AdditionHackType} does not have violation-levels
      */
-    public static int getVL(final Player player, final AdditionHackType additionHackType) throws NoViolationLevelManagementExeption
+    public static int getVL(final Player player, final AdditionHackType additionHackType) throws NoViolationLevelManagementException
     {
         return CheckManager.checkManagerInstance.getCheck(additionHackType).getViolationLevelManagement().getVL(player.getUniqueId());
     }
@@ -44,9 +44,9 @@ public final class AACAdditionProApi
      * @param additionHackType the Check in which the Violation-Level will be set.
      * @param new_vl           The new Violation-Level of the player.
      *
-     * @throws NoViolationLevelManagementExeption if the check of the given {@link AdditionHackType} does not have violation-levels
+     * @throws NoViolationLevelManagementException if the check of the given {@link AdditionHackType} does not have violation-levels
      */
-    public static void setVl(final Player player, final AdditionHackType additionHackType, final int new_vl) throws NoViolationLevelManagementExeption
+    public static void setVl(final Player player, final AdditionHackType additionHackType, final int new_vl) throws NoViolationLevelManagementException
     {
         CheckManager.checkManagerInstance.getCheck(additionHackType).getViolationLevelManagement().setVL(player, new_vl);
     }

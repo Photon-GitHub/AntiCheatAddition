@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.util.entities.equipment;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
+import de.photon.AACAdditionPro.util.entities.ClientsideEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -14,41 +14,63 @@ import java.util.Map;
 public class Equipment implements Cloneable
 {
     /**
+     * The selector is designed to be a singleton. So he can feed multiple inventories at once
+     */
+    private static final EquipmentSelector selector = new EquipmentSelector( new EquipmentDatabase() );
+
+    /**
      * The {@link HashMap} with all {@link ItemStack}s.
      * All equipmentMap is mapped to the slot it should be applied to.
      */
-    private final Map<EnumWrappers.ItemSlot, ItemStack> equipmentMap;
+    private final Map<EnumWrappers.ItemSlot, ItemStack> equipmentMap = new EnumMap<>(EnumWrappers.ItemSlot.class);
 
-    public Equipment(Material itemInMainHand, Material itemInOffHand, Material helmet, Material chestPlate, Material leggings, Material boots)
+    private final ClientsideEntity entity;
+
+
+    public Equipment(ClientsideEntity entity)
     {
-        // 6 slots
-        equipmentMap = new EnumMap<>(EnumWrappers.ItemSlot.class);
-
-        // Hands
-        this.equipmentMap.put(EnumWrappers.ItemSlot.MAINHAND, new ItemStack(itemInMainHand));
-        this.equipmentMap.put(EnumWrappers.ItemSlot.OFFHAND, new ItemStack(itemInOffHand));
-
-        // Armor
-        this.equipmentMap.put(EnumWrappers.ItemSlot.HEAD, new ItemStack(helmet));
-        this.equipmentMap.put(EnumWrappers.ItemSlot.CHEST, new ItemStack(chestPlate));
-        this.equipmentMap.put(EnumWrappers.ItemSlot.LEGS, new ItemStack(leggings));
-        this.equipmentMap.put(EnumWrappers.ItemSlot.FEET, new ItemStack(boots));
+        this.entity = entity;
     }
 
-    public Equipment(Material itemInMainHand, Material itemInOffHand, Material[] armor)
+    /**
+     * Equip the entity with new armor
+     */
+    public void equipArmor()
     {
-        // 6 slots
-        equipmentMap = new EnumMap<>(EnumWrappers.ItemSlot.class);
+        // Let the selector get the armor
+        Material[] armor = Equipment.selector.selectArmor(this.entity);
+        if ( armor != null ) {
+            for (int i = 0; i < armor.length; i++) {
+                Material armorPiece = armor[i];
 
-        // Hands
-        this.equipmentMap.put(EnumWrappers.ItemSlot.MAINHAND, new ItemStack(itemInMainHand));
-        this.equipmentMap.put(EnumWrappers.ItemSlot.OFFHAND, new ItemStack(itemInOffHand));
+                // Security fallback to prevent NPEs
+                if (armorPiece == null) armorPiece = Material.AIR;
 
-        for (Material material : armor) {
-            if (material != null) {
-                this.equipmentMap.put(EquipmentMapping.getEquipmentMappingOfMaterial(material).getSlotOfItem(), new ItemStack(material));
+                EnumWrappers.ItemSlot itemSlot = EquipmentMapping.values()[i].getSlotOfItem();
+                ItemStack itemStack = new ItemStack(armorPiece);
+                equipItem(itemSlot, itemStack);
             }
         }
+    }
+
+    /**
+     * Equip the entity with a in hand item (like a sword, blocks etc.)
+     */
+    public void equipInHand()
+    {
+        Material mainHand = Equipment.selector.selectMainHand(this.entity);
+
+        // Security fallback to prevent NPEs
+        if (mainHand == null) mainHand = Material.AIR;
+
+        ItemStack itemStack = new ItemStack(mainHand);
+        equipItem(EnumWrappers.ItemSlot.MAINHAND, itemStack);
+    }
+
+    private void equipItem(EnumWrappers.ItemSlot itemSlot, ItemStack itemStack)
+    {
+        // TODO: Fire a event so the user can change things like durability or custom NBT tags
+        this.equipmentMap.put(itemSlot, itemStack);
     }
 
     /**
@@ -74,20 +96,20 @@ public class Equipment implements Cloneable
     }
 
     /**
-     * Equips the {@link ClientsidePlayerEntity} with this {@link Equipment}.
+     * Equips the {@link ClientsideEntity} with this {@link Equipment}.
      */
-    public void equipPlayerEntity(ClientsidePlayerEntity playerEntity)
+    public void equipPlayerEntity()
     {
         this.getEquipmentForServerVersion().forEach(
                 (slot, itemStack) ->
                 {
                     final WrapperPlayServerEntityEquipment entityEquipmentWrapper = new WrapperPlayServerEntityEquipment();
 
-                    entityEquipmentWrapper.setEntityID(playerEntity.getEntityID());
+                    entityEquipmentWrapper.setEntityID(entity.getEntityID());
                     entityEquipmentWrapper.setSlot(slot);
                     entityEquipmentWrapper.setItem(itemStack);
 
-                    entityEquipmentWrapper.sendPacket(playerEntity.getObservedPlayer());
+                    entityEquipmentWrapper.sendPacket(entity.getObservedPlayer());
                 });
     }
 
@@ -96,4 +118,9 @@ public class Equipment implements Cloneable
     {
         return (Equipment) super.clone();
     }
+
+    public ItemStack getMainHand() {
+        return this.equipmentMap.get( EnumWrappers.ItemSlot.MAINHAND );
+    }
+
 }

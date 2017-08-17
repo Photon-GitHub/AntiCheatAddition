@@ -79,7 +79,7 @@ public class Scaffold implements Listener, AACAdditionProCheck
                             // Speed-Effect
                             user.getPotionData().getAmplifier(PotionEffectType.SPEED),
                             // JumpBoost effect is 0 because it is not relevant for the check
-                            (byte) 0
+                            null
                     )))
         {
             // If the buffer is big enough calculate an average time

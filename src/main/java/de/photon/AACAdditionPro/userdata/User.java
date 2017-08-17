@@ -20,7 +20,6 @@ import de.photon.AACAdditionPro.userdata.data.TeamingData;
 import de.photon.AACAdditionPro.userdata.data.TeleportData;
 import de.photon.AACAdditionPro.userdata.data.TimeData;
 import lombok.Getter;
-import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -43,37 +42,36 @@ public class User
                     (last, current) ->
                     {
                         final double speed_modifier;
-                        final short speedLevel = (short) (current.getSpeedLevel() + 1);
-
-                        //If the speedLevel is <= 0, the speed_modifier is 1
-                        switch (speedLevel) {
-                            case 0:
-                                speed_modifier = 1.0D;
-                                break;
-                            case 1:
-                                speed_modifier = 1.01D;
-                                break;
-                            case 2:
-                            case 3:
-                            case 4:
-                            case 5:
-                            case 6:
-                                speed_modifier = 1.5D;
-                                break;
-                            case 7:
-                                speed_modifier = 1.55D;
-                                break;
-                            case 8:
-                                speed_modifier = 2.3D;
-                                break;
-                            default:
-                                // Everything above 8 should have a speed_modifier of 3
-                                if (speedLevel > 8) {
-                                    speed_modifier = 3.0D;
-                                } else {
-                                    speed_modifier = 1.0D;
-                                }
-                                break;
+                        if (current.getSpeedLevel() == null) {
+                            speed_modifier = 1.0D;
+                        } else {
+                            //If the speedLevel is <= 0, the speed_modifier is 1
+                            switch (current.getSpeedLevel()) {
+                                case 0:
+                                    speed_modifier = 1.01D;
+                                    break;
+                                case 1:
+                                case 2:
+                                case 3:
+                                case 4:
+                                case 5:
+                                    speed_modifier = 1.5D;
+                                    break;
+                                case 6:
+                                    speed_modifier = 1.55D;
+                                    break;
+                                case 7:
+                                    speed_modifier = 2.3D;
+                                    break;
+                                default:
+                                    // Everything above 8 should have a speed_modifier of 3
+                                    if (current.getSpeedLevel() >= 8) {
+                                        speed_modifier = 3.0D;
+                                    } else {
+                                        speed_modifier = 1.0D;
+                                    }
+                                    break;
+                            }
                         }
 
                         // last - current to calculate the delta as the more recent time is always in last.
@@ -125,7 +123,7 @@ public class User
 
     public boolean isBypassed()
     {
-        return !AACAPIProvider.isAPILoaded() || AACAPIProvider.getAPI().isBypassed(this.player);
+        return Permissions.hasPermission(this.player, Permissions.BYPASS);
     }
 
     /**

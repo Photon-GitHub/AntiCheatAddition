@@ -25,7 +25,7 @@ public abstract class EquipmentCategory
     public abstract boolean isValid();
 
     /**
-     * Get all currently loaded materials out of this category
+     * Get all currently loaded materials of this category
      *
      * @return list of materials in this category
      */

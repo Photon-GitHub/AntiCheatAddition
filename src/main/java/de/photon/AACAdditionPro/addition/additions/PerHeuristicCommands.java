@@ -85,7 +85,7 @@ public class PerHeuristicCommands implements Listener, Addition
                 }
             }
         } catch (final RuntimeException e) {
-            System.err.println("AACAdditionPro failed to execute the Heuristics-Addition commands. Are they formatted correctly?");
+            VerboseSender.sendVerboseMessage("AACAdditionPro failed to execute the Heuristics-Addition commands. Are they formatted correctly?", true, true);
             e.printStackTrace();
         }
     }

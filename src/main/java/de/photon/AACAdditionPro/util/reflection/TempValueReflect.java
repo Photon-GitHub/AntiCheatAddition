@@ -6,22 +6,23 @@ import java.lang.reflect.Field;
  * @author geNAZt
  * @version 1.0
  */
-public class TempValueReflect {
+public class TempValueReflect
+{
 
     private final Object obj;
     private final Field field;
 
-    TempValueReflect( Field field, Object obj )
+    TempValueReflect(Field field, Object obj)
     {
         this.field = field;
         this.obj = obj;
     }
 
-    public <T> T as( Class<T> clazz )
+    public <T> T as(Class<T> clazz)
     {
         try {
-            return (T) this.field.get( obj );
-        } catch ( IllegalAccessException e ) {
+            return (T) this.field.get(obj);
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
 
@@ -31,8 +32,8 @@ public class TempValueReflect {
     public byte[] asBytes()
     {
         try {
-            return (byte[]) this.field.get( obj );
-        } catch ( IllegalAccessException e ) {
+            return (byte[]) this.field.get(obj);
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
 
@@ -42,8 +43,8 @@ public class TempValueReflect {
     public double asDouble()
     {
         try {
-            return this.field.getDouble( obj );
-        } catch ( IllegalAccessException e ) {
+            return this.field.getDouble(obj);
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
 

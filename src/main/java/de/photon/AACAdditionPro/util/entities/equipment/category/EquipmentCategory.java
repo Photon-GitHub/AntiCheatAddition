@@ -18,7 +18,7 @@ public abstract class EquipmentCategory
     public abstract void load();
 
     /**
-     * Decides if a category contains enough data to output for a equip run
+     * Decides whether a category contains enough {@link Material}s to (re)equip the entity.
      *
      * @return true if enough data is available, false if not
      */

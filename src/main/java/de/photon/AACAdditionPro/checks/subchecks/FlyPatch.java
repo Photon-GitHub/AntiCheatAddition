@@ -10,16 +10,12 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
-import de.photon.AACAdditionPro.util.multiversion.ReflectionUtils;
 import de.photon.AACAdditionPro.util.reflection.Reflect;
+import de.photon.AACAdditionPro.util.reflection.ReflectionUtils;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import me.konsolas.aac.api.AACAPIProvider;
 import me.konsolas.aac.api.HackType;
 import org.bukkit.GameMode;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class FlyPatch extends PacketAdapter implements AACAdditionProCheck
 {

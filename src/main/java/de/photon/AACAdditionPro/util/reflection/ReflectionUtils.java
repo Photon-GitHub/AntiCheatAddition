@@ -1,7 +1,6 @@
-package de.photon.AACAdditionPro.util.multiversion;
+package de.photon.AACAdditionPro.util.reflection;
 
 import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
-import de.photon.AACAdditionPro.util.reflection.Reflect;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -10,11 +9,7 @@ import java.util.List;
 
 public final class ReflectionUtils
 {
-    private static final String versionNumber;
-
-    static {
-        versionNumber = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-    }
+    private static final String versionNumber = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 
     /**
      * Used to get the version {@link String} that is necessary for net.minecraft.server reflection
@@ -33,7 +28,7 @@ public final class ReflectionUtils
                 .fromNMS("AxisAlignedBB")
                 .constructor(double.class, double.class, double.class, double.class, double.class, double.class)
                 .instance(boundingBox.getMaxX(), boundingBox.getMaxY(), boundingBox.getMaxZ(),
-                        boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMinZ() );
+                          boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMinZ());
 
         // Now we need the NMS entity of the player (since the bot has none)
         Object nmsHandle = Reflect
@@ -56,9 +51,9 @@ public final class ReflectionUtils
         // Now lets see what we got
         List<AxisAlignedBB> boxes = new ArrayList<>();
         List list = (List) returnVal;
-        for ( Object nmsAABB : list ) {
+        for (Object nmsAABB : list) {
             // nmsAABB is a NMS AxisAlignedBB
-            boxes.add( AxisAlignedBB.fromNms(nmsAABB) );
+            boxes.add(AxisAlignedBB.fromNms(nmsAABB));
         }
 
         return boxes;

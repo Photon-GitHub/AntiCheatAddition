@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.checks;
 
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.Module;
-import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementExeption;
+import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 
@@ -19,11 +19,11 @@ public interface AACAdditionProCheck extends Module
 
     /**
      * @return the {@link ViolationLevelManagement} of the check.<br>
-     * By default the check has no {@link ViolationLevelManagement} and this {@link java.lang.reflect.Method} throws a {@link NoViolationLevelManagementExeption}.
+     * By default the check has no {@link ViolationLevelManagement} and this {@link java.lang.reflect.Method} throws a {@link NoViolationLevelManagementException}.
      */
-    default ViolationLevelManagement getViolationLevelManagement() throws NoViolationLevelManagementExeption
+    default ViolationLevelManagement getViolationLevelManagement() throws NoViolationLevelManagementException
     {
-        throw new NoViolationLevelManagementExeption(this.getAdditionHackType());
+        throw new NoViolationLevelManagementException(this.getAdditionHackType());
     }
 
     @Override

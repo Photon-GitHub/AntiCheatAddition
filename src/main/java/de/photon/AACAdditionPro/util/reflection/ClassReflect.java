@@ -10,10 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author geNAZt
  * @version 1.0
  */
-public class ClassReflect {
-
-    private final Map<String, FieldReflect> cache = new ConcurrentHashMap<String, FieldReflect>();
-    private final Map<Integer, FieldReflect> cacheIndex = new ConcurrentHashMap<Integer, FieldReflect>();
+public class ClassReflect
+{
+    private final Map<String, FieldReflect> cache = new ConcurrentHashMap<>();
+    private final Map<Integer, FieldReflect> cacheIndex = new ConcurrentHashMap<>();
 
     private final Map<String, ConstructorReflect> constructorCache = new ConcurrentHashMap<>();
 
@@ -21,21 +21,21 @@ public class ClassReflect {
 
     private final Class<?> clazz;
 
-    ClassReflect( Class clazz )
+    ClassReflect(Class clazz)
     {
         this.clazz = clazz;
     }
 
-    public FieldReflect field( String name )
+    public FieldReflect field(String name)
     {
-        FieldReflect fieldReflect = this.cache.get( name );
-        if ( fieldReflect == null ) {
+        FieldReflect fieldReflect = this.cache.get(name);
+        if (fieldReflect == null) {
             try {
-                Field field = this.clazz.getDeclaredField( name );
-                field.setAccessible( true );
-                fieldReflect = new FieldReflect( field );
-                this.cache.put( name, fieldReflect );
-            } catch ( NoSuchFieldException e ) {
+                Field field = this.clazz.getDeclaredField(name);
+                field.setAccessible(true);
+                fieldReflect = new FieldReflect(field);
+                this.cache.put(name, fieldReflect);
+            } catch (NoSuchFieldException e) {
                 e.printStackTrace();
                 return null;
             }
@@ -44,44 +44,44 @@ public class ClassReflect {
         return fieldReflect;
     }
 
-    public FieldReflect field( int index )
+    public FieldReflect field(int index)
     {
-        FieldReflect fieldReflect = this.cacheIndex.get( index );
-        if ( fieldReflect == null ) {
+        FieldReflect fieldReflect = this.cacheIndex.get(index);
+        if (fieldReflect == null) {
             Field[] fieldArray = this.clazz.getDeclaredFields();
-            if ( fieldArray.length < index + 1 ) {
+            if (fieldArray.length < index + 1) {
                 return null;
             }
 
             Field field = fieldArray[index];
-            field.setAccessible( true );
-            fieldReflect = new FieldReflect( field );
-            this.cacheIndex.put( index, fieldReflect );
+            field.setAccessible(true);
+            fieldReflect = new FieldReflect(field);
+            this.cacheIndex.put(index, fieldReflect);
         }
 
         return fieldReflect;
     }
 
-    public ConstructorReflect constructor( Class ... classes )
+    public ConstructorReflect constructor(Class... classes)
     {
         // Build the key first
         StringBuilder key = new StringBuilder();
-        for ( Class aClass : classes ) {
-            key.append( aClass.getName() );
+        for (Class aClass : classes) {
+            key.append(aClass.getName());
         }
 
         String cacheKey = key.toString();
 
-        ConstructorReflect constructorReflect = this.constructorCache.get( cacheKey );
-        if ( constructorReflect == null ) {
+        ConstructorReflect constructorReflect = this.constructorCache.get(cacheKey);
+        if (constructorReflect == null) {
             // We need to search for the constructor now
             try {
-                Constructor<?> constructor = this.clazz.getConstructor( classes );
-                constructor.setAccessible( true );
+                Constructor<?> constructor = this.clazz.getConstructor(classes);
+                constructor.setAccessible(true);
 
-                constructorReflect = new ConstructorReflect( constructor );
-                this.constructorCache.put( cacheKey, constructorReflect );
-            } catch ( NoSuchMethodException e ) {
+                constructorReflect = new ConstructorReflect(constructor);
+                this.constructorCache.put(cacheKey, constructorReflect);
+            } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
         }
@@ -89,17 +89,17 @@ public class ClassReflect {
         return constructorReflect;
     }
 
-    public MethodReflect method( String name )
+    public MethodReflect method(String name)
     {
-        MethodReflect methodReflect = this.methodCache.get( name );
-        if ( methodReflect == null ) {
-            for ( Method method : this.clazz.getDeclaredMethods() ) {
+        MethodReflect methodReflect = this.methodCache.get(name);
+        if (methodReflect == null) {
+            for (Method method : this.clazz.getDeclaredMethods()) {
                 // We take the first method with the name
-                if ( method.getName().equals( name ) ) {
-                    method.setAccessible( true );
+                if (method.getName().equals(name)) {
+                    method.setAccessible(true);
 
-                    methodReflect = new MethodReflect( method );
-                    this.methodCache.put( name, methodReflect );
+                    methodReflect = new MethodReflect(method);
+                    this.methodCache.put(name, methodReflect);
                     return methodReflect;
                 }
             }

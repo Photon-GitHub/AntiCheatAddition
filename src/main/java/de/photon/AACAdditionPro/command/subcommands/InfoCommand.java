@@ -6,7 +6,7 @@ import de.photon.AACAdditionPro.Permissions;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.CheckManager;
 import de.photon.AACAdditionPro.command.InternalCommand;
-import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementExeption;
+import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -50,7 +50,7 @@ public class InfoCommand extends InternalCommand
                     if (vl != 0) {
                         messages.put(vl, module.getName());
                     }
-                } catch (NoViolationLevelManagementExeption ignore) {
+                } catch (NoViolationLevelManagementException ignore) {
                     // Ignore the Exception as there are a few checks with no ViolatonLevelManagement
                 }
             }

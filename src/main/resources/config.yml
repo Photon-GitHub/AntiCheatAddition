@@ -180,7 +180,7 @@ FlyPatch:
 Freecam:
    # Do you want to enable the Anti-Freecam
    enabled: true
-   # The time in ms before AACAdditonPro starts to initiate teleports for an idling player
+   # The time in ms before AACAdditionPro starts to initiate teleports for an idling player
    idle_time: 1000
    # How often should players be checked and possibly teleported
    # Too low values can cause visual bugs (very frequent wobbles and disappearing chunks in extreme cases)

@@ -7,24 +7,23 @@ import java.lang.reflect.Method;
  * @author geNAZt
  * @version 1.0
  */
-public class MethodReflect {
-
+public class MethodReflect
+{
     private final Method method;
 
-    MethodReflect( Method method )
+    MethodReflect(Method method)
     {
         this.method = method;
     }
 
-    public Object invoke( Object obj, Object ... args )
+    public Object invoke(Object obj, Object... args)
     {
         try {
-            return this.method.invoke( obj, args );
-        } catch ( IllegalAccessException | InvocationTargetException e ) {
+            return this.method.invoke(obj, args);
+        } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
 
         return null;
     }
-
 }

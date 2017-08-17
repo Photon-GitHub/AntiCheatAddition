@@ -7,25 +7,23 @@ import java.lang.reflect.InvocationTargetException;
  * @author geNAZt
  * @version 1.0
  */
-public class ConstructorReflect {
-
+public class ConstructorReflect
+{
     private final Constructor constructor;
 
-    ConstructorReflect( Constructor constructor )
+    ConstructorReflect(Constructor constructor)
     {
         this.constructor = constructor;
     }
+    
 
-
-    public Object instance( Object ... initObjects )
+    public Object instance(Object... initObjects)
     {
         try {
-            return this.constructor.newInstance( initObjects );
-        } catch ( InstantiationException | IllegalAccessException | InvocationTargetException e ) {
+            return this.constructor.newInstance(initObjects);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
-
         return null;
     }
-
 }

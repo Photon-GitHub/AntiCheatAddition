@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,7 +31,7 @@ public class PerHeuristicCommands implements Listener, Addition
     /**
      * The map of the command that are defined in the config at certain violation-levels.
      */
-    private Map<Integer, List<String>> thresholds;
+    private ConcurrentMap<Integer, List<String>> thresholds;
 
     @Override
     public void subEnable()

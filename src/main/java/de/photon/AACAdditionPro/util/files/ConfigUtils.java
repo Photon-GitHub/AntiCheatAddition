@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public final class ConfigUtils
 {
@@ -71,7 +72,7 @@ public final class ConfigUtils
      *
      * @return a {@link Map} where the keys are {@link Integer}s and representing the threshold and Objects that are {@link List}s of {@link String}(s) which contain the commands that should be run when triggering the threshold.
      */
-    public static ConcurrentHashMap<Integer, List<String>> loadThresholds(final String thresholdSectionPath)
+    public static ConcurrentMap<Integer, List<String>> loadThresholds(final String thresholdSectionPath)
     {
         final Set<String> keys = Objects.requireNonNull(loadKeys(thresholdSectionPath), "Severe loading error: Keys are null when loading: " + thresholdSectionPath);
 

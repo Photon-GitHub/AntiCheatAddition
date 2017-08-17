@@ -58,12 +58,12 @@ final class EquipmentDatabase
             return reflectedConstructor;
         });
 
-        // Ok now we got the constructor, get a new instance and let the api handle the materials
+        // Ok now we got the constructor, get a new instance and make the api handle the materials
         try {
             EquipmentCategory category = constructor.newInstance();
             category.load();
 
-            // Let the config overwrite and filter stuff out
+            // Override potential config settings and filter out affected materials
             final List<Material> materials = category.getMaterials();
             final String categoryName = categoryClass.getSimpleName().replace(EquipmentCategory.class.getSimpleName(), "").toLowerCase();
             final Set<String> optionKeys = ConfigUtils.loadKeys(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".equipment." + categoryName);

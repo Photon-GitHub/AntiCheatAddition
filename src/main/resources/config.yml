@@ -336,6 +336,7 @@ KillauraEntity:
          gold_ore: true
          iron_ore: true
          # Working materials
+         # All kinds of ingots are included here
          ingot: true
          wood: true
          diamond: true

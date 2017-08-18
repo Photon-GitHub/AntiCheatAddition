@@ -112,7 +112,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         float newHeadYaw;
         do {
-            newHeadYaw = (float) (yaw + 10 + ThreadLocalRandom.current().nextDouble(20));
+            newHeadYaw = (float) MathUtils.generateRandomThreshold(yaw + 10, 20);
         } while (MathUtils.getFixRotation(headYaw) == MathUtils.getFixRotation(newHeadYaw));
 
         this.headYaw = reduceAngle(newHeadYaw, 180);
@@ -195,7 +195,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> {
             DisplayInformation.updatePing(this);
             recursiveUpdatePing();
-        }, 10 + ThreadLocalRandom.current().nextInt(35));
+        }, MathUtils.generateRandomThreshold(10, 35));
     }
 
     // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //

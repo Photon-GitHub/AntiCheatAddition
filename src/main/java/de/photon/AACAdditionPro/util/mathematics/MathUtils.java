@@ -37,9 +37,9 @@ public final class MathUtils
      *
      * @return the resulting random integer
      */
-    public static int generateRandomThreshold(int min, int randomBoundary)
+    public static double generateRandomThreshold(double min, double randomBoundary)
     {
-        return min + ThreadLocalRandom.current().nextInt(randomBoundary);
+        return min + ThreadLocalRandom.current().nextDouble(randomBoundary);
     }
 
     /**

@@ -19,23 +19,25 @@ public class BasicMovement extends Movement
     public Location calculate(Location old)
     {
         // Spawning-Location
-        final Location location = player.getLocation();
-        final double origX = location.getX();
-        final double origZ = location.getZ();
+        final Location moveLocation = player.getLocation();
+        final double origX = moveLocation.getX();
+        final double origZ = moveLocation.getZ();
 
         // Move behind the player to make the entity not disturb players
         // Important: the negative offset!
-        location.add(location.getDirection().setY(0).normalize().multiply(-(entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange))));
+        moveLocation.add(moveLocation.getDirection().setY(0).normalize().multiply(-(entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange))));
 
-        final double currentXZDifference = Math.hypot(location.getX() - origX, location.getZ() - origZ);
+        final double currentXZDifference = Math.hypot(moveLocation.getX() - origX, moveLocation.getZ() - origZ);
 
         if (currentXZDifference < minXZDifference) {
-            final Vector moveAddVector = new Vector(-Math.sin(Math.toRadians(location.getYaw())), 0, Math.cos(Math.toRadians(location.getYaw())));
-            location.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
+            final double radiansYaw = Math.toRadians(moveLocation.getYaw());
+
+            final Vector moveAddVector = new Vector(-Math.sin(radiansYaw), 0, Math.cos(radiansYaw));
+            moveLocation.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
         }
 
-        old.setX(location.getX());
-        old.setZ(location.getZ());
+        old.setX(moveLocation.getX());
+        old.setZ(moveLocation.getZ());
         return old;
     }
 }

@@ -111,11 +111,11 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         pitch = reduceAngle(pitch, 90);
 
-        this.headYaw = reduceAngle((float) MathUtils.generateRandomThreshold(yaw - 10, 20), 180);
+        this.headYaw = reduceAngle((float) MathUtils.randomBoundaryDouble(yaw - 10, 20), 180);
 
         // Get the next position and move
         Location location = this.currentMovementCalculator.calculate(this.location.clone());
-        
+
         // Backup-Movement
         if (location == null) {
             this.currentMovementCalculator = this.movementStates.get(EntityMovement.BASIC);
@@ -127,14 +127,14 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         this.move(location);
 
         // Maybe we should switch movement states?
-        if (lastJump++ > MathUtils.generateRandomThreshold(30, 80)) {
+        if (lastJump++ > MathUtils.randomBoundaryDouble(30, 80)) {
             lastJump = 0;
             jump();
         }
 
         // Swing items if enabled
         if (shouldSwing) {
-            if (lastSwing++ > MathUtils.generateRandomThreshold(15, 35)) {
+            if (lastSwing++ > MathUtils.randomBoundaryDouble(15, 35)) {
                 lastSwing = 0;
 
                 if (isSwingable(equipment.getMainHand().getType())) {
@@ -145,7 +145,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         // Swap items if needed
         if (shouldSwap) {
-            if (lastSwap++ > MathUtils.generateRandomThreshold(40, 65)) {
+            if (lastSwap++ > MathUtils.randomBoundaryDouble(40, 65)) {
                 lastSwap = 0;
                 equipment.equipInHand();
                 equipment.equipPlayerEntity();
@@ -193,7 +193,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> {
             DisplayInformation.updatePing(this);
             recursiveUpdatePing();
-        }, (long) MathUtils.generateRandomThreshold(10, 35));
+        }, (long) MathUtils.randomBoundaryDouble(10, 35));
     }
 
     // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //

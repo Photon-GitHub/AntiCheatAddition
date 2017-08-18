@@ -46,8 +46,6 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     @LoadFromConfiguration(configPath = ".position.minXZDifference")
     private double minXZDifference;
 
-    private boolean spawnAtJoin;
-
     @EventHandler
     public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)
     {
@@ -153,11 +151,9 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 // Set it as the user's active entity
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
 
-                // Spawn it if necessary
-                if (spawnAtJoin) {
-                    final Location location = calculateLocationBehindPlayer(player, entityOffset, offsetRandomizationRange, minXZDifference);
-                    playerEntity.spawn(location);
-                }
+                // Spawn the entity
+                final Location location = calculateLocationBehindPlayer(player, entityOffset, offsetRandomizationRange, minXZDifference);
+                playerEntity.spawn(location);
             });
         }, 2L);
     }

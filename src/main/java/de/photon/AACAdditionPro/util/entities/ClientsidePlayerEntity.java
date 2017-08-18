@@ -6,6 +6,7 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.api.killauraentity.EntityMovement;
 import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.entities.equipment.Equipment;
 import de.photon.AACAdditionPro.util.entities.equipment.category.WeaponsEquipmentCategory;
@@ -24,7 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -56,7 +57,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private byte lastSwap = 0;
 
     // Movement state machine
-    private Map<String, Movement> movementStates = new HashMap<>(); // HashMap is enough since you write to it once and never rehash it
+    private Map<EntityMovement, Movement> movementStates = new EnumMap<>(EntityMovement.class);
     private Movement currentMovementCalculator;
     private short lastJump = 0;
 
@@ -78,10 +79,10 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         this.equipment = new Equipment(this);
 
         // Init movement states
-        this.movementStates.put("basic", new BasicMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
+        this.movementStates.put(EntityMovement.BASIC, new BasicMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
 
         // Set default movement state
-        this.currentMovementCalculator = this.movementStates.get("basic");
+        this.currentMovementCalculator = this.movementStates.get(EntityMovement.BASIC);
 
         recursiveUpdatePing();
     }
@@ -114,8 +115,10 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         // Get the next position and move
         Location location = this.currentMovementCalculator.calculate(this.location.clone());
+        
+        // Backup-Movement
         if (location == null) {
-            this.currentMovementCalculator = this.movementStates.get("basic");
+            this.currentMovementCalculator = this.movementStates.get(EntityMovement.BASIC);
             location = this.currentMovementCalculator.calculate(this.location.clone());
         }
 

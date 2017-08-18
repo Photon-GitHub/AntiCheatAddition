@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.util.entities;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.entities.movement.Gravitation;
@@ -111,7 +112,7 @@ public abstract class ClientsideEntity
     {
         final User user = UserManager.getUser(observedPlayer.getUniqueId());
 
-        if (user != null) {
+        if (!AACAdditionProCheck.isUserInvalid(user)) {
             ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
             if (clientSidePlayerEntity != null) {
                 if (clientSidePlayerEntity.getEntityID() == this.entityID) {
@@ -148,6 +149,7 @@ public abstract class ClientsideEntity
                 this.location.getY() + this.size.getY(),
                 this.location.getZ() + (this.size.getZ() / 2)
         );
+
         List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(observedPlayer, bb.addCoordinates(dX, dY, dZ));
 
         // Check if we would hit a y border block
@@ -196,6 +198,7 @@ public abstract class ClientsideEntity
         if (!this.spawned) {
             return;
         }
+
         double xDiff = this.location.getX() - this.lastLocation.getX();
         double yDiff = this.location.getY() - this.lastLocation.getY();
         double zDiff = this.location.getZ() - this.lastLocation.getZ();

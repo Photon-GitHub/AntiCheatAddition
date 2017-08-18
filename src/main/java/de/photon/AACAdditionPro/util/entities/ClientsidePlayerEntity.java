@@ -12,6 +12,7 @@ import de.photon.AACAdditionPro.util.entities.equipment.category.WeaponsEquipmen
 import de.photon.AACAdditionPro.util.entities.movement.BasicMovement;
 import de.photon.AACAdditionPro.util.entities.movement.Movement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import lombok.Getter;
@@ -112,7 +113,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         float newHeadYaw;
         do {
             newHeadYaw = (float) (yaw + 10 + ThreadLocalRandom.current().nextDouble(20));
-        } while (getFixRotation(headYaw) == getFixRotation(newHeadYaw));
+        } while (MathUtils.getFixRotation(headYaw) == MathUtils.getFixRotation(newHeadYaw));
 
         this.headYaw = reduceAngle(newHeadYaw, 180);
 
@@ -128,15 +129,14 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         this.move(location);
 
         // Maybe we should switch movement states?
-        if (lastJump++ > 30 + ThreadLocalRandom.current().nextInt(80)) {
+        if (lastJump++ > MathUtils.generateRandomThreshold(30, 80)) {
             lastJump = 0;
             jump();
         }
 
         // Swing items if enabled
         if (shouldSwing) {
-            int should = 15 + ThreadLocalRandom.current().nextInt(35);
-            if (lastSwing++ > should) {
+            if (lastSwing++ > MathUtils.generateRandomThreshold(15, 35)) {
                 lastSwing = 0;
 
                 if (isSwingable(equipment.getMainHand().getType())) {
@@ -147,8 +147,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         // Swap items if needed
         if (shouldSwap) {
-            int should = 40 + ThreadLocalRandom.current().nextInt(65);
-            if (lastSwap++ > should) {
+            if (lastSwap++ > MathUtils.generateRandomThreshold(40, 65)) {
                 lastSwap = 0;
                 equipment.equipInHand();
                 equipment.equipPlayerEntity();
@@ -170,11 +169,6 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             input -= Math.signum(input) * minMax;
         }
         return input;
-    }
-
-    private byte getFixRotation(float yawpitch)
-    {
-        return (byte) ((int) (yawpitch * 256.0F / 360.0F));
     }
 
     private boolean isSwingable(Material material)

@@ -160,6 +160,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     /**
      * Reduces the angle to make it fit the spectrum of -minMax til +minMax in steps of minMax
+     *
+     * @param input  the initial angle
+     * @param minMax the boundary in the positive and negative spectrum. The parameter itself must be > 0.
      */
     private float reduceAngle(float input, float minMax)
     {

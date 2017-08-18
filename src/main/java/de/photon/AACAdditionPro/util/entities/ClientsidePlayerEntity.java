@@ -8,6 +8,7 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.entities.equipment.Equipment;
+import de.photon.AACAdditionPro.util.entities.equipment.category.WeaponsEquipmentCategory;
 import de.photon.AACAdditionPro.util.entities.movement.BasicMovement;
 import de.photon.AACAdditionPro.util.entities.movement.Movement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
@@ -19,7 +20,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
@@ -107,28 +107,14 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         pitch += ThreadLocalRandom.current().nextInt(5);
 
-        while (pitch > 90) {
-            pitch -= 90;
-        }
-
-        while (pitch < -90) {
-            pitch += 90;
-        }
+        pitch = reduceAngle(pitch, 90);
 
         float newHeadYaw;
         do {
             newHeadYaw = (float) (yaw + 10 + ThreadLocalRandom.current().nextDouble(20));
         } while (getFixRotation(headYaw) == getFixRotation(newHeadYaw));
 
-        while (newHeadYaw > 180) {
-            newHeadYaw -= 180;
-        }
-
-        while (newHeadYaw < -180) {
-            newHeadYaw += 180;
-        }
-
-        this.headYaw = newHeadYaw;
+        this.headYaw = reduceAngle(newHeadYaw, 180);
 
         // Get the next position and move
         Location location = this.currentMovementCalculator.calculate(this.location.clone());
@@ -153,7 +139,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             if (lastSwing++ > should) {
                 lastSwing = 0;
 
-                if (isSwingable(equipment.getMainHand())) {
+                if (isSwingable(equipment.getMainHand().getType())) {
                     swing();
                 }
             }
@@ -170,16 +156,28 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         }
     }
 
+    // -------------------------------------------------------------- Yaw/Pitch ------------------------------------------------------------- //
+
+    /**
+     * Reduces the angle to make it fit the spectrum of -minMax til +minMax in steps of minMax
+     */
+    private float reduceAngle(float input, float minMax)
+    {
+        while (Math.abs(input) > minMax) {
+            input -= Math.signum(input) * minMax;
+        }
+        return input;
+    }
+
     private byte getFixRotation(float yawpitch)
     {
         return (byte) ((int) (yawpitch * 256.0F / 360.0F));
     }
 
-    private boolean isSwingable(ItemStack itemStack)
+    private boolean isSwingable(Material material)
     {
-        Material material = itemStack.getType();
-        String name = material.name();
-        return name.contains("SWORD") || name.contains("AXE") || name.contains("HOE") || material == Material.FISHING_ROD;
+        WeaponsEquipmentCategory weaponsEquipmentCategory = new WeaponsEquipmentCategory();
+        return weaponsEquipmentCategory.getMaterials().contains(material);
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //

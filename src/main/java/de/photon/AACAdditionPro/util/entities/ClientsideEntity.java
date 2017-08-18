@@ -42,7 +42,7 @@ public abstract class ClientsideEntity
     private static Field entityCountField;
 
     static {
-        entityCountField = Reflect.fromNMS(".Entity").field("entityCount").getField();
+        entityCountField = Reflect.fromNMS("Entity").field("entityCount").getField();
         entityCountField.setAccessible(true);
     }
 

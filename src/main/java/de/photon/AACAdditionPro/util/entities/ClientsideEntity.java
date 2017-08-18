@@ -1,11 +1,14 @@
 package de.photon.AACAdditionPro.util.entities;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.entities.movement.Gravitation;
 import de.photon.AACAdditionPro.util.entities.movement.Jumping;
+import de.photon.AACAdditionPro.util.entities.movement.Movement;
+import de.photon.AACAdditionPro.util.entities.movement.submovements.StayMovement;
 import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
@@ -29,7 +32,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract class ClientsideEntity
 {
@@ -80,11 +86,20 @@ public abstract class ClientsideEntity
     @Getter
     protected final Player observedPlayer;
     private int tickTask = -1;
-    private int ticks = 0;
+
+    // Movement state machine
+    private Set<Movement> movementStates = new HashSet<>();
+    private Movement currentMovementCalculator;
 
     public ClientsideEntity(final Player observedPlayer)
     {
         this.observedPlayer = observedPlayer;
+
+        // Add all movements to the list
+        this.movementStates.add(new StayMovement());
+
+        // Set default movement state
+        this.setMovement(MovementType.STAY);
 
         tickTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::tick, 1L, 1L);
 
@@ -94,6 +109,17 @@ public abstract class ClientsideEntity
         } catch (IllegalAccessException ex) {
             throw new RuntimeException("Could not create ClientsideEntity for player " + observedPlayer.getName(), ex);
         }
+    }
+
+    /**
+     * Constructs a {@link ClientsideEntity} with additional possible {@link Movement}s.
+     *
+     * @param possibleMovements the additional {@link Movement}s the entity should be capable of. The {@link StayMovement} is added by default and should not be provided in the
+     */
+    public ClientsideEntity(final Player observedPlayer, Movement... possibleMovements)
+    {
+        this(observedPlayer);
+        this.movementStates.addAll(Arrays.asList(possibleMovements));
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //
@@ -118,14 +144,22 @@ public abstract class ClientsideEntity
         return false;
     }
 
-    // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //
-
     /**
      * Should be called every tick once, updates physics + sends movement packets
      */
     protected void tick()
     {
-        // Apply motion movement
+        // ------------------------------------------ Movement system -----------------------------------------------//
+        // Get the next position and move
+        Location location = this.currentMovementCalculator.calculate(this.location.clone());
+
+        // Backup-Movement
+        if (location == null) {
+            this.setMovement(MovementType.STAY);
+            location = this.currentMovementCalculator.calculate(this.location.clone());
+        }
+
+        // ------------------------------------------ Velocity system -----------------------------------------------//
         velocity = Gravitation.applyGravitationAndAirResistance(velocity, Gravitation.PLAYER);
 
         double dX = velocity.getX();
@@ -145,6 +179,8 @@ public abstract class ClientsideEntity
                 this.location.getZ() + (this.size.getZ() / 2)
         );
 
+
+        // ----------------------------------------- Collision checking ---------------------------------------------//
         List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(observedPlayer, bb.addCoordinates(dX, dY, dZ));
 
         // Check if we would hit a y border block
@@ -174,6 +210,8 @@ public abstract class ClientsideEntity
         sendMove();
         sendHeadYaw();
     }
+
+    // -------------------------------------------------------------- Movement ------------------------------------------------------------ //
 
     /**
      * Moves the {@link ClientsideEntity} somewhere
@@ -297,6 +335,65 @@ public abstract class ClientsideEntity
         }
     }
 
+    private void sendHeadYaw()
+    {
+        // The entity is already spawned
+        if (this.isSpawned() &&
+            // and has moved it's head.
+            this.headYaw != this.lastHeadYaw)
+        {
+            final WrapperPlayServerEntityHeadRotation headRotationWrapper = new WrapperPlayServerEntityHeadRotation();
+
+            headRotationWrapper.setEntityID(entityID);
+            headRotationWrapper.setHeadYaw(MathUtils.getFixRotation(headYaw));
+
+            headRotationWrapper.sendPacket(observedPlayer);
+            lastHeadYaw = headYaw;
+        }
+    }
+
+
+    public Location getLocation()
+    {
+        return location == null ?
+               null :
+               location.clone();
+    }
+
+    public Location getLastLocation()
+    {
+        return lastLocation == null ?
+               null :
+               location.clone();
+    }
+
+    public Vector getVelocity()
+    {
+        return velocity.clone();
+    }
+
+    public void setVelocity(Vector velocity)
+    {
+        this.velocity = velocity.clone();
+    }
+
+    /**
+     * Sets the {@link Movement} of this entity by the {@link MovementType}.
+     *
+     * @throws IllegalArgumentException if the Entity is not supporting the requested {@link Movement}.
+     */
+    public void setMovement(MovementType movementType)
+    {
+        for (Movement movement : movementStates) {
+            if (movement.getMovementType() == movementType) {
+                this.currentMovementCalculator = movement;
+            }
+        }
+        throw new IllegalArgumentException("The Entity does not support the MovementType " + movementType.name());
+    }
+
+    // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //
+
     /**
      * Fake being hurt by the observedPlayer in the next sync server tick
      */
@@ -370,47 +467,6 @@ public abstract class ClientsideEntity
             animationWrapper.setAnimation(animationType);
             animationWrapper.sendPacket(this.observedPlayer);
         }
-    }
-
-    private void sendHeadYaw()
-    {
-        // The entity is already spawned
-        if (this.isSpawned() &&
-            // and has moved it's head.
-            this.headYaw != this.lastHeadYaw)
-        {
-            final WrapperPlayServerEntityHeadRotation headRotationWrapper = new WrapperPlayServerEntityHeadRotation();
-
-            headRotationWrapper.setEntityID(entityID);
-            headRotationWrapper.setHeadYaw(MathUtils.getFixRotation(headYaw));
-
-            headRotationWrapper.sendPacket(observedPlayer);
-            lastHeadYaw = headYaw;
-        }
-    }
-
-    public Location getLocation()
-    {
-        return location == null ?
-               null :
-               location.clone();
-    }
-
-    public Location getLastLocation()
-    {
-        return lastLocation == null ?
-               null :
-               location.clone();
-    }
-
-    public Vector getVelocity()
-    {
-        return velocity.clone();
-    }
-
-    public void setVelocity(Vector velocity)
-    {
-        this.velocity = velocity.clone();
     }
 
     // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //

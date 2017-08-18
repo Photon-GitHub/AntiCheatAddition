@@ -6,12 +6,11 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.api.killauraentity.EntityMovement;
+import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.entities.equipment.Equipment;
 import de.photon.AACAdditionPro.util.entities.equipment.category.WeaponsEquipmentCategory;
-import de.photon.AACAdditionPro.util.entities.movement.BasicMovement;
-import de.photon.AACAdditionPro.util.entities.movement.Movement;
+import de.photon.AACAdditionPro.util.entities.movement.submovements.BasicFollowMovement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
@@ -25,8 +24,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ClientsidePlayerEntity extends ClientsideEntity
@@ -57,16 +54,16 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private byte lastSwing = 0;
     private byte lastSwap = 0;
 
-    // Movement state machine
-    private Map<EntityMovement, Movement> movementStates = new EnumMap<>(EntityMovement.class);
-    private Movement currentMovementCalculator;
     private short lastJump = 0;
 
     private Equipment equipment;
 
     public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange, double minXZDifference)
     {
-        super(observedPlayer);
+        super(observedPlayer, new BasicFollowMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
+        
+        // Activate the BASIC_FOLLOW movement.
+        this.setMovement(MovementType.BASIC_FOLLOW);
 
         // This needs to match a NMS EntityPlayer hitbox
         this.size.setX(2 * Hitbox.PLAYER.getOffset());
@@ -78,12 +75,6 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         // EquipmentData
         this.equipment = new Equipment(this);
-
-        // Init movement states
-        this.movementStates.put(EntityMovement.BASIC_FOLLOW, new BasicMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
-
-        // Set default movement state
-        this.currentMovementCalculator = this.movementStates.get(EntityMovement.BASIC_FOLLOW);
 
         recursiveUpdatePing();
     }
@@ -114,18 +105,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         this.headYaw = reduceAngle((float) MathUtils.randomBoundaryDouble(yaw - 10, 20), 180);
 
-        // Get the next position and move
-        Location location = this.currentMovementCalculator.calculate(this.location.clone());
-
-        // Backup-Movement
-        if (location == null) {
-            this.currentMovementCalculator = this.movementStates.get(EntityMovement.BASIC_FOLLOW);
-            location = this.currentMovementCalculator.calculate(this.location.clone());
-        }
-
-        location.setYaw(yaw);
-        location.setPitch(pitch);
-        this.move(location);
+        this.location.setYaw(yaw);
+        this.location.setPitch(pitch);
+        this.move(this.location);
 
         // Maybe we should switch movement states?
         if (lastJump++ > MathUtils.randomBoundaryDouble(30, 80)) {

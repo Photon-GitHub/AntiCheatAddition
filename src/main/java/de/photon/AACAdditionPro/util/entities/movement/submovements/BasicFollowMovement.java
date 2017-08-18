@@ -1,19 +1,27 @@
-package de.photon.AACAdditionPro.util.entities.movement;
+package de.photon.AACAdditionPro.util.entities.movement.submovements;
 
-import lombok.AllArgsConstructor;
+import de.photon.AACAdditionPro.api.killauraentity.MovementType;
+import de.photon.AACAdditionPro.util.entities.movement.Movement;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@AllArgsConstructor
-public class BasicMovement extends Movement
+public class BasicFollowMovement implements Movement
 {
     private final Player player;
     private double entityOffset;
     private double offsetRandomizationRange;
     private double minXZDifference;
+
+    public BasicFollowMovement(Player player, double entityOffset, double offsetRandomizationRange, double minXZDifference)
+    {
+        this.player = player;
+        this.entityOffset = entityOffset;
+        this.offsetRandomizationRange = offsetRandomizationRange;
+        this.minXZDifference = minXZDifference;
+    }
 
     @Override
     public Location calculate(Location old)
@@ -39,5 +47,11 @@ public class BasicMovement extends Movement
         old.setX(moveLocation.getX());
         old.setZ(moveLocation.getZ());
         return old;
+    }
+
+    @Override
+    public MovementType getMovementType()
+    {
+        return MovementType.BASIC_FOLLOW;
     }
 }

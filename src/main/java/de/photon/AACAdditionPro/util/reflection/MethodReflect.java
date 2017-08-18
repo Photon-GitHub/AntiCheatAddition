@@ -1,14 +1,13 @@
 package de.photon.AACAdditionPro.util.reflection;
 
+import lombok.Getter;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/**
- * @author geNAZt
- * @version 1.0
- */
 public class MethodReflect
 {
+    @Getter
     private final Method method;
 
     MethodReflect(Method method)

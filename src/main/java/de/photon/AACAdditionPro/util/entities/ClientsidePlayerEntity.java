@@ -44,6 +44,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     @Getter
     private final WrappedGameProfile gameProfile;
+
     @Getter
     @Setter
     private int ping;
@@ -79,10 +80,10 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         this.equipment = new Equipment(this);
 
         // Init movement states
-        this.movementStates.put(EntityMovement.BASIC, new BasicMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
+        this.movementStates.put(EntityMovement.BASIC_FOLLOW, new BasicMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
 
         // Set default movement state
-        this.currentMovementCalculator = this.movementStates.get(EntityMovement.BASIC);
+        this.currentMovementCalculator = this.movementStates.get(EntityMovement.BASIC_FOLLOW);
 
         recursiveUpdatePing();
     }
@@ -118,7 +119,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         // Backup-Movement
         if (location == null) {
-            this.currentMovementCalculator = this.movementStates.get(EntityMovement.BASIC);
+            this.currentMovementCalculator = this.movementStates.get(EntityMovement.BASIC_FOLLOW);
             location = this.currentMovementCalculator.calculate(this.location.clone());
         }
 

@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Reflect
 {
-
     private static final Map<String, ClassReflect> REFLECTION_CACHE = new ConcurrentHashMap<>();
 
     public static ClassReflect from(Class clazz)

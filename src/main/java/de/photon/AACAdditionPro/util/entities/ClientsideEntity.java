@@ -16,6 +16,7 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityTeleport;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMove;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMoveLook;
+import de.photon.AACAdditionPro.util.reflection.Reflect;
 import de.photon.AACAdditionPro.util.reflection.ReflectionUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,14 +36,8 @@ public abstract class ClientsideEntity
     private static Field entityCountField;
 
     static {
-        try {
-            final String version = ReflectionUtils.getVersionString();
-            Class<?> entityClass = Class.forName("net.minecraft.server." + version + ".Entity");
-            entityCountField = entityClass.getDeclaredField("entityCount");
-            entityCountField.setAccessible(true);
-        } catch (ReflectiveOperationException ex) {
-            throw new IllegalStateException("Server version is not supported", ex);
-        }
+        entityCountField = Reflect.fromNMS(".Entity").field("entityCount").getField();
+        entityCountField.setAccessible(true);
     }
 
     @Getter

@@ -1,13 +1,12 @@
 package de.photon.AACAdditionPro.util.reflection;
 
+import lombok.Getter;
+
 import java.lang.reflect.Field;
 
-/**
- * @author geNAZt
- * @version 1.0
- */
 public class FieldReflect
 {
+    @Getter
     private final Field field;
 
     FieldReflect(Field field)

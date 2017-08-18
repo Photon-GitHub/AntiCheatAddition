@@ -12,13 +12,11 @@ public interface KillauraEntityController
      */
     boolean isValid();
 
-    boolean isSpawnAtJoin();
-
-    void setSpawnAtJoin(boolean spawnAtJoin);
-
     boolean isSpawnedFor(Player player);
 
     boolean setSpawnedForPlayer(Player player, boolean spawned);
+
+    MovementType getMovementType();
 
     /**
      * @param spawnLocation used only when the entity is not spawned currently

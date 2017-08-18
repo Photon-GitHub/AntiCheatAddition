@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.util.entities;
 
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
+import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -24,18 +25,6 @@ public class DelegatingKillauraEntityController implements KillauraEntityControl
     }
 
     @Override
-    public boolean isSpawnAtJoin()
-    {
-        return killauraEntityController.isSpawnAtJoin();
-    }
-
-    @Override
-    public void setSpawnAtJoin(boolean spawnAtJoin)
-    {
-        killauraEntityController.setSpawnAtJoin(spawnAtJoin);
-    }
-
-    @Override
     public boolean isSpawnedFor(Player player)
     {
         return killauraEntityController.isSpawnedFor(player);
@@ -45,6 +34,12 @@ public class DelegatingKillauraEntityController implements KillauraEntityControl
     public boolean setSpawnedForPlayer(Player player, boolean spawned)
     {
         return killauraEntityController.setSpawnedForPlayer(player, spawned);
+    }
+
+    @Override
+    public MovementType getMovementType()
+    {
+        return MovementType.STAY;
     }
 
     @Override

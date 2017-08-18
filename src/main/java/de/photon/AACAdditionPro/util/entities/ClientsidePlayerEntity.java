@@ -61,7 +61,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange, double minXZDifference)
     {
         super(observedPlayer, new BasicFollowMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
-        
+
         // Activate the BASIC_FOLLOW movement.
         this.setMovement(MovementType.BASIC_FOLLOW);
 

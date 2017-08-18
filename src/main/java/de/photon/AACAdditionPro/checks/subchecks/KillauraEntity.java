@@ -8,6 +8,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
+import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -109,12 +110,14 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), () -> {
             WrappedGameProfile gameProfile = null;
+            MovementType movementType = MovementType.BASIC_FOLLOW;
 
             // Ask API endpoint for valid profiles
             KillauraEntityAddon killauraEntityAddon = AACAdditionPro.getInstance().getKillauraEntityAddon();
             if (killauraEntityAddon != null) {
                 try {
                     gameProfile = killauraEntityAddon.getKillauraEntityGameProfile(player);
+                    movementType = killauraEntityAddon.getController().getMovementType();
                 } catch (Throwable t) {
                     new RuntimeException("Error in plugin " + killauraEntityAddon.getPlugin().getName() + " while trying to get a killaura-entity gameprofile for " + player.getName(), t).printStackTrace();
                 }
@@ -138,10 +141,15 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
             // Make it final for the use in a lambda
             final WrappedGameProfile resultingGameProfile = gameProfile;
+            final MovementType finalMovementType = movementType;
 
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
                 // Create the new Entity with the resultingGameProfile
                 final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(player, resultingGameProfile, entityOffset, offsetRandomizationRange, minXZDifference);
+
+                // Set the MovementType
+                playerEntity.setMovement(finalMovementType);
+
                 // Set it as the user's active entity
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
 
@@ -214,18 +222,6 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             public boolean isValid()
             {
                 return true;
-            }
-
-            @Override
-            public boolean isSpawnAtJoin()
-            {
-                return spawnAtJoin;
-            }
-
-            @Override
-            public void setSpawnAtJoin(boolean spawnAtJoin)
-            {
-                KillauraEntity.this.spawnAtJoin = spawnAtJoin;
             }
 
             @Override

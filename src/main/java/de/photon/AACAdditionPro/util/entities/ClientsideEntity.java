@@ -387,6 +387,7 @@ public abstract class ClientsideEntity
         for (Movement movement : movementStates) {
             if (movement.getMovementType() == movementType) {
                 this.currentMovementCalculator = movement;
+                return;
             }
         }
         throw new IllegalArgumentException("The Entity does not support the MovementType " + movementType.name());

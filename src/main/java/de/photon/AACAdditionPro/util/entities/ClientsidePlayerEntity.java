@@ -195,7 +195,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> {
             DisplayInformation.updatePing(this);
             recursiveUpdatePing();
-        }, MathUtils.generateRandomThreshold(10, 35));
+        }, (long) MathUtils.generateRandomThreshold(10, 35));
     }
 
     // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //

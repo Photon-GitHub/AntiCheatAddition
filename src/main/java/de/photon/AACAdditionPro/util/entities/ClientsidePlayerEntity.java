@@ -110,12 +110,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         pitch = reduceAngle(pitch, 90);
 
-        float newHeadYaw;
-        do {
-            newHeadYaw = (float) MathUtils.generateRandomThreshold(yaw + 10, 20);
-        } while (MathUtils.getFixRotation(headYaw) == MathUtils.getFixRotation(newHeadYaw));
-
-        this.headYaw = reduceAngle(newHeadYaw, 180);
+        this.headYaw = reduceAngle((float) MathUtils.generateRandomThreshold(yaw - 10, 20), 180);
 
         // Get the next position and move
         Location location = this.currentMovementCalculator.calculate(this.location.clone());

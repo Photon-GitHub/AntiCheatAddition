@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.util.entities;
 
-import de.photon.AACAdditionPro.api.KillauraEntityController;
+import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 

@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.api;
+package de.photon.AACAdditionPro.api.killauraentity;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

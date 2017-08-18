@@ -2,8 +2,8 @@ package de.photon.AACAdditionPro;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import de.photon.AACAdditionPro.addition.AdditionManager;
-import de.photon.AACAdditionPro.api.KillauraEntityAddon;
-import de.photon.AACAdditionPro.api.KillauraEntityController;
+import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
+import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
 import de.photon.AACAdditionPro.checks.CheckManager;
 import de.photon.AACAdditionPro.command.MainCommand;
 import de.photon.AACAdditionPro.events.APILoadedEvent;

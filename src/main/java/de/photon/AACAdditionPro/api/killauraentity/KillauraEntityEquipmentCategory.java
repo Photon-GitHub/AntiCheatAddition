@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.api;
+package de.photon.AACAdditionPro.api.killauraentity;
 
 /**
  * This is used to determine where to set an {@link org.bukkit.inventory.ItemStack} in the {@link org.bukkit.inventory.Inventory}

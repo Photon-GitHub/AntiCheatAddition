@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.util.entities.equipment;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.api.KillauraEntityEquipmentCategory;
+import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityEquipmentCategory;
 import de.photon.AACAdditionPro.events.KillauraEntityEquipmentPrepareEvent;
 import de.photon.AACAdditionPro.util.entities.ClientsideEntity;
 import de.photon.AACAdditionPro.util.entities.equipment.category.EquipmentCategory;

@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.api;
+package de.photon.AACAdditionPro.api.killauraentity;
 
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import org.bukkit.entity.Player;

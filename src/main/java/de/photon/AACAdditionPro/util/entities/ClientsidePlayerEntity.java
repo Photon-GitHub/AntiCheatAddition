@@ -6,7 +6,6 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.entities.equipment.Equipment;
 import de.photon.AACAdditionPro.util.entities.equipment.category.WeaponsEquipmentCategory;
@@ -61,9 +60,6 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange, double minXZDifference)
     {
         super(observedPlayer, new BasicFollowMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
-
-        // Activate the BASIC_FOLLOW movement.
-        this.setMovement(MovementType.BASIC_FOLLOW);
 
         // This needs to match a NMS EntityPlayer hitbox
         this.size.setX(2 * Hitbox.PLAYER.getOffset());

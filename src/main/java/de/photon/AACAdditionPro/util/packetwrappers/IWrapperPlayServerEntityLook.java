@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.util.packetwrappers;
 
+
 public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOnGround
 {
     default int getByteOffset()
@@ -46,5 +47,4 @@ public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOn
     {
         getHandle().getBytes().write(1 + getByteOffset(), (byte) (value * 256.0F / 360.0F));
     }
-
 }

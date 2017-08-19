@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.util.reflection;
 
 import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public final class ReflectionUtils
         return versionNumber;
     }
 
-    public static List<AxisAlignedBB> getCollisionBoxes(Player player, AxisAlignedBB boundingBox)
+    public static List<AxisAlignedBB> getCollisionBoxes(Entity entity, AxisAlignedBB boundingBox)
     {
         // First we need a NMS bounding box
         Object nmsAxisAlignedBB = Reflect
@@ -34,13 +34,13 @@ public final class ReflectionUtils
         Object nmsHandle = Reflect
                 .fromOBC("entity.CraftPlayer")
                 .method("getHandle")
-                .invoke(player);
+                .invoke(entity);
 
         // Now we need to call getCubes(Entity, AxisAlignedBB) on the world
         Object nmsWorld = Reflect
                 .fromOBC("CraftWorld")
                 .field("world")
-                .from(player.getWorld())
+                .from(entity.getWorld())
                 .as(Object.class);
 
         Object returnVal = Reflect

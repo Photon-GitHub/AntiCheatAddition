@@ -5,11 +5,12 @@ import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.entities.movement.Collision;
 import de.photon.AACAdditionPro.util.entities.movement.Gravitation;
 import de.photon.AACAdditionPro.util.entities.movement.Jumping;
 import de.photon.AACAdditionPro.util.entities.movement.Movement;
 import de.photon.AACAdditionPro.util.entities.movement.submovements.StayMovement;
-import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
+import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntity;
@@ -20,7 +21,6 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityTelep
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMove;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMoveLook;
 import de.photon.AACAdditionPro.util.reflection.Reflect;
-import de.photon.AACAdditionPro.util.reflection.ReflectionUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -34,7 +34,6 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public abstract class ClientsideEntity
@@ -85,15 +84,20 @@ public abstract class ClientsideEntity
 
     @Getter
     protected final Player observedPlayer;
+
+    @Getter
+    protected final Hitbox hitbox;
+
     private int tickTask = -1;
 
     // Movement state machine
     private Set<Movement> movementStates = new HashSet<>();
     private Movement currentMovementCalculator;
 
-    public ClientsideEntity(final Player observedPlayer)
+    public ClientsideEntity(final Player observedPlayer, Hitbox hitbox)
     {
         this.observedPlayer = observedPlayer;
+        this.hitbox = hitbox;
 
         // Add all movements to the list
         this.movementStates.add(new StayMovement());
@@ -116,9 +120,9 @@ public abstract class ClientsideEntity
      *
      * @param possibleMovements the additional {@link Movement}s the entity should be capable of. The {@link StayMovement} is added by default and should not be provided in the
      */
-    public ClientsideEntity(final Player observedPlayer, Movement... possibleMovements)
+    public ClientsideEntity(final Player observedPlayer, Hitbox hitbox, Movement... possibleMovements)
     {
-        this(observedPlayer);
+        this(observedPlayer, hitbox);
         this.movementStates.addAll(Arrays.asList(possibleMovements));
     }
 
@@ -159,55 +163,14 @@ public abstract class ClientsideEntity
             targetLocation = this.currentMovementCalculator.calculate(this.location.clone());
         }
 
-        this.move(targetLocation);
+        this.move(Collision.getNearestUncollidedLocation(observedPlayer, targetLocation, this.hitbox));
 
         // ------------------------------------------ Velocity system -----------------------------------------------//
         velocity = Gravitation.applyGravitationAndAirResistance(velocity, Gravitation.PLAYER);
 
-        double dX = velocity.getX();
-        double dY = velocity.getY();
-        double dZ = velocity.getZ();
-
-        // Since we need collision detections now we need the NMS world
-        AxisAlignedBB bb = new AxisAlignedBB(
-                this.location.getX() - (this.size.getX() / 2),
-                // The location is based on the feet location
-                this.location.getY(),
-                this.location.getZ() - (this.size.getZ() / 2),
-
-                this.location.getX() + (this.size.getX() / 2),
-                // The location is based on the feet location
-                this.location.getY() + this.size.getY(),
-                this.location.getZ() + (this.size.getZ() / 2)
-        );
-
 
         // ----------------------------------------- Collision checking ---------------------------------------------//
-        List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(observedPlayer, bb.addCoordinates(dX, dY, dZ));
-
-        // Check if we would hit a y border block
-        for (AxisAlignedBB axisAlignedBB : collisions) {
-            dY = axisAlignedBB.calculateYOffset(bb, dY);
-        }
-
-        bb.offset(0, dY, 0);
-
-        // Check if we would hit a x border block
-        for (AxisAlignedBB axisAlignedBB : collisions) {
-            dX = axisAlignedBB.calculateXOffset(bb, dX);
-        }
-
-        bb.offset(dX, 0, 0);
-
-        // Check if we would hit a z border block
-        for (AxisAlignedBB axisAlignedBB : collisions) {
-            dZ = axisAlignedBB.calculateZOffset(bb, dZ);
-        }
-
-        bb.offset(0, 0, dZ);
-
-        // Move
-        this.location.add(dX, dY, dZ);
+        this.location = Collision.getNearestUncollidedLocation(observedPlayer, this.location, this.hitbox, velocity);
 
         sendMove();
         sendHeadYaw();

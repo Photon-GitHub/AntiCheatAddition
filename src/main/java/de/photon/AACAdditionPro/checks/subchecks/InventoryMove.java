@@ -108,9 +108,9 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
                 final List<LivingEntity> nearbyPlayers = EntityUtils.getLivingEntitiesAroundPlayer(
                         user.getPlayer(),
                         // No division by 2 here as the hitbox of the other player is also important (-> 2 players)
-                        Hitbox.PLAYER.getOffset() + 0.1,
+                        Hitbox.PLAYER.getOffsetX() + 0.1,
                         Hitbox.PLAYER.getHeight() + 0.1,
-                        Hitbox.PLAYER.getOffset() + 0.1);
+                        Hitbox.PLAYER.getOffsetZ() + 0.1);
 
                 if (nearbyPlayers.isEmpty()) {
                     vlManager.flag(user.getPlayer(), cancel_vl, () ->

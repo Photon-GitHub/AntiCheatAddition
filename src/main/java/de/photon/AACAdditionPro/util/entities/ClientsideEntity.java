@@ -151,13 +151,15 @@ public abstract class ClientsideEntity
     {
         // ------------------------------------------ Movement system -----------------------------------------------//
         // Get the next position and move
-        Location location = this.currentMovementCalculator.calculate(this.location.clone());
+        Location targetLocation = this.currentMovementCalculator.calculate(this.location.clone());
 
         // Backup-Movement
-        if (location == null) {
+        if (targetLocation == null) {
             this.setMovement(MovementType.STAY);
-            location = this.currentMovementCalculator.calculate(this.location.clone());
+            targetLocation = this.currentMovementCalculator.calculate(this.location.clone());
         }
+
+        this.move(targetLocation);
 
         // ------------------------------------------ Velocity system -----------------------------------------------//
         velocity = Gravitation.applyGravitationAndAirResistance(velocity, Gravitation.PLAYER);
@@ -205,7 +207,7 @@ public abstract class ClientsideEntity
         bb.offset(0, 0, dZ);
 
         // Move
-        location.add(dX, dY, dZ);
+        this.location.add(dX, dY, dZ);
 
         sendMove();
         sendHeadYaw();

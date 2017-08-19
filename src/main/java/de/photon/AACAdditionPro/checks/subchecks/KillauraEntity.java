@@ -274,6 +274,12 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 }
                 return true;
             }
+
+            @Override
+            public MovementType getMovementType()
+            {
+                return MovementType.BASIC_FOLLOW;
+            }
         });
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), PacketType.Play.Client.USE_ENTITY)

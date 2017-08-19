@@ -32,7 +32,7 @@ public final class ReflectionUtils
 
         // Now we need the NMS entity of the player (since the bot has none)
         Object nmsHandle = Reflect
-                .fromOBC("entity.getClass")
+                .from(entity.getClass())
                 .method("getHandle")
                 .invoke(entity);
 

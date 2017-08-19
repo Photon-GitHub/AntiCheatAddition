@@ -32,42 +32,42 @@ public final class Collision
      * @param dependantEntity the Entity used for the reflection process
      * @param input           the initial {@link Location}
      * @param hitbox          the {@link Hitbox} of the used {@link org.bukkit.entity.Entity}
-     * @param coords          the planned movement
+     * @param velocity        the planned movement
      *
      * @return the nearest, uncollided {@link Location}
      */
-    public static Location getNearestUncollidedLocation(Entity dependantEntity, Location input, Hitbox hitbox, Vector coords)
+    public static Location getNearestUncollidedLocation(Entity dependantEntity, Location input, Hitbox hitbox, Vector velocity)
     {
         // Construct the BoundingBox
         AxisAlignedBB bb = hitbox.constructBoundingBox(input);
         // Add the scheduled movement
-        bb.addCoordinates(coords.getX(), coords.getY(), coords.getZ());
+        bb.addCoordinates(velocity.getX(), velocity.getY(), velocity.getZ());
 
         // Get the collisions
         List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(dependantEntity, bb);
 
         // Check if we would hit a y border block
         for (AxisAlignedBB axisAlignedBB : collisions) {
-            coords.setY(axisAlignedBB.calculateYOffset(bb, coords.getY()));
+            velocity.setY(axisAlignedBB.calculateYOffset(bb, velocity.getY()));
         }
 
-        bb.offset(0, coords.getY(), 0);
+        bb.offset(0, velocity.getY(), 0);
 
         // Check if we would hit a x border block
         for (AxisAlignedBB axisAlignedBB : collisions) {
-            coords.setX(axisAlignedBB.calculateYOffset(bb, coords.getX()));
+            velocity.setX(axisAlignedBB.calculateYOffset(bb, velocity.getX()));
         }
 
-        bb.offset(coords.getX(), 0, 0);
+        bb.offset(velocity.getX(), 0, 0);
 
         // Check if we would hit a z border block
         for (AxisAlignedBB axisAlignedBB : collisions) {
-            coords.setZ(axisAlignedBB.calculateYOffset(bb, coords.getZ()));
+            velocity.setZ(axisAlignedBB.calculateYOffset(bb, velocity.getZ()));
         }
 
-        bb.offset(0, 0, coords.getZ());
+        bb.offset(0, 0, velocity.getZ());
 
         // Returns the cloned input with the needed offset.
-        return input.clone().add(coords);
+        return input.clone().add(velocity);
     }
 }

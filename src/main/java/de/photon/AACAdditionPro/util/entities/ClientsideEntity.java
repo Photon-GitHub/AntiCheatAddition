@@ -163,14 +163,11 @@ public abstract class ClientsideEntity
             targetLocation = this.currentMovementCalculator.calculate(this.location.clone());
         }
 
-        this.move(Collision.getNearestUncollidedLocation(observedPlayer, targetLocation, this.hitbox));
+        this.location = Collision.getNearestUncollidedLocation(this.observedPlayer, targetLocation, this.hitbox);
 
         // ------------------------------------------ Velocity system -----------------------------------------------//
-        velocity = Gravitation.applyGravitationAndAirResistance(velocity, Gravitation.PLAYER);
-
-
-        // ----------------------------------------- Collision checking ---------------------------------------------//
-        this.location = Collision.getNearestUncollidedLocation(observedPlayer, this.location, this.hitbox, velocity);
+        this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
+        this.location = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);
 
         sendMove();
         sendHeadYaw();

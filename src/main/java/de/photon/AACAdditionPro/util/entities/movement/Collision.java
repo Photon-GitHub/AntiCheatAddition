@@ -55,14 +55,14 @@ public final class Collision
 
         // Check if we would hit a x border block
         for (AxisAlignedBB axisAlignedBB : collisions) {
-            velocity.setX(axisAlignedBB.calculateYOffset(bb, velocity.getX()));
+            velocity.setX(axisAlignedBB.calculateXOffset(bb, velocity.getX()));
         }
 
         bb.offset(velocity.getX(), 0, 0);
 
         // Check if we would hit a z border block
         for (AxisAlignedBB axisAlignedBB : collisions) {
-            velocity.setZ(axisAlignedBB.calculateYOffset(bb, velocity.getZ()));
+            velocity.setZ(axisAlignedBB.calculateZOffset(bb, velocity.getZ()));
         }
 
         bb.offset(0, 0, velocity.getZ());

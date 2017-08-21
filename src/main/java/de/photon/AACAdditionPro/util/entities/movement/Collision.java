@@ -38,6 +38,9 @@ public final class Collision
      */
     public static Location getNearestUncollidedLocation(Entity dependantEntity, Location input, Hitbox hitbox, Vector velocity)
     {
+        // Do not touch the real velocity of the entity.
+        velocity = velocity.clone();
+
         // Construct the BoundingBox
         AxisAlignedBB bb = hitbox.constructBoundingBox(input);
         // Add the scheduled movement

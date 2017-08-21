@@ -42,9 +42,9 @@ public final class Collision
         velocity = velocity.clone();
 
         // Construct the BoundingBox
-        AxisAlignedBB bb = hitbox.constructBoundingBox(input);
-        // Add the scheduled movement
-        bb.addCoordinates(velocity.getX(), velocity.getY(), velocity.getZ());
+        final AxisAlignedBB bb = hitbox.constructBoundingBox(input)
+                                       // Add the scheduled movement
+                                       .addCoordinates(velocity.getX(), velocity.getY(), velocity.getZ());
 
         // Get the collisions
         final List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(dependantEntity, bb);
@@ -71,6 +71,7 @@ public final class Collision
         // No offset here as the bb is not used anymore afterwards.
 
         // Returns the cloned input with the needed offset.
+        System.out.println("Velocity:" + velocity);
         return input.clone().add(velocity);
     }
 }

@@ -612,8 +612,15 @@ ClientControl:
 LogBot:
    # Do you want to enable the LogBot
    enabled: false
-   # The time in days that should pass before an unmodified file will be deleted
-   days_until_delete: 10
+   # After how many days should AAC-logs be deleted
+   # Set to -1 to disable
+   AAC: 10
+   # After how many days should AACAdditionPro-logs be deleted
+   # Set to -1 to disable
+   AACAdditionPro: 10
+   # After how many days should Server-logs be deleted
+   # Set to -1 to disable
+   Server: 10
 
 # This allows you to run different commands on different confidences
 # IN ORDER TO USE THIS you MUST change your heuristics - confidence in AAC's config to 50

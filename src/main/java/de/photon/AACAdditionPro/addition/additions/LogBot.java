@@ -6,39 +6,35 @@ import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import org.bukkit.Bukkit;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class LogBot implements Addition, Runnable
 {
-    private static final File[] AFFECTED_FOLDERS = new File[]
-            {
-                    // AAC-Folder for logs.
-                    new File("plugins/AAC", "logs"),
-
-                    // AACAdditionPro folder for logs.
-                    new File("plugins/AACAdditionPro", "logs")
-            };
-
-    private final long millis_until_delete = TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".days_until_delete"));
-
+    private final Map<File, Long> logDeletionTimes = new HashMap<>();
     private int task_number;
 
     @Override
     public void run()
     {
-        for (File logFolder : AFFECTED_FOLDERS) {
-            final long current_time = System.currentTimeMillis();
+        for (Map.Entry<File, Long> entry : logDeletionTimes.entrySet()) {
+            final long currentTime = System.currentTimeMillis();
 
-            if (logFolder.exists()) {
-                final File[] files = logFolder.listFiles();
+            // If the logFolder exists
+            if (entry.getKey().exists()) {
+                final File[] files = entry.getKey().listFiles();
 
                 if (files != null) {
                     // The folder is not empty
                     for (final File file : files) {
-                        // Be sure it is a log file
-                        if (file.getName().endsWith(".log") &&
+                        // Be sure it is a log file of AAC or AACAdditionPro
+                        if ((file.getName().endsWith(".log") ||
+                             // Log files of the server
+                             file.getName().endsWith(".log.gz")
+                            ) &&
                             // Minimum time
-                            current_time - file.lastModified() > this.millis_until_delete)
+                            currentTime - file.lastModified() > entry.getValue())
                         {
                             if (file.delete()) {
                                 VerboseSender.sendVerboseMessage("Deleted " + file.getName());
@@ -49,7 +45,7 @@ public class LogBot implements Addition, Runnable
                     }
                 }
             } else {
-                VerboseSender.sendVerboseMessage("Could not find folder " + logFolder.getName(), true, true);
+                VerboseSender.sendVerboseMessage("Could not find folder " + entry.getKey().getName(), true, true);
             }
         }
     }
@@ -57,6 +53,21 @@ public class LogBot implements Addition, Runnable
     @Override
     public void enable()
     {
+        // AAC-Folder for logs.
+        logDeletionTimes.put(new File("plugins/AAC", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AAC")));
+        // AACAdditionPro folder for logs.
+        logDeletionTimes.put(new File("plugins/AACAdditionPro", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AACAdditionPro")));
+        // Server log folder
+        logDeletionTimes.put(new File("logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".Server")));
+
+        // Remove the entries if the time is negative (disable a certain feature)
+        logDeletionTimes.forEach((key, value) -> {
+            if (value < 0) {
+                logDeletionTimes.remove(key);
+            }
+        });
+
+
         task_number = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this, 1, 864000);
     }
 

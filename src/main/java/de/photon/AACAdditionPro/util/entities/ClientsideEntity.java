@@ -47,7 +47,6 @@ public abstract class ClientsideEntity
 
     @Getter
     protected final int entityID;
-    protected Vector size = new Vector();
 
     @Getter
     @Setter

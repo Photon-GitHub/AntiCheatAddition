@@ -61,11 +61,6 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         super(observedPlayer, Hitbox.PLAYER, new BasicFollowMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
 
-        // This needs to match a NMS EntityPlayer hitbox
-        this.size.setX(2 * Hitbox.PLAYER.getOffsetX());
-        this.size.setY(Hitbox.PLAYER.getHeight());
-        this.size.setZ(2 * Hitbox.PLAYER.getOffsetZ());
-
         // Get skin data and name
         this.gameProfile = gameProfile;
 

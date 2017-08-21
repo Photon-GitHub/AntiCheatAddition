@@ -44,28 +44,28 @@ public final class Collision
         bb.addCoordinates(velocity.getX(), velocity.getY(), velocity.getZ());
 
         // Get the collisions
-        List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(dependantEntity, bb);
+        final List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(dependantEntity, bb);
 
         // Check if we would hit a y border block
-        for (AxisAlignedBB axisAlignedBB : collisions) {
-            velocity.setY(axisAlignedBB.calculateYOffset(bb, velocity.getY()));
+        for (AxisAlignedBB collisionBox : collisions) {
+            velocity.setY(collisionBox.calculateYOffset(bb, velocity.getY()));
         }
 
         bb.offset(0, velocity.getY(), 0);
 
         // Check if we would hit a x border block
-        for (AxisAlignedBB axisAlignedBB : collisions) {
-            velocity.setX(axisAlignedBB.calculateXOffset(bb, velocity.getX()));
+        for (AxisAlignedBB collisionBox : collisions) {
+            velocity.setX(collisionBox.calculateXOffset(bb, velocity.getX()));
         }
 
         bb.offset(velocity.getX(), 0, 0);
 
         // Check if we would hit a z border block
-        for (AxisAlignedBB axisAlignedBB : collisions) {
-            velocity.setZ(axisAlignedBB.calculateZOffset(bb, velocity.getZ()));
+        for (AxisAlignedBB collisionBox : collisions) {
+            velocity.setZ(collisionBox.calculateZOffset(bb, velocity.getZ()));
         }
 
-        bb.offset(0, 0, velocity.getZ());
+        // No offset here as the bb is not used anymore afterwards.
 
         // Returns the cloned input with the needed offset.
         return input.clone().add(velocity);

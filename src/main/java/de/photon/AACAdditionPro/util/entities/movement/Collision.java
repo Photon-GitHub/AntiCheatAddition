@@ -71,7 +71,6 @@ public final class Collision
         // No offset here as the bb is not used anymore afterwards.
 
         // Returns the cloned input with the needed offset.
-        System.out.println("Velocity:" + velocity);
         return input.clone().add(velocity);
     }
 }

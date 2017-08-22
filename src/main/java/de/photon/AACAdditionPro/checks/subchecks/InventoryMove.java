@@ -16,6 +16,7 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.reflection.Reflect;
 import de.photon.AACAdditionPro.util.reflection.ReflectionUtils;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.world.BlockUtils;
 import de.photon.AACAdditionPro.util.world.EntityUtils;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.entity.LivingEntity;
@@ -74,6 +75,10 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
             !user.getPlayer().isInsideVehicle() &&
             // Not flying (may trigger some fps)
             !user.getPlayer().isFlying() &&
+            // The player is currently not in a liquid (liquids push)
+            !BlockUtils.isHitboxInLiquids(user.getPlayer().getLocation(), user.getPlayer().isSneaking() ?
+                                                                          Hitbox.SNEAKING_PLAYER :
+                                                                          Hitbox.PLAYER) &&
             // Not using an Elytra
             user.getElytraData().isNotFlyingWithElytra() &&
             // Player is in an inventory

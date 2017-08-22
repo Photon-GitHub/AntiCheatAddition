@@ -1,10 +1,16 @@
 package de.photon.AACAdditionPro.util.world;
 
 import com.google.common.collect.ImmutableList;
+import de.photon.AACAdditionPro.util.mathematics.Hitbox;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public final class BlockUtils
@@ -22,6 +28,50 @@ public final class BlockUtils
             BlockFace.SOUTH,
             BlockFace.WEST,
             BlockFace.EAST);
+
+    /**
+     * Checks if a {@link Hitbox} at a certain {@link Location} is inside liquids.
+     *
+     * @param location the {@link Location} to base the {@link Hitbox} on.
+     * @param hitbox   the type of {@link Hitbox} that should be constructed.
+     */
+    public static boolean isHitboxInLiquids(Location location, Hitbox hitbox)
+    {
+        return isHitboxInMaterials(location, hitbox, Arrays.asList(Material.WATER, Material.LAVA, Material.STATIONARY_WATER, Material.STATIONARY_LAVA));
+    }
+
+    /**
+     * Checks if a {@link Hitbox} at a certain {@link Location} is inside of one of the provided {@link Material}s.
+     *
+     * @param location  the {@link Location} to base the {@link Hitbox} on.
+     * @param hitbox    the type of {@link Hitbox} that should be constructed.
+     * @param materials the {@link Material}s that should be checked for.
+     */
+    public static boolean isHitboxInMaterials(Location location, Hitbox hitbox, Collection<Material> materials)
+    {
+        Iterable<Vector> vectors = hitbox.getCalculationVectors(location, false);
+        // The max. amount of blocks that could be in the collection is 8
+        // Use a check-if present method as getBlock calls are performance-intensive.
+        Collection<int[]> checkedBlockLocations = new ArrayList<>(8);
+
+        for (Vector vector : vectors) {
+            final int[] blockCoordsOfVector = new int[]{
+                    vector.getBlockX(),
+                    vector.getBlockY(),
+                    vector.getBlockZ()
+            };
+
+            // If the location was already checked go further.
+            if (!checkedBlockLocations.contains(blockCoordsOfVector)) {
+                if (materials.contains(location.getWorld().getBlockAt(blockCoordsOfVector[0], blockCoordsOfVector[1], blockCoordsOfVector[2]).getType())) {
+                    return true;
+                }
+
+                checkedBlockLocations.add(blockCoordsOfVector);
+            }
+        }
+        return false;
+    }
 
     /**
      * This can be used to know if the {@link Block}s are next to each other.

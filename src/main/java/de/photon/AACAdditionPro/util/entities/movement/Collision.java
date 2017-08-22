@@ -21,7 +21,7 @@ public final class Collision
      *
      * @return the nearest, uncollided {@link Location}
      */
-    public static Location getNearestUncollidedLocation(Entity dependantEntity, Location input, Hitbox hitbox)
+    public static Vector getNearestUncollidedLocation(Entity dependantEntity, Location input, Hitbox hitbox)
     {
         return getNearestUncollidedLocation(dependantEntity, input, hitbox, new Vector());
     }
@@ -34,9 +34,9 @@ public final class Collision
      * @param hitbox          the {@link Hitbox} of the used {@link org.bukkit.entity.Entity}
      * @param velocity        the planned movement
      *
-     * @return the nearest, uncollided {@link Location}
+     * @return the vector to add to the input for the nearest, uncollided {@link Location}
      */
-    public static Location getNearestUncollidedLocation(Entity dependantEntity, Location input, Hitbox hitbox, Vector velocity)
+    public static Vector getNearestUncollidedLocation(Entity dependantEntity, Location input, Hitbox hitbox, Vector velocity)
     {
         // Do not touch the real velocity of the entity.
         velocity = velocity.clone();
@@ -71,6 +71,6 @@ public final class Collision
         // No offset here as the bb is not used anymore afterwards.
 
         // Returns the cloned input with the needed offset.
-        return input.clone().add(velocity);
+        return velocity;
     }
 }

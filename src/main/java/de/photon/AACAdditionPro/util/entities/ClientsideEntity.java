@@ -157,7 +157,7 @@ public abstract class ClientsideEntity
 
         // Whether the entity should jump if horizontally collided
         if (this.currentMovementCalculator.jumpIfCollidedHorizontally() &&
-            this.location.clone().add(velocity.setY(0)).getBlock().getType().isSolid())
+            this.location.clone().add(velocity.clone().setY(0)).getBlock().getType().isSolid())
         {
             this.jump();
         }
@@ -172,14 +172,20 @@ public abstract class ClientsideEntity
             targetLocation = this.currentMovementCalculator.calculate(this.location.clone());
         }
 
+        // Prevent different-world issues.
+        if (!this.location.getWorld().getName().equals(targetLocation.getWorld().getName())) {
+            return;
+        }
+
         this.location = targetLocation;
 
         // ------------------------------------------ Velocity system -----------------------------------------------//
-        this.location = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);
+        final Vector collidedVelocity = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);
+        this.location = this.location.add(collidedVelocity);
 
         // Already added the velocity to location and collided it
         // ClientCopy
-        this.onGround = (lastLocation.clone().add(velocity.clone().setY(0)).getY() != location.getY()) &&
+        this.onGround = (collidedVelocity.getY() != this.velocity.getY()) &&
                         // Due to gravity a player always have a negative velocity if walking/running on the ground.
                         velocity.getY() <= 0;
 

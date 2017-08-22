@@ -42,16 +42,17 @@ public final class Collision
         velocity = velocity.clone();
 
         // Construct the BoundingBox
-        final AxisAlignedBB bb = hitbox.constructBoundingBox(input)
-                                       // Add the scheduled movement
-                                       .addCoordinates(velocity.getX(), velocity.getY(), velocity.getZ());
+        final AxisAlignedBB bb = hitbox.constructBoundingBox(input);
 
         // Get the collisions
-        final List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(dependantEntity, bb);
+        final List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(dependantEntity, bb
+                // Add the scheduled movement. This DOES NOT MODIFY INTERNAL VALUES, only call this for the Reflection!!!
+                .addCoordinates(velocity.getX(), velocity.getY(), velocity.getZ()));
 
         // Check if we would hit a y border block
         for (AxisAlignedBB collisionBox : collisions) {
             velocity.setY(collisionBox.calculateYOffset(bb, velocity.getY()));
+            System.out.println("Y-Velocity: " + velocity.getY() + " | AxisAlignedBB: " + collisionBox + " | EntityBox: " + bb);
         }
 
         bb.offset(0, velocity.getY(), 0);

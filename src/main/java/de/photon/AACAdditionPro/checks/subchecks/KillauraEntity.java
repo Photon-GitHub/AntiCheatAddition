@@ -14,6 +14,7 @@ import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
+import de.photon.AACAdditionPro.util.entities.movement.submovements.BasicFollowMovement;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import org.bukkit.Bukkit;
@@ -29,7 +30,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.StringUtil;
-import org.bukkit.util.Vector;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -152,7 +152,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
 
                 // Spawn the entity
-                final Location location = calculateLocationBehindPlayer(player, entityOffset, offsetRandomizationRange, minXZDifference);
+                final Location location = calculateSpawiningLocation(player, entityOffset, offsetRandomizationRange, minXZDifference);
                 playerEntity.spawn(location);
             });
         }, 2L);
@@ -173,24 +173,10 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 });
     }
 
-    public static Location calculateLocationBehindPlayer(Player player, double entityOffset, double offsetRandomizationRange, double minXZDifference)
+    private static Location calculateSpawiningLocation(Player player, double entityOffset, double offsetRandomizationRange, double minXZDifference)
     {
-        // Spawning-Location
-        final Location location = player.getLocation();
-        final double origX = location.getX();
-        final double origZ = location.getZ();
-
-        // Move behind the player to make the entity not disturb players
-        // Important: the negative offset!
-        location.add(location.getDirection().setY(0).normalize().multiply(-(entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange))));
-
-        final double currentXZDifference = Math.hypot(location.getX() - origX, location.getZ() - origZ);
-
-        if (currentXZDifference < minXZDifference) {
-            final Vector moveAddVector = new Vector(-Math.sin(Math.toRadians(location.getYaw())), 0, Math.cos(Math.toRadians(location.getYaw())));
-            location.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
-        }
-        return location;
+        // TODO: MAKE SURE THAT THIS IS NOT INSIDE SOME BLOCKS!
+        return new BasicFollowMovement(player, entityOffset, offsetRandomizationRange, minXZDifference).calculate(player.getLocation());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -247,7 +233,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 if (clientSidePlayerEntity.isSpawned()) {
                     clientSidePlayerEntity.despawn();
                 } else {
-                    clientSidePlayerEntity.spawn(calculateLocationBehindPlayer(player, KillauraEntity.this.entityOffset, KillauraEntity.this.offsetRandomizationRange, KillauraEntity.this.minXZDifference));
+                    clientSidePlayerEntity.spawn(calculateSpawiningLocation(player, KillauraEntity.this.entityOffset, KillauraEntity.this.offsetRandomizationRange, KillauraEntity.this.minXZDifference));
                 }
                 return true;
             }

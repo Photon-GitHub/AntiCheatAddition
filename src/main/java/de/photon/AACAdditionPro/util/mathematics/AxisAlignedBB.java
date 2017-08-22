@@ -290,11 +290,13 @@ public class AxisAlignedBB implements Cloneable
     {
         // Check if we are outside of X bounds
         if (bb.maxX <= this.minX || bb.minX >= this.maxX) {
+            System.out.println("Out-Of-X");
             return y;
         }
 
         // Check if we are outside of Z bounds
         if (bb.maxZ <= this.minZ || bb.minZ >= this.maxZ) {
+            System.out.println("Out-Of-Z");
             return y;
         }
 
@@ -302,6 +304,7 @@ public class AxisAlignedBB implements Cloneable
         if (y > 0 && bb.maxY <= this.minY) {
             // Get the real offset and cap it at the default offset
             double y1 = this.minY - bb.maxY;
+            System.out.println("Positive: " + y1);
             if (y1 < y) {
                 y = y1;
             }
@@ -311,6 +314,7 @@ public class AxisAlignedBB implements Cloneable
         if (y < 0 && bb.minY >= this.maxY) {
             // Get the real offset and cap it at the default offset
             double y2 = this.maxY - bb.minY;
+            System.out.println("Negative: " + y2);
             if (y2 > y) {
                 y = y2;
             }

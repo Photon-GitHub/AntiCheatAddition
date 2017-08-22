@@ -289,10 +289,12 @@ public abstract class ClientsideEntity
 
     public void jump()
     {
-        velocity.setY(Jumping.getJumpYMotion(null));
+        if(this.isOnGround()) {
+            velocity.setY(velocity.getY() + Jumping.getJumpYMotion(null));
 
-        if (sprinting) {
-            velocity.add(location.getDirection().setY(0).normalize().multiply(.2F));
+            if (sprinting) {
+                velocity.add(location.getDirection().setY(0).normalize().multiply(.2F));
+            }
         }
     }
 

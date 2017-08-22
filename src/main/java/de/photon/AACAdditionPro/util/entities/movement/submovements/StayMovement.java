@@ -17,4 +17,10 @@ public class StayMovement implements Movement
     {
         return MovementType.STAY;
     }
+
+    @Override
+    public boolean jumpIfCollidedHorizontally()
+    {
+        return false;
+    }
 }

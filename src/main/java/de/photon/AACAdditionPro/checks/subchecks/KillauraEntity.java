@@ -12,9 +12,9 @@ import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.entities.ClientsideEntity;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
-import de.photon.AACAdditionPro.util.entities.movement.submovements.BasicFollowMovement;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import org.bukkit.Bukkit;
@@ -152,7 +152,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
 
                 // Spawn the entity
-                final Location location = calculateSpawiningLocation(player, entityOffset, offsetRandomizationRange, minXZDifference);
+                final Location location = calculateSpawningLocation(player, playerEntity);
                 playerEntity.spawn(location);
             });
         }, 2L);
@@ -173,10 +173,14 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 });
     }
 
-    private static Location calculateSpawiningLocation(Player player, double entityOffset, double offsetRandomizationRange, double minXZDifference)
+    private static Location calculateSpawningLocation(Player player, ClientsideEntity entity)
     {
-        // TODO: MAKE SURE THAT THIS IS NOT INSIDE SOME BLOCKS!
-        return new BasicFollowMovement(player, entityOffset, offsetRandomizationRange, minXZDifference).calculate(player.getLocation());
+        Location spawnLocation = entity.getMovement().calculate(player.getLocation());
+
+        while (!(spawnLocation.getBlock().isEmpty() && spawnLocation.clone().add(0, 1, 0).getBlock().isEmpty())) {
+            spawnLocation.add(0, 1, 0);
+        }
+        return spawnLocation;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -233,7 +237,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 if (clientSidePlayerEntity.isSpawned()) {
                     clientSidePlayerEntity.despawn();
                 } else {
-                    clientSidePlayerEntity.spawn(calculateSpawiningLocation(player, KillauraEntity.this.entityOffset, KillauraEntity.this.offsetRandomizationRange, KillauraEntity.this.minXZDifference));
+                    clientSidePlayerEntity.spawn(calculateSpawningLocation(player, clientSidePlayerEntity));
                 }
                 return true;
             }

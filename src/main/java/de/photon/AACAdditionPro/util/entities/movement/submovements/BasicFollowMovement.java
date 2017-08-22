@@ -54,4 +54,10 @@ public class BasicFollowMovement implements Movement
     {
         return MovementType.BASIC_FOLLOW;
     }
+
+    @Override
+    public boolean jumpIfCollidedHorizontally()
+    {
+        return true;
+    }
 }

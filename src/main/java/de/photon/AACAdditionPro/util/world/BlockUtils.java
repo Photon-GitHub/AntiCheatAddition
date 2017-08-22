@@ -30,6 +30,14 @@ public final class BlockUtils
             BlockFace.EAST);
 
     /**
+     * Whether an entity should jump if collided horizontally against that material.
+     */
+    public static boolean isJumpMaterial(Material material)
+    {
+        return material.isSolid();
+    }
+
+    /**
      * Checks if a {@link Hitbox} at a certain {@link Location} is inside liquids.
      *
      * @param location the {@link Location} to base the {@link Hitbox} on.

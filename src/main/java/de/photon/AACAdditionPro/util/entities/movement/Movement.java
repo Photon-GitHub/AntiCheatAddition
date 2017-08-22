@@ -13,4 +13,6 @@ public interface Movement
     Location calculate(Location old);
 
     MovementType getMovementType();
+
+    boolean jumpIfCollidedHorizontally();
 }

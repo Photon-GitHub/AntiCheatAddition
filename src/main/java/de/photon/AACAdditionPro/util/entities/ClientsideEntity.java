@@ -25,7 +25,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -75,6 +74,7 @@ public abstract class ClientsideEntity
 
     protected Location lastLocation;
     protected Location location;
+    private boolean onGround;
 
     @Getter
     protected float lastHeadYaw;
@@ -152,6 +152,16 @@ public abstract class ClientsideEntity
      */
     protected void tick()
     {
+        // Calculate velocity
+        this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
+
+        // Whether the entity should jump if horizontally collided
+        if (this.currentMovementCalculator.jumpIfCollidedHorizontally() &&
+            this.location.clone().add(velocity.setY(0)).getBlock().getType().isSolid())
+        {
+            this.jump();
+        }
+
         // ------------------------------------------ Movement system -----------------------------------------------//
         // Get the next position and move
         Location targetLocation = this.currentMovementCalculator.calculate(this.location.clone());
@@ -162,11 +172,16 @@ public abstract class ClientsideEntity
             targetLocation = this.currentMovementCalculator.calculate(this.location.clone());
         }
 
-        this.location = Collision.getNearestUncollidedLocation(this.observedPlayer, targetLocation, this.hitbox);
+        this.location = targetLocation;
 
         // ------------------------------------------ Velocity system -----------------------------------------------//
-        this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
         this.location = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);
+
+        // Already added the velocity to location and collided it
+        // ClientCopy
+        this.onGround = (lastLocation.clone().add(velocity.clone().setY(0)).getY() != location.getY()) &&
+                        // Due to gravity a player always have a negative velocity if walking/running on the ground.
+                        velocity.getY() <= 0;
 
         sendMove();
         sendHeadYaw();
@@ -284,12 +299,12 @@ public abstract class ClientsideEntity
 
     private boolean isOnGround()
     {
-        return location.clone().add(0, -0.1, 0).getBlock().getType() != Material.AIR;
+        return this.onGround;
     }
 
     public void jump()
     {
-        if(this.isOnGround()) {
+        if (this.isOnGround()) {
             velocity.setY(velocity.getY() + Jumping.getJumpYMotion(null));
 
             if (sprinting) {
@@ -354,6 +369,11 @@ public abstract class ClientsideEntity
             }
         }
         throw new IllegalArgumentException("The Entity does not support the MovementType " + movementType.name());
+    }
+
+    public Movement getMovement()
+    {
+        return this.currentMovementCalculator;
     }
 
     // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //

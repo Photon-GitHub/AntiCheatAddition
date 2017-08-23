@@ -102,7 +102,7 @@ public class AxisAlignedBB implements Cloneable
      *
      * @return a new Bounding Box which contains the addition of the coordinates
      */
-    public AxisAlignedBB addCoordinates(double x, double y, double z)
+    public AxisAlignedBB addCoordinatesToNewBox(double x, double y, double z)
     {
         double minX = this.minX;
         double minY = this.minY;

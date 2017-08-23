@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.events;
 
-import de.photon.AACAdditionPro.api.KillauraEntityEquipmentCategory;
+import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityEquipmentCategory;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;

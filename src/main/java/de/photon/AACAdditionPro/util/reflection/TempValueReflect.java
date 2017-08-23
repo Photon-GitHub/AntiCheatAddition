@@ -8,7 +8,6 @@ import java.lang.reflect.Field;
  */
 public class TempValueReflect
 {
-
     private final Object obj;
     private final Field field;
 

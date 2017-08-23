@@ -30,19 +30,17 @@ AutoFish:
    # Violation before AACAdditionPro starts to cancel the fishing.
    # Set this to 0 to never cancel fishing.
    # Please think of potential luck, thus I do not recommend to set this to 1-2.
-   cancel_vl: 5
+   cancel_vl: 10
    # Control the different solutions of AutoFish
    parts:
       # The inhuman_reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
       # This might cause some false positives with experienced fishers.
+      # This will add up to 6 vl, depending on the reaction speed.
       inhuman_reaction:
          # Should this part of the check be enabled
          enabled: true
          # How many milliseconds should have passed before a fishing action counts as legit.
-         # This also influences the given vl according to this formula:
-         # < 0.42 * fishing_milliseconds  | 3 VL
-         # < 0.68 * fishing_milliseconds  | 2 VL
-         # < fishing_milliseconds         | 1 VL
+         # This also influences the given vl according to a linear distribution.
          fishing_milliseconds: 145
       # The consistency part recognizes static times between a successful catch and fishing again.
       # This check has less to none false positives, especially with a high event count
@@ -55,12 +53,12 @@ AutoFish:
          # Measured in ms
          violation_offset: 25
          # How many violation-levels should be given for failing this part
-         weight: 4
+         weight: 9
    # Map of violation levels to command
    thresholds:
-      5: "aacstaffnotify {player} in {world} is suspected for AutoFish"
-      7: "aacstaffnotify {player} in {world} is highly suspected for AutoFish"
-      10: "aackick {player} AutoFish"
+      8: "aacstaffnotify {player} in {world} is suspected for AutoFish"
+      12: "aacstaffnotify {player} in {world} is highly suspected for AutoFish"
+      18: "aackick {player} AutoFish"
 
 # AutoPotion detects automated bots which splash the player with potions that have positive effects
 # This check does only work on minecraft versions 1.10 and beyond and auto-disables itself on other versions.
@@ -149,15 +147,6 @@ Fastswitch:
       4: "aacstaffnotify {player} in {world} is suspected for Fastswitch"
       8: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
       12: "aackick {player} Fastswitch"
-
-# This is an temporary check to prevent a fly bypass in AAC's code until konsolas returns from his vacation.
-FlyPatch:
-   # Do you want to enable the Fly-Patch
-   enabled: true
-   # How many velocity toggles should be assumed being legit per second
-   toggles: 5
-   # How much should the check increase AAC's fly vl
-   vl_increase: 10
 
 # This check will block most Freecam cheats
 # Your Players will recognize small jumps when they are standing completely still and are not moving their mouse.
@@ -614,8 +603,15 @@ ClientControl:
 LogBot:
    # Do you want to enable the LogBot
    enabled: false
-   # The time in days that should pass before an unmodified file will be deleted
-   days_until_delete: 10
+   # After how many days should AAC-logs be deleted
+   # Set to -1 to disable
+   AAC: 10
+   # After how many days should AACAdditionPro-logs be deleted
+   # Set to -1 to disable
+   AACAdditionPro: 10
+   # After how many days should Server-logs be deleted
+   # Set to -1 to disable
+   Server: 10
 
 # This allows you to run different commands on different confidences
 # IN ORDER TO USE THIS you MUST change your heuristics - confidence in AAC's config to 50

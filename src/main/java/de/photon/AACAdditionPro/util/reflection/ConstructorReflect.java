@@ -1,14 +1,13 @@
 package de.photon.AACAdditionPro.util.reflection;
 
+import lombok.Getter;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * @author geNAZt
- * @version 1.0
- */
 public class ConstructorReflect
 {
+    @Getter
     private final Constructor constructor;
 
     ConstructorReflect(Constructor constructor)

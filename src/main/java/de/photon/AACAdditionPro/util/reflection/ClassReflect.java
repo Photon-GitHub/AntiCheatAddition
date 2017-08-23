@@ -1,5 +1,7 @@
 package de.photon.AACAdditionPro.util.reflection;
 
+import lombok.Getter;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -19,6 +21,7 @@ public class ClassReflect
 
     private final Map<String, MethodReflect> methodCache = new ConcurrentHashMap<>();
 
+    @Getter
     private final Class<?> clazz;
 
     ClassReflect(Class clazz)

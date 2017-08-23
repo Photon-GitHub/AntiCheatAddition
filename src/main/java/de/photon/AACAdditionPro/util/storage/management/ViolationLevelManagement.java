@@ -17,19 +17,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class ViolationLevelManagement implements Listener
 {
     /**
      * The {@link Map} violation-levels of all the players.
      */
-    private final ConcurrentHashMap<UUID, Integer> violationLevels = new ConcurrentHashMap<>();
+    private final ConcurrentMap<UUID, Integer> violationLevels = new ConcurrentHashMap<>();
 
     /**
      * The {@link Map} of the command that are defined in the config at certain violation-levels.
      * This is automatically a {@link ConcurrentHashMap} as of the
      */
-    final ConcurrentHashMap<Integer, List<String>> thresholds;
+    final ConcurrentMap<Integer, List<String>> thresholds;
 
     /**
      * The {@link AdditionHackType} of the handler, used for reload

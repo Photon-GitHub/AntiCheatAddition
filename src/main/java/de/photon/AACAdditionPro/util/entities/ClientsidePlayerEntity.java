@@ -8,9 +8,10 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.entities.equipment.Equipment;
-import de.photon.AACAdditionPro.util.entities.movement.BasicMovement;
-import de.photon.AACAdditionPro.util.entities.movement.Movement;
+import de.photon.AACAdditionPro.util.entities.equipment.category.WeaponsEquipmentCategory;
+import de.photon.AACAdditionPro.util.entities.movement.submovements.BasicFollowMovement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import lombok.Getter;
@@ -19,12 +20,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ClientsidePlayerEntity extends ClientsideEntity
@@ -42,6 +40,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     @Getter
     private final WrappedGameProfile gameProfile;
+
     @Getter
     @Setter
     private int ping;
@@ -54,33 +53,19 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private byte lastSwing = 0;
     private byte lastSwap = 0;
 
-    // Movement state machine
-    private Map<String, Movement> movementStates = new HashMap<>(); // HashMap is enough since you write to it once and never rehash it
-    private Movement currentMovementCalculator;
     private short lastJump = 0;
 
     private Equipment equipment;
 
     public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange, double minXZDifference)
     {
-        super(observedPlayer);
-
-        // This needs to match a NMS EntityPlayer hitbox
-        this.size.setX(2 * Hitbox.PLAYER.getOffset());
-        this.size.setY(Hitbox.PLAYER.getHeight());
-        this.size.setZ(2 * Hitbox.PLAYER.getOffset());
+        super(observedPlayer, Hitbox.PLAYER, new BasicFollowMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
 
         // Get skin data and name
         this.gameProfile = gameProfile;
 
         // EquipmentData
         this.equipment = new Equipment(this);
-
-        // Init movement states
-        this.movementStates.put("basic", new BasicMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
-
-        // Set default movement state
-        this.currentMovementCalculator = this.movementStates.get("basic");
 
         recursiveUpdatePing();
     }
@@ -107,53 +92,26 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         pitch += ThreadLocalRandom.current().nextInt(5);
 
-        while (pitch > 90) {
-            pitch -= 90;
-        }
+        pitch = reduceAngle(pitch, 90);
 
-        while (pitch < -90) {
-            pitch += 90;
-        }
+        this.headYaw = reduceAngle((float) MathUtils.randomBoundaryDouble(yaw - 10, 20), 180);
 
-        float newHeadYaw;
-        do {
-            newHeadYaw = (float) (yaw + 10 + ThreadLocalRandom.current().nextDouble(20));
-        } while (getFixRotation(headYaw) == getFixRotation(newHeadYaw));
-
-        while (newHeadYaw > 180) {
-            newHeadYaw -= 180;
-        }
-
-        while (newHeadYaw < -180) {
-            newHeadYaw += 180;
-        }
-
-        this.headYaw = newHeadYaw;
-
-        // Get the next position and move
-        Location location = this.currentMovementCalculator.calculate(this.location.clone());
-        if (location == null) {
-            this.currentMovementCalculator = this.movementStates.get("basic");
-            location = this.currentMovementCalculator.calculate(this.location.clone());
-        }
-
-        location.setYaw(yaw);
-        location.setPitch(pitch);
-        this.move(location);
+        this.location.setYaw(yaw);
+        this.location.setPitch(pitch);
+        this.move(this.location);
 
         // Maybe we should switch movement states?
-        if (lastJump++ > 30 + ThreadLocalRandom.current().nextInt(80)) {
+        if (lastJump++ > MathUtils.randomBoundaryDouble(30, 80)) {
             lastJump = 0;
             jump();
         }
 
         // Swing items if enabled
         if (shouldSwing) {
-            int should = 15 + ThreadLocalRandom.current().nextInt(35);
-            if (lastSwing++ > should) {
+            if (lastSwing++ > MathUtils.randomBoundaryDouble(15, 35)) {
                 lastSwing = 0;
 
-                if (isSwingable(equipment.getMainHand())) {
+                if (isSwingable(equipment.getMainHand().getType())) {
                     swing();
                 }
             }
@@ -161,8 +119,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         // Swap items if needed
         if (shouldSwap) {
-            int should = 40 + ThreadLocalRandom.current().nextInt(65);
-            if (lastSwap++ > should) {
+            if (lastSwap++ > MathUtils.randomBoundaryDouble(40, 65)) {
                 lastSwap = 0;
                 equipment.equipInHand();
                 equipment.equipPlayerEntity();
@@ -170,16 +127,26 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         }
     }
 
-    private byte getFixRotation(float yawpitch)
+    // -------------------------------------------------------------- Yaw/Pitch ------------------------------------------------------------- //
+
+    /**
+     * Reduces the angle to make it fit the spectrum of -minMax til +minMax in steps of minMax
+     *
+     * @param input  the initial angle
+     * @param minMax the boundary in the positive and negative spectrum. The parameter itself must be > 0.
+     */
+    private float reduceAngle(float input, float minMax)
     {
-        return (byte) ((int) (yawpitch * 256.0F / 360.0F));
+        while (Math.abs(input) > minMax) {
+            input -= Math.signum(input) * minMax;
+        }
+        return input;
     }
 
-    private boolean isSwingable(ItemStack itemStack)
+    private boolean isSwingable(Material material)
     {
-        Material material = itemStack.getType();
-        String name = material.name();
-        return name.contains("SWORD") || name.contains("AXE") || name.contains("HOE") || material == Material.FISHING_ROD;
+        WeaponsEquipmentCategory weaponsEquipmentCategory = new WeaponsEquipmentCategory();
+        return weaponsEquipmentCategory.getMaterials().contains(material);
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //
@@ -200,7 +167,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> {
             DisplayInformation.updatePing(this);
             recursiveUpdatePing();
-        }, 10 + ThreadLocalRandom.current().nextInt(35));
+        }, (long) MathUtils.randomBoundaryDouble(10, 35));
     }
 
     // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //

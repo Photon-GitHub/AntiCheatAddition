@@ -22,13 +22,6 @@ public class AutoFish implements Listener, AACAdditionProCheck
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 3600);
 
-    // Must be sorted from high to low
-    private static final float[] autofishPercentageThresholds = {
-            1F,
-            0.68F,
-            0.42F
-    };
-
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
 
@@ -108,8 +101,12 @@ public class AutoFish implements Listener, AACAdditionProCheck
                     if (user.getFishingData().recentlyUpdated(fishing_milliseconds)) {
 
                         // Get the correct amount of vl.
-                        for (byte b = (byte) (autofishPercentageThresholds.length - 1); b >= 0; b--) {
-                            if (user.getFishingData().recentlyUpdated((long) (autofishPercentageThresholds[b] * fishing_milliseconds))) {
+                        // vl 6 is the maximum.
+                        // Points = {{0, 1}, {8, 0}}
+                        // Function: 1 - 0.125x
+                        for (byte b = 5; b > 0; b--) {
+                            if (user.getFishingData().recentlyUpdated((long) (1 - 0.125 * b) * fishing_milliseconds)) {
+                                // Flag for vl = b + 1 because there would otherwise be a "0-vl"
                                 vlManager.flag(event.getPlayer(), b + 1, cancel_vl, () -> event.setCancelled(true), () -> {});
                                 break;
                             }

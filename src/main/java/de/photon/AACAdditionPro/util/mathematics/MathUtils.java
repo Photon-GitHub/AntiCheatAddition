@@ -3,6 +3,8 @@ package de.photon.AACAdditionPro.util.mathematics;
 
 import org.bukkit.Location;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public final class MathUtils
 {
     /**
@@ -25,6 +27,19 @@ public final class MathUtils
         } else {
             return (b - range) <= a;
         }
+    }
+
+    /**
+     * Generates a new random integer.
+     *
+     * @param min            the result will at least be this parameter
+     * @param randomBoundary the result will at most be min + randomBoundary
+     *
+     * @return the resulting random integer
+     */
+    public static double randomBoundaryDouble(double min, double randomBoundary)
+    {
+        return min + ThreadLocalRandom.current().nextDouble(randomBoundary);
     }
 
     /**

@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.api;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.checks.CheckManager;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import org.bukkit.entity.Player;

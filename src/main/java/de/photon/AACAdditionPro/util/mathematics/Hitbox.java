@@ -1,62 +1,85 @@
 package de.photon.AACAdditionPro.util.mathematics;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.List;
 
+@RequiredArgsConstructor
+@Getter
 public enum Hitbox
 {
-    PLAYER(0.3D, 1.8D),
-    SNEAKING_PLAYER(0.3D, 1.65D);
+    PLAYER(0.3D, 0.3D, 1.8D),
+    SNEAKING_PLAYER(0.3D, 0.3D, 1.65D);
 
-    private final double offset;
+    private final double offsetX;
+    private final double offsetZ;
     private final double height;
 
-    Hitbox(final double offset, final double height)
+    /**
+     * This gets a {@link List} of Vectors, which is especially helpful for raytracing
+     *
+     * @param location         the initial {@link Location} of the {@link org.bukkit.entity.Entity}, thus the basis of the {@link Hitbox}.
+     * @param addCenterVectors whether only the {@link Vector}s of the corners should be returned in the {@link List} or additional {@link Vector}s
+     *                         in the center of the {@link org.bukkit.entity.Entity} (alongside the y-axis) should be added
+     *
+     * @return a {@link List} of all the constructed {@link Vector}s.
+     */
+    public List<Vector> getCalculationVectors(final Location location, final boolean addCenterVectors)
     {
-        this.offset = offset;
-        this.height = height;
-    }
-
-    public static ArrayList<Vector> getCalculationVectors(final Hitbox hitbox, final Location location)
-    {
-        final ArrayList<Vector> vectors = new ArrayList<>(11);
+        final ArrayList<Vector> vectors = new ArrayList<>(addCenterVectors ?
+                                                          11 :
+                                                          8);
         final Vector start = location.toVector();
 
         //Lower corners
-        vectors.add(new Vector(start.getX() + hitbox.offset, start.getY(), start.getZ() + hitbox.offset));
-        vectors.add(new Vector(start.getX() - hitbox.offset, start.getY(), start.getZ() + hitbox.offset));
-        vectors.add(new Vector(start.getX() + hitbox.offset, start.getY(), start.getZ() - hitbox.offset));
-        vectors.add(new Vector(start.getX() - hitbox.offset, start.getY(), start.getZ() - hitbox.offset));
+        vectors.add(new Vector(start.getX() + this.offsetX, start.getY(), start.getZ() + this.offsetZ));
+        vectors.add(new Vector(start.getX() - this.offsetX, start.getY(), start.getZ() + this.offsetZ));
+        vectors.add(new Vector(start.getX() + this.offsetX, start.getY(), start.getZ() - this.offsetZ));
+        vectors.add(new Vector(start.getX() - this.offsetX, start.getY(), start.getZ() - this.offsetZ));
 
         //Upper corners
-        vectors.add(new Vector(start.getX() + hitbox.offset, start.getY() + hitbox.height, start.getZ() + hitbox.offset));
-        vectors.add(new Vector(start.getX() - hitbox.offset, start.getY() + hitbox.height, start.getZ() + hitbox.offset));
-        vectors.add(new Vector(start.getX() + hitbox.offset, start.getY() + hitbox.height, start.getZ() - hitbox.offset));
-        vectors.add(new Vector(start.getX() - hitbox.offset, start.getY() + hitbox.height, start.getZ() - hitbox.offset));
+        vectors.add(new Vector(start.getX() + this.offsetX, start.getY() + this.height, start.getZ() + this.offsetZ));
+        vectors.add(new Vector(start.getX() - this.offsetX, start.getY() + this.height, start.getZ() + this.offsetZ));
+        vectors.add(new Vector(start.getX() + this.offsetX, start.getY() + this.height, start.getZ() - this.offsetZ));
+        vectors.add(new Vector(start.getX() - this.offsetX, start.getY() + this.height, start.getZ() - this.offsetZ));
 
-        final double step_size;
-        if (location.getY() - location.getBlockX() > 0.1) {
-            // Steps and other blocks with irregular hitboxes need more steps (below 0.5 blocks)
-            step_size = 0.47D;
-        } else {
-            step_size = 1D;
-        }
+        if (addCenterVectors) {
+            final double step_size;
+            if (location.getY() - location.getBlockX() > 0.1) {
+                // Steps and other blocks with irregular hitboxes need more steps (below 0.5 blocks)
+                step_size = 0.47D;
+            } else {
+                step_size = 1D;
+            }
 
-        for (double d = 1.47; d < hitbox.height - 1; d += step_size) {
-            vectors.add(new Vector(start.getX(), start.getY() + d, start.getZ()));
+            for (double d = 1.47; d < this.height - 1; d += step_size) {
+                vectors.add(new Vector(start.getX(), start.getY() + d, start.getZ()));
+            }
         }
         return vectors;
     }
 
-    public double getHeight()
+    /**
+     * Constructs an {@link AxisAlignedBB} on the basis of the provided {@link Location}
+     *
+     * @param location the {@link Location} to base the bounding box on.
+     */
+    public AxisAlignedBB constructBoundingBox(final Location location)
     {
-        return height;
-    }
+        return new AxisAlignedBB(
+                location.getX() - this.offsetX,
+                // The location is based on the feet location
+                location.getY(),
+                location.getZ() - this.offsetZ,
 
-    public double getOffset()
-    {
-        return offset;
+                location.getX() + this.offsetX,
+                // The location is based on the feet location
+                location.getY() + this.height,
+                location.getZ() + this.offsetZ
+        );
     }
 }

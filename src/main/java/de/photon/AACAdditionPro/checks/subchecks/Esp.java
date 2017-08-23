@@ -19,9 +19,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 public class Esp implements AACAdditionProCheck
 {
@@ -161,6 +161,7 @@ public class Esp implements AACAdditionProCheck
                     // TODO: You neither need to clear the connections every second nor to add all connections again (exeption: on the first start)... event usage
 
                     // Clear the HashSet for a new Run
+                    // This allows for better performance as the internal Map only grows once.
                     playerConnections.clear();
 
                     // Update_Ticks: the refresh-rate of the check.
@@ -220,9 +221,11 @@ public class Esp implements AACAdditionProCheck
         }
 
         final Vector[] camera_vectors = getCameraVectors(watcher);
-        final ArrayList<Vector> calc_vectors = Hitbox.getCalculationVectors(object.isSneaking() ?
-                                                                            Hitbox.SNEAKING_PLAYER :
-                                                                            Hitbox.PLAYER, object.getLocation());
+
+        final Hitbox usedHitbox = object.isSneaking() ?
+                                  Hitbox.SNEAKING_PLAYER :
+                                  Hitbox.PLAYER;
+        final List<Vector> calc_vectors = usedHitbox.getCalculationVectors(object.getLocation(), true);
 
         double lastIntersectionCache = 1;
 

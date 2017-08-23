@@ -21,6 +21,7 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityTelep
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMove;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMoveLook;
 import de.photon.AACAdditionPro.util.reflection.Reflect;
+import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -155,29 +156,29 @@ public abstract class ClientsideEntity
         // Calculate velocity
         this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
 
+        final Vector tempJumpVelocity = velocity.clone();
+        tempJumpVelocity.setX(Math.signum(tempJumpVelocity.getX()));
+        tempJumpVelocity.setZ(Math.signum(tempJumpVelocity.getZ()));
+
         // Whether the entity should jump if horizontally collided
         if (this.currentMovementCalculator.jumpIfCollidedHorizontally() &&
-            this.location.clone().add(velocity.clone().setY(0)).getBlock().getType().isSolid())
+            this.location.clone().add(tempJumpVelocity).getBlock().getType().isSolid())
         {
             this.jump();
         }
 
         // ------------------------------------------ Movement system -----------------------------------------------//
         // Get the next position and move
-        Location targetLocation = this.currentMovementCalculator.calculate(this.location.clone());
+        Vector xzVelocity = this.currentMovementCalculator.calculate(this.location.clone());
 
         // Backup-Movement
-        if (targetLocation == null) {
+        if (xzVelocity == null) {
             this.setMovement(MovementType.STAY);
-            targetLocation = this.currentMovementCalculator.calculate(this.location.clone());
+            xzVelocity = this.currentMovementCalculator.calculate(this.location.clone());
         }
 
-        // Prevent different-world issues.
-        if (!this.location.getWorld().getName().equals(targetLocation.getWorld().getName())) {
-            return;
-        }
-
-        this.location = targetLocation;
+        // Only set the x- and the z- axis (y should be handled by autojumping).
+        this.velocity.setX(xzVelocity.getX()).setZ(xzVelocity.getZ());
 
         // ------------------------------------------ Velocity system -----------------------------------------------//
         final Vector collidedVelocity = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);
@@ -187,7 +188,9 @@ public abstract class ClientsideEntity
         // ClientCopy
         this.onGround = (collidedVelocity.getY() != this.velocity.getY()) &&
                         // Due to gravity a player always have a negative velocity if walking/running on the ground.
-                        velocity.getY() <= 0;
+                        velocity.getY() <= 0 &&
+                        // Make sure the entity only jumps on real blocks, not e.g. grass.
+                        BlockUtils.isJumpMaterial(this.location.clone().add(0, -0.05, 0).getBlock().getType());
 
         sendMove();
         sendHeadYaw();
@@ -311,7 +314,7 @@ public abstract class ClientsideEntity
     public void jump()
     {
         if (this.isOnGround()) {
-            velocity.setY(velocity.getY() + Jumping.getJumpYMotion(null));
+            velocity.setY(Jumping.getJumpYMotion(null));
 
             if (sprinting) {
                 velocity.add(location.getDirection().setY(0).normalize().multiply(.2F));

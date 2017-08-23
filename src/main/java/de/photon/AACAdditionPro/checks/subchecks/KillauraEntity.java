@@ -175,7 +175,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
     private static Location calculateSpawningLocation(Player player, ClientsideEntity entity)
     {
-        Location spawnLocation = entity.getMovement().calculate(player.getLocation());
+        Location spawnLocation = player.getLocation().clone().add(entity.getMovement().calculate(player.getLocation()));
 
         while (!(spawnLocation.getBlock().isEmpty() && spawnLocation.clone().add(0, 1, 0).getBlock().isEmpty())) {
             spawnLocation.add(0, 1, 0);

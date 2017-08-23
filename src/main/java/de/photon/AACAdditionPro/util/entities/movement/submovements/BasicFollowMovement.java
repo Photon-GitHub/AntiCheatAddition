@@ -24,7 +24,7 @@ public class BasicFollowMovement implements Movement
     }
 
     @Override
-    public Location calculate(Location old)
+    public Vector calculate(Location old)
     {
         // Spawning-Location
         final Location moveLocation = player.getLocation();
@@ -44,9 +44,7 @@ public class BasicFollowMovement implements Movement
             moveLocation.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
         }
 
-        old.setX(moveLocation.getX());
-        old.setZ(moveLocation.getZ());
-        return old;
+        return new Vector(moveLocation.getX() - old.getX(), 0, moveLocation.getZ() - old.getZ());
     }
 
     @Override

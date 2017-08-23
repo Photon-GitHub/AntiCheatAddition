@@ -30,7 +30,7 @@ AutoFish:
    # Violation before AACAdditionPro starts to cancel the fishing.
    # Set this to 0 to never cancel fishing.
    # Please think of potential luck, thus I do not recommend to set this to 1-2.
-   cancel_vl: 5
+   cancel_vl: 10
    # Control the different solutions of AutoFish
    parts:
       # The inhuman_reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
@@ -147,15 +147,6 @@ Fastswitch:
       4: "aacstaffnotify {player} in {world} is suspected for Fastswitch"
       8: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
       12: "aackick {player} Fastswitch"
-
-# This is an temporary check to prevent a fly bypass in AAC's code until konsolas returns from his vacation.
-FlyPatch:
-   # Do you want to enable the Fly-Patch
-   enabled: true
-   # How many velocity toggles should be assumed being legit per second
-   toggles: 5
-   # How much should the check increase AAC's fly vl
-   vl_increase: 10
 
 # This check will block most Freecam cheats
 # Your Players will recognize small jumps when they are standing completely still and are not moving their mouse.

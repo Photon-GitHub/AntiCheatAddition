@@ -6,16 +6,18 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class SchematicaControl implements Listener, ClientControlCheck
+public class SchematicaControl implements Listener, ClientControlCheck, PluginMessageListener
 {
     @SuppressWarnings("FieldCanBeLocal")
     private static final String SCHEMATICA_CHANNEL = "schematica";
@@ -69,6 +71,9 @@ public class SchematicaControl implements Listener, ClientControlCheck
             user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), SCHEMATICA_CHANNEL, pluginMessage);
         }
     }
+
+    @Override
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {}
 
     @Override
     public String[] getPluginMessageChannels()

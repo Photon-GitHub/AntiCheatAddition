@@ -16,4 +16,6 @@ public interface Movement
     MovementType getMovementType();
 
     boolean jumpIfCollidedHorizontally();
+
+    boolean isTPNeeded();
 }

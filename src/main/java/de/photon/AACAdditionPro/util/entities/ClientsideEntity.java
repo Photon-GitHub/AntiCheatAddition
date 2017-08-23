@@ -61,6 +61,7 @@ public abstract class ClientsideEntity
     /**
      * Determines whether this {@link ClientsideEntity} should tp in the next move, ignoring all other calculations.
      */
+    @Setter
     private boolean needsTeleport;
 
     /**
@@ -162,7 +163,7 @@ public abstract class ClientsideEntity
 
         // Whether the entity should jump if horizontally collided
         if (this.currentMovementCalculator.jumpIfCollidedHorizontally() &&
-            this.location.clone().add(tempJumpVelocity).getBlock().getType().isSolid())
+            this.location.clone().add(tempJumpVelocity).getBlock().isEmpty())
         {
             this.jump();
         }
@@ -177,8 +178,13 @@ public abstract class ClientsideEntity
             xzVelocity = this.currentMovementCalculator.calculate(this.location.clone());
         }
 
-        // Only set the x- and the z- axis (y should be handled by autojumping).
-        this.velocity.setX(xzVelocity.getX()).setZ(xzVelocity.getZ());
+        if (this.currentMovementCalculator.isTPNeeded() || this.needsTeleport) {
+            final Location spawnLocation = observedPlayer.getLocation().clone().add(this.getMovement().calculate(observedPlayer.getLocation()));
+            this.location = BlockUtils.getNextFreeSpaceYAxis(spawnLocation, this.getHitbox());
+        } else {
+            // Only set the x- and the z- axis (y should be handled by autojumping).
+            this.velocity.setX(xzVelocity.getX()).setZ(xzVelocity.getZ());
+        }
 
         // ------------------------------------------ Velocity system -----------------------------------------------//
         final Vector collidedVelocity = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);

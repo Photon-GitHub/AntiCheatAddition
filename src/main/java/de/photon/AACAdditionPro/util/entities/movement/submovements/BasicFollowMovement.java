@@ -14,6 +14,7 @@ public class BasicFollowMovement implements Movement
     private double entityOffset;
     private double offsetRandomizationRange;
     private double minXZDifference;
+    private boolean isTPNeeded;
 
     public BasicFollowMovement(Player player, double entityOffset, double offsetRandomizationRange, double minXZDifference)
     {
@@ -44,7 +45,14 @@ public class BasicFollowMovement implements Movement
             moveLocation.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
         }
 
-        return new Vector(moveLocation.getX() - old.getX(), 0, moveLocation.getZ() - old.getZ());
+        final Vector movementVector = new Vector(moveLocation.getX() - old.getX(), 0, moveLocation.getZ() - old.getZ());
+        if (movementVector.lengthSquared() > 49) {
+            isTPNeeded = true;
+        } else {
+            isTPNeeded = false;
+        }
+
+        return movementVector;
     }
 
     @Override
@@ -57,5 +65,11 @@ public class BasicFollowMovement implements Movement
     public boolean jumpIfCollidedHorizontally()
     {
         return true;
+    }
+
+    @Override
+    public boolean isTPNeeded()
+    {
+        return isTPNeeded;
     }
 }

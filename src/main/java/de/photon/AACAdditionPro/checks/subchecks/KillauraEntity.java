@@ -17,6 +17,7 @@ import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -175,12 +176,8 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
     private static Location calculateSpawningLocation(Player player, ClientsideEntity entity)
     {
-        Location spawnLocation = player.getLocation().clone().add(entity.getMovement().calculate(player.getLocation()));
-
-        while (!(spawnLocation.getBlock().isEmpty() && spawnLocation.clone().add(0, 1, 0).getBlock().isEmpty())) {
-            spawnLocation.add(0, 1, 0);
-        }
-        return spawnLocation;
+        final Location spawnLocation = player.getLocation().clone().add(entity.getMovement().calculate(player.getLocation()));
+        return BlockUtils.getNextFreeSpaceYAxis(spawnLocation, entity.getHitbox());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -293,6 +290,8 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                     entityId == playerEntity.getEntityID())
                 {
                     playerEntity.hurtByObserved();
+                    // To prevent false positives ensure the correct position.
+                    playerEntity.setNeedsTeleport(true);
                     vlManager.flag(event.getPlayer(), -1, () -> {}, () -> {});
                     event.setCancelled(true);
                 }

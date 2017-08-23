@@ -24,4 +24,10 @@ public class StayMovement implements Movement
     {
         return false;
     }
+
+    @Override
+    public boolean isTPNeeded()
+    {
+        return false;
+    }
 }

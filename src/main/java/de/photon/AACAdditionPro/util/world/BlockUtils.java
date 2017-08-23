@@ -6,11 +6,13 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 public final class BlockUtils
@@ -28,6 +30,68 @@ public final class BlockUtils
             BlockFace.SOUTH,
             BlockFace.WEST,
             BlockFace.EAST);
+
+    /**
+     * @return the next Location on the Y-Axis above the input location - 5 where the hitbox could fit in.
+     */
+    public static Location getNextFreeSpaceYAxis(final Location location, Hitbox hitbox)
+    {
+        final short neededHeight = (short) Math.ceil(hitbox.getHeight());
+
+        // The y-values
+        final LinkedList<Integer> possibleLocations = new LinkedList<>();
+
+        double minDeltaY = Double.MAX_VALUE;
+
+        BlockIterator blockIterator = new BlockIterator(location.getWorld(), location.toVector(), new Vector(0, 1, 0),
+                                                        // Make sure the starting position is not in the void.
+                                                        location.getY() < 20 ?
+                                                        -location.getY() :
+                                                        -20, 40);
+
+        while (blockIterator.hasNext()) {
+            final Block block = blockIterator.next();
+
+            if (Math.abs(location.getY() - block.getY()) > Math.abs(minDeltaY)) {
+                // Now we can only get worse results.
+                break;
+            }
+
+            if (block.isEmpty()) {
+                boolean insideHeight = true;
+
+                // smaller, not smaller equals as the first block is already counted above.
+                for (short s = 1; s < neededHeight; s++) {
+                    // The list has enough entries.
+                    if (possibleLocations.size() < (neededHeight - 1) ||
+                        possibleLocations.get(possibleLocations.size() - s) != (block.getY() - s))
+                    {
+                        insideHeight = false;
+                        break;
+                    }
+                }
+
+                if (insideHeight) {
+                    // Found at least one match, set the minDelta if it is smaller
+                    double deltaY = block.getY() - neededHeight / 2;
+                    if (deltaY < minDeltaY) {
+                        minDeltaY = deltaY;
+                    }
+                }
+                possibleLocations.add(block.getY());
+            }
+        }
+
+        Location result = location.clone();
+        if (minDeltaY != Double.MAX_VALUE) {
+            // +1 to Prevent spawning into the ground.
+            result.setY((minDeltaY - neededHeight / 2) + 1);
+        } else {
+            // Huge value where no blocks can be present.
+            result.setY(260);
+        }
+        return result;
+    }
 
     /**
      * Whether an entity should jump if collided horizontally against that material.

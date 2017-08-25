@@ -29,6 +29,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.StringUtil;
 
@@ -36,7 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class KillauraEntity implements AACAdditionProCheck, Listener
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 60);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 55);
 
     @LoadFromConfiguration(configPath = ".position.entityOffset")
     private double entityOffset;
@@ -160,7 +161,18 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     }
 
     @EventHandler
+    public void onRespawn(PlayerRespawnEvent event)
+    {
+        respawnEntity(event.getPlayer());
+    }
+
+    @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event)
+    {
+        respawnEntity(event.getPlayer());
+    }
+
+    private void respawnEntity(Player player)
     {
         // Wait one server tick
         Bukkit.getScheduler().runTask(
@@ -168,9 +180,9 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 () ->
                 {
                     // Despawn the old entity
-                    this.onQuit(new PlayerQuitEvent(event.getPlayer(), null));
+                    this.onQuit(new PlayerQuitEvent(player, null));
                     // Spawn another entity after the world was changed
-                    this.onJoin(new PlayerJoinEvent(event.getPlayer(), null));
+                    this.onJoin(new PlayerJoinEvent(player, null));
                 });
     }
 

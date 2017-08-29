@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 
 public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEntityMove implements IWrapperPlayServerEntityLook
 {
@@ -23,7 +23,7 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
     @Override
     public int getByteOffset()
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return 3;
             case MC110:

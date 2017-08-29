@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 
 public class WrapperPlayServerEntityTeleport extends AbstractPacket implements IWrapperPlayServerEntityLook
 {
@@ -22,7 +22,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public double getX()
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(1) / 32.0;
             case MC110:
@@ -36,7 +36,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public void setX(double value)
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(1, (int) value * 32);
                 break;
@@ -52,7 +52,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public double getY()
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(2) / 32.0;
             case MC110:
@@ -66,7 +66,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public void setY(double value)
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(2, (int) value * 32);
                 break;
@@ -82,7 +82,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public double getZ()
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(3) / 32.0;
             case MC110:
@@ -96,7 +96,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public void setZ(double value)
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(3, (int) value * 32);
                 break;

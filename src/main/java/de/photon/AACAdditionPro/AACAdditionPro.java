@@ -27,8 +27,6 @@ import java.util.Objects;
 
 public class AACAdditionPro extends JavaPlugin
 {
-    private ServerVersion serverVersion = null;
-
     /**
      * Indicates if the loading process is completed.
      */
@@ -99,13 +97,11 @@ public class AACAdditionPro extends JavaPlugin
         try {
             savedFile = FileUtilities.saveFileInFolder("config.yml");
         } catch (final IOException e) {
+            VerboseSender.sendVerboseMessage("Failed to create config folder / file", true, true);
             e.printStackTrace();
         }
 
-        if (savedFile == null) {
-            throw new NullPointerException("Config file needed to get the FileConfiguration was not found.");
-        }
-        return YamlConfiguration.loadConfiguration(savedFile);
+        return YamlConfiguration.loadConfiguration(Objects.requireNonNull(savedFile, "Config file needed to get the FileConfiguration was not found."));
     }
 
     @Override
@@ -116,17 +112,9 @@ public class AACAdditionPro extends JavaPlugin
             VerboseSender.sendVerboseMessage("Enabling plugin...", true, false);
 
             // ------------------------------------------------------------------------------------------------------ //
-            //                                      Validate server version                                           //
-            // ------------------------------------------------------------------------------------------------------ //
-
-            try {
-                this.serverVersion = ServerVersion.getServerVersion();
-            }
-
-            // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
-            catch (IllegalArgumentException exception) {
+            if (ServerVersion.getActiveServerVersion() == null) {
                 VerboseSender.sendVerboseMessage("Server version is not supported.", true, true);
 
                 final ServerVersion[] supportedVersions = ServerVersion.values();
@@ -283,14 +271,6 @@ public class AACAdditionPro extends JavaPlugin
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * @return the {@link ServerVersion} of the server the plugin is running on.
-     */
-    public ServerVersion getServerVersion()
-    {
-        return serverVersion;
     }
 
     /**

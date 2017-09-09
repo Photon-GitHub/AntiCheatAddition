@@ -4,7 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
@@ -118,7 +118,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public double getX()
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(1) / 32.0D;
             case MC110:
@@ -132,7 +132,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public void setX(double value)
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(1, (int) (value * 32));
                 break;
@@ -148,7 +148,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public double getY()
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(2) / 32.0D;
             case MC110:
@@ -162,7 +162,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public void setY(double value)
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(2, (int) (value * 32));
                 break;
@@ -178,7 +178,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public double getZ()
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(3) / 32.0D;
             case MC110:
@@ -192,7 +192,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public void setZ(double value)
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(3, (int) (value * 32));
                 break;

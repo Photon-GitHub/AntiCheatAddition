@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.userdata.data;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.userdata.Data;
 import de.photon.AACAdditionPro.userdata.User;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 
 public class ElytraData extends Data
 {
@@ -19,7 +19,7 @@ public class ElytraData extends Data
      */
     public boolean isNotFlyingWithElytra()
     {
-        switch (AACAdditionPro.getInstance().getServerVersion())
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 return true;

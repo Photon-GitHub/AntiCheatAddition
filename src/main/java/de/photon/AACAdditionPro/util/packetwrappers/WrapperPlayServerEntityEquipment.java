@@ -4,7 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
-import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
@@ -77,7 +77,7 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
 
     public void setSlot(final ItemSlot value)
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(1, value.ordinal());
                 break;

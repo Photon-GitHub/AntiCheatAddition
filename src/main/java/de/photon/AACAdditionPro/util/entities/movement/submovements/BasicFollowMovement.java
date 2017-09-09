@@ -46,11 +46,7 @@ public class BasicFollowMovement implements Movement
         }
 
         final Vector movementVector = new Vector(moveLocation.getX() - old.getX(), 0, moveLocation.getZ() - old.getZ());
-        if (movementVector.lengthSquared() > 49) {
-            isTPNeeded = true;
-        } else {
-            isTPNeeded = false;
-        }
+        isTPNeeded = movementVector.lengthSquared() > 49;
 
         return movementVector;
     }

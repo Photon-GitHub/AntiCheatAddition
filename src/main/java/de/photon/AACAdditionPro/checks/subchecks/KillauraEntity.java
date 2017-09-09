@@ -33,6 +33,9 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.StringUtil;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class KillauraEntity implements AACAdditionProCheck, Listener
@@ -126,16 +129,20 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             // No profile was set by the API
             if (gameProfile == null) {
                 // Use the offline players as a replacement
-                final OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
+                // Encapsulate the Arrays.asList in an ArrayList to make sure removal of elements is supported.
+                final List<OfflinePlayer> offlinePlayers = new ArrayList<>(Arrays.asList(Bukkit.getOfflinePlayers()));
 
-                // If the API endpoint can't serve valid profiles, check if we can serve OfflinePlayer profiles.
-                if (offlinePlayers.length < 1) {
+                // Make sure that the player cannot see himself
+                offlinePlayers.removeIf(offlinePlayer -> offlinePlayer.getName().equalsIgnoreCase(player.getName()));
+
+                // Check if we can serve OfflinePlayer profiles.
+                if (offlinePlayers.isEmpty()) {
                     // No WrappedGameProfile can be set as there are no valid offline players.
                     return;
                 }
 
-                // Choose a random OfflinePlayer and get his GameProfile
-                final OfflinePlayer chosenOfflinePlayer = offlinePlayers[ThreadLocalRandom.current().nextInt(offlinePlayers.length)];
+                // Choose a random OfflinePlayer and get his GameProfile and make sure it is not the player himself
+                final OfflinePlayer chosenOfflinePlayer = offlinePlayers.get(ThreadLocalRandom.current().nextInt(offlinePlayers.size()));
                 gameProfile = new WrappedGameProfile(chosenOfflinePlayer.getUniqueId(), chosenOfflinePlayer.getName());
             }
 

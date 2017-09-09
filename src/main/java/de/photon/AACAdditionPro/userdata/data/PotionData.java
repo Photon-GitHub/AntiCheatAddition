@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.userdata.data;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.userdata.Data;
 import de.photon.AACAdditionPro.userdata.User;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -15,7 +15,7 @@ public class PotionData extends Data
 
     private PotionEffect getPotionEffect(final PotionEffectType type)
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 for (final PotionEffect effect : theUser.getPlayer().getActivePotionEffects()) {
                     if (effect.getType().equals(type)) {

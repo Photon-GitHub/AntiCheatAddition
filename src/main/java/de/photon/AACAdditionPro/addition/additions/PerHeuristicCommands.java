@@ -1,6 +1,5 @@
 package de.photon.AACAdditionPro.addition.additions;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.addition.Addition;
 import de.photon.AACAdditionPro.events.HeuristicsAdditionViolationEvent;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
@@ -8,6 +7,7 @@ import de.photon.AACAdditionPro.util.files.ConfigUtils;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import me.konsolas.aac.api.HackType;
 import me.konsolas.aac.api.PlayerViolationEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -54,17 +54,20 @@ public class PerHeuristicCommands implements Listener, Addition
                 final String pattern = patternMatcher.group(1).trim();
                 final Double confidence = Double.parseDouble(confidenceMatcher.group(1).trim());
 
-                // Heuristics-Event
-                AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(new HeuristicsAdditionViolationEvent(event.getPlayer(), confidence, pattern));
+                // Heuristics-Event + Cancellation
+                final HeuristicsAdditionViolationEvent additionEvent = new HeuristicsAdditionViolationEvent(event.getPlayer(), confidence, pattern);
+                Bukkit.getPluginManager().callEvent(additionEvent);
 
-                // Full verbose
-                VerboseSender.sendVerboseMessage("Heuristics-Addon-Report | Player: " + event.getPlayer().getName() + " | Pattern: " + pattern + " | Confidence: " + confidence);
+                if (!additionEvent.isCancelled()) {
+                    // Full verbose
+                    VerboseSender.sendVerboseMessage("Heuristics-Addon-Report | Player: " + event.getPlayer().getName() + " | Pattern: " + pattern + " | Confidence: " + confidence);
 
-                // Commands
-                executeHeuristicsCommands(confidence, event.getPlayer());
+                    // Commands
+                    executeHeuristicsCommands(confidence, event.getPlayer());
 
-                // Confidence - Management
-                oldConfidences.put(event.getPlayer().getUniqueId(), confidence);
+                    // Confidence - Management
+                    oldConfidences.put(event.getPlayer().getUniqueId(), confidence);
+                }
             }
         }
     }

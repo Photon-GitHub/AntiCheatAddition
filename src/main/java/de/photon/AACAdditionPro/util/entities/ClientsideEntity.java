@@ -12,6 +12,7 @@ import de.photon.AACAdditionPro.util.entities.movement.Movement;
 import de.photon.AACAdditionPro.util.entities.movement.submovements.StayMovement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityDestroy;
@@ -231,7 +232,7 @@ public abstract class ClientsideEntity
 
         // Teleport needed ?
         int teleportThreshold;
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 teleportThreshold = 4;
                 break;
@@ -413,7 +414,7 @@ public abstract class ClientsideEntity
 
             final ItemStack itemInHand;
 
-            switch (AACAdditionPro.getInstance().getServerVersion()) {
+            switch (ServerVersion.getActiveServerVersion()) {
                 case MC188:
                     itemInHand = observedPlayer.getItemInHand();
                     break;

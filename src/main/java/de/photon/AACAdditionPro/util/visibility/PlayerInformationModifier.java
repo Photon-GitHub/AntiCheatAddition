@@ -36,40 +36,41 @@ public abstract class PlayerInformationModifier
      */
     protected PlayerInformationModifier()
     {
-        // Register events and packet listener
-        AACAdditionPro.getInstance().registerListener(new Listener()
-        {
-            @EventHandler
-            public void on(final EntityDeathEvent e)
+        // Only start if the ServerVersion is supported
+        if (this.getSupportedVersions().contains(ServerVersion.getActiveServerVersion())) {
+
+            // Register events and packet listener
+            AACAdditionPro.getInstance().registerListener(new Listener()
             {
-                Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
-                    removeEntity(e.getEntity());
-                    return null;
-                });
-            }
+                @EventHandler
+                public void on(final EntityDeathEvent e)
+                {
+                    Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
+                        removeEntity(e.getEntity());
+                        return null;
+                    });
+                }
 
-            @EventHandler
-            public void on(final ChunkUnloadEvent e)
-            {
-                Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
-                    for (final Entity entity : e.getChunk().getEntities()) {
-                        removeEntity(entity);
-                    }
-                    return null;
-                });
-            }
+                @EventHandler
+                public void on(final ChunkUnloadEvent e)
+                {
+                    Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
+                        for (final Entity entity : e.getChunk().getEntities()) {
+                            removeEntity(entity);
+                        }
+                        return null;
+                    });
+                }
 
-            @EventHandler
-            public void on(final PlayerQuitEvent e)
-            {
-                removePlayer(e.getPlayer());
-            }
+                @EventHandler
+                public void on(final PlayerQuitEvent e)
+                {
+                    removePlayer(e.getPlayer());
+                }
 
-        });
+            });
 
-        // Add the PacketListener if the ServerVersion is ok.
-        if (this.getSupportedVersions().contains(AACAdditionPro.getInstance().getServerVersion())) {
-            manager.addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, this.getAffectedPackets())
+            this.manager.addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, this.getAffectedPackets())
             {
                 @Override
                 public void onPacketSending(final PacketEvent event)

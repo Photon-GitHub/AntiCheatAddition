@@ -52,6 +52,7 @@ public interface Module
 
                 // The different classes
                 try {
+
                     // Boolean
                     if (clazz == boolean.class || clazz == Boolean.class) {
                         field.setBoolean(this, AACAdditionPro.getInstance().getConfig().getBoolean(path));

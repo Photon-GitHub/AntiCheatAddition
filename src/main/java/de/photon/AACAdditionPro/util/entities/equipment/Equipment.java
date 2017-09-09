@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.util.entities.equipment;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.util.entities.ClientsideEntity;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -80,7 +80,7 @@ public class Equipment implements Cloneable
      */
     private Map<EnumWrappers.ItemSlot, ItemStack> getEquipmentForServerVersion()
     {
-        switch (AACAdditionPro.getInstance().getServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 this.equipmentMap.remove(EnumWrappers.ItemSlot.OFFHAND);
                 break;

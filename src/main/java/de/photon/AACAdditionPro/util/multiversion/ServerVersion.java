@@ -16,21 +16,19 @@ public enum ServerVersion
     private final String versionOutputString;
 
     /**
-     * Identifies the server version of the currently running {@link Bukkit} instance by its version - {@link String}
-     *
-     * @return the {@link ServerVersion} that fits represents the server's version or
-     *
-     * @throws IllegalArgumentException if no supported server version was found.
+     * The server version of the currently running {@link Bukkit} instance.
      */
-    public static ServerVersion getServerVersion() throws IllegalArgumentException
-    {
+    @Getter
+    private static ServerVersion activeServerVersion;
+
+    static {
         final String versionOutput = Bukkit.getVersion();
         for (final ServerVersion serverVersion : ServerVersion.values()) {
             if (versionOutput.contains(serverVersion.getVersionOutputString())) {
-                return serverVersion;
+                activeServerVersion = serverVersion;
+                // break for better performance as no other version should be found.
+                break;
             }
         }
-
-        throw new IllegalArgumentException("Unsupported server version");
     }
 }

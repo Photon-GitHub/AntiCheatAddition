@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro;
 
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import org.bukkit.Bukkit;
 
@@ -24,7 +25,7 @@ public abstract class ModuleManager extends ArrayList<Module>
             if (AACAdditionPro.getInstance().getConfig().getBoolean(object.getConfigString() + ".enabled")) {
 
                 // Supports the current server version
-                if (object.getSupportedVersions().contains(AACAdditionPro.getInstance().getServerVersion())) {
+                if (object.getSupportedVersions().contains(ServerVersion.getActiveServerVersion())) {
                     // Enable
                     object.enable();
                     pathOutput = " has been enabled.";

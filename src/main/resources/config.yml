@@ -29,7 +29,7 @@ AutoFish:
    enabled: true
    # Violation before AACAdditionPro starts to cancel the fishing.
    # Set this to 0 to never cancel fishing.
-   # Please think of potential luck, thus I do not recommend to set this to 1-2.
+   # Please think of potential luck, thus I do not recommend to set this to 1-6.
    cancel_vl: 10
    # Control the different solutions of AutoFish
    parts:
@@ -120,10 +120,12 @@ EqualRotation:
 # - Equipment-Hider: If a player cannot be directly seen by another player his equipment (hand, armour) will be hidden
 #                    from the observer. (This will make the life of cheaters harder as they cannot properly estimate
 #                    the combat strength of a player)
+#                    This part will autodisable itself on servers with MC versions below 1.10.
 Esp:
    # Do you want to enable the ESP check
    #
-   # If your server has over 30 players on average you might want to disable this check because of the huge cpu load.
+   # If your server has more than 40 players in one world within its render distance, this check will require a good
+   # CPU, thus it is recommended to disable it on Hub/Spawn servers.
    #
    enabled: true
    # After this amount of ticks the positions will be updated again
@@ -223,11 +225,7 @@ InventoryRotation:
       24: "aacstaffnotify {player} in {world} is highly suspected for Killaura/Autoarmor (InventoryRotation)"
       35: "aackick {player} Killaura/Autoarmor"
 
-# Brings back an entity check of the old AAC 1.9.10 times
-# but much more advanced.
-# ------------------------------------------------------------------------------------------------------------------- #
-# Still somewhat EXPERIMENTAL! Please use with caution and report bugs.
-# ------------------------------------------------------------------------------------------------------------------- #
+# Brings back an entity check of the old AAC 1.9.10 times but much more advanced.
 KillauraEntity:
    # Do you want to enable the KillauraEntity check
    enabled: true
@@ -405,7 +403,7 @@ Teaming:
    # How far in blocks should players at most be away to count as teaming
    proximity_range: 4.5
    # If you only want to allow teams with a certain member-cap you can change this value appropriately.
-   # Setting it to one flags all teams.
+   # Setting it to 1 flags all teams.
    allowed_size: 1
    # Non-pvp time to count as teaming
    # Measured in milliseconds.

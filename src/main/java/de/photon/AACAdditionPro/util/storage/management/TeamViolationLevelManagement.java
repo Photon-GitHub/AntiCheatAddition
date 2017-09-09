@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class TeamViolationLevelManagement extends ViolationLevelManagement
@@ -101,21 +100,22 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
      */
     private void punishTeam(final List<Player> playersOfTeam, final Integer teamVL)
     {
-        Optional<Integer> threshold = thresholds.keySet().stream()
-                                                // Filter out all elements that are too big
-                                                .filter((integer) -> integer <= teamVL)
-                                                // Reversed comparator to make sure the biggest element is the first one.
-                                                .sorted((i1, i2) -> Integer.compare(i2, i1)).findFirst();
+        thresholds.keySet().stream()
+                  // Filter out all elements that are too big
+                  .filter((integer) -> integer <= teamVL)
+                  // Reversed comparator to make sure the biggest element is the first one.
+                  .sorted((i1, i2) -> Integer.compare(i2, i1)).findFirst()
+                  // Make sure the element exists
+                  .ifPresent(vl -> {
+                      // Execute the commands
+                      for (final String s : thresholds.get(vl)) {
 
-        if (threshold.isPresent()) {
-            for (final String s : thresholds.get(threshold.get())) {
+                          // Command cannot be null as of the new loading process.
+                          final String realCommand = Placeholders.applyPlaceholders(s, playersOfTeam);
 
-                // Command cannot be null as of the new loading process.
-                final String realCommand = Placeholders.applyPlaceholders(s, playersOfTeam);
-
-                // Sync command execution
-                CommandUtils.executeCommand(realCommand);
-            }
-        }
+                          // Sync command execution
+                          CommandUtils.executeCommand(realCommand);
+                      }
+                  });
     }
 }

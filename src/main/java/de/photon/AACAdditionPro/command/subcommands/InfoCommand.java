@@ -1,32 +1,32 @@
 package de.photon.AACAdditionPro.command.subcommands;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.Module;
-import de.photon.AACAdditionPro.Permissions;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.checks.CheckManager;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class InfoCommand extends InternalCommand
 {
     public InfoCommand()
     {
-        super("info", (byte) 1, false, Permissions.INFO, "Display all Violation-Levels of a player.");
+        super("info", InternalPermission.INFO, (byte) 1);
     }
 
     @Override
-    protected void execute(final CommandSender sender, final LinkedList<String> arguments)
+    protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        final Player p = AACAdditionPro.getInstance().getServer().getPlayer(arguments.getFirst());
+        final Player p = AACAdditionPro.getInstance().getServer().getPlayer(arguments.peek());
 
         if (p == null) {
             sender.sendMessage(playerNotFoundMessage);
@@ -66,11 +66,24 @@ public class InfoCommand extends InternalCommand
     }
 
     @Override
-    protected List<String> getTabPossibilities()
+    protected String[] getCommandHelp()
     {
-        final ArrayList<String> tab = new ArrayList<>();
-        for (final Player p : AACAdditionPro.getInstance().getServer().getOnlinePlayers()) {
-            tab.add(p.getName());
+        return new String[]{"Display all Violation-Levels of a player."};
+    }
+
+    @Override
+    protected Set<InternalCommand> getChildCommands()
+    {
+        return null;
+    }
+
+    @Override
+    protected String[] getTabPossibilities()
+    {
+        final String[] tab = new String[Bukkit.getOnlinePlayers().size()];
+        int index = 0;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            tab[index++] = player.getName();
         }
         return tab;
     }

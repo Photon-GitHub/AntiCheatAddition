@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.userdata;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.Permissions;
+import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.userdata.data.AutoPotionData;
 import de.photon.AACAdditionPro.userdata.data.BlockPlaceData;
 import de.photon.AACAdditionPro.userdata.data.ClientSideEntityData;
@@ -118,12 +118,12 @@ public class User
     {
         this.player = player;
         this.loginData = new TimeData(false, this, System.currentTimeMillis());
-        this.verbose = Permissions.hasPermission(player, Permissions.VERBOSE);
+        this.verbose = InternalPermission.hasPermission(player, InternalPermission.VERBOSE);
     }
 
     public boolean isBypassed()
     {
-        return Permissions.hasPermission(this.player, Permissions.BYPASS);
+        return InternalPermission.hasPermission(this.player, InternalPermission.BYPASS);
     }
 
     /**

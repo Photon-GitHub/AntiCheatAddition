@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.command.subcommands;
 
-import de.photon.AACAdditionPro.Permissions;
+import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -8,46 +8,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 public class VerboseCommand extends InternalCommand
 {
-    public VerboseCommand()
+    public VerboseCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments, byte maxArguments)
     {
-        super("verbose",
-              (byte) 0,
-              true,
-              Permissions.VERBOSE,
-              "Used to toggle the verbose messages on and off for oneself."
-             );
-    }
-
-    @Override
-    protected void execute(final CommandSender sender, final LinkedList<String> arguments)
-    {
-        final User user = UserManager.getUser(((Player) sender).getUniqueId());
-
-        if (user == null) {
-            return;
-        }
-
-        if (arguments.size() == 1) {
-            //on/off mode
-            if ("on".equalsIgnoreCase(arguments.getFirst())) {
-                //If is is already present the Set denies the adding
-                user.verbose = true;
-                sendToggleMessage(sender, true);
-            } else if ("off".equalsIgnoreCase(arguments.getFirst())) {
-                user.verbose = false;
-                sendToggleMessage(sender, false);
-            }
-        } else {
-            //Toggle mode
-            user.verbose = !user.verbose;
-            sendToggleMessage(sender, user.verbose);
-        }
+        super("verbose", InternalPermission.VERBOSE, true, (byte) 0, (byte) 1);
     }
 
     /**
@@ -65,8 +33,52 @@ public class VerboseCommand extends InternalCommand
     }
 
     @Override
-    protected List<String> getTabPossibilities()
+    protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        return Arrays.asList("on", "off");
+        final User user = UserManager.getUser(((Player) sender).getUniqueId());
+
+        if (user == null) {
+            return;
+        }
+
+        if (arguments.size() == 1) {
+            switch (arguments.peek()) {
+                case "on":
+                    user.verbose = true;
+                    sendToggleMessage(sender, true);
+                    return;
+                case "off":
+                    user.verbose = false;
+                    sendToggleMessage(sender, false);
+                    return;
+                default:
+                    break;
+            }
+        } else {
+            //Toggle mode
+            user.verbose = !user.verbose;
+            sendToggleMessage(sender, user.verbose);
+        }
+    }
+
+    @Override
+    protected String[] getCommandHelp()
+    {
+        return new String[]{"Used to toggle the verbose messages on and off for oneself."};
+    }
+
+    @Override
+    protected Set<InternalCommand> getChildCommands()
+    {
+        return null;
+    }
+
+    @Override
+    protected String[] getTabPossibilities()
+    {
+        return new String[]{
+                "on",
+                "off"
+        };
     }
 }

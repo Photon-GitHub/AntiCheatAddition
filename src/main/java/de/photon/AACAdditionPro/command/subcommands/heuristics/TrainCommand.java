@@ -1,54 +1,60 @@
 package de.photon.AACAdditionPro.command.subcommands.heuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.Permissions;
+import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.events.InventoryHeuristicsEvent;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 public class TrainCommand extends InternalCommand
 {
     public TrainCommand()
     {
-        super("train",
-              (byte) 2,
-              false,
-              Permissions.NEURAL_TRAIN,
-              "Train the Inventory-Heuristics with an example-player"
-             );
+        super("train", InternalPermission.NEURAL_TRAIN, (byte) 2);
     }
 
     @Override
-    protected void execute(final CommandSender sender, final LinkedList<String> arguments)
+    protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        final Player p = AACAdditionPro.getInstance().getServer().getPlayer(arguments.getFirst());
+        if (AACAdditionPro.getInstance().getConfig().getBoolean("InventoryHeuristics.enabled")) {
+            final Player p = AACAdditionPro.getInstance().getServer().getPlayer(arguments.poll());
 
-        if (p == null) {
-            sender.sendMessage(playerNotFoundMessage);
-        } else {
-            if (arguments.get(1) == null || arguments.get(1).isEmpty()) {
-                sender.sendMessage(prefix + ChatColor.GOLD + "You need to define a Pattern.");
+            if (p == null) {
+                sender.sendMessage(playerNotFoundMessage);
             } else {
-                sender.sendMessage(prefix + ChatColor.GOLD + "[HEURISTICS] Training " + arguments.get(1).toUpperCase() + " Player: " + p.getName());
-                VerboseSender.sendVerboseMessage("[HEURISTICS] Training " + arguments.get(1).toUpperCase() + "; Player: " + p.getName());
-                AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(new InventoryHeuristicsEvent(p, true, arguments.get(1).toUpperCase()));
+                sender.sendMessage(prefix + ChatColor.GOLD + "[HEURISTICS] Training " + arguments.element().toUpperCase() + " Player: " + p.getName());
+                VerboseSender.sendVerboseMessage("[HEURISTICS] Training " + arguments.element().toUpperCase() + "; Player: " + p.getName());
+                AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(new InventoryHeuristicsEvent(p, true, arguments.element().toUpperCase()));
             }
         }
     }
 
     @Override
-    protected List<String> getTabPossibilities()
+    protected String[] getCommandHelp()
     {
-        final ArrayList<String> tab = new ArrayList<>();
-        for (final Player p : AACAdditionPro.getInstance().getServer().getOnlinePlayers()) {
-            tab.add(p.getName());
+        return new String[]{"Train the Inventory-Heuristics with an example-player"};
+    }
+
+    @Override
+    protected Set<InternalCommand> getChildCommands()
+    {
+        return null;
+    }
+
+    @Override
+    protected String[] getTabPossibilities()
+    {
+        final String[] tab = new String[Bukkit.getOnlinePlayers().size()];
+        int index = 0;
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            tab[index++] = player.getName();
         }
         return tab;
     }

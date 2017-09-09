@@ -225,11 +225,7 @@ InventoryRotation:
       24: "aacstaffnotify {player} in {world} is highly suspected for Killaura/Autoarmor (InventoryRotation)"
       35: "aackick {player} Killaura/Autoarmor"
 
-# Brings back an entity check of the old AAC 1.9.10 times
-# but much more advanced.
-# ------------------------------------------------------------------------------------------------------------------- #
-# Still somewhat EXPERIMENTAL! Please use with caution and report bugs.
-# ------------------------------------------------------------------------------------------------------------------- #
+# Brings back an entity check of the old AAC 1.9.10 times but much more advanced.
 KillauraEntity:
    # Do you want to enable the KillauraEntity check
    enabled: true

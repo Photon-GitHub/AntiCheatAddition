@@ -200,9 +200,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             case MC111:
             case MC112:
                 WrappedDataWatcher.WrappedDataWatcherObject[] objects = new WrappedDataWatcher.WrappedDataWatcherObject[2];
-                objects[0] = new WrappedDataWatcher.WrappedDataWatcherObject(6, WrappedDataWatcher.Registry.get(float.class));
-                objects[1] = new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(byte.class));
-                dataWatcher.setObject(objects[0], 20F);
+                objects[0] = new WrappedDataWatcher.WrappedDataWatcherObject(6, WrappedDataWatcher.Registry.get(Byte.class));
+                objects[1] = new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(Byte.class));
+                dataWatcher.setObject(objects[0], (byte) 20);
                 dataWatcher.setObject(objects[1], (byte) 127);
                 break;
             default:

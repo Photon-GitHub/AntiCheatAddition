@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,6 +67,6 @@ public class VerboseCommand extends InternalCommand
     @Override
     protected List<String> getTabPossibilities()
     {
-        return new ArrayList<>(Arrays.asList("on", "off"));
+        return Arrays.asList("on", "off");
     }
 }

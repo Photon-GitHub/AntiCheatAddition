@@ -12,6 +12,7 @@ import de.photon.AACAdditionPro.util.entities.equipment.category.WeaponsEquipmen
 import de.photon.AACAdditionPro.util.entities.movement.submovements.BasicFollowMovement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import lombok.Getter;
@@ -189,8 +190,24 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         // DataWatcher
         final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
-        dataWatcher.setObject(6, (float) 20);
-        dataWatcher.setObject(10, (byte) 127); //TODO player's probably do have more things set here
+
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC188:
+                dataWatcher.setObject(6, 20F);
+                dataWatcher.setObject(10, (byte) 127);
+                break;
+            case MC110:
+            case MC111:
+            case MC112:
+                WrappedDataWatcher.WrappedDataWatcherObject[] objects = new WrappedDataWatcher.WrappedDataWatcherObject[2];
+                objects[0] = new WrappedDataWatcher.WrappedDataWatcherObject(6, WrappedDataWatcher.Registry.get(float.class));
+                objects[1] = new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(byte.class));
+                dataWatcher.setObject(objects[0], 20F);
+                dataWatcher.setObject(objects[1], (byte) 127);
+                break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
 
         // Spawn the entity
         final WrapperPlayServerNamedEntitySpawn spawnEntityWrapper = new WrapperPlayServerNamedEntitySpawn();

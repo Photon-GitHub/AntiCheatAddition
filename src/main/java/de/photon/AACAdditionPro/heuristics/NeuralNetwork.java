@@ -4,7 +4,6 @@ import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 import de.photon.AACAdditionPro.heuristics.storage.Matrix;
 import de.photon.AACAdditionPro.heuristics.storage.StorageList;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +53,7 @@ public class NeuralNetwork
         this.networkFunction = networkFunction;
 
         // Layer-Management
-        this.layers = new ArrayList<>(Arrays.asList(layers));
+        this.layers = Arrays.asList(layers);
 
         initIONeurons(this.inputNeurons, inputNeurons);
         initIONeurons(this.outputNeurons, outputNeurons);

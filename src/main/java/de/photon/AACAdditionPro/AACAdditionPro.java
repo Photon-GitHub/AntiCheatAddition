@@ -23,6 +23,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class AACAdditionPro extends JavaPlugin
@@ -57,6 +59,9 @@ public class AACAdditionPro extends JavaPlugin
 
     @Setter
     private KillauraEntityController killauraEntityController;
+
+    // Cache the config for better performance
+    private FileConfiguration cachedConfig;
 
     /**
      * This will get the object of the plugin registered on the server.
@@ -93,15 +98,18 @@ public class AACAdditionPro extends JavaPlugin
     @Override
     public FileConfiguration getConfig()
     {
-        File savedFile = null;
-        try {
-            savedFile = FileUtilities.saveFileInFolder("config.yml");
-        } catch (final IOException e) {
-            VerboseSender.sendVerboseMessage("Failed to create config folder / file", true, true);
-            e.printStackTrace();
+        if (cachedConfig == null) {
+            File savedFile = null;
+            try {
+                savedFile = FileUtilities.saveFileInFolder("config.yml");
+            } catch (final IOException e) {
+                VerboseSender.sendVerboseMessage("Failed to create config folder / file", true, true);
+                e.printStackTrace();
+            }
+            cachedConfig = YamlConfiguration.loadConfiguration(Objects.requireNonNull(savedFile, "Config file needed to get the FileConfiguration was not found."));
         }
 
-        return YamlConfiguration.loadConfiguration(Objects.requireNonNull(savedFile, "Config file needed to get the FileConfiguration was not found."));
+        return cachedConfig;
     }
 
     @Override
@@ -117,31 +125,14 @@ public class AACAdditionPro extends JavaPlugin
             if (ServerVersion.getActiveServerVersion() == null) {
                 VerboseSender.sendVerboseMessage("Server version is not supported.", true, true);
 
-                final ServerVersion[] supportedVersions = ServerVersion.values();
-
-                /*
-                    StringBuilder for the message explaining what versions are supported
-                    19 for "Supported versions:"
-                    5 for every entry (5 is the max.)
-                    2 for " " and "," per entry
-                    -----------------------------------------
-                    -> 19 + 7 * ServerVersion.values().length
-                */
-                final StringBuilder supportedMessage = new StringBuilder(19 + supportedVersions.length * 7);
-                supportedMessage.append("Supported versions:");
-
-                // Automatically get all the supported versions and append them to the message
-                for (final ServerVersion serverVersion : supportedVersions) {
-                    supportedMessage.append(" ");
-                    supportedMessage.append(serverVersion.getVersionOutputString());
-                    supportedMessage.append(",");
+                // Create a List of all the possible server versions
+                final List<String> possibleVersions = new ArrayList<>(ServerVersion.values().length);
+                for (ServerVersion serverVersion : ServerVersion.values()) {
+                    possibleVersions.add(serverVersion.getVersionOutputString());
                 }
 
-                // Delete the last comma
-                supportedMessage.deleteCharAt(supportedMessage.length() - 1);
-
                 // Print the complete message
-                VerboseSender.sendVerboseMessage(supportedMessage.toString(), true, true);
+                VerboseSender.sendVerboseMessage("Supported versions:" + String.join(", ", possibleVersions), true, true);
                 return;
             }
 
@@ -156,12 +147,7 @@ public class AACAdditionPro extends JavaPlugin
                 return;
             }
 
-            // ------------------------------------------------------------------------------------------------------ //
-            //                                                 Config                                                 //
-            // ------------------------------------------------------------------------------------------------------ //
-
-            getConfig().options().copyDefaults(true);
-            FileUtilities.saveFileInFolder("config.yml");
+            // The first getConfig call will automatically save and cache the config.
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //
@@ -239,14 +225,11 @@ public class AACAdditionPro extends JavaPlugin
             throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin provided as KillauraEntityAddon: " + plugin.getName() + " - " + plugin);
         }
 
-        // Check KillauraEntity-API being available
-        if (killauraEntityController == null) {
-            throw new IllegalStateException("KillauraEntity-API not ready, enable the KillauraEntity check");
-        }
-
         // Set up the new KillauraEntityAddon
         this.killauraEntityAddon = killauraEntityAddon;
-        currentDelegatingKillauraEntityController = new DelegatingKillauraEntityController(killauraEntityController);
+        currentDelegatingKillauraEntityController = new DelegatingKillauraEntityController(
+                // Check KillauraEntity-API being available
+                Objects.requireNonNull(killauraEntityController, "KillauraEntity-API not ready, enable the KillauraEntity check"));
 
         try {
             killauraEntityControllerField.set(this.killauraEntityAddon, currentDelegatingKillauraEntityController);

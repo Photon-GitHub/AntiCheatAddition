@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
@@ -80,9 +81,10 @@ public class InfoCommand extends InternalCommand
     @Override
     protected String[] getTabPossibilities()
     {
-        final String[] tab = new String[Bukkit.getOnlinePlayers().size()];
+        final Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+        final String[] tab = new String[onlinePlayers.size()];
         int index = 0;
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : onlinePlayers) {
             tab[index++] = player.getName();
         }
         return tab;

@@ -25,12 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
@@ -38,8 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class KillauraEntity implements AACAdditionProCheck, Listener
-{
+public class KillauraEntity implements AACAdditionProCheck, Listener {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 55);
 
     @LoadFromConfiguration(configPath = ".position.entityOffset")
@@ -52,8 +46,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     private double minXZDifference;
 
     @EventHandler
-    public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)
-    {
+    public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event) {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
@@ -64,15 +57,13 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
         final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
 
         if (playerEntity != null &&
-            StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken()))
-        {
+            StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken())) {
             event.getTabCompletions().add(playerEntity.getName());
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerVelocity(final PlayerVelocityEvent event)
-    {
+    public void onPlayerVelocity(final PlayerVelocityEvent event) {
         // Add velocity to the bot so the bot does never stand inside or in front of the player
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
@@ -88,9 +79,14 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
         }
     }
 
+    @EventHandler
+    public void onGamemodeChange(PlayerGameModeChangeEvent event) {
+        // The real check for the player's gamemode is located in onJoin()
+        respawnEntity(event.getPlayer());
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onJoin(final PlayerJoinEvent event)
-    {
+    public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         switch (player.getGameMode()) {
             case CREATIVE:
@@ -168,19 +164,16 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     }
 
     @EventHandler
-    public void onRespawn(PlayerRespawnEvent event)
-    {
+    public void onRespawn(PlayerRespawnEvent event) {
         respawnEntity(event.getPlayer());
     }
 
     @EventHandler
-    public void onWorldChange(PlayerChangedWorldEvent event)
-    {
+    public void onWorldChange(PlayerChangedWorldEvent event) {
         respawnEntity(event.getPlayer());
     }
 
-    private void respawnEntity(Player player)
-    {
+    private void respawnEntity(Player player) {
         // Wait one server tick
         Bukkit.getScheduler().runTask(
                 AACAdditionPro.getInstance(),
@@ -193,15 +186,13 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 });
     }
 
-    private static Location calculateSpawningLocation(Player player, ClientsideEntity entity)
-    {
+    private static Location calculateSpawningLocation(Player player, ClientsideEntity entity) {
         final Location spawnLocation = player.getLocation().clone().add(entity.getMovement().calculate(player.getLocation()));
         return BlockUtils.getNextFreeSpaceYAxis(spawnLocation, entity.getHitbox());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onQuit(PlayerQuitEvent event)
-    {
+    public void onQuit(PlayerQuitEvent event) {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // User not there
@@ -216,19 +207,16 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     }
 
     @Override
-    public void subEnable()
-    {
+    public void subEnable() {
         AACAdditionPro.getInstance().setKillauraEntityController(new DelegatingKillauraEntityController(null) //extending the delegation for obfuscation purposes, does not make any difference at the end
         {
             @Override
-            public boolean isValid()
-            {
+            public boolean isValid() {
                 return true;
             }
 
             @Override
-            public boolean isSpawnedFor(Player player)
-            {
+            public boolean isSpawnedFor(Player player) {
                 User user = UserManager.getUser(player.getUniqueId());
                 if (AACAdditionProCheck.isUserInvalid(user)) {
                     return false;
@@ -238,8 +226,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             }
 
             @Override
-            public boolean setSpawnedForPlayer(Player player, boolean spawned)
-            {
+            public boolean setSpawnedForPlayer(Player player, boolean spawned) {
                 final User user = UserManager.getUser(player.getUniqueId());
                 if (AACAdditionProCheck.isUserInvalid(user)) {
                     return false;
@@ -252,15 +239,15 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
                 if (clientSidePlayerEntity.isSpawned()) {
                     clientSidePlayerEntity.despawn();
-                } else {
+                }
+                else {
                     clientSidePlayerEntity.spawn(calculateSpawningLocation(player, clientSidePlayerEntity));
                 }
                 return true;
             }
 
             @Override
-            public boolean setSpawnedForPlayer(Player player, boolean spawned, Location spawnLocation)
-            {
+            public boolean setSpawnedForPlayer(Player player, boolean spawned, Location spawnLocation) {
                 final User user = UserManager.getUser(player.getUniqueId());
                 if (AACAdditionProCheck.isUserInvalid(user)) {
                     return false;
@@ -273,7 +260,8 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
                 if (clientSidePlayerEntity.isSpawned()) {
                     clientSidePlayerEntity.despawn();
-                } else {
+                }
+                else {
                     //Manual location copy to prevent users from inserting locations with a bad copy method
                     Location location = new Location(spawnLocation.getWorld(), spawnLocation.getX(), spawnLocation.getY(), spawnLocation.getZ(), spawnLocation.getYaw(), spawnLocation.getPitch());
                     clientSidePlayerEntity.spawn(location);
@@ -282,17 +270,14 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
             }
 
             @Override
-            public MovementType getMovementType()
-            {
+            public MovementType getMovementType() {
                 return MovementType.BASIC_FOLLOW;
             }
         });
 
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), PacketType.Play.Client.USE_ENTITY)
-        {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), PacketType.Play.Client.USE_ENTITY) {
             @Override
-            public void onPacketReceiving(final PacketEvent event)
-            {
+            public void onPacketReceiving(final PacketEvent event) {
                 final int entityId = event.getPacket().getIntegers().read(0);
 
                 // Add velocity to the bot so the bot does never stand inside or in front of the player
@@ -306,8 +291,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
                 final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
 
                 if (playerEntity != null &&
-                    entityId == playerEntity.getEntityID())
-                {
+                    entityId == playerEntity.getEntityID()) {
                     playerEntity.hurtByObserved();
                     // To prevent false positives ensure the correct position.
                     playerEntity.setNeedsTeleport(true);
@@ -324,8 +308,7 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
     }
 
     @Override
-    public void subDisable()
-    {
+    public void subDisable() {
         AACAdditionPro.getInstance().setKillauraEntityController(null);
         AACAdditionPro.getInstance().disableKillauraEntityAPI();
 
@@ -342,14 +325,12 @@ public class KillauraEntity implements AACAdditionProCheck, Listener
 
 
     @Override
-    public ViolationLevelManagement getViolationLevelManagement()
-    {
+    public ViolationLevelManagement getViolationLevelManagement() {
         return vlManager;
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
-    {
+    public AdditionHackType getAdditionHackType() {
         return AdditionHackType.KILLAURA_ENTITY;
     }
 }

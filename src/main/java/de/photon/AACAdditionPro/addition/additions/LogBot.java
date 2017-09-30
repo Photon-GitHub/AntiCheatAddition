@@ -10,15 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class LogBot implements Addition, Runnable
-{
+public class LogBot implements Addition, Runnable {
     // HashMap's real capacity is always a power of 2
     private final Map<File, Long> logDeletionTimes = new HashMap<>(4, 1F);
     private int task_number;
 
     @Override
-    public void run()
-    {
+    public void run() {
         final long currentTime = System.currentTimeMillis();
 
         logDeletionTimes.forEach(
@@ -35,25 +33,25 @@ public class LogBot implements Addition, Runnable
                                 // Be sure it is a log file of AAC or AACAdditionPro (.log) or a log file of the server (.log.gz)
                                 if ((nameOfFile.endsWith(".log") || nameOfFile.endsWith(".log.gz")) &&
                                     // Minimum time
-                                    currentTime - file.lastModified() > timeToDelete)
-                                {
+                                    currentTime - file.lastModified() > timeToDelete) {
                                     if (file.delete()) {
                                         VerboseSender.sendVerboseMessage("Deleted " + nameOfFile);
-                                    } else {
+                                    }
+                                    else {
                                         VerboseSender.sendVerboseMessage("Could not delete old file " + nameOfFile, true, true);
                                     }
                                 }
                             }
                         }
-                    } else {
+                    }
+                    else {
                         VerboseSender.sendVerboseMessage("Could not find log folder " + logFolder.getName(), true, true);
                     }
                 });
     }
 
     @Override
-    public void enable()
-    {
+    public void enable() {
         long[] daysToDelete = new long[]{
                 AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AAC"),
                 AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AACAdditionPro"),
@@ -72,18 +70,16 @@ public class LogBot implements Addition, Runnable
             }
         }
 
-        task_number = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this, 1, 864000);
+        task_number = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this, 1, TimeUnit.DAYS.toMillis(1));
     }
 
     @Override
-    public void disable()
-    {
+    public void disable() {
         Bukkit.getScheduler().cancelTask(task_number);
     }
 
     @Override
-    public String getConfigString()
-    {
+    public String getConfigString() {
         return "LogBot";
     }
 }

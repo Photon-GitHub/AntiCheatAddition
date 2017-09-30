@@ -232,15 +232,17 @@ KillauraEntity:
    # The general behaviour of the entity, mostly important for certain gamemodes.
    # Please configure this correctly for your server to have the best setup
    # (e.g. servers who have no teams should disable team)
+   #
+   # The entity will only be visible for one player and only spawns behind players in survival and adventure mode
    behaviour:
       # Should the entity join a team
       team:
          enabled: true
-      # Should the entity swing items to simulate an attack
-      swing:
-         enabled: true
       # Should the entity swap the items it is wearing and using
       swap:
+         enabled: true
+      # Should the entity swing items to simulate an attack
+      swing:
          enabled: true
    # Here you can find all options regarding the positioning of the entity
    position:
@@ -256,17 +258,6 @@ KillauraEntity:
    # For the best setup only choose equipment a normal player can obtain.
    # If the API is used it will override the decisions you made here.
    equipment:
-      # The weapons the entities will use in a fake fight
-      weapons:
-         # Types
-         sword: true
-         axe: true
-         # Materials
-         wood: true
-         gold: true
-         stone: true
-         iron: true
-         diamond: true
       # The armor the entities will spawn with
       armor:
          # Types
@@ -312,6 +303,17 @@ KillauraEntity:
          # All kinds of ingots are included here
          ingot: true
          wood: true
+         diamond: true
+      # The weapons the entities will use in a fake fight
+      weapons:
+         # Types
+         sword: true
+         axe: true
+         # Materials
+         wood: true
+         gold: true
+         stone: true
+         iron: true
          diamond: true
    thresholds:
       5: "aacstaffnotify {player} in {world} is suspected for Killaura"

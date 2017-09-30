@@ -20,8 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public interface Module
-{
+public interface Module {
     /**
      * This enables the check by registering it in all Managers.
      * <p>
@@ -30,8 +29,7 @@ public interface Module
      * ProtocolLib's {@link PacketListener} or {@link PacketAdapter},<br>
      * Bukkit's {@link PluginMessageListener}
      */
-    default void enable()
-    {
+    default void enable() {
         // Config-Annotation processing
         for (Field field : this.getClass().getDeclaredFields()) {
             final LoadFromConfiguration annotation = field.getAnnotation(LoadFromConfiguration.class);
@@ -58,42 +56,53 @@ public interface Module
                         field.setBoolean(this, AACAdditionPro.getInstance().getConfig().getBoolean(path));
 
                         // Numbers
-                    } else if (clazz == double.class || clazz == Double.class) {
+                    }
+                    else if (clazz == double.class || clazz == Double.class) {
                         field.setDouble(this, AACAdditionPro.getInstance().getConfig().getDouble(path));
-                    } else if (clazz == int.class || clazz == Integer.class) {
+                    }
+                    else if (clazz == int.class || clazz == Integer.class) {
                         field.setInt(this, AACAdditionPro.getInstance().getConfig().getInt(path));
-                    } else if (clazz == long.class || clazz == Long.class) {
+                    }
+                    else if (clazz == long.class || clazz == Long.class) {
                         field.setLong(this, AACAdditionPro.getInstance().getConfig().getLong(path));
 
                         // Strings
-                    } else if (clazz == String.class) {
+                    }
+                    else if (clazz == String.class) {
                         field.set(this, AACAdditionPro.getInstance().getConfig().getString(path));
 
                         // Special stuff
-                    } else if (clazz == ItemStack.class) {
+                    }
+                    else if (clazz == ItemStack.class) {
                         field.set(this, AACAdditionPro.getInstance().getConfig().getItemStack(path));
-                    } else if (clazz == Color.class) {
+                    }
+                    else if (clazz == Color.class) {
                         field.set(this, AACAdditionPro.getInstance().getConfig().getColor(path));
-                    } else if (clazz == OfflinePlayer.class) {
+                    }
+                    else if (clazz == OfflinePlayer.class) {
                         field.set(this, AACAdditionPro.getInstance().getConfig().getOfflinePlayer(path));
-                    } else if (clazz == Vector.class) {
+                    }
+                    else if (clazz == Vector.class) {
                         field.set(this, AACAdditionPro.getInstance().getConfig().getVector(path));
 
 
                         // Lists
-                    } else if (clazz == List.class) {
+                    }
+                    else if (clazz == List.class) {
 
                         // StringLists
                         if (annotation.listType() == String.class) {
                             field.set(this, ConfigUtils.loadStringOrStringList(path));
 
                             // Unknown type
-                        } else {
+                        }
+                        else {
                             field.set(this, AACAdditionPro.getInstance().getConfig().getList(path));
                         }
 
                         // No special type found
-                    } else {
+                    }
+                    else {
                         field.set(this, AACAdditionPro.getInstance().getConfig().get(path));
                     }
                 } catch (IllegalAccessException e) {
@@ -136,8 +145,7 @@ public interface Module
      * ProtocolLib's {@link PacketListener} or {@link PacketAdapter},<br>
      * Bukkit's {@link PluginMessageListener}
      */
-    default void disable()
-    {
+    default void disable() {
         // Bukkit event listener cleanup
         if (this instanceof Listener) {
             HandlerList.unregisterAll((Listener) this);
@@ -162,8 +170,7 @@ public interface Module
     /**
      * The name of the module as it appears in the logs.
      */
-    default String getName()
-    {
+    default String getName() {
         return this.getConfigString();
     }
 
@@ -188,8 +195,7 @@ public interface Module
      * Only needed to override for PluginMessageListeners.
      * By default it returns null for no registration of plugin channels.
      */
-    default String[] getPluginMessageChannels()
-    {
+    default String[] getPluginMessageChannels() {
         return null;
     }
 
@@ -199,8 +205,7 @@ public interface Module
      * <p>
      * By default all {@link ServerVersion} are marked as supported.
      */
-    default Set<ServerVersion> getSupportedVersions()
-    {
+    default Set<ServerVersion> getSupportedVersions() {
         return new HashSet<>(Arrays.asList(ServerVersion.values()));
     }
 }

@@ -149,13 +149,14 @@ public class Esp implements AACAdditionProCheck
 
                                 double lastIntersectionCache = 1;
 
+                                // The minimum difference in angle to have at least 1 Block difference
+                                // (1 Block) / Math.sqrt(pairdistance^2 + (1 Block)^2)
+                                final double minAngleDifference = Math.asin(1 / Math.sqrt(pairDistanceSquared + 1));
+
                                 for (int i = 0; i < cameraVectors.length; i++)
                                 {
                                     Vector perspective = cameraVectors[i];
 
-                                    // The minimum difference in angle to have at least 1 Block difference
-                                    // (1 Block) / Math.sqrt(pairdistance^2 + (1 Block)^2)
-                                    final double minAngleDifference = Math.asin(1 / Math.sqrt(pairDistanceSquared + 1));
                                     Vector lastBetweenVector = null;
 
                                     for (final Vector calculationVector : watchedHitboxVectors)

@@ -21,12 +21,14 @@ import org.bukkit.util.Vector;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 public class Esp implements AACAdditionProCheck
 {
     // The camera offset for 3rd person
-    private static final double thirdPersonOffset = 5D;
+    private static final double THIRD_PERSON_OFFSET = 5D;
+
+    // The real MAX_FOV is 110 (quake pro), but to account for movement and lag we set it to 125
+    private static final double MAX_FOV = Math.toRadians(125D);
 
     // The hider / censor stuff
     private final PlayerHider fullHider = new PlayerHider();
@@ -39,8 +41,8 @@ public class Esp implements AACAdditionProCheck
     private int taskNumber;
 
     // The auto-config-data
-    private double render_distance_squared = 0;
-    private boolean hide_after_render_distance = true;
+    private double renderDistanceSquared = 0;
+    private boolean hideAfterRenderDistance = true;
 
     @Override
     public AdditionHackType getAdditionHackType()
@@ -56,20 +58,23 @@ public class Esp implements AACAdditionProCheck
         final YamlConfiguration spigot = YamlConfiguration.loadConfiguration(new File("spigot.yml"));
         final ConfigurationSection worlds = spigot.getConfigurationSection("world-settings");
 
-        for (final String s : worlds.getKeys(false)) {
+        for (final String s : worlds.getKeys(false))
+        {
             int currentPlayerTrackingRange = spigot.getInt(worlds.getCurrentPath() + "." + s + ".entity-tracking-range.players");
 
             // Square
             currentPlayerTrackingRange *= currentPlayerTrackingRange;
 
-            if (currentPlayerTrackingRange > render_distance_squared) {
-                render_distance_squared = currentPlayerTrackingRange;
+            if (currentPlayerTrackingRange > renderDistanceSquared)
+            {
+                renderDistanceSquared = currentPlayerTrackingRange;
 
                 // Do the maths inside here as reading from a file takes longer than calculating this.
                 // 19321 == 139^2 as of the maximum range of the block-iterator
-                if (render_distance_squared > 19321) {
-                    hide_after_render_distance = false;
-                    render_distance_squared = 19321;
+                if (renderDistanceSquared > 19321)
+                {
+                    hideAfterRenderDistance = false;
+                    renderDistanceSquared = 19321;
                     break;
                 }
             }
@@ -84,174 +89,159 @@ public class Esp implements AACAdditionProCheck
                     final Collection<User> users = UserManager.getUsers();
 
                     //Iterate through all player-constellations
-                    for (final User observer : users) {
+                    for (final User observer : users)
+                    {
                         // Not bypassed
                         if (!observer.isBypassed() &&
-                            // Not logged in recently (to prevent bugs)
-                            !observer.getLoginData().recentlyUpdated(3500))
+                            // Spectators are ignored in ESP
+                            observer.getPlayer().getGameMode() != GameMode.SPECTATOR)
                         {
                             // All users can potentially be seen
-                            for (final User watchedPlayer : users) {
-                                // The user are not the same
-                                if (!observer.refersToUUID(watchedPlayer.getPlayer().getUniqueId())) {
-                                    playerConnections.add(new Pair(observer, watchedPlayer));
+                            for (final User watched : users)
+                            {
+                                // The watched player is also not in Spectator mode
+                                if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR &&
+                                    // The users are not the same
+                                    !observer.refersToUUID(watched.getPlayer().getUniqueId()))
+                                {
+                                    playerConnections.add(new Pair(observer, watched));
                                 }
                             }
                         }
                     }
 
-                    for (final Pair pair : playerConnections) {
-                        // Are the players in the same world
-                        if (pair.usersOfPair[0].getPlayer().getLocation().getWorld().equals(pair.usersOfPair[1].getPlayer().getLocation().getWorld()) &&
-                            // Are the players inside the render_distance
-                            pair.usersOfPair[0].getPlayer().getLocation().distanceSquared(pair.usersOfPair[1].getPlayer().getLocation()) <= render_distance_squared)
+                    for (final Pair pair : playerConnections)
+                    {
+                        // The Users are in the same world
+                        if (pair.usersOfPair[0].getPlayer().getWorld().equals(pair.usersOfPair[1].getPlayer().getWorld()))
                         {
-                            /*
-                                Spectator mode needs different handling as a spectator can see through walls and can never be seen by other players who are no spectators as well.
-                                [0]: User a is a spectator
-                                [1]: User b is a spectator
-                            */
-                            final boolean[] spectatorMode = {
-                                    pair.usersOfPair[0].getPlayer().getGameMode() == GameMode.SPECTATOR,
-                                    pair.usersOfPair[1].getPlayer().getGameMode() == GameMode.SPECTATOR
-                            };
+                            final double pairDistanceSquared = pair.usersOfPair[0].getPlayer().getLocation().distanceSquared(pair.usersOfPair[1].getPlayer().getLocation());
 
-                            // Gamemode 3 handling
-                            if (spectatorMode[0] || spectatorMode[1]) {
-                                if (spectatorMode[0]) {
-                                    updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), HideMode.NONE);
-
-                                    // If both players are in spectator mode noone should be hidden -> HideMode.NONE
-                                    updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), spectatorMode[1] ?
-                                                                                                         HideMode.NONE :
-                                                                                                         HideMode.FULL);
-                                } else {
-                                    // spectatorMode[1] must be true here as spectatorMode[0] == false and one of spectatorMode[0] and spectatorMode[1] must be true !
-                                    // -> spectatorMode[1] == true; spectatorMode[0] == false
-                                    updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), HideMode.NONE);
-                                    updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), HideMode.FULL);
-                                }
-
-                                // Normal handling without spectators
-                            } else {
-                                if (canDirectlySee(pair.usersOfPair[0].getPlayer(), pair.usersOfPair[1].getPlayer())) {
-                                    updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), HideMode.NONE);
-                                    updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), HideMode.NONE);
-                                } else {
-                                    updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), pair.usersOfPair[0].getPlayer().isSneaking() ?
-                                                                                                         HideMode.FULL :
-                                                                                                         HideMode.INFORMATION_ONLY);
-
-                                    updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), pair.usersOfPair[1].getPlayer().isSneaking() ?
-                                                                                                         HideMode.FULL :
-                                                                                                         HideMode.INFORMATION_ONLY);
-                                }
+                            // Less than 1 block distance
+                            // Everything (smaller than 1)^2 will result in something smaller than 1
+                            if (pairDistanceSquared < 1)
+                            {
+                                updatePairHideMode(pair, HideMode.NONE);
+                                continue;
                             }
 
-                            // Players cannot see each other
-                        } else if (hide_after_render_distance) {
-                            updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), HideMode.FULL);
-                            updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), HideMode.FULL);
-                        } else {
-                            updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), HideMode.NONE);
-                            updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), HideMode.NONE);
+                            if (pairDistanceSquared > renderDistanceSquared)
+                            {
+                                updatePairHideMode(pair, hideAfterRenderDistance ? HideMode.FULL : HideMode.NONE);
+                                continue;
+                            }
+
+                            for (byte b = 0; b <= 1; b++)
+                            {
+                                final Player observer = pair.usersOfPair[b].getPlayer();
+                                final Player watched = pair.usersOfPair[1 - b].getPlayer();
+
+                                // ------------------------- Can one Player see the other ? ------------------------- //
+                                boolean canSee = false;
+
+                                final Vector[] cameraVectors = getCameraVectors(observer);
+
+                                final Hitbox hitboxOfWatched = watched.isSneaking() ?
+                                                               Hitbox.SNEAKING_PLAYER :
+                                                               Hitbox.PLAYER;
+
+                                final Iterable<Vector> watchedHitboxVectors = hitboxOfWatched.getCalculationVectors(watched.getLocation(), true);
+
+                                double lastIntersectionCache = 1;
+
+                                for (int i = 0; i < cameraVectors.length; i++)
+                                {
+                                    Vector perspective = cameraVectors[i];
+
+                                    // The minimum difference in angle to have at least 1 Block difference
+                                    // (1 Block) / Math.sqrt(pairdistance^2 + (1 Block)^2)
+                                    final double minAngleDifference = Math.asin(1 / Math.sqrt(pairDistanceSquared + 1));
+                                    Vector lastBetweenVector = null;
+
+                                    for (final Vector calculationVector : watchedHitboxVectors)
+                                    {
+                                        //System.out.println("OwnVec: " + watcher.getEyeLocation().toVector() + " |Vector: " + vector);
+
+                                        final Location start = perspective.toLocation(observer.getWorld());
+                                        // The resulting Vector
+                                        // The camera is not blocked by non-solid blocks
+                                        // Vector is intersecting with some blocks
+                                        final Vector between = calculationVector.clone().subtract(perspective);
+
+                                        // Do not calculate vectors which are too similar
+                                        if (lastBetweenVector != null &&
+                                            lastBetweenVector.angle(between) < minAngleDifference)
+                                        {
+                                            continue;
+                                        }
+
+                                        // ---------------------------------------------- FOV ----------------------------------------------- //
+                                        Vector cameraRotation = observer.getLocation().getDirection();
+
+                                        // Exactly the opposite rotation for the front-view
+                                        if (i == 1)
+                                        {
+                                            cameraRotation.multiply(-1);
+                                        }
+
+                                        if (cameraRotation.angle(between) > MAX_FOV)
+                                        {
+                                            continue;
+                                        }
+
+                                        // --------------------------------------- Normal Calculation --------------------------------------- //
+
+                                        if (VectorUtils.vectorIntersectsWithBlockAt(start, between, lastIntersectionCache))
+                                        {
+                                            continue;
+                                        }
+
+                                        final double intersect = VectorUtils.getFirstVectorIntersectionWithBlock(start, between);
+
+                                        // No intersection found
+                                        if (intersect == 0)
+                                        {
+                                            canSee = true;
+                                            break;
+                                        }
+
+                                        lastIntersectionCache = intersect;
+                                        lastBetweenVector = between;
+                                    }
+                                }
+
+                                if (canSee)
+                                {
+                                    // Can see the other player
+                                    updateHideMode(pair.usersOfPair[b], pair.usersOfPair[1 - b].getPlayer(), HideMode.NONE);
+                                }
+                                else
+                                {
+                                    // Cannot see the other player
+                                    updateHideMode(pair.usersOfPair[b], pair.usersOfPair[1 - b].getPlayer(),
+                                                   // If the observed player is sneaking hide him fully
+                                                   pair.usersOfPair[1 - b].getPlayer().isSneaking() ?
+                                                   HideMode.FULL :
+                                                   HideMode.INFORMATION_ONLY);
+                                }
+                            }
                         }
                     }
 
-                    // TODO: You neither need to clear the connections every second nor to add all connections again (exeption: on the first start)... event usage
+                    // TODO: You neither need to clear the connections every second nor to add all connections again (exception: on the first start)... event usage
 
                     // Clear the HashSet for a new Run
-                    // This allows for better performance as the internal Map only grows once.
+                    // This allows for better performance as the internal Map only grows once and purges some bugs, like hiding of offline players.
                     playerConnections.clear();
 
                     // Update_Ticks: the refresh-rate of the check.
                 }, 0L, AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".update_ticks"));
     }
 
-    @Override
-    public void disable()
+
+    private static boolean canDirectlySee(final Player observer, final Player watched)
     {
-        Bukkit.getScheduler().cancelTask(taskNumber);
-    }
 
-    private void updateHideMode(final User observer, final Player object, final HideMode hideMode)
-    {
-        switch (hideMode) {
-            case FULL:
-                if (observer.getEspInformationData().hiddenPlayers.get(object.getUniqueId()) != HideMode.FULL) {
-                    observer.getEspInformationData().hiddenPlayers.put(object.getUniqueId(), HideMode.FULL);
-
-                    // FULL: fullHider active, informationOnlyHider inactive
-                    informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
-                    fullHider.modifyInformation(observer.getPlayer(), object);
-                }
-                break;
-            case INFORMATION_ONLY:
-                if (observer.getEspInformationData().hiddenPlayers.get(object.getUniqueId()) != HideMode.INFORMATION_ONLY) {
-                    observer.getEspInformationData().hiddenPlayers.put(object.getUniqueId(), HideMode.INFORMATION_ONLY);
-
-                    // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
-                    fullHider.unModifyInformation(observer.getPlayer(), object);
-                    informationOnlyHider.modifyInformation(observer.getPlayer(), object);
-                }
-                break;
-            case NONE:
-                if (observer.getEspInformationData().hiddenPlayers.containsKey(object.getUniqueId())) {
-                    observer.getEspInformationData().hiddenPlayers.remove(object.getUniqueId());
-
-                    // NONE: fullHider inactive, informationOnlyHider inactive
-                    informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
-                    fullHider.unModifyInformation(observer.getPlayer(), object);
-                }
-                break;
-        }
-    }
-
-    private static boolean canDirectlySee(final Player watcher, final Player object)
-    {
-        // Not the same world
-        if (!watcher.getWorld().equals(object.getWorld())) {
-            return false;
-        }
-
-        // Less than 1 block distance
-        // Everything (smaller than 1)^2 will result in something smaller than 1
-        if (watcher.getLocation().distanceSquared(object.getLocation()) < 1) {
-            return true;
-        }
-
-        final Vector[] camera_vectors = getCameraVectors(watcher);
-
-        final Hitbox usedHitbox = object.isSneaking() ?
-                                  Hitbox.SNEAKING_PLAYER :
-                                  Hitbox.PLAYER;
-        final List<Vector> calc_vectors = usedHitbox.getCalculationVectors(object.getLocation(), true);
-
-        double lastIntersectionCache = 1;
-
-        for (final Vector perspective : camera_vectors) {
-            for (final Vector calculationVector : calc_vectors) {
-                //System.out.println("OwnVec: " + watcher.getEyeLocation().toVector() + " |Vector: " + vector);
-
-                final Location start = perspective.toLocation(watcher.getWorld());
-                // The resulting Vector
-                // The camera is not blocked by non-solid blocks
-                // Vector is intersecting with some blocks
-                final Vector between = calculationVector.clone().subtract(perspective);
-
-                if (VectorUtils.vectorIntersectsWithBlockAt(start, between, lastIntersectionCache)) {
-                    continue;
-                }
-
-                final double intersect = VectorUtils.getFirstVectorIntersectionWithBlock(start, between);
-
-                if (intersect == 0) {
-                    return true;
-                }
-
-                lastIntersectionCache = intersect;
-            }
-        }
 
         return false;
     }
@@ -267,8 +257,8 @@ public class Esp implements AACAdditionProCheck
         final Vector[] vectors = new Vector[3];
 
         // Front vector : The 3rd person perspective in front of the player
-        // Use thirdPersonOffset to get the maximum positions
-        vectors[1] = player.getLocation().getDirection().clone().normalize().multiply(thirdPersonOffset);
+        // Use THIRD_PERSON_OFFSET to get the maximum positions
+        vectors[1] = player.getLocation().getDirection().clone().normalize().multiply(THIRD_PERSON_OFFSET);
 
         // Behind vector : The 3rd person perspective behind the player
         vectors[2] = vectors[1].clone().multiply(-1);
@@ -284,16 +274,67 @@ public class Esp implements AACAdditionProCheck
         final double behindIntersection = VectorUtils.getFirstVectorIntersectionWithBlock(eyeLocation, vectors[2]);
 
         // There is an intersection in the front-vector
-        if (frontIntersection != 0) {
+        if (frontIntersection != 0)
+        {
             vectors[1].normalize().multiply(frontIntersection);
         }
 
         // There is an intersection in the behind-vector
-        if (behindIntersection != 0) {
+        if (behindIntersection != 0)
+        {
             vectors[2].normalize().multiply(behindIntersection);
         }
 
         return vectors;
+    }
+
+    private void updatePairHideMode(final Pair pair, final HideMode hideMode)
+    {
+        updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), hideMode);
+        updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), hideMode);
+    }
+
+    private void updateHideMode(final User observer, final Player object, final HideMode hideMode)
+    {
+        switch (hideMode)
+        {
+            case FULL:
+                if (observer.getEspInformationData().hiddenPlayers.get(object.getUniqueId()) != HideMode.FULL)
+                {
+                    observer.getEspInformationData().hiddenPlayers.put(object.getUniqueId(), HideMode.FULL);
+
+                    // FULL: fullHider active, informationOnlyHider inactive
+                    informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
+                    fullHider.modifyInformation(observer.getPlayer(), object);
+                }
+                break;
+            case INFORMATION_ONLY:
+                if (observer.getEspInformationData().hiddenPlayers.get(object.getUniqueId()) != HideMode.INFORMATION_ONLY)
+                {
+                    observer.getEspInformationData().hiddenPlayers.put(object.getUniqueId(), HideMode.INFORMATION_ONLY);
+
+                    // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
+                    fullHider.unModifyInformation(observer.getPlayer(), object);
+                    informationOnlyHider.modifyInformation(observer.getPlayer(), object);
+                }
+                break;
+            case NONE:
+                if (observer.getEspInformationData().hiddenPlayers.containsKey(object.getUniqueId()))
+                {
+                    observer.getEspInformationData().hiddenPlayers.remove(object.getUniqueId());
+
+                    // NONE: fullHider inactive, informationOnlyHider inactive
+                    informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
+                    fullHider.unModifyInformation(observer.getPlayer(), object);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void disable()
+    {
+        Bukkit.getScheduler().cancelTask(taskNumber);
     }
 
     private static class Pair
@@ -311,10 +352,12 @@ public class Esp implements AACAdditionProCheck
         @Override
         public boolean equals(final Object o)
         {
-            if (this == o) {
+            if (this == o)
+            {
                 return true;
             }
-            if (o == null || getClass() != o.getClass()) {
+            if (o == null || getClass() != o.getClass())
+            {
                 return false;
             }
 

@@ -16,6 +16,8 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.util.Vector;
 
 import java.io.File;
@@ -91,10 +93,8 @@ public class Esp implements AACAdditionProCheck
                     //Iterate through all player-constellations
                     for (final User observer : users)
                     {
-                        // Not bypassed
-                        if (!observer.isBypassed() &&
-                            // Spectators are ignored in ESP
-                            observer.getPlayer().getGameMode() != GameMode.SPECTATOR)
+                        // Not a spectator
+                        if (observer.getPlayer().getGameMode() != GameMode.SPECTATOR)
                         {
                             // All users can potentially be seen
                             for (final User watched : users)
@@ -139,76 +139,86 @@ public class Esp implements AACAdditionProCheck
                                 // ------------------------- Can one Player see the other ? ------------------------- //
                                 boolean canSee = false;
 
-                                final Vector[] cameraVectors = getCameraVectors(observer);
-
-                                final Hitbox hitboxOfWatched = watched.isSneaking() ?
-                                                               Hitbox.SNEAKING_PLAYER :
-                                                               Hitbox.PLAYER;
-
-                                final Iterable<Vector> watchedHitboxVectors = hitboxOfWatched.getCalculationVectors(watched.getLocation(), true);
-
-                                double lastIntersectionCache = 1;
-
-                                // The minimum difference in angle to have at least 0.5 blocks difference
-                                // (1 Block) / Math.sqrt(pairdistance^2 + (1 Block)^2)
-                                final double minAngleDifference = Math.asin(0.5 / Math.sqrt(pairDistanceSquared + 0.25));
-
-                                for (int i = 0; i < cameraVectors.length; i++)
+                                // Not bypassed
+                                if (!pair.usersOfPair[b].isBypassed() &&
+                                    // Has not logged in recently to prevent bugs
+                                    !pair.usersOfPair[b].getLoginData().recentlyUpdated(3000))
                                 {
-                                    Vector perspective = cameraVectors[i];
+                                    final Vector[] cameraVectors = getCameraVectors(observer);
 
-                                    Vector lastBetweenVector = null;
+                                    final Hitbox hitboxOfWatched = watched.isSneaking() ?
+                                                                   Hitbox.SNEAKING_PLAYER :
+                                                                   Hitbox.PLAYER;
 
-                                    for (final Vector calculationVector : watchedHitboxVectors)
+                                    final Iterable<Vector> watchedHitboxVectors = hitboxOfWatched.getCalculationVectors(watched.getLocation(), true);
+
+                                    double lastIntersectionCache = 1;
+
+                                    // The minimum difference in angle to have at least 0.5 blocks difference
+                                    // (1 Block) / Math.sqrt(pairdistance^2 + (1 Block)^2)
+                                    final double minAngleDifference = Math.asin(0.5 / Math.sqrt(pairDistanceSquared + 0.25));
+
+                                    for (int i = 0; i < cameraVectors.length; i++)
                                     {
-                                        //System.out.println("OwnVec: " + watcher.getEyeLocation().toVector() + " |Vector: " + vector);
+                                        Vector perspective = cameraVectors[i];
 
-                                        final Location start = perspective.toLocation(observer.getWorld());
-                                        // The resulting Vector
-                                        // The camera is not blocked by non-solid blocks
-                                        // Vector is intersecting with some blocks
-                                        final Vector between = calculationVector.clone().subtract(perspective);
+                                        Vector lastBetweenVector = null;
 
-                                        // Do not calculate vectors which are too similar
-                                        if (lastBetweenVector != null &&
-                                            lastBetweenVector.angle(between) < minAngleDifference)
+                                        for (final Vector calculationVector : watchedHitboxVectors)
                                         {
-                                            continue;
+                                            //System.out.println("OwnVec: " + watcher.getEyeLocation().toVector() + " |Vector: " + vector);
+
+                                            final Location start = perspective.toLocation(observer.getWorld());
+                                            // The resulting Vector
+                                            // The camera is not blocked by non-solid blocks
+                                            // Vector is intersecting with some blocks
+                                            final Vector between = calculationVector.clone().subtract(perspective);
+
+                                            // Do not calculate vectors which are too similar
+                                            if (lastBetweenVector != null &&
+                                                lastBetweenVector.angle(between) < minAngleDifference)
+                                            {
+                                                continue;
+                                            }
+
+                                            // ---------------------------------------------- FOV ----------------------------------------------- //
+                                            Vector cameraRotation = observer.getLocation().getDirection();
+
+                                            // Exactly the opposite rotation for the front-view
+                                            if (i == 1)
+                                            {
+                                                cameraRotation.multiply(-1);
+                                            }
+
+                                            if (cameraRotation.angle(between) > MAX_FOV)
+                                            {
+                                                continue;
+                                            }
+
+                                            // --------------------------------------- Normal Calculation --------------------------------------- //
+
+                                            if (VectorUtils.vectorIntersectsWithBlockAt(start, between, lastIntersectionCache))
+                                            {
+                                                continue;
+                                            }
+
+                                            final double intersect = VectorUtils.getFirstVectorIntersectionWithBlock(start, between);
+
+                                            // No intersection found
+                                            if (intersect == 0)
+                                            {
+                                                canSee = true;
+                                                break;
+                                            }
+
+                                            lastIntersectionCache = intersect;
+                                            lastBetweenVector = between;
                                         }
-
-                                        // ---------------------------------------------- FOV ----------------------------------------------- //
-                                        Vector cameraRotation = observer.getLocation().getDirection();
-
-                                        // Exactly the opposite rotation for the front-view
-                                        if (i == 1)
-                                        {
-                                            cameraRotation.multiply(-1);
-                                        }
-
-                                        if (cameraRotation.angle(between) > MAX_FOV)
-                                        {
-                                            continue;
-                                        }
-
-                                        // --------------------------------------- Normal Calculation --------------------------------------- //
-
-                                        if (VectorUtils.vectorIntersectsWithBlockAt(start, between, lastIntersectionCache))
-                                        {
-                                            continue;
-                                        }
-
-                                        final double intersect = VectorUtils.getFirstVectorIntersectionWithBlock(start, between);
-
-                                        // No intersection found
-                                        if (intersect == 0)
-                                        {
-                                            canSee = true;
-                                            break;
-                                        }
-
-                                        lastIntersectionCache = intersect;
-                                        lastBetweenVector = between;
                                     }
+                                }
+                                else
+                                {
+                                    canSee = true;
                                 }
 
                                 if (canSee)
@@ -239,13 +249,23 @@ public class Esp implements AACAdditionProCheck
                 }, 0L, AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".update_ticks"));
     }
 
-
-    private static boolean canDirectlySee(final Player observer, final Player watched)
+    @EventHandler
+    public void onGameModeChange(PlayerGameModeChangeEvent event)
     {
+        if (event.getNewGameMode() == GameMode.SPECTATOR)
+        {
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
+            // Not bypassed
+            if (AACAdditionProCheck.isUserInvalid(user))
+            {
+                return;
+            }
 
-        return false;
+            user.getEspInformationData().hiddenPlayers.keySet().forEach(hiddenPlayer -> updateHideMode(user, hiddenPlayer, HideMode.NONE));
+        }
     }
+
 
     private static Vector[] getCameraVectors(final Player player)
     {
@@ -300,9 +320,9 @@ public class Esp implements AACAdditionProCheck
         switch (hideMode)
         {
             case FULL:
-                if (observer.getEspInformationData().hiddenPlayers.get(object.getUniqueId()) != HideMode.FULL)
+                if (observer.getEspInformationData().hiddenPlayers.get(object) != HideMode.FULL)
                 {
-                    observer.getEspInformationData().hiddenPlayers.put(object.getUniqueId(), HideMode.FULL);
+                    observer.getEspInformationData().hiddenPlayers.put(object, HideMode.FULL);
 
                     // FULL: fullHider active, informationOnlyHider inactive
                     informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
@@ -310,9 +330,9 @@ public class Esp implements AACAdditionProCheck
                 }
                 break;
             case INFORMATION_ONLY:
-                if (observer.getEspInformationData().hiddenPlayers.get(object.getUniqueId()) != HideMode.INFORMATION_ONLY)
+                if (observer.getEspInformationData().hiddenPlayers.get(object) != HideMode.INFORMATION_ONLY)
                 {
-                    observer.getEspInformationData().hiddenPlayers.put(object.getUniqueId(), HideMode.INFORMATION_ONLY);
+                    observer.getEspInformationData().hiddenPlayers.put(object, HideMode.INFORMATION_ONLY);
 
                     // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
                     fullHider.unModifyInformation(observer.getPlayer(), object);
@@ -320,9 +340,9 @@ public class Esp implements AACAdditionProCheck
                 }
                 break;
             case NONE:
-                if (observer.getEspInformationData().hiddenPlayers.containsKey(object.getUniqueId()))
+                if (observer.getEspInformationData().hiddenPlayers.containsKey(object))
                 {
-                    observer.getEspInformationData().hiddenPlayers.remove(object.getUniqueId());
+                    observer.getEspInformationData().hiddenPlayers.remove(object);
 
                     // NONE: fullHider inactive, informationOnlyHider inactive
                     informationOnlyHider.unModifyInformation(observer.getPlayer(), object);

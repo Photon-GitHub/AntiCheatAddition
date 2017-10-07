@@ -44,6 +44,8 @@ public class GravitationalModifier implements AACAdditionProCheck, Listener
 
         // The player wasn't hurt and got velocity for that.
         if (user.getPlayer().getNoDamageTicks() == 0 &&
+            // Recent teleports can cause bugs
+            !user.getTeleportData().recentlyUpdated(1000) &&
             // Players can jump up and down more often if there is a block above them
             user.getPlayer().getEyeLocation().getBlock().isEmpty() &&
             BlockUtils.blocksAround(user.getPlayer().getEyeLocation().getBlock(), false) == 0)

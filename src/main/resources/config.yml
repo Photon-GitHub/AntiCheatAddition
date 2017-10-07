@@ -165,13 +165,14 @@ Freecam:
    frequency: 30
 
 # GravitationalModifier improves the detection speed of various movement-cheats
-# The check will add the violation to AAC's internal Speed violation level.
 GravitationalModifier:
    # Do you want to enable the GravitationalModifier check
    enabled: true
-   # This modifies how much a failed check will increase the Speed - vl.
-   # Please acknowledge that the check will punish linearly higher for harsher offenses
-   weight: 10
+   # Map of violation levels to command
+   thresholds:
+      10: "aacstaffnotify {player} in {world} is suspected for movement cheats (GravitationalModifier)"
+      15: "aacstaffnotify {player} in {world} is highly suspected for movement cheats (GravitationalModifier)"
+      20: "aackick {player} Illegal movement modification"
 
 # InventoryHit checks if a player modifies his inventory while hitting at the same time.
 InventoryHit:

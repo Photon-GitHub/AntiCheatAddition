@@ -4,11 +4,8 @@ import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
-import me.konsolas.aac.api.AACAPIProvider;
-import me.konsolas.aac.api.HackType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -18,8 +15,7 @@ public class GravitationalModifier implements AACAdditionProCheck, Listener
 {
     private static final int MAX_VELOCITY_CHANGES = 12;
 
-    @LoadFromConfiguration(configPath = ".weight")
-    private double weight;
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 120);
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onMove(PlayerMoveEvent event)
@@ -39,13 +35,7 @@ public class GravitationalModifier implements AACAdditionProCheck, Listener
 
             if (additionalChanges > 0)
             {
-                final int additionalVl = (int) (weight * additionalChanges);
-
-                VerboseSender.sendVerboseMessage("Player " + event.getPlayer().getName() + " failed GravitationalModifer: " + additionalChanges + " additional changes | added VL: " + additionalVl);
-                AACAPIProvider.getAPI().setViolationLevel(
-                        user.getPlayer(),
-                        HackType.SPEED,
-                        AACAPIProvider.getAPI().getViolationLevel(user.getPlayer(), HackType.SPEED) + additionalVl);
+                this.vlManager.flag(user.getPlayer(), additionalChanges, () -> {}, () -> {});
             }
 
             user.getVelocityChangeData().velocityChangeCounter = 0;

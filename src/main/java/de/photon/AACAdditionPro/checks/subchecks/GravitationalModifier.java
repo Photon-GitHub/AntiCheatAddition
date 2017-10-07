@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import me.konsolas.aac.api.AACAPIProvider;
 import me.konsolas.aac.api.HackType;
@@ -15,7 +16,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class GravitationalModifier implements AACAdditionProCheck, Listener
 {
-    private static final double MAX_VELOCITY_CHANGES = 12;
+    private static final int MAX_VELOCITY_CHANGES = 12;
 
     @LoadFromConfiguration(configPath = ".weight")
     private double weight;
@@ -34,10 +35,13 @@ public class GravitationalModifier implements AACAdditionProCheck, Listener
         // Time of a check cycle is over
         if (!user.getVelocityChangeData().recentlyUpdated(3000))
         {
-            int additionalVl = (int) (weight * (user.getVelocityChangeData().velocityChangeCounter - MAX_VELOCITY_CHANGES));
+            final int additionalChanges = user.getVelocityChangeData().velocityChangeCounter - MAX_VELOCITY_CHANGES;
 
-            if (additionalVl > 0)
+            if (additionalChanges > 0)
             {
+                final int additionalVl = (int) (weight * additionalChanges);
+
+                VerboseSender.sendVerboseMessage("Player " + event.getPlayer().getName() + " failed GravitationalModifer: " + additionalChanges + " additional changes | added VL: " + additionalVl);
                 AACAPIProvider.getAPI().setViolationLevel(
                         user.getPlayer(),
                         HackType.SPEED,

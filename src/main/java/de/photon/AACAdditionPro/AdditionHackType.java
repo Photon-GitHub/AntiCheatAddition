@@ -13,6 +13,7 @@ public enum AdditionHackType
     FASTSWITCH("Fastswitch"),
     FLYPATCH("FlyPatch"),
     FREECAM("Freecam"),
+    GRAVITATIONAL_MODIFIER("GravitationalModifier"),
     INVENTORY_CHAT("InventoryChat", "sent chat message while in Inventory (InventoryChat)"),
     INVENTORY_HEURISTICS("InventoryHeuristics"),
     INVENTORY_HIT("InventoryHit", "failed Killaura/Triggerbot (InventoryHit)"),

@@ -3,22 +3,7 @@ package de.photon.AACAdditionPro.userdata;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.Permissions;
-import de.photon.AACAdditionPro.userdata.data.AutoPotionData;
-import de.photon.AACAdditionPro.userdata.data.BlockPlaceData;
-import de.photon.AACAdditionPro.userdata.data.ClientSideEntityData;
-import de.photon.AACAdditionPro.userdata.data.ElytraData;
-import de.photon.AACAdditionPro.userdata.data.EspInformationData;
-import de.photon.AACAdditionPro.userdata.data.FishingData;
-import de.photon.AACAdditionPro.userdata.data.FlyPatchData;
-import de.photon.AACAdditionPro.userdata.data.InventoryData;
-import de.photon.AACAdditionPro.userdata.data.LookPacketData;
-import de.photon.AACAdditionPro.userdata.data.PingData;
-import de.photon.AACAdditionPro.userdata.data.PositionData;
-import de.photon.AACAdditionPro.userdata.data.PotionData;
-import de.photon.AACAdditionPro.userdata.data.SettingsData;
-import de.photon.AACAdditionPro.userdata.data.TeamingData;
-import de.photon.AACAdditionPro.userdata.data.TeleportData;
-import de.photon.AACAdditionPro.userdata.data.TimeData;
+import de.photon.AACAdditionPro.userdata.data.*;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
@@ -42,11 +27,15 @@ public class User
                     (last, current) ->
                     {
                         final double speed_modifier;
-                        if (current.getSpeedLevel() == null) {
+                        if (current.getSpeedLevel() == null)
+                        {
                             speed_modifier = 1.0D;
-                        } else {
+                        }
+                        else
+                        {
                             //If the speedLevel is <= 0, the speed_modifier is 1
-                            switch (current.getSpeedLevel()) {
+                            switch (current.getSpeedLevel())
+                            {
                                 case 0:
                                     speed_modifier = 1.01D;
                                     break;
@@ -65,9 +54,12 @@ public class User
                                     break;
                                 default:
                                     // Everything above 8 should have a speed_modifier of 3
-                                    if (current.getSpeedLevel() >= 8) {
+                                    if (current.getSpeedLevel() >= 8)
+                                    {
                                         speed_modifier = 3.0D;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         speed_modifier = 1.0D;
                                     }
                                     break;
@@ -107,6 +99,7 @@ public class User
     private final SettingsData settingsData = new SettingsData();
     private final TeamingData teamingData = new TeamingData(this);
     private final TeleportData teleportData = new TeleportData(this);
+    private final VelocityChangeData velocityChangeData = new VelocityChangeData(this);
 
     /**
      * Should the player receive verbose-messages?
@@ -130,7 +123,6 @@ public class User
      * Used to see if a {@link UUID} refers to this {@link User}
      *
      * @param uuid the uuid of the given {@link Player}
-     *
      * @return true if the uuid refers to this {@link User}
      */
     public boolean refersToUUID(final UUID uuid)

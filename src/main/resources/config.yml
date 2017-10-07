@@ -124,12 +124,12 @@ EqualRotation:
 Esp:
    # Do you want to enable the ESP check
    #
-   # If your server has more than 40 players in one world within its render distance, this check will require a good
-   # CPU, thus it is recommended to disable it on Hub/Spawn servers.
+   # If your server has more than 45 players in one world within its render distance the ESP check will create a
+   # medium - high CPU load
    #
    enabled: true
    # After this amount of ticks the positions will be updated again
-   update_ticks: 5
+   update_ticks: 3
 
 # The Fastswitch check prevents players from switching their hotbar-selection too quickly
 Fastswitch:
@@ -163,6 +163,15 @@ Freecam:
    # High values reduce the effectiveness of the check. I do not recommend setting this higher than 80 ticks.
    # Measured in ticks (please do not use floating points).
    frequency: 30
+
+# GravitationalModifier improves the detection speed of various movement-cheats
+# The check will add the violation to AAC's internal Speed violation level.
+GravitationalModifier:
+   # Do you want to enable the GravitationalModifier check
+   enabled: true
+   # This modifies how much a failed check will increase the Speed - vl.
+   # Please acknowledge that the check will punish linearly higher for harsher offenses
+   weight: 10
 
 # InventoryHit checks if a player modifies his inventory while hitting at the same time.
 InventoryHit:

@@ -40,12 +40,14 @@ public class Tower implements Listener, AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (AACAdditionProCheck.isUserInvalid(user))
+        {
             return;
         }
 
         //To prevent too fast towering -> Timeout
-        if (user.getTowerData().recentlyUpdated(timeout)) {
+        if (user.getTowerData().recentlyUpdated(timeout))
+        {
             event.setCancelled(true);
             InventoryUtils.syncUpdateInventory(user.getPlayer());
         }
@@ -57,12 +59,14 @@ public class Tower implements Listener, AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (AACAdditionProCheck.isUserInvalid(user))
+        {
             return;
         }
 
         // Not flying
-        if (!user.getPlayer().isFlying()) {
+        if (!user.getPlayer().isFlying())
+        {
             final Block blockPlaced = event.getBlockPlaced();
             // User must stand above the block (placed from above)1
             // Check if the block is tower-placed (Block belows)
@@ -86,7 +90,8 @@ public class Tower implements Listener, AACAdditionProCheck
                 // The buffer is filled to the required degree -> Checking now
                 double threshold = 0;
 
-                for (final BlockPlace blockPlace : user.getTowerData().getBlockPlaces()) {
+                for (final BlockPlace blockPlace : user.getTowerData().getBlockPlaces())
+                {
                     threshold += calculateDelay(blockPlace.getJumpBoostLevel());
                 }
 
@@ -100,7 +105,8 @@ public class Tower implements Listener, AACAdditionProCheck
                 final double average = user.getTowerData().calculateRealTime();
 
                 // Real check
-                if (average < threshold) {
+                if (average < threshold)
+                {
                     final int vlToAdd = (int) Math.min(1 + Math.floor((threshold - average) / 16), 100);
 
                     // Violation-Level handling
@@ -125,13 +131,15 @@ public class Tower implements Listener, AACAdditionProCheck
     private double calculateDelay(final Integer amplifier)
     {
         // No JUMP_BOOST
-        if (amplifier == null) {
+        if (amplifier == null)
+        {
             // 478.4 * 0.925
             return 442.52;
         }
 
         // Player has JUMP_BOOST
-        if (amplifier <= 0) {
+        if (amplifier < 0)
+        {
             // Negative JUMP_BOOST -> Not allowed to place blocks -> Very high delay
             return 1500;
         }
@@ -146,30 +154,36 @@ public class Tower implements Listener, AACAdditionProCheck
         double currentBlockValue = currentVelocity.getY();
 
         // Start the tick-loop at 2 due to the one tick outside.
-        for (short ticks = 2; ticks < 160; ticks++) {
+        for (short ticks = 2; ticks < 160; ticks++)
+        {
             currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER);
 
             currentBlockValue += currentVelocity.getY();
 
             // The maximum placed blocks are the next lower integer of the maximum y-Position of the player
             final short flooredBlocks = (short) Math.floor(currentBlockValue);
-            if (maximumPlacedBlocks < flooredBlocks) {
+            if (maximumPlacedBlocks < flooredBlocks)
+            {
                 maximumPlacedBlocks = flooredBlocks;
-            } else {
+            }
+            else
+            {
                 // Location must be lower than maximumPlacedBlocks and there is negative velocity (in the beginning there is no negative velocity, but maximumPlacedBlocks > flooredBlocks!)
-                if (maximumPlacedBlocks > flooredBlocks && currentVelocity.getY() < 0) {
+                if (maximumPlacedBlocks > flooredBlocks && currentVelocity.getY() < 0)
+                {
 
                     // Leniency:
                     double leniency;
-                    switch (amplifier) {
-                        case 1:
+                    switch (amplifier)
+                    {
+                        case 0:
                             leniency = 1;
                             break;
-                        case 2:
-                        case 4:
+                        case 1:
+                        case 3:
                             leniency = 0.9;
                             break;
-                        case 3:
+                        case 2:
                             leniency = 0.87;
                             break;
                         default:

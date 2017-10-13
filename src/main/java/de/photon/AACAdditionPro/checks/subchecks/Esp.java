@@ -23,9 +23,7 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.util.Vector;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Esp implements AACAdditionProCheck
 {
@@ -33,6 +31,7 @@ public class Esp implements AACAdditionProCheck
     // The auto-config-data
     private double renderDistanceSquared = 0;
     private boolean hideAfterRenderDistance = true;
+
     @LoadFromConfiguration(configPath = ".update_ticks")
     private int update_ticks;
 
@@ -43,8 +42,7 @@ public class Esp implements AACAdditionProCheck
     // 150° + 15° (compensation) = 165°
     private static final double MAX_FOV = Math.toRadians(165D);
 
-    // No structural changes in the evaluation, thus a HashSet can be used.
-    private final Set<Pair> playerConnections = new HashSet<>();
+    private final Queue<Pair> playerConnections = new LinkedList<>();
 
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
@@ -116,12 +114,17 @@ public class Esp implements AACAdditionProCheck
                             }
 
                             // Remove the finished player to reduce the amount of added entries.
+                            // Due to this we can use a List instead of a set.
                             users.remove(observer);
                         }
                     }
 
-                    for (final Pair pair : playerConnections)
+                    Pair pair;
+                    while (!playerConnections.isEmpty())
                     {
+                        // Automatically empty the playerConnections
+                        pair = playerConnections.element();
+
                         // The Users are in the same world
                         if (pair.usersOfPair[0].getPlayer().getWorld().equals(pair.usersOfPair[1].getPlayer().getWorld()))
                         {
@@ -237,12 +240,6 @@ public class Esp implements AACAdditionProCheck
                         }
                         // No special HideMode here as of the players being in 2 different worlds to decrease CPU load.
                     }
-
-                    // TODO: You neither need to clear the connections every second nor to add all connections again (exception: on the first start)... event usage
-
-                    // Clear the HashSet for a new Run
-                    // This allows for better performance as the internal Map only grows once and purges some bugs, like hiding of offline players.
-                    playerConnections.clear();
 
                     // Update_Ticks: the refresh-rate of the check.
                 }, 0L, update_ticks);

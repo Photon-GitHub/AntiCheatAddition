@@ -42,6 +42,7 @@ public class Esp implements AACAdditionProCheck
     // 150° + 15° (compensation) = 165°
     private static final double MAX_FOV = Math.toRadians(165D);
 
+    // Use a LinkedList design for optimal storage use as one cannot estimate the amount of bypassed / spectator players.
     private final Queue<Pair> playerConnections = new LinkedList<>();
 
     private final PlayerInformationModifier fullHider = new PlayerHider();

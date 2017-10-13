@@ -248,7 +248,7 @@ public class Esp implements AACAdditionProCheck
                         // 3 ticks
                         try
                         {
-                            executorService.awaitTermination(150, TimeUnit.MILLISECONDS);
+                            executorService.awaitTermination(update_ticks * 50, TimeUnit.MILLISECONDS);
                         } catch (InterruptedException e)
                         {
                             e.printStackTrace();

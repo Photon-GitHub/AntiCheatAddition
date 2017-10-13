@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class UserManager implements Listener
 {
@@ -19,7 +20,7 @@ public class UserManager implements Listener
     }
 
     // Concurrency to tackle some ConcurrentModificationExceptions
-    private static final ConcurrentHashMap<UUID, User> users = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<UUID, User> users = new ConcurrentHashMap<>();
 
     public static User getUser(final UUID uuid)
     {

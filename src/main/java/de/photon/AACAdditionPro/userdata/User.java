@@ -14,6 +14,7 @@ public class User
 {
     private final Player player;
 
+    private final AutoPotionData autoPotionData = new AutoPotionData(this);
     private final BlockPlaceData scaffoldData = new BlockPlaceData(true, AACAdditionPro.getInstance().getConfig().getInt(AdditionHackType.SCAFFOLD.getConfigString() + ".buffer_size"), this)
     {
         @Override
@@ -27,7 +28,8 @@ public class User
                     (last, current) ->
                     {
                         final double speed_modifier;
-                        if (current.getSpeedLevel() == null)
+                        if (current.getSpeedLevel() == null ||
+                            current.getSpeedLevel() < 0)
                         {
                             speed_modifier = 1.0D;
                         }
@@ -54,14 +56,7 @@ public class User
                                     break;
                                 default:
                                     // Everything above 8 should have a speed_modifier of 3
-                                    if (current.getSpeedLevel() >= 8)
-                                    {
-                                        speed_modifier = 3.0D;
-                                    }
-                                    else
-                                    {
-                                        speed_modifier = 1.0D;
-                                    }
+                                    speed_modifier = 3.0D;
                                     break;
                             }
                         }
@@ -73,17 +68,7 @@ public class User
             return fraction[0] / fraction[1];
         }
     };
-
-    private final BlockPlaceData towerData = new BlockPlaceData(false, AACAdditionPro.getInstance().getConfig().getInt(AdditionHackType.TOWER.getConfigString() + ".buffer_size"), this)
-    {
-        @Override
-        public double calculateRealTime()
-        {
-            return calculateAverageTime();
-        }
-    };
-
-    private final AutoPotionData autoPotionData = new AutoPotionData(this);
+    private final BlockPlaceData towerData = new BlockPlaceData(false, AACAdditionPro.getInstance().getConfig().getInt(AdditionHackType.TOWER.getConfigString() + ".buffer_size"), this);
     private final ClientSideEntityData clientSideEntityData = new ClientSideEntityData(this);
     private final ElytraData elytraData = new ElytraData(this);
     private final EspInformationData espInformationData = new EspInformationData(this);

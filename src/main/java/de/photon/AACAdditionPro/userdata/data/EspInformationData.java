@@ -7,12 +7,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 public class EspInformationData extends Data
 {
-    public final Map<Player, HideMode> hiddenPlayers = new HashMap<>();
+    public final Map<Player, HideMode> hiddenPlayers = new WeakHashMap<>();
 
     public EspInformationData(final User theUser)
     {

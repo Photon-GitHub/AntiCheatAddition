@@ -9,12 +9,12 @@ import de.photon.AACAdditionPro.util.world.BlockUtils;
 /**
  * Used to store {@link BlockPlace}s. The {@link TimeData} is used for timeouts.
  */
-public abstract class BlockPlaceData extends TimeData
+public class BlockPlaceData extends TimeData
 {
     protected final Buffer<BlockPlace> blockPlaces;
     private final int buffer_size;
 
-    protected BlockPlaceData(final boolean horizontal, final int buffer_size, final User theUser)
+    public BlockPlaceData(final boolean horizontal, final int buffer_size, final User theUser)
     {
         super(false, theUser);
         this.buffer_size = buffer_size;
@@ -40,7 +40,10 @@ public abstract class BlockPlaceData extends TimeData
         return blockPlaces.bufferObject(blockplace);
     }
 
-    public abstract double calculateRealTime();
+    public double calculateRealTime()
+    {
+        return this.calculateAverageTime();
+    }
 
     /**
      * Used to calculate the average time span between the {@link BlockPlace}s in the buffer

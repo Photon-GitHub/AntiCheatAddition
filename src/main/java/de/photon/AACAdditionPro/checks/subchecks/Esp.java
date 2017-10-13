@@ -243,16 +243,17 @@ public class Esp implements AACAdditionProCheck
                                     }
                                     // No special HideMode here as of the players being in 2 different worlds to decrease CPU load.
                                 });
+                    }
+                    
+                    executorService.shutdown();
 
-                        executorService.shutdown();
+                    try
+                    {
                         // 3 ticks
-                        try
-                        {
-                            executorService.awaitTermination(update_ticks * 50, TimeUnit.MILLISECONDS);
-                        } catch (InterruptedException e)
-                        {
-                            e.printStackTrace();
-                        }
+                        executorService.awaitTermination(update_ticks * 50, TimeUnit.MILLISECONDS);
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
                     }
 
                     // TODO: You neither need to clear the connections every second nor to add all connections again (exception: on the first start)... event usage

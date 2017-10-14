@@ -1,10 +1,12 @@
 package de.photon.AACAdditionPro.command;
 
 import de.photon.AACAdditionPro.InternalPermission;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.Queue;
 import java.util.Set;
 
@@ -46,19 +48,25 @@ public abstract class InternalCommand
     protected void invokeCommand(CommandSender sender, Queue<String> arguments)
     {
         // No permission is set or the sender has the permission
-        if (InternalPermission.hasPermission(sender, this.permission)) {
+        if (InternalPermission.hasPermission(sender, this.permission))
+        {
 
             // Help can be displayed at any time
-            if (arguments.size() > 0) {
-                if (arguments.peek().equals("?")) {
-                    for (String help : this.getCommandHelp()) {
+            if (arguments.size() > 0)
+            {
+                if (arguments.peek().equals("?"))
+                {
+                    for (String help : this.getCommandHelp())
+                    {
                         sender.sendMessage(prefix + ChatColor.GOLD + help);
                     }
                 }
 
                 // Delegate to SubCommands
-                for (InternalCommand internalCommand : this.getChildCommands()) {
-                    if (arguments.peek().equalsIgnoreCase(internalCommand.name)) {
+                for (InternalCommand internalCommand : this.getChildCommands())
+                {
+                    if (arguments.peek().equalsIgnoreCase(internalCommand.name))
+                    {
                         // Remove the current command arg
                         arguments.remove();
                         internalCommand.invokeCommand(sender, arguments);
@@ -68,16 +76,24 @@ public abstract class InternalCommand
             }
 
             // Normal command procedure
-            if (arguments.size() >= minArguments && arguments.size() <= maxArguments) {
-                if (!onlyPlayers || sender instanceof Player) {
+            if (arguments.size() >= minArguments && arguments.size() <= maxArguments)
+            {
+                if (!onlyPlayers || sender instanceof Player)
+                {
                     execute(sender, arguments);
-                } else {
+                }
+                else
+                {
                     sender.sendMessage(prefix + ChatColor.RED + "Only a player can use this command.");
                 }
-            } else {
+            }
+            else
+            {
                 sender.sendMessage(prefix + ChatColor.RED + "Wrong amount of arguments: " + arguments.size() + " expected: " + minArguments + " to " + maxArguments);
             }
-        } else {
+        }
+        else
+        {
             sender.sendMessage(prefix + ChatColor.RED + "You don't have permission to do this.");
         }
     }
@@ -88,16 +104,31 @@ public abstract class InternalCommand
 
     protected abstract Set<InternalCommand> getChildCommands();
 
-    protected String[] getTabPossibilities()
+    protected abstract String[] getTabPossibilities();
+
+    protected String[] getChildTabs()
     {
         final Set<InternalCommand> childs = this.getChildCommands();
         final String[] tabs = new String[childs.size()];
         int index = 0;
 
-        for (InternalCommand child : childs) {
+        for (InternalCommand child : childs)
+        {
             tabs[index++] = child.name;
         }
 
         return tabs;
+    }
+
+    protected String[] getPlayerNameTabs()
+    {
+        final Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
+        final String[] tab = new String[onlinePlayers.size()];
+        int index = 0;
+        for (Player player : onlinePlayers)
+        {
+            tab[index++] = player.getName();
+        }
+        return tab;
     }
 }

@@ -37,12 +37,15 @@ public class VerboseCommand extends InternalCommand
     {
         final User user = UserManager.getUser(((Player) sender).getUniqueId());
 
-        if (user == null) {
+        if (user == null)
+        {
             return;
         }
 
-        if (arguments.size() == 1) {
-            switch (arguments.peek()) {
+        if (arguments.size() == 1)
+        {
+            switch (arguments.peek())
+            {
                 case "on":
                     user.verbose = true;
                     sendToggleMessage(sender, true);
@@ -54,7 +57,9 @@ public class VerboseCommand extends InternalCommand
                 default:
                     break;
             }
-        } else {
+        }
+        else
+        {
             //Toggle mode
             user.verbose = !user.verbose;
             sendToggleMessage(sender, user.verbose);

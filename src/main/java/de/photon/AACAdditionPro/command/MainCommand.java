@@ -7,12 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class MainCommand extends InternalCommand implements CommandExecutor, TabCompleter
 {
@@ -26,7 +21,8 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        if (command.getName().equalsIgnoreCase(this.name)) {
+        if (command.getName().equalsIgnoreCase(this.name))
+        {
             this.invokeCommand(sender, new LinkedList<>(Arrays.asList(args)));
             return true;
         }
@@ -40,19 +36,23 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
         final Queue<String> allArguments = new LinkedList<>(Arrays.asList(args));
 
         String currentArgument;
-        while (!allArguments.isEmpty() && currentCommand.getChildCommands() != null) {
+        while (!allArguments.isEmpty() && currentCommand.getChildCommands() != null)
+        {
             currentArgument = allArguments.remove();
 
             InternalCommand lastCommand = currentCommand;
-            for (final InternalCommand childCommand : currentCommand.getChildCommands()) {
-                if (childCommand.name.equalsIgnoreCase(currentArgument)) {
+            for (final InternalCommand childCommand : currentCommand.getChildCommands())
+            {
+                if (childCommand.name.equalsIgnoreCase(currentArgument))
+                {
                     currentCommand = childCommand;
                     break;
                 }
             }
 
             // Stop the loop if you cannot go on.
-            if (lastCommand.equals(currentCommand)) {
+            if (lastCommand.equals(currentCommand))
+            {
                 break;
             }
         }
@@ -61,14 +61,18 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
         List<String> tab;
 
         // The args are only child commands so far
-        if (allArguments.isEmpty()) {
+        if (allArguments.isEmpty())
+        {
             tab = Arrays.asList(currentCommand.getTabPossibilities());
         }
         // Probably began some typing of an argument
-        else {
+        else
+        {
             tab = new ArrayList<>(currentCommand.getTabPossibilities().length);
-            for (String tabPossiblitity : currentCommand.getTabPossibilities()) {
-                if (tabPossiblitity.startsWith(allArguments.peek())) {
+            for (String tabPossiblitity : currentCommand.getTabPossibilities())
+            {
+                if (tabPossiblitity.startsWith(allArguments.peek()))
+                {
                     tab.add(tabPossiblitity);
                 }
             }
@@ -93,5 +97,11 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     protected Set<InternalCommand> getChildCommands()
     {
         return null;
+    }
+
+    @Override
+    protected String[] getTabPossibilities()
+    {
+        return getChildTabs();
     }
 }

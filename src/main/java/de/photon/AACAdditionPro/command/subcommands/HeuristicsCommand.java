@@ -22,7 +22,8 @@ public class HeuristicsCommand extends InternalCommand
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        if (!AACAdditionPro.getInstance().getConfig().getBoolean("InventoryHeuristics.enabled")) {
+        if (!AACAdditionPro.getInstance().getConfig().getBoolean("InventoryHeuristics.enabled"))
+        {
             sender.sendMessage("InventoryHeuristics is not loaded / enabled.");
         }
     }
@@ -40,5 +41,11 @@ public class HeuristicsCommand extends InternalCommand
                 new CheckCommand(),
                 new TrainCommand())
         );
+    }
+
+    @Override
+    protected String[] getTabPossibilities()
+    {
+        return getChildTabs();
     }
 }

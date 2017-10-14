@@ -68,8 +68,8 @@ public class AutoPotion implements Listener, AACAdditionProCheck
 
         if (user.getAutoPotionData().alreadyThrown) {
             // The pitch and yaw values are nearly the same as before
-            if (MathUtils.isInRange(event.getTo().getPitch(), user.getAutoPotionData().lastSuddenPitch, angle_offset) &&
-                MathUtils.isInRange(event.getTo().getYaw(), user.getAutoPotionData().lastSuddenYaw, angle_offset) &&
+            if (MathUtils.roughlyEquals(event.getTo().getPitch(), user.getAutoPotionData().lastSuddenPitch, angle_offset) &&
+                MathUtils.roughlyEquals(event.getTo().getYaw(), user.getAutoPotionData().lastSuddenYaw, angle_offset) &&
                 // Happened in a short timeframe
                 user.getAutoPotionData().recentlyUpdated(0, time_offset))
             {

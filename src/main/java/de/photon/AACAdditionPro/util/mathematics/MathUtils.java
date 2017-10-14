@@ -13,18 +13,21 @@ public final class MathUtils
      * @param a     The first number
      * @param b     The second number
      * @param range The maximum search range
-     *
      * @return true if the numbers are in range of one another else false
      */
-    public static boolean isInRange(final double a, final double b, final double range)
+    public static boolean roughlyEquals(final double a, final double b, final double range)
     {
-        if (a == b) {
+        if (a == b)
+        {
             return true;
         }
 
-        if (a > b) {
+        if (a > b)
+        {
             return (a - range) <= b;
-        } else {
+        }
+        else
+        {
             return (b - range) <= a;
         }
     }
@@ -34,7 +37,6 @@ public final class MathUtils
      *
      * @param min            the result will at least be this parameter
      * @param randomBoundary the result will at most be min + randomBoundary
-     *
      * @return the resulting random integer
      */
     public static double randomBoundaryDouble(double min, double randomBoundary)
@@ -50,15 +52,14 @@ public final class MathUtils
      * @param x              how far should the {@link Location}s at most be apart on the x-Axis
      * @param y              how far should the {@link Location}s at most be apart on the y-Axis
      * @param z              how far should the {@link Location}s at most be apart on the z-Axis
-     *
      * @return true if the {@link Location} are in range, false if not
      */
     public static boolean areLocationsInRange(final Location firstLocation, final Location secondLocation, final double x, final double y, final double z)
     {
         return firstLocation.getWorld().getName().equals(secondLocation.getWorld().getName()) &&
-               isInRange(firstLocation.getX(), secondLocation.getX(), x) &&
-               isInRange(firstLocation.getY(), secondLocation.getY(), y) &&
-               isInRange(firstLocation.getZ(), secondLocation.getZ(), z);
+               roughlyEquals(firstLocation.getX(), secondLocation.getX(), x) &&
+               roughlyEquals(firstLocation.getY(), secondLocation.getY(), y) &&
+               roughlyEquals(firstLocation.getZ(), secondLocation.getZ(), z);
     }
 
     /**
@@ -67,7 +68,6 @@ public final class MathUtils
      * @param firstLocation  the first {@link Location}
      * @param secondLocation the second {@link Location}
      * @param sqaredDistance the squared distance that must be at most between the two {@link Location}s to make this {@link java.lang.reflect.Method} return true.
-     *
      * @return true if the {@link Location} are in range, false if not
      */
     public static boolean areLocationsInRange(final Location firstLocation, final Location secondLocation, final double sqaredDistance)

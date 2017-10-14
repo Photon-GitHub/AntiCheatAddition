@@ -80,7 +80,7 @@ public class Tower implements Listener, AACAdditionProCheck
                 // Buffer the block place, continue the check only when we a certain number of block places in check
                 user.getTowerData().bufferBlockPlace(
                         new BlockPlace(
-                                System.currentTimeMillis(), blockPlaced,
+                                blockPlaced,
                                 //Speed is not important for this check
                                 null,
                                 //Jump boost effect is important
@@ -171,7 +171,6 @@ public class Tower implements Listener, AACAdditionProCheck
                 // Location must be lower than maximumPlacedBlocks and there is negative velocity (in the beginning there is no negative velocity, but maximumPlacedBlocks > flooredBlocks!)
                 if (maximumPlacedBlocks > flooredBlocks && currentVelocity.getY() < 0)
                 {
-
                     // Leniency:
                     double leniency;
                     switch (amplifier)

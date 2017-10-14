@@ -78,7 +78,7 @@ public class AutoFish implements Listener, AACAdditionProCheck
                         double deltaTime = user.getFishingData().consistencyBuffer.remove(user.getFishingData().consistencyBuffer.size() - 1);
 
                         // Not in range anymore -> not consistent enough for a flag.
-                        if (!MathUtils.isInRange(deltaTime, average, violation_offset)) {
+                        if (!MathUtils.roughlyEquals(deltaTime, average, violation_offset)) {
                             cheating = false;
 
                             // Clear the rest of the buffer that was not cleared here so the method is not called when the Buffer is emptied by this while-loop

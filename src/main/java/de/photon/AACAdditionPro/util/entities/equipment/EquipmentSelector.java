@@ -65,7 +65,7 @@ public class EquipmentSelector {
 
         if (category != null &&
             // Do not try to get materials if the size is 0 as it will throw an IllegalArgumentException in ThreadLocalRandom.
-            category.getMaterials().size() > 0) {
+            !category.getMaterials().isEmpty()) {
             return category.getMaterials().get(ThreadLocalRandom.current().nextInt(category.getMaterials().size()));
         }
         return Material.AIR;

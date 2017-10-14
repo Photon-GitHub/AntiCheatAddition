@@ -19,7 +19,7 @@ public abstract class Buffer<T> extends ArrayList<T>
      *
      * @return true if the object should be added to the buffer and false if the buffer should be cleared
      */
-    public abstract boolean verifyObject(T object);
+    protected abstract boolean verifyObject(T object);
 
     /**
      * Adds a {@link T} to the buffer, or clears the buffer if verifyObject returns false

@@ -2,11 +2,10 @@ package de.photon.AACAdditionPro.util.entities.movement.submovements;
 
 import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.util.entities.movement.Movement;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 public class BasicFollowMovement implements Movement
 {
@@ -34,7 +33,7 @@ public class BasicFollowMovement implements Movement
 
         // Move behind the player to make the entity not disturb players
         // Important: the negative offset!
-        moveLocation.add(moveLocation.getDirection().setY(0).normalize().multiply(-(entityOffset + ThreadLocalRandom.current().nextDouble(offsetRandomizationRange))));
+        moveLocation.add(moveLocation.getDirection().setY(0).normalize().multiply(-(MathUtils.randomBoundaryDouble(entityOffset, offsetRandomizationRange))));
 
         final double currentXZDifference = Math.hypot(moveLocation.getX() - origX, moveLocation.getZ() - origZ);
 

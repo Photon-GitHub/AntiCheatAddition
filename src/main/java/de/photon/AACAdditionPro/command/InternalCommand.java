@@ -51,9 +51,9 @@ public abstract class InternalCommand
         if (InternalPermission.hasPermission(sender, this.permission))
         {
 
-            // Help can be displayed at any time
             if (arguments.size() > 0)
             {
+                // Help can be displayed at any time
                 if (arguments.peek().equals("?"))
                 {
                     for (String help : this.getCommandHelp())
@@ -61,35 +61,38 @@ public abstract class InternalCommand
                         sender.sendMessage(prefix + ChatColor.GOLD + help);
                     }
                 }
-
                 // Delegate to SubCommands
-                for (InternalCommand internalCommand : this.getChildCommands())
-                {
-                    if (arguments.peek().equalsIgnoreCase(internalCommand.name))
-                    {
-                        // Remove the current command arg
-                        arguments.remove();
-                        internalCommand.invokeCommand(sender, arguments);
-                        return;
-                    }
-                }
-            }
-
-            // Normal command procedure
-            if (arguments.size() >= minArguments && arguments.size() <= maxArguments)
-            {
-                if (!onlyPlayers || sender instanceof Player)
-                {
-                    execute(sender, arguments);
-                }
                 else
                 {
-                    sender.sendMessage(prefix + ChatColor.RED + "Only a player can use this command.");
+                    for (InternalCommand internalCommand : this.getChildCommands())
+                    {
+                        if (arguments.peek().equalsIgnoreCase(internalCommand.name))
+                        {
+                            // Remove the current command arg
+                            arguments.remove();
+                            internalCommand.invokeCommand(sender, arguments);
+                        }
+                    }
                 }
             }
             else
             {
-                sender.sendMessage(prefix + ChatColor.RED + "Wrong amount of arguments: " + arguments.size() + " expected: " + minArguments + " to " + maxArguments);
+                // Normal command procedure
+                if (arguments.size() >= minArguments && arguments.size() <= maxArguments)
+                {
+                    if (!onlyPlayers || sender instanceof Player)
+                    {
+                        execute(sender, arguments);
+                    }
+                    else
+                    {
+                        sender.sendMessage(prefix + ChatColor.RED + "Only a player can use this command.");
+                    }
+                }
+                else
+                {
+                    sender.sendMessage(prefix + ChatColor.RED + "Wrong amount of arguments: " + arguments.size() + " expected: " + minArguments + " to " + maxArguments);
+                }
             }
         }
         else
@@ -108,10 +111,10 @@ public abstract class InternalCommand
 
     protected String[] getChildTabs()
     {
-        final Set<InternalCommand> childs = this.getChildCommands();
+        final Collection<InternalCommand> childs = this.getChildCommands();
         final String[] tabs = new String[childs.size()];
-        int index = 0;
 
+        int index = 0;
         for (InternalCommand child : childs)
         {
             tabs[index++] = child.name;
@@ -124,6 +127,7 @@ public abstract class InternalCommand
     {
         final Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
         final String[] tab = new String[onlinePlayers.size()];
+
         int index = 0;
         for (Player player : onlinePlayers)
         {

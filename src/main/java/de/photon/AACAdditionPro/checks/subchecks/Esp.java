@@ -124,7 +124,7 @@ public class Esp implements AACAdditionProCheck
                     while (!playerConnections.isEmpty())
                     {
                         // Automatically empty the playerConnections
-                        pair = playerConnections.element();
+                        pair = playerConnections.remove();
 
                         // The Users are in the same world
                         if (pair.usersOfPair[0].getPlayer().getWorld().equals(pair.usersOfPair[1].getPlayer().getWorld()))

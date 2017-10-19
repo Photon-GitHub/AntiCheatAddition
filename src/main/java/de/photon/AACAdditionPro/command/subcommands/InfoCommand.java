@@ -79,7 +79,7 @@ public class InfoCommand extends InternalCommand
     @Override
     protected String[] getCommandHelp()
     {
-        return new String[]{"Display all Violation-Levels of a player."};
+        return new String[]{"Display all violation levels of a player."};
     }
 
     @Override

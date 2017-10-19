@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class VerboseCommand extends InternalCommand
 {
-    public VerboseCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments, byte maxArguments)
+    public VerboseCommand()
     {
         super("verbose", InternalPermission.VERBOSE, true, (byte) 0, (byte) 1);
     }

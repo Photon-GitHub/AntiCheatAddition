@@ -1,6 +1,8 @@
 package de.photon.AACAdditionPro.command;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.command.subcommands.InfoCommand;
+import de.photon.AACAdditionPro.command.subcommands.VerboseCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -90,13 +92,17 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     @Override
     protected String[] getCommandHelp()
     {
-        return new String[]{prefix + ChatColor.GOLD + "The main command of AACAdditionPro"};
+        return new String[]{"The main command of AACAdditionPro"};
     }
 
     @Override
     protected Set<InternalCommand> getChildCommands()
     {
-        return null;
+        return new HashSet<>(Arrays.asList(
+                // Disabled for now
+                // new HeuristicsCommand(),
+                new InfoCommand(),
+                new VerboseCommand()));
     }
 
     @Override

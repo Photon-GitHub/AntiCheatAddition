@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.events.InventoryHeuristicsEvent;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,7 +25,7 @@ public class TrainCommand extends InternalCommand
     {
         if (AACAdditionPro.getInstance().getConfig().getBoolean("InventoryHeuristics.enabled"))
         {
-            final Player p = AACAdditionPro.getInstance().getServer().getPlayer(arguments.poll());
+            final Player p = Bukkit.getServer().getPlayer(arguments.poll());
 
             if (p == null)
             {
@@ -36,6 +37,10 @@ public class TrainCommand extends InternalCommand
                 VerboseSender.sendVerboseMessage("[HEURISTICS] Training " + arguments.element().toUpperCase() + "; Player: " + p.getName());
                 AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(new InventoryHeuristicsEvent(p, true, arguments.element().toUpperCase()));
             }
+        }
+        else
+        {
+            sender.sendMessage(prefix + ChatColor.RED + "InventoryHeuristics is not loaded / enabled.");
         }
     }
 

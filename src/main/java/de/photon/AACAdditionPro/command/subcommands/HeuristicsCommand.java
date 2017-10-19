@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.CheckCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.TrainCommand;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
@@ -24,14 +25,14 @@ public class HeuristicsCommand extends InternalCommand
     {
         if (!AACAdditionPro.getInstance().getConfig().getBoolean("InventoryHeuristics.enabled"))
         {
-            sender.sendMessage("InventoryHeuristics is not loaded / enabled.");
+            sender.sendMessage(prefix + ChatColor.RED + "InventoryHeuristics is not loaded / enabled.");
         }
     }
 
     @Override
     protected String[] getCommandHelp()
     {
-        return new String[]{"Everything regarding heuristics"};
+        return new String[]{"Utilities for the InventoryHeuristics"};
     }
 
     @Override

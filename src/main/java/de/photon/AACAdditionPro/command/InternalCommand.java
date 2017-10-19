@@ -21,22 +21,22 @@ public abstract class InternalCommand
     private final byte minArguments;
     private final byte maxArguments;
 
-    public InternalCommand(String name, byte minArguments)
+    protected InternalCommand(String name, byte minArguments)
     {
         this(name, null, minArguments);
     }
 
-    public InternalCommand(String name, InternalPermission permission, byte minArguments)
+    protected InternalCommand(String name, InternalPermission permission, byte minArguments)
     {
         this(name, permission, false, minArguments);
     }
 
-    public InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments)
+    protected InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments)
     {
         this(name, permission, onlyPlayers, minArguments, Byte.MAX_VALUE);
     }
 
-    public InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments, byte maxArguments)
+    protected InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments, byte maxArguments)
     {
         this.name = name;
         this.permission = permission;
@@ -45,12 +45,11 @@ public abstract class InternalCommand
         this.maxArguments = maxArguments;
     }
 
-    protected void invokeCommand(CommandSender sender, Queue<String> arguments)
+    void invokeCommand(CommandSender sender, Queue<String> arguments)
     {
         // No permission is set or the sender has the permission
         if (InternalPermission.hasPermission(sender, this.permission))
         {
-
             if (arguments.size() > 0)
             {
                 // Help can be displayed at any time
@@ -61,16 +60,34 @@ public abstract class InternalCommand
                         sender.sendMessage(prefix + ChatColor.GOLD + help);
                     }
                 }
-                // Delegate to SubCommands
                 else
                 {
-                    for (InternalCommand internalCommand : this.getChildCommands())
+                    Set<InternalCommand> childCommands = this.getChildCommands();
+                    // Invoke command with arguments
+                    if (childCommands == null)
                     {
-                        if (arguments.peek().equalsIgnoreCase(internalCommand.name))
+                        this.executeIfAllowed(sender, arguments);
+                    }
+                    // Delegate to SubCommands
+                    else
+                    {
+                        boolean foundChildCommand = false;
+                        for (InternalCommand internalCommand : childCommands)
                         {
-                            // Remove the current command arg
-                            arguments.remove();
-                            internalCommand.invokeCommand(sender, arguments);
+                            if (arguments.peek().equalsIgnoreCase(internalCommand.name))
+                            {
+                                // Remove the current command arg
+                                arguments.remove();
+                                internalCommand.invokeCommand(sender, arguments);
+                                foundChildCommand = true;
+                                break;
+                            }
+                        }
+
+                        // No fitting child commands were found.
+                        if (!foundChildCommand)
+                        {
+                            this.executeIfAllowed(sender, arguments);
                         }
                     }
                 }
@@ -78,26 +95,31 @@ public abstract class InternalCommand
             else
             {
                 // Normal command procedure
-                if (arguments.size() >= minArguments && arguments.size() <= maxArguments)
-                {
-                    if (!onlyPlayers || sender instanceof Player)
-                    {
-                        execute(sender, arguments);
-                    }
-                    else
-                    {
-                        sender.sendMessage(prefix + ChatColor.RED + "Only a player can use this command.");
-                    }
-                }
-                else
-                {
-                    sender.sendMessage(prefix + ChatColor.RED + "Wrong amount of arguments: " + arguments.size() + " expected: " + minArguments + " to " + maxArguments);
-                }
+                executeIfAllowed(sender, arguments);
             }
         }
         else
         {
             sender.sendMessage(prefix + ChatColor.RED + "You don't have permission to do this.");
+        }
+    }
+
+    private void executeIfAllowed(CommandSender sender, Queue<String> arguments)
+    {
+        if (arguments.size() >= minArguments && arguments.size() <= maxArguments)
+        {
+            if (!onlyPlayers || sender instanceof Player)
+            {
+                execute(sender, arguments);
+            }
+            else
+            {
+                sender.sendMessage(prefix + ChatColor.RED + "Only a player can use this command.");
+            }
+        }
+        else
+        {
+            sender.sendMessage(prefix + ChatColor.RED + "Wrong amount of arguments: " + arguments.size() + " expected: " + minArguments + " to " + maxArguments);
         }
     }
 

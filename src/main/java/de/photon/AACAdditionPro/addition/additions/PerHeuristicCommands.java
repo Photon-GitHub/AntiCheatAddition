@@ -26,7 +26,7 @@ public class PerHeuristicCommands implements Listener, Addition
     private static final Pattern HEURISTICS_PATTERN = Pattern.compile("P/(\\d{2})");
     private static final Pattern CONFIDENCE_PATTERN = Pattern.compile("confidence (\\d{2}(\\.\\d+)?)");
 
-    private final HashMap<UUID, Double> oldConfidences = new HashMap<>();
+    private final Map<UUID, Double> oldConfidences = new HashMap<>();
 
     /**
      * The map of the command that are defined in the config at certain violation-levels.
@@ -44,12 +44,14 @@ public class PerHeuristicCommands implements Listener, Addition
     public void on(final PlayerViolationEvent event)
     {
         // Only Heuristics-Events are listened for.
-        if (event.getHackType() == HackType.HEURISTICS) {
+        if (event.getHackType() == HackType.HEURISTICS)
+        {
             final Matcher patternMatcher = HEURISTICS_PATTERN.matcher(event.getMessage());
             final Matcher confidenceMatcher = CONFIDENCE_PATTERN.matcher(event.getMessage());
 
             // Both matchers have found something
-            if (patternMatcher.find() && confidenceMatcher.find()) {
+            if (patternMatcher.find() && confidenceMatcher.find())
+            {
                 // Directly remove all whitespaces from the matches.
                 final String pattern = patternMatcher.group(1).trim();
                 final Double confidence = Double.parseDouble(confidenceMatcher.group(1).trim());
@@ -58,7 +60,8 @@ public class PerHeuristicCommands implements Listener, Addition
                 final HeuristicsAdditionViolationEvent additionEvent = new HeuristicsAdditionViolationEvent(event.getPlayer(), confidence, pattern);
                 Bukkit.getPluginManager().callEvent(additionEvent);
 
-                if (!additionEvent.isCancelled()) {
+                if (!additionEvent.isCancelled())
+                {
                     // Full verbose
                     VerboseSender.sendVerboseMessage("Heuristics-Addon-Report | Player: " + event.getPlayer().getName() + " | Pattern: " + pattern + " | Confidence: " + confidence);
 
@@ -76,18 +79,23 @@ public class PerHeuristicCommands implements Listener, Addition
     {
         final double oldConfidence = oldConfidences.getOrDefault(player.getUniqueId(), 0D);
 
-        try {
-            for (final Map.Entry<Integer, List<String>> entry : thresholds.entrySet()) {
-                if (entry.getKey() > oldConfidence && entry.getKey() <= confidence) {
-                    for (final String command : entry.getValue()) {
-
-                        // Command cannot be null as of the new loading process.
-                        // Sync command execution
-                        CommandUtils.executeCommandWithPlaceholders(command, player);
-                    }
-                }
-            }
-        } catch (final RuntimeException e) {
+        try
+        {
+            thresholds.forEach(
+                    (confidenceKey, commandsOfThreshold) ->
+                    {
+                        if (confidenceKey > oldConfidence && confidenceKey <= confidence)
+                        {
+                            for (final String command : commandsOfThreshold)
+                            {
+                                // Command cannot be null as of the new loading process.
+                                // Sync command execution
+                                CommandUtils.executeCommandWithPlaceholders(command, player);
+                            }
+                        }
+                    });
+        } catch (final RuntimeException e)
+        {
             VerboseSender.sendVerboseMessage("AACAdditionPro failed to execute the Heuristics-Addition commands. Are they formatted correctly?", true, true);
             e.printStackTrace();
         }

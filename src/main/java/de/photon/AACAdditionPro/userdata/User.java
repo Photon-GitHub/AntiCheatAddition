@@ -96,12 +96,12 @@ public class User
     {
         this.player = player;
         this.loginData = new TimeData(false, this, System.currentTimeMillis());
-        this.verbose = Permissions.hasPermission(player, Permissions.VERBOSE);
+        this.verbose = InternalPermission.hasPermission(player, InternalPermission.VERBOSE);
     }
 
     public boolean isBypassed()
     {
-        return Permissions.hasPermission(this.player, Permissions.BYPASS);
+        return InternalPermission.hasPermission(this.player, InternalPermission.BYPASS);
     }
 
     /**

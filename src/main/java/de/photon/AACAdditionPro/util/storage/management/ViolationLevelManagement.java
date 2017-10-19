@@ -55,9 +55,12 @@ public class ViolationLevelManagement implements Listener
                         {
                             final int newVl = vl - 1;
 
-                            if (newVl > 0) {
+                            if (newVl > 0)
+                            {
                                 violationLevels.put(uuid, newVl);
-                            } else {
+                            }
+                            else
+                            {
                                 violationLevels.remove(uuid);
                             }
                         }), 0L, decreaseDelay);
@@ -99,11 +102,13 @@ public class ViolationLevelManagement implements Listener
         AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(playerAdditionViolationEvent);
 
 
-        if (!playerAdditionViolationEvent.isCancelled()) {
+        if (!playerAdditionViolationEvent.isCancelled())
+        {
             this.addVL(player, vl_increase);
 
             //Cancel
-            if (cancel_vl > 0 && cancel_vl < this.getVL(player.getUniqueId())) {
+            if (cancel_vl > 0 && cancel_vl < this.getVL(player.getUniqueId()))
+            {
                 onCancel.run();
             }
 
@@ -113,7 +118,6 @@ public class ViolationLevelManagement implements Listener
 
     /**
      * @param uuid the {@link UUID} of the {@link Player} whose vl should be returned.
-     *
      * @return the vl of the given uuid.
      */
     public final int getVL(final UUID uuid)
@@ -145,10 +149,13 @@ public class ViolationLevelManagement implements Listener
 
             // setVL is also called when decreasing the vl
             // thus we must prevent double punishment
-            if (punish && oldVl < newVl) {
+            if (punish && oldVl < newVl)
+            {
                 this.punishPlayer(player, oldVl, newVl);
             }
-        } else {
+        }
+        else
+        {
             violationLevels.remove(player.getUniqueId());
         }
     }
@@ -184,19 +191,23 @@ public class ViolationLevelManagement implements Listener
     private void punishPlayer(final Player player, final int fromvl, final int toVl)
     {
         // Iterate through all the keys
-        for (final Integer key : thresholds.keySet()) {
+        for (final Integer key : thresholds.keySet())
+        {
 
             // If the key should be applied here
-            if (key > fromvl && key <= toVl) {
+            if (key > fromvl && key <= toVl)
+            {
 
                 // Iterate through all the commands that are presented in the threshold of key
-                for (final String s : thresholds.get(key)) {
+                for (final String s : thresholds.get(key))
+                {
 
                     // Command cannot be null as of the new loading process.
                     final String realCommand = Placeholders.applyPlaceholders(s, player);
 
                     // Only schedule the command execution if the plugin is loaded
-                    if (AACAdditionPro.getInstance().isLoaded()) {
+                    if (AACAdditionPro.getInstance().isLoaded())
+                    {
 
                         // Calling of the event + Sync command execution
                         CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.additionHackType));

@@ -1,46 +1,64 @@
 package de.photon.AACAdditionPro.command.subcommands.heuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.Permissions;
+import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.events.InventoryHeuristicsEvent;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 public class CheckCommand extends InternalCommand
 {
     public CheckCommand()
     {
-        super("check", (byte) 1, false, Permissions.NEURAL_CHECK, "Manually check a player with the heuristics");
+        super("check", InternalPermission.NEURAL_CHECK, (byte) 1);
     }
 
     @Override
-    protected void execute(final CommandSender sender, final LinkedList<String> arguments)
+    protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        final Player p = AACAdditionPro.getInstance().getServer().getPlayer(arguments.getFirst());
+        if (AACAdditionPro.getInstance().getConfig().getBoolean("InventoryHeuristics.enabled"))
+        {
+            final Player p = Bukkit.getServer().getPlayer(arguments.peek());
 
-        if (p == null) {
-            sender.sendMessage(playerNotFoundMessage);
-        } else {
-            sender.sendMessage(prefix + ChatColor.GOLD + "[HEURISTICS] Manual check of " + p.getName());
-            VerboseSender.sendVerboseMessage("[HEURISTICS] Manual check of " + p.getName());
-            AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(new InventoryHeuristicsEvent(p, false, ""));
+            if (p == null)
+            {
+                sender.sendMessage(playerNotFoundMessage);
+            }
+            else
+            {
+                sender.sendMessage(prefix + ChatColor.GOLD + "[HEURISTICS] Manual check of " + p.getName());
+                VerboseSender.sendVerboseMessage("[HEURISTICS] Manual check of " + p.getName());
+                AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(new InventoryHeuristicsEvent(p, false, ""));
+            }
+        }
+        else
+        {
+            sender.sendMessage(prefix + ChatColor.RED + "InventoryHeuristics is not loaded / enabled.");
         }
     }
 
     @Override
-    protected List<String> getTabPossibilities()
+    protected String[] getCommandHelp()
     {
-        final ArrayList<String> tab = new ArrayList<>();
-        for (final Player p : AACAdditionPro.getInstance().getServer().getOnlinePlayers()) {
-            tab.add(p.getName());
-        }
-        return tab;
+        return new String[]{"Manually check a player with the heuristics"};
+    }
+
+    @Override
+    protected Set<InternalCommand> getChildCommands()
+    {
+        return null;
+    }
+
+    @Override
+    protected String[] getTabPossibilities()
+    {
+        return getPlayerNameTabs();
     }
 }

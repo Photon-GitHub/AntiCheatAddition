@@ -161,7 +161,7 @@ public class AACAdditionPro extends JavaPlugin
             CheckManager.startCheckManager();
 
             // Commands
-            this.getCommand(MainCommand.instance.commandName).setExecutor(MainCommand.instance);
+            this.getCommand(MainCommand.instance.name).setExecutor(MainCommand.instance);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                          Enabled-Verbose + API                                         //

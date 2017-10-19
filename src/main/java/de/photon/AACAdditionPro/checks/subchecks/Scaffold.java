@@ -37,12 +37,14 @@ public class Scaffold implements Listener, AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (AACAdditionProCheck.isUserInvalid(user))
+        {
             return;
         }
 
         //To prevent too fast towering -> Timeout
-        if (user.getScaffoldData().recentlyUpdated(timeout)) {
+        if (user.getScaffoldData().recentlyUpdated(timeout))
+        {
             event.setCancelled(true);
             InventoryUtils.syncUpdateInventory(user.getPlayer());
         }
@@ -54,7 +56,8 @@ public class Scaffold implements Listener, AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (AACAdditionProCheck.isUserInvalid(user))
+        {
             return;
         }
 
@@ -75,7 +78,7 @@ public class Scaffold implements Listener, AACAdditionProCheck
             // Buffer the block place, continue the check only when we a certain number of block places in check
             user.getScaffoldData().bufferBlockPlace(
                     new BlockPlace(
-                            System.currentTimeMillis(), blockPlaced,
+                            blockPlaced,
                             // Speed-Effect
                             user.getPotionData().getAmplifier(PotionEffectType.SPEED),
                             // JumpBoost effect is 0 because it is not relevant for the check
@@ -86,7 +89,8 @@ public class Scaffold implements Listener, AACAdditionProCheck
             final double average = user.getScaffoldData().calculateRealTime();
 
             // delta-times are too low -> flag
-            if (average < scaffold_delay) {
+            if (average < scaffold_delay)
+            {
                 VerboseSender.sendVerboseMessage("SCAFFOLD | Player: " + user.getPlayer().getName() + " estimated time: " + scaffold_delay + " | real: " + average);
 
                 // Flag the player

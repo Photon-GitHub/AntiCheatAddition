@@ -3,24 +3,7 @@ package de.photon.AACAdditionPro.checks;
 import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.ModuleManager;
-import de.photon.AACAdditionPro.checks.subchecks.AutoFish;
-import de.photon.AACAdditionPro.checks.subchecks.AutoPotion;
-import de.photon.AACAdditionPro.checks.subchecks.EqualRotation;
-import de.photon.AACAdditionPro.checks.subchecks.Esp;
-import de.photon.AACAdditionPro.checks.subchecks.Fastswitch;
-import de.photon.AACAdditionPro.checks.subchecks.Freecam;
-import de.photon.AACAdditionPro.checks.subchecks.InventoryChat;
-import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
-import de.photon.AACAdditionPro.checks.subchecks.InventoryHit;
-import de.photon.AACAdditionPro.checks.subchecks.InventoryMove;
-import de.photon.AACAdditionPro.checks.subchecks.InventoryRotation;
-import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
-import de.photon.AACAdditionPro.checks.subchecks.MultiInteraction;
-import de.photon.AACAdditionPro.checks.subchecks.Pingspoof;
-import de.photon.AACAdditionPro.checks.subchecks.Scaffold;
-import de.photon.AACAdditionPro.checks.subchecks.Skinblinker;
-import de.photon.AACAdditionPro.checks.subchecks.Teaming;
-import de.photon.AACAdditionPro.checks.subchecks.Tower;
+import de.photon.AACAdditionPro.checks.subchecks.*;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.BetterSprintingControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.FiveZigControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.ForgeControl;
@@ -55,6 +38,7 @@ public final class CheckManager extends ModuleManager
                 new Esp(),
                 new Fastswitch(),
                 new Freecam(),
+                new GravitationalModifier(),
                 new InventoryChat(),
                 new InventoryHeuristics(),
                 new InventoryHit(),

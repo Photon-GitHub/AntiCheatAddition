@@ -14,7 +14,7 @@ public final class Jumping
 
         // If the amplifier is null no effect should be applied.
         if (amplifier != null) {
-            // Increase amplifier by one as e.g. amplifier 0 makes up Speed I
+            // Increase amplifier by one as e.g. amplifier 0 makes up JumpBoost I
             motionY += (double) ((float) ((amplifier + 1) * 0.1F));
         }
 

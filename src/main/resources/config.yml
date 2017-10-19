@@ -92,7 +92,7 @@ AutoPotion:
       4: "aackick {player} AutoPotion"
 
 # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
-# This will catch several Scaffold, Tower, Killaura and Aimbot mods
+# This will catch several scaffold, tower, killaura and aimbot mods
 EqualRotation:
    # Do you want to enable the EqualRotation check
    enabled: true
@@ -120,16 +120,16 @@ EqualRotation:
 # - Equipment-Hider: If a player cannot be directly seen by another player his equipment (hand, armour) will be hidden
 #                    from the observer. (This will make the life of cheaters harder as they cannot properly estimate
 #                    the combat strength of a player)
-#                    This part will autodisable itself on servers with MC versions below 1.10.
+#                    This part will automatically disable itself on servers with MC versions below 1.10.
 Esp:
    # Do you want to enable the ESP check
    #
-   # If your server has more than 40 players in one world within its render distance, this check will require a good
-   # CPU, thus it is recommended to disable it on Hub/Spawn servers.
+   # If your server has more than 45 players in one world within its render distance the ESP check will create a
+   # medium - high CPU load
    #
    enabled: true
    # After this amount of ticks the positions will be updated again
-   update_ticks: 5
+   update_ticks: 3
 
 # The Fastswitch check prevents players from switching their hotbar-selection too quickly
 Fastswitch:
@@ -139,7 +139,7 @@ Fastswitch:
    # Set this to 0 to never cancel interacts.
    cancel_vl: 3
    # If a player has a ping higher than that value he bypasses the check
-   # Please make sure that you have some pingspoofer protection enabled if you use this feature
+   # Please make sure that you have some pingspoof protection enabled while using this feature
    # Set this to -1 to disable
    max_ping: 400
    # The minimum time between switches that are not considered scrolling
@@ -163,6 +163,16 @@ Freecam:
    # High values reduce the effectiveness of the check. I do not recommend setting this higher than 80 ticks.
    # Measured in ticks (please do not use floating points).
    frequency: 30
+
+# GravitationalModifier improves the detection speed of various movement-cheats
+GravitationalModifier:
+   # Do you want to enable the GravitationalModifier check
+   enabled: true
+   # Map of violation levels to command
+   thresholds:
+      10: "aacstaffnotify {player} in {world} is suspected for movement cheats (GravitationalModifier)"
+      15: "aacstaffnotify {player} in {world} is highly suspected for movement cheats (GravitationalModifier)"
+      20: "aackick {player} Illegal movement modification"
 
 # InventoryHit checks if a player modifies his inventory while hitting at the same time.
 InventoryHit:
@@ -232,15 +242,17 @@ KillauraEntity:
    # The general behaviour of the entity, mostly important for certain gamemodes.
    # Please configure this correctly for your server to have the best setup
    # (e.g. servers who have no teams should disable team)
+   #
+   # The entity will only be visible for one player and only spawns behind players in survival and adventure mode
    behaviour:
       # Should the entity join a team
       team:
          enabled: true
-      # Should the entity swing items to simulate an attack
-      swing:
-         enabled: true
       # Should the entity swap the items it is wearing and using
       swap:
+         enabled: true
+      # Should the entity swing items to simulate an attack
+      swing:
          enabled: true
    # Here you can find all options regarding the positioning of the entity
    position:
@@ -256,17 +268,6 @@ KillauraEntity:
    # For the best setup only choose equipment a normal player can obtain.
    # If the API is used it will override the decisions you made here.
    equipment:
-      # The weapons the entities will use in a fake fight
-      weapons:
-         # Types
-         sword: true
-         axe: true
-         # Materials
-         wood: true
-         gold: true
-         stone: true
-         iron: true
-         diamond: true
       # The armor the entities will spawn with
       armor:
          # Types
@@ -312,6 +313,17 @@ KillauraEntity:
          # All kinds of ingots are included here
          ingot: true
          wood: true
+         diamond: true
+      # The weapons the entities will use in a fake fight
+      weapons:
+         # Types
+         sword: true
+         axe: true
+         # Materials
+         wood: true
+         gold: true
+         stone: true
+         iron: true
          diamond: true
    thresholds:
       5: "aacstaffnotify {player} in {world} is suspected for Killaura"

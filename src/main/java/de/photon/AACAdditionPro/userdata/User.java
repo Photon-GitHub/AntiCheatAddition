@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.userdata;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.Permissions;
+import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.userdata.data.*;
 import lombok.Getter;
 import org.bukkit.entity.Player;

@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Queue;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class InfoCommand extends InternalCommand
@@ -33,7 +34,7 @@ public class InfoCommand extends InternalCommand
         }
         else
         {
-            final TreeMap<Integer, String> messages = new TreeMap<>(
+            final SortedMap<Integer, String> messages = new TreeMap<>(
                     (Integer o1, Integer o2) -> {
                         //The other way round
                         if (o1 > o2)

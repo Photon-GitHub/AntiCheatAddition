@@ -48,7 +48,7 @@ public class InfoCommand extends InternalCommand
                         return 1;
                     });
 
-            for (final Module module : CheckManager.checkManagerInstance.getManagedObjects())
+            for (final Module module : CheckManager.checkManagerInstance)
             {
                 try
                 {

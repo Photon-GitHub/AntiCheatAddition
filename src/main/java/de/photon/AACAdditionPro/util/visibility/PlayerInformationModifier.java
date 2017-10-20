@@ -37,7 +37,8 @@ public abstract class PlayerInformationModifier
     protected PlayerInformationModifier()
     {
         // Only start if the ServerVersion is supported
-        if (this.getSupportedVersions().contains(ServerVersion.getActiveServerVersion())) {
+        if (ServerVersion.supportsActiveServerVersion(this.getSupportedVersions()))
+        {
 
             // Register events and packet listener
             AACAdditionPro.getInstance().registerListener(new Listener()
@@ -55,7 +56,8 @@ public abstract class PlayerInformationModifier
                 public void on(final ChunkUnloadEvent e)
                 {
                     Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
-                        for (final Entity entity : e.getChunk().getEntities()) {
+                        for (final Entity entity : e.getChunk().getEntities())
+                        {
                             removeEntity(entity);
                         }
                         return null;
@@ -78,7 +80,8 @@ public abstract class PlayerInformationModifier
                     final int entityID = event.getPacket().getIntegers().read(0);
 
                     // See if this packet should be cancelled
-                    if (isInformationModified(event.getPlayer(), entityID)) {
+                    if (isInformationModified(event.getPlayer(), entityID))
+                    {
                         event.setCancelled(true);
                     }
                 }
@@ -98,14 +101,15 @@ public abstract class PlayerInformationModifier
      *
      * @param observer - the player observer.
      * @param entityID - ID of the entity.
-     *
      * @return TRUE if they are present, FALSE otherwise.
      */
     private boolean getMembership(final Player observer, final int entityID)
     {
-        try {
+        try
+        {
             return observerEntityMap.contains(observer.getEntityId(), entityID);
-        } catch (final UnsupportedOperationException ignore) {
+        } catch (final UnsupportedOperationException ignore)
+        {
             // Nothing here as this is a ProtocolLib problem with it's temporal players who have less methods
             // due to reflection.
         }
@@ -118,19 +122,23 @@ public abstract class PlayerInformationModifier
      * @param observer - the player observer.
      * @param entityID - ID of the entity.
      * @param member   - TRUE if they should be present in the table, FALSE otherwise.
-     *
      * @return TRUE if they already were present, FALSE otherwise.
      */
     // Helper method
     private boolean setMembership(final Player observer, final int entityID, final boolean member)
     {
-        try {
-            if (member) {
+        try
+        {
+            if (member)
+            {
                 return observerEntityMap.put(observer.getEntityId(), entityID, true) != null;
-            } else {
+            }
+            else
+            {
                 return observerEntityMap.remove(observer.getEntityId(), entityID) != null;
             }
-        } catch (final UnsupportedOperationException ignore) {
+        } catch (final UnsupportedOperationException ignore)
+        {
             // Nothing here as this is a ProtocolLib problem with it's temporal players who have less methods
             // due to reflection.
         }
@@ -144,13 +152,16 @@ public abstract class PlayerInformationModifier
      */
     private void removeEntity(final Entity entity)
     {
-        try {
+        try
+        {
             final int entityID = entity.getEntityId();
 
-            for (final Map<Integer, Boolean> maps : observerEntityMap.rowMap().values()) {
+            for (final Map<Integer, Boolean> maps : observerEntityMap.rowMap().values())
+            {
                 maps.remove(entityID);
             }
-        } catch (final UnsupportedOperationException ignore) {
+        } catch (final UnsupportedOperationException ignore)
+        {
             // Nothing here as this is a ProtocolLib problem with it's temporal players who have less methods
             // due to reflection.
         }
@@ -163,10 +174,12 @@ public abstract class PlayerInformationModifier
      */
     private void removePlayer(final Player player)
     {
-        try {
+        try
+        {
             // Cleanup
             observerEntityMap.rowMap().remove(player.getEntityId());
-        } catch (final UnsupportedOperationException ignore) {
+        } catch (final UnsupportedOperationException ignore)
+        {
             // Nothing here as this is a ProtocolLib problem with it's temporal players who have less methods
             // due to reflection.
         }
@@ -180,15 +193,18 @@ public abstract class PlayerInformationModifier
      */
     public final void unModifyInformation(final Player observer, final Entity entity)
     {
-        try {
+        try
+        {
             validate(observer, entity);
             final boolean hiddenBefore = !setModifyInformation(observer, entity.getEntityId(), true);
 
             // Resend packets
-            if (manager != null && hiddenBefore) {
+            if (manager != null && hiddenBefore)
+            {
                 manager.updateEntity(entity, Collections.singletonList(observer));
             }
-        } catch (final UnsupportedOperationException ignore) {
+        } catch (final UnsupportedOperationException ignore)
+        {
             // Nothing here as this is a ProtocolLib problem with it's temporal players who have less methods
             // due to reflection.
         }
@@ -199,7 +215,6 @@ public abstract class PlayerInformationModifier
      *
      * @param observer - the observer player.
      * @param entityID -  ID of the entity that we are testing for visibility.
-     *
      * @return TRUE if the entity is visible, FALSE otherwise.
      */
     protected final boolean isInformationModified(final Player observer, final int entityID)
@@ -215,7 +230,6 @@ public abstract class PlayerInformationModifier
      * @param observer          - the observer player.
      * @param entityID          - ID of the entity that will be hidden or made visible.
      * @param modifyInformation - TRUE if the entity should be made visible, FALSE if not.
-     *
      * @return TRUE if the entity was visible before this method call, FALSE otherwise.
      */
     protected final boolean setModifyInformation(final Player observer, final int entityID, final boolean modifyInformation)

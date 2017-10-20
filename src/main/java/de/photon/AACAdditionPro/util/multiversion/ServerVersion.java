@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 
+import java.util.Set;
+
 @RequiredArgsConstructor(suppressConstructorProperties = true)
 public enum ServerVersion
 {
@@ -21,14 +23,28 @@ public enum ServerVersion
     @Getter
     private static ServerVersion activeServerVersion;
 
-    static {
+    static
+    {
         final String versionOutput = Bukkit.getVersion();
-        for (final ServerVersion serverVersion : ServerVersion.values()) {
-            if (versionOutput.contains(serverVersion.getVersionOutputString())) {
+        for (final ServerVersion serverVersion : ServerVersion.values())
+        {
+            if (versionOutput.contains(serverVersion.getVersionOutputString()))
+            {
                 activeServerVersion = serverVersion;
                 // break for better performance as no other version should be found.
                 break;
             }
         }
+    }
+
+    /**
+     * Used to check whether the current server version is included in the supported server versions of a {@link de.photon.AACAdditionPro.Module}
+     *
+     * @param supportedServerVersions the {@link Set} of supported server versions of the module
+     * @return true if the active server version is included in the provided {@link Set} or false if it is not.
+     */
+    public static boolean supportsActiveServerVersion(Set<ServerVersion> supportedServerVersions)
+    {
+        return supportedServerVersions.contains(activeServerVersion);
     }
 }

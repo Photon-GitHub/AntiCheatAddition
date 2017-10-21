@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.addition.additions;
+package de.photon.AACAdditionPro.additions;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.Module;

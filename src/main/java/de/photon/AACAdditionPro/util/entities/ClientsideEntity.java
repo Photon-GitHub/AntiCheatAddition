@@ -2,7 +2,6 @@ package de.photon.AACAdditionPro.util.entities;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.api.killauraentity.MovementType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.entities.movement.Collision;
@@ -139,7 +138,7 @@ public abstract class ClientsideEntity
     {
         final User user = UserManager.getUser(observedPlayer.getUniqueId());
 
-        if (!AACAdditionProCheck.isUserInvalid(user)) {
+        if (!User.isUserInvalid(user)) {
             ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
             if (clientSidePlayerEntity != null) {
                 if (clientSidePlayerEntity.getEntityID() == this.entityID) {

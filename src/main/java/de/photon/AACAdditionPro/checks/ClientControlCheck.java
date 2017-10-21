@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-public interface ClientControlCheck extends AACAdditionProCheck
+public interface ClientControlCheck extends ViolationModule
 {
     String MCBRANDCHANNEL = "MC|Brand";
 
@@ -26,7 +26,7 @@ public interface ClientControlCheck extends AACAdditionProCheck
         // Call the event
         final ClientControlEvent clientControlEvent = new ClientControlEvent(
                 player,
-                this.getAdditionHackType()
+                this.getModuleType()
         );
 
         AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(clientControlEvent);
@@ -39,7 +39,7 @@ public interface ClientControlCheck extends AACAdditionProCheck
                 final String realCommand = Placeholders.applyPlaceholders(rawCommand, player);
 
                 // Calling of the event + Sync command execution
-                CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.getAdditionHackType()));
+                CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.getModuleType()));
             }
         }
     }

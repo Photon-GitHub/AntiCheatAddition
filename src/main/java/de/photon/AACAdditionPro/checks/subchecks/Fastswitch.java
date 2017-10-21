@@ -4,8 +4,8 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
@@ -14,9 +14,9 @@ import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
 
-public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
+public class Fastswitch extends PacketAdapter implements ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 120);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -38,7 +38,7 @@ public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (User.isUserInvalid(user)) {
             return;
         }
 
@@ -80,8 +80,8 @@ public class Fastswitch extends PacketAdapter implements AACAdditionProCheck
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.FASTSWITCH;
+        return ModuleType.FASTSWITCH;
     }
 }

@@ -1,6 +1,9 @@
 package de.photon.AACAdditionPro;
 
+import de.photon.AACAdditionPro.checks.ViolationModule;
+import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
+import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 
 import java.util.ArrayList;
@@ -11,7 +14,7 @@ import java.util.ArrayList;
  */
 public class ModuleManager extends ArrayList<Module>
 {
-    protected ModuleManager(final Module... initialObjects)
+    ModuleManager(final Module... initialObjects)
     {
         super(initialObjects.length);
         for (Module initialObject : initialObjects)
@@ -56,5 +59,70 @@ public class ModuleManager extends ArrayList<Module>
             VerboseSender.sendVerboseMessage(object.getName() + " could not be registered.", true, true);
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Gets a {@link Module} from its {@link ModuleType}.
+     *
+     * @param moduleType the {@link ModuleType} of the {@link Module} that should be found
+     * @return the {@link Module} if a match was found
+     * @throws IllegalArgumentException if the provided {@link ModuleType} parameter is not used in a {@link Module}
+     */
+    public Module getModule(final ModuleType moduleType)
+    {
+        for (final Module module : this)
+        {
+            if (module.getModuleType() == moduleType)
+            {
+                return module;
+            }
+        }
+        throw new IllegalArgumentException("The ModuleType: " + moduleType.name() + " is not used in any registered check (is the server version compatible with it?).");
+    }
+
+    /**
+     * Gets a check from its {@link ModuleType}.
+     *
+     * @param moduleType the {@link ModuleType} of the check that should be found
+     * @return the check if it was found
+     * @throws IllegalArgumentException if the provided {@link ModuleType} parameter is not used in a check
+     */
+    public ViolationLevelManagement getViolationLevelManagement(final ModuleType moduleType)
+    {
+        final Module module = this.getModule(moduleType);
+        if (module instanceof ViolationModule)
+        {
+            return ((ViolationModule) module).getViolationLevelManagement();
+        }
+
+        throw new NoViolationLevelManagementException(moduleType);
+    }
+
+    /**
+     * Enables or disables a check in runtime
+     *
+     * @param moduleType the {@link ModuleType} of the check that should be disabled.
+     */
+    public void setStateOfModule(final ModuleType moduleType, final boolean state)
+    {
+        final Module module = this.getModule(moduleType);
+
+        // The message that will be printed in the logs / console
+        String message = "Check " + module.getName() + "has been ";
+
+        // Should it be enabled or disabled
+        if (state)
+        {
+            module.enable();
+            message += "enabled.";
+        }
+        else
+        {
+            module.disable();
+            message += "disabled.";
+        }
+
+        // Send / log the message
+        VerboseSender.sendVerboseMessage(message);
     }
 }

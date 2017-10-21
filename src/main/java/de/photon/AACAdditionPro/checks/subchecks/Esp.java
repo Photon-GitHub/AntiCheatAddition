@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
@@ -25,7 +25,7 @@ import org.bukkit.util.Vector;
 import java.io.File;
 import java.util.*;
 
-public class Esp implements AACAdditionProCheck
+public class Esp implements ViolationModule
 {
 
     // The auto-config-data
@@ -53,9 +53,9 @@ public class Esp implements AACAdditionProCheck
     private int taskNumber;
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.ESP;
+        return ModuleType.ESP;
     }
 
     @Override
@@ -254,7 +254,7 @@ public class Esp implements AACAdditionProCheck
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             // Not bypassed
-            if (AACAdditionProCheck.isUserInvalid(user))
+            if (User.isUserInvalid(user))
             {
                 return;
             }

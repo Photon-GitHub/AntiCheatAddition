@@ -5,8 +5,8 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
@@ -29,9 +29,9 @@ import org.bukkit.util.Vector;
 import java.util.HashSet;
 import java.util.List;
 
-public class InventoryMove extends PacketAdapter implements Listener, AACAdditionProCheck
+public class InventoryMove extends PacketAdapter implements Listener, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 100);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -49,7 +49,7 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (User.isUserInvalid(user)) {
             return;
         }
 
@@ -150,7 +150,7 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
         // Not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (User.isUserInvalid(user)) {
             return;
         }
         // Flight may trigger this
@@ -181,9 +181,9 @@ public class InventoryMove extends PacketAdapter implements Listener, AACAdditio
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.INVENTORY_MOVE;
+        return ModuleType.INVENTORY_MOVE;
     }
 
 }

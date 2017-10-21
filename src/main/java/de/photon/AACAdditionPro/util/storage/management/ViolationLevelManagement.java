@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.util.storage.management;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationCommandEvent;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationEvent;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
@@ -33,20 +33,20 @@ public class ViolationLevelManagement implements Listener
     final ConcurrentMap<Integer, List<String>> thresholds;
 
     /**
-     * The {@link AdditionHackType} of the handler, used for reload
+     * The {@link ModuleType} of the handler, used for reload
      */
-    private final AdditionHackType additionHackType;
+    private final ModuleType moduleType;
 
-    public ViolationLevelManagement(final AdditionHackType additionHackType, final long decreaseDelay)
+    public ViolationLevelManagement(final ModuleType moduleType, final long decreaseDelay)
     {
-        // The AdditionHackType of the check
-        this.additionHackType = additionHackType;
+        // The ModuleType of the check
+        this.moduleType = moduleType;
 
         // Listener registration as of the PlayerQuitEvent
         AACAdditionPro.getInstance().registerListener(this);
 
         // Load the thresholds
-        thresholds = ConfigUtils.loadThresholds(additionHackType.getConfigString() + ".thresholds");
+        thresholds = ConfigUtils.loadThresholds(moduleType.getConfigString() + ".thresholds");
 
         //The vl-decrease
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
@@ -93,9 +93,9 @@ public class ViolationLevelManagement implements Listener
         // Only create the event if it should be called.
         final PlayerAdditionViolationEvent playerAdditionViolationEvent = new PlayerAdditionViolationEvent(
                 player,
-                this.additionHackType,
+                this.moduleType,
                 this.getVL(player.getUniqueId()) + vl_increase,
-                this.additionHackType.getViolationMessage()
+                this.moduleType.getViolationMessage()
         );
 
         // Call the event
@@ -210,7 +210,7 @@ public class ViolationLevelManagement implements Listener
                     {
 
                         // Calling of the event + Sync command execution
-                        CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.additionHackType));
+                        CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.moduleType));
                     }
                 }
             }

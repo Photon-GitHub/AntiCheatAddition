@@ -1,19 +1,19 @@
 package de.photon.AACAdditionPro.exceptions;
 
-import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.ModuleType;
 
 public class NoViolationLevelManagementException extends RuntimeException
 {
-    private final AdditionHackType additionHackType;
+    private final ModuleType moduleType;
 
-    public NoViolationLevelManagementException(final AdditionHackType additionHackType)
+    public NoViolationLevelManagementException(final ModuleType moduleType)
     {
-        super("The check of the " + additionHackType.name() + " has no ViolationLevels.");
-        this.additionHackType = additionHackType;
+        super("The module of the " + moduleType.name() + " has no ViolationLevelManagement.");
+        this.moduleType = moduleType;
     }
 
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return additionHackType;
+        return moduleType;
     }
 }

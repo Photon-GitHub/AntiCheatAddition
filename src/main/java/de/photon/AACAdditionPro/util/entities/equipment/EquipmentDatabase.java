@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.util.entities.equipment;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityEquipmentCategory;
 import de.photon.AACAdditionPro.events.KillauraEntityEquipmentPrepareEvent;
 import de.photon.AACAdditionPro.util.entities.ClientsideEntity;
@@ -66,10 +66,10 @@ final class EquipmentDatabase
             // Override potential config settings and filter out affected materials
             final List<Material> materials = category.getMaterials();
             final String categoryName = categoryClass.getSimpleName().replace(EquipmentCategory.class.getSimpleName(), "").toLowerCase();
-            final Set<String> optionKeys = ConfigUtils.loadKeys(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".equipment." + categoryName);
+            final Set<String> optionKeys = ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment." + categoryName);
 
             for (final String optionKey : optionKeys) {
-                if (!AACAdditionPro.getInstance().getConfig().getBoolean(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".equipment." + categoryName + "." + optionKey)) {
+                if (!AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment." + categoryName + "." + optionKey)) {
                     // Filter out the affected materials
                     materials.removeIf((material -> material.name().contains(optionKey.toUpperCase())));
                 }

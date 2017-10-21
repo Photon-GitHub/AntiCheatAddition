@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
@@ -13,16 +13,16 @@ import org.bukkit.event.inventory.InventoryType;
 
 import java.util.HashSet;
 
-public class Freecam implements AACAdditionProCheck
+public class Freecam implements ViolationModule
 {
     @LoadFromConfiguration(configPath = ".idle_time")
     private static int idle_time;
     private int task_number;
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.FREECAM;
+        return ModuleType.FREECAM;
     }
 
     @Override

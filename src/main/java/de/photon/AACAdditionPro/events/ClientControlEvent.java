@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.events;
 
-import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.ModuleType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -10,22 +10,22 @@ import org.bukkit.event.player.PlayerEvent;
 public class ClientControlEvent extends PlayerEvent implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();
-    private final AdditionHackType additionHackType;
+    private final ModuleType moduleType;
     private final String message;
     private boolean cancelled = false;
 
-    public ClientControlEvent(final Player p, final AdditionHackType additionHackType, final String message)
+    public ClientControlEvent(final Player p, final ModuleType moduleType, final String message)
     {
         super(p);
-        this.additionHackType = additionHackType;
+        this.moduleType = moduleType;
         this.message = message;
     }
 
-    public ClientControlEvent(final Player p, final AdditionHackType additionHackType)
+    public ClientControlEvent(final Player p, final ModuleType moduleType)
     {
         super(p);
-        this.additionHackType = additionHackType;
-        this.message = this.additionHackType.getViolationMessage();
+        this.moduleType = moduleType;
+        this.message = this.moduleType.getViolationMessage();
     }
 
     //Needed for 1.8.8
@@ -37,11 +37,11 @@ public class ClientControlEvent extends PlayerEvent implements Cancellable
     /**
      * This method is used to determine the check which was triggered by the player.
      *
-     * @return the {@link AdditionHackType} of the triggered check
+     * @return the {@link ModuleType} of the triggered check
      */
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return additionHackType;
+        return moduleType;
     }
 
     /**

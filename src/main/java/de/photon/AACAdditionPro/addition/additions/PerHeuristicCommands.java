@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.addition.additions;
 
-import de.photon.AACAdditionPro.addition.Addition;
+import de.photon.AACAdditionPro.Module;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.events.HeuristicsAdditionViolationEvent;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.files.ConfigUtils;
@@ -21,7 +22,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PerHeuristicCommands implements Listener, Addition
+public class PerHeuristicCommands implements Module, Listener
 {
     private static final Pattern HEURISTICS_PATTERN = Pattern.compile("P/(\\d{2})");
     private static final Pattern CONFIDENCE_PATTERN = Pattern.compile("confidence (\\d{2}(\\.\\d+)?)");
@@ -108,8 +109,8 @@ public class PerHeuristicCommands implements Listener, Addition
     }
 
     @Override
-    public String getConfigString()
+    public ModuleType getModuleType()
     {
-        return "Heuristic-Addition";
+        return ModuleType.PER_HEURISTIC_COMMANDS;
     }
 }

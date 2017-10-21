@@ -3,8 +3,7 @@ package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -27,7 +26,7 @@ public class BetterSprintingControl implements PluginMessageListener, ClientCont
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (User.isUserInvalid(user)) {
             return;
         }
 
@@ -57,8 +56,8 @@ public class BetterSprintingControl implements PluginMessageListener, ClientCont
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.BETTERSPRINTING_CONTROL;
+        return ModuleType.BETTERSPRINTING_CONTROL;
     }
 }

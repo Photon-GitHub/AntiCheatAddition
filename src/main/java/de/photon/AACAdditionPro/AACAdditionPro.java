@@ -1,10 +1,37 @@
 package de.photon.AACAdditionPro;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import de.photon.AACAdditionPro.addition.AdditionManager;
+import de.photon.AACAdditionPro.addition.additions.LogBot;
+import de.photon.AACAdditionPro.addition.additions.PerHeuristicCommands;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
-import de.photon.AACAdditionPro.checks.CheckManager;
+import de.photon.AACAdditionPro.checks.subchecks.AutoFish;
+import de.photon.AACAdditionPro.checks.subchecks.AutoPotion;
+import de.photon.AACAdditionPro.checks.subchecks.EqualRotation;
+import de.photon.AACAdditionPro.checks.subchecks.Esp;
+import de.photon.AACAdditionPro.checks.subchecks.Fastswitch;
+import de.photon.AACAdditionPro.checks.subchecks.Freecam;
+import de.photon.AACAdditionPro.checks.subchecks.GravitationalModifier;
+import de.photon.AACAdditionPro.checks.subchecks.InventoryChat;
+import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
+import de.photon.AACAdditionPro.checks.subchecks.InventoryHit;
+import de.photon.AACAdditionPro.checks.subchecks.InventoryMove;
+import de.photon.AACAdditionPro.checks.subchecks.InventoryRotation;
+import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
+import de.photon.AACAdditionPro.checks.subchecks.MultiInteraction;
+import de.photon.AACAdditionPro.checks.subchecks.Pingspoof;
+import de.photon.AACAdditionPro.checks.subchecks.Scaffold;
+import de.photon.AACAdditionPro.checks.subchecks.Skinblinker;
+import de.photon.AACAdditionPro.checks.subchecks.Teaming;
+import de.photon.AACAdditionPro.checks.subchecks.Tower;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.BetterSprintingControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.FiveZigControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.ForgeControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LabyModControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LiteloaderControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.SchematicaControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VapeControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.WorldDownloaderControl;
 import de.photon.AACAdditionPro.command.MainCommand;
 import de.photon.AACAdditionPro.events.APILoadedEvent;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -44,7 +71,8 @@ public class AACAdditionPro extends JavaPlugin
     private static final Field killauraEntityControllerField;
     private static final Field delegatingKillauraEntityControllerField;
 
-    static {
+    static
+    {
         killauraEntityControllerField = KillauraEntityAddon.class.getDeclaredFields()[1];
         killauraEntityControllerField.setAccessible(true);
 
@@ -63,6 +91,9 @@ public class AACAdditionPro extends JavaPlugin
     // Cache the config for better performance
     private FileConfiguration cachedConfig;
 
+    @Getter
+    private ModuleManager moduleManager;
+
     /**
      * This will get the object of the plugin registered on the server.
      *
@@ -77,7 +108,6 @@ public class AACAdditionPro extends JavaPlugin
      * Parses an int from a version {@link String} that has numbers and dots in it.
      *
      * @param versionString the {@link String} from which the version int should be parsed.
-     *
      * @return the int representation of all numbers in the {@link String} with the dots filtered out.
      */
     private static int getVersionNumber(final String versionString)
@@ -98,11 +128,14 @@ public class AACAdditionPro extends JavaPlugin
     @Override
     public FileConfiguration getConfig()
     {
-        if (cachedConfig == null) {
+        if (cachedConfig == null)
+        {
             File savedFile = null;
-            try {
+            try
+            {
                 savedFile = FileUtilities.saveFileInFolder("config.yml");
-            } catch (final IOException e) {
+            } catch (final IOException e)
+            {
                 VerboseSender.sendVerboseMessage("Failed to create config folder / file", true, true);
                 e.printStackTrace();
             }
@@ -115,19 +148,22 @@ public class AACAdditionPro extends JavaPlugin
     @Override
     public void onEnable()
     {
-        try {
+        try
+        {
             // Enabled message
             VerboseSender.sendVerboseMessage("Enabling plugin...", true, false);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
-            if (ServerVersion.getActiveServerVersion() == null) {
+            if (ServerVersion.getActiveServerVersion() == null)
+            {
                 VerboseSender.sendVerboseMessage("Server version is not supported.", true, true);
 
                 // Create a List of all the possible server versions
                 final List<String> possibleVersions = new ArrayList<>(ServerVersion.values().length);
-                for (ServerVersion serverVersion : ServerVersion.values()) {
+                for (ServerVersion serverVersion : ServerVersion.values())
+                {
                     possibleVersions.add(serverVersion.getVersionOutputString());
                 }
 
@@ -141,7 +177,8 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Is the numerical representation of the min AAC version smaller than the representation of the real version
-            if (getVersionNumber(minimumAACVersion) > getVersionNumber(Bukkit.getPluginManager().getPlugin("AAC").getDescription().getVersion())) {
+            if (getVersionNumber(minimumAACVersion) > getVersionNumber(Bukkit.getPluginManager().getPlugin("AAC").getDescription().getVersion()))
+            {
                 VerboseSender.sendVerboseMessage("AAC version is not supported.", true, true);
                 VerboseSender.sendVerboseMessage("This plugin needs AAC version " + minimumAACVersion + " or newer.", true, true);
                 return;
@@ -157,8 +194,42 @@ public class AACAdditionPro extends JavaPlugin
             this.registerListener(new UserManager());
 
             // Managers
-            AdditionManager.startAdditionManager();
-            CheckManager.startCheckManager();
+            this.moduleManager = new ModuleManager(
+                    // Additions
+                    new PerHeuristicCommands(),
+                    new LogBot(),
+
+                    // ClientControl
+                    new BetterSprintingControl(),
+                    new FiveZigControl(),
+                    new ForgeControl(),
+                    new LabyModControl(),
+                    new LiteloaderControl(),
+                    new SchematicaControl(),
+                    new VapeControl(),
+                    new WorldDownloaderControl(),
+
+                    // Normal checks
+                    new AutoFish(),
+                    new AutoPotion(),
+                    new EqualRotation(),
+                    new Esp(),
+                    new Fastswitch(),
+                    new Freecam(),
+                    new GravitationalModifier(),
+                    new InventoryChat(),
+                    new InventoryHeuristics(),
+                    new InventoryHit(),
+                    new InventoryMove(),
+                    new InventoryRotation(),
+                    new KillauraEntity(),
+                    new MultiInteraction(),
+                    new Pingspoof(),
+                    new Scaffold(),
+                    new Skinblinker(),
+                    new Teaming(),
+                    new Tower()
+            );
 
             // Commands
             this.getCommand(MainCommand.instance.name).setExecutor(MainCommand.instance);
@@ -172,7 +243,8 @@ public class AACAdditionPro extends JavaPlugin
             this.loaded = true;
             this.getServer().getPluginManager().callEvent(new APILoadedEvent());
 
-        } catch (final Exception e) {
+        } catch (final Exception e)
+        {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //
             // ------------------------------------------------------------------------------------------------------ //
@@ -188,8 +260,7 @@ public class AACAdditionPro extends JavaPlugin
         VerboseSender.setAllowedToRegisterTasks(false);
 
         // Disable all checks
-        AdditionManager.additionManagerInstance.forEach(Module::disable);
-        CheckManager.checkManagerInstance.forEach(Module::disable);
+        moduleManager.forEach(Module::disable);
 
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
@@ -212,7 +283,8 @@ public class AACAdditionPro extends JavaPlugin
         // check provided plugin (Required for better exception messages)
         JavaPlugin plugin = Objects.requireNonNull(killauraEntityAddon, "EXTERNAL PLUGIN ERROR: KillauraEntityAddon is null").getPlugin();
 
-        if (plugin == null || plugin.getName() == null) {
+        if (plugin == null || plugin.getName() == null)
+        {
             throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin provided as KillauraEntityAddon: " + plugin);
         }
 
@@ -231,9 +303,11 @@ public class AACAdditionPro extends JavaPlugin
                 // Check KillauraEntity-API being available
                 Objects.requireNonNull(killauraEntityController, "KillauraEntity-API not ready, enable the KillauraEntity check"));
 
-        try {
+        try
+        {
             killauraEntityControllerField.set(this.killauraEntityAddon, currentDelegatingKillauraEntityController);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e)
+        {
             throw new RuntimeException(e);
         }
     }
@@ -243,15 +317,19 @@ public class AACAdditionPro extends JavaPlugin
      */
     public void disableKillauraEntityAPI()
     {
-        try {
-            if (this.killauraEntityAddon != null) {
+        try
+        {
+            if (this.killauraEntityAddon != null)
+            {
                 killauraEntityControllerField.set(this.killauraEntityAddon, null);
             }
 
-            if (this.currentDelegatingKillauraEntityController != null) {
+            if (this.currentDelegatingKillauraEntityController != null)
+            {
                 delegatingKillauraEntityControllerField.set(currentDelegatingKillauraEntityController, null);
             }
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e)
+        {
             e.printStackTrace();
         }
     }

@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -27,9 +26,9 @@ public class VapeControl implements Listener, PluginMessageListener, ClientContr
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.VAPE_CONTROL;
+        return ModuleType.VAPE_CONTROL;
     }
 
     @EventHandler
@@ -43,7 +42,7 @@ public class VapeControl implements Listener, PluginMessageListener, ClientContr
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (User.isUserInvalid(user)) {
             return;
         }
 

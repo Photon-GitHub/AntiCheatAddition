@@ -1,8 +1,7 @@
 package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -56,7 +55,7 @@ public class LabyModControl implements Listener, ClientControlCheck
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (User.isUserInvalid(user)) {
             return;
         }
 
@@ -82,9 +81,9 @@ public class LabyModControl implements Listener, ClientControlCheck
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.LABYMOD_CONTROL;
+        return ModuleType.LABYMOD_CONTROL;
     }
 
     @Override
@@ -93,7 +92,7 @@ public class LabyModControl implements Listener, ClientControlCheck
         // Get all functions that can be disabled and put them in the HashMap
         for (final LabyModFeature feature : LabyModFeature.values()) {
             // Inversion here as true in the config means disable.
-            featureMap.put(feature.getPacketName(), !AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".disable." + feature.name().toLowerCase()));
+            featureMap.put(feature.getPacketName(), !AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable." + feature.name().toLowerCase()));
         }
     }
 }

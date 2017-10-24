@@ -158,7 +158,7 @@ public class KillauraEntity implements ViolationModule, Listener
                         // No WrappedGameProfile can be set as there are no valid offline players.
                         return;
                     }
-                    
+
                     // Choose a random OfflinePlayer
                     chosenOfflinePlayer = offlinePlayers.remove(ThreadLocalRandom.current().nextInt(offlinePlayers.size()));
                     // and make sure it is not the player himself

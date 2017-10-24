@@ -149,18 +149,24 @@ public class KillauraEntity implements ViolationModule, Listener
                 // Encapsulate the Arrays.asList in an ArrayList to make sure removal of elements is supported.
                 final List<OfflinePlayer> offlinePlayers = new ArrayList<>(Arrays.asList(Bukkit.getOfflinePlayers()));
 
-                // Make sure that the player cannot see himself
-                offlinePlayers.removeIf(offlinePlayer -> offlinePlayer.getName().equalsIgnoreCase(player.getName()));
-
-                // Check if we can serve OfflinePlayer profiles.
-                if (offlinePlayers.isEmpty())
+                OfflinePlayer chosenOfflinePlayer;
+                do
                 {
-                    // No WrappedGameProfile can be set as there are no valid offline players.
-                    return;
-                }
+                    // Check if we can serve OfflinePlayer profiles.
+                    if (offlinePlayers.isEmpty())
+                    {
+                        // No WrappedGameProfile can be set as there are no valid offline players.
+                        return;
+                    }
 
-                // Choose a random OfflinePlayer and get his GameProfile and make sure it is not the player himself
-                final OfflinePlayer chosenOfflinePlayer = offlinePlayers.get(ThreadLocalRandom.current().nextInt(offlinePlayers.size()));
+                    final int chosenIndex = ThreadLocalRandom.current().nextInt(offlinePlayers.size());
+
+                    // Choose a random OfflinePlayer
+                    chosenOfflinePlayer = offlinePlayers.remove(chosenIndex);
+                    // and make sure it is not the player himself
+                } while (chosenOfflinePlayer.getUniqueId().equals(player.getUniqueId()));
+
+                // Get the GameProfile
                 gameProfile = new WrappedGameProfile(chosenOfflinePlayer.getUniqueId(), chosenOfflinePlayer.getName());
             }
 

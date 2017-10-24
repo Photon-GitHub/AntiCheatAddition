@@ -40,7 +40,8 @@ public abstract class ClientsideEntity
 {
     private static Field entityCountField;
 
-    static {
+    static
+    {
         entityCountField = Reflect.fromNMS("Entity").field("entityCount").getField();
         entityCountField.setAccessible(true);
     }
@@ -109,9 +110,11 @@ public abstract class ClientsideEntity
         tickTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::tick, 1L, 1L);
 
         // Get a valid entity ID
-        try {
+        try
+        {
             this.entityID = getNextEntityID();
-        } catch (IllegalAccessException ex) {
+        } catch (IllegalAccessException ex)
+        {
             throw new RuntimeException("Could not create ClientsideEntity for player " + observedPlayer.getName(), ex);
         }
     }
@@ -138,10 +141,13 @@ public abstract class ClientsideEntity
     {
         final User user = UserManager.getUser(observedPlayer.getUniqueId());
 
-        if (!User.isUserInvalid(user)) {
+        if (!User.isUserInvalid(user))
+        {
             ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-            if (clientSidePlayerEntity != null) {
-                if (clientSidePlayerEntity.getEntityID() == this.entityID) {
+            if (clientSidePlayerEntity != null)
+            {
+                if (clientSidePlayerEntity.getEntityID() == this.entityID)
+                {
                     return true;
                 }
             }
@@ -173,15 +179,19 @@ public abstract class ClientsideEntity
         Vector xzVelocity = this.currentMovementCalculator.calculate(this.location.clone());
 
         // Backup-Movement
-        if (xzVelocity == null) {
+        if (xzVelocity == null)
+        {
             this.setMovement(MovementType.STAY);
             xzVelocity = this.currentMovementCalculator.calculate(this.location.clone());
         }
 
-        if (this.currentMovementCalculator.isTPNeeded() || this.needsTeleport) {
+        if (this.currentMovementCalculator.isTPNeeded() || this.needsTeleport)
+        {
             final Location spawnLocation = observedPlayer.getLocation().clone().add(this.getMovement().calculate(observedPlayer.getLocation()));
             this.location = BlockUtils.getNextFreeSpaceYAxis(spawnLocation, this.getHitbox());
-        } else {
+        }
+        else
+        {
             // Only set the x- and the z- axis (y should be handled by autojumping).
             this.velocity.setX(xzVelocity.getX()).setZ(xzVelocity.getZ());
         }
@@ -219,7 +229,8 @@ public abstract class ClientsideEntity
      */
     private void sendMove()
     {
-        if (!this.spawned) {
+        if (!this.spawned)
+        {
             return;
         }
 
@@ -231,7 +242,8 @@ public abstract class ClientsideEntity
 
         // Teleport needed ?
         int teleportThreshold;
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion())
+        {
             case MC188:
                 teleportThreshold = 4;
                 break;
@@ -244,7 +256,8 @@ public abstract class ClientsideEntity
                 throw new IllegalStateException("Unknown minecraft version");
         }
 
-        if (Math.abs(xDiff) + Math.abs(yDiff) + Math.abs(zDiff) > teleportThreshold || needsTeleport) {
+        if (Math.abs(xDiff) + Math.abs(yDiff) + Math.abs(zDiff) > teleportThreshold || needsTeleport)
+        {
             final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
             // EntityID
             teleportWrapper.setEntityID(this.entityID);
@@ -261,17 +274,21 @@ public abstract class ClientsideEntity
             teleportWrapper.sendPacket(this.observedPlayer);
             this.needsTeleport = false;
             // System.out.println("Sent TP to: " + this.location.getX() + " | " + this.location.getY() + " | " + this.location.getZ());
-        } else {
+        }
+        else
+        {
             // Sending relative movement
             boolean move = xDiff != 0 || yDiff != 0 || zDiff != 0;
             boolean look = this.location.getPitch() != this.lastLocation.getPitch() || this.location.getYaw() != this.lastLocation.getYaw();
 
             WrapperPlayServerEntity packetWrapper;
 
-            if (move) {
+            if (move)
+            {
                 WrapperPlayServerRelEntityMove movePacketWrapper;
 
-                if (look) {
+                if (look)
+                {
                     WrapperPlayServerRelEntityMoveLook moveLookPacketWrapper = new WrapperPlayServerRelEntityMoveLook();
 
                     // Angle
@@ -280,7 +297,9 @@ public abstract class ClientsideEntity
 
                     movePacketWrapper = moveLookPacketWrapper;
                     // System.out.println("Sending movelook");
-                } else {
+                }
+                else
+                {
                     movePacketWrapper = new WrapperPlayServerRelEntityMove();
                     // System.out.println("Sending move");
                 }
@@ -288,7 +307,9 @@ public abstract class ClientsideEntity
                 movePacketWrapper.setOnGround(onGround);
                 movePacketWrapper.setDiffs(xDiff, yDiff, zDiff);
                 packetWrapper = movePacketWrapper;
-            } else if (look) {
+            }
+            else if (look)
+            {
                 WrapperPlayServerEntityLook lookPacketWrapper = new WrapperPlayServerEntityLook();
 
                 // Angles
@@ -300,7 +321,9 @@ public abstract class ClientsideEntity
                 packetWrapper = lookPacketWrapper;
                 // System.out.println("Sending look");
 
-            } else {
+            }
+            else
+            {
                 packetWrapper = new WrapperPlayServerEntity();
                 // System.out.println("Sending idle");
             }
@@ -319,10 +342,12 @@ public abstract class ClientsideEntity
 
     public void jump()
     {
-        if (this.isOnGround()) {
+        if (this.isOnGround())
+        {
             velocity.setY(Jumping.getJumpYMotion(null));
 
-            if (sprinting) {
+            if (sprinting)
+            {
                 velocity.add(location.getDirection().setY(0).normalize().multiply(.2F));
             }
         }
@@ -377,8 +402,10 @@ public abstract class ClientsideEntity
      */
     public void setMovement(MovementType movementType)
     {
-        for (Movement movement : movementStates) {
-            if (movement.getMovementType() == movementType) {
+        for (Movement movement : movementStates)
+        {
+            if (movement.getMovementType() == movementType)
+            {
                 this.currentMovementCalculator = movement;
                 return;
             }
@@ -407,13 +434,15 @@ public abstract class ClientsideEntity
 
             //Calculate knockback strength
             int knockbackStrength = 0;
-            if (observedPlayer.isSprinting()) {
+            if (observedPlayer.isSprinting())
+            {
                 knockbackStrength = 1;
             }
 
             final ItemStack itemInHand;
 
-            switch (ServerVersion.getActiveServerVersion()) {
+            switch (ServerVersion.getActiveServerVersion())
+            {
                 case MC188:
                     itemInHand = observedPlayer.getItemInHand();
                     break;
@@ -426,12 +455,14 @@ public abstract class ClientsideEntity
                     throw new IllegalStateException("Unknown minecraft version");
             }
 
-            if (itemInHand != null) {
+            if (itemInHand != null)
+            {
                 knockbackStrength += itemInHand.getEnchantmentLevel(Enchantment.KNOCKBACK);
             }
 
             //Apply velocity
-            if (knockbackStrength > 0) {
+            if (knockbackStrength > 0)
+            {
                 velocity.add(observedLoc.getDirection().normalize().setY(.1).multiply(knockbackStrength * .5));
 
                 //TODO wrong code, its not applied generally, needs to be moved into the method the fake entity hits another entity and apply knockback + sprinting options
@@ -460,7 +491,8 @@ public abstract class ClientsideEntity
     private void fakeAnimation(final int animationType)
     {
         // Entity is already spawned.
-        if (this.isSpawned()) {
+        if (this.isSpawned())
+        {
             final WrapperPlayServerAnimation animationWrapper = new WrapperPlayServerAnimation();
             animationWrapper.setEntityID(this.entityID);
             animationWrapper.setAnimation(animationType);
@@ -494,12 +526,14 @@ public abstract class ClientsideEntity
 
     public void despawn()
     {
-        if (tickTask > 0) {
+        if (tickTask > 0)
+        {
             Bukkit.getScheduler().cancelTask(tickTask);
             this.tickTask = -1;
         }
 
-        if (spawned) {
+        if (spawned)
+        {
             final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
             entityDestroyWrapper.setEntityIds(new int[]{this.entityID});
             entityDestroyWrapper.sendPacket(observedPlayer);

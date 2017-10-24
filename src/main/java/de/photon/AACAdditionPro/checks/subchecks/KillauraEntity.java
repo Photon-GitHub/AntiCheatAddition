@@ -122,7 +122,7 @@ public class KillauraEntity implements ViolationModule, Listener
         {
             return;
         }
-        
+
         Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), () -> {
             WrappedGameProfile gameProfile = null;
             MovementType movementType = MovementType.BASIC_FOLLOW;

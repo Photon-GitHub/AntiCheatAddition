@@ -34,7 +34,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.StringUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -123,7 +122,7 @@ public class KillauraEntity implements ViolationModule, Listener
         {
             return;
         }
-
+        
         Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), () -> {
             WrappedGameProfile gameProfile = null;
             MovementType movementType = MovementType.BASIC_FOLLOW;
@@ -147,7 +146,7 @@ public class KillauraEntity implements ViolationModule, Listener
             {
                 // Use the offline players as a replacement
                 // Encapsulate the Arrays.asList in an ArrayList to make sure removal of elements is supported.
-                final List<OfflinePlayer> offlinePlayers = new ArrayList<>(Arrays.asList(Bukkit.getOfflinePlayers()));
+                final List<OfflinePlayer> offlinePlayers = Arrays.asList(Bukkit.getOfflinePlayers());
 
                 OfflinePlayer chosenOfflinePlayer;
                 do

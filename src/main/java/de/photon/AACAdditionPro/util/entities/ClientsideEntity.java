@@ -17,6 +17,7 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityDestroy;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityHeadRotation;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityLook;
+import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityStatus;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityTeleport;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMove;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMoveLook;
@@ -89,6 +90,9 @@ public abstract class ClientsideEntity
 
     @Getter
     protected final Hitbox hitbox;
+
+    @Getter
+    private boolean visible = true;
 
     private int tickTask = -1;
 
@@ -493,7 +497,18 @@ public abstract class ClientsideEntity
      */
     public void setVisibility(boolean visible)
     {
-        //TODO: DO STUFF HERE.
+        if (this.visible == visible)
+        {
+            // No need to change anything.
+            return;
+        }
+
+        final WrapperPlayServerEntityStatus entityStatusWrapper = new WrapperPlayServerEntityStatus();
+        entityStatusWrapper.setEntityID(this.getEntityID());
+        entityStatusWrapper.setEntityStatus((byte) 0x20);
+        entityStatusWrapper.sendPacket(this.observedPlayer);
+
+        this.visible = visible;
     }
 
     private void fakeAnimation(final int animationType)

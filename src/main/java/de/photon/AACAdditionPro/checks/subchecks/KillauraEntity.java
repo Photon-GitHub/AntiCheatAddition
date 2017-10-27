@@ -51,6 +51,9 @@ public class KillauraEntity implements ViolationModule, Listener
     @LoadFromConfiguration(configPath = ".position.minXZDifference")
     private double minXZDifference;
 
+    @LoadFromConfiguration(configPath = ".on_command")
+    private boolean onCommand;
+
     @EventHandler
     public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)
     {
@@ -184,6 +187,11 @@ public class KillauraEntity implements ViolationModule, Listener
                 // Spawn the entity
                 final Location location = calculateSpawningLocation(player, playerEntity);
                 playerEntity.spawn(location);
+
+                if (this.onCommand)
+                {
+                    playerEntity.setVisibility(false);
+                }
             });
         }, 2L);
     }

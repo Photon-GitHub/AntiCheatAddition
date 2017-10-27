@@ -48,20 +48,18 @@ public class EntityCheckCommand extends InternalCommand
 
             if (AACAdditionPro.getInstance().getConfig().getBoolean("KillauraEntity.on_command"))
             {
-                if (user.getClientSideEntityData().spawnedOnDemand)
+                if (user.getClientSideEntityData().clientSidePlayerEntity.isVisible())
                 {
                     sender.sendMessage(prefix + ChatColor.RED + "A check of the player is already in progress.");
                 }
                 else
                 {
                     sender.sendMessage(prefix + ChatColor.GOLD + "Now checking player " + user.getPlayer().getName() + " for " + checkDuration + " ticks.");
-                    user.getClientSideEntityData().spawnedOnDemand = true;
                     user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(true);
 
-                    Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> {
-                        user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(false);
-                        user.getClientSideEntityData().spawnedOnDemand = false;
-                    }, checkDuration);
+                    Bukkit.getScheduler().runTaskLater(
+                            AACAdditionPro.getInstance(),
+                            () -> user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(false), checkDuration);
                 }
             }
             else

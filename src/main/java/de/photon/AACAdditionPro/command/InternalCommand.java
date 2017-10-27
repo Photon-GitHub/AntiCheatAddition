@@ -21,22 +21,22 @@ public abstract class InternalCommand
     private final byte minArguments;
     private final byte maxArguments;
 
-    protected InternalCommand(String name, byte minArguments)
+    public InternalCommand(String name, byte minArguments)
     {
         this(name, null, minArguments);
     }
 
-    protected InternalCommand(String name, InternalPermission permission, byte minArguments)
+    public InternalCommand(String name, InternalPermission permission, byte minArguments)
     {
         this(name, permission, false, minArguments);
     }
 
-    protected InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments)
+    public InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments)
     {
         this(name, permission, onlyPlayers, minArguments, Byte.MAX_VALUE);
     }
 
-    protected InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments, byte maxArguments)
+    public InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments, byte maxArguments)
     {
         this.name = name;
         this.permission = permission;

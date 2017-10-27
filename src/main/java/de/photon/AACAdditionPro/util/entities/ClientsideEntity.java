@@ -488,6 +488,14 @@ public abstract class ClientsideEntity
         fakeAnimation(1);
     }
 
+    /**
+     * Used to apply the visibility effect to the entity and remove it once again.
+     */
+    public void setVisibility(boolean visible)
+    {
+        //TODO: DO STUFF HERE.
+    }
+
     private void fakeAnimation(final int animationType)
     {
         // Entity is already spawned.

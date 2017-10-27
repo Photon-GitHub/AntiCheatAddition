@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.command;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.command.subcommands.EntityCheckCommand;
 import de.photon.AACAdditionPro.command.subcommands.InfoCommand;
 import de.photon.AACAdditionPro.command.subcommands.VerboseCommand;
 import org.bukkit.ChatColor;
@@ -9,7 +10,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 public class MainCommand extends InternalCommand implements CommandExecutor, TabCompleter
 {
@@ -99,6 +106,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     protected Set<InternalCommand> getChildCommands()
     {
         return new HashSet<>(Arrays.asList(
+                new EntityCheckCommand(),
                 // Disabled for now
                 // new HeuristicsCommand(),
                 new InfoCommand(),

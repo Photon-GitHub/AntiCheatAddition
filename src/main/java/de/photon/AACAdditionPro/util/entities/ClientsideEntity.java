@@ -503,6 +503,8 @@ public abstract class ClientsideEntity
             return;
         }
 
+        System.out.println("Really changed to " + visible);
+
         final WrapperPlayServerEntityStatus entityStatusWrapper = new WrapperPlayServerEntityStatus();
         entityStatusWrapper.setEntityID(this.getEntityID());
         entityStatusWrapper.setEntityStatus((byte) 0x20);

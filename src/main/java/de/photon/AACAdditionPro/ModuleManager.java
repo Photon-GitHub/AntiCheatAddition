@@ -81,11 +81,12 @@ public class ModuleManager extends ArrayList<Module>
     }
 
     /**
-     * Gets a check from its {@link ModuleType}.
+     * Gets a the {@link ViolationLevelManagement} of a module from its {@link ModuleType}.
      *
-     * @param moduleType the {@link ModuleType} of the check that should be found
+     * @param moduleType the {@link ModuleType} of the check which {@link ViolationLevelManagement} is searched for.
      * @return the check if it was found
-     * @throws IllegalArgumentException if the provided {@link ModuleType} parameter is not used in a check
+     * @throws IllegalArgumentException            if the provided {@link ModuleType} parameter is not used in a check
+     * @throws NoViolationLevelManagementException if the module doesn't have a {@link ViolationLevelManagement}
      */
     public ViolationLevelManagement getViolationLevelManagement(final ModuleType moduleType)
     {

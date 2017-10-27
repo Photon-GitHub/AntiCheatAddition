@@ -8,6 +8,7 @@ import de.photon.AACAdditionPro.userdata.UserManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Queue;
 import java.util.Set;
@@ -16,15 +17,15 @@ public class EntityCheckCommand extends InternalCommand
 {
     public EntityCheckCommand()
     {
-        super("entitycheck", InternalPermission.ENTITYCHECK, false, (byte) 1, (byte) 2);
+        super("entitycheck", InternalPermission.ENTITYCHECK, false, (byte) 2, (byte) 2);
     }
 
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        final User user = UserManager.getUser(AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove()).getUniqueId());
+        final Player player = AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove());
 
-        if (user == null)
+        if (player == null)
         {
             sender.sendMessage(playerNotFoundMessage);
         }
@@ -48,6 +49,14 @@ public class EntityCheckCommand extends InternalCommand
 
             if (AACAdditionPro.getInstance().getConfig().getBoolean("KillauraEntity.on_command"))
             {
+                final User user = UserManager.getUser(player.getUniqueId());
+
+                if (User.isUserInvalid(user))
+                {
+                    sender.sendMessage(prefix + ChatColor.RED + "Invalid user parsing. Has the player logged recently?");
+                    return;
+                }
+
                 if (user.getClientSideEntityData().clientSidePlayerEntity.isVisible())
                 {
                     sender.sendMessage(prefix + ChatColor.RED + "A check of the player is already in progress.");

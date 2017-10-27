@@ -56,9 +56,9 @@ public class InfoCommand extends InternalCommand
                     {
                         messages.put(vl, AACAdditionPro.getInstance().getModuleManager().getModule(moduleType).getName());
                     }
-                } catch (NoViolationLevelManagementException ignore)
+                } catch (IllegalArgumentException | NoViolationLevelManagementException ignore)
                 {
-                    // Ignore the Exception as there are a few checks with no ViolatonLevelManagement
+                    // Ignore the Exceptions as there are a few checks with no ViolatonLevelManagement or disabled checks.
                 }
             }
 

@@ -191,7 +191,7 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // UserManager
-            this.registerListener(UserManager.getInstance());
+            this.registerListener(new UserManager());
 
             // Managers
             this.moduleManager = new ModuleManager(

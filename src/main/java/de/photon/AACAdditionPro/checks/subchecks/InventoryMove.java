@@ -49,7 +49,8 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
@@ -93,7 +94,8 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
             final boolean currentlyNotJumping = (user.getPlayer().getVelocity().getY() <= 0 && user.getPlayer().getFallDistance() == 0);
 
             // Not allowed to start another jump in the inventory
-            if (currentlyNotJumping) {
+            if (currentlyNotJumping)
+            {
                 user.getPositionData().allowedToJump = false;
             }
 
@@ -106,7 +108,8 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
                                                   100;
 
             // Was already in inventory or no air - movement (fall distance + velocity)
-            if (user.getInventoryData().notRecentlyOpened(allowedRecentlyOpenedTime)) {
+            if (user.getInventoryData().notRecentlyOpened(allowedRecentlyOpenedTime))
+            {
 
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
@@ -117,7 +120,8 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
                         Hitbox.PLAYER.getHeight() + 0.1,
                         Hitbox.PLAYER.getOffsetZ() + 0.1);
 
-                if (nearbyPlayers.isEmpty()) {
+                if (nearbyPlayers.isEmpty())
+                {
                     vlManager.flag(user.getPlayer(), cancel_vl, () ->
                     {
                         event.getPacket().getDoubles().writeSafely(0, knownPosition.getX());
@@ -139,7 +143,9 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
                     }, () -> {});
                 }
             }
-        } else {
+        }
+        else
+        {
             user.getPositionData().allowedToJump = true;
         }
     }
@@ -150,7 +156,8 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
         // Flight may trigger this

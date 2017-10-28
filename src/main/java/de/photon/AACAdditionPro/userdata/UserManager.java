@@ -14,13 +14,14 @@ import java.util.concurrent.ConcurrentMap;
 
 public class UserManager implements Listener
 {
-    public UserManager()
+    // Concurrency to tackle some ConcurrentModificationExceptions
+    private static final ConcurrentMap<UUID, User> users;
+
+    static
     {
+        users = new ConcurrentHashMap<>();
         ProtocolLibrary.getProtocolManager().addPacketListener(new BeaconListener());
     }
-
-    // Concurrency to tackle some ConcurrentModificationExceptions
-    private static final ConcurrentMap<UUID, User> users = new ConcurrentHashMap<>();
 
     public static User getUser(final UUID uuid)
     {

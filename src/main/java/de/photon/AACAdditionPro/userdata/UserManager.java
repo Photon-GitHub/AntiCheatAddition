@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.userdata;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -14,12 +15,16 @@ import java.util.concurrent.ConcurrentMap;
 
 public class UserManager implements Listener
 {
+    @Getter
+    private static UserManager instance;
+
     // Concurrency to tackle some ConcurrentModificationExceptions
     private static final ConcurrentMap<UUID, User> users;
 
     static
     {
         users = new ConcurrentHashMap<>();
+        instance = new UserManager();
         ProtocolLibrary.getProtocolManager().addPacketListener(new BeaconListener());
     }
 

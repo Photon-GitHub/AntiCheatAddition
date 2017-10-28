@@ -37,22 +37,11 @@ public class UserManager implements Listener
     public void onJoin(final PlayerJoinEvent event)
     {
         users.put(event.getPlayer().getUniqueId(), new User(event.getPlayer()));
-        System.out.println("--DEBUG--");
-        System.out.println("PlayerName: " + event.getPlayer().getName());
-        System.out.println("List size: " + getUsers().size());
-        System.out.println("Get: " + getUser(event.getPlayer().getUniqueId()));
-        System.out.println("User object: " + new User(event.getPlayer()));
-
-        System.out.println("Pointer:" + ((Object) UserManager.users).toString());
     }
 
     @EventHandler
     public void onQuit(final PlayerQuitEvent event)
     {
-        System.out.println("--DEBUGQUIT--");
-        System.out.println("PlayerName: " + event.getPlayer().getName());
         users.remove(event.getPlayer().getUniqueId());
-
-        System.out.println("Pointer:" + ((Object) UserManager.users).toString());
     }
 }

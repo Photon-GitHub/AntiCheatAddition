@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.util.entities;
 
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.userdata.User;
@@ -17,7 +18,7 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityDestroy;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityHeadRotation;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityLook;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityStatus;
+import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityMetadata;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityTeleport;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMove;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMoveLook;
@@ -34,6 +35,7 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -503,12 +505,12 @@ public abstract class ClientsideEntity
             return;
         }
 
-        System.out.println("Really changed to " + visible);
-
-        final WrapperPlayServerEntityStatus entityStatusWrapper = new WrapperPlayServerEntityStatus();
-        entityStatusWrapper.setEntityID(this.getEntityID());
-        entityStatusWrapper.setEntityStatus((byte) 0x20);
-        entityStatusWrapper.sendPacket(this.observedPlayer);
+        final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata();
+        entityMetadataWrapper.setEntityID(this.getEntityID());
+        entityMetadataWrapper.setMetadata(Collections.singletonList(new WrappedWatchableObject(0, (byte) (visible ?
+                                                                                                          0 :
+                                                                                                          0x20))));
+        entityMetadataWrapper.sendPacket(this.observedPlayer);
 
         this.visible = visible;
     }

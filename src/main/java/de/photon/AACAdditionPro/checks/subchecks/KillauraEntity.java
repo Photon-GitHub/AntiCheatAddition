@@ -191,7 +191,6 @@ public class KillauraEntity implements ViolationModule, Listener
 
                 if (this.onCommand)
                 {
-                    System.out.println("make invis");
                     playerEntity.setVisibility(false);
                 }
             });

@@ -3,20 +3,24 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
-public class WrapperPlayServerEntityStatus extends AbstractPacket
-{
-    public static final PacketType TYPE = PacketType.Play.Server.ENTITY_STATUS;
+import java.util.List;
 
-    public WrapperPlayServerEntityStatus()
+public class WrapperPlayServerEntityMetadata extends AbstractPacket
+{
+    public static final PacketType TYPE =
+            PacketType.Play.Server.ENTITY_METADATA;
+
+    public WrapperPlayServerEntityMetadata()
     {
         super(new PacketContainer(TYPE), TYPE);
         handle.getModifier().writeDefaults();
     }
 
-    public WrapperPlayServerEntityStatus(PacketContainer packet)
+    public WrapperPlayServerEntityMetadata(PacketContainer packet)
     {
         super(packet, TYPE);
     }
@@ -66,24 +70,22 @@ public class WrapperPlayServerEntityStatus extends AbstractPacket
     }
 
     /**
-     * Retrieve Entity Status.
-     * <p>
-     * Notes: see below
+     * Retrieve Metadata.
      *
-     * @return The current Entity Status
+     * @return The current Metadata
      */
-    public byte getEntityStatus()
+    public List<WrappedWatchableObject> getMetadata()
     {
-        return handle.getBytes().read(0);
+        return handle.getWatchableCollectionModifier().read(0);
     }
 
     /**
-     * Set Entity Status.
+     * Set Metadata.
      *
      * @param value - new value.
      */
-    public void setEntityStatus(byte value)
+    public void setMetadata(List<WrappedWatchableObject> value)
     {
-        handle.getBytes().write(0, value);
+        handle.getWatchableCollectionModifier().write(0, value);
     }
 }

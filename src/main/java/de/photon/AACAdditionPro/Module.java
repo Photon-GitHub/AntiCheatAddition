@@ -20,7 +20,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public interface Module {
+public interface Module
+{
     /**
      * This enables the check by registering it in all Managers.
      * <p>
@@ -29,12 +30,15 @@ public interface Module {
      * ProtocolLib's {@link PacketListener} or {@link PacketAdapter},<br>
      * Bukkit's {@link PluginMessageListener}
      */
-    default void enable() {
+    default void enable()
+    {
         // Config-Annotation processing
-        for (Field field : this.getClass().getDeclaredFields()) {
+        for (Field field : this.getClass().getDeclaredFields())
+        {
             final LoadFromConfiguration annotation = field.getAnnotation(LoadFromConfiguration.class);
 
-            if (annotation != null) {
+            if (annotation != null)
+            {
                 // Make it possible to modify the field
                 final boolean accessible = field.isAccessible();
                 field.setAccessible(true);
@@ -49,63 +53,78 @@ public interface Module {
                 path += annotation.configPath();
 
                 // The different classes
-                try {
+                try
+                {
 
                     // Boolean
-                    if (clazz == boolean.class || clazz == Boolean.class) {
+                    if (clazz == boolean.class || clazz == Boolean.class)
+                    {
                         field.setBoolean(this, AACAdditionPro.getInstance().getConfig().getBoolean(path));
 
                         // Numbers
                     }
-                    else if (clazz == double.class || clazz == Double.class) {
+                    else if (clazz == double.class || clazz == Double.class)
+                    {
                         field.setDouble(this, AACAdditionPro.getInstance().getConfig().getDouble(path));
                     }
-                    else if (clazz == int.class || clazz == Integer.class) {
+                    else if (clazz == int.class || clazz == Integer.class)
+                    {
                         field.setInt(this, AACAdditionPro.getInstance().getConfig().getInt(path));
                     }
-                    else if (clazz == long.class || clazz == Long.class) {
+                    else if (clazz == long.class || clazz == Long.class)
+                    {
                         field.setLong(this, AACAdditionPro.getInstance().getConfig().getLong(path));
 
                         // Strings
                     }
-                    else if (clazz == String.class) {
+                    else if (clazz == String.class)
+                    {
                         field.set(this, AACAdditionPro.getInstance().getConfig().getString(path));
 
                         // Special stuff
                     }
-                    else if (clazz == ItemStack.class) {
+                    else if (clazz == ItemStack.class)
+                    {
                         field.set(this, AACAdditionPro.getInstance().getConfig().getItemStack(path));
                     }
-                    else if (clazz == Color.class) {
+                    else if (clazz == Color.class)
+                    {
                         field.set(this, AACAdditionPro.getInstance().getConfig().getColor(path));
                     }
-                    else if (clazz == OfflinePlayer.class) {
+                    else if (clazz == OfflinePlayer.class)
+                    {
                         field.set(this, AACAdditionPro.getInstance().getConfig().getOfflinePlayer(path));
                     }
-                    else if (clazz == Vector.class) {
+                    else if (clazz == Vector.class)
+                    {
                         field.set(this, AACAdditionPro.getInstance().getConfig().getVector(path));
 
 
                         // Lists
                     }
-                    else if (clazz == List.class) {
+                    else if (clazz == List.class)
+                    {
 
                         // StringLists
-                        if (annotation.listType() == String.class) {
+                        if (annotation.listType() == String.class)
+                        {
                             field.set(this, ConfigUtils.loadStringOrStringList(path));
 
                             // Unknown type
                         }
-                        else {
+                        else
+                        {
                             field.set(this, AACAdditionPro.getInstance().getConfig().getList(path));
                         }
 
                         // No special type found
                     }
-                    else {
+                    else
+                    {
                         field.set(this, AACAdditionPro.getInstance().getConfig().get(path));
                     }
-                } catch (IllegalAccessException e) {
+                } catch (IllegalAccessException e)
+                {
                     e.printStackTrace();
                 }
 
@@ -115,20 +134,24 @@ public interface Module {
         }
 
         // Bukkit event listener
-        if (this instanceof Listener) {
+        if (this instanceof Listener)
+        {
             AACAdditionPro.getInstance().registerListener((Listener) this);
         }
 
         // PacketAdapter register
-        if (this instanceof PacketListener) {
+        if (this instanceof PacketListener)
+        {
             ProtocolLibrary.getProtocolManager().addPacketListener((PacketListener) this);
         }
 
         // Plugin message channels
         final String[] pluginMessageChannels = this.getPluginMessageChannels();
 
-        if (this instanceof PluginMessageListener && pluginMessageChannels != null) {
-            for (final String channel : pluginMessageChannels) {
+        if (this instanceof PluginMessageListener && pluginMessageChannels != null)
+        {
+            for (final String channel : pluginMessageChannels)
+            {
                 AACAdditionPro.getInstance().getServer().getMessenger().registerIncomingPluginChannel(AACAdditionPro.getInstance(), channel, (PluginMessageListener) this);
                 AACAdditionPro.getInstance().getServer().getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), channel);
             }
@@ -145,22 +168,27 @@ public interface Module {
      * ProtocolLib's {@link PacketListener} or {@link PacketAdapter},<br>
      * Bukkit's {@link PluginMessageListener}
      */
-    default void disable() {
+    default void disable()
+    {
         // Bukkit event listener cleanup
-        if (this instanceof Listener) {
+        if (this instanceof Listener)
+        {
             HandlerList.unregisterAll((Listener) this);
         }
 
         // PacketAdapter register cleanup
-        if (this instanceof PacketAdapter) {
+        if (this instanceof PacketAdapter)
+        {
             ProtocolLibrary.getProtocolManager().removePacketListener((PacketListener) this);
         }
 
         // Plugin message channels cleanup
         final String[] pluginMessageChannels = this.getPluginMessageChannels();
 
-        if (this instanceof PluginMessageListener && pluginMessageChannels != null) {
-            for (final String channel : pluginMessageChannels) {
+        if (this instanceof PluginMessageListener && pluginMessageChannels != null)
+        {
+            for (final String channel : pluginMessageChannels)
+            {
                 AACAdditionPro.getInstance().getServer().getMessenger().unregisterIncomingPluginChannel(AACAdditionPro.getInstance(), channel, (PluginMessageListener) this);
                 AACAdditionPro.getInstance().getServer().getMessenger().unregisterOutgoingPluginChannel(AACAdditionPro.getInstance(), channel);
             }
@@ -170,32 +198,41 @@ public interface Module {
     /**
      * The name of the module as it appears in the logs.
      */
-    default String getName() {
+    default String getName()
+    {
         return this.getConfigString();
     }
 
     /**
+     * Gets the {@link ModuleType} of this {@link Module}
+     */
+    ModuleType getModuleType();
+
+    /**
      * Gets the direct path representing this module in the config.
      */
-    String getConfigString();
+    default String getConfigString()
+    {
+        return this.getModuleType().getConfigString();
+    }
 
     /**
      * All config values are initialized here and other tasks that are not covered by enable() should be stated here.
      */
-    void subEnable();
-
+    default void subEnable() {}
 
     /**
      * Cancelling tasks and everything else that is not covered by disable() should be done here.
      */
-    void subDisable();
+    default void subDisable() {}
 
     /**
      * This are the channels a PluginMessageListener should listen to.
      * Only needed to override for PluginMessageListeners.
      * By default it returns null for no registration of plugin channels.
      */
-    default String[] getPluginMessageChannels() {
+    default String[] getPluginMessageChannels()
+    {
         return null;
     }
 
@@ -205,7 +242,8 @@ public interface Module {
      * <p>
      * By default all {@link ServerVersion} are marked as supported.
      */
-    default Set<ServerVersion> getSupportedVersions() {
+    default Set<ServerVersion> getSupportedVersions()
+    {
         return new HashSet<>(Arrays.asList(ServerVersion.values()));
     }
 }

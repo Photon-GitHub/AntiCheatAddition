@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
@@ -11,11 +11,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class GravitationalModifier implements AACAdditionProCheck, Listener
+public class GravitationalModifier implements ViolationModule, Listener
 {
     private static final int MAX_VELOCITY_CHANGES = 12;
 
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 120);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120);
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onMove(PlayerMoveEvent event)
@@ -23,7 +23,7 @@ public class GravitationalModifier implements AACAdditionProCheck, Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user))
+        if (User.isUserInvalid(user))
         {
             return;
         }
@@ -61,8 +61,8 @@ public class GravitationalModifier implements AACAdditionProCheck, Listener
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.GRAVITATIONAL_MODIFIER;
+        return ModuleType.GRAVITATIONAL_MODIFIER;
     }
 }

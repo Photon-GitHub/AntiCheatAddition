@@ -1,16 +1,15 @@
 package de.photon.AACAdditionPro.api;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
-import de.photon.AACAdditionPro.checks.CheckManager;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings({
-        "unused",
-        "WeakerAccess"
-})
+                          "unused",
+                          "WeakerAccess"
+                  })
 public final class AACAdditionProApi
 {
     /**
@@ -26,40 +25,37 @@ public final class AACAdditionProApi
     /**
      * Used to get the ViolationLevel of a player.
      *
-     * @param player           the player who should be looked up
-     * @param additionHackType the Check that should be looked up.
-     *
+     * @param player     the player who should be looked up
+     * @param moduleType the Check that should be looked up.
      * @return The Violation-Level as an int.
-     *
-     * @throws NoViolationLevelManagementException if the check of the given {@link AdditionHackType} does not have violation-levels
+     * @throws NoViolationLevelManagementException if the check of the given {@link ModuleType} does not have violation-levels
      */
-    public static int getVL(final Player player, final AdditionHackType additionHackType) throws NoViolationLevelManagementException
+    public static int getVL(final Player player, final ModuleType moduleType) throws NoViolationLevelManagementException
     {
-        return CheckManager.checkManagerInstance.getCheck(additionHackType).getViolationLevelManagement().getVL(player.getUniqueId());
+        return AACAdditionPro.getInstance().getModuleManager().getViolationLevelManagement(moduleType).getVL(player.getUniqueId());
     }
 
     /**
      * Used to set the ViolationLevel of a player.
      *
-     * @param player           the player whose Violation-Level should be set.
-     * @param additionHackType the Check in which the Violation-Level will be set.
-     * @param new_vl           The new Violation-Level of the player.
-     *
-     * @throws NoViolationLevelManagementException if the check of the given {@link AdditionHackType} does not have violation-levels
+     * @param player     the player whose Violation-Level should be set.
+     * @param moduleType the Check in which the Violation-Level will be set.
+     * @param new_vl     The new Violation-Level of the player.
+     * @throws NoViolationLevelManagementException if the check of the given {@link ModuleType} does not have violation-levels
      */
-    public static void setVl(final Player player, final AdditionHackType additionHackType, final int new_vl) throws NoViolationLevelManagementException
+    public static void setVl(final Player player, final ModuleType moduleType, final int new_vl) throws NoViolationLevelManagementException
     {
-        CheckManager.checkManagerInstance.getCheck(additionHackType).getViolationLevelManagement().setVL(player, new_vl);
+        AACAdditionPro.getInstance().getModuleManager().getViolationLevelManagement(moduleType).setVL(player, new_vl);
     }
 
     /**
-     * This enables or disables a check live.
+     * Enables or disables a module on the fly.
      *
-     * @param additionHackType the {@link AdditionHackType} of the check that should be enabled.
+     * @param moduleType the {@link ModuleType} of the check that should be enabled.
      */
-    public static void setStateOfCheck(final AdditionHackType additionHackType, final boolean state)
+    public static void setStateOfModule(final ModuleType moduleType, final boolean state)
     {
-        CheckManager.checkManagerInstance.setStateOfCheck(additionHackType, state);
+        AACAdditionPro.getInstance().getModuleManager().setStateOfModule(moduleType, state);
     }
 
     /**

@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.userdata;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
@@ -12,7 +11,6 @@ class BeaconListener extends PacketAdapter
     BeaconListener()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.CUSTOM_PAYLOAD);
-        ProtocolLibrary.getProtocolManager().addPacketListener(this);
     }
 
     @Override

@@ -7,6 +7,7 @@ public enum InternalPermission
     BYPASS("aac.bypass"),
     VERBOSE("aac.verbose"),
     INFO("aacadditionpro.info"),
+    ENTITYCHECK("aacadditionpro.entitycheck"),
     NEURAL("aacadditionpro.neural"),
     NEURAL_TRAIN("aacadditionpro.neural.train"),
     NEURAL_CHECK("aacadditionpro.neural.check");

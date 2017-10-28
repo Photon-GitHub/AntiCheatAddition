@@ -1,9 +1,25 @@
 package de.photon.AACAdditionPro.userdata;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
 import de.photon.AACAdditionPro.InternalPermission;
-import de.photon.AACAdditionPro.userdata.data.*;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.userdata.data.AutoPotionData;
+import de.photon.AACAdditionPro.userdata.data.BlockPlaceData;
+import de.photon.AACAdditionPro.userdata.data.ClientSideEntityData;
+import de.photon.AACAdditionPro.userdata.data.ElytraData;
+import de.photon.AACAdditionPro.userdata.data.EspInformationData;
+import de.photon.AACAdditionPro.userdata.data.FishingData;
+import de.photon.AACAdditionPro.userdata.data.FlyPatchData;
+import de.photon.AACAdditionPro.userdata.data.InventoryData;
+import de.photon.AACAdditionPro.userdata.data.LookPacketData;
+import de.photon.AACAdditionPro.userdata.data.PingData;
+import de.photon.AACAdditionPro.userdata.data.PositionData;
+import de.photon.AACAdditionPro.userdata.data.PotionData;
+import de.photon.AACAdditionPro.userdata.data.SettingsData;
+import de.photon.AACAdditionPro.userdata.data.TeamingData;
+import de.photon.AACAdditionPro.userdata.data.TeleportData;
+import de.photon.AACAdditionPro.userdata.data.TimeData;
+import de.photon.AACAdditionPro.userdata.data.VelocityChangeData;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
@@ -15,7 +31,7 @@ public class User
     private final Player player;
 
     private final AutoPotionData autoPotionData = new AutoPotionData(this);
-    private final BlockPlaceData scaffoldData = new BlockPlaceData(true, AACAdditionPro.getInstance().getConfig().getInt(AdditionHackType.SCAFFOLD.getConfigString() + ".buffer_size"), this)
+    private final BlockPlaceData scaffoldData = new BlockPlaceData(true, AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".buffer_size"), this)
     {
         @Override
         public double calculateRealTime()
@@ -68,7 +84,7 @@ public class User
             return fraction[0] / fraction[1];
         }
     };
-    private final BlockPlaceData towerData = new BlockPlaceData(false, AACAdditionPro.getInstance().getConfig().getInt(AdditionHackType.TOWER.getConfigString() + ".buffer_size"), this);
+    private final BlockPlaceData towerData = new BlockPlaceData(false, AACAdditionPro.getInstance().getConfig().getInt(ModuleType.TOWER.getConfigString() + ".buffer_size"), this);
     private final ClientSideEntityData clientSideEntityData = new ClientSideEntityData(this);
     private final ElytraData elytraData = new ElytraData(this);
     private final EspInformationData espInformationData = new EspInformationData(this);
@@ -113,5 +129,13 @@ public class User
     public boolean refersToUUID(final UUID uuid)
     {
         return uuid.equals(this.player.getUniqueId());
+    }
+
+    /**
+     * @return true if the {@link de.photon.AACAdditionPro.userdata.User} is null or bypassed.
+     */
+    public static boolean isUserInvalid(User user)
+    {
+        return user == null || user.isBypassed();
     }
 }

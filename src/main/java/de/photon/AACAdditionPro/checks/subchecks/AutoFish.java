@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
@@ -18,9 +18,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AutoFish implements Listener, AACAdditionProCheck
+public class AutoFish implements Listener, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 3600);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 3600);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -49,7 +49,7 @@ public class AutoFish implements Listener, AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // User valid and not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (User.isUserInvalid(user)) {
             return;
         }
 
@@ -132,17 +132,17 @@ public class AutoFish implements Listener, AACAdditionProCheck
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.AUTO_FISH;
+        return ModuleType.AUTO_FISH;
     }
 
     @Override
     public void subEnable()
     {
         // Parts
-        this.parts[0] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".parts.inhuman_reaction.enabled");
-        this.parts[1] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".parts.consistency.enabled");
+        this.parts[0] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".parts.inhuman_reaction.enabled");
+        this.parts[1] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".parts.consistency.enabled");
 
         VerboseSender.sendVerboseMessage("AutoFish-Parts: inhuman reaction: " + parts[0] + " | consistency: " + parts[1]);
     }

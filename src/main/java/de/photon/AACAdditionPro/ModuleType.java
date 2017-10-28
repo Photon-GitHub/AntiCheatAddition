@@ -3,8 +3,12 @@ package de.photon.AACAdditionPro;
 import lombok.Getter;
 
 @Getter
-public enum AdditionHackType
+public enum ModuleType
 {
+    // Additions
+    LOG_BOT("LogBot"),
+    PER_HEURISTIC_COMMANDS("Heuristic-Addition"),
+
     // Normal checks
     AUTO_FISH("AutoFish"),
     AUTO_POTION("AutoPotion"),
@@ -40,13 +44,13 @@ public enum AdditionHackType
     private final String configString;
     private final String violationMessage;
 
-    AdditionHackType(final String configString, final String violationMessage)
+    ModuleType(final String configString, final String violationMessage)
     {
         this.configString = configString;
         this.violationMessage = violationMessage;
     }
 
-    AdditionHackType(final String configString)
+    ModuleType(final String configString)
     {
         this.configString = configString;
         this.violationMessage = "failed " + configString;

@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.events.InventoryHeuristicsEvent;
 import de.photon.AACAdditionPro.heuristics.ActivationFunction;
 import de.photon.AACAdditionPro.heuristics.NeuralNetwork;
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.TreeMap;
 
-public class InventoryHeuristics implements Listener, AACAdditionProCheck
+public class InventoryHeuristics implements Listener, ViolationModule
 {
     private final Stack<Long> deltaTimes = new Stack<>();
     private final Stack<Integer> startPositions = new Stack<>();
@@ -43,7 +43,7 @@ public class InventoryHeuristics implements Listener, AACAdditionProCheck
             final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
             // Not bypassed
-            if (AACAdditionProCheck.isUserInvalid(user)) {
+            if (User.isUserInvalid(user)) {
                 return;
             }
 
@@ -132,9 +132,9 @@ public class InventoryHeuristics implements Listener, AACAdditionProCheck
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.INVENTORY_HEURISTICS;
+        return ModuleType.INVENTORY_HEURISTICS;
     }
 
     @Override

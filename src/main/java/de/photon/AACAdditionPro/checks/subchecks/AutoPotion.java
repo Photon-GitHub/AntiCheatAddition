@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
@@ -19,9 +19,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AutoPotion implements Listener, AACAdditionProCheck
+public class AutoPotion implements Listener, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 120L);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -103,7 +103,7 @@ public class AutoPotion implements Listener, AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (User.isUserInvalid(user)) {
             return;
         }
 
@@ -128,9 +128,9 @@ public class AutoPotion implements Listener, AACAdditionProCheck
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.AUTO_POTION;
+        return ModuleType.AUTO_POTION;
     }
 
     @Override

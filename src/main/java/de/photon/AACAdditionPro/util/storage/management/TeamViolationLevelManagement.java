@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.util.storage.management;
 
-import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.commands.Placeholders;
 import org.bukkit.entity.Player;
@@ -11,9 +11,9 @@ import java.util.UUID;
 
 public class TeamViolationLevelManagement extends ViolationLevelManagement
 {
-    public TeamViolationLevelManagement(final AdditionHackType additionHackType, final long decrease_delay)
+    public TeamViolationLevelManagement(final ModuleType moduleType, final long decrease_delay)
     {
-        super(additionHackType, decrease_delay);
+        super(moduleType, decrease_delay);
     }
 
     /**

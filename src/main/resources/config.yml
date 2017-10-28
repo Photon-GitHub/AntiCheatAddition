@@ -239,6 +239,12 @@ InventoryRotation:
 KillauraEntity:
    # Do you want to enable the KillauraEntity check
    enabled: true
+   # Enable this to only spawn an entity if requested by a command.
+   # In order to use the command you are required to set this to true.
+   # The entity will remain invisible until the command is issued.
+   #
+   # Please be aware that this will allow for
+   on_command: false
    # The general behaviour of the entity, mostly important for certain gamemodes.
    # Please configure this correctly for your server to have the best setup
    # (e.g. servers who have no teams should disable team)

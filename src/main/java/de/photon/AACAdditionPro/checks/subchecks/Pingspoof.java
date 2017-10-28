@@ -4,8 +4,8 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
@@ -17,9 +17,9 @@ import org.bukkit.event.Listener;
 
 import java.util.HashSet;
 
-public class Pingspoof extends PacketAdapter implements Listener, AACAdditionProCheck
+public class Pingspoof extends PacketAdapter implements Listener, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 500L);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 500L);
 
     @LoadFromConfiguration(configPath = ".ping_offset")
     private double ping_offset;
@@ -41,7 +41,8 @@ public class Pingspoof extends PacketAdapter implements Listener, AACAdditionPro
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
@@ -71,7 +72,8 @@ public class Pingspoof extends PacketAdapter implements Listener, AACAdditionPro
             If the measured ping is too high for a sophisticated result or a ping-update is scheduled soon ignore this to
             prevent false positives
         */
-        if (ping > this.max_real_ping || user.getPingData().forceUpdatePing) {
+        if (ping > this.max_real_ping || user.getPingData().forceUpdatePing)
+        {
             return;
         }
 
@@ -93,9 +95,9 @@ public class Pingspoof extends PacketAdapter implements Listener, AACAdditionPro
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.PINGSPOOF;
+        return ModuleType.PINGSPOOF;
     }
 
     @Override
@@ -106,9 +108,11 @@ public class Pingspoof extends PacketAdapter implements Listener, AACAdditionPro
                 AACAdditionPro.getInstance(),
                 () ->
                 {
-                    for (final User user : UserManager.getUsers()) {
+                    for (final User user : UserManager.getUsers())
+                    {
                         //Took too long to check
-                        if (user.getPingData().isCurrentlyChecking && user.getPingData().recentlyUpdated(1000)) {
+                        if (user.getPingData().isCurrentlyChecking && user.getPingData().recentlyUpdated(1000))
+                        {
                             user.getPingData().teleportLocation = null;
                             user.getPingData().isCurrentlyChecking = false;
                         }

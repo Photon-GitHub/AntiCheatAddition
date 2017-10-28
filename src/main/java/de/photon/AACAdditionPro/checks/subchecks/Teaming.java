@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.ConfigUtils;
@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Teaming implements Listener, AACAdditionProCheck
+public class Teaming implements Listener, ViolationModule
 {
-    private final TeamViolationLevelManagement vlManager = new TeamViolationLevelManagement(this.getAdditionHackType(), 300);
+    private final TeamViolationLevelManagement vlManager = new TeamViolationLevelManagement(this.getModuleType(), 300);
 
     // Config
     @LoadFromConfiguration(configPath = ".proximity_range")
@@ -40,18 +40,18 @@ public class Teaming implements Listener, AACAdditionProCheck
     @Override
     public void subEnable()
     {
-        final long period = (AACAdditionPro.getInstance().getConfig().getInt(this.getAdditionHackType().getConfigString() + ".delay") * 20) / 1000;
+        final long period = (AACAdditionPro.getInstance().getConfig().getInt(this.getModuleType().getConfigString() + ".delay") * 20) / 1000;
 
         // Square it
         proximity_range_squared *= proximity_range_squared;
 
         // Enabled worlds init
-        for (final String nameOfWorld : ConfigUtils.loadStringOrStringList(this.getAdditionHackType().getConfigString() + ".enabled_worlds")) {
+        for (final String nameOfWorld : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".enabled_worlds")) {
             enabled_worlds.add(AACAdditionPro.getInstance().getServer().getWorld(nameOfWorld));
         }
 
         // Safe zone init
-        for (final String safe_zone : ConfigUtils.loadStringOrStringList(this.getAdditionHackType().getConfigString() + ".safe_zones")) {
+        for (final String safe_zone : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".safe_zones")) {
             safe_zones.add(new Region(safe_zone));
         }
 
@@ -144,8 +144,8 @@ public class Teaming implements Listener, AACAdditionProCheck
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.TEAMING;
+        return ModuleType.TEAMING;
     }
 }

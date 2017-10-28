@@ -1,8 +1,7 @@
 package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlCheck;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -36,9 +35,9 @@ public class SchematicaControl implements Listener, ClientControlCheck, PluginMe
     {
         // Disable parts
         // True in config = Do disable
-        features[0] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".disable.printer");
-        features[1] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".disable.save");
-        features[2] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getAdditionHackType().getConfigString() + ".disable.load");
+        features[0] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.printer");
+        features[1] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.save");
+        features[2] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.load");
     }
 
     @EventHandler
@@ -46,7 +45,7 @@ public class SchematicaControl implements Listener, ClientControlCheck, PluginMe
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (User.isUserInvalid(user)) {
             return;
         }
 
@@ -90,8 +89,8 @@ public class SchematicaControl implements Listener, ClientControlCheck, PluginMe
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.SCHEMATICA_CONTROL;
+        return ModuleType.SCHEMATICA_CONTROL;
     }
 }

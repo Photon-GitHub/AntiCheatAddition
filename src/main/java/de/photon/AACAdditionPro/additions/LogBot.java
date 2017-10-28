@@ -1,7 +1,8 @@
-package de.photon.AACAdditionPro.addition.additions;
+package de.photon.AACAdditionPro.additions;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.addition.Addition;
+import de.photon.AACAdditionPro.Module;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import org.bukkit.Bukkit;
 
@@ -10,48 +11,58 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class LogBot implements Addition, Runnable {
+public class LogBot implements Module, Runnable
+{
     // HashMap's real capacity is always a power of 2
     private final Map<File, Long> logDeletionTimes = new HashMap<>(4, 1F);
     private int task_number;
 
     @Override
-    public void run() {
+    public void run()
+    {
         final long currentTime = System.currentTimeMillis();
 
         logDeletionTimes.forEach(
                 (logFolder, timeToDelete) ->
                 {
                     // If the logFolder exists
-                    if (logFolder.exists()) {
+                    if (logFolder.exists())
+                    {
                         final File[] files = logFolder.listFiles();
 
-                        if (files != null) {
+                        if (files != null)
+                        {
                             // The folder is not empty
-                            for (final File file : files) {
+                            for (final File file : files)
+                            {
                                 final String nameOfFile = file.getName();
                                 // Be sure it is a log file of AAC or AACAdditionPro (.log) or a log file of the server (.log.gz)
                                 if ((nameOfFile.endsWith(".log") || nameOfFile.endsWith(".log.gz")) &&
                                     // Minimum time
-                                    currentTime - file.lastModified() > timeToDelete) {
-                                    if (file.delete()) {
+                                    currentTime - file.lastModified() > timeToDelete)
+                                {
+                                    if (file.delete())
+                                    {
                                         VerboseSender.sendVerboseMessage("Deleted " + nameOfFile);
                                     }
-                                    else {
+                                    else
+                                    {
                                         VerboseSender.sendVerboseMessage("Could not delete old file " + nameOfFile, true, true);
                                     }
                                 }
                             }
                         }
                     }
-                    else {
+                    else
+                    {
                         VerboseSender.sendVerboseMessage("Could not find log folder " + logFolder.getName(), true, true);
                     }
                 });
     }
 
     @Override
-    public void enable() {
+    public void enable()
+    {
         long[] daysToDelete = new long[]{
                 AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AAC"),
                 AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AACAdditionPro"),
@@ -64,8 +75,10 @@ public class LogBot implements Addition, Runnable {
                 new File("logs")
         };
 
-        for (byte b = 0; b < daysToDelete.length; b++) {
-            if (daysToDelete[b] > 0) {
+        for (byte b = 0; b < daysToDelete.length; b++)
+        {
+            if (daysToDelete[b] > 0)
+            {
                 logDeletionTimes.put(logFolderLocations[b], TimeUnit.DAYS.toMillis(daysToDelete[b]));
             }
         }
@@ -74,12 +87,14 @@ public class LogBot implements Addition, Runnable {
     }
 
     @Override
-    public void disable() {
+    public void disable()
+    {
         Bukkit.getScheduler().cancelTask(task_number);
     }
 
     @Override
-    public String getConfigString() {
-        return "LogBot";
+    public ModuleType getModuleType()
+    {
+        return ModuleType.LOG_BOT;
     }
 }

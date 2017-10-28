@@ -4,15 +4,15 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 
-public class Skinblinker extends PacketAdapter implements AACAdditionProCheck
+public class Skinblinker extends PacketAdapter implements ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 100);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100);
 
     public Skinblinker()
     {
@@ -31,16 +31,20 @@ public class Skinblinker extends PacketAdapter implements AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
         //Sprinting or sneaking (detection)
         if (user.getPlayer().isSprinting() || user.getPlayer().isSneaking())
         {
-            if (user.getSettingsData().skin_components == 0) {
+            if (user.getSettingsData().skin_components == 0)
+            {
                 user.getSettingsData().skin_components = event.getPacket().getIntegers().readSafely(1);
-            } else if (event.getPacket().getIntegers().readSafely(1) != user.getSettingsData().skin_components) {
+            }
+            else if (event.getPacket().getIntegers().readSafely(1) != user.getSettingsData().skin_components)
+            {
                 vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
                 user.getSettingsData().skin_components = event.getPacket().getIntegers().readSafely(1);
             }
@@ -54,8 +58,8 @@ public class Skinblinker extends PacketAdapter implements AACAdditionProCheck
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.SKINBLINKER;
+        return ModuleType.SKINBLINKER;
     }
 }

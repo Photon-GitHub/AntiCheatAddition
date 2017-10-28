@@ -5,8 +5,8 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
+import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
@@ -15,9 +15,9 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLoo
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 
-public class EqualRotation extends PacketAdapter implements AACAdditionProCheck
+public class EqualRotation extends PacketAdapter implements ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getAdditionHackType(), 100);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -35,7 +35,7 @@ public class EqualRotation extends PacketAdapter implements AACAdditionProCheck
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (AACAdditionProCheck.isUserInvalid(user)) {
+        if (User.isUserInvalid(user)) {
             return;
         }
 
@@ -96,8 +96,8 @@ public class EqualRotation extends PacketAdapter implements AACAdditionProCheck
     }
 
     @Override
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return AdditionHackType.EQUAL_ROTATION;
+        return ModuleType.EQUAL_ROTATION;
     }
 }

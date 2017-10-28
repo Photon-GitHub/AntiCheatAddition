@@ -2,9 +2,7 @@ package de.photon.AACAdditionPro.command.subcommands;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.InternalPermission;
-import de.photon.AACAdditionPro.Module;
-import de.photon.AACAdditionPro.checks.AACAdditionProCheck;
-import de.photon.AACAdditionPro.checks.CheckManager;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import org.bukkit.ChatColor;
@@ -13,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Queue;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class InfoCommand extends InternalCommand
@@ -33,7 +32,7 @@ public class InfoCommand extends InternalCommand
         }
         else
         {
-            final TreeMap<Integer, String> messages = new TreeMap<>(
+            final SortedMap<Integer, String> messages = new TreeMap<>(
                     (Integer o1, Integer o2) -> {
                         //The other way round
                         if (o1 > o2)
@@ -47,19 +46,19 @@ public class InfoCommand extends InternalCommand
                         return 1;
                     });
 
-            for (final Module module : CheckManager.checkManagerInstance.getManagedObjects())
+            for (final ModuleType moduleType : ModuleType.values())
             {
                 try
                 {
                     // Casting is ok here as only AACAdditionProChecks will be in the CheckManager.
-                    Integer vl = ((AACAdditionProCheck) module).getViolationLevelManagement().getVL(p.getUniqueId());
+                    Integer vl = AACAdditionPro.getInstance().getModuleManager().getViolationLevelManagement(moduleType).getVL(p.getUniqueId());
                     if (vl != 0)
                     {
-                        messages.put(vl, module.getName());
+                        messages.put(vl, AACAdditionPro.getInstance().getModuleManager().getModule(moduleType).getName());
                     }
-                } catch (NoViolationLevelManagementException ignore)
+                } catch (IllegalArgumentException | NoViolationLevelManagementException ignore)
                 {
-                    // Ignore the Exception as there are a few checks with no ViolatonLevelManagement
+                    // Ignore the Exceptions as there are a few checks with no ViolatonLevelManagement or disabled checks.
                 }
             }
 

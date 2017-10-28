@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.events;
 
-import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.ModuleType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -10,15 +10,15 @@ import org.bukkit.event.player.PlayerEvent;
 public class PlayerAdditionViolationCommandEvent extends PlayerEvent implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();
-    private final AdditionHackType additionHackType;
+    private final ModuleType moduleType;
     private boolean cancelled;
     private String command;
 
-    public PlayerAdditionViolationCommandEvent(final Player player, final String command, final AdditionHackType additionHackType)
+    public PlayerAdditionViolationCommandEvent(final Player player, final String command, final ModuleType moduleType)
     {
         super(player);
         this.command = command;
-        this.additionHackType = additionHackType;
+        this.moduleType = moduleType;
     }
 
     //Needed for 1.8.8
@@ -27,9 +27,9 @@ public class PlayerAdditionViolationCommandEvent extends PlayerEvent implements 
         return handlers;
     }
 
-    public AdditionHackType getAdditionHackType()
+    public ModuleType getModuleType()
     {
-        return additionHackType;
+        return moduleType;
     }
 
     public String getCommand()

@@ -5,7 +5,7 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.entities.equipment.Equipment;
 import de.photon.AACAdditionPro.util.entities.equipment.category.WeaponsEquipmentCategory;
@@ -13,6 +13,7 @@ import de.photon.AACAdditionPro.util.entities.movement.submovements.BasicFollowM
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
+import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import lombok.Getter;
@@ -21,6 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
@@ -28,16 +30,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ClientsidePlayerEntity extends ClientsideEntity
 {
-    private static final boolean shouldAssignTeam;
-    private static final boolean shouldSwing;
-    private static final boolean shouldSwap;
-
-    static {
-        // Init additional behaviour configs
-        shouldAssignTeam = AACAdditionPro.getInstance().getConfig().getBoolean(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".behaviour.team.enabled");
-        shouldSwing = AACAdditionPro.getInstance().getConfig().getBoolean(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swing.enabled");
-        shouldSwap = AACAdditionPro.getInstance().getConfig().getBoolean(AdditionHackType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swap.enabled");
-    }
+    private boolean shouldAssignTeam;
+    private boolean shouldSwing;
+    private boolean shouldSwap;
 
     @Getter
     private final WrappedGameProfile gameProfile;
@@ -69,6 +64,11 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         this.equipment = new Equipment(this);
 
         recursiveUpdatePing();
+
+        // Init additional behaviour configs
+        shouldAssignTeam = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.team.enabled");
+        shouldSwing = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swing.enabled");
+        shouldSwap = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swap.enabled");
     }
 
     @Override
@@ -77,7 +77,8 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         super.tick();
 
         // Teams + Scoreboard
-        if (shouldAssignTeam) {
+        if (shouldAssignTeam)
+        {
             DisplayInformation.applyTeams(this);
         }
 
@@ -102,25 +103,31 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         this.move(this.location);
 
         // Maybe we should switch movement states?
-        if (lastJump++ > MathUtils.randomBoundaryDouble(30, 80)) {
+        if (lastJump++ > MathUtils.randomBoundaryDouble(30, 80))
+        {
             lastJump = 0;
             jump();
         }
 
         // Swing items if enabled
-        if (shouldSwing) {
-            if (lastSwing++ > MathUtils.randomBoundaryDouble(15, 35)) {
+        if (shouldSwing)
+        {
+            if (lastSwing++ > MathUtils.randomBoundaryDouble(15, 35))
+            {
                 lastSwing = 0;
 
-                if (isSwingable(equipment.getMainHand().getType())) {
+                if (isSwingable(equipment.getMainHand().getType()))
+                {
                     swing();
                 }
             }
         }
 
         // Swap items if needed
-        if (shouldSwap) {
-            if (lastSwap++ > MathUtils.randomBoundaryDouble(40, 65)) {
+        if (shouldSwap)
+        {
+            if (lastSwap++ > MathUtils.randomBoundaryDouble(40, 65))
+            {
                 lastSwap = 0;
                 equipment.equipInHand();
                 equipment.equipPlayerEntity();
@@ -138,7 +145,8 @@ public class ClientsidePlayerEntity extends ClientsideEntity
      */
     private float reduceAngle(float input, float minMax)
     {
-        while (Math.abs(input) > minMax) {
+        while (Math.abs(input) > minMax)
+        {
             input -= Math.signum(input) * minMax;
         }
         return input;
@@ -171,6 +179,29 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         }, (long) MathUtils.randomBoundaryDouble(10, 35));
     }
 
+    @Override
+    public void setVisibility(boolean visible)
+    {
+        super.setVisibility(visible);
+
+        this.shouldSwap = visible;
+
+        for (final EnumWrappers.ItemSlot slot : EnumWrappers.ItemSlot.values())
+        {
+            //Update the equipment with fake-packets
+            final WrapperPlayServerEntityEquipment wrapperPlayServerEntityEquipment = new WrapperPlayServerEntityEquipment();
+
+            wrapperPlayServerEntityEquipment.setEntityID(this.getEntityID());
+            wrapperPlayServerEntityEquipment.setItem(new ItemStack(Material.AIR));
+
+
+            // 1.8.8 is automatically included as of the bukkit-handling, therefore server-version specific handling
+            // as of the different server classes / enums and the null-removal above.
+            wrapperPlayServerEntityEquipment.setSlot(slot);
+            wrapperPlayServerEntityEquipment.sendPacket(this.observedPlayer);
+        }
+    }
+
     // ---------------------------------------------------------------- Spawn --------------------------------------------------------------- //
 
     @Override
@@ -191,7 +222,8 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // DataWatcher
         final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
 
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion())
+        {
             case MC188:
                 dataWatcher.setObject(6, 20F);
                 dataWatcher.setObject(10, (byte) 127);
@@ -225,7 +257,8 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // System.out.println("Sent player spawn of bot " + this.entityID + " for " + observedPlayer.getName() + " @ " + location);
 
         // Set the team (most common on respawn)
-        if (shouldAssignTeam) {
+        if (shouldAssignTeam)
+        {
             DisplayInformation.applyTeams(this);
         }
 
@@ -242,7 +275,8 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         super.despawn();
 
-        if (isSpawned()) {
+        if (isSpawned())
+        {
             removeFromTab();
         }
     }

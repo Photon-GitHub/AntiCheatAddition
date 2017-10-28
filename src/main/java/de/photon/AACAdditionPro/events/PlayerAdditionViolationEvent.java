@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.events;
 
-import de.photon.AACAdditionPro.AdditionHackType;
+import de.photon.AACAdditionPro.ModuleType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
@@ -17,22 +17,22 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
 
     private final int vl;
 
-    public PlayerAdditionViolationEvent(final Player p, final AdditionHackType additionHackType, final int i, final String message)
+    public PlayerAdditionViolationEvent(final Player p, final ModuleType moduleType, final int i, final String message)
     {
-        super(p, additionHackType, message);
+        super(p, moduleType, message);
         this.vl = i;
     }
 
-    public PlayerAdditionViolationEvent(final Player p, final AdditionHackType additionHackType, final int i)
+    public PlayerAdditionViolationEvent(final Player p, final ModuleType moduleType, final int i)
     {
-        super(p, additionHackType);
+        super(p, moduleType);
         this.vl = i;
     }
 
     /**
-     * Used to get the current vl of a player in a certain check. The checks are distinguished by their {@link AdditionHackType}
+     * Used to get the current vl of a player in a certain check. The checks are distinguished by their {@link ModuleType}
      *
-     * @return the new vl of the player in the {@link AdditionHackType}
+     * @return the new vl of the player in the {@link ModuleType}
      */
     public int getVl()
     {

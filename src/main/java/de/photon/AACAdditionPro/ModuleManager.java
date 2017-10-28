@@ -1,55 +1,129 @@
 package de.photon.AACAdditionPro;
 
+import de.photon.AACAdditionPro.checks.ViolationModule;
+import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
+import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
-import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-public abstract class ModuleManager extends ArrayList<Module>
+/**
+ * Manages the {@link Module}s of {@link AACAdditionPro}.
+ * It extends {@link ArrayList} and thus has an in-built iterator.
+ */
+public class ModuleManager extends ArrayList<Module>
 {
-    protected ModuleManager(final Module... initialObjects)
+    ModuleManager(final Module... initialObjects)
     {
-        super(Arrays.asList(initialObjects));
-        this.forEach(this::registerObject);
+        super(initialObjects.length);
+        for (Module initialObject : initialObjects)
+        {
+            this.registerObject(initialObject);
+        }
     }
 
     private void registerObject(Module object)
     {
-        try {
+        try
+        {
             // Save what should be written in the current path (no error) in this variable.
             final String pathOutput;
             // Enabled in the config
-            if (AACAdditionPro.getInstance().getConfig().getBoolean(object.getConfigString() + ".enabled")) {
-
+            if (AACAdditionPro.getInstance().getConfig().getBoolean(object.getConfigString() + ".enabled"))
+            {
                 // Supports the current server version
-                if (object.getSupportedVersions().contains(ServerVersion.getActiveServerVersion())) {
+                if (ServerVersion.supportsActiveServerVersion(object.getSupportedVersions()))
+                {
                     // Enable
+                    this.add(object);
                     object.enable();
                     pathOutput = " has been enabled.";
-                } else {
-                    // Auto-Disable as of the wrong server version
-                    Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> this.remove(object));
-                    pathOutput = " is not compatible with the server-version.";
                 }
-            } else {
+                else
+                {
+                    pathOutput = " is not compatible with your server version.";
+                }
+            }
+            else
+            {
                 // Disable as it was chosen so in the config
                 // Do not remove here as one might want to enable the check via the API
                 pathOutput = " was chosen not to be enabled.";
             }
 
             VerboseSender.sendVerboseMessage(object.getName() + pathOutput, true, false);
-        } catch (final Exception e) {
+        } catch (final Exception e)
+        {
             // Error handling
             VerboseSender.sendVerboseMessage(object.getName() + " could not be registered.", true, true);
             e.printStackTrace();
         }
     }
 
-    public List<Module> getManagedObjects()
+    /**
+     * Gets a {@link Module} from its {@link ModuleType}.
+     *
+     * @param moduleType the {@link ModuleType} of the {@link Module} that should be found
+     * @return the {@link Module} if a match was found
+     * @throws IllegalArgumentException if the provided {@link ModuleType} parameter is not used in a {@link Module}
+     */
+    public Module getModule(final ModuleType moduleType)
     {
-        return this;
+        for (final Module module : this)
+        {
+            if (module.getModuleType() == moduleType)
+            {
+                return module;
+            }
+        }
+        throw new IllegalArgumentException("The ModuleType: " + moduleType.name() + " is not used in any registered check (is the server version compatible with it?).");
+    }
+
+    /**
+     * Gets a the {@link ViolationLevelManagement} of a module from its {@link ModuleType}.
+     *
+     * @param moduleType the {@link ModuleType} of the check which {@link ViolationLevelManagement} is searched for.
+     * @return the check if it was found
+     * @throws IllegalArgumentException            if the provided {@link ModuleType} parameter is not used in a check
+     * @throws NoViolationLevelManagementException if the module doesn't have a {@link ViolationLevelManagement}
+     */
+    public ViolationLevelManagement getViolationLevelManagement(final ModuleType moduleType)
+    {
+        final Module module = this.getModule(moduleType);
+        if (module instanceof ViolationModule)
+        {
+            return ((ViolationModule) module).getViolationLevelManagement();
+        }
+
+        throw new NoViolationLevelManagementException(moduleType);
+    }
+
+    /**
+     * Enables or disables a check in runtime
+     *
+     * @param moduleType the {@link ModuleType} of the check that should be disabled.
+     */
+    public void setStateOfModule(final ModuleType moduleType, final boolean state)
+    {
+        final Module module = this.getModule(moduleType);
+
+        // The message that will be printed in the logs / console
+        String message = "Check " + module.getName() + "has been ";
+
+        // Should it be enabled or disabled
+        if (state)
+        {
+            module.enable();
+            message += "enabled.";
+        }
+        else
+        {
+            module.disable();
+            message += "disabled.";
+        }
+
+        // Send / log the message
+        VerboseSender.sendVerboseMessage(message);
     }
 }

@@ -20,7 +20,7 @@ public class Fastswitch extends PacketAdapter implements ViolationModule
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
-    
+
     @LoadFromConfiguration(configPath = "max_ping")
     private double max_ping;
 
@@ -37,8 +37,15 @@ public class Fastswitch extends PacketAdapter implements ViolationModule
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
+        System.out.println("--DEBUG--");
+        System.out.println("PlayerName: " + event.getPlayer().getName());
+        System.out.println("List size: " + UserManager.getUsers().size());
+        System.out.println("Get: " + UserManager.getUser(event.getPlayer().getUniqueId()));
+        System.out.println("User object: " + new User(event.getPlayer()));
+
         // Not bypassed
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
@@ -49,10 +56,12 @@ public class Fastswitch extends PacketAdapter implements ViolationModule
             !canBeLegit(user.getPlayer().getInventory().getHeldItemSlot(), event.getPacket().getBytes().readSafely(0)))
         {
             // Already switched in the given timeframe
-            if (user.getFastSwitchData().recentlyUpdated(switch_milliseconds)) {
+            if (user.getFastSwitchData().recentlyUpdated(switch_milliseconds))
+            {
 
                 // The ping is valid and in the borders that are set in the config
-                if (max_ping < 0 || AACAPIProvider.getAPI().getPing(user.getPlayer()) < max_ping) {
+                if (max_ping < 0 || AACAPIProvider.getAPI().getPing(user.getPlayer()) < max_ping)
+                {
                     vlManager.flag(user.getPlayer(),
                                    cancel_vl,
                                    () -> event.setCancelled(true),

@@ -9,8 +9,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Collection;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class UserManager implements Listener
 {
@@ -19,7 +19,7 @@ public class UserManager implements Listener
 
     static
     {
-        users = new ConcurrentHashMap<>();
+        users = new ConcurrentSkipListMap<>();
         ProtocolLibrary.getProtocolManager().addPacketListener(new BeaconListener());
     }
 

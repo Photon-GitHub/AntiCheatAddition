@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -29,7 +30,7 @@ public class UserManager implements Listener
 
     public static Collection<User> getUsers()
     {
-        return users.values();
+        return new HashSet<>(users.values());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

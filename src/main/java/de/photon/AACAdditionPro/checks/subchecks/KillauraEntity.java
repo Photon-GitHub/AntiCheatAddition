@@ -61,8 +61,14 @@ public class KillauraEntity implements ViolationModule, Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user))
+        if (user == null)
         {
+            return;
+        }
+
+        if (user.isBypassed())
+        {
+            respawnEntity(user.getPlayer());
             return;
         }
 
@@ -82,8 +88,14 @@ public class KillauraEntity implements ViolationModule, Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user))
+        if (user == null)
         {
+            return;
+        }
+
+        if (user.isBypassed())
+        {
+            respawnEntity(user.getPlayer());
             return;
         }
 
@@ -236,11 +248,12 @@ public class KillauraEntity implements ViolationModule, Listener
 
         // User not there
         if (user == null)
-        { //dont check bypassed since it might change and it would run forever
+        {
+            // Don't check bypassed since it might change and it would run forever
             return;
         }
 
-        ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+        final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
         if (clientSidePlayerEntity != null)
         {
             clientSidePlayerEntity.despawn();

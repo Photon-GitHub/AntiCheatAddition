@@ -1,14 +1,11 @@
 package de.photon.AACAdditionPro.util.visibility.informationmodifiers;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.visibility.PlayerInformationModifier;
-import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,19 +19,7 @@ public class InformationObfuscator extends PlayerInformationModifier
         validate(observer, entity);
         setModifyInformation(observer, entity.getEntityId(), false);
 
-        for (final EnumWrappers.ItemSlot slot : EnumWrappers.ItemSlot.values()) {
-            //Update the equipment with fake-packets
-            final WrapperPlayServerEntityEquipment wrapperPlayServerEntityEquipment = new WrapperPlayServerEntityEquipment();
-
-            wrapperPlayServerEntityEquipment.setEntityID(entity.getEntityId());
-            wrapperPlayServerEntityEquipment.setItem(new ItemStack(Material.AIR));
-
-
-            // 1.8.8 is automatically included as of the bukkit-handling, therefore server-version specific handling
-            // as of the different server classes / enums and the null-removal above.
-            wrapperPlayServerEntityEquipment.setSlot(slot);
-            wrapperPlayServerEntityEquipment.sendPacket(observer);
-        }
+        WrapperPlayServerEntityEquipment.clearAllSlots(entity.getEntityId(), observer);
     }
 
     @Override

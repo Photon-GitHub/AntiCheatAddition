@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Queue;
-import java.util.Set;
 
 public class CheckCommand extends InternalCommand
 {
@@ -48,12 +47,6 @@ public class CheckCommand extends InternalCommand
     protected String[] getCommandHelp()
     {
         return new String[]{"Manually check a player with the heuristics"};
-    }
-
-    @Override
-    protected Set<InternalCommand> getChildCommands()
-    {
-        return null;
     }
 
     @Override

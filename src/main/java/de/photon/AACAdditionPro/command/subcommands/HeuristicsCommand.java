@@ -8,16 +8,15 @@ import de.photon.AACAdditionPro.command.subcommands.heuristics.TrainCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Queue;
-import java.util.Set;
 
 public class HeuristicsCommand extends InternalCommand
 {
     public HeuristicsCommand()
     {
-        super("heuristics", InternalPermission.NEURAL, (byte) 1);
+        super("heuristics", InternalPermission.NEURAL, (byte) 1,
+              new CheckCommand(),
+              new TrainCommand());
     }
 
     @Override
@@ -33,15 +32,6 @@ public class HeuristicsCommand extends InternalCommand
     protected String[] getCommandHelp()
     {
         return new String[]{"Utilities for the InventoryHeuristics"};
-    }
-
-    @Override
-    protected Set<InternalCommand> getChildCommands()
-    {
-        return new HashSet<>(Arrays.asList(
-                new CheckCommand(),
-                new TrainCommand())
-        );
     }
 
     @Override

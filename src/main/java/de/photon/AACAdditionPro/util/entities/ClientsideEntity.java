@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.util.entities;
 
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.api.killauraentity.MovementType;
@@ -507,9 +508,29 @@ public abstract class ClientsideEntity
 
         final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata();
         entityMetadataWrapper.setEntityID(this.getEntityID());
-        entityMetadataWrapper.setMetadata(Collections.singletonList(new WrappedWatchableObject(0, (byte) (visible ?
-                                                                                                          0 :
-                                                                                                          0x20))));
+
+        switch (ServerVersion.getActiveServerVersion())
+        {
+            case MC188:
+                entityMetadataWrapper.setMetadata(Collections.singletonList(new WrappedWatchableObject(0, (byte) (
+                        visible ?
+                        0 :
+                        0x20))));
+                break;
+            case MC110:
+            case MC111:
+            case MC112:
+                final WrappedDataWatcher.WrappedDataWatcherObject dataWatcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class));
+
+                entityMetadataWrapper.setEntityID(this.getEntityID());
+                entityMetadataWrapper.setMetadata(Collections.singletonList(new WrappedWatchableObject(dataWatcherObject, (byte) (
+                        visible ?
+                        0 :
+                        0x20))));
+                break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
         entityMetadataWrapper.sendPacket(this.observedPlayer);
 
         this.visible = visible;

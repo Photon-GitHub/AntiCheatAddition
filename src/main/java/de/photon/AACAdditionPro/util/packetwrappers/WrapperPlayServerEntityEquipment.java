@@ -3,10 +3,13 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class WrapperPlayServerEntityEquipment extends AbstractPacket
@@ -50,7 +53,6 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
      * Retrieve the entity of the painting that will be spawned.
      *
      * @param world - the current world of the entity.
-     *
      * @return The spawned entity.
      */
     public Entity getEntity(final World world)
@@ -62,7 +64,6 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
      * Retrieve the entity of the painting that will be spawned.
      *
      * @param event - the packet event.
-     *
      * @return The spawned entity.
      */
     public Entity getEntity(final PacketEvent event)
@@ -77,7 +78,8 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
 
     public void setSlot(final ItemSlot value)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion())
+        {
             case MC188:
                 handle.getIntegers().write(1, value.ordinal());
                 break;
@@ -111,5 +113,29 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
     public void setItem(final ItemStack value)
     {
         handle.getItemModifier().write(0, value);
+    }
+
+    /**
+     * Sets all equipment slots of the entity to air for the observer.
+     *
+     * @param entityId the id of the {@link Entity} which slots should be cleared.
+     * @param observer the {@link Player} who shall no longer see the equipment.
+     */
+    public static void clearAllSlots(int entityId, Player observer)
+    {
+        for (final EnumWrappers.ItemSlot slot : EnumWrappers.ItemSlot.values())
+        {
+            //Update the equipment with fake-packets
+            final WrapperPlayServerEntityEquipment wrapperPlayServerEntityEquipment = new WrapperPlayServerEntityEquipment();
+
+            wrapperPlayServerEntityEquipment.setEntityID(entityId);
+            wrapperPlayServerEntityEquipment.setItem(new ItemStack(Material.AIR));
+
+
+            // 1.8.8 is automatically included as of the bukkit-handling, therefore server-version specific handling
+            // as of the different server classes / enums and the null-removal above.
+            wrapperPlayServerEntityEquipment.setSlot(slot);
+            wrapperPlayServerEntityEquipment.sendPacket(observer);
+        }
     }
 }

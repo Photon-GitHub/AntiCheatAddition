@@ -22,7 +22,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
@@ -188,20 +187,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         if (!visible)
         {
-            for (final EnumWrappers.ItemSlot slot : EnumWrappers.ItemSlot.values())
-            {
-                //Update the equipment with fake-packets
-                final WrapperPlayServerEntityEquipment wrapperPlayServerEntityEquipment = new WrapperPlayServerEntityEquipment();
-
-                wrapperPlayServerEntityEquipment.setEntityID(this.getEntityID());
-                wrapperPlayServerEntityEquipment.setItem(new ItemStack(Material.AIR));
-
-
-                // 1.8.8 is automatically included as of the bukkit-handling, therefore server-version specific handling
-                // as of the different server classes / enums and the null-removal above.
-                wrapperPlayServerEntityEquipment.setSlot(slot);
-                wrapperPlayServerEntityEquipment.sendPacket(this.observedPlayer);
-            }
+            WrapperPlayServerEntityEquipment.clearAllSlots(this.getEntityID(), this.observedPlayer);
         }
     }
 

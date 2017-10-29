@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.command.subcommands;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.InternalPermission;
+import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -11,6 +12,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Queue;
 
 public class EntityCheckCommand extends InternalCommand
@@ -64,6 +67,22 @@ public class EntityCheckCommand extends InternalCommand
                 {
                     sender.sendMessage(prefix + ChatColor.RED + "The target user has bypass permissions.");
                     return;
+                }
+
+                if (user.getClientSideEntityData().clientSidePlayerEntity == null)
+                {
+                    try
+                    {
+                        final Method respawnEntityMethod = KillauraEntity.class.getDeclaredMethod("respawnEntity", Player.class);
+                        respawnEntityMethod.setAccessible(true);
+                        respawnEntityMethod.invoke(null, user.getPlayer());
+                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
+                    {
+                        sender.sendMessage(prefix + ChatColor.RED + "Critical error whilst trying to respawn the entity.");
+                        VerboseSender.sendVerboseMessage("Critical error whilst trying to respawn the entity.", true, true);
+                        e.printStackTrace();
+                        return;
+                    }
                 }
 
                 if (user.getClientSideEntityData().clientSidePlayerEntity.isVisible())

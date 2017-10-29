@@ -507,16 +507,15 @@ public abstract class ClientsideEntity
         }
 
         final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata();
-        
+        entityMetadataWrapper.setEntityID(this.getEntityID());
+
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
-                entityMetadataWrapper.setEntityID(this.getEntityID());
                 entityMetadataWrapper.setMetadata(Collections.singletonList(new WrappedWatchableObject(0, (byte) (
                         visible ?
                         0 :
                         0x20))));
-                entityMetadataWrapper.sendPacket(this.observedPlayer);
                 break;
             case MC110:
             case MC111:
@@ -528,12 +527,11 @@ public abstract class ClientsideEntity
                         visible ?
                         0 :
                         0x20))));
-                entityMetadataWrapper.sendPacket(this.observedPlayer);
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
-
+        entityMetadataWrapper.sendPacket(this.observedPlayer);
 
         this.visible = visible;
     }

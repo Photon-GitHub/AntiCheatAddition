@@ -2,6 +2,8 @@ package de.photon.AACAdditionPro.command.subcommands;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.InternalPermission;
+import de.photon.AACAdditionPro.Module;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.userdata.User;
@@ -19,6 +21,8 @@ import java.util.Queue;
 public class EntityCheckCommand extends InternalCommand
 {
     private final boolean on_command;
+
+    private static final byte MAX_ITERATIONS = 1;
 
     public EntityCheckCommand()
     {
@@ -40,7 +44,7 @@ public class EntityCheckCommand extends InternalCommand
             final short checkDuration;
             try
             {
-                checkDuration = Short.valueOf(arguments.peek());
+                checkDuration = Short.valueOf(arguments.remove());
             } catch (NumberFormatException exception)
             {
                 sender.sendMessage(prefix + ChatColor.RED + "Please enter a valid duration");
@@ -73,40 +77,46 @@ public class EntityCheckCommand extends InternalCommand
                 {
                     try
                     {
+                        final Module module = AACAdditionPro.getInstance().getModuleManager().getModule(ModuleType.KILLAURA_ENTITY);
+
                         final Method respawnEntityMethod = KillauraEntity.class.getDeclaredMethod("respawnEntity", Player.class);
                         respawnEntityMethod.setAccessible(true);
-                        respawnEntityMethod.invoke(null, user.getPlayer());
-                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
+                        respawnEntityMethod.invoke(module, user.getPlayer());
+
+                        arguments.add(player.getName());
+                        arguments.add(String.valueOf(checkDuration));
+
+                        if (user.getClientSideEntityData().respawnTrys++ > MAX_ITERATIONS)
+                        {
+                            throw new IllegalStateException("Too many repspawn iterations.");
+                        }
+
+                        Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> this.execute(sender, arguments), 5L);
+                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | IllegalStateException e)
                     {
                         sender.sendMessage(prefix + ChatColor.RED + "Critical error whilst trying to respawn the entity.");
                         VerboseSender.sendVerboseMessage("Critical error whilst trying to respawn the entity.", true, true);
                         e.printStackTrace();
-                        return;
                     }
                 }
+                else
+                {
+                    user.getClientSideEntityData().respawnTrys = 0;
+                    if (user.getClientSideEntityData().clientSidePlayerEntity.isVisible())
+                    {
+                        sender.sendMessage(prefix + ChatColor.RED + "A check of the player is already in progress.");
+                    }
+                    else
+                    {
+                        sender.sendMessage(prefix + ChatColor.GOLD + "Now checking player " + user.getPlayer().getName() + " for " + checkDuration + " ticks.");
+                        VerboseSender.sendVerboseMessage("Manual entity check issued by " + sender.getName() + ": Player: " + user.getPlayer().getName() + " | Time: " + checkDuration + " ticks.");
+                        user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(true);
 
-                Bukkit.getScheduler().runTaskLater(
-                        AACAdditionPro.getInstance(),
-                        () ->
-                        {
-                            if (user.getClientSideEntityData().clientSidePlayerEntity.isVisible())
-                            {
-                                sender.sendMessage(prefix + ChatColor.RED + "A check of the player is already in progress.");
-                            }
-                            else
-                            {
-                                sender.sendMessage(prefix + ChatColor.GOLD + "Now checking player " + user.getPlayer().getName() + " for " + checkDuration + " ticks.");
-                                VerboseSender.sendVerboseMessage("Manual entity check issued by " + sender.getName() + ": Player: " + user.getPlayer().getName() + " | Time: " + checkDuration + " ticks.");
-                                user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(true);
-
-                                Bukkit.getScheduler().runTaskLater(
-                                        AACAdditionPro.getInstance(),
-                                        () -> user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(false), checkDuration);
-                            }
-
-                        },
-                        // To ticks to make sure the entity is spawned by now.
-                        2L);
+                        Bukkit.getScheduler().runTaskLater(
+                                AACAdditionPro.getInstance(),
+                                () -> user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(false), checkDuration);
+                    }
+                }
             }
             else
             {

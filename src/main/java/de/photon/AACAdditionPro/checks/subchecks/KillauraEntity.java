@@ -61,17 +61,27 @@ public class KillauraEntity implements ViolationModule, Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user))
+        if (user == null)
         {
             return;
         }
 
         final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
 
-        if (playerEntity != null &&
-            StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken()))
+        if (playerEntity != null)
         {
-            event.getTabCompletions().add(playerEntity.getName());
+            // Despawing if bypassed.
+            if (user.isBypassed())
+            {
+                playerEntity.despawn();
+            }
+            else
+            {
+                if (StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken()))
+                {
+                    event.getTabCompletions().add(playerEntity.getName());
+                }
+            }
         }
     }
 
@@ -82,7 +92,7 @@ public class KillauraEntity implements ViolationModule, Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user))
+        if (user == null)
         {
             return;
         }
@@ -91,7 +101,15 @@ public class KillauraEntity implements ViolationModule, Listener
 
         if (playerEntity != null)
         {
-            playerEntity.setVelocity(event.getVelocity());
+            // Despawing if bypassed.
+            if (user.isBypassed())
+            {
+                playerEntity.despawn();
+            }
+            else
+            {
+                playerEntity.setVelocity(event.getVelocity());
+            }
         }
     }
 

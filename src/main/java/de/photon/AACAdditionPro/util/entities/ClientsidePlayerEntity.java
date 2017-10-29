@@ -186,19 +186,22 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         this.shouldSwap = visible;
 
-        for (final EnumWrappers.ItemSlot slot : EnumWrappers.ItemSlot.values())
+        if (!visible)
         {
-            //Update the equipment with fake-packets
-            final WrapperPlayServerEntityEquipment wrapperPlayServerEntityEquipment = new WrapperPlayServerEntityEquipment();
+            for (final EnumWrappers.ItemSlot slot : EnumWrappers.ItemSlot.values())
+            {
+                //Update the equipment with fake-packets
+                final WrapperPlayServerEntityEquipment wrapperPlayServerEntityEquipment = new WrapperPlayServerEntityEquipment();
 
-            wrapperPlayServerEntityEquipment.setEntityID(this.getEntityID());
-            wrapperPlayServerEntityEquipment.setItem(new ItemStack(Material.AIR));
+                wrapperPlayServerEntityEquipment.setEntityID(this.getEntityID());
+                wrapperPlayServerEntityEquipment.setItem(new ItemStack(Material.AIR));
 
 
-            // 1.8.8 is automatically included as of the bukkit-handling, therefore server-version specific handling
-            // as of the different server classes / enums and the null-removal above.
-            wrapperPlayServerEntityEquipment.setSlot(slot);
-            wrapperPlayServerEntityEquipment.sendPacket(this.observedPlayer);
+                // 1.8.8 is automatically included as of the bukkit-handling, therefore server-version specific handling
+                // as of the different server classes / enums and the null-removal above.
+                wrapperPlayServerEntityEquipment.setSlot(slot);
+                wrapperPlayServerEntityEquipment.sendPacket(this.observedPlayer);
+            }
         }
     }
 

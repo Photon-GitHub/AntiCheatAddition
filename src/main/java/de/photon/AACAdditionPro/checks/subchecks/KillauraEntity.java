@@ -69,6 +69,7 @@ public class KillauraEntity implements ViolationModule, Listener
         if (user.isBypassed())
         {
             respawnEntity(user.getPlayer());
+            return;
         }
 
         final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
@@ -95,6 +96,7 @@ public class KillauraEntity implements ViolationModule, Listener
         if (user.isBypassed())
         {
             respawnEntity(user.getPlayer());
+            return;
         }
 
         final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;

@@ -85,20 +85,28 @@ public class EntityCheckCommand extends InternalCommand
                     }
                 }
 
-                if (user.getClientSideEntityData().clientSidePlayerEntity.isVisible())
-                {
-                    sender.sendMessage(prefix + ChatColor.RED + "A check of the player is already in progress.");
-                }
-                else
-                {
-                    sender.sendMessage(prefix + ChatColor.GOLD + "Now checking player " + user.getPlayer().getName() + " for " + checkDuration + " ticks.");
-                    VerboseSender.sendVerboseMessage("Manual entity check issued by " + sender.getName() + ": Player: " + user.getPlayer().getName() + " | Time: " + checkDuration + " ticks.");
-                    user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(true);
+                Bukkit.getScheduler().runTaskLater(
+                        AACAdditionPro.getInstance(),
+                        () ->
+                        {
+                            if (user.getClientSideEntityData().clientSidePlayerEntity.isVisible())
+                            {
+                                sender.sendMessage(prefix + ChatColor.RED + "A check of the player is already in progress.");
+                            }
+                            else
+                            {
+                                sender.sendMessage(prefix + ChatColor.GOLD + "Now checking player " + user.getPlayer().getName() + " for " + checkDuration + " ticks.");
+                                VerboseSender.sendVerboseMessage("Manual entity check issued by " + sender.getName() + ": Player: " + user.getPlayer().getName() + " | Time: " + checkDuration + " ticks.");
+                                user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(true);
 
-                    Bukkit.getScheduler().runTaskLater(
-                            AACAdditionPro.getInstance(),
-                            () -> user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(false), checkDuration);
-                }
+                                Bukkit.getScheduler().runTaskLater(
+                                        AACAdditionPro.getInstance(),
+                                        () -> user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(false), checkDuration);
+                            }
+
+                        },
+                        // To ticks to make sure the entity is spawned by now.
+                        2L);
             }
             else
             {

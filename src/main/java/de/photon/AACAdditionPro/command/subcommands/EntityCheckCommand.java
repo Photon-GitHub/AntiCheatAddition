@@ -12,7 +12,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Queue;
-import java.util.Set;
 
 public class EntityCheckCommand extends InternalCommand
 {
@@ -97,12 +96,6 @@ public class EntityCheckCommand extends InternalCommand
                 "Run an entity-check on a player",
                 "This procedure must be enabled manually in the config."
         };
-    }
-
-    @Override
-    protected Set<InternalCommand> getChildCommands()
-    {
-        return null;
     }
 
     @Override

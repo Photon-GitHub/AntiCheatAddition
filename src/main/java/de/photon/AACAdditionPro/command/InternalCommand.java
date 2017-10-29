@@ -1,12 +1,15 @@
 package de.photon.AACAdditionPro.command;
 
 import de.photon.AACAdditionPro.InternalPermission;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 
@@ -21,28 +24,40 @@ public abstract class InternalCommand
     private final byte minArguments;
     private final byte maxArguments;
 
-    public InternalCommand(String name, byte minArguments)
+    @Getter
+    private final Set<InternalCommand> childCommands;
+
+    public InternalCommand(String name, byte minArguments, InternalCommand... childCommands)
     {
-        this(name, null, minArguments);
+        this(name, null, minArguments, childCommands);
     }
 
-    public InternalCommand(String name, InternalPermission permission, byte minArguments)
+    public InternalCommand(String name, InternalPermission permission, byte minArguments, InternalCommand... childCommands)
     {
-        this(name, permission, false, minArguments);
+        this(name, permission, false, minArguments, childCommands);
     }
 
-    public InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments)
+    public InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments, InternalCommand... childCommands)
     {
-        this(name, permission, onlyPlayers, minArguments, Byte.MAX_VALUE);
+        this(name, permission, onlyPlayers, minArguments, Byte.MAX_VALUE, childCommands);
     }
 
-    public InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments, byte maxArguments)
+    public InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments, byte maxArguments, InternalCommand... childCommands)
     {
         this.name = name;
         this.permission = permission;
         this.onlyPlayers = onlyPlayers;
         this.minArguments = minArguments;
         this.maxArguments = maxArguments;
+
+        if (childCommands.length > 1)
+        {
+            this.childCommands = new HashSet<>(Arrays.asList(childCommands));
+        }
+        else
+        {
+            this.childCommands = null;
+        }
     }
 
     void invokeCommand(CommandSender sender, Queue<String> arguments)
@@ -126,8 +141,6 @@ public abstract class InternalCommand
     protected abstract void execute(CommandSender sender, Queue<String> arguments);
 
     protected abstract String[] getCommandHelp();
-
-    protected abstract Set<InternalCommand> getChildCommands();
 
     protected abstract String[] getTabPossibilities();
 

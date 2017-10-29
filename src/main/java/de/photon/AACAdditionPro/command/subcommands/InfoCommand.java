@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Queue;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -79,12 +78,6 @@ public class InfoCommand extends InternalCommand
     protected String[] getCommandHelp()
     {
         return new String[]{"Display all violation levels of a player."};
-    }
-
-    @Override
-    protected Set<InternalCommand> getChildCommands()
-    {
-        return null;
     }
 
     @Override

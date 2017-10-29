@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Queue;
-import java.util.Set;
 
 public class TrainCommand extends InternalCommand
 {
@@ -48,12 +47,6 @@ public class TrainCommand extends InternalCommand
     protected String[] getCommandHelp()
     {
         return new String[]{"Train the Inventory-Heuristics with an example-player"};
-    }
-
-    @Override
-    protected Set<InternalCommand> getChildCommands()
-    {
-        return null;
     }
 
     @Override

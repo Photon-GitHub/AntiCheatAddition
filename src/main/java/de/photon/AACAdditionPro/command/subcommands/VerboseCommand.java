@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Queue;
-import java.util.Set;
 
 public class VerboseCommand extends InternalCommand
 {
@@ -70,12 +69,6 @@ public class VerboseCommand extends InternalCommand
     protected String[] getCommandHelp()
     {
         return new String[]{"Used to toggle the verbose messages on and off for oneself."};
-    }
-
-    @Override
-    protected Set<InternalCommand> getChildCommands()
-    {
-        return null;
     }
 
     @Override

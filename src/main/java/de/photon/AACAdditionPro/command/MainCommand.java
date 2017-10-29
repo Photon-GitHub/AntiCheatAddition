@@ -12,11 +12,9 @@ import org.bukkit.command.TabCompleter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
 
 public class MainCommand extends InternalCommand implements CommandExecutor, TabCompleter
 {
@@ -24,7 +22,10 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
 
     private MainCommand()
     {
-        super("aacadditionpro", (byte) 0);
+        super("aacadditionpro", (byte) 0,
+              new EntityCheckCommand(),
+              new InfoCommand(),
+              new VerboseCommand());
     }
 
     @Override
@@ -100,17 +101,6 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     protected String[] getCommandHelp()
     {
         return new String[]{"The main command of AACAdditionPro"};
-    }
-
-    @Override
-    protected Set<InternalCommand> getChildCommands()
-    {
-        return new HashSet<>(Arrays.asList(
-                new EntityCheckCommand(),
-                // Disabled for now
-                // new HeuristicsCommand(),
-                new InfoCommand(),
-                new VerboseCommand()));
     }
 
     @Override

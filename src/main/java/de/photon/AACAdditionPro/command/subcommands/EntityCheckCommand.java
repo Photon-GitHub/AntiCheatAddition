@@ -16,9 +16,12 @@ import java.util.Set;
 
 public class EntityCheckCommand extends InternalCommand
 {
+    private final boolean on_command;
+
     public EntityCheckCommand()
     {
         super("entitycheck", InternalPermission.ENTITYCHECK, false, (byte) 2, (byte) 2);
+        on_command = AACAdditionPro.getInstance().getConfig().getBoolean("KillauraEntity.on_command");
     }
 
     @Override
@@ -48,13 +51,19 @@ public class EntityCheckCommand extends InternalCommand
                 return;
             }
 
-            if (AACAdditionPro.getInstance().getConfig().getBoolean("KillauraEntity.on_command"))
+            if (on_command)
             {
                 final User user = UserManager.getUser(player.getUniqueId());
 
-                if (User.isUserInvalid(user))
+                if (user == null)
                 {
                     sender.sendMessage(prefix + ChatColor.RED + "Invalid user parsing. Has the player logged recently?");
+                    return;
+                }
+
+                if (user.isBypassed())
+                {
+                    sender.sendMessage(prefix + ChatColor.RED + "The target user has bypass permissions.");
                     return;
                 }
 

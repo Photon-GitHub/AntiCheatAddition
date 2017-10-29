@@ -276,12 +276,12 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     @Override
     public void despawn()
     {
-        super.despawn();
-
         if (isSpawned())
         {
             removeFromTab();
         }
+
+        super.despawn();
     }
 
     private void removeFromTab()

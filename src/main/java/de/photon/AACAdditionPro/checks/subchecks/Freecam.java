@@ -32,7 +32,7 @@ public class Freecam implements ViolationModule
                 AACAdditionPro.getInstance(),
                 () ->
                 {
-                    for (final User user : UserManager.getUsers())
+                    for (final User user : UserManager.getUsersUnwrapped())
                     {
                         if (    // Not bypassed
                                 !user.isBypassed() &&

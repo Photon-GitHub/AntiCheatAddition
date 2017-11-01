@@ -118,8 +118,6 @@ public class Esp implements ViolationModule
                                 }
                             }
                         }
-
-
                     }
 
                     Pair pair;

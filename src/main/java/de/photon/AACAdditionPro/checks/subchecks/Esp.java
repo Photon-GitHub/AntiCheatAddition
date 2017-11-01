@@ -101,6 +101,10 @@ public class Esp implements ViolationModule
                     //Iterate through all player-constellations
                     for (final User observer : users)
                     {
+                        // Remove the finished player to reduce the amount of added entries.
+                        // This makes sure the player won't have a connection with himself.
+                        users.remove(observer);
+
                         // Not a spectator
                         if (observer.getPlayer().getGameMode() != GameMode.SPECTATOR)
                         {
@@ -108,18 +112,14 @@ public class Esp implements ViolationModule
                             for (final User watched : users)
                             {
                                 // The watched player is also not in Spectator mode
-                                if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR &&
-                                    // The users are not the same
-                                    !observer.refersToUUID(watched.getPlayer().getUniqueId()))
+                                if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR)
                                 {
                                     playerConnections.add(new Pair(observer, watched));
                                 }
                             }
                         }
 
-                        // Remove the finished player to reduce the amount of added entries.
-                        // Due to this we can use a List instead of a set.
-                        users.remove(observer);
+
                     }
 
                     Pair pair;

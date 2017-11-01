@@ -23,7 +23,9 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.util.Vector;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Esp implements ViolationModule
 {
@@ -113,11 +115,11 @@ public class Esp implements ViolationModule
                                     playerConnections.add(new Pair(observer, watched));
                                 }
                             }
-
-                            // Remove the finished player to reduce the amount of added entries.
-                            // Due to this we can use a List instead of a set.
-                            users.remove(observer);
                         }
+
+                        // Remove the finished player to reduce the amount of added entries.
+                        // Due to this we can use a List instead of a set.
+                        users.remove(observer);
                     }
 
                     Pair pair;

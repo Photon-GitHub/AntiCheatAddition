@@ -388,9 +388,8 @@ public class KillauraEntity implements ViolationModule, Listener
         AACAdditionPro.getInstance().disableKillauraEntityAPI();
 
         // Despawn on reload
-        for (User user : UserManager.getUsers())
+        for (User user : UserManager.getUsersUnwrapped())
         {
-
             final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
 
             if (clientSidePlayerEntity != null)

@@ -28,9 +28,24 @@ public class UserManager implements Listener
         return users.get(uuid);
     }
 
+    /**
+     * Gets all {@link User}s wrapped in a {@link HashSet}. <br>
+     * Safe to modify.
+     */
     public static Collection<User> getUsers()
     {
-        return new HashSet<>(users.values());
+        return new HashSet<>(getUsersUnwrapped());
+    }
+
+    /**
+     * Gets all {@link User}s without wrapping. <br>
+     * DO NOT MODIFY THIS COLLECTION; IT WILL MESS UP THE USER MANAGEMENT.
+     * <p>
+     * Use this solely for performance purposes e.g. in iterations or as a source {@link Collection} for wrapping.
+     */
+    public static Collection<User> getUsersUnwrapped()
+    {
+        return users.values();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

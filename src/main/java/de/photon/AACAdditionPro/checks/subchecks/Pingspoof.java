@@ -108,7 +108,7 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
                 AACAdditionPro.getInstance(),
                 () ->
                 {
-                    for (final User user : UserManager.getUsers())
+                    for (final User user : UserManager.getUsersUnwrapped())
                     {
                         //Took too long to check
                         if (user.getPingData().isCurrentlyChecking && user.getPingData().recentlyUpdated(1000))

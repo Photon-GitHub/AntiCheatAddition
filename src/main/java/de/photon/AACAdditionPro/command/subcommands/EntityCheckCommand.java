@@ -88,7 +88,7 @@ public class EntityCheckCommand extends InternalCommand
 
                         if (user.getClientSideEntityData().respawnTrys++ > MAX_ITERATIONS)
                         {
-                            throw new IllegalStateException("Too many repspawn iterations.");
+                            throw new IllegalStateException("Too many respawn iterations.");
                         }
 
                         Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> this.execute(sender, arguments), 5L);

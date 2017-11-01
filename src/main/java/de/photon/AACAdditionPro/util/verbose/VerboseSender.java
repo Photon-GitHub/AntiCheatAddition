@@ -80,23 +80,31 @@ public final class VerboseSender implements Listener
         // Prevent errors on disable as of scheduling
         final String logMessage = ChatColor.stripColor(s);
 
-        if (verboseOptions[0]) {
+        if (verboseOptions[0])
+        {
             // Remove color codes
             log(logMessage);
         }
 
-        if (verboseOptions[1] || force_console) {
-            if (error) {
+        if (verboseOptions[1] || force_console)
+        {
+            if (error)
+            {
                 Bukkit.getLogger().severe(NON_COLORED_PRE_STRING + logMessage);
-            } else {
+            }
+            else
+            {
                 Bukkit.getLogger().info(NON_COLORED_PRE_STRING + logMessage);
             }
         }
 
         // Prevent error on disable
-        if (allowedToRegisterTasks && verboseOptions[2]) {
-            for (final User user : UserManager.getUsers()) {
-                if (user.verbose) {
+        if (allowedToRegisterTasks && verboseOptions[2])
+        {
+            for (final User user : UserManager.getUsersUnwrapped())
+            {
+                if (user.verbose)
+                {
                     Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> user.getPlayer().sendMessage(PRE_STRING + s));
                 }
             }
@@ -105,7 +113,8 @@ public final class VerboseSender implements Listener
 
     private static void log(final String message)
     {
-        try {
+        try
+        {
             // Get the logfile that is in use currently or create a new one if needed.
             final File log_File = FileUtilities.saveFileInFolder(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log", FileUtilities.AACADDITIONPRO_DATAFOLDER.getPath() + "/logs");
 
@@ -115,7 +124,8 @@ public final class VerboseSender implements Listener
             time.append(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));
 
             // Add a 0 if it is too short
-            while (time.length() < 12) {
+            while (time.length() < 12)
+            {
                 time.append("0");
             }
 
@@ -126,7 +136,8 @@ public final class VerboseSender implements Listener
 
             // Log the message
             Files.write(log_File.toPath(), time.toString().getBytes(), StandardOpenOption.APPEND);
-        } catch (final IOException e) {
+        } catch (final IOException e)
+        {
             e.printStackTrace();
         }
     }

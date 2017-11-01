@@ -23,7 +23,10 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.util.Vector;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 public class Esp implements ViolationModule
 {
@@ -93,30 +96,31 @@ public class Esp implements ViolationModule
         taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
                 () -> {
-                    //All users
-                    final Collection<User> users = UserManager.getUsers();
+                    // Put all users in a List for fast removal.
+                    final List<User> users = new ArrayList<>(UserManager.getUsersUnwrapped());
 
-                    //Iterate through all player-constellations
-                    for (final User observer : users)
+                    // Iterate through all player-constellations
+                    User observingUser;
+                    while (!users.isEmpty())
                     {
-                        // Not a spectator
-                        if (observer.getPlayer().getGameMode() != GameMode.SPECTATOR)
+                        /*
+                            Remove the finished player to reduce the amount of added entries.
+                            This makes sure the player won't have a connection with himself.
+                            Remove index - 1 for the best performance.
+                        */
+                        observingUser = users.remove(users.size() - 1);
+
+                        if (observingUser.getPlayer().getGameMode() != GameMode.SPECTATOR)
                         {
                             // All users can potentially be seen
                             for (final User watched : users)
                             {
                                 // The watched player is also not in Spectator mode
-                                if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR &&
-                                    // The users are not the same
-                                    !observer.refersToUUID(watched.getPlayer().getUniqueId()))
+                                if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR)
                                 {
-                                    playerConnections.add(new Pair(observer, watched));
+                                    playerConnections.add(new Pair(observingUser, watched));
                                 }
                             }
-
-                            // Remove the finished player to reduce the amount of added entries.
-                            // Due to this we can use a List instead of a set.
-                            users.remove(observer);
                         }
                     }
 

@@ -100,6 +100,7 @@ public class Esp implements ViolationModule
                     final List<User> users = new ArrayList<>(UserManager.getUsersUnwrapped());
 
                     // Iterate through all player-constellations
+                    User observingUser;
                     while (!users.isEmpty())
                     {
                         /*
@@ -107,9 +108,9 @@ public class Esp implements ViolationModule
                             This makes sure the player won't have a connection with himself.
                             Remove index - 1 for the best performance.
                         */
-                        User observer = users.remove(users.size() - 1);
+                        observingUser = users.remove(users.size() - 1);
 
-                        if (observer.getPlayer().getGameMode() != GameMode.SPECTATOR)
+                        if (observingUser.getPlayer().getGameMode() != GameMode.SPECTATOR)
                         {
                             // All users can potentially be seen
                             for (final User watched : users)
@@ -117,7 +118,7 @@ public class Esp implements ViolationModule
                                 // The watched player is also not in Spectator mode
                                 if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR)
                                 {
-                                    playerConnections.add(new Pair(observer, watched));
+                                    playerConnections.add(new Pair(observingUser, watched));
                                 }
                             }
                         }

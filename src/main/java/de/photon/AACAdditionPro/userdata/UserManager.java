@@ -41,7 +41,7 @@ public class UserManager implements Listener
      * Gets all {@link User}s without wrapping. <br>
      * DO NOT MODIFY THIS COLLECTION; IT WILL MESS UP THE USER MANAGEMENT.
      * <p>
-     * Use this solely for performance purposes e.g. in iterations.
+     * Use this solely for performance purposes e.g. in iterations or as a source {@link Collection} for wrapping.
      */
     public static Collection<User> getUsersUnwrapped()
     {

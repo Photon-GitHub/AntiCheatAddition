@@ -191,12 +191,11 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         if (this.isSpawned())
         {
-            // Send player info first
-            final PlayerInfoData playerInfoData = new PlayerInfoData(this.getGameProfile(), ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
-
             final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
             playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY);
-            playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
+            playerInfoWrapper.setData(Collections.singletonList(
+                    // The new information of about the Entity.
+                    new PlayerInfoData(this.getGameProfile(), ping, EnumWrappers.NativeGameMode.SURVIVAL, null)));
             playerInfoWrapper.sendPacket(this.observedPlayer);
         }
     }

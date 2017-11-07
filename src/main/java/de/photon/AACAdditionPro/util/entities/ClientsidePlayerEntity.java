@@ -16,6 +16,7 @@ import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -41,7 +42,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private int ping;
 
     @Getter
-    @Setter
+    @Setter(value = AccessLevel.PROTECTED)
     private Team currentTeam;
 
     // Main ticker for the entity
@@ -173,13 +174,35 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private void recursiveUpdatePing()
     {
         Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> {
-            DisplayInformation.updatePing(this);
-            recursiveUpdatePing();
+            if (this.isValid())
+            {
+                fakePingForObservedPlayer(MathUtils.randomBoundaryInt(21, 4));
+                recursiveUpdatePing();
+            }
         }, (long) MathUtils.randomBoundaryDouble(10, 35));
     }
 
+    /**
+     * The real {@link java.lang.reflect.Method} that handles the ping-changing once the given {@link ClientsidePlayerEntity} is confirmed as valid.
+     *
+     * @param ping the new ping of the {@link ClientsidePlayerEntity}
+     */
+    private void fakePingForObservedPlayer(final int ping)
+    {
+        if (this.isSpawned())
+        {
+            // Send player info first
+            final PlayerInfoData playerInfoData = new PlayerInfoData(this.getGameProfile(), ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
+
+            final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
+            playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY);
+            playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
+            playerInfoWrapper.sendPacket(this.observedPlayer);
+        }
+    }
+
     @Override
-    public void setVisibility(boolean visible)
+    public void setVisibility(final boolean visible)
     {
         super.setVisibility(visible);
 
@@ -188,6 +211,34 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         if (!visible)
         {
             WrapperPlayServerEntityEquipment.clearAllSlots(this.getEntityID(), this.observedPlayer);
+        }
+    }
+
+    // ---------------------------------------------------------------- Teams --------------------------------------------------------------- //
+
+    /**
+     * Used to make the {@link ClientsidePlayerEntity} join a new {@link Team}
+     * If the {@link ClientsidePlayerEntity} is already in a {@link Team} it will try to leave it first.
+     *
+     * @param team the new {@link Team} to join.
+     */
+    public void joinTeam(Team team) throws IllegalStateException
+    {
+        this.leaveTeam();
+        team.addEntry(this.getGameProfile().getName());
+        this.setCurrentTeam(team);
+    }
+
+    /**
+     * Used to make the {@link ClientsidePlayerEntity} leave its current {@link Team}
+     * If the {@link ClientsidePlayerEntity} is in no team nothing will happen.
+     */
+    public void leaveTeam() throws IllegalStateException
+    {
+        if (this.getCurrentTeam() != null)
+        {
+            this.getCurrentTeam().removeEntry(this.getGameProfile().getName());
+            this.setCurrentTeam(null);
         }
     }
 

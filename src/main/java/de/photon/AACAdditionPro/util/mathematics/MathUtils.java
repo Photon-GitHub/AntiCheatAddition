@@ -45,11 +45,11 @@ public final class MathUtils
     }
 
     /**
-     * Generates a new random integer.
+     * Generates a new random double.
      *
      * @param min            the result will at least be this parameter
      * @param randomBoundary the result will at most be min + randomBoundary
-     * @return the resulting random integer
+     * @return the resulting random double
      */
     public static double randomBoundaryDouble(double min, double randomBoundary)
     {

@@ -16,6 +16,7 @@ import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -41,7 +42,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private int ping;
 
     @Getter
-    @Setter
+    @Setter(value = AccessLevel.PROTECTED)
     private Team currentTeam;
 
     // Main ticker for the entity
@@ -102,7 +103,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         this.move(this.location);
 
         // Maybe we should switch movement states?
-        if (lastJump++ > MathUtils.randomBoundaryDouble(30, 80))
+        if (lastJump++ > MathUtils.randomBoundaryInt(30, 80))
         {
             lastJump = 0;
             jump();
@@ -111,7 +112,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // Swing items if enabled
         if (shouldSwing)
         {
-            if (lastSwing++ > MathUtils.randomBoundaryDouble(15, 35))
+            if (lastSwing++ > MathUtils.randomBoundaryInt(15, 35))
             {
                 lastSwing = 0;
 
@@ -125,7 +126,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // Swap items if needed
         if (shouldSwap)
         {
-            if (lastSwap++ > MathUtils.randomBoundaryDouble(40, 65))
+            if (lastSwap++ > MathUtils.randomBoundaryInt(40, 65))
             {
                 lastSwap = 0;
                 equipment.equipInHand();
@@ -173,13 +174,34 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private void recursiveUpdatePing()
     {
         Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> {
-            DisplayInformation.updatePing(this);
-            recursiveUpdatePing();
-        }, (long) MathUtils.randomBoundaryDouble(10, 35));
+            if (this.isValid())
+            {
+                fakePingForObservedPlayer(MathUtils.randomBoundaryInt(21, 4));
+                recursiveUpdatePing();
+            }
+        }, (long) MathUtils.randomBoundaryInt(10, 35));
+    }
+
+    /**
+     * The real {@link java.lang.reflect.Method} that handles the ping-changing once the given {@link ClientsidePlayerEntity} is confirmed as valid.
+     *
+     * @param ping the new ping of the {@link ClientsidePlayerEntity}
+     */
+    private void fakePingForObservedPlayer(final int ping)
+    {
+        if (this.isSpawned())
+        {
+            final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
+            playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY);
+            playerInfoWrapper.setData(Collections.singletonList(
+                    // The new information of about the Entity.
+                    new PlayerInfoData(this.getGameProfile(), ping, EnumWrappers.NativeGameMode.SURVIVAL, null)));
+            playerInfoWrapper.sendPacket(this.observedPlayer);
+        }
     }
 
     @Override
-    public void setVisibility(boolean visible)
+    public void setVisibility(final boolean visible)
     {
         super.setVisibility(visible);
 
@@ -188,6 +210,34 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         if (!visible)
         {
             WrapperPlayServerEntityEquipment.clearAllSlots(this.getEntityID(), this.observedPlayer);
+        }
+    }
+
+    // ---------------------------------------------------------------- Teams --------------------------------------------------------------- //
+
+    /**
+     * Used to make the {@link ClientsidePlayerEntity} join a new {@link Team}
+     * If the {@link ClientsidePlayerEntity} is already in a {@link Team} it will try to leave it first.
+     *
+     * @param team the new {@link Team} to join.
+     */
+    public void joinTeam(Team team) throws IllegalStateException
+    {
+        this.leaveTeam();
+        team.addEntry(this.getGameProfile().getName());
+        this.setCurrentTeam(team);
+    }
+
+    /**
+     * Used to make the {@link ClientsidePlayerEntity} leave its current {@link Team}
+     * If the {@link ClientsidePlayerEntity} is in no team nothing will happen.
+     */
+    public void leaveTeam() throws IllegalStateException
+    {
+        if (this.getCurrentTeam() != null)
+        {
+            this.getCurrentTeam().removeEntry(this.getGameProfile().getName());
+            this.setCurrentTeam(null);
         }
     }
 

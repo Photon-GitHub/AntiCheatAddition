@@ -150,7 +150,7 @@ public abstract class ClientsideEntity
 
         if (!User.isUserInvalid(user))
         {
-            ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+            final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
             if (clientSidePlayerEntity != null)
             {
                 if (clientSidePlayerEntity.getEntityID() == this.entityID)
@@ -498,7 +498,7 @@ public abstract class ClientsideEntity
     /**
      * Used to apply the visibility effect to the entity and remove it once again.
      */
-    public void setVisibility(boolean visible)
+    public void setVisibility(final boolean visible)
     {
         if (this.visible == visible)
         {

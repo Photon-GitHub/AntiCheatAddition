@@ -51,7 +51,7 @@ public final class DisplayInformation
                     {
                         // This is ignored as of the potentially unregistered scoreboard components.
                     }
-                    break;
+                    return;
                 }
             }
         }

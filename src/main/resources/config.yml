@@ -614,6 +614,54 @@ ClientControl:
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
+# This allows for much better detection based on your very unique setup.
+CombatAdaption:
+   # Do you want to enable CombatAdaption
+   enabled: true
+   # As of less hits/second on average with the 1.9+ combat system the violation-gain and violation-decay of these
+   # checks will prevent sensible detection. The first measure is increasing the maximum total weight each violation
+   # has in this part.
+   # THIS WILL ONLY BE ACTIVE ON MC 1.10+, IN 1.8 ALL MULTIPLIERS ARE 1.
+   multiplier:
+      hitbox: 2
+      killaura: 2.5
+      # This check should rarely be triggered on 1.10+ servers and thus is a strong indicator for Killaura.
+      fightspeed: 5
+   # This gives you full control over the activation function, which calculates a factor to be multiplied to the weight
+   # multiplied to the violation level.
+   #
+   # If the result is not an integer it will be ceiled (the smallest integer bigger than the result).
+   #
+   # Variables:
+   # %charge    = the charge of the hit in percent (0 <= %charge <= 1)
+   # %pitch     = pitch of the player on hit
+   # %yaw       = yaw of the player on hit
+   # %ping      = ping of the player
+   # %tps       = current TPS
+   #
+   # Constants:
+   # $e         = Euler's number
+   # $pi        = Pi
+   #
+   # Operators:
+   # +, -, *, / = Normal calculation
+   #
+   # ()         = Brackets
+   # ^          = Power of
+   # %          = Modulo
+   #
+   # sin        = Sine
+   # cos        = Cosine
+   # tan        = Tangent
+   #
+   # sinh       = hyperbolic sine
+   # cosh       = hyperbolic cosine
+   # tanh       = hyperbolic tangent
+   functions:
+      hitbox: "e^(-(&ping/200)^2) * tanh(2.5 * %charge)"
+      killaura: "e^(-(&ping/400)^2) * tanh(3 * %charge)"
+      fightspeed: "e^(-(&ping/400)^2) * tanh(3 * %charge)"
+
 # This automatically deletes old log files of both AAC and AACAdditionPro
 # It activates automatically on restart and after that in a 12 hour cycle.
 LogBot:

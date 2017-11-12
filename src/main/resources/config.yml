@@ -615,8 +615,8 @@ ClientControl:
 # ------------------------------------------------------------------------------------------------------------------- #
 
 # This allows for much better detection based on your very unique setup.
-CombatAdaption:
-   # Do you want to enable CombatAdaption
+ViolationAdjustment:
+   # Do you want to enable ViolationAdjustment
    enabled: true
    # As of less hits/second on average with the 1.9+ combat system the violation-gain and violation-decay of these
    # checks will prevent sensible detection. The first measure is increasing the maximum total weight each violation

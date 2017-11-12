@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum ModuleType
 {
     // Additions
-    COMBAT_ADAPTION("CombatAdaption"),
+    VIOLATION_ADJUSTMENT("ViolationAdjustment"),
     LOG_BOT("LogBot"),
     PER_HEURISTIC_COMMANDS("Heuristic-Addition"),
 

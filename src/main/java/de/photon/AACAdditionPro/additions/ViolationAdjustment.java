@@ -6,7 +6,7 @@ import me.konsolas.aac.api.PlayerViolationEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class CombatAdaption implements Module, Listener
+public class ViolationAdjustment implements Module, Listener
 {
     @EventHandler
     public void onAACViolation(PlayerViolationEvent event)
@@ -17,6 +17,6 @@ public class CombatAdaption implements Module, Listener
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.COMBAT_ADAPTION;
+        return ModuleType.VIOLATION_ADJUSTMENT;
     }
 }

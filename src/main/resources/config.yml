@@ -388,17 +388,17 @@ Scaffold:
    cancel_vl: 5
    # Over how many values should AACAdditionPro take the average for the check
    buffer_size: 6
-   # The minimum delay between blockplaces that will be enforced by AACAdditionPro
+   # The minimum delay between blockplaces that will be enforced by AACAdditionPro (measured in ms)
    scaffold_delay: 300
    # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
    # to prevent further scaffolding (measured in ms)
    timeout: 1000
-   # This check adds vl 5 when failed!
+   # The check might add between 1 and 6 violation levels depending on the severity of the violation.
    # Map of violation levels to command
    thresholds:
-      5: "aacstaffnotify {player} in {world} is suspected for Scaffold"
-      10: "aacstaffnotify {player} in {world} is highly suspected for Scaffold"
-      15: "aackick {player} Scaffold"
+      4: "aacstaffnotify {player} in {world} is suspected for Scaffold"
+      6: "aacstaffnotify {player} in {world} is highly suspected for Scaffold"
+      9: "aackick {player} Scaffold"
 
 # The Skinblinker check detects Skinblinker cheats when the player sprints/sneaks.
 Skinblinker:

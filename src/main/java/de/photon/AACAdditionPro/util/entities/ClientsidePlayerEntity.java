@@ -41,6 +41,8 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     @Setter
     private int ping;
 
+    private int pingTask;
+
     @Getter
     @Setter(value = AccessLevel.PROTECTED)
     private Team currentTeam;
@@ -62,8 +64,6 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         // EquipmentData
         this.equipment = new Equipment(this);
-
-        recursiveUpdatePing();
 
         // Init additional behaviour configs
         shouldAssignTeam = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.team.enabled");
@@ -173,7 +173,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
      */
     private void recursiveUpdatePing()
     {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> {
+        pingTask = Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> {
             if (this.isValid())
             {
                 fakePingForObservedPlayer(MathUtils.randomBoundaryInt(21, 4));
@@ -301,6 +301,8 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             DisplayInformation.applyTeams(this);
         }
 
+        this.recursiveUpdatePing();
+
         // Entity equipment + armor
         this.equipment.equipArmor();
         this.equipment.equipInHand();
@@ -317,6 +319,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             removeFromTab();
         }
 
+        Bukkit.getScheduler().cancelTask(pingTask);
         super.despawn();
     }
 

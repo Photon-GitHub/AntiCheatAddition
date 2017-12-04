@@ -317,9 +317,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         if (isSpawned())
         {
             removeFromTab();
+            Bukkit.getScheduler().cancelTask(pingTask);
         }
 
-        Bukkit.getScheduler().cancelTask(pingTask);
         super.despawn();
     }
 

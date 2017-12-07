@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-public interface ClientControlCheck extends ViolationModule
+public interface ClientControlModule extends ViolationModule
 {
     String MCBRANDCHANNEL = "MC|Brand";
 

@@ -67,51 +67,35 @@ public abstract class InternalCommand
         {
             if (arguments.size() > 0)
             {
-                // Help can be displayed at any time
                 if (arguments.peek().equals("?"))
                 {
-                    for (String help : this.getCommandHelp())
+                    for (final String help : this.getCommandHelp())
                     {
                         sender.sendMessage(prefix + ChatColor.GOLD + help);
                     }
+                    return;
                 }
-                else
-                {
-                    Set<InternalCommand> childCommands = this.getChildCommands();
-                    // Invoke command with arguments
-                    if (childCommands == null)
-                    {
-                        this.executeIfAllowed(sender, arguments);
-                    }
-                    // Delegate to SubCommands
-                    else
-                    {
-                        boolean foundChildCommand = false;
-                        for (InternalCommand internalCommand : childCommands)
-                        {
-                            if (arguments.peek().equalsIgnoreCase(internalCommand.name))
-                            {
-                                // Remove the current command arg
-                                arguments.remove();
-                                internalCommand.invokeCommand(sender, arguments);
-                                foundChildCommand = true;
-                                break;
-                            }
-                        }
 
-                        // No fitting child commands were found.
-                        if (!foundChildCommand)
+                final Set<InternalCommand> childCommands = this.getChildCommands();
+
+                if (childCommands != null)
+                {
+                    // Delegate to SubCommands
+                    for (final InternalCommand internalCommand : childCommands)
+                    {
+                        if (arguments.peek().equalsIgnoreCase(internalCommand.name))
                         {
-                            this.executeIfAllowed(sender, arguments);
+                            // Remove the current command arg
+                            arguments.remove();
+                            internalCommand.invokeCommand(sender, arguments);
+                            return;
                         }
                     }
                 }
             }
-            else
-            {
-                // Normal command procedure
-                executeIfAllowed(sender, arguments);
-            }
+
+            // Normal command procedure or childCommands is null or no fitting child commands were found.
+            this.executeIfAllowed(sender, arguments);
         }
         else
         {

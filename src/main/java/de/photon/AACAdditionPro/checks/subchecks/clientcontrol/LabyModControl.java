@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
-import de.photon.AACAdditionPro.checks.ClientControlCheck;
+import de.photon.AACAdditionPro.checks.ClientControlModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerCustomPayload;
@@ -17,7 +17,7 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.List;
 
-public class LabyModControl implements Listener, ClientControlCheck
+public class LabyModControl implements Listener, ClientControlModule
 {
     @Getter
     private enum LabyModFeature

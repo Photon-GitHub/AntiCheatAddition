@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
 import de.photon.AACAdditionPro.ModuleType;
-import de.photon.AACAdditionPro.checks.ClientControlCheck;
+import de.photon.AACAdditionPro.checks.ClientControlModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
@@ -10,7 +10,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.util.List;
 
-public class ForgeControl implements PluginMessageListener, ClientControlCheck
+public class ForgeControl implements PluginMessageListener, ClientControlModule
 {
     @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
     private List<String> commandsOnDetection;
@@ -34,8 +34,8 @@ public class ForgeControl implements PluginMessageListener, ClientControlCheck
         boolean flag = true;
 
         // MC-Brand for vanilla world-downloader
-        if (ClientControlCheck.isBranded(channel)) {
-            flag = ClientControlCheck.brandContains(channel, message, FORGEFLAGS);
+        if (ClientControlModule.isBranded(channel)) {
+            flag = ClientControlModule.brandContains(channel, message, FORGEFLAGS);
         }
 
         // Should flag

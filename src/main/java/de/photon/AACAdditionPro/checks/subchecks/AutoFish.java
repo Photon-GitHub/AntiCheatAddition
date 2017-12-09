@@ -88,9 +88,10 @@ public class AutoFish implements Listener, ViolationModule
                         {
                             maxOffset = offset;
 
-                            // Will not be flagged as of too big offset. -> break
+                            // Will not be flagged as of too big offset.
                             if (maxOffset >= violation_offset)
                             {
+                                user.getFishingData().consistencyBuffer.clear();
                                 return;
                             }
                         }

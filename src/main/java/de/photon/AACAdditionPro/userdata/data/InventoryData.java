@@ -73,7 +73,8 @@ public class InventoryData extends TimeData
         if (theUser.refersToUUID(event.getWhoClicked().getUniqueId()) &&
             event.getSlotType() != InventoryType.SlotType.QUICKBAR)
         {
-            if (this.getTimeStamp(0) == 0) {
+            if (this.getTimeStamp(0) == 0)
+            {
                 this.updateTimeStamp(0);
             }
             this.updateTimeStamp(1);
@@ -100,7 +101,8 @@ public class InventoryData extends TimeData
 
     private void nullifyIfRefersToUser(UUID uuid)
     {
-        if (theUser.refersToUUID(uuid)) {
+        if (theUser.refersToUUID(uuid))
+        {
             this.nullifyTimeStamp(0);
         }
     }

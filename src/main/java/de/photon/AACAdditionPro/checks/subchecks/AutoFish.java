@@ -40,8 +40,8 @@ public class AutoFish implements Listener, ViolationModule
     @LoadFromConfiguration(configPath = ".parts.consistency.violation_offset")
     private int violation_offset;
 
-    @LoadFromConfiguration(configPath = ".parts.consistency.weight")
-    private int weight;
+    @LoadFromConfiguration(configPath = ".parts.consistency.maximum_fails")
+    private int maximum_fails;
 
     @EventHandler
     public void on(final PlayerFishEvent event)
@@ -49,63 +49,76 @@ public class AutoFish implements Listener, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // User valid and not bypassed
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
-        switch (event.getState()) {
+        switch (event.getState())
+        {
             case FISHING:
-                // Only check when consistency is enabled
-                if (!parts[1] ||
-                    // If the timestamp is 0 do not check (false positives)
-                    user.getFishingData().getTimeStamp(1) == 0)
-                {
-                    return;
-                }
+                // Get the fails
+                final int fails = user.getFishingData().failedCounter;
+                user.getFishingData().failedCounter = 0;
 
-                // Add the delta to the consistencyBuffer of the user.
-                if (user.getFishingData().bufferConsistencyData()) {
+                // Only check if consistency is enabled
+                if (parts[1] &&
+                    // Not too many failed attempts in between (afk fish farm false positives)
+                    fails <= maximum_fails &&
+                    // If the timestamp is 0 do not check (false positives)
+                    user.getFishingData().getTimeStamp(1) != 0 &&
+                    // Add the delta to the consistencyBuffer of the user.
+                    user.getFishingData().bufferConsistencyData())
+                {
                     // Enough data, now checking
                     // Calculating the average
                     final double average = user.getFishingData().consistencyBuffer.average();
 
-                    // Test if the average is exceeded by the violation_offset
-                    boolean cheating = true;
+                    // The maximum offset of the values.
+                    double maxOffset = 0;
 
                     // Partially clear the buffer already in the loop to improve performance (instead of get())
-                    while (!user.getFishingData().consistencyBuffer.isEmpty()) {
+                    while (!user.getFishingData().consistencyBuffer.isEmpty())
+                    {
                         // Remove the last element to make the ArrayList-remove as performant as possible
-                        double deltaTime = user.getFishingData().consistencyBuffer.remove(user.getFishingData().consistencyBuffer.size() - 1);
+                        final double deltaTime = user.getFishingData().consistencyBuffer.remove(user.getFishingData().consistencyBuffer.size() - 1);
+                        final double offset = MathUtils.offset(deltaTime, average);
 
-                        // Not in range anymore -> not consistent enough for a flag.
-                        if (!MathUtils.roughlyEquals(deltaTime, average, violation_offset)) {
-                            cheating = false;
+                        if (offset > maxOffset)
+                        {
+                            maxOffset = offset;
 
-                            // Clear the rest of the buffer that was not cleared here so the method is not called when the Buffer is emptied by this while-loop
-                            // Clear for a new run.
-                            user.getFishingData().consistencyBuffer.clear();
-                            break;
+                            // Will not be flagged as of too big offset. -> break
+                            if (maxOffset >= violation_offset)
+                            {
+                                return;
+                            }
                         }
                     }
 
-                    if (cheating) {
-                        vlManager.flag(event.getPlayer(), this.weight, cancel_vl, () -> event.setCancelled(true), () -> {});
-                    }
+                    // Certainly in cheating range (higher values terminate the method in the loop)
+                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " + user.getPlayer().getName() + " average time: " + average + " | maximum offset: " + maxOffset);
+                    // assert violation_offset - maxOffset > 0 as of the termination in the loop above.
+                    vlManager.flag(event.getPlayer(), (int) Math.max(Math.ceil(violation_offset - maxOffset * 0.4), 10), cancel_vl, () -> event.setCancelled(true), () -> {});
                 }
                 break;
             case CAUGHT_ENTITY:
             case CAUGHT_FISH:
                 // Only check if inhuman reaction is enabled
-                if (parts[0]) {
+                if (parts[0])
+                {
                     // Too few time has passed since the fish bit.
-                    if (user.getFishingData().recentlyUpdated(fishing_milliseconds)) {
+                    if (user.getFishingData().recentlyUpdated(fishing_milliseconds))
+                    {
 
                         // Get the correct amount of vl.
                         // vl 6 is the maximum.
                         // Points = {{0, 1}, {8, 0}}
                         // Function: 1 - 0.125x
-                        for (byte b = 5; b > 0; b--) {
-                            if (user.getFishingData().recentlyUpdated((long) (1 - 0.125 * b) * fishing_milliseconds)) {
+                        for (byte b = 5; b > 0; b--)
+                        {
+                            if (user.getFishingData().recentlyUpdated((long) (1 - 0.125 * b) * fishing_milliseconds))
+                            {
                                 // Flag for vl = b + 1 because there would otherwise be a "0-vl"
                                 vlManager.flag(event.getPlayer(), b + 1, cancel_vl, () -> event.setCancelled(true), () -> {});
                                 break;
@@ -124,6 +137,7 @@ public class AutoFish implements Listener, ViolationModule
             case IN_GROUND:
             case FAILED_ATTEMPT:
                 user.getFishingData().nullifyTimeStamp(1);
+                user.getFishingData().failedCounter++;
                 break;
             case BITE:
                 user.getFishingData().updateTimeStamp();

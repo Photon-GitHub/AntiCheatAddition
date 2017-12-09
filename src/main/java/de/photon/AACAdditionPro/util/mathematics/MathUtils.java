@@ -17,19 +17,27 @@ public final class MathUtils
      */
     public static boolean roughlyEquals(final double a, final double b, final double range)
     {
+        return offset(a, b) <= range;
+    }
+
+    /**
+     * Simple method to calculate the absolute offset of two numbers.
+     *
+     * @return the absolute offset, always positive or 0 if the numbers are equal.
+     */
+    public static double offset(final double a, final double b)
+    {
         if (a == b)
         {
-            return true;
+            return 0;
         }
 
         if (a > b)
         {
-            return (a - range) <= b;
+            return a - b;
         }
-        else
-        {
-            return (b - range) <= a;
-        }
+
+        return b - a;
     }
 
     /**

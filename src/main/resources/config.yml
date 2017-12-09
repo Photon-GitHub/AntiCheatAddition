@@ -44,7 +44,7 @@ AutoFish:
          fishing_milliseconds: 145
       # The consistency part recognizes static times between a successful catch and fishing again.
       # This check has less to none false positives, especially with a high event count
-      # Depending on how accurate the consistency is players will receive between 1 and 10 vl
+      # Depending on how accurate the consistency is players will receive between 1 and 15 vl
       consistency:
          # Should this part of the check be enabled
          enabled: true

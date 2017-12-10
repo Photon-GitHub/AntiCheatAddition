@@ -80,21 +80,21 @@ public class ViolationLevelManagement implements Listener
     }
 
     /**
-     * Flags a {@link Player} in the violationLevelManagement with the amount of vl_increase
+     * Flags a {@link Player} in the violationLevelManagement with the amount of vlIncrease
      *
      * @param player      the player that should be flagged.
-     * @param vl_increase how much the vl should be increased.
-     * @param cancel_vl   the ViolationLevel up from which onCancel is run. Set to -1 to disable
-     * @param onCancel    a {@link Runnable} that is executed if the vl is higher that cancel_vl
+     * @param vlIncrease  how much the vl should be increased.
+     * @param cancelVl    the ViolationLevel up from which onCancel is run. Set to -1 to disable
+     * @param onCancel    a {@link Runnable} that is executed if the vl is higher that cancelVl
      * @param specialCode a {@link Runnable} to define special code such as critical_vl
      */
-    public void flag(final Player player, final int vl_increase, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
+    public void flag(final Player player, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable specialCode)
     {
         // Only create the event if it should be called.
         final PlayerAdditionViolationEvent playerAdditionViolationEvent = new PlayerAdditionViolationEvent(
                 player,
                 this.moduleType,
-                this.getVL(player.getUniqueId()) + vl_increase,
+                this.getVL(player.getUniqueId()) + vlIncrease,
                 this.moduleType.getViolationMessage()
         );
 
@@ -104,10 +104,10 @@ public class ViolationLevelManagement implements Listener
 
         if (!playerAdditionViolationEvent.isCancelled())
         {
-            this.addVL(player, vl_increase);
+            this.addVL(player, vlIncrease);
 
             //Cancel
-            if (cancel_vl > 0 && cancel_vl < this.getVL(player.getUniqueId()))
+            if (cancelVl > 0 && cancelVl < this.getVL(player.getUniqueId()))
             {
                 onCancel.run();
             }
@@ -175,9 +175,9 @@ public class ViolationLevelManagement implements Listener
      * Adds an {@link Integer} to the vl of a player. The number can be negative, this will decrease the vl then.
      *
      * @param player the {@link Player} whose vl should be set
-     * @param vl     the new vl of the player.
+     * @param vl     the vl to be added to the current vl.
      */
-    private void addVL(final Player player, final Integer vl)
+    private void addVL(final Player player, final int vl)
     {
         this.setVL(player, this.getVL(player.getUniqueId()) + vl);
     }
@@ -186,16 +186,16 @@ public class ViolationLevelManagement implements Listener
      * Used to execute the command that are defined in the config section CHECK_NAME.thresholds
      *
      * @param player the {@link Player} that should be punished and that should be used to apply the placeholders
-     * @param fromvl the last vl of the player before the addition and the searching-range for command.
+     * @param fromVl the last vl of the player before the addition and the searching-range for command.
      */
-    private void punishPlayer(final Player player, final int fromvl, final int toVl)
+    private void punishPlayer(final Player player, final int fromVl, final int toVl)
     {
         // Iterate through all the keys
         for (final Integer key : thresholds.keySet())
         {
 
             // If the key should be applied here
-            if (key > fromvl && key <= toVl)
+            if (key > fromVl && key <= toVl)
             {
 
                 // Iterate through all the commands that are presented in the threshold of key

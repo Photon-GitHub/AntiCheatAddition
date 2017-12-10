@@ -43,7 +43,7 @@ public class VerboseCommand extends InternalCommand
 
         if (arguments.size() == 1)
         {
-            switch (arguments.peek())
+            switch (arguments.peek().toLowerCase())
             {
                 case "on":
                     user.verbose = true;

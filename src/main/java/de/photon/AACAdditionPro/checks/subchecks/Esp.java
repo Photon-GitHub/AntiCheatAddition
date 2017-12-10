@@ -30,7 +30,6 @@ import java.util.Queue;
 
 public class Esp implements ViolationModule
 {
-
     // The auto-config-data
     private double renderDistanceSquared = 0;
     private boolean hideAfterRenderDistance = true;
@@ -45,7 +44,7 @@ public class Esp implements ViolationModule
     // 150° + 15° (compensation) = 165°
     private static final double MAX_FOV = Math.toRadians(165D);
 
-    // Use a LinkedList design for optimal storage use as one cannot estimate the amount of bypassed / spectator players.
+    // Use a LinkedList design for optimal storage usage as the amount of bypassed / spectator players cannot be estimated.
     private final Queue<Pair> playerConnections = new LinkedList<>();
 
     private final PlayerInformationModifier fullHider = new PlayerHider();

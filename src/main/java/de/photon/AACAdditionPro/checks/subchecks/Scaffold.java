@@ -91,7 +91,7 @@ public class Scaffold implements Listener, ViolationModule
             // delta-times are too low -> flag
             if (average < scaffold_delay)
             {
-                VerboseSender.sendVerboseMessage("SCAFFOLD | Player: " + user.getPlayer().getName() + " estimated time: " + scaffold_delay + " | real: " + average);
+                VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + scaffold_delay + " | real: " + average);
 
                 // Flag the player
                 vlManager.flag(event.getPlayer(), (int) Math.max(Math.min(1, (scaffold_delay - average) / 15), 6), cancel_vl, () ->

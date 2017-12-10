@@ -44,16 +44,24 @@ AutoFish:
          fishing_milliseconds: 145
       # The consistency part recognizes static times between a successful catch and fishing again.
       # This check has less to none false positives, especially with a high event count
+      # Depending on how accurate the consistency is players will receive between 1 and 15 vl
       consistency:
          # Should this part of the check be enabled
          enabled: true
          # How many FishEvents should be checked by the consistency check
          consistency_events: 5
-         # The offset that will be flagged as cheating
+         # The offset minimum offset a player has to have in order to count as non-cheating.
          # Measured in ms
          violation_offset: 25
-         # How many violation-levels should be given for failing this part
-         weight: 9
+         # After how many failed attempts to fish between two successful attempts should a player be exempted from the
+         # consistency part?
+         #
+         # This is a countermeasure for afk fishing farms.
+         # Do not extensively lower this value because bots can implement this behaviour and the value should
+         # make bots with fail-percentages perform very bad.
+         #
+         # If you do not allow afk fishing farms on your server set this to a high value (e.g. a million)
+         maximum_fails: 12
    # Map of violation levels to command
    thresholds:
       8: "aacstaffnotify {player} in {world} is suspected for AutoFish"

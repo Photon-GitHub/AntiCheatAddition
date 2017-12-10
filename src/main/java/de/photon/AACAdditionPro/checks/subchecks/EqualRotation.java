@@ -10,6 +10,7 @@ import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLook;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
@@ -35,38 +36,41 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
-        if (user.getLookPacketData().recentlyUpdated(timeout)) {
+        if (user.getLookPacketData().recentlyUpdated(timeout))
+        {
             event.setCancelled(true);
             user.getLookPacketData().lastYaw = Float.MIN_VALUE;
             user.getLookPacketData().lastPitch = Float.MIN_VALUE;
             return;
         }
 
-        final float currentYaw, currentPitch;
+        final IWrapperPlayClientLook lookWrapper;
 
         // Differentiate the packets
-        if (event.getPacketType() == PacketType.Play.Client.POSITION_LOOK) {
+        if (event.getPacketType() == PacketType.Play.Client.POSITION_LOOK)
+        {
             // PositionLook wrapper
-            final WrapperPlayClientPositionLook positionLookWrapper = new WrapperPlayClientPositionLook(event.getPacket());
-            currentYaw = positionLookWrapper.getYaw();
-            currentPitch = positionLookWrapper.getPitch();
+            lookWrapper = new WrapperPlayClientPositionLook(event.getPacket());
 
-        } else if (event.getPacketType() == PacketType.Play.Client.LOOK) {
-            // Look wrapper
-            final WrapperPlayClientLook lookWrapper = new WrapperPlayClientLook(event.getPacket());
-            currentYaw = lookWrapper.getYaw();
-            currentPitch = lookWrapper.getPitch();
-
-        } else {
-            // Invalid data
-            currentYaw = 0;
-            currentPitch = 0;
-            VerboseSender.sendVerboseMessage("EqualRotation: received invalid packet: " + event.getPacketType().toString(), true, true);
         }
+        else if (event.getPacketType() == PacketType.Play.Client.LOOK)
+        {
+            // Look wrapper
+            lookWrapper = new WrapperPlayClientLook(event.getPacket());
+        }
+        else
+        {
+            VerboseSender.sendVerboseMessage("EqualRotation: received invalid packet: " + event.getPacketType().toString(), true, true);
+            return;
+        }
+
+        final float currentYaw = lookWrapper.getYaw();
+        final float currentPitch = lookWrapper.getPitch();
 
         // Boat false positive (usually worse cheats in vehicles as well)
         if (!user.getPlayer().isInsideVehicle() &&
@@ -83,7 +87,9 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
                 event.setCancelled(true);
                 user.getLookPacketData().updateTimeStamp();
             }, () -> {});
-        } else {
+        }
+        else
+        {
             user.getLookPacketData().lastYaw = currentYaw;
             user.getLookPacketData().lastPitch = currentPitch;
         }

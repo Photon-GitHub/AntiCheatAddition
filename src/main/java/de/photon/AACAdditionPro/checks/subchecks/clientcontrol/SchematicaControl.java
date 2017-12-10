@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
-import de.photon.AACAdditionPro.checks.ClientControlCheck;
+import de.photon.AACAdditionPro.checks.ClientControlModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import org.bukkit.entity.Player;
@@ -16,7 +16,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class SchematicaControl implements Listener, ClientControlCheck, PluginMessageListener
+public class SchematicaControl implements Listener, ClientControlModule, PluginMessageListener
 {
     @SuppressWarnings("FieldCanBeLocal")
     private static final String SCHEMATICA_CHANNEL = "schematica";

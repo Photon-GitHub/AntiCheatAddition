@@ -15,7 +15,8 @@ public abstract class DoubleBuffer extends Buffer<Double>
     public double sum()
     {
         double result = 0D;
-        for (double d : this) {
+        for (double d : this)
+        {
             result += d;
         }
         return result;

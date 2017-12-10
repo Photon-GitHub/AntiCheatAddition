@@ -6,7 +6,7 @@
 
     <groupId>de.photon</groupId>
     <artifactId>AACAdditionPro</artifactId>
-    <version>3.4.4</version>
+    <version>3.4.5</version>
 
     <name>AACAdditionPro</name>
     <description>This plugin provides niche checks for cheats which are not covered by AAC</description>

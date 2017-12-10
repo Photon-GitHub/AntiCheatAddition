@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 public class PerHeuristicCommands implements Module, Listener
 {
-    private static final Pattern HEURISTICS_PATTERN = Pattern.compile("P/(\\d{2})");
+    private static final Pattern HEURISTICS_PATTERN = Pattern.compile("P/(\\d{2})(\\S*)");
     private static final Pattern CONFIDENCE_PATTERN = Pattern.compile("confidence (\\d{2}(\\.\\d+)?)");
 
     private final Map<UUID, Double> oldConfidences = new HashMap<>();

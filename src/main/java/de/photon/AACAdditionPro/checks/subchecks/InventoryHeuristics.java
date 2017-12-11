@@ -1,30 +1,18 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.events.InventoryHeuristicsEvent;
-import de.photon.AACAdditionPro.heuristics.ActivationFunction;
-import de.photon.AACAdditionPro.heuristics.NeuralNetwork;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-
-import java.util.Map;
-import java.util.Stack;
-import java.util.TreeMap;
 
 public class InventoryHeuristics implements Listener, ViolationModule
 {
-    private final Stack<Long> deltaTimes = new Stack<>();
+    @Override
+    public ModuleType getModuleType()
+    {
+        return ModuleType.INVENTORY_HEURISTICS;
+    }
+
+    /*private final Stack<Long> deltaTimes = new Stack<>();
     private final Stack<Integer> startPositions = new Stack<>();
     private final Stack<Integer> targetPositions = new Stack<>();
     private final Stack<Integer> materials = new Stack<>();
@@ -153,5 +141,5 @@ public class InventoryHeuristics implements Listener, ViolationModule
                         "CER_AUTOARMOR"
                 },
                 10, 10);
-    }
+    }*/
 }

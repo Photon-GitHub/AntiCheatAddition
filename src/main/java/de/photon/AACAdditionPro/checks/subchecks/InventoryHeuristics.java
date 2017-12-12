@@ -2,121 +2,182 @@ package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
+import de.photon.AACAdditionPro.userdata.User;
+import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class InventoryHeuristics implements Listener, ViolationModule
 {
-    @Override
-    public ModuleType getModuleType()
-    {
-        return ModuleType.INVENTORY_HEURISTICS;
-    }
+    ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 600);
 
-    /*private final Stack<Long> deltaTimes = new Stack<>();
-    private final Stack<Integer> startPositions = new Stack<>();
-    private final Stack<Integer> targetPositions = new Stack<>();
-    private final Stack<Integer> materials = new Stack<>();
-    private NeuralNetwork neuralNetwork;
-    private Player training;
-    private Player checking;
-    private InventoryClick lastClick;
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void on(final InventoryClickEvent event)
+    // TODO: DIFFERENT INVENTORY TYPES!
+    // Lowest priority to get all the Events before they are processed.
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void on(InventoryClickEvent event)
     {
-        if ((training != null && training.getPlayer().getUniqueId().equals(event.getWhoClicked().getUniqueId())) ||
-            (checking != null && checking.getPlayer().getUniqueId().equals(event.getWhoClicked().getUniqueId())))
+        final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
+
+        // User valid and not bypassed
+        if (User.isUserInvalid(user))
         {
-
-            final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
-
-            // Not bypassed
-            if (User.isUserInvalid(user)) {
-                return;
-            }
-
-            if (lastClick == null) {
-                lastClick = new InventoryClick(
-                        user,
-                        event.getCurrentItem() != null ?
-                        event.getCurrentItem().getType() :
-                        Material.AIR,
-                        event.getRawSlot(),
-                        event.getClick().ordinal()
-                );
-            } else {
-                deltaTimes.push(System.currentTimeMillis() - lastClick.timeStamp);
-                startPositions.push(event.getRawSlot());
-                targetPositions.push(lastClick.position);
-                materials.push(lastClick.type.ordinal());
-                lastClick = null;
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void on(final InventoryHeuristicsEvent event)
-    {
-        if (event.isTraining()) {
-            train(event.getPlayer(), event.getPattern());
-        } else {
-            check(event.getPlayer());
-        }
-    }
-
-    private void train(final Player player, final String s)
-    {
-        if (checking != null || training != null) {
-            VerboseSender.sendVerboseMessage("Already checking or training");
             return;
         }
-
-        training = player;
-        neuralNetwork.debugMatrix();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                AACAdditionPro.getInstance(), () ->
-                {
-                    training = null;
-                    while (!deltaTimes.isEmpty()) {
-                        neuralNetwork.setInput("deltaTimes", Double.valueOf(deltaTimes.pop()));
-                        neuralNetwork.setInput("startPositions", Double.valueOf(startPositions.pop()));
-                        neuralNetwork.setInput("targetPositions", Double.valueOf(targetPositions.pop()));
-                        neuralNetwork.setInput("materials", Double.valueOf(materials.pop()));
-                        neuralNetwork.train(s);
-                    }
-                    VerboseSender.sendVerboseMessage("Training finished.");
-                    neuralNetwork.debugMatrix();
-                }, 200);
     }
 
-    private void check(final Player player)
-    {
-        if (checking != null || training != null) {
-            VerboseSender.sendVerboseMessage("Already checking or training");
-            return;
-        }
+        /*InventoryUtils.locateSlot(event.getRawSlot(), event.getInventory().getType());
 
-        checking = player;
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
-                AACAdditionPro.getInstance(), () ->
-                {
-                    final TreeMap<String, Double> patternSums = new TreeMap<>();
-                    checking = null;
-                    while (!deltaTimes.isEmpty())
+        // Buffer the data in the user's InventoryData and check if there are enough entries
+        if (user.getInventoryData().inventoryClicks.bufferObject(new InventoryClick(user, event.getCurrentItem().getType(), event.getRawSlot(), event.getSlotType(), event.getClick().ordinal()))) {
+            // Buffer filled, now check
+            final Stack<Long> deltaTimes = new Stack<>();
+            final Stack<Double> slotDistances = new Stack<>();
+            final Stack<Integer> slotTypes = new Stack<>();
+            final Stack<Integer> clickTypes = new Stack<>();
+
+            user.getInventoryData().inventoryClicks.clearLastObjectIteration(
+                    // The most recently added element is in last (method)
+                    (last, current) ->
                     {
-                        neuralNetwork.setInput("deltaTimes", Double.valueOf(deltaTimes.pop()));
-                        neuralNetwork.setInput("startPositions", Double.valueOf(startPositions.pop()));
-                        neuralNetwork.setInput("targetPositions", Double.valueOf(targetPositions.pop()));
-                        neuralNetwork.setInput("materials", Double.valueOf(materials.pop()));
+                        deltaTimes.push(last.timeStamp - current.timeStamp);
+                        slotDistances.push(this.getSlotDistance(last.clickedRawSlot, current.clickedRawSlot, last.slotType, current.slotType));
+                        // Use last here as of the method.
+                        slotTypes.push(last.slotType.ordinal());
+                        clickTypes.push(last.clickType);
+                    });
 
-                        final Map<String, Double> currentResult = neuralNetwork.check();
-                        currentResult.forEach((name, value) -> patternSums.put(name, value + patternSums.getOrDefault(name, 0D)));
+            // Training
+            if (trainingPattern.containsKey(user)) {
+                final NeuralNetwork trainedNetwork = this.getNetworkByPattern(trainingPattern.get(user));
+
+                // Invalid pattern
+                if (trainedNetwork == null) {
+                    throw new NeuralNetworkException("Tried to train invalid pattern " + trainingPattern.get(user));
+                }
+
+                // Init training
+                // Just take one stack here as all have the same size
+                while (!deltaTimes.empty()) {
+                    trainedNetwork.setInput("deltaTimes", deltaTimes.pop());
+                    trainedNetwork.setInput("slotdistance", slotDistances.pop());
+                    trainedNetwork.setInput("slotTypes", slotTypes.pop());
+                    trainedNetwork.setInput("clickTypes", clickTypes.pop());
+                    // TODO: REAL OUTPUT
+                    trainedNetwork.train("NONLEGIT");
+                }
+
+            } else
+            // Checking
+            {
+                final Map<Short, Double> legitResults = new HashMap<>(neuralNetworks.size());
+
+                // Init training
+                // Just take one stack here as all have the same size
+                while (!deltaTimes.empty()) {
+                    neuralNetworks.forEach((neuralNetwork -> neuralNetwork.setInput("deltaTimes", deltaTimes.peek())));
+                    neuralNetworks.forEach((neuralNetwork -> neuralNetwork.setInput("slotDistances", slotDistances.peek())));
+                    neuralNetworks.forEach((neuralNetwork -> neuralNetwork.setInput("slotTypes", slotTypes.peek())));
+                    neuralNetworks.forEach((neuralNetwork -> neuralNetwork.setInput("clickTypes", clickTypes.peek())));
+
+                    neuralNetworks.forEach(neuralNetwork ->
+                                           {
+                                               neuralNetwork.calculate();
+                                               legitResults.put(neuralNetwork.pattern, legitResults.getOrDefault(neuralNetwork.pattern, 0D) + neuralNetwork.extractOutputNeurons().get("legit"));
+                                           });
+                    deltaTimes.pop();
+                    slotDistances.pop();
+                    slotTypes.pop();
+                    clickTypes.pop();
+                }
+
+                // Get the average legit coverage
+                final byte divisor = (byte) legitResults.size();
+                legitResults.replaceAll((key, value) -> value /= divisor);
+
+                @SuppressWarnings("ConstantConditions")
+                Map.Entry<Short, Double> minEntry = legitResults.entrySet().stream().min((o1, o2) -> {
+                    if (Objects.equals(o1.getValue(), o2.getValue())) {
+                        return 0;
+                    } else if (o1.getValue() > o2.getValue()) {
+                        return 1;
                     }
+                    return -1;
+                    // The .get is ok here as a minimum value is guaranteed here.
+                }).get();
 
-                    final Map<String, Double> resultMap = patternSums.descendingMap();
+                int vl = (int) Math.floor(minEntry.getValue());
 
-                    resultMap.forEach((name_of_pattern, value) -> VerboseSender.sendVerboseMessage(name_of_pattern + ": " + value));
-                }, 200);
+                // Set the vl of the player to minEntry
+                PlayerAdditionViolationEvent violationEvent = new PlayerAdditionViolationEvent(user.getPlayer(), this.getAdditionHackType(), vl);
+                Bukkit.getPluginManager().callEvent(violationEvent);
+
+                if (!violationEvent.isCancelled()) {
+                    vlManager.setVL(user.getPlayer(), vl);
+                }
+            }
+        }
+    }
+
+    private double getSlotDistance(int firstSlot, int secondSlot, InventoryType.SlotType fistType, InventoryType.SlotType secondType)
+    {
+        float[] firstCoords = new float[2];
+        float[] secondCoords = new float[2];
+        return Math.hypot(firstCoords[0] - secondCoords[0], firstCoords[1] - secondCoords[1]);
+    }*/
+
+    /**
+     * @return the coords of a slot or null if it is invalid.
+     */
+   /* private float[] locateSlot(int slot, InventoryType.SlotType type)
+    {
+        // TODO: MANUAL TESTING WHAT THE SLOTNUMBERS ARE...
+        switch (type) {
+            // Y = 0
+            case QUICKBAR:
+                return new float[]{
+                        slot % 9,
+                        0
+                };
+
+            case CRAFTING:
+                return new float[]
+                        {
+                                // 80 and 82
+                                slot % 2 == 0 ?
+                                5.5F :
+                                6.5F,
+                                // 82 and 83
+                                slot > 81 ?
+                                6.5F :
+                                7.5F
+                        };
+
+            case RESULT:
+                return new float[]{
+                        7.5F,
+                        7
+                };
+
+            case ARMOR:
+                break;
+            case CONTAINER:
+
+                break;
+            case FUEL:
+                break;
+        }
+
+        // cases: OUTSIDE
+        return null;
+    }*/
+    @Override
+    public ViolationLevelManagement getViolationLevelManagement()
+    {
+        return vlManager;
     }
 
     @Override
@@ -124,22 +185,4 @@ public class InventoryHeuristics implements Listener, ViolationModule
     {
         return ModuleType.INVENTORY_HEURISTICS;
     }
-
-    @Override
-    public void subEnable()
-    {
-        neuralNetwork = new NeuralNetwork(
-                ActivationFunction.TANGENS_HYPERBOLICUS,
-                new String[]{
-                        "deltaTimes",
-                        "startPositions",
-                        "targetPositions",
-                        "materials"
-                },
-                new String[]{
-                        "VANILLA",
-                        "CER_AUTOARMOR"
-                },
-                10, 10);
-    }*/
 }

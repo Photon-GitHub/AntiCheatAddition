@@ -3,6 +3,8 @@ package de.photon.AACAdditionPro.heuristics;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 public class Pattern
 {
     @Getter
@@ -12,16 +14,18 @@ public class Pattern
     private InputData[] inputs;
     private OutputData[] outputs;
 
-    public Pattern(String name)
+    public Pattern(String name, Graph graph, OutputData[] outputs)
     {
         this.name = name;
+        this.graph = graph;
+        this.outputs = outputs;
     }
 
     /**
      * Prepares the calculation of the {@link Graph} by setting the values of the {@link InputData}s.
      * The {@link InputData}s should have the same internal array length.
      */
-    private void provideInputData(InputData[] inputValues)
+    public void provideInputData(InputData[] inputValues)
     {
         int dataEntries = -1;
         for (InputData inputValue : inputValues)
@@ -44,5 +48,48 @@ public class Pattern
                 }
             }
         }
+    }
+
+    /**
+     * Make the pattern analyse the current input data.
+     * Provide data via {@link Graph}.{@link #provideInputData(InputData[])}
+     *
+     * @return the result of the analyse in form of an {@link OutputData}
+     */
+    public OutputData analyse()
+    {
+        // Convert the input data to a double tensor
+        double[][] inputs = new double[this.inputs[0].getData().length][this.inputs.length];
+
+        for (int i = 0; i < this.inputs[0].getData().length; i++)
+        {
+            for (int j = 0; j < this.inputs.length; j++)
+            {
+                inputs[i][j] = this.inputs[j].getData()[i];
+            }
+        }
+
+        // Actual analyse
+        double[] results = graph.analyse(inputs);
+
+        // Get the max. confidence
+        int maxIndex = -1;
+        double maxConfidence = -1;
+
+        for (int i = 0; i < results.length; i++)
+        {
+            if (results[i] > maxConfidence)
+            {
+                maxIndex = i;
+                maxConfidence = results[i];
+            }
+        }
+
+        if (maxIndex == -1)
+        {
+            throw new NeuralNetworkException("Invalid confidences: " + Arrays.toString(results));
+        }
+
+        return new OutputData(this.outputs[maxIndex].getName()).setConfidence(maxConfidence);
     }
 }

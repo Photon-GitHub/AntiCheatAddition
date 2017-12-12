@@ -204,7 +204,7 @@ public class Graph implements Serializable
             }
         }
 
-        System.arraycopy(neurons, (neurons.length - outputs.length), outputs, 0, outputs.length);
+        System.arraycopy(activatedNeurons, (activatedNeurons.length - outputs.length), outputs, 0, outputs.length);
         return outputs;
     }
 

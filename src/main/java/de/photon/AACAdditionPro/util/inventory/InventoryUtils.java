@@ -252,7 +252,7 @@ public final class InventoryUtils
         }
         return null;
     }
-    
+
     /**
      * This schedules an {@link org.bukkit.inventory.Inventory} update to be executed synchronously in the next server tick
      *

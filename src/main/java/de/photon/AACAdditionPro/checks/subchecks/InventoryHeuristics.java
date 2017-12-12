@@ -2,13 +2,23 @@ package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
+import de.photon.AACAdditionPro.heuristics.InputData;
+import de.photon.AACAdditionPro.heuristics.OutputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
+import de.photon.AACAdditionPro.userdata.User;
+import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import lombok.Getter;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 
 public class InventoryHeuristics implements Listener, ViolationModule
 {
@@ -16,6 +26,83 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
     @Getter
     private static final HashSet<Pattern> PATTERNS = new HashSet<>();
+
+    @EventHandler
+    public void on(InventoryClickEvent event)
+    {
+        final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
+
+        // Not bypassed
+        if (User.isUserInvalid(user))
+        {
+            return;
+        }
+
+        if (user.getInventoryData().inventoryClicks.bufferObject(new InventoryClick(event.getCurrentItem().getType(), event.getRawSlot(), event.getSlotType(), event.getClick())))
+        {
+            InputData[] inputData = new InputData[]{
+                    new InputData("TIMEDELTAS"),
+                    new InputData("MATERIALS"),
+                    new InputData("RAWSLOTS"),
+                    new InputData("SLOTTYPES"),
+                    new InputData("CLICKTYPE")
+            };
+
+            for (InputData data : inputData)
+            {
+                data.setData(new double[user.getInventoryData().inventoryClicks.size()]);
+            }
+
+            // Start at 1 to make timedeltas reliable
+            for (int i = 1; i < user.getInventoryData().inventoryClicks.size(); i++)
+            {
+                // Timestamps
+                inputData[0].getData()[i - 1] = user.getInventoryData().inventoryClicks.get(i).timeStamp - user.getInventoryData().inventoryClicks.get(i - 1).timeStamp;
+                // Materials
+                inputData[1].getData()[i - 1] = user.getInventoryData().inventoryClicks.get(i - 1).type.ordinal();
+                // RawSlots
+                inputData[2].getData()[i - 1] = user.getInventoryData().inventoryClicks.get(i - 1).clickedRawSlot;
+                // SlotTypes
+                inputData[3].getData()[i - 1] = user.getInventoryData().inventoryClicks.get(i - 1).slotType.ordinal();
+                // ClickTypes
+                inputData[4].getData()[i - 1] = user.getInventoryData().inventoryClicks.get(i - 1).clickType.ordinal();
+            }
+
+            List<OutputData> outputData = new ArrayList<>(PATTERNS.size());
+
+            for (Pattern pattern : PATTERNS)
+            {
+                pattern.provideInputData(inputData);
+                outputData.add(pattern.analyse());
+            }
+
+            // Filter out all detections
+            // Get the highest confidence and flag:
+            Optional<OutputData> maxConfidenceData = outputData.stream().filter(output -> !output.getName().equals("VANILLA")).max(
+                    (obj1, obj2) -> {
+                        if (obj1.getConfidence() == obj2.getConfidence())
+                        {
+                            return 0;
+                        }
+
+                        if (obj1.getConfidence() > obj2.getConfidence())
+                        {
+                            return 1;
+                        }
+
+                        return -1;
+                    });
+
+            // Might not be the case, i.e. no detections
+            maxConfidenceData.ifPresent(maxConfidenceOutput -> vlManager.flag(
+                    user.getPlayer(),
+                    // Use power 7 here to make sure higher confidences will flag significantly more.
+                    (int) (100 * Math.pow(maxConfidenceOutput.getConfidence(), 7)),
+                    -1,
+                    () -> {},
+                    () -> {}));
+        }
+    }
 
     private double getSlotDistance(int firstSlot, int secondSlot, InventoryType.SlotType firstType, InventoryType.SlotType secondType)
     {

@@ -1,6 +1,8 @@
 package de.photon.AACAdditionPro.userdata.data;
 
 import de.photon.AACAdditionPro.userdata.User;
+import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
+import de.photon.AACAdditionPro.util.storage.management.Buffer;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,6 +19,16 @@ import java.util.UUID;
 
 public class InventoryData extends TimeData
 {
+
+    public final Buffer<InventoryClick> inventoryClicks = new Buffer<InventoryClick>(InventoryClick.SAMPLES)
+    {
+        @Override
+        public boolean verifyObject(InventoryClick object)
+        {
+            return true;
+        }
+    };
+
     /**
      * The last slot a person clicked.<br>
      * This variable is used to prevent false positives based on spam-clicking one slot.

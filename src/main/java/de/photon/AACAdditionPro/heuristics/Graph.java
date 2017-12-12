@@ -27,10 +27,13 @@ public class Graph implements Serializable
      */
     public Graph(int... neuronsInLayers)
     {
-        this.neuronsInLayers = neuronsInLayers;
+        this.neuronsInLayers = new int[neuronsInLayers.length + 1];
+        System.arraycopy(neuronsInLayers, 0, this.neuronsInLayers, 0, neuronsInLayers.length);
+        // There must be 2 output neurons.
+        this.neuronsInLayers[this.neuronsInLayers.length - 1] = 2;
 
         int sumOfNeurons = 0;
-        for (int sizeOfLayer : neuronsInLayers)
+        for (int sizeOfLayer : this.neuronsInLayers)
         {
             sumOfNeurons += sizeOfLayer;
         }
@@ -51,13 +54,13 @@ public class Graph implements Serializable
 
         int currentNeuron = 0;
         int currentLayerLastNeuron;
-        int nextLayerLastNeuron = neuronsInLayers[0];
+        int nextLayerLastNeuron = this.neuronsInLayers[0];
 
         // Do not iterate over the last layer as output neurons do not need any additional connections.
-        for (int layer = 0; layer < (neuronsInLayers.length - 1); layer++)
+        for (int layer = 0; layer < (this.neuronsInLayers.length - 1); layer++)
         {
             currentLayerLastNeuron = nextLayerLastNeuron;
-            nextLayerLastNeuron += neuronsInLayers[layer + 1];
+            nextLayerLastNeuron += this.neuronsInLayers[layer + 1];
 
             while (currentNeuron++ < currentLayerLastNeuron)
             {

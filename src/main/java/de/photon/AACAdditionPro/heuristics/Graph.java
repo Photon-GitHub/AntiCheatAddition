@@ -10,11 +10,15 @@ import java.io.Serializable;
  */
 public class Graph implements Serializable
 {
+    private static final double TRAIN_PARAMETER = 0.05;
+
     // The main matrix containing the weights of all connections
     // Use Wrapper class to be able to set a value to null
     private Double[][] matrix;
     // Working array does not need to be serialized
     private transient double[] neurons;
+    private transient double[] activatedNeurons;
+    private transient double[] deltas;
 
     private int[] neuronsInLayers;
 
@@ -33,6 +37,8 @@ public class Graph implements Serializable
 
         this.matrix = new Double[sumOfNeurons][sumOfNeurons];
         this.neurons = new double[sumOfNeurons];
+        this.activatedNeurons = new double[sumOfNeurons];
+        this.deltas = new double[sumOfNeurons];
 
         // Invalidate every connection
         for (int i = 0; i < this.matrix.length; i++)
@@ -47,7 +53,7 @@ public class Graph implements Serializable
         int currentLayerLastNeuron;
         int nextLayerLastNeuron = neuronsInLayers[0];
 
-        // Do not iterate over the last layer as output neuron do not need any additional connections.
+        // Do not iterate over the last layer as output neurons do not need any additional connections.
         for (int layer = 0; layer < (neuronsInLayers.length - 1); layer++)
         {
             currentLayerLastNeuron = nextLayerLastNeuron;
@@ -77,36 +83,11 @@ public class Graph implements Serializable
 
         for (double[] testSeries : inputValues)
         {
-            // Set input values
-            for (int i = 0; i < testSeries.length; i++)
-            {
-                if (testSeries.length != neuronsInLayers[0])
-                {
-                    throw new NeuralNetworkException("Length of test series too long.");
-                }
-                neurons[i] = testSeries[i];
-            }
-
-            // Perform all the adding
-            for (int neuron = 0; neuron < matrix.length; neuron++)
-            {
-                // Activation function
-                neurons[neuron] = Math.tanh(neurons[neuron]);
-
-                // Forward - pass of the values
-                for (int connectionTo = 0; connectionTo < matrix.length; connectionTo++)
-                {
-                    // Forbid a connection in null - values
-                    if (matrix[neuron][connectionTo] != null)
-                    {
-                        neurons[connectionTo] += (neurons[neuron] * matrix[neuron][connectionTo]);
-                    }
-                }
-            }
+            double[] results = calculate(testSeries);
 
             for (int i = 0; i < outputs.length; i++)
             {
-                outputs[i] += neurons[(neurons.length - outputs.length) + i];
+                outputs[i] += results[i];
             }
         }
 
@@ -117,5 +98,161 @@ public class Graph implements Serializable
         }
 
         return outputs;
+    }
+
+    /**
+     * Train the neural network.
+     *
+     * @param inputValues  the input values as a matrix with the different tests being the first index and the
+     *                     different input sources (e.g. time delta, slot distance, etc.) being the second index.
+     * @param outputNeuron the index of the output neuron that is the correct result
+     */
+    public void train(double[][] inputValues, int outputNeuron)
+    {
+        if (outputNeuron >= neuronsInLayers[neuronsInLayers.length - 1])
+        {
+            throw new NeuralNetworkException("OutputNeuron " + outputNeuron + " is not recognized.");
+        }
+
+        int indexOfOutputNeuron = matrix.length - neuronsInLayers[neuronsInLayers.length - 1] + outputNeuron;
+
+        for (double[] testSeries : inputValues)
+        {
+            double[] results = calculate(testSeries);
+
+            for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
+            {
+                for (int from = matrix.length; from > 0; from--)
+                {
+                    if (matrix[from][currentNeuron] != null)
+                    {
+                        // weight change = train parameter * activation level of sending neuron * delta
+                        double weightChange = TRAIN_PARAMETER * activatedNeurons[from];
+                        switch (classifyNeuron(currentNeuron))
+                        {
+                            case INPUT:
+                                break;
+                            case HIDDEN:
+                                // f'(netinput) * Sum(delta_this,toHigherLayer * matrix[this][toHigherLayer])
+                                deltas[currentNeuron] = tanhDerived(neurons[currentNeuron]);
+
+                                double sum = 0;
+
+                                int[] indices = nextLayerIndices(currentNeuron);
+                                for (int i = indices[0]; i <= indices[1]; i++)
+                                {
+                                    if (matrix[currentNeuron][i] != null)
+                                    {
+                                        sum += deltas[i] * matrix[currentNeuron][i];
+                                    }
+                                }
+
+                                deltas[currentNeuron] *= sum;
+                                break;
+                            case OUTPUT:
+                                // f'(netInput) * (a_wanted - a_real)
+                                deltas[currentNeuron] = tanhDerived(neurons[currentNeuron]) * ((currentNeuron == indexOfOutputNeuron ?
+                                                                                                1 :
+                                                                                                0) - activatedNeurons[currentNeuron]);
+                                break;
+                        }
+
+                        weightChange *= deltas[currentNeuron];
+
+                        matrix[from][currentNeuron] += weightChange;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Calculate one data series in the {@link Graph}.
+     *
+     * @param testSeries the different input sources (e.g. time delta, slot distance, etc.) being the index.
+     * @return an array of doubles representing the output neurons.
+     */
+    private double[] calculate(double[] testSeries)
+    {
+        double[] outputs = new double[neuronsInLayers[neuronsInLayers.length - 1]];
+
+        // Set input values
+        for (int i = 0; i < testSeries.length; i++)
+        {
+            if (testSeries.length != neuronsInLayers[0])
+            {
+                throw new NeuralNetworkException("Length of test series is not persistent.");
+            }
+            neurons[i] = testSeries[i];
+        }
+
+        // Perform all the adding
+        for (int neuron = 0; neuron < matrix.length; neuron++)
+        {
+            // Activation function
+            activatedNeurons[neuron] = Math.tanh(neurons[neuron]);
+
+            // Forward - pass of the values
+            for (int connectionTo = 0; connectionTo < matrix.length; connectionTo++)
+            {
+                // Forbid a connection in null - values
+                if (matrix[neuron][connectionTo] != null)
+                {
+                    neurons[connectionTo] += (activatedNeurons[neuron] * matrix[neuron][connectionTo]);
+                }
+            }
+        }
+
+        System.arraycopy(neurons, (neurons.length - outputs.length), outputs, 0, outputs.length);
+        return outputs;
+    }
+
+    /**
+     * @return the start index of the next layer in index 0 and the end in index 1
+     */
+    private int[] nextLayerIndices(int index)
+    {
+        // We count with lengths here, so - 1 to get the index.
+        int startIndex = -1;
+
+        for (int i = 0; i < neuronsInLayers.length; i++)
+        {
+            startIndex += neuronsInLayers[i];
+
+            if (startIndex > index)
+            {
+                // -1 because of the index here
+                return new int[]{startIndex, startIndex + (neuronsInLayers[++i] - 1)};
+            }
+        }
+        throw new NeuralNetworkException("Cannot identify the next layer of neuron " + index + " out of " + matrix.length);
+    }
+
+    private static double tanhDerived(double d)
+    {
+        double cosh = Math.cosh(d);
+        return 1 / (cosh * cosh);
+    }
+
+    private NeuronType classifyNeuron(int indexOfNeuron)
+    {
+        if (indexOfNeuron < neuronsInLayers[0])
+        {
+            return NeuronType.INPUT;
+        }
+
+        if (indexOfNeuron < matrix.length - neuronsInLayers[neuronsInLayers.length - 1])
+        {
+            return NeuronType.HIDDEN;
+        }
+
+        return NeuronType.OUTPUT;
+    }
+
+    private enum NeuronType
+    {
+        INPUT,
+        HIDDEN,
+        OUTPUT
     }
 }

@@ -2,13 +2,20 @@ package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
+import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import lombok.Getter;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
+
+import java.util.HashSet;
 
 public class InventoryHeuristics implements Listener, ViolationModule
 {
     ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 600);
+
+    @Getter
+    private static final HashSet<Pattern> PATTERNS = new HashSet<>();
 
     private double getSlotDistance(int firstSlot, int secondSlot, InventoryType.SlotType firstType, InventoryType.SlotType secondType)
     {

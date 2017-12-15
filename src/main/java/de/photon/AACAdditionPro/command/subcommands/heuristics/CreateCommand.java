@@ -10,6 +10,8 @@ import de.photon.AACAdditionPro.heuristics.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 
 public class CreateCommand extends InternalCommand
@@ -32,20 +34,12 @@ public class CreateCommand extends InternalCommand
                 sender.sendMessage(ChatColor.GOLD + "Pattern name \"" + patternName + "\"" + " is already in use.");
             }
 
-            final StringBuilder hiddenLayerConfigBuilder = new StringBuilder();
-
-            while (!arguments.isEmpty())
+            final List<String> hiddenLayerConfigStrings = new ArrayList<>(arguments);
+            int[] hiddenLayerConfig = new int[hiddenLayerConfigStrings.size()];
+            
+            for (int i = 0; i < hiddenLayerConfigStrings.size(); i++)
             {
-                hiddenLayerConfigBuilder.append(arguments.remove());
-            }
-
-            String[] hiddenLayerConfigStrings = hiddenLayerConfigBuilder.toString().split(" ");
-
-            int[] hiddenLayerConfig = new int[hiddenLayerConfigStrings.length];
-
-            for (int i = 0; i < hiddenLayerConfigStrings.length; i++)
-            {
-                hiddenLayerConfig[i] = Integer.valueOf(hiddenLayerConfigStrings[i]);
+                hiddenLayerConfig[i] = Integer.valueOf(hiddenLayerConfigStrings.get(i));
             }
 
             sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");

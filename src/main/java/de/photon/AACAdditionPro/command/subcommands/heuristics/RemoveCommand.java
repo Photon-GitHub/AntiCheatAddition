@@ -15,7 +15,7 @@ public class RemoveCommand extends InternalCommand
 {
     public RemoveCommand()
     {
-        super("remove", InternalPermission.NEURAL_CREATE, (byte) 2);
+        super("remove", InternalPermission.NEURAL_CREATE, (byte) 1);
     }
 
     @Override

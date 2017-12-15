@@ -78,7 +78,10 @@ public class TrainCommand extends InternalCommand
     @Override
     protected String[] getCommandHelp()
     {
-        return new String[]{"Train a pattern with an example."};
+        return new String[]{
+                "Train a pattern with an example.",
+                "Format: /aacadditionpro train <Player to learn from> <Name of pattern> <Output>"
+        };
     }
 
     @Override

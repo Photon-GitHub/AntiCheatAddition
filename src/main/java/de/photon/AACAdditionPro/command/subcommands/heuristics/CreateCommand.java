@@ -92,7 +92,8 @@ public class CreateCommand extends InternalCommand
     protected String[] getCommandHelp()
     {
         return new String[]{
-                "Creates a new pattern with a clear graph. Saving is required if you want the pattern to be permanent."
+                "Creates a new pattern with a clear graph. Saving is required if you want the pattern to be permanent.",
+                "Format: /aacadditionpro create <Name of pattern> <Inputs> <Neurons of layer 1> <Neurons of layer 2> ..."
         };
     }
 

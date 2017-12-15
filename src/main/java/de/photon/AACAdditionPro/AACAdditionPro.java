@@ -260,7 +260,13 @@ public class AACAdditionPro extends JavaPlugin
         VerboseSender.setAllowedToRegisterTasks(false);
 
         // Disable all checks
-        moduleManager.forEach(Module::disable);
+        try
+        {
+            moduleManager.forEach(Module::disable);
+        } catch (NullPointerException ignore)
+        {
+            // This can happen if the modulemanager is already finalized.
+        }
 
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);

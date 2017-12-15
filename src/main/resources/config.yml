@@ -196,9 +196,10 @@ InventoryChat:
       5: "aacstaffnotify {player} in {world} is highly suspected for InventoryChat"
       8: "aackick {player} InventoryChat"
 
+# The inventory heuristics provide a neural network framework to detect advanced inventory cheats.
 InventoryHeuristics:
    # Do you want to enable the InventoryHeuristics
-   enable: true
+   enabled: true
    # Map of confidence levels to command
    thresholds:
       80: "aacstaffnotify {player} in {world} is suspected for inventory cheats. Pattern {pattern} | Confidence: {confidence}"

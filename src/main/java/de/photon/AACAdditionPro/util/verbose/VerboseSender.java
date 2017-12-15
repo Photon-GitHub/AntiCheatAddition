@@ -46,7 +46,7 @@ public final class VerboseSender implements Listener
      * <p>
      * [0] stores whether AACAdditionPro should print verbose output in the console ({@link org.bukkit.command.ConsoleCommandSender} - Verbose)
      * <p>
-     * [1] stores whether AACAdditionPro should save verbose output in a log file ({@link File} - Verbose)
+     * [1] stores whether AACAdditionPro should saveToFile verbose output in a log file ({@link File} - Verbose)
      * <p>
      * [2] stores whether AACAdditionPro should print verbose output in the chat ({@link org.bukkit.entity.Player} - Verbose)
      */

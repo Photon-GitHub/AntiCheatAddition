@@ -57,7 +57,9 @@ public class CreateCommand extends InternalCommand
     @Override
     protected String[] getCommandHelp()
     {
-        return new String[]{"Create a new pattern"};
+        return new String[]{
+                "Creates a new pattern with a clear graph. Saving is required if you want the pattern to be permanent."
+        };
     }
 
     @Override

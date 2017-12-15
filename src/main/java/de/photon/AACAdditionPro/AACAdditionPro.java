@@ -184,7 +184,7 @@ public class AACAdditionPro extends JavaPlugin
                 return;
             }
 
-            // The first getConfig call will automatically save and cache the config.
+            // The first getConfig call will automatically saveToFile and cache the config.
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //

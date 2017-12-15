@@ -78,7 +78,7 @@ public class TrainCommand extends InternalCommand
     @Override
     protected String[] getCommandHelp()
     {
-        return new String[]{"Train the Inventory-Heuristics with an example-player"};
+        return new String[]{"Train a pattern with an example."};
     }
 
     @Override

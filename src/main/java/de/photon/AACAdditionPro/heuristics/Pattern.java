@@ -2,12 +2,19 @@ package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 import de.photon.AACAdditionPro.userdata.User;
+import de.photon.AACAdditionPro.util.files.FileUtilities;
+import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class Pattern
+public class Pattern implements Serializable
 {
     @Getter
     private String name;
@@ -99,5 +106,27 @@ public class Pattern
         }
 
         return new OutputData(this.outputs[maxIndex].getName()).setConfidence(maxConfidence);
+    }
+
+    /**
+     * Saves this pattern as a file.
+     */
+    public void saveToFile()
+    {
+        try
+        {
+            final File saveFile = FileUtilities.saveFileInFolder(this.name, FileUtilities.AACADDITIONPRO_DATAFOLDER + "/heuristics");
+            FileOutputStream fileOutputStream = new FileOutputStream(saveFile);
+
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(this);
+            objectOutputStream.close();
+
+            fileOutputStream.close();
+        } catch (IOException e)
+        {
+            VerboseSender.sendVerboseMessage("Could not save pattern " + this.name + ". See the logs for further information.", true, true);
+            e.printStackTrace();
+        }
     }
 }

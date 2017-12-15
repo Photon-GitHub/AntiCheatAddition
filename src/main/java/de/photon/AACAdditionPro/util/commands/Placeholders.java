@@ -18,9 +18,9 @@ public final class Placeholders
      *
      * @return the final {@link String} with the actual replacements in the place of the placeholders.
      */
-    public static String applyPlaceholders(final String input, final Player player)
+    public static String applyPlaceholders(final String input, final Player player, final String violationInformation)
     {
-        return applyPlaceholders(input, Collections.singletonList(player));
+        return applyPlaceholders(input, Collections.singletonList(player), violationInformation);
     }
 
     /**
@@ -32,7 +32,7 @@ public final class Placeholders
      *
      * @return the final {@link String} with the actual replacements in the place of the placeholders.
      */
-    public static String applyPlaceholders(String input, final List<Player> players)
+    public static String applyPlaceholders(String input, final List<Player> players, final String violationInformation)
     {
         if (AACAPIProvider.isAPILoaded())
         {
@@ -78,6 +78,8 @@ public final class Placeholders
 
                 // Both team and single player need the following placeholders
                 input = applySinglePlaceholder(input, "{tps}", String.valueOf(AACAPIProvider.getAPI().getTPS()), (byte) 5);
+
+                input = applySinglePlaceholder(input, "{vl}", violationInformation, (byte) 5);
 
                 // World
                 input = applySinglePlaceholder(input, "{world}", players.get(0).getWorld().getName(), Byte.MAX_VALUE);

@@ -118,6 +118,7 @@ public class ViolationLevelManagement implements Listener
 
     /**
      * @param uuid the {@link UUID} of the {@link Player} whose vl should be returned.
+     *
      * @return the vl of the given uuid.
      */
     public final int getVL(final UUID uuid)
@@ -201,9 +202,8 @@ public class ViolationLevelManagement implements Listener
                 // Iterate through all the commands that are presented in the threshold of key
                 for (final String s : thresholds.get(key))
                 {
-
                     // Command cannot be null as of the new loading process.
-                    final String realCommand = Placeholders.applyPlaceholders(s, player);
+                    final String realCommand = Placeholders.applyPlaceholders(s, player, String.valueOf(toVl));
 
                     // Only schedule the command execution if the plugin is loaded
                     if (AACAdditionPro.getInstance().isLoaded())

@@ -101,9 +101,13 @@ public class InventoryHeuristics implements Listener, ViolationModule
             };
 
             // Start at 1 to make deltas happen.
-            int i = 1;
-            while (i < user.getInventoryData().inventoryClicks.size())
+            int i = 0;
+
+            while (++i < user.getInventoryData().inventoryClicks.size())
             {
+                lastAndCurrent[0] = lastAndCurrent[1];
+                lastAndCurrent[1] = user.getInventoryData().inventoryClicks.get(i);
+
                 // Timestamps
                 inputData[0].getData()[i - 1] = lastAndCurrent[1].timeStamp - lastAndCurrent[0].timeStamp;
                 // Materials
@@ -117,8 +121,6 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 // ClickTypes
                 inputData[4].getData()[i - 1] = lastAndCurrent[0].clickType.ordinal();
 
-                lastAndCurrent[0] = lastAndCurrent[1];
-                lastAndCurrent[1] = user.getInventoryData().inventoryClicks.get(++i);
             }
 
             final List<OutputData> outputData = new ArrayList<>(PATTERNS.size());

@@ -15,7 +15,7 @@ public class SaveCommand extends InternalCommand
 {
     public SaveCommand()
     {
-        super("save", InternalPermission.NEURAL_CREATE, (byte) 2);
+        super("save", InternalPermission.NEURAL_CREATE, (byte) 1);
     }
 
     @Override

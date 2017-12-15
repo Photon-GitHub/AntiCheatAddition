@@ -23,10 +23,10 @@ public class Pattern implements Serializable
     private InputData[] inputs;
     private OutputData[] outputs;
 
-    private UUID currentlyCheckedUUID;
+    private transient UUID currentlyCheckedUUID;
 
     @Setter
-    private TrainingData trainingData;
+    private transient TrainingData trainingData;
 
     public Pattern(String name, Graph graph, InputData[] inputs, OutputData[] outputs)
     {

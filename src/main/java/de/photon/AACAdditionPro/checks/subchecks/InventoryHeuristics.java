@@ -91,10 +91,12 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 outputData.add(pattern.analyse());
             }
 
-            // Filter out all detections
             // Get the highest confidence and flag:
-            Optional<OutputData> maxConfidenceData = outputData.stream().filter(output -> !output.getName().equals("VANILLA")).max(
-                    Comparator.comparingDouble(OutputData::getConfidence));
+            Optional<OutputData> maxConfidenceData = outputData.stream()
+                                                               // Filter out all the VANILLA results
+                                                               .filter(output -> !output.getName().equals("VANILLA"))
+                                                               // get the max confidence for flagging
+                                                               .max(Comparator.comparingDouble(OutputData::getConfidence));
 
             // Might not be the case, i.e. no detections
             maxConfidenceData.ifPresent(maxConfidenceOutput -> vlManager.flag(

@@ -268,6 +268,50 @@ public final class InventoryUtils
                  * 32                        -                       40
                  */
                 break;
+            // TODO: is this needed or even correct?
+            case PLAYER:
+                if (slotType != null)
+                {
+                    switch (slotType)
+                    {
+                        // Y = 0
+                        case QUICKBAR:
+                            return new double[]{
+                                    rawSlot % 9, 0
+                            };
+
+                        case CRAFTING:
+                            return new double[]
+                                    {
+                                            // 80 and 82
+                                            rawSlot % 2 == 0 ?
+                                            5.5F :
+                                            6.5F,
+                                            // 82 and 83
+                                            rawSlot > 81 ?
+                                            6.5F :
+                                            7.5F
+                                    };
+
+                        case RESULT:
+                            return new double[]{
+                                    7.5F,
+                                    7
+                            };
+
+                        case ARMOR:
+                            break;
+                        case CONTAINER:
+                            break;
+                        case FUEL:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                // cases: OUTSIDE
+                return null;
             default:
                 // CREATIVE (false positives), PLAYER, SHULKER_BOX, BREWING_STAND (version compatibility)
                 return null;

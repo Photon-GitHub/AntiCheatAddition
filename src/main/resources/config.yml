@@ -182,19 +182,6 @@ GravitationalModifier:
       15: "aacstaffnotify {player} in {world} is highly suspected for movement cheats (GravitationalModifier)"
       20: "aackick {player} Illegal movement modification"
 
-# InventoryHit checks if a player modifies his inventory while hitting at the same time.
-InventoryHit:
-   # Do you want to enable the InventoryHit check
-   enabled: true
-   # Violation before AACAdditionPro starts to cancel the hits.
-   # Set this to 0 to never cancel hits.
-   cancel_vl: 3
-   # Map of violation levels to command
-   thresholds:
-      3: "aacstaffnotify {player} in {world} is suspected for Killaura/Autoarmor (InventoryHit)"
-      6: "aacstaffnotify {player} in {world} is highly suspected for Killaura/Autoarmor (InventoryHit)"
-      10: "aackick {player} Killaura/Triggerbot"
-
 # The InventoryChat check detects sending chat messages while being in an inventory
 InventoryChat:
    # Do you want to enable the InventoryChat check
@@ -209,11 +196,27 @@ InventoryChat:
       5: "aacstaffnotify {player} in {world} is highly suspected for InventoryChat"
       8: "aackick {player} InventoryChat"
 
-# The InventoryHeuristics check uses a neural network to detect cheats
-# This is not functional right now!
 InventoryHeuristics:
-   # Do you want to enable the InventoryHeuristics check
-   enabled: false
+   # Do you want to enable the InventoryHeuristics
+   enable: true
+   # Map of confidence levels to command
+   thresholds:
+      80: "aacstaffnotify {player} in {world} is suspected for inventory cheats. Pattern {pattern} | Confidence: {confidence}"
+      90: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats. Pattern {pattern} | Confidence: {confidence}"
+      95: "aackick {player} Inventory cheats."
+
+# InventoryHit checks if a player modifies his inventory while hitting at the same time.
+InventoryHit:
+   # Do you want to enable the InventoryHit check
+   enabled: true
+   # Violation before AACAdditionPro starts to cancel the hits.
+   # Set this to 0 to never cancel hits.
+   cancel_vl: 3
+   # Map of violation levels to command
+   thresholds:
+      3: "aacstaffnotify {player} in {world} is suspected for Killaura/Autoarmor (InventoryHit)"
+      6: "aacstaffnotify {player} in {world} is highly suspected for Killaura/Autoarmor (InventoryHit)"
+      10: "aackick {player} Killaura/Triggerbot"
 
 # The InventoryMove check detects inventory clicks while moving
 InventoryMove:

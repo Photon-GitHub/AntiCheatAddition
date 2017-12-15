@@ -14,7 +14,6 @@ import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -87,6 +86,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
             for (Pattern pattern : PATTERNS)
             {
+                // Totally ok to do with the array as the provideInputData() method filters out the required information and ignores the rest.
                 pattern.provideInputData(inputData);
                 outputData.add(pattern.analyse());
             }
@@ -107,57 +107,6 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     () -> {},
                     () -> {}));
         }
-    }
-
-    /**
-     * @return the coords of a slot or null if it is invalid.
-     */
-    private float[] locateSlot(int slot, InventoryType.SlotType type)
-    {
-
-
-        // TODO: MANUAL TESTING WHAT THE SLOTNUMBERS ARE...
-        switch (type)
-        {
-            // Y = 0
-            case QUICKBAR:
-                return new float[]{
-                        slot % 9,
-                        0
-                };
-
-            case CRAFTING:
-                return new float[]
-                        {
-                                // 80 and 82
-                                slot % 2 == 0 ?
-                                5.5F :
-                                6.5F,
-                                // 82 and 83
-                                slot > 81 ?
-                                6.5F :
-                                7.5F
-                        };
-
-            case RESULT:
-                return new float[]{
-                        7.5F,
-                        7
-                };
-
-            case ARMOR:
-                break;
-            case CONTAINER:
-
-                break;
-            case FUEL:
-                break;
-            default:
-                break;
-        }
-
-        // cases: OUTSIDE
-        return null;
     }
 
     @Override

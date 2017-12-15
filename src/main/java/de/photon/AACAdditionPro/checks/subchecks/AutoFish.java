@@ -98,7 +98,18 @@ public class AutoFish implements Listener, ViolationModule
                     }
 
                     // Certainly in cheating range (higher values terminate the method in the loop)
-                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " + user.getPlayer().getName() + " average time: " + String.valueOf(average).substring(0, 7) + " | maximum offset: " + String.valueOf(maxOffset).substring(0, 7));
+                    // First string is the average time, second one the maximum offset
+                    final String[] verboseStrings = new String[]{
+                            String.valueOf(average),
+                            String.valueOf(maxOffset)
+                    };
+
+                    for (int i = 0; i < verboseStrings.length; i++)
+                    {
+                        verboseStrings[i] = verboseStrings[i].substring(0, Math.min(verboseStrings.length, 7));
+                    }
+
+                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " + user.getPlayer().getName() + " average time: " + verboseStrings[0] + " | maximum offset: " + verboseStrings[1]);
                     // assert violation_offset - maxOffset > 0 as of the termination in the loop above.
                     vlManager.flag(event.getPlayer(), (int) Math.max(Math.ceil((violation_offset - maxOffset) * 0.6), 15), cancel_vl, () -> event.setCancelled(true), () -> {});
                 }

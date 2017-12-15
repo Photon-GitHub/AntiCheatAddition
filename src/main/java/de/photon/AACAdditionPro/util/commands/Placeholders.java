@@ -34,31 +34,40 @@ public final class Placeholders
      */
     public static String applyPlaceholders(String input, final List<Player> players)
     {
-        if (AACAPIProvider.isAPILoaded()) {
+        if (AACAPIProvider.isAPILoaded())
+        {
             // List is not null and contains at least one player
-            if (players != null && !players.isEmpty()) {
+            if (players != null && !players.isEmpty())
+            {
                 // Team handling
-                if (players.size() > 1) {
+                if (players.size() > 1)
+                {
 
                     // Team
                     final StringBuilder teamString = new StringBuilder();
 
                     Iterator<Player> playerIterator = players.iterator();
                     Player player;
-                    while (true) {
+                    while (true)
+                    {
                         player = playerIterator.next();
                         teamString.append(player.getName());
 
-                        if (playerIterator.hasNext()) {
+                        if (playerIterator.hasNext())
+                        {
                             teamString.append(", ");
-                        } else {
+                        }
+                        else
+                        {
                             break;
                         }
                     }
 
                     input = applySinglePlaceholder(input, "{team}", teamString.toString(), Byte.MAX_VALUE);
                     // Single-Player handling
-                } else {
+                }
+                else
+                {
 
                     // Player
                     input = applySinglePlaceholder(input, "{player}", players.get(0).getName(), (byte) 32);

@@ -56,7 +56,7 @@ public final class ConfigUtils
         // Loading error when Config-Section is null
         // Return the Set of keys
         return Objects.requireNonNull(
-                //Generate a ConfigurationSection that contains all keys
+                // Generate a ConfigurationSection that contains all keys
                 AACAdditionPro.getInstance().getConfig().getConfigurationSection(sectionPath),
                 "Severe loading error: Config-Section is null when loading: " + sectionPath).getKeys(false);
     }

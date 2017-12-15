@@ -56,7 +56,8 @@ public final class FileUtilities
         final String[] pathParts = path.split("/");
         final StringBuilder currentPath = new StringBuilder(path.length());
 
-        for (final String s : pathParts) {
+        for (final String s : pathParts)
+        {
             currentPath.append(s);
             currentPath.append('/');
 
@@ -66,14 +67,16 @@ public final class FileUtilities
         // Create the file
         final File resourceFile = new File(path, file_name);
 
-        if (createFileOrDirectory(resourceFile, false)) {
+        if (createFileOrDirectory(resourceFile, false))
+        {
             // Stream to read from the default-file
             final InputStream in = AACAdditionPro.getInstance().getResource(file_name);
 
             // Stream to write into the newly created file
             final OutputStream out = new FileOutputStream(resourceFile);
 
-            if (in != null) {
+            if (in != null)
+            {
                 // Write the content of the default file to the newly created file
                 ByteStreams.copy(in, out);
             }
@@ -94,23 +97,28 @@ public final class FileUtilities
     private static boolean createFileOrDirectory(File file, boolean directory) throws IOException
     {
         // The file must not exist.
-        if (file.exists()) {
+        if (file.exists())
+        {
             return false;
         }
 
         // Create a folder
-        if (directory) {
+        if (directory)
+        {
 
             // Create the folder if it does not exist
-            if (!file.mkdir()) {
+            if (!file.mkdir())
+            {
                 throw new IOException("The folder " + file.getPath() + " could not be created.");
             }
 
         }
         // Create a normal file
-        else {
+        else
+        {
             // Create the file if it does not exist
-            if (!file.createNewFile()) {
+            if (!file.createNewFile())
+            {
                 // Could not create the file
                 throw new IOException("The file " + file.getName() + " could not be created in " + file.getPath());
             }

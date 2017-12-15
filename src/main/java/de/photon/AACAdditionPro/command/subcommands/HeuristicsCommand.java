@@ -4,6 +4,8 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.CreateCommand;
+import de.photon.AACAdditionPro.command.subcommands.heuristics.RemoveCommand;
+import de.photon.AACAdditionPro.command.subcommands.heuristics.SaveCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.TrainCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -16,6 +18,8 @@ public class HeuristicsCommand extends InternalCommand
     {
         super("heuristics", InternalPermission.NEURAL, (byte) 1,
               new CreateCommand(),
+              new RemoveCommand(),
+              new SaveCommand(),
               new TrainCommand());
     }
 

@@ -200,6 +200,17 @@ InventoryChat:
 InventoryHeuristics:
    # Do you want to enable the InventoryHeuristics
    enabled: true
+   # This will allow you to access all of the framework, including the creation of your own patterns and training them.
+   #
+   # Recommended knowledge:
+   # - Understanding Java's SERIALIZATION
+   # - Understanding NEURAL NETWORKS (function and building)
+   # - Understanding the principle of HIDDEN LAYERS
+   #
+   # DO, UNDER NO CIRCUMSTANCES ENABLE THIS IF YOU DO NOT HAVE THE RECOMMENDED KNOWLEDGE.
+   # THIS IS A VERY POWERFUL TOOL AND CAN CRIPPLE YOUR SERVER IF USED IN THE WRONG WAY.
+   # I WILL _NOT_ PROVIDE SUPPORT FOR THIS FUNCTION: USE ON YOUR OWN RISK!
+   unlock_full_framework: false
    # Map of confidence levels to command
    thresholds:
       80: "aacstaffnotify {player} in {world} is suspected for inventory cheats. Pattern {pattern} | Confidence: {confidence}"

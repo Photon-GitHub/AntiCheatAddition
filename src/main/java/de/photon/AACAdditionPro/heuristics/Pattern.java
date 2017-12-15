@@ -97,6 +97,7 @@ public class Pattern implements Serializable
 
                     if (--this.trainingData.trainingCycles < 0)
                     {
+                        VerboseSender.sendVerboseMessage("Training of pattern " + this.name + " finished.");
                         this.trainingData = null;
                     }
                     return null;

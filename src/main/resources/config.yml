@@ -202,12 +202,12 @@ InventoryHeuristics:
    enabled: true
    # This will allow you to access all of the framework, including the creation of your own patterns and training them.
    #
-   # Recommended knowledge:
+   # Required knowledge:
    # - Understanding Java's SERIALIZATION
    # - Understanding NEURAL NETWORKS (function and building)
    # - Understanding the principle of HIDDEN LAYERS
    #
-   # DO, UNDER NO CIRCUMSTANCES ENABLE THIS IF YOU DO NOT HAVE THE RECOMMENDED KNOWLEDGE.
+   # DO UNDER NO CIRCUMSTANCES ENABLE THIS IF YOU DO NOT HAVE THE REQUIRED KNOWLEDGE.
    # THIS IS A VERY POWERFUL TOOL AND CAN CRIPPLE YOUR SERVER IF USED IN THE WRONG WAY.
    # I WILL _NOT_ PROVIDE SUPPORT FOR THIS FUNCTION: USE ON YOUR OWN RISK!
    unlock_full_framework: false

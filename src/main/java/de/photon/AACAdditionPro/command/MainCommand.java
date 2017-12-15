@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.command;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.command.subcommands.EntityCheckCommand;
+import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
 import de.photon.AACAdditionPro.command.subcommands.InfoCommand;
 import de.photon.AACAdditionPro.command.subcommands.VerboseCommand;
 import org.bukkit.ChatColor;
@@ -24,6 +25,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     {
         super("aacadditionpro", (byte) 0,
               new EntityCheckCommand(),
+              new HeuristicsCommand(),
               new InfoCommand(),
               new VerboseCommand());
     }
@@ -79,11 +81,11 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
         else
         {
             tab = new ArrayList<>(currentCommand.getTabPossibilities().length);
-            for (String tabPossiblitity : currentCommand.getTabPossibilities())
+            for (final String tabPossibility : currentCommand.getTabPossibilities())
             {
-                if (tabPossiblitity.startsWith(allArguments.peek()))
+                if (tabPossibility.startsWith(allArguments.peek()))
                 {
-                    tab.add(tabPossiblitity);
+                    tab.add(tabPossibility);
                 }
             }
         }

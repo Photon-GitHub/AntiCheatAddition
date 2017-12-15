@@ -36,14 +36,14 @@ public class CreateCommand extends InternalCommand
 
             final List<String> hiddenLayerConfigStrings = new ArrayList<>(arguments);
             int[] hiddenLayerConfig = new int[hiddenLayerConfigStrings.size()];
-            
+
             for (int i = 0; i < hiddenLayerConfigStrings.size(); i++)
             {
                 hiddenLayerConfig[i] = Integer.valueOf(hiddenLayerConfigStrings.get(i));
             }
 
             sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
-            sender.sendMessage(ChatColor.GOLD + "Created new Pattern \"" + patternName + "\"" + " with " + hiddenLayerConfig.length + " layers.");
+            sender.sendMessage(ChatColor.GOLD + "Created new pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " with " + hiddenLayerConfig.length + " layers.");
             InventoryHeuristics.getPATTERNS().add(new Pattern(patternName, new Graph(hiddenLayerConfig), OutputData.DEFAULT_OUTPUT_DATA));
         }
         else

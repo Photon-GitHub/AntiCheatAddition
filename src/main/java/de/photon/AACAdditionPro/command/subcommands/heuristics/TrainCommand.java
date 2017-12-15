@@ -29,16 +29,16 @@ public class TrainCommand extends InternalCommand
     {
         if (HeuristicsCommand.heurisitcsUnlocked())
         {
-            final Player p = Bukkit.getServer().getPlayer(arguments.remove());
+            final Player trainingPlayer = Bukkit.getServer().getPlayer(arguments.remove());
 
-            if (p == null)
+            if (trainingPlayer == null)
             {
                 sender.sendMessage(playerNotFoundMessage);
             }
             else
             {
-                sender.sendMessage(prefix + ChatColor.GOLD + "[HEURISTICS] Training " + arguments.element().toUpperCase() + " Player: " + p.getName());
-                VerboseSender.sendVerboseMessage("[HEURISTICS] Training " + arguments.element().toUpperCase() + "; Player: " + p.getName());
+                sender.sendMessage(prefix + ChatColor.GOLD + "[HEURISTICS] Training " + arguments.element() + " Player: " + trainingPlayer.getName());
+                VerboseSender.sendVerboseMessage("[HEURISTICS] Training " + arguments.element() + "; Player: " + trainingPlayer.getName());
 
                 final String patternName = arguments.remove();
                 final Set<Pattern> possiblePatterns = InventoryHeuristics.getPATTERNS().stream().filter(pattern -> pattern.getName().equals(patternName)).collect(Collectors.toSet());
@@ -46,7 +46,7 @@ public class TrainCommand extends InternalCommand
                 if (possiblePatterns.isEmpty())
                 {
                     sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
-                    sender.sendMessage(ChatColor.GOLD + "Pattern \"" + patternName + "\"" + " could not be found.");
+                    sender.sendMessage(ChatColor.GOLD + "Pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " could not be found.");
                 }
                 else if (possiblePatterns.size() > 1)
                 {
@@ -58,13 +58,13 @@ public class TrainCommand extends InternalCommand
 
                     if (output.equals("VANILLA") || output.equals("CHEATING"))
                     {
-                        possiblePatterns.forEach(pattern -> pattern.setTrainingData(new TrainingData(p.getUniqueId(), new OutputData(output))));
+                        possiblePatterns.forEach(pattern -> pattern.setTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output))));
                     }
                     else
                     {
                         sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
-                        sender.sendMessage(ChatColor.GOLD + "Output \"" + output + "\"" + " is not allowed.");
-                        sender.sendMessage(ChatColor.GOLD + "Allowed outputs: VANILLA | CHEATING");
+                        sender.sendMessage(ChatColor.GOLD + "Output \"" + ChatColor.RED + output + ChatColor.GOLD + "\"" + " is not allowed.");
+                        sender.sendMessage(ChatColor.GOLD + "Allowed outputs: " + ChatColor.RED + "VANILLA" + ChatColor.GOLD + " | " + ChatColor.RED + "CHEATING");
                     }
                 }
             }

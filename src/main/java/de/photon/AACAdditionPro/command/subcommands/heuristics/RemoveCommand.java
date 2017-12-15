@@ -32,12 +32,12 @@ public class RemoveCommand extends InternalCommand
                 InventoryHeuristics.getPATTERNS().remove(patternToDelete.get());
 
                 sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
-                sender.sendMessage(ChatColor.GOLD + "Deleted pattern \"" + patternName + "\"");
+                sender.sendMessage(ChatColor.GOLD + "Deleted pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"");
             }
             else
             {
                 sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
-                sender.sendMessage(ChatColor.GOLD + "Pattern \"" + patternName + "\"" + " could not be found.");
+                sender.sendMessage(ChatColor.GOLD + "Pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " could not be found.");
             }
         }
         else

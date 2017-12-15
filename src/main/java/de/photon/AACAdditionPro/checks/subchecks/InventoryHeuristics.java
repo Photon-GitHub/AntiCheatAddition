@@ -87,7 +87,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     new InputData("RAWSLOTS"),
                     new InputData("INVENTORYTYPES"),
                     new InputData("SLOTTYPES"),
-                    new InputData("CLICKTYPE")
+                    new InputData("CLICKTYPES")
             };
 
             for (InputData data : inputData)

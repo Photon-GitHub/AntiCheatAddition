@@ -28,10 +28,11 @@ public class Pattern implements Serializable
     @Setter
     private TrainingData trainingData;
 
-    public Pattern(String name, Graph graph, OutputData[] outputs)
+    public Pattern(String name, Graph graph, InputData[] inputs, OutputData[] outputs)
     {
         this.name = name;
         this.graph = graph;
+        this.inputs = inputs;
         this.outputs = outputs;
     }
 

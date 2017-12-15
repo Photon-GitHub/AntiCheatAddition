@@ -4,6 +4,11 @@ import lombok.Getter;
 
 public class OutputData extends Data
 {
+    public static final OutputData[] DEFAULT_OUTPUT_DATA = new OutputData[]{
+            new OutputData("VANILLA"),
+            new OutputData("CHEATING")
+    };
+
     @Getter
     private double confidence;
 

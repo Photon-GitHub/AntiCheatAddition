@@ -1,7 +1,9 @@
 package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
+import de.photon.AACAdditionPro.userdata.User;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 
@@ -14,6 +16,11 @@ public class Pattern
     private InputData[] inputs;
     private OutputData[] outputs;
 
+    private User currentlyCheckedUser;
+
+    @Setter
+    private TrainingData trainingData;
+
     public Pattern(String name, Graph graph, OutputData[] outputs)
     {
         this.name = name;
@@ -25,8 +32,9 @@ public class Pattern
      * Prepares the calculation of the {@link Graph} by setting the values of the {@link InputData}s.
      * The {@link InputData}s should have the same internal array length.
      */
-    public void provideInputData(InputData[] inputValues)
+    public void provideInputData(InputData[] inputValues, User user)
     {
+        this.currentlyCheckedUser = user;
         int dataEntries = -1;
         for (InputData inputValue : inputValues)
         {
@@ -52,7 +60,7 @@ public class Pattern
 
     /**
      * Make the pattern analyse the current input data.
-     * Provide data via {@link Graph}.{@link #provideInputData(InputData[])}
+     * Provide data via {@link Graph}.{@link #provideInputData(InputData[], User)}
      *
      * @return the result of the analyse in form of an {@link OutputData}
      */

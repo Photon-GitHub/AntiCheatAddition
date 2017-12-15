@@ -14,11 +14,6 @@ import java.util.Queue;
 
 public class CreateCommand extends InternalCommand
 {
-    private static final OutputData[] DEFAULT_OUTPUT_DATA = new OutputData[]{
-            new OutputData("VANILLA"),
-            new OutputData("CHEATING")
-    };
-
     public CreateCommand()
     {
         super("create", InternalPermission.NEURAL_CREATE, (byte) 2);
@@ -30,6 +25,12 @@ public class CreateCommand extends InternalCommand
         if (AACAdditionPro.getInstance().getConfig().getBoolean("InventoryHeuristics.enabled"))
         {
             final String patternName = arguments.remove();
+
+            if (InventoryHeuristics.getPATTERNS().stream().anyMatch(pattern -> pattern.getName().equals(patternName)))
+            {
+                sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
+                sender.sendMessage(ChatColor.GOLD + "Pattern name \"" + patternName + "\"" + " is already in use.");
+            }
 
             final StringBuilder hiddenLayerConfigBuilder = new StringBuilder();
 
@@ -49,7 +50,7 @@ public class CreateCommand extends InternalCommand
 
             sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
             sender.sendMessage(ChatColor.GOLD + "Created new Pattern \"" + patternName + "\"" + " with " + hiddenLayerConfig.length + " layers.");
-            InventoryHeuristics.getPATTERNS().add(new Pattern(patternName, new Graph(hiddenLayerConfig), DEFAULT_OUTPUT_DATA));
+            InventoryHeuristics.getPATTERNS().add(new Pattern(patternName, new Graph(hiddenLayerConfig), OutputData.DEFAULT_OUTPUT_DATA));
         }
     }
 

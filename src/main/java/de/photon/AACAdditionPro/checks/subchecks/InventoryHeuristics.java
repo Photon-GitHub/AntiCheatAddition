@@ -89,8 +89,13 @@ public class InventoryHeuristics implements Listener, ViolationModule
             for (Pattern pattern : PATTERNS)
             {
                 // Totally ok to do with the array as the provideInputData() method filters out the required information and ignores the rest.
-                pattern.provideInputData(inputData);
-                outputData.add(pattern.analyse());
+                pattern.provideInputData(inputData, user.getPlayer().getUniqueId());
+
+                OutputData result = pattern.analyse();
+                if (result != null)
+                {
+                    outputData.add(result);
+                }
             }
 
             // Get the highest confidence and flag:

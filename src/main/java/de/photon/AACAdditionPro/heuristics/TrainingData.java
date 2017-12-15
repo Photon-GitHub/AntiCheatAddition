@@ -6,9 +6,12 @@ import lombok.RequiredArgsConstructor;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-@Getter
 public class TrainingData
 {
+    @Getter
     private final UUID uuid;
+    @Getter
     private final OutputData outputData;
+
+    public int trainingCycles = 3;
 }

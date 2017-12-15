@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
-import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.UUID;
 
 public class Pattern implements Serializable
 {
@@ -23,7 +23,7 @@ public class Pattern implements Serializable
     private InputData[] inputs;
     private OutputData[] outputs;
 
-    private User currentlyCheckedUser;
+    private UUID currentlyCheckedUUID;
 
     @Setter
     private TrainingData trainingData;
@@ -39,9 +39,9 @@ public class Pattern implements Serializable
      * Prepares the calculation of the {@link Graph} by setting the values of the {@link InputData}s.
      * The {@link InputData}s should have the same internal array length.
      */
-    public void provideInputData(InputData[] inputValues, User user)
+    public void provideInputData(InputData[] inputValues, UUID checkedUUID)
     {
-        this.currentlyCheckedUser = user;
+        this.currentlyCheckedUUID = checkedUUID;
         int dataEntries = -1;
         for (InputData inputValue : inputValues)
         {
@@ -67,7 +67,7 @@ public class Pattern implements Serializable
 
     /**
      * Make the pattern analyse the current input data.
-     * Provide data via {@link Graph}.{@link #provideInputData(InputData[], User)}
+     * Provide data via {@link Graph}.{@link #provideInputData(InputData[], UUID)}
      *
      * @return the result of the analyse in form of an {@link OutputData}
      */
@@ -85,27 +85,49 @@ public class Pattern implements Serializable
         }
 
         // Actual analyse
-        double[] results = graph.analyse(inputs);
-
-        // Get the max. confidence
-        int maxIndex = -1;
-        double maxConfidence = -1;
-
-        for (int i = 0; i < results.length; i++)
+        if (this.currentlyCheckedUUID.equals(this.trainingData.getUuid()))
         {
-            if (results[i] > maxConfidence)
+            // Look for the index of the trained output
+            for (int i = 0; i < this.outputs.length; i++)
             {
-                maxIndex = i;
-                maxConfidence = results[i];
+                if (this.trainingData.getOutputData().getName().equals(this.outputs[i].getName()))
+                {
+                    this.graph.train(inputs, i);
+
+                    if (--this.trainingData.trainingCycles < 0)
+                    {
+                        this.trainingData = null;
+                    }
+                    return null;
+                }
             }
-        }
 
-        if (maxIndex == -1)
+            throw new NeuralNetworkException("Cannot identify output " + this.trainingData.getOutputData().getName() + " in pattern " + this.name);
+        }
+        else
         {
-            throw new NeuralNetworkException("Invalid confidences: " + Arrays.toString(results));
-        }
+            double[] results = graph.analyse(inputs);
 
-        return new OutputData(this.outputs[maxIndex].getName()).setConfidence(maxConfidence);
+            // Get the max. confidence
+            int maxIndex = -1;
+            double maxConfidence = -1;
+
+            for (int i = 0; i < results.length; i++)
+            {
+                if (results[i] > maxConfidence)
+                {
+                    maxIndex = i;
+                    maxConfidence = results[i];
+                }
+            }
+
+            if (maxIndex == -1)
+            {
+                throw new NeuralNetworkException("Invalid confidences: " + Arrays.toString(results));
+            }
+
+            return new OutputData(this.outputs[maxIndex].getName()).setConfidence(maxConfidence);
+        }
     }
 
     /**

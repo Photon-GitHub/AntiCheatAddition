@@ -54,7 +54,7 @@ public class TrainCommand extends InternalCommand
                 }
                 else
                 {
-                    String output = arguments.remove().toUpperCase();
+                    final String output = arguments.remove().toUpperCase();
 
                     if (output.equals("VANILLA") || output.equals("CHEATING"))
                     {

@@ -36,7 +36,7 @@ public interface ClientControlModule extends ViolationModule
 
             // Execution of the commands
             for (final String rawCommand : this.getCommandsOnDetection()) {
-                final String realCommand = Placeholders.applyPlaceholders(rawCommand, player);
+                final String realCommand = Placeholders.applyPlaceholders(rawCommand, player, null);
 
                 // Calling of the event + Sync command execution
                 CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.getModuleType()));

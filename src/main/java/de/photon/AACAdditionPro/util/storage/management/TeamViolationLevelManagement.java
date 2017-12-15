@@ -111,7 +111,7 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
                       for (final String s : thresholds.get(vl)) {
 
                           // Command cannot be null as of the new loading process.
-                          final String realCommand = Placeholders.applyPlaceholders(s, playersOfTeam);
+                          final String realCommand = Placeholders.applyPlaceholders(s, playersOfTeam, null);
 
                           // Sync command execution
                           CommandUtils.executeCommand(realCommand);

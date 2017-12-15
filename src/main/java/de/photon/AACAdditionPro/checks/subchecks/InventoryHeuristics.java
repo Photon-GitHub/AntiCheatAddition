@@ -17,17 +17,19 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InventoryHeuristics implements Listener, ViolationModule
 {
     ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 600);
 
+    // Concurrency as patterns are potentially added concurrently.
     @Getter
-    private static final HashSet<Pattern> PATTERNS = new HashSet<>();
+    private static final Set<Pattern> PATTERNS = ConcurrentHashMap.newKeySet();
 
     @EventHandler
     public void on(InventoryClickEvent event)
@@ -82,7 +84,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 lastAndCurrent[1] = user.getInventoryData().inventoryClicks.get(++i);
             }
 
-            List<OutputData> outputData = new ArrayList<>(PATTERNS.size());
+            final List<OutputData> outputData = new ArrayList<>(PATTERNS.size());
 
             for (Pattern pattern : PATTERNS)
             {

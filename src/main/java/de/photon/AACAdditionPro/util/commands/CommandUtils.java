@@ -17,7 +17,7 @@ public final class CommandUtils
      */
     public static void executeCommandWithPlaceholders(final String command, final Player player)
     {
-        executeCommand(Placeholders.applyPlaceholders(command, player));
+        executeCommand(Placeholders.applyPlaceholders(command, player, null));
     }
 
     /**

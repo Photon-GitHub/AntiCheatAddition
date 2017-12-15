@@ -79,7 +79,10 @@ public final class Placeholders
                 // Both team and single player need the following placeholders
                 input = applySinglePlaceholder(input, "{tps}", String.valueOf(AACAPIProvider.getAPI().getTPS()), (byte) 5);
 
-                input = applySinglePlaceholder(input, "{vl}", violationInformation, (byte) 5);
+                if (violationInformation != null)
+                {
+                    input = applySinglePlaceholder(input, "{vl}", violationInformation, (byte) 5);
+                }
 
                 // World
                 input = applySinglePlaceholder(input, "{world}", players.get(0).getWorld().getName(), Byte.MAX_VALUE);

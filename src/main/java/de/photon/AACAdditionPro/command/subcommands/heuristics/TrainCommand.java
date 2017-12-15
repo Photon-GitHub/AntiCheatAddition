@@ -1,9 +1,9 @@
 package de.photon.AACAdditionPro.command.subcommands.heuristics;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
+import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
 import de.photon.AACAdditionPro.heuristics.OutputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.heuristics.TrainingData;
@@ -27,7 +27,7 @@ public class TrainCommand extends InternalCommand
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        if (AACAdditionPro.getInstance().getConfig().getBoolean("InventoryHeuristics.enabled"))
+        if (HeuristicsCommand.heurisitcsUnlocked())
         {
             final Player p = Bukkit.getServer().getPlayer(arguments.remove());
 
@@ -71,7 +71,7 @@ public class TrainCommand extends InternalCommand
         }
         else
         {
-            sender.sendMessage(prefix + ChatColor.RED + "InventoryHeuristics is not loaded / enabled.");
+            sender.sendMessage(prefix + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
         }
     }
 

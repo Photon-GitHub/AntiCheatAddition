@@ -1,9 +1,9 @@
 package de.photon.AACAdditionPro.command.subcommands.heuristics;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
+import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
 import de.photon.AACAdditionPro.heuristics.Graph;
 import de.photon.AACAdditionPro.heuristics.OutputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
@@ -22,7 +22,7 @@ public class CreateCommand extends InternalCommand
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        if (AACAdditionPro.getInstance().getConfig().getBoolean("InventoryHeuristics.enabled"))
+        if (HeuristicsCommand.heurisitcsUnlocked())
         {
             final String patternName = arguments.remove();
 
@@ -51,6 +51,10 @@ public class CreateCommand extends InternalCommand
             sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
             sender.sendMessage(ChatColor.GOLD + "Created new Pattern \"" + patternName + "\"" + " with " + hiddenLayerConfig.length + " layers.");
             InventoryHeuristics.getPATTERNS().add(new Pattern(patternName, new Graph(hiddenLayerConfig), OutputData.DEFAULT_OUTPUT_DATA));
+        }
+        else
+        {
+            sender.sendMessage(prefix + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
         }
     }
 

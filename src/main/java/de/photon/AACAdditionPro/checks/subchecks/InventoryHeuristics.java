@@ -7,14 +7,20 @@ import de.photon.AACAdditionPro.heuristics.OutputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -30,6 +36,37 @@ public class InventoryHeuristics implements Listener, ViolationModule
     // Concurrency as patterns are potentially added concurrently.
     @Getter
     private static final Set<Pattern> PATTERNS = ConcurrentHashMap.newKeySet();
+
+    @Override
+    public void subEnable()
+    {
+        final File heuristicsFolder = new File(FileUtilities.AACADDITIONPRO_DATAFOLDER + "/heuristics");
+
+        if (heuristicsFolder.exists())
+        {
+            final File[] patternFiles = heuristicsFolder.listFiles();
+            if (patternFiles != null)
+            {
+                for (File file : patternFiles)
+                {
+                    try
+                    {
+                        FileInputStream fileInputStream = new FileInputStream(file);
+                        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+
+                        PATTERNS.add((Pattern) objectInputStream.readObject());
+
+                        objectInputStream.close();
+                        fileInputStream.close();
+                    } catch (IOException | ClassNotFoundException e)
+                    {
+                        VerboseSender.sendVerboseMessage("Unable to load file " + file.getPath() + " as a pattern.");
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
 
     @EventHandler
     public void on(InventoryClickEvent event)

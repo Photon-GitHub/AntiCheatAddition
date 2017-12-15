@@ -105,7 +105,6 @@ public final class FileUtilities
         // Create a folder
         if (directory)
         {
-
             // Create the folder if it does not exist
             if (!file.mkdir())
             {

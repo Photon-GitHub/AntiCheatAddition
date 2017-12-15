@@ -8,15 +8,37 @@ import org.bukkit.event.inventory.InventoryType;
 public final class InventoryUtils
 {
     /**
+     * Calculates the distance between two vectors in n-dimensional space.
+     */
+    public static double vectorDistance(double[] firstVector, double[] secondVector)
+    {
+        if (firstVector.length != secondVector.length)
+        {
+            throw new IllegalArgumentException("Vectors have not the same amount of dimensions.");
+        }
+
+        // float is sufficient here as the data will not be based on very accurate numbers.
+        double sum = 0;
+        for (int i = 0; i < firstVector.length; i++)
+        {
+            sum += Math.pow(secondVector[i] - firstVector[i], 2);
+        }
+
+        return Math.sqrt(sum);
+    }
+
+    /**
      * Used to locate a slot in an {@link org.bukkit.inventory.Inventory}.
      * The coordinate-system is (0|0) in upper-left corner.
      * <br>
      * Please make sure that the {@link Player} is not riding a horse, as this method does not support horses/donkeys/mules
      *
-     * @param rawSlot the number that is returned by getRawSlot()
+     * @param rawSlot       the number that is returned by getRawSlot()
+     * @param inventoryType the inventory layout when
+     *
      * @return the coords of a slot or null if it is invalid.
      */
-    public static float[] locateSlot(int rawSlot, InventoryType inventoryType)
+    public static double[] locateSlot(int rawSlot, InventoryType inventoryType, InventoryType.SlotType slotType)
     {
         System.out.println(rawSlot + " | " + inventoryType);
         switch (inventoryType)
@@ -41,7 +63,7 @@ public final class InventoryUtils
                  * ------------------------------------------------------
                  * 54                        -                       62
                  */
-                return new float[]{
+                return new double[]{
                         rawSlot % 9,
                         rawSlot / 9
                 };
@@ -67,13 +89,13 @@ public final class InventoryUtils
                 // In the dispenser - part
                 if (rawSlot < 9)
                 {
-                    return new float[]{
+                    return new double[]{
                             4 + rawSlot % 3,
                             rawSlot / 3
                     };
                 }
 
-                return new float[]{
+                return new double[]{
                         rawSlot % 9,
                         // It is 3.5 away, and / 9 will always result in something >= 1
                         2.5F + rawSlot / 9
@@ -98,22 +120,22 @@ public final class InventoryUtils
                 switch (rawSlot)
                 {
                     case 0:
-                        return new float[]{
+                        return new double[]{
                                 3.5F,
                                 0F
                         };
                     case 1:
-                        return new float[]{
+                        return new double[]{
                                 3.5F,
                                 2F
                         };
                     case 2:
-                        return new float[]{
+                        return new double[]{
                                 7F,
                                 1F
                         };
                     default:
-                        return new float[]{
+                        return new double[]{
                                 (rawSlot - 3) % 9,
                                 // It is 3.5 away, and (x - 3) / 9 will result in something >= 0
                                 3.5F + (rawSlot - 3) / 9

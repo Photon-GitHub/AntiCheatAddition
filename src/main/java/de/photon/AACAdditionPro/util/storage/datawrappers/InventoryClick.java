@@ -16,6 +16,7 @@ public class InventoryClick
     public final Material type;
     public final long timeStamp = System.currentTimeMillis();
     public final int clickedRawSlot;
+    public final InventoryType inventoryType;
     public final InventoryType.SlotType slotType;
     public final ClickType clickType;
 }

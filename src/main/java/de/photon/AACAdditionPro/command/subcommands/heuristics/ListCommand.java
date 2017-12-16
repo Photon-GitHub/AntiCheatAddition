@@ -29,6 +29,7 @@ public class ListCommand extends InternalCommand
                 final StringBuilder messageBuilder = new StringBuilder(64);
                 messageBuilder.append(ChatColor.RED);
                 messageBuilder.append("Active patterns: \n");
+                messageBuilder.append(ChatColor.GOLD);
 
                 int patterns = 0;
                 for (Pattern pattern : InventoryHeuristics.getPATTERNS())

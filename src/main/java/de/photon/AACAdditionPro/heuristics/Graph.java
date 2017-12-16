@@ -79,6 +79,7 @@ public class Graph implements Serializable
      *
      * @param inputValues the input values as a matrix with the different tests being the first index and the
      *                    different input sources (e.g. time delta, slot distance, etc.) being the second index.
+     *
      * @return the output values as an average of
      */
     public double[] analyse(double[][] inputValues)
@@ -87,11 +88,14 @@ public class Graph implements Serializable
 
         for (double[] testSeries : inputValues)
         {
-            double[] results = calculate(testSeries);
-
-            for (int i = 0; i < outputs.length; i++)
+            if (testSeries != null)
             {
-                outputs[i] += results[i];
+                double[] results = calculate(testSeries);
+
+                for (int i = 0; i < outputs.length; i++)
+                {
+                    outputs[i] += results[i];
+                }
             }
         }
 
@@ -122,48 +126,51 @@ public class Graph implements Serializable
 
         for (double[] testSeries : inputValues)
         {
-            double[] results = calculate(testSeries);
-
-            for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
+            if (testSeries != null)
             {
-                for (int from = matrix.length; from > 0; from--)
+                double[] results = calculate(testSeries);
+
+                for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
                 {
-                    if (matrix[from][currentNeuron] != null)
+                    for (int from = matrix.length; from > 0; from--)
                     {
-                        // weight change = train parameter * activation level of sending neuron * delta
-                        double weightChange = TRAIN_PARAMETER * activatedNeurons[from];
-                        switch (classifyNeuron(currentNeuron))
+                        if (matrix[from][currentNeuron] != null)
                         {
-                            case INPUT:
-                                break;
-                            case HIDDEN:
-                                // f'(netinput) * Sum(delta_this,toHigherLayer * matrix[this][toHigherLayer])
-                                deltas[currentNeuron] = tanhDerived(neurons[currentNeuron]);
+                            // weight change = train parameter * activation level of sending neuron * delta
+                            double weightChange = TRAIN_PARAMETER * activatedNeurons[from];
+                            switch (classifyNeuron(currentNeuron))
+                            {
+                                case INPUT:
+                                    break;
+                                case HIDDEN:
+                                    // f'(netinput) * Sum(delta_this,toHigherLayer * matrix[this][toHigherLayer])
+                                    deltas[currentNeuron] = tanhDerived(neurons[currentNeuron]);
 
-                                double sum = 0;
+                                    double sum = 0;
 
-                                int[] indices = nextLayerIndices(currentNeuron);
-                                for (int i = indices[0]; i <= indices[1]; i++)
-                                {
-                                    if (matrix[currentNeuron][i] != null)
+                                    int[] indices = nextLayerIndices(currentNeuron);
+                                    for (int i = indices[0]; i <= indices[1]; i++)
                                     {
-                                        sum += deltas[i] * matrix[currentNeuron][i];
+                                        if (matrix[currentNeuron][i] != null)
+                                        {
+                                            sum += deltas[i] * matrix[currentNeuron][i];
+                                        }
                                     }
-                                }
 
-                                deltas[currentNeuron] *= sum;
-                                break;
-                            case OUTPUT:
-                                // f'(netInput) * (a_wanted - a_real)
-                                deltas[currentNeuron] = tanhDerived(neurons[currentNeuron]) * ((currentNeuron == indexOfOutputNeuron ?
-                                                                                                1 :
-                                                                                                0) - activatedNeurons[currentNeuron]);
-                                break;
+                                    deltas[currentNeuron] *= sum;
+                                    break;
+                                case OUTPUT:
+                                    // f'(netInput) * (a_wanted - a_real)
+                                    deltas[currentNeuron] = tanhDerived(neurons[currentNeuron]) * ((currentNeuron == indexOfOutputNeuron ?
+                                                                                                    1 :
+                                                                                                    0) - activatedNeurons[currentNeuron]);
+                                    break;
+                            }
+
+                            weightChange *= deltas[currentNeuron];
+
+                            matrix[from][currentNeuron] += weightChange;
                         }
-
-                        weightChange *= deltas[currentNeuron];
-
-                        matrix[from][currentNeuron] += weightChange;
                     }
                 }
             }
@@ -174,6 +181,7 @@ public class Graph implements Serializable
      * Calculate one data series in the {@link Graph}.
      *
      * @param testSeries the different input sources (e.g. time delta, slot distance, etc.) being the index.
+     *
      * @return an array of doubles representing the output neurons.
      */
     private double[] calculate(double[] testSeries)

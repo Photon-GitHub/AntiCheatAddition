@@ -54,8 +54,11 @@ public class HeuristicsCommand extends InternalCommand
                 welcomeBuilder.append(" ,");
             }
 
-            // Delete the last comma
-            welcomeBuilder.deleteCharAt(welcomeBuilder.length() - 1);
+            // Delete the last comma and space
+            for (int i = 0; i < 2; i++)
+            {
+                welcomeBuilder.deleteCharAt(welcomeBuilder.length() - 1);
+            }
 
             sender.sendMessage(welcomeBuilder.toString());
         }

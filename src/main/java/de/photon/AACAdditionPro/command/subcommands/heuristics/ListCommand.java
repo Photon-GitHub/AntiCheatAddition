@@ -34,15 +34,21 @@ public class ListCommand extends InternalCommand
                 int patterns = 0;
                 for (Pattern pattern : InventoryHeuristics.getPATTERNS())
                 {
-                    messageBuilder.append(pattern.getName());
-                    messageBuilder.append(" ,");
-
-                    if (++patterns > 4)
+                    if (++patterns > 5)
                     {
                         messageBuilder.append("\n");
                         messageBuilder.append(ChatColor.GOLD);
                         patterns = 0;
                     }
+
+                    messageBuilder.append(pattern.getName());
+                    messageBuilder.append(" ,");
+                }
+
+                // Delete the last comma and space
+                for (int i = 0; i < 2; i++)
+                {
+                    messageBuilder.deleteCharAt(messageBuilder.length() - 1);
                 }
 
                 sender.sendMessage(messageBuilder.toString());

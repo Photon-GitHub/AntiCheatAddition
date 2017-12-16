@@ -35,7 +35,7 @@ public class CreateCommand extends InternalCommand
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        if (HeuristicsCommand.heurisitcsUnlocked())
+        if (HeuristicsCommand.heuristicsUnlocked())
         {
             try
             {
@@ -65,6 +65,7 @@ public class CreateCommand extends InternalCommand
                 {
                     sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
                     sender.sendMessage(ChatColor.GOLD + "Pattern name \"" + patternName + "\"" + " is already in use.");
+                    return;
                 }
 
                 final List<String> hiddenLayerConfigStrings = new ArrayList<>(arguments);

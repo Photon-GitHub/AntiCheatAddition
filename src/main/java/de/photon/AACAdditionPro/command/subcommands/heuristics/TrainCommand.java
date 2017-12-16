@@ -27,7 +27,7 @@ public class TrainCommand extends InternalCommand
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        if (HeuristicsCommand.heurisitcsUnlocked())
+        if (HeuristicsCommand.heuristicsUnlocked())
         {
             final Player trainingPlayer = Bukkit.getServer().getPlayer(arguments.remove());
 

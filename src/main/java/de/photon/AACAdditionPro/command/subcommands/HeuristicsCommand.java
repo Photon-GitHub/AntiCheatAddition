@@ -15,7 +15,7 @@ import java.util.Queue;
 
 public class HeuristicsCommand extends InternalCommand
 {
-    public static boolean heurisitcsUnlocked()
+    public static boolean heuristicsUnlocked()
     {
         return AACAdditionPro.getInstance().getConfig().getBoolean("InventoryHeuristics.enabled") &&
                AACAdditionPro.getInstance().getConfig().getBoolean("InventoryHeuristics.unlock_full_framework");
@@ -34,7 +34,7 @@ public class HeuristicsCommand extends InternalCommand
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        if (heurisitcsUnlocked())
+        if (heuristicsUnlocked())
         {
             sender.sendMessage(prefix + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
         }

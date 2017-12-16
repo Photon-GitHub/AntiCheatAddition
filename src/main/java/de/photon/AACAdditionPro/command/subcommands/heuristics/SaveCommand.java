@@ -21,7 +21,7 @@ public class SaveCommand extends InternalCommand
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        if (HeuristicsCommand.heurisitcsUnlocked())
+        if (HeuristicsCommand.heuristicsUnlocked())
         {
             final String patternName = arguments.remove();
 

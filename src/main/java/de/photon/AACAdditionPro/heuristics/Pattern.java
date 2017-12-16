@@ -139,7 +139,7 @@ public class Pattern implements Serializable
     {
         try
         {
-            final File saveFile = FileUtilities.saveFileInFolder(this.name, FileUtilities.AACADDITIONPRO_DATAFOLDER + "/heuristics");
+            final File saveFile = FileUtilities.saveFileInFolder(this.name + ".pattern", FileUtilities.AACADDITIONPRO_DATAFOLDER + "/heuristics");
             FileOutputStream fileOutputStream = new FileOutputStream(saveFile);
 
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);

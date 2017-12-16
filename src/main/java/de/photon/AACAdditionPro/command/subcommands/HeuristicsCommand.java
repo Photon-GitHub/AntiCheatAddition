@@ -23,7 +23,7 @@ public class HeuristicsCommand extends InternalCommand
 
     public HeuristicsCommand()
     {
-        super("heuristics", InternalPermission.NEURAL, (byte) 1,
+        super("heuristics", InternalPermission.NEURAL, (byte) 0,
               new CreateCommand(),
               new ListCommand(),
               new RemoveCommand(),

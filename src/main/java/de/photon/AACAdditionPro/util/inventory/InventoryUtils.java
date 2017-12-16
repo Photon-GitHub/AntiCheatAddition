@@ -5,6 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 
+import java.util.Objects;
+
 public final class InventoryUtils
 {
     /**
@@ -12,7 +14,7 @@ public final class InventoryUtils
      */
     public static double vectorDistance(double[] firstVector, double[] secondVector)
     {
-        if (firstVector.length != secondVector.length)
+        if (Objects.requireNonNull(firstVector, "First vector is null").length != Objects.requireNonNull(secondVector, "Second vector is null").length)
         {
             throw new IllegalArgumentException("Vectors have not the same amount of dimensions.");
         }
@@ -65,7 +67,7 @@ public final class InventoryUtils
                  */
                 return new double[]{
                         rawSlot % 9,
-                        rawSlot / 9
+                        Math.floor(rawSlot / 9)
                 };
             case DISPENSER:
             case DROPPER:
@@ -91,14 +93,15 @@ public final class InventoryUtils
                 {
                     return new double[]{
                             4 + rawSlot % 3,
-                            rawSlot / 3
+                            Math.floor(rawSlot / 3)
                     };
                 }
 
                 return new double[]{
                         rawSlot % 9,
-                        // It is 3.5 away, and / 9 will always result in something >= 1
-                        2.5F + rawSlot / 9
+                        // 3.5D is the normal y - offset, but rawslots begin over 9 thus
+                        // the Math.floor would need a subtraction by 1, thus 2.5D.
+                        2.5F + Math.floor(rawSlot / 9)
                 };
             case FURNACE:
                 /*
@@ -121,24 +124,25 @@ public final class InventoryUtils
                 {
                     case 0:
                         return new double[]{
-                                3.5F,
+                                2.5F,
                                 0F
                         };
                     case 1:
                         return new double[]{
-                                3.5F,
+                                2.5F,
                                 2F
                         };
                     case 2:
                         return new double[]{
-                                7F,
+                                6F,
                                 1F
                         };
                     default:
                         return new double[]{
                                 (rawSlot - 3) % 9,
-                                // It is 3.5 away, and (x - 3) / 9 will result in something >= 0
-                                3.5F + (rawSlot - 3) / 9
+                                // 3.5D is the normal y - offset, and rawslots begin below 9
+                                // thus it is ok to use 3.5D here.
+                                3.5F + Math.floor((rawSlot - 3) / 9)
                         };
                 }
             case WORKBENCH:
@@ -150,7 +154,7 @@ public final class InventoryUtils
                  *          7       8       9
                  * ------------------------------------------------------
                  * ------------------------------------------------------
-                 * 10                         -                      18
+                 * 10                        -                       18
                  *
                  * 19                        -                       27
                  *
@@ -158,7 +162,35 @@ public final class InventoryUtils
                  * ------------------------------------------------------
                  * 37                        -                       45
                  */
-                break;
+
+                switch (rawSlot)
+                {
+                    case 0:
+                        return new double[]{
+                                6.5D,
+                                1D
+                        };
+
+                    default:
+                        if (rawSlot <= 9)
+                        {
+                            int xTemp = rawSlot % 3;
+                            float yTemp = rawSlot / 3;
+                            return new double[]{
+                                    (xTemp == 0 ? 3 : xTemp) + 0.25D,
+                                    yTemp <= 1 ? 0 : (yTemp <= 2 ? 1 : 2)
+                            };
+                        }
+                        else
+                        {
+                            return new double[]{
+                                    (rawSlot - 1) % 9,
+                                    // 3.5D is the normal y - offset, but rawslots begin over 9 thus
+                                    // the Math.floor would need a subtraction by 1, thus 2.5D.
+                                    2.5D + Math.floor((rawSlot - 1) / 9)
+                            };
+                        }
+                }
             case CRAFTING:
                 /* Player Inventory
                  * 5
@@ -269,6 +301,8 @@ public final class InventoryUtils
                  */
                 break;
             // TODO: is this needed or even correct?
+            case BREWING:
+                break;
             case PLAYER:
                 if (slotType != null)
                 {
@@ -312,6 +346,10 @@ public final class InventoryUtils
 
                 // cases: OUTSIDE
                 return null;
+            case CREATIVE:
+                break;
+            case SHULKER_BOX:
+                break;
             default:
                 // CREATIVE (false positives), PLAYER, SHULKER_BOX, BREWING_STAND (version compatibility)
                 return null;

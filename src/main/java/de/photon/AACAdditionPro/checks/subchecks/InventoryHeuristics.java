@@ -13,6 +13,7 @@ import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -79,7 +80,20 @@ public class InventoryHeuristics implements Listener, ViolationModule
             return;
         }
 
-        if (user.getInventoryData().inventoryClicks.bufferObject(new InventoryClick(event.getCurrentItem().getType(), event.getRawSlot(), event.getClickedInventory().getType(), event.getSlotType(), event.getClick())))
+        if (user.getInventoryData().inventoryClicks.bufferObject(new InventoryClick(
+                // The current item might be null and causes NPEs when .getType() is invoked.
+                event.getCurrentItem() == null ? Material.AIR : event.getCurrentItem().getType(),
+
+                event.getRawSlot(),
+
+                // The inventory might be null and causes NPEs when .getType() is invoked.
+                event.getClickedInventory() == null ?
+                event.getWhoClicked().getOpenInventory().getType() :
+                event.getClickedInventory().getType(),
+
+                event.getSlotType(),
+
+                event.getClick())))
         {
             InputData[] inputData = new InputData[]{
                     new InputData("TIMEDELTAS"),
@@ -101,12 +115,10 @@ public class InventoryHeuristics implements Listener, ViolationModule
             };
 
             // Start at 1 to make deltas happen.
-            int i = 0;
-
-            while (++i < user.getInventoryData().inventoryClicks.size())
+            for (int i = 1; !user.getInventoryData().inventoryClicks.isEmpty(); i++)
             {
                 lastAndCurrent[0] = lastAndCurrent[1];
-                lastAndCurrent[1] = user.getInventoryData().inventoryClicks.get(i);
+                lastAndCurrent[1] = user.getInventoryData().inventoryClicks.remove(0);
 
                 // Timestamps
                 inputData[0].getData()[i - 1] = lastAndCurrent[1].timeStamp - lastAndCurrent[0].timeStamp;

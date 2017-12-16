@@ -19,4 +19,17 @@ public class InventoryClick
     public final InventoryType inventoryType;
     public final InventoryType.SlotType slotType;
     public final ClickType clickType;
+
+    @Override
+    public String toString()
+    {
+        return "InventoryClick{" +
+               "type=" + type +
+               ", timeStamp=" + timeStamp +
+               ", clickedRawSlot=" + clickedRawSlot +
+               ", inventoryType=" + inventoryType +
+               ", slotType=" + slotType +
+               ", clickType=" + clickType +
+               '}';
+    }
 }

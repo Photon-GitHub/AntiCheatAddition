@@ -105,8 +105,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
             for (InputData data : inputData)
             {
-                // -1 as of the delta handling
-                data.setData(new double[user.getInventoryData().inventoryClicks.size() - 1]);
+                data.setData(new double[user.getInventoryData().inventoryClicks.size()]);
             }
 
             InventoryClick[] lastAndCurrent = new InventoryClick[]{

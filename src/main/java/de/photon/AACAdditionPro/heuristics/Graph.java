@@ -16,9 +16,9 @@ public class Graph implements Serializable
     // Use Wrapper class to be able to set a value to null
     private Double[][] matrix;
     // Working array does not need to be serialized
-    private transient double[] neurons;
-    private transient double[] activatedNeurons;
-    private transient double[] deltas;
+    private double[] neurons;
+    private double[] activatedNeurons;
+    private double[] deltas;
 
     private int[] neuronsInLayers;
 

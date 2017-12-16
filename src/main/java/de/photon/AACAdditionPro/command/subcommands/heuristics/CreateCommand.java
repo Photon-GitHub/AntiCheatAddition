@@ -37,50 +37,56 @@ public class CreateCommand extends InternalCommand
     {
         if (HeuristicsCommand.heurisitcsUnlocked())
         {
-            final String patternName = arguments.remove();
+            try
+            {
+                final String patternName = arguments.remove();
 
-            /* Valid ones:
-             * T = TimeDeltas
-             * M = Materials
-             * R = RawSlots
-             * I = InventoryType
-             * S = SlotTypes
-             * C = ClickTypes
-             * */
-            final String encodedInputs = arguments.remove();
-            final List<InputData> inputDataList = new ArrayList<>(6);
+                /* Valid ones:
+                 * T = TimeDeltas
+                 * M = Materials
+                 * R = RawSlots
+                 * I = InventoryType
+                 * S = SlotTypes
+                 * C = ClickTypes
+                 * */
+                final String encodedInputs = arguments.remove();
+                final List<InputData> inputDataList = new ArrayList<>(6);
 
-            inputDataMapping.forEach(
-                    (keyChar, data) ->
-                    {
-                        if (encodedInputs.contains(keyChar))
+                inputDataMapping.forEach(
+                        (keyChar, data) ->
                         {
-                            inputDataList.add(data);
-                        }
-                    });
+                            if (encodedInputs.contains(keyChar))
+                            {
+                                inputDataList.add(data);
+                            }
+                        });
 
-            if (InventoryHeuristics.getPATTERNS().stream().anyMatch(pattern -> pattern.getName().equals(patternName)))
-            {
+                if (InventoryHeuristics.getPATTERNS().stream().anyMatch(pattern -> pattern.getName().equals(patternName)))
+                {
+                    sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
+                    sender.sendMessage(ChatColor.GOLD + "Pattern name \"" + patternName + "\"" + " is already in use.");
+                }
+
+                final List<String> hiddenLayerConfigStrings = new ArrayList<>(arguments);
+                int[] hiddenLayerConfig = new int[hiddenLayerConfigStrings.size()];
+
+                for (int i = 0; i < hiddenLayerConfigStrings.size(); i++)
+                {
+                    hiddenLayerConfig[i] = Integer.valueOf(hiddenLayerConfigStrings.get(i));
+                }
+
                 sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
-                sender.sendMessage(ChatColor.GOLD + "Pattern name \"" + patternName + "\"" + " is already in use.");
-            }
+                sender.sendMessage(ChatColor.GOLD + "Created new pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " with " + hiddenLayerConfig.length + " layers and " + inputDataList.size() + " inputs.");
 
-            final List<String> hiddenLayerConfigStrings = new ArrayList<>(arguments);
-            int[] hiddenLayerConfig = new int[hiddenLayerConfigStrings.size()];
-
-            for (int i = 0; i < hiddenLayerConfigStrings.size(); i++)
+                InventoryHeuristics.getPATTERNS().add(new Pattern(
+                        patternName,
+                        new Graph(hiddenLayerConfig),
+                        inputDataList.toArray(new InputData[inputDataList.size()]),
+                        OutputData.DEFAULT_OUTPUT_DATA));
+            } catch (NumberFormatException exception)
             {
-                hiddenLayerConfig[i] = Integer.valueOf(hiddenLayerConfigStrings.get(i));
+                sender.sendMessage(prefix + ChatColor.RED + "Formatting error. Please utilize the command help for formatting.");
             }
-
-            sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
-            sender.sendMessage(ChatColor.GOLD + "Created new pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " with " + hiddenLayerConfig.length + " layers and " + inputDataList.size() + " inputs.");
-
-            InventoryHeuristics.getPATTERNS().add(new Pattern(
-                    patternName,
-                    new Graph(hiddenLayerConfig),
-                    inputDataList.toArray(new InputData[inputDataList.size()]),
-                    OutputData.DEFAULT_OUTPUT_DATA));
         }
         else
         {
@@ -93,7 +99,10 @@ public class CreateCommand extends InternalCommand
     {
         return new String[]{
                 "Creates a new pattern with a clear graph. Saving is required if you want the pattern to be permanent.",
-                "Format: /aacadditionpro create <Name of pattern> <Inputs> <Neurons of layer 1> <Neurons of layer 2> ..."
+                "Format: /aacadditionpro create <Name of pattern> <Inputs> <Neurons of layer 1> <Neurons of layer 2> ...",
+                "Valid inputs: e.g TRM, TM, RM, CS, TMRISC.",
+                "You use any combination of these letters as a valid input specification.",
+                "Guide to the letters: T = TimeDeltas | M = Materials | R = RawSlots | I = InventoryType | S = SlotTypes | C = ClickTypes"
         };
     }
 

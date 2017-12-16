@@ -50,18 +50,18 @@ public class Graph implements Serializable
         }
 
         int currentNeuron = 0;
-        int currentLayerLastNeuron;
-        int nextLayerLastNeuron = this.neuronsInLayers[0];
+        int nextLayerFirstNeuron;
+        int nextNextLayerFirstNeuron = this.neuronsInLayers[0];
 
         // Do not iterate over the last layer as output neurons do not need any additional connections.
-        for (int layer = 0; layer < (this.neuronsInLayers.length - 1); layer++)
+        for (int layer = 1; layer < (this.neuronsInLayers.length - 1); layer++)
         {
-            currentLayerLastNeuron = nextLayerLastNeuron;
-            nextLayerLastNeuron += this.neuronsInLayers[layer + 1];
+            nextLayerFirstNeuron = nextNextLayerFirstNeuron;
+            nextNextLayerFirstNeuron += this.neuronsInLayers[layer];
 
-            while (currentNeuron++ < currentLayerLastNeuron)
+            while (currentNeuron++ < nextLayerFirstNeuron)
             {
-                for (int to = currentLayerLastNeuron; to < nextLayerLastNeuron; to++)
+                for (int to = nextLayerFirstNeuron; to < nextNextLayerFirstNeuron; to++)
                 {
                     // Validate allowed connections.
                     // A connection should never be 0 to begin with as of the backpropagation algorithm.

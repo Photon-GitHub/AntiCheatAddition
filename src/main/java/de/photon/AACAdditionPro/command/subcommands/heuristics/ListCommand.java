@@ -24,25 +24,32 @@ public class ListCommand extends InternalCommand
         {
             sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
 
-            final StringBuilder messageBuilder = new StringBuilder(64);
-            messageBuilder.append(ChatColor.RED);
-            messageBuilder.append("Active patterns: \n");
-
-            int patterns = 0;
-            for (Pattern pattern : InventoryHeuristics.getPATTERNS())
+            if (!InventoryHeuristics.getPATTERNS().isEmpty())
             {
-                messageBuilder.append(pattern.getName());
-                messageBuilder.append(" ,");
+                final StringBuilder messageBuilder = new StringBuilder(64);
+                messageBuilder.append(ChatColor.RED);
+                messageBuilder.append("Active patterns: \n");
 
-                if (++patterns > 4)
+                int patterns = 0;
+                for (Pattern pattern : InventoryHeuristics.getPATTERNS())
                 {
-                    messageBuilder.append("\n");
-                    messageBuilder.append(ChatColor.GOLD);
-                    patterns = 0;
-                }
-            }
+                    messageBuilder.append(pattern.getName());
+                    messageBuilder.append(" ,");
 
-            sender.sendMessage(messageBuilder.toString());
+                    if (++patterns > 4)
+                    {
+                        messageBuilder.append("\n");
+                        messageBuilder.append(ChatColor.GOLD);
+                        patterns = 0;
+                    }
+                }
+
+                sender.sendMessage(messageBuilder.toString());
+            }
+            else
+            {
+                sender.sendMessage(ChatColor.RED + "No active patterns found.");
+            }
         }
         else
         {

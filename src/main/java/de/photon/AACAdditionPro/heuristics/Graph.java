@@ -125,7 +125,8 @@ public class Graph implements Serializable
         {
             if (testSeries != null)
             {
-                double[] results = calculate(testSeries);
+                // Only calculate so that the neurons array is updated.
+                calculate(testSeries);
 
                 for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
                 {

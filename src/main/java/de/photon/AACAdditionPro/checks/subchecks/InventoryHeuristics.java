@@ -25,7 +25,6 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -120,16 +119,27 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 lastAndCurrent[0] = lastAndCurrent[1];
                 lastAndCurrent[1] = user.getInventoryData().inventoryClicks.remove(0);
 
+                // Slot distance
+                // Must be done first as of the continue!
+                double[] locationOfLastClick = InventoryUtils.locateSlot(lastAndCurrent[0].clickedRawSlot, lastAndCurrent[0].inventoryType, lastAndCurrent[0].slotType);
+                double[] locationOfCurrentClick = InventoryUtils.locateSlot(lastAndCurrent[1].clickedRawSlot, lastAndCurrent[1].inventoryType, lastAndCurrent[1].slotType);
+
+                if (locationOfLastClick == null || locationOfCurrentClick == null)
+                {
+                    continue;
+                }
+
+                inputData[2].getData()[i - 1] = InventoryUtils.vectorDistance(locationOfLastClick, locationOfCurrentClick);
+
                 // Timestamps
                 inputData[0].getData()[i - 1] = lastAndCurrent[1].timeStamp - lastAndCurrent[0].timeStamp;
+
                 // Materials
                 inputData[1].getData()[i - 1] = lastAndCurrent[0].type.ordinal();
-                // Slot distance
-                inputData[2].getData()[i - 1] = InventoryUtils.vectorDistance(
-                        Objects.requireNonNull(InventoryUtils.locateSlot(lastAndCurrent[0].clickedRawSlot, lastAndCurrent[0].inventoryType, lastAndCurrent[0].slotType)),
-                        Objects.requireNonNull(InventoryUtils.locateSlot(lastAndCurrent[1].clickedRawSlot, lastAndCurrent[1].inventoryType, lastAndCurrent[1].slotType)));
+
                 // SlotTypes
                 inputData[3].getData()[i - 1] = lastAndCurrent[0].slotType.ordinal();
+
                 // ClickTypes
                 inputData[4].getData()[i - 1] = lastAndCurrent[0].clickType.ordinal();
 

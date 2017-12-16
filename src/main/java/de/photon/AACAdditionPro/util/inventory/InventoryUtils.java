@@ -191,25 +191,7 @@ public final class InventoryUtils
                             };
                         }
                 }
-            case CRAFTING:
-                /* Player Inventory
-                 * 5
-                 *
-                 * 6                            1   2
-                 *                                         ->      0
-                 * 7                            3   4
-                 *
-                 * 8
-                 * ------------------------------------------------------
-                 * 9                         -                       17
-                 *
-                 * 18                        -                       26
-                 *
-                 * 27                        -                       35
-                 * ------------------------------------------------------
-                 * 36                        -                       44
-                 * */
-                break;
+
             case ENCHANTING:
                 /*
                  *
@@ -303,6 +285,25 @@ public final class InventoryUtils
             // TODO: is this needed or even correct?
             case BREWING:
                 break;
+
+            /* Player Inventory
+             * 5
+             *
+             * 6                            1   2
+             *                                         ->      0
+             * 7                            3   4
+             *
+             * 8
+             * ------------------------------------------------------
+             * 9                         -                       17
+             *
+             * 18                        -                       26
+             *
+             * 27                        -                       35
+             * ------------------------------------------------------
+             * 36                        -                       44
+             * */
+            case CRAFTING:
             case PLAYER:
                 if (slotType != null)
                 {
@@ -319,17 +320,17 @@ public final class InventoryUtils
                                     {
                                             // 80 and 82
                                             rawSlot % 2 == 0 ?
-                                            5.5F :
-                                            6.5F,
+                                            5.5D :
+                                            6.5D,
                                             // 82 and 83
                                             rawSlot > 81 ?
-                                            6.5F :
-                                            7.5F
+                                            6.5D :
+                                            7.5D
                                     };
 
                         case RESULT:
                             return new double[]{
-                                    7.5F,
+                                    7.5D,
                                     7
                             };
 

@@ -34,7 +34,7 @@ public class HeuristicsCommand extends InternalCommand
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        if (heuristicsUnlocked())
+        if (!heuristicsUnlocked())
         {
             sender.sendMessage(prefix + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
         }

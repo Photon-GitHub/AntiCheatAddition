@@ -83,6 +83,7 @@ public class Graph implements Serializable
     {
         double[] outputs = new double[neuronsInLayers[neuronsInLayers.length - 1]];
 
+        //TODO: Is really at least one value not null?
         for (double[] testSeries : inputValues)
         {
             if (testSeries != null)
@@ -196,6 +197,7 @@ public class Graph implements Serializable
             neurons[i] = testSeries[i];
         }
 
+        //TODO: MAKE SURE EVERYTHING HERE DOES REALLY RETURN A SENSIBLE NUMBER.
         // Perform all the adding
         for (int neuron = 0; neuron < matrix.length; neuron++)
         {

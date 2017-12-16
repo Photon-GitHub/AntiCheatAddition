@@ -30,7 +30,7 @@ public class OutputData extends Data implements Serializable
     {
         return "OutputData{" +
                "name=" + this.getName() +
-               "confidence=" + confidence +
+               ",confidence=" + confidence +
                '}';
     }
 }

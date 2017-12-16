@@ -95,7 +95,7 @@ public class Pattern implements Serializable
         }
 
         // Actual analyse
-        if (this.currentlyCheckedUUID.equals(this.trainingData.getUuid()))
+        if (this.trainingData != null && this.currentlyCheckedUUID.equals(this.trainingData.getUuid()))
         {
             // Look for the index of the trained output
             for (int i = 0; i < this.outputs.length; i++)

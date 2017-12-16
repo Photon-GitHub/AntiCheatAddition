@@ -2,7 +2,9 @@ package de.photon.AACAdditionPro.heuristics;
 
 import lombok.Getter;
 
-public class OutputData extends Data
+import java.io.Serializable;
+
+public class OutputData extends Data implements Serializable
 {
     public static final OutputData[] DEFAULT_OUTPUT_DATA = new OutputData[]{
             new OutputData("VANILLA"),
@@ -21,5 +23,14 @@ public class OutputData extends Data
     {
         this.confidence = confidence;
         return this;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "OutputData{" +
+               "name=" + this.getName() +
+               "confidence=" + confidence +
+               '}';
     }
 }

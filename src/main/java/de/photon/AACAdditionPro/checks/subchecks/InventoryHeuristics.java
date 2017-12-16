@@ -159,6 +159,9 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 }
             }
 
+            //Debug
+            outputData.forEach(System.out::println);
+
             // Get the highest confidence and flag:
             Optional<OutputData> maxConfidenceData = outputData.stream()
                                                                // Filter out all the VANILLA results

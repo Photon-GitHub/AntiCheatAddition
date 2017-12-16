@@ -42,7 +42,7 @@ public final class InventoryUtils
      */
     public static double[] locateSlot(int rawSlot, InventoryType inventoryType, InventoryType.SlotType slotType)
     {
-        System.out.println(rawSlot + " | " + inventoryType);
+        // System.out.println(rawSlot + " | " + inventoryType);
         switch (inventoryType)
         {
             case CHEST:

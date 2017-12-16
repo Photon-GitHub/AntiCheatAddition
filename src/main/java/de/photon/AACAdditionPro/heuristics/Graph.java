@@ -222,17 +222,17 @@ public class Graph implements Serializable
      */
     private int[] nextLayerIndices(int index)
     {
-        // We count with lengths here, so - 1 to get the index.
-        int startIndex = -1;
+        // 0 is the correct start here as the first layer starts at 0.
+        int startingIndex = 0;
 
-        for (int i = 0; i < neuronsInLayers.length; i++)
+        // -1 as the OutputNeurons should not be used / throw an exception.
+        for (int i = 0; i < neuronsInLayers.length - 1; i++)
         {
-            startIndex += neuronsInLayers[i];
+            startingIndex += neuronsInLayers[i];
 
-            if (startIndex > index)
+            if (startingIndex > index)
             {
-                // -1 because of the index here
-                return new int[]{startIndex, startIndex + (neuronsInLayers[++i] - 1)};
+                return new int[]{startingIndex, startingIndex + (neuronsInLayers[++i] - 1)};
             }
         }
         throw new NeuralNetworkException("Cannot identify the next layer of neuron " + index + " out of " + matrix.length);

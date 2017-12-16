@@ -76,7 +76,7 @@ public class CreateCommand extends InternalCommand
                 }
 
                 sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
-                sender.sendMessage(ChatColor.GOLD + "Created new pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " with " + hiddenLayerConfig.length + " layers and " + inputDataList.size() + " inputs.");
+                sender.sendMessage(ChatColor.GOLD + "Created new pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " with " + hiddenLayerConfig.length + " hidden layers and " + inputDataList.size() + " inputs.");
 
                 InventoryHeuristics.getPATTERNS().add(new Pattern(
                         patternName,

@@ -129,7 +129,7 @@ public class Graph implements Serializable
 
                 for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
                 {
-                    for (int from = matrix.length; from > 0; from--)
+                    for (int from = matrix.length - 1; from > 0; from--)
                     {
                         if (matrix[from][currentNeuron] != null)
                         {

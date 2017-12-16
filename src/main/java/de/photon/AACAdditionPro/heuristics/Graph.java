@@ -65,7 +65,7 @@ public class Graph implements Serializable
                 {
                     // Validate allowed connections.
                     // A connection should never be 0 to begin with as of the backpropagation algorithm.
-                    this.matrix[currentNeuron][to] = 0.1D;
+                    this.matrix[currentNeuron][to] = 1D;
                 }
             }
         }

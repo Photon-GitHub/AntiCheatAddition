@@ -83,9 +83,9 @@ public class Graph implements Serializable
     {
         double[] outputs = new double[neuronsInLayers[neuronsInLayers.length - 1]];
 
-        //TODO: Is really at least one value not null?
         for (double[] testSeries : inputValues)
         {
+            // The test series are not supposed to be null and are not within normal usage.
             if (testSeries != null)
             {
                 double[] results = calculate(testSeries);

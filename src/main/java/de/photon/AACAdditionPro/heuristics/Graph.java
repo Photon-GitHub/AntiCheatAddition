@@ -25,12 +25,9 @@ public class Graph implements Serializable
     /**
      * Constructs a new Graph
      */
-    public Graph(int... neuronsInLayers)
+    Graph(int[] neuronsInLayers)
     {
-        this.neuronsInLayers = new int[neuronsInLayers.length + 1];
-        System.arraycopy(neuronsInLayers, 0, this.neuronsInLayers, 0, neuronsInLayers.length);
-        // There must be 2 output neurons.
-        this.neuronsInLayers[this.neuronsInLayers.length - 1] = 2;
+        this.neuronsInLayers = neuronsInLayers;
 
         int sumOfNeurons = 0;
         for (int sizeOfLayer : this.neuronsInLayers)
@@ -193,7 +190,7 @@ public class Graph implements Serializable
         {
             if (testSeries.length != neuronsInLayers[0])
             {
-                throw new NeuralNetworkException("Length of test series is not persistent.");
+                throw new NeuralNetworkException("Wrong amount of inputs for " + neuronsInLayers[0] + " input neurons.");
             }
             neurons[i] = testSeries[i];
         }

@@ -28,10 +28,19 @@ public class Pattern implements Serializable
     @Setter
     private transient TrainingData trainingData;
 
-    public Pattern(String name, Graph graph, InputData[] inputs, OutputData[] outputs)
+    public Pattern(String name, InputData[] inputs, OutputData[] outputs, int[] hiddenNeuronsPerLayer)
     {
         this.name = name;
-        this.graph = graph;
+
+        // The input and output neurons need to be added prior to building the graph.
+        int[] completeNeurons = new int[hiddenNeuronsPerLayer.length + 2];
+        // Inputs
+        completeNeurons[0] = inputs.length;
+        System.arraycopy(hiddenNeuronsPerLayer, 0, completeNeurons, 1, hiddenNeuronsPerLayer.length);
+        // Outputs
+        completeNeurons[completeNeurons.length - 1] = outputs.length;
+
+        this.graph = new Graph(completeNeurons);
         this.inputs = inputs;
         this.outputs = outputs;
     }

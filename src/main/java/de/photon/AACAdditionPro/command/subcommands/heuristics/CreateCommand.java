@@ -4,7 +4,6 @@ import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
-import de.photon.AACAdditionPro.heuristics.Graph;
 import de.photon.AACAdditionPro.heuristics.InputData;
 import de.photon.AACAdditionPro.heuristics.OutputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
@@ -81,9 +80,10 @@ public class CreateCommand extends InternalCommand
 
                 InventoryHeuristics.getPATTERNS().add(new Pattern(
                         patternName,
-                        new Graph(hiddenLayerConfig),
                         inputDataList.toArray(new InputData[inputDataList.size()]),
-                        OutputData.DEFAULT_OUTPUT_DATA));
+                        OutputData.DEFAULT_OUTPUT_DATA,
+                        hiddenLayerConfig));
+
             } catch (NumberFormatException exception)
             {
                 sender.sendMessage(prefix + ChatColor.RED + "Formatting error. Please utilize the command help for formatting.");

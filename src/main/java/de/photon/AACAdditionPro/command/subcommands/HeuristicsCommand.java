@@ -38,6 +38,27 @@ public class HeuristicsCommand extends InternalCommand
         {
             sender.sendMessage(prefix + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
         }
+        else
+        {
+            sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
+            sender.sendMessage(ChatColor.GOLD + "Welcome to the heuristics framework.");
+
+            final StringBuilder welcomeBuilder = new StringBuilder(32);
+            welcomeBuilder.append(ChatColor.RED);
+            welcomeBuilder.append("Possible commands: ");
+            welcomeBuilder.append(ChatColor.GOLD);
+
+            for (String s : this.getChildTabs())
+            {
+                welcomeBuilder.append(s);
+                welcomeBuilder.append(" ,");
+            }
+
+            // Delete the last comma
+            welcomeBuilder.deleteCharAt(welcomeBuilder.length() - 1);
+
+            sender.sendMessage(welcomeBuilder.toString());
+        }
     }
 
     @Override

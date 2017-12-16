@@ -51,16 +51,16 @@ public class Pattern implements Serializable
                 if (input.getName().equals(inputValue.getName()))
                 {
                     input.setData(inputValue.getData());
-                }
 
-                if (dataEntries == -1)
-                {
-                    dataEntries = input.getData().length;
-                }
+                    if (dataEntries == -1)
+                    {
+                        dataEntries = input.getData().length;
+                    }
 
-                if (input.getData().length != dataEntries)
-                {
-                    throw new NeuralNetworkException("Input " + input.getName() + " in " + this.name + " has a different length.");
+                    if (input.getData().length != dataEntries)
+                    {
+                        throw new NeuralNetworkException("Input " + input.getName() + " in " + this.name + " has a different length.");
+                    }
                 }
             }
         }

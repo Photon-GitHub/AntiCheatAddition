@@ -29,7 +29,6 @@ public class InventoryClick
                ", clickedRawSlot=" + clickedRawSlot +
                ", inventoryType=" + inventoryType +
                ", slotType=" + slotType +
-               ", clickType=" + clickType +
-               '}';
+               ", clickType=" + clickType + '}';
     }
 }

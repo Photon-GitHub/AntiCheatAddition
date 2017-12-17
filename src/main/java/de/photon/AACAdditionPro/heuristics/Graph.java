@@ -146,7 +146,7 @@ public class Graph implements Serializable
                                     break;
                                 case HIDDEN:
                                     // f'(netinput) * Sum(delta_this,toHigherLayer * matrix[this][toHigherLayer])
-                                    deltas[currentNeuron] = tanhDerived(neurons[currentNeuron]);
+                                    deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true);
 
                                     double sum = 0;
 
@@ -163,9 +163,9 @@ public class Graph implements Serializable
                                     break;
                                 case OUTPUT:
                                     // f'(netInput) * (a_wanted - a_real)
-                                    deltas[currentNeuron] = tanhDerived(neurons[currentNeuron]) * ((currentNeuron == indexOfOutputNeuron ?
-                                                                                                    1 :
-                                                                                                    0) - activatedNeurons[currentNeuron]);
+                                    deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true) * ((currentNeuron == indexOfOutputNeuron ?
+                                                                                                                      1 :
+                                                                                                                      0) - activatedNeurons[currentNeuron]);
                                     break;
                             }
 
@@ -204,7 +204,7 @@ public class Graph implements Serializable
         for (int neuron = 0; neuron < matrix.length; neuron++)
         {
             // Activation function
-            activatedNeurons[neuron] = Math.tanh(neurons[neuron]);
+            activatedNeurons[neuron] = applyActivationFunction(neurons[neuron], false);
 
             // Forward - pass of the values
             for (int connectionTo = 0; connectionTo < matrix.length; connectionTo++)
@@ -235,8 +235,8 @@ public class Graph implements Serializable
         // 0 is the correct start here as the first layer starts at 0.
         int startingIndex = 0;
 
-        // -1 as the OutputNeurons should not be used / throw an exception.
-        for (int i = 0; i < neuronsInLayers.length - 1; i++)
+        // The OutputNeurons should not be used / throw an exception, which is guaranteed via < length.
+        for (int i = 0; i < neuronsInLayers.length; i++)
         {
             startingIndex += neuronsInLayers[i];
 
@@ -248,12 +248,11 @@ public class Graph implements Serializable
         throw new NeuralNetworkException("Cannot identify the next layer of neuron " + index + " out of " + matrix.length);
     }
 
-    private static double tanhDerived(double d)
-    {
-        double cosh = Math.cosh(d);
-        return 1 / (cosh * cosh);
-    }
-
+    /**
+     * Determines whether a neuron is an input neuron, a hidden neuron or an output neuron
+     *
+     * @param indexOfNeuron the index of the neuron which should be classified (index of the matrix).
+     */
     private NeuronType classifyNeuron(int indexOfNeuron)
     {
         if (indexOfNeuron < neuronsInLayers[0])
@@ -269,10 +268,32 @@ public class Graph implements Serializable
         return NeuronType.OUTPUT;
     }
 
+    /**
+     * Classifier of a neuron
+     */
     private enum NeuronType
     {
         INPUT,
         HIDDEN,
         OUTPUT
+    }
+
+    /**
+     * Calculated the activated value of a neuron.
+     *
+     * @param input   the netinput of the neuron
+     * @param derived whether the derived activation function should be used.
+     *
+     * @return the value of the activated neuron or the derived neuron, depending on the parameter derived.
+     */
+    private static double applyActivationFunction(double input, boolean derived)
+    {
+        if (derived)
+        {
+            final double cosh = Math.cosh(input);
+            return 1 / (cosh * cosh);
+        }
+
+        return Math.tanh(input);
     }
 }

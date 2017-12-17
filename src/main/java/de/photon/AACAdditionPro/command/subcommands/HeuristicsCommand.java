@@ -51,7 +51,7 @@ public class HeuristicsCommand extends InternalCommand
             for (String s : this.getChildTabs())
             {
                 welcomeBuilder.append(s);
-                welcomeBuilder.append(" ,");
+                welcomeBuilder.append(", ");
             }
 
             // Delete the last comma and space

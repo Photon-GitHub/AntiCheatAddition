@@ -25,6 +25,8 @@ public class Pattern implements Serializable
 
     private transient UUID currentlyCheckedUUID;
 
+    private transient boolean currentlyBlockedByInvalidData;
+
     @Setter
     private transient TrainingData trainingData;
 
@@ -61,6 +63,17 @@ public class Pattern implements Serializable
                 {
                     input.setData(inputValue.getData());
 
+                    for (double d : input.getData())
+                    {
+                        if (d == Double.MIN_VALUE)
+                        {
+                            currentlyBlockedByInvalidData = true;
+                            return;
+                        }
+                    }
+
+                    currentlyBlockedByInvalidData = false;
+
                     if (dataEntries == -1)
                     {
                         dataEntries = input.getData().length;
@@ -83,6 +96,12 @@ public class Pattern implements Serializable
      */
     public OutputData analyse()
     {
+        if (currentlyBlockedByInvalidData)
+        {
+            System.out.println("Blocked by invalid data.");
+            return this.outputs[0].setConfidence(1);
+        }
+
         // Convert the input data to a double tensor
         double[][] inputs = new double[this.inputs[0].getData().length][this.inputs.length];
 

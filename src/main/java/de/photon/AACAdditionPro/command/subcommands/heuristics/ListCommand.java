@@ -42,7 +42,7 @@ public class ListCommand extends InternalCommand
                     }
 
                     messageBuilder.append(pattern.getName());
-                    messageBuilder.append(" ,");
+                    messageBuilder.append(", ");
                 }
 
                 // Delete the last comma and space

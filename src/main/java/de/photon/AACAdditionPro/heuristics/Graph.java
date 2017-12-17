@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.heuristics;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * The graph of a neural network including the matrix.
@@ -69,6 +70,8 @@ public class Graph implements Serializable
                 }
             }
         }
+
+        System.out.println("Matrix: " + Arrays.deepToString(this.matrix));
     }
 
     /**
@@ -85,7 +88,7 @@ public class Graph implements Serializable
 
         for (double[] testSeries : inputValues)
         {
-            // The test series are not supposed to be null and are not within normal usage.
+            // The test series are not supposed to be null and are not null within regular usage.
             if (testSeries != null)
             {
                 double[] results = calculate(testSeries);
@@ -124,6 +127,7 @@ public class Graph implements Serializable
 
         for (double[] testSeries : inputValues)
         {
+            // The test series are not supposed to be null and are not null within regular usage.
             if (testSeries != null)
             {
                 // Only calculate so that the neurons array is updated.
@@ -197,7 +201,6 @@ public class Graph implements Serializable
             neurons[i] = testSeries[i];
         }
 
-        //TODO: MAKE SURE EVERYTHING HERE DOES REALLY RETURN A SENSIBLE NUMBER.
         // Perform all the adding
         for (int neuron = 0; neuron < matrix.length; neuron++)
         {
@@ -213,6 +216,12 @@ public class Graph implements Serializable
                     neurons[connectionTo] += (activatedNeurons[neuron] * matrix[neuron][connectionTo]);
                 }
             }
+        }
+
+        // Debug
+        for (int i = 0; i < neurons.length; i++)
+        {
+            System.out.println("Neuron " + i + " is " + neurons[i]);
         }
 
         System.arraycopy(activatedNeurons, (activatedNeurons.length - outputs.length), outputs, 0, outputs.length);

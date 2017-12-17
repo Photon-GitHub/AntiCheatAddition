@@ -124,12 +124,14 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 double[] locationOfLastClick = InventoryUtils.locateSlot(lastAndCurrent[0].clickedRawSlot, lastAndCurrent[0].inventoryType, lastAndCurrent[0].slotType);
                 double[] locationOfCurrentClick = InventoryUtils.locateSlot(lastAndCurrent[1].clickedRawSlot, lastAndCurrent[1].inventoryType, lastAndCurrent[1].slotType);
 
-                if (locationOfLastClick == null || locationOfCurrentClick == null)
+                if (locationOfCurrentClick == null || locationOfLastClick == null)
                 {
-                    continue;
+                    inputData[2].getData()[i - 1] = Double.MIN_VALUE;
                 }
-
-                inputData[2].getData()[i - 1] = InventoryUtils.vectorDistance(locationOfLastClick, locationOfCurrentClick);
+                else
+                {
+                    inputData[2].getData()[i - 1] = InventoryUtils.vectorDistance(locationOfLastClick, locationOfCurrentClick);
+                }
 
                 // Timestamps
                 inputData[0].getData()[i - 1] = lastAndCurrent[1].timeStamp - lastAndCurrent[0].timeStamp;
@@ -142,7 +144,6 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
                 // ClickTypes
                 inputData[4].getData()[i - 1] = lastAndCurrent[0].clickType.ordinal();
-
             }
 
             final List<OutputData> outputData = new ArrayList<>(PATTERNS.size());

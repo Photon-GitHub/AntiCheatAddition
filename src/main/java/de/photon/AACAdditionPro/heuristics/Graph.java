@@ -10,7 +10,8 @@ import java.io.Serializable;
  */
 public class Graph implements Serializable
 {
-    private static final double TRAIN_PARAMETER = 0.05;
+    private static final double TRAIN_PARAMETER = -0.05;
+    private static final double MOMENTUM_PARAMETER = 0.05;
 
     // The main matrix containing the weights of all connections
     // Use Wrapper class to be able to set a value to null
@@ -139,7 +140,10 @@ public class Graph implements Serializable
                         if (matrix[from][currentNeuron] != null)
                         {
                             // weight change = train parameter * activation level of sending neuron * delta
-                            double weightChange = TRAIN_PARAMETER * activatedNeurons[from];
+                            // first and last parameters are parts of momentum
+                            double weightChange = (1 - MOMENTUM_PARAMETER) * TRAIN_PARAMETER * activatedNeurons[from] + (MOMENTUM_PARAMETER * deltas[currentNeuron]);
+
+                            // Deltas are dependent of the neuron class.
                             switch (classifyNeuron(currentNeuron))
                             {
                                 case INPUT:
@@ -150,7 +154,7 @@ public class Graph implements Serializable
 
                                     double sum = 0;
 
-                                    int[] indices = nextLayerIndices(currentNeuron);
+                                    int[] indices = nextLayerIndexBoundaries(currentNeuron);
                                     for (int i = indices[0]; i <= indices[1]; i++)
                                     {
                                         if (matrix[currentNeuron][i] != null)
@@ -168,6 +172,8 @@ public class Graph implements Serializable
                                                                                                                       0) - activatedNeurons[currentNeuron]);
                                     break;
                             }
+
+                            System.out.println("Delta: " + currentNeuron + " | value: " + deltas[currentNeuron]);
 
                             weightChange *= deltas[currentNeuron];
 
@@ -230,7 +236,7 @@ public class Graph implements Serializable
     /**
      * @return the start index of the next layer in index 0 and the end in index 1
      */
-    private int[] nextLayerIndices(int index)
+    private int[] nextLayerIndexBoundaries(int index)
     {
         // 0 is the correct start here as the first layer starts at 0.
         int startingIndex = 0;

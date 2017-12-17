@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class Graph implements Serializable
 {
-    private static final double TRAIN_PARAMETER = -0.05;
+    private static final double TRAIN_PARAMETER = -0.005;
     private static final double MOMENTUM_PARAMETER = 0.05;
 
     // The main matrix containing the weights of all connections
@@ -194,6 +194,12 @@ public class Graph implements Serializable
      */
     private double[] calculate(double[] testSeries)
     {
+        for (int i = 0; i < neurons.length; i++)
+        {
+            neurons[i] = 0;
+            activatedNeurons[i] = 0;
+        }
+
         double[] outputs = new double[neuronsInLayers[neuronsInLayers.length - 1]];
 
         // Set input values

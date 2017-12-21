@@ -68,9 +68,9 @@ public class Esp implements ViolationModule
         final YamlConfiguration spigot = YamlConfiguration.loadConfiguration(new File("spigot.yml"));
         final ConfigurationSection worlds = spigot.getConfigurationSection("world-settings");
 
-        for (final String s : worlds.getKeys(false))
+        for (final String world : worlds.getKeys(false))
         {
-            int currentPlayerTrackingRange = spigot.getInt(worlds.getCurrentPath() + "." + s + ".entity-tracking-range.players");
+            int currentPlayerTrackingRange = spigot.getInt(worlds.getCurrentPath() + "." + world + ".entity-tracking-range.players");
 
             // Square
             currentPlayerTrackingRange *= currentPlayerTrackingRange;

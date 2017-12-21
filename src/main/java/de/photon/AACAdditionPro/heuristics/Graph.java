@@ -123,6 +123,7 @@ public class Graph implements Serializable
             throw new NeuralNetworkException("OutputNeuron index " + outputNeuron + " is not recognized.");
         }
 
+        // outputNeuron is an index here.
         int indexOfOutputNeuron = matrix.length - neuronsInLayers[neuronsInLayers.length - 1] + outputNeuron;
 
         for (double[] testSeries : inputValues)
@@ -173,7 +174,10 @@ public class Graph implements Serializable
                                     break;
                             }
 
-                            System.out.println("Delta: " + currentNeuron + " | value: " + deltas[currentNeuron]);
+                            System.out.println("Classification: " + classifyNeuron(currentNeuron) +
+                                               " | Neuron: " + currentNeuron +
+                                               " | Delta-Value: " + deltas[currentNeuron] +
+                                               " | Trained: " + (currentNeuron == indexOfOutputNeuron));
 
                             weightChange *= deltas[currentNeuron];
 
@@ -254,7 +258,9 @@ public class Graph implements Serializable
 
             if (startingIndex > index)
             {
-                return new int[]{startingIndex, startingIndex + (neuronsInLayers[++i] - 1)};
+                // - 1 as the algorithm first of all calculates the starting index of the next layer and the ending
+                // index is that starting index - 1
+                return new int[]{startingIndex, startingIndex + (neuronsInLayers[i + 1] - 1)};
             }
         }
         throw new NeuralNetworkException("Cannot identify the next layer of neuron " + index + " out of " + matrix.length);

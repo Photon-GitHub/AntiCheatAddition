@@ -100,10 +100,10 @@ public class CreateCommand extends InternalCommand
     {
         return new String[]{
                 "Creates a new pattern with a clear graph. Saving is required if you want the pattern to be permanent.",
-                "Format: /aacadditionpro create <Name of pattern> <Inputs> <Neurons of layer 1> <Neurons of layer 2> ...",
-                "Valid inputs: e.g TRM, TM, RM, CS, TMRISC.",
-                "You use any combination of these letters as a valid input specification.",
-                "Guide to the letters: T = TimeDeltas | M = Materials | R = RawSlots | I = InventoryType | S = SlotTypes | C = ClickTypes"
+                "Format: /aacadditionpro create <name of pattern> <inputs> <neuron count of layer 1> <neuron count of layer 2> ...",
+                "You may use any combination of the following letters as a valid input specification.",
+                "Guide to the letters: T = TimeDeltas | M = Materials | R = RawSlots | I = InventoryType | S = SlotTypes | C = ClickTypes",
+                "Examples: TRM, TM, RM, CS, TMRISC"
         };
     }
 

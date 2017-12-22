@@ -37,8 +37,8 @@ public class TrainCommand extends InternalCommand
             }
             else
             {
-                sender.sendMessage(prefix + ChatColor.GOLD + "[HEURISTICS] Training " + arguments.element() + " Player: " + trainingPlayer.getName());
-                VerboseSender.sendVerboseMessage("[HEURISTICS] Training " + arguments.element() + "; Player: " + trainingPlayer.getName());
+                sender.sendMessage(prefix + ChatColor.GOLD + "[HEURISTICS] Training " + arguments.element() + " | Player: " + trainingPlayer.getName());
+                VerboseSender.sendVerboseMessage("[HEURISTICS] Training " + arguments.element() + " | Player: " + trainingPlayer.getName());
 
                 final String patternName = arguments.remove();
                 final Set<Pattern> possiblePatterns = InventoryHeuristics.getPATTERNS().stream().filter(pattern -> pattern.getName().equals(patternName)).collect(Collectors.toSet());

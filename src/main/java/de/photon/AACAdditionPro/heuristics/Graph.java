@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class Graph implements Serializable
 {
-    private static final double TRAIN_PARAMETER = -0.05;
+    private static final double TRAIN_PARAMETER = 0.05;
     private static final double MOMENTUM_PARAMETER = 0.05;
 
     // The main matrix containing the weights of all connections
@@ -142,6 +142,7 @@ public class Graph implements Serializable
                         {
                             // weight change = train parameter * activation level of sending neuron * delta
                             // first and last parameters are parts of momentum
+                            // deltas[currentNeuron] has not been set by now, thus it can be used as momentum.
                             double weightChange = (1 - MOMENTUM_PARAMETER) * TRAIN_PARAMETER * activatedNeurons[from] + (MOMENTUM_PARAMETER * deltas[currentNeuron]);
 
                             // Deltas are dependent of the neuron class.
@@ -169,8 +170,8 @@ public class Graph implements Serializable
                                 case OUTPUT:
                                     // f'(netInput) * (a_wanted - a_real)
                                     deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true) * ((currentNeuron == indexOfOutputNeuron ?
-                                                                                                                      1 :
-                                                                                                                      0) - activatedNeurons[currentNeuron]);
+                                                                                                                      1D :
+                                                                                                                      0D) - activatedNeurons[currentNeuron]);
                                     break;
                             }
 

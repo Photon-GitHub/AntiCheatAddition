@@ -102,7 +102,7 @@ public class Pattern implements Serializable
             return this.outputs[0].setConfidence(1);
         }
 
-        // Convert the input data to a double tensor
+        // Convert the input data into a double tensor
         double[][] inputs = new double[this.inputs[0].getData().length][this.inputs.length];
 
         for (int i = 0; i < this.inputs[0].getData().length; i++)

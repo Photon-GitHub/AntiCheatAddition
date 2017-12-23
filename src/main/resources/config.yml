@@ -212,6 +212,8 @@ InventoryHeuristics:
    # I WILL _NOT_ PROVIDE SUPPORT FOR THIS FUNCTION: USE ON YOUR OWN RISK!
    unlock_full_framework: false
    # Map of confidence levels to command
+   # Confidences will not add up.
+   # 100 is the maximum confidence possible to reach.
    thresholds:
       80: "aacstaffnotify {player} in {world} is suspected for inventory cheats. Pattern {pattern} | Confidence: {confidence}"
       90: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats. Pattern {pattern} | Confidence: {confidence}"

@@ -140,14 +140,16 @@ public class Pattern implements Serializable
 
             // Get the max. confidence
             int maxIndex = -1;
-            double maxConfidence = -1;
+            double maxResult = -1;
+            double resultSum = 0;
 
             for (int i = 0; i < results.length; i++)
             {
-                if (results[i] > maxConfidence)
+                resultSum += results[i];
+                if (results[i] > maxResult)
                 {
                     maxIndex = i;
-                    maxConfidence = results[i];
+                    maxResult = results[i];
                 }
             }
 
@@ -156,7 +158,8 @@ public class Pattern implements Serializable
                 throw new NeuralNetworkException("Invalid confidences: " + Arrays.toString(results));
             }
 
-            return new OutputData(this.outputs[maxIndex].getName()).setConfidence(maxConfidence);
+            // Return the max result divided by the sum of all results as the confidence of the pattern.
+            return new OutputData(this.outputs[maxIndex].getName()).setConfidence(maxResult / resultSum);
         }
     }
 

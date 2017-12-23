@@ -4,12 +4,12 @@ import lombok.Getter;
 
 import java.io.Serializable;
 
-public abstract class Data implements Serializable
+abstract class Data implements Serializable
 {
     @Getter
     private String name;
 
-    public Data(String name)
+    Data(String name)
     {
         this.name = name;
     }

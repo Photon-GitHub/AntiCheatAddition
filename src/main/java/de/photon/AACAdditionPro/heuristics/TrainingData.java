@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(suppressConstructorProperties = true)
 public class TrainingData
 {
     @Getter

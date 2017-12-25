@@ -236,10 +236,10 @@ public class Graph implements Serializable
         }
 
         // Debug
-        for (int i = 0; i < neurons.length; i++)
+        /*for (int i = 0; i < neurons.length; i++)
         {
             System.out.println("Neuron " + i + " is " + neurons[i]);
-        }
+        }*/
 
         System.arraycopy(activatedNeurons, (activatedNeurons.length - outputs.length), outputs, 0, outputs.length);
         return outputs;

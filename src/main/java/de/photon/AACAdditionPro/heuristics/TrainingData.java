@@ -1,10 +1,12 @@
 package de.photon.AACAdditionPro.heuristics;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
 
+@AllArgsConstructor(suppressConstructorProperties = true)
 @RequiredArgsConstructor(suppressConstructorProperties = true)
 public class TrainingData
 {

@@ -58,7 +58,15 @@ public class TrainCommand extends InternalCommand
 
                     if (output.equals("VANILLA") || output.equals("CHEATING"))
                     {
-                        possiblePatterns.forEach(pattern -> pattern.addTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output))));
+                        if (arguments.isEmpty())
+                        {
+                            possiblePatterns.forEach(pattern -> pattern.addTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output))));
+                        }
+                        else
+                        {
+                            final int cycles = Integer.valueOf(arguments.remove());
+                            possiblePatterns.forEach(pattern -> pattern.addTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output), cycles)));
+                        }
                     }
                     else
                     {
@@ -80,7 +88,7 @@ public class TrainCommand extends InternalCommand
     {
         return new String[]{
                 "Train a pattern with an example.",
-                "Format: /aacadditionpro train <Player to learn from> <Name of pattern> <Output>"
+                "Format: /aacadditionpro train <player to learn from> <name of pattern> <output> [<cycles>]"
         };
     }
 

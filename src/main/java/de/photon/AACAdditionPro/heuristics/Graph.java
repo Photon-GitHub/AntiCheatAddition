@@ -175,10 +175,11 @@ public class Graph implements Serializable
                                     break;
                             }
 
-                            System.out.println("Classification: " + classifyNeuron(currentNeuron) +
+                            //Debug:
+                            /*System.out.println("Classification: " + classifyNeuron(currentNeuron) +
                                                " | Neuron: " + currentNeuron +
                                                " | Delta-Value: " + deltas[currentNeuron] +
-                                               " | Trained: " + (currentNeuron == indexOfOutputNeuron));
+                                               " | Trained: " + (currentNeuron == indexOfOutputNeuron));*/
 
                             weightChange *= deltas[currentNeuron];
 

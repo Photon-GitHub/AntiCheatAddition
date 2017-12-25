@@ -98,7 +98,8 @@ public class Pattern implements Serializable
     {
         if (currentlyBlockedByInvalidData)
         {
-            System.out.println("Blocked by invalid data.");
+            // Debug
+            // System.out.println("Blocked by invalid data.");
             return this.outputs[0].setConfidence(1);
         }
 

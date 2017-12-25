@@ -4,7 +4,6 @@ import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,6 +11,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 public class Pattern implements Serializable
@@ -27,8 +28,7 @@ public class Pattern implements Serializable
 
     private transient boolean currentlyBlockedByInvalidData;
 
-    @Setter
-    private transient TrainingData trainingData;
+    private transient List<TrainingData> trainingDataList = new LinkedList<>();
 
     public Pattern(String name, InputData[] inputs, OutputData[] outputs, int[] hiddenNeuronsPerLayer)
     {
@@ -45,6 +45,14 @@ public class Pattern implements Serializable
         this.graph = new Graph(completeNeurons);
         this.inputs = inputs;
         this.outputs = outputs;
+    }
+
+    /**
+     * Adds a training data to the list.
+     */
+    public void addTrainingData(final TrainingData trainingData)
+    {
+        this.trainingDataList.add(trainingData);
     }
 
     /**
@@ -115,53 +123,54 @@ public class Pattern implements Serializable
         }
 
         // Actual analyse
-        if (this.trainingData != null && this.currentlyCheckedUUID.equals(this.trainingData.getUuid()))
+        for (TrainingData trainingData : trainingDataList)
         {
-            // Look for the index of the trained output
-            for (int i = 0; i < this.outputs.length; i++)
+            if (trainingData != null && this.currentlyCheckedUUID.equals(trainingData.getUuid()))
             {
-                if (this.trainingData.getOutputData().getName().equals(this.outputs[i].getName()))
+                // Look for the index of the trained output
+                for (int i = 0; i < this.outputs.length; i++)
                 {
-                    this.graph.train(inputs, i);
-
-                    if (--this.trainingData.trainingCycles < 0)
+                    if (trainingData.getOutputData().getName().equals(this.outputs[i].getName()))
                     {
-                        VerboseSender.sendVerboseMessage("Training of pattern " + this.name + " of output " + this.outputs[i].getName() + " finished.");
-                        this.trainingData = null;
+                        this.graph.train(inputs, i);
+
+                        if (--trainingData.trainingCycles < 0)
+                        {
+                            VerboseSender.sendVerboseMessage("Training of pattern " + this.name + " of output " + this.outputs[i].getName() + " finished.");
+                            trainingData = null;
+                        }
+                        return null;
                     }
-                    return null;
                 }
-            }
 
-            throw new NeuralNetworkException("Cannot identify output " + this.trainingData.getOutputData().getName() + " in pattern " + this.name);
+                throw new NeuralNetworkException("Cannot identify output " + trainingData.getOutputData().getName() + " in pattern " + this.name);
+            }
         }
-        else
+
+        double[] results = graph.analyse(inputs);
+
+        // Get the max. confidence
+        int maxIndex = -1;
+        double maxResult = -1;
+        double resultSum = 0;
+
+        for (int i = 0; i < results.length; i++)
         {
-            double[] results = graph.analyse(inputs);
-
-            // Get the max. confidence
-            int maxIndex = -1;
-            double maxResult = -1;
-            double resultSum = 0;
-
-            for (int i = 0; i < results.length; i++)
+            resultSum += results[i];
+            if (results[i] > maxResult)
             {
-                resultSum += results[i];
-                if (results[i] > maxResult)
-                {
-                    maxIndex = i;
-                    maxResult = results[i];
-                }
+                maxIndex = i;
+                maxResult = results[i];
             }
-
-            if (maxIndex == -1)
-            {
-                throw new NeuralNetworkException("Invalid confidences: " + Arrays.toString(results));
-            }
-
-            // Return the max result divided by the sum of all results as the confidence of the pattern.
-            return new OutputData(this.outputs[maxIndex].getName()).setConfidence(maxResult / resultSum);
         }
+
+        if (maxIndex == -1)
+        {
+            throw new NeuralNetworkException("Invalid confidences: " + Arrays.toString(results));
+        }
+
+        // Return the max result divided by the sum of all results as the confidence of the pattern.
+        return new OutputData(this.outputs[maxIndex].getName()).setConfidence(maxResult / resultSum);
     }
 
     /**

@@ -130,11 +130,11 @@ public abstract class InternalCommand
 
     protected String[] getChildTabs()
     {
-        final Collection<InternalCommand> childs = this.getChildCommands();
-        final String[] tabs = new String[childs.size()];
+        final Collection<InternalCommand> children = this.getChildCommands();
+        final String[] tabs = new String[children.size()];
 
         int index = 0;
-        for (InternalCommand child : childs)
+        for (InternalCommand child : children)
         {
             tabs[index++] = child.name;
         }

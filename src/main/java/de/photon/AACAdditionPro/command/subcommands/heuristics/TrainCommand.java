@@ -58,7 +58,7 @@ public class TrainCommand extends InternalCommand
 
                     if (output.equals("VANILLA") || output.equals("CHEATING"))
                     {
-                        possiblePatterns.forEach(pattern -> pattern.setTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output))));
+                        possiblePatterns.forEach(pattern -> pattern.addTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output))));
                     }
                     else
                     {

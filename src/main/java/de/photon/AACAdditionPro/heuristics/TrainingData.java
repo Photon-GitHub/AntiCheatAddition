@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @AllArgsConstructor(suppressConstructorProperties = true)
@@ -16,4 +17,19 @@ public class TrainingData
     private final OutputData outputData;
 
     public int trainingCycles = 3;
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TrainingData that = (TrainingData) o;
+        return Objects.equals(uuid, that.uuid);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(uuid);
+    }
 }

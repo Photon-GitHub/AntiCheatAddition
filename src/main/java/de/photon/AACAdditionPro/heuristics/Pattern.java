@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class Pattern implements Serializable
@@ -28,7 +28,7 @@ public class Pattern implements Serializable
 
     private transient boolean currentlyBlockedByInvalidData;
 
-    private transient List<TrainingData> trainingDataList = new LinkedList<>();
+    private transient Set<TrainingData> trainingDataList = new HashSet<>();
 
     public Pattern(String name, InputData[] inputs, OutputData[] outputs, int[] hiddenNeuronsPerLayer)
     {

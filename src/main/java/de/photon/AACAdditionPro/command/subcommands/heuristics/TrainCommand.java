@@ -21,7 +21,7 @@ public class TrainCommand extends InternalCommand
 {
     public TrainCommand()
     {
-        super("train", InternalPermission.NEURAL_TRAIN, (byte) 3);
+        super("train", InternalPermission.NEURAL_TRAIN, false, (byte) 3, (byte) 4);
     }
 
     @Override
@@ -37,7 +37,6 @@ public class TrainCommand extends InternalCommand
             }
             else
             {
-
                 final String patternName = arguments.remove();
                 final Set<Pattern> possiblePatterns = InventoryHeuristics.getPATTERNS().stream().filter(pattern -> pattern.getName().equals(patternName)).collect(Collectors.toSet());
 
@@ -56,11 +55,14 @@ public class TrainCommand extends InternalCommand
 
                     if (output.equals("VANILLA") || output.equals("CHEATING"))
                     {
-                        final int cycles = arguments.isEmpty() ? Integer.valueOf(arguments.remove()) : 3;
+                        // The cycles argument is optional
+                        final int cycles = arguments.isEmpty() ? 3 : Integer.valueOf(arguments.remove());
                         possiblePatterns.forEach(pattern -> pattern.addTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output), cycles)));
 
-                        sender.sendMessage(prefix + ChatColor.GOLD + "[HEURISTICS] Training " + arguments.element() + " | Player: " + trainingPlayer.getName() + " | Output: " + output + " | Cycles: " + cycles);
-                        VerboseSender.sendVerboseMessage("[HEURISTICS] Training " + arguments.element() + " | Player: " + trainingPlayer.getName() + " | Output: " + output + " | Cycles: " + cycles);
+                        final String messageString = "[HEURISTICS] Training " + patternName + " | Player: " + trainingPlayer.getName() + " | Output: " + output + " | Cycles: " + cycles;
+
+                        sender.sendMessage(prefix + ChatColor.GOLD + messageString);
+                        VerboseSender.sendVerboseMessage(messageString);
                     }
                     else
                     {

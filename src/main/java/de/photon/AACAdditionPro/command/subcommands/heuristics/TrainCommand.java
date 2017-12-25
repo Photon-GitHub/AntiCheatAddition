@@ -37,8 +37,6 @@ public class TrainCommand extends InternalCommand
             }
             else
             {
-                sender.sendMessage(prefix + ChatColor.GOLD + "[HEURISTICS] Training " + arguments.element() + " | Player: " + trainingPlayer.getName());
-                VerboseSender.sendVerboseMessage("[HEURISTICS] Training " + arguments.element() + " | Player: " + trainingPlayer.getName());
 
                 final String patternName = arguments.remove();
                 final Set<Pattern> possiblePatterns = InventoryHeuristics.getPATTERNS().stream().filter(pattern -> pattern.getName().equals(patternName)).collect(Collectors.toSet());
@@ -58,15 +56,11 @@ public class TrainCommand extends InternalCommand
 
                     if (output.equals("VANILLA") || output.equals("CHEATING"))
                     {
-                        if (arguments.isEmpty())
-                        {
-                            possiblePatterns.forEach(pattern -> pattern.addTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output))));
-                        }
-                        else
-                        {
-                            final int cycles = Integer.valueOf(arguments.remove());
-                            possiblePatterns.forEach(pattern -> pattern.addTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output), cycles)));
-                        }
+                        final int cycles = arguments.isEmpty() ? Integer.valueOf(arguments.remove()) : 3;
+                        possiblePatterns.forEach(pattern -> pattern.addTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output), cycles)));
+
+                        sender.sendMessage(prefix + ChatColor.GOLD + "[HEURISTICS] Training " + arguments.element() + " | Player: " + trainingPlayer.getName() + " | Output: " + output + " | Cycles: " + cycles);
+                        VerboseSender.sendVerboseMessage("[HEURISTICS] Training " + arguments.element() + " | Player: " + trainingPlayer.getName() + " | Output: " + output + " | Cycles: " + cycles);
                     }
                     else
                     {

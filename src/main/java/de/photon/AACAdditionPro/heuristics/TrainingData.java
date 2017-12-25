@@ -1,10 +1,12 @@
 package de.photon.AACAdditionPro.heuristics;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Objects;
 import java.util.UUID;
 
+@AllArgsConstructor(suppressConstructorProperties = true)
 public class TrainingData
 {
     @Getter
@@ -13,16 +15,6 @@ public class TrainingData
     private final OutputData outputData;
 
     public int trainingCycles;
-
-    public TrainingData(UUID uuid, OutputData outputData)
-    {this(uuid, outputData, 3);}
-
-    public TrainingData(UUID uuid, OutputData outputData, int trainingCycles)
-    {
-        this.uuid = uuid;
-        this.outputData = outputData;
-        this.trainingCycles = trainingCycles;
-    }
 
     @Override
     public boolean equals(Object o)

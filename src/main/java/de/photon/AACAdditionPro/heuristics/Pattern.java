@@ -63,6 +63,13 @@ public class Pattern implements Serializable
     {
         this.currentlyCheckedUUID = checkedUUID;
         int dataEntries = -1;
+
+        if (inputValues.length == 0)
+        {
+            this.currentlyBlockedByInvalidData = true;
+            return;
+        }
+
         for (InputData inputValue : inputValues)
         {
             for (InputData input : this.inputs)
@@ -75,12 +82,12 @@ public class Pattern implements Serializable
                     {
                         if (d == Double.MIN_VALUE)
                         {
-                            currentlyBlockedByInvalidData = true;
+                            this.currentlyBlockedByInvalidData = true;
                             return;
                         }
                     }
 
-                    currentlyBlockedByInvalidData = false;
+                    this.currentlyBlockedByInvalidData = false;
 
                     if (dataEntries == -1)
                     {

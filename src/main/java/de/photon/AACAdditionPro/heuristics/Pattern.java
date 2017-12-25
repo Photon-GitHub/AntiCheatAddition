@@ -64,7 +64,7 @@ public class Pattern implements Serializable
         this.currentlyCheckedUUID = checkedUUID;
         int dataEntries = -1;
 
-        if (inputValues.length == 0)
+        if (inputValues == null || inputValues.length == 0)
         {
             this.currentlyBlockedByInvalidData = true;
             return;

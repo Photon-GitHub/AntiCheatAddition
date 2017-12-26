@@ -5,13 +5,13 @@ import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,11 +24,10 @@ public class Pattern implements Serializable
     private InputData[] inputs;
     private OutputData[] outputs;
 
-    private transient UUID currentlyCheckedUUID;
-
     private transient boolean currentlyBlockedByInvalidData;
 
-    private transient Set<TrainingData> trainingDataList = new HashSet<>();
+    // The default initial capacity of 16 is not used in most cases.
+    private transient Set<TrainingData> trainingDataList = new HashSet<>(8);
 
     public Pattern(String name, InputData[] inputs, OutputData[] outputs, int[] hiddenNeuronsPerLayer)
     {
@@ -59,12 +58,11 @@ public class Pattern implements Serializable
      * Prepares the calculation of the {@link Graph} by setting the values of the {@link InputData}s.
      * The {@link InputData}s should have the same internal array length.
      */
-    public void provideInputData(InputData[] inputValues, UUID checkedUUID)
+    public void provideInputData(InputData[] inputValues)
     {
-        this.currentlyCheckedUUID = checkedUUID;
         int dataEntries = -1;
 
-        if (inputValues == null || inputValues.length == 0)
+        if (Objects.requireNonNull(inputValues, "The input values of pattern " + this.getName() + " are null.").length == 0)
         {
             this.currentlyBlockedByInvalidData = true;
             return;
@@ -93,8 +91,7 @@ public class Pattern implements Serializable
                     {
                         dataEntries = input.getData().length;
                     }
-
-                    if (input.getData().length != dataEntries)
+                    else if (input.getData().length != dataEntries)
                     {
                         throw new NeuralNetworkException("Input " + input.getName() + " in " + this.name + " has a different length.");
                     }
@@ -105,11 +102,13 @@ public class Pattern implements Serializable
 
     /**
      * Make the pattern analyse the current input data.
-     * Provide data via {@link Graph}.{@link #provideInputData(InputData[], UUID)}
+     * Provide data via {@link Graph}.{@link #provideInputData(InputData[])}
+     *
+     * @param checkedUUID the {@link UUID} of the player who is checked. This identifies players who are training the graph.
      *
      * @return the result of the analyse in form of an {@link OutputData}
      */
-    public OutputData analyse()
+    public OutputData analyse(UUID checkedUUID)
     {
         if (currentlyBlockedByInvalidData)
         {
@@ -132,7 +131,7 @@ public class Pattern implements Serializable
         // Actual analyse
         for (TrainingData trainingData : trainingDataList)
         {
-            if (trainingData != null && this.currentlyCheckedUUID.equals(trainingData.getUuid()))
+            if (checkedUUID.equals(trainingData.getUuid()))
             {
                 // Look for the index of the trained output
                 for (int i = 0; i < this.outputs.length; i++)
@@ -187,10 +186,12 @@ public class Pattern implements Serializable
     {
         try
         {
-            final File saveFile = FileUtilities.saveFileInFolder(this.name + ".pattern", FileUtilities.AACADDITIONPRO_DATAFOLDER + "/heuristics");
-            FileOutputStream fileOutputStream = new FileOutputStream(saveFile);
+            // Create the file and open a FileOutputStream for it.
+            final FileOutputStream fileOutputStream = new FileOutputStream(
+                    FileUtilities.saveFileInFolder(this.name + ".pattern", FileUtilities.AACADDITIONPRO_DATAFOLDER + "/heuristics")
+            );
 
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            final ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(this);
             objectOutputStream.close();
 

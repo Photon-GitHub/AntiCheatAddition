@@ -151,9 +151,9 @@ public class InventoryHeuristics implements Listener, ViolationModule
             for (Pattern pattern : PATTERNS)
             {
                 // Totally ok to do with the array as the provideInputData() method filters out the required information and ignores the rest.
-                pattern.provideInputData(inputData, user.getPlayer().getUniqueId());
+                pattern.provideInputData(inputData);
 
-                OutputData result = pattern.analyse();
+                OutputData result = pattern.analyse(user.getPlayer().getUniqueId());
                 if (result != null)
                 {
                     outputData.add(result);

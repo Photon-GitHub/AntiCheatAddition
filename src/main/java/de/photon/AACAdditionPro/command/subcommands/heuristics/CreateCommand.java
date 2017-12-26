@@ -7,6 +7,7 @@ import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
 import de.photon.AACAdditionPro.heuristics.InputData;
 import de.photon.AACAdditionPro.heuristics.OutputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
+import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -64,6 +65,7 @@ public class CreateCommand extends InternalCommand
                 InventoryHeuristics.getPATTERNS().add(new Pattern(
                         patternName,
                         inputDataList.toArray(new InputData[inputDataList.size()]),
+                        InventoryClick.SAMPLES,
                         OutputData.DEFAULT_OUTPUT_DATA,
                         hiddenLayerConfig));
 
@@ -85,7 +87,7 @@ public class CreateCommand extends InternalCommand
                 "Creates a new pattern with a clear graph. Saving is required if you want the pattern to be permanent.",
                 "Format: /aacadditionpro create <name of pattern> <inputs> <neuron count of layer 1> <neuron count of layer 2> ...",
                 "You may use any combination of the following letters as a valid input specification.",
-                "Guide to the letters: T = TimeDeltas | M = Materials | R = RawSlots | I = InventoryType | S = SlotTypes | C = ClickTypes",
+                "Guide to the letters: T = TimeDeltas | M = Materials | X = X-Distances | Y = Y-Distances | I = InventoryType | S = SlotTypes | C = ClickTypes",
                 "Examples: TRM, TM, RM, CS, TMRISC"
         };
     }

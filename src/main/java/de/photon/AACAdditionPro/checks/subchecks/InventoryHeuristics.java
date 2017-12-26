@@ -22,12 +22,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class InventoryHeuristics implements Listener, ViolationModule
 {
@@ -143,35 +144,35 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 inputData[4].getData()[i - 1] = lastAndCurrent[0].clickType.ordinal();
             }
 
-            final List<OutputData> outputData = new ArrayList<>(PATTERNS.size());
+            final Map<Pattern, OutputData> outputDataMap = new HashMap<>(PATTERNS.size());
 
             for (Pattern pattern : PATTERNS)
             {
                 // Totally ok to do with the array as the provideInputData() method filters out the required information and ignores the rest.
                 pattern.provideInputData(inputData);
 
-                OutputData result = pattern.analyse(user.getPlayer().getUniqueId());
+                final OutputData result = pattern.analyse(user.getPlayer().getUniqueId());
                 if (result != null)
                 {
-                    outputData.add(result);
+                    outputDataMap.put(pattern, result);
                 }
             }
 
             //Debug
-            outputData.forEach(System.out::println);
+            outputDataMap.forEach((pattern, outputData) -> System.out.println("Pattern: " + pattern + " | OutputData: " + outputData));
+
+            // Filter out all the VANILLA results
+            final Set<Map.Entry<Pattern, OutputData>> flagEntrySet = outputDataMap.entrySet().stream().filter(entry -> !entry.getValue().getName().equals("VANILLA")).collect(Collectors.toSet());
+            flagEntrySet.forEach(entry -> VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue().getConfidence()));
 
             // Get the highest confidence and flag:
-            Optional<OutputData> maxConfidenceData = outputData.stream()
-                                                               // Filter out all the VANILLA results
-                                                               .filter(output -> !output.getName().equals("VANILLA"))
-                                                               // get the max confidence for flagging
-                                                               .max(Comparator.comparingDouble(OutputData::getConfidence));
+            Optional<Map.Entry<Pattern, OutputData>> maxConfidenceData = flagEntrySet.stream().max(Comparator.comparingDouble(entry -> entry.getValue().getConfidence()));
 
             // Might not be the case, i.e. no detections
-            maxConfidenceData.ifPresent(maxConfidenceOutput -> vlManager.flag(
+            maxConfidenceData.ifPresent(maxConfidenceEntry -> vlManager.flag(
                     user.getPlayer(),
                     // Use power 7 here to make sure higher confidences will flag significantly more.
-                    (int) (100 * Math.pow(maxConfidenceOutput.getConfidence(), 7)),
+                    (int) (100 * Math.pow(maxConfidenceEntry.getValue().getConfidence(), 7)),
                     -1,
                     () -> {},
                     () -> {}));

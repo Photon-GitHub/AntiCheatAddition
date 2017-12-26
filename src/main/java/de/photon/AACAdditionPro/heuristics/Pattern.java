@@ -37,7 +37,9 @@ public class Pattern implements Serializable
         int[] completeNeurons = new int[hiddenNeuronsPerLayer.length + 2];
 
         // Inputs
-        completeNeurons[0] = inputs.length * samples;
+        completeNeurons[0] = (inputs.length * samples);
+
+        // Hidden
         System.arraycopy(hiddenNeuronsPerLayer, 0, completeNeurons, 1, hiddenNeuronsPerLayer.length);
 
         // Outputs

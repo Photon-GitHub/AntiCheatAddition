@@ -89,8 +89,6 @@ public class Pattern implements Serializable
                         }
                     }
 
-                    this.currentlyBlockedByInvalidData = false;
-
                     if (dataEntries == -1)
                     {
                         dataEntries = input.getData().length;
@@ -101,6 +99,8 @@ public class Pattern implements Serializable
                     }
                 }
             }
+
+            this.currentlyBlockedByInvalidData = false;
         }
     }
 

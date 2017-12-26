@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.heuristics;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  * The graph of a neural network including the matrix.

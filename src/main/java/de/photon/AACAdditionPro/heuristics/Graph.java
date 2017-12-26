@@ -99,7 +99,8 @@ public class Graph implements Serializable
             }
         }
 
-        if (inputIndex >= this.neuronsInLayers[0])
+        // Not >= as the inputIndex is as well increased by one in the end.
+        if (inputIndex > this.neuronsInLayers[0])
         {
             throw new NeuralNetworkException("Wrong amount of input values.");
         }

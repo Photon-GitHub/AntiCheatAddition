@@ -10,26 +10,6 @@ import java.util.Objects;
 public final class InventoryUtils
 {
     /**
-     * Calculates the distance between two vectors in n-dimensional space.
-     */
-    public static double vectorDistance(double[] firstVector, double[] secondVector)
-    {
-        if (Objects.requireNonNull(firstVector, "First vector is null").length != Objects.requireNonNull(secondVector, "Second vector is null").length)
-        {
-            throw new IllegalArgumentException("Vectors have not the same amount of dimensions.");
-        }
-
-        // float is sufficient here as the data will not be based on very accurate numbers.
-        double sum = 0;
-        for (int i = 0; i < firstVector.length; i++)
-        {
-            sum += Math.pow(secondVector[i] - firstVector[i], 2);
-        }
-
-        return Math.sqrt(sum);
-    }
-
-    /**
      * Used to locate a slot in an {@link org.bukkit.inventory.Inventory}.
      * The coordinate-system is (0|0) in upper-left corner.
      * <br>

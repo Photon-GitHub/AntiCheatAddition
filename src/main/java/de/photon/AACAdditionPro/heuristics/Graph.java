@@ -75,38 +75,35 @@ public class Graph implements Serializable
     }
 
     /**
-     * Calculate every entry of the provided dataset and analyse the results.
+     * Set the input values of the {@link Graph} and {@link #calculate()}.
      *
-     * @param inputValues the input values as a matrix with the different tests being the first index and the
-     *                    different input sources (e.g. time delta, slot distance, etc.) being the second index.
+     * @param inputValues the input values as a matrix with the different tests being the second index and the
+     *                    different input sources (e.g. time delta, slot distance, etc.) being the first index.
      *
-     * @return the output values as an average of
+     * @return the output values of the output neurons.
      */
     public double[] analyse(double[][] inputValues)
     {
-        double[] outputs = new double[neuronsInLayers[neuronsInLayers.length - 1]];
-
-        for (double[] testSeries : inputValues)
+        for (int i = 0; i < neurons.length; i++)
         {
-            // The test series are not supposed to be null and are not null within regular usage.
-            if (testSeries != null)
-            {
-                double[] results = calculate(testSeries);
+            neurons[i] = 0;
+            activatedNeurons[i] = 0;
+        }
 
-                for (int i = 0; i < outputs.length; i++)
-                {
-                    outputs[i] += results[i];
-                }
+        int inputIndex = 0;
+        for (double[] inputArray : inputValues)
+        {
+            for (double input : inputArray)
+            {
+                this.neurons[inputIndex++] = input;
             }
         }
 
-        //TODO: DO YOU REALLY TAKE THE AVERAGE HERE?
-        for (int i = 0; i < outputs.length; i++)
+        if (inputIndex >= this.neuronsInLayers[0])
         {
-            outputs[i] /= inputValues.length;
+            throw new NeuralNetworkException("Wrong amount of input values.");
         }
-
-        return outputs;
+        return this.calculate();
     }
 
     /**
@@ -126,97 +123,73 @@ public class Graph implements Serializable
         // outputNeuron is an index here.
         int indexOfOutputNeuron = matrix.length - neuronsInLayers[neuronsInLayers.length - 1] + outputNeuron;
 
-        for (double[] testSeries : inputValues)
+        // Only calculate so that the neurons array is updated.
+        analyse(inputValues);
+
+        for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
         {
-            // The test series are not supposed to be null and are not null within regular usage.
-            if (testSeries != null)
+            for (int from = matrix.length - 1; from >= 0; from--)
             {
-                // Only calculate so that the neurons array is updated.
-                calculate(testSeries);
-
-                for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
+                if (matrix[from][currentNeuron] != null)
                 {
-                    for (int from = matrix.length - 1; from >= 0; from--)
+                    // weight change = train parameter * activation level of sending neuron * delta
+                    // first and last parameters are parts of momentum
+                    // deltas[currentNeuron] has not been set by now, thus it can be used as momentum.
+                    double weightChange = (1 - MOMENTUM_PARAMETER) * TRAIN_PARAMETER * activatedNeurons[from] + (MOMENTUM_PARAMETER * deltas[currentNeuron]);
+
+                    // Deltas are dependent of the neuron class.
+                    switch (classifyNeuron(currentNeuron))
                     {
-                        if (matrix[from][currentNeuron] != null)
-                        {
-                            // weight change = train parameter * activation level of sending neuron * delta
-                            // first and last parameters are parts of momentum
-                            // deltas[currentNeuron] has not been set by now, thus it can be used as momentum.
-                            double weightChange = (1 - MOMENTUM_PARAMETER) * TRAIN_PARAMETER * activatedNeurons[from] + (MOMENTUM_PARAMETER * deltas[currentNeuron]);
+                        case INPUT:
+                            break;
+                        case HIDDEN:
+                            // f'(netinput) * Sum(delta_this,toHigherLayer * matrix[this][toHigherLayer])
+                            deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true);
 
-                            // Deltas are dependent of the neuron class.
-                            switch (classifyNeuron(currentNeuron))
+                            double sum = 0;
+
+                            int[] indices = nextLayerIndexBoundaries(currentNeuron);
+                            for (int i = indices[0]; i <= indices[1]; i++)
                             {
-                                case INPUT:
-                                    break;
-                                case HIDDEN:
-                                    // f'(netinput) * Sum(delta_this,toHigherLayer * matrix[this][toHigherLayer])
-                                    deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true);
-
-                                    double sum = 0;
-
-                                    int[] indices = nextLayerIndexBoundaries(currentNeuron);
-                                    for (int i = indices[0]; i <= indices[1]; i++)
-                                    {
-                                        if (matrix[currentNeuron][i] != null)
-                                        {
-                                            sum += deltas[i] * matrix[currentNeuron][i];
-                                        }
-                                    }
-
-                                    deltas[currentNeuron] *= sum;
-                                    break;
-                                case OUTPUT:
-                                    // f'(netInput) * (a_wanted - a_real)
-                                    deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true) * ((currentNeuron == indexOfOutputNeuron ?
-                                                                                                                      1D :
-                                                                                                                      0D) - activatedNeurons[currentNeuron]);
-                                    break;
+                                if (matrix[currentNeuron][i] != null)
+                                {
+                                    sum += deltas[i] * matrix[currentNeuron][i];
+                                }
                             }
 
-                            //Debug:
+                            deltas[currentNeuron] *= sum;
+                            break;
+                        case OUTPUT:
+                            // f'(netInput) * (a_wanted - a_real)
+                            deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true) * ((currentNeuron == indexOfOutputNeuron ?
+                                                                                                              1D :
+                                                                                                              0D) - activatedNeurons[currentNeuron]);
+                            break;
+                    }
+
+                    //Debug:
                             /*System.out.println("Classification: " + classifyNeuron(currentNeuron) +
                                                " | Neuron: " + currentNeuron +
                                                " | Delta-Value: " + deltas[currentNeuron] +
                                                " | Trained: " + (currentNeuron == indexOfOutputNeuron));*/
 
-                            weightChange *= deltas[currentNeuron];
+                    weightChange *= deltas[currentNeuron];
 
-                            matrix[from][currentNeuron] += weightChange;
-                        }
-                    }
+                    matrix[from][currentNeuron] += weightChange;
                 }
             }
         }
     }
 
     /**
-     * Calculate one data series in the {@link Graph}.
-     *
-     * @param testSeries the different input sources (e.g. time delta, slot distance, etc.) being the index.
+     * Calculate the current {@link Graph}.
+     * Prior to this method call the input neurons should be set.
      *
      * @return an array of doubles representing the output neurons.
      */
-    private double[] calculate(double[] testSeries)
+    private double[] calculate()
     {
-        for (int i = 0; i < neurons.length; i++)
-        {
-            neurons[i] = 0;
-            activatedNeurons[i] = 0;
-        }
-
         double[] outputs = new double[neuronsInLayers[neuronsInLayers.length - 1]];
-
-        // Set input values
-        for (int i = 0; i < testSeries.length; i++)
-        {
-            if (testSeries.length != neuronsInLayers[0])
-            {
-                throw new NeuralNetworkException("Wrong amount of inputs for " + neuronsInLayers[0] + " input neurons.");
-            }
-            neurons[i] = testSeries[i];
-        }
 
         // Perform all the adding
         for (int neuron = 0; neuron < matrix.length; neuron++)

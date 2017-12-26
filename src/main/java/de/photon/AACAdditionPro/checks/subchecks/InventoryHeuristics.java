@@ -94,18 +94,13 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
                 event.getClick())))
         {
-            InputData[] inputData = new InputData[]{
-                    new InputData("TIMEDELTAS"),
-                    new InputData("MATERIALS"),
-                    new InputData("RAWSLOTS"),
-                    new InputData("INVENTORYTYPES"),
-                    new InputData("SLOTTYPES"),
-                    new InputData("CLICKTYPES")
-            };
+            InputData[] inputData = new InputData[InputData.VALID_INPUTS.size()];
 
-            for (InputData data : inputData)
+            int dataIndex = 0;
+            for (InputData data : InputData.VALID_INPUTS.values())
             {
-                data.setData(new double[user.getInventoryData().inventoryClicks.size()]);
+                inputData[dataIndex] = new InputData(data.getName());
+                inputData[dataIndex++].setData(new double[user.getInventoryData().inventoryClicks.size()]);
             }
 
             InventoryClick[] lastAndCurrent = new InventoryClick[]{
@@ -127,10 +122,12 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 if (locationOfCurrentClick == null || locationOfLastClick == null)
                 {
                     inputData[2].getData()[i - 1] = Double.MIN_VALUE;
+                    inputData[3].getData()[i - 1] = Double.MIN_VALUE;
                 }
                 else
                 {
-                    inputData[2].getData()[i - 1] = InventoryUtils.vectorDistance(locationOfLastClick, locationOfCurrentClick);
+                    inputData[2].getData()[i - 1] = locationOfLastClick[0] - locationOfCurrentClick[0];
+                    inputData[3].getData()[i - 1] = locationOfLastClick[1] - locationOfCurrentClick[1];
                 }
 
                 // Timestamps

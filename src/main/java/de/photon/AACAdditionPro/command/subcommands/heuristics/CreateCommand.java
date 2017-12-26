@@ -11,24 +11,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Queue;
 
 public class CreateCommand extends InternalCommand
 {
-    private final HashMap<String, InputData> inputDataMapping = new HashMap<>(6, 1);
 
     public CreateCommand()
     {
         super("create", InternalPermission.NEURAL_CREATE, (byte) 3);
-
-        inputDataMapping.put("T", new InputData("TIMEDELTAS"));
-        inputDataMapping.put("M", new InputData("MATERIALS"));
-        inputDataMapping.put("R", new InputData("RAWSLOTS"));
-        inputDataMapping.put("I", new InputData("INVENTORYTYPES"));
-        inputDataMapping.put("S", new InputData("SLOTTYPES"));
-        inputDataMapping.put("C", new InputData("CLICKTYPES"));
     }
 
     @Override
@@ -39,19 +30,11 @@ public class CreateCommand extends InternalCommand
             try
             {
                 final String patternName = arguments.remove();
-
-                /* Valid ones:
-                 * T = TimeDeltas
-                 * M = Materials
-                 * R = RawSlots
-                 * I = InventoryType
-                 * S = SlotTypes
-                 * C = ClickTypes
-                 * */
+                // A full list of all allowed inputs can be found as InputData.VALID_INPUTS
                 final String encodedInputs = arguments.remove();
                 final List<InputData> inputDataList = new ArrayList<>(6);
 
-                inputDataMapping.forEach(
+                InputData.VALID_INPUTS.forEach(
                         (keyChar, data) ->
                         {
                             if (encodedInputs.contains(keyChar))

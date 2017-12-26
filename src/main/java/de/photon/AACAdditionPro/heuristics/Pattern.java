@@ -29,15 +29,17 @@ public class Pattern implements Serializable
     // The default initial capacity of 16 is not used in most cases.
     private final transient Set<TrainingData> trainingDataList = new HashSet<>(8);
 
-    public Pattern(String name, InputData[] inputs, OutputData[] outputs, int[] hiddenNeuronsPerLayer)
+    public Pattern(String name, InputData[] inputs, int samples, OutputData[] outputs, int[] hiddenNeuronsPerLayer)
     {
         this.name = name;
 
         // The input and output neurons need to be added prior to building the graph.
         int[] completeNeurons = new int[hiddenNeuronsPerLayer.length + 2];
+
         // Inputs
-        completeNeurons[0] = inputs.length;
+        completeNeurons[0] = inputs.length * samples;
         System.arraycopy(hiddenNeuronsPerLayer, 0, completeNeurons, 1, hiddenNeuronsPerLayer.length);
+
         // Outputs
         completeNeurons[completeNeurons.length - 1] = outputs.length;
 
@@ -110,7 +112,7 @@ public class Pattern implements Serializable
      */
     public OutputData analyse(UUID checkedUUID)
     {
-        if (currentlyBlockedByInvalidData)
+        if (this.currentlyBlockedByInvalidData)
         {
             // Debug
             // System.out.println("Blocked by invalid data.");
@@ -118,14 +120,10 @@ public class Pattern implements Serializable
         }
 
         // Convert the input data into a double tensor
-        double[][] inputs = new double[this.inputs[0].getData().length][this.inputs.length];
-
-        for (int i = 0; i < this.inputs[0].getData().length; i++)
+        double[][] inputArray = new double[this.inputs[0].getData().length][this.inputs.length];
+        for (int i = 0; i < this.inputs.length; i++)
         {
-            for (int j = 0; j < this.inputs.length; j++)
-            {
-                inputs[i][j] = this.inputs[j].getData()[i];
-            }
+            inputArray[i] = this.inputs[i].getData();
         }
 
         // Actual analyse
@@ -138,7 +136,7 @@ public class Pattern implements Serializable
                 {
                     if (trainingData.getOutputData().getName().equals(this.outputs[i].getName()))
                     {
-                        this.graph.train(inputs, i);
+                        this.graph.train(inputArray, i);
 
                         if (--trainingData.trainingCycles < 0)
                         {
@@ -153,7 +151,7 @@ public class Pattern implements Serializable
             }
         }
 
-        double[] results = graph.analyse(inputs);
+        double[] results = graph.analyse(inputArray);
 
         // Get the max. confidence
         int maxIndex = -1;

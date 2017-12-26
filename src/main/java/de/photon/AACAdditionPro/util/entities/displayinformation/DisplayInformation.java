@@ -47,11 +47,16 @@ public final class DisplayInformation
                     {
                         // The Entity will automatically leave its current team, no extra method call required.
                         clientsidePlayerEntity.joinTeam(team);
+                        // No further team joining.
+                        return;
+                    } catch (IllegalArgumentException entityIsNull)
+                    {
+                        // Here the entity is null and thus additional measures are not required.
+                        return;
                     } catch (IllegalStateException ignore)
                     {
-                        // This is ignored as of the potentially unregistered scoreboard components.
+                        // Here the team is no longer present -> loop through the other teams.
                     }
-                    break;
                 }
             }
         }

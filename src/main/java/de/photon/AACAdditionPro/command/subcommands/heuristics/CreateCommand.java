@@ -62,7 +62,7 @@ public class CreateCommand extends InternalCommand
 
                 if (InventoryHeuristics.getPATTERNS().stream().anyMatch(pattern -> pattern.getName().equals(patternName)))
                 {
-                    sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
+                    sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                     sender.sendMessage(ChatColor.GOLD + "Pattern name \"" + patternName + "\"" + " is already in use.");
                     return;
                 }
@@ -75,7 +75,7 @@ public class CreateCommand extends InternalCommand
                     hiddenLayerConfig[i] = Integer.valueOf(hiddenLayerConfigStrings.get(i));
                 }
 
-                sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
+                sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                 sender.sendMessage(ChatColor.GOLD + "Created new pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " with " + hiddenLayerConfig.length + " hidden layers and " + inputDataList.size() + " inputs.");
 
                 InventoryHeuristics.getPATTERNS().add(new Pattern(

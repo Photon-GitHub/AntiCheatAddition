@@ -31,12 +31,12 @@ public class SaveCommand extends InternalCommand
             {
                 patternToDelete.get().saveToFile();
 
-                sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
+                sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                 sender.sendMessage(ChatColor.GOLD + "Saved pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"");
             }
             else
             {
-                sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
+                sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                 sender.sendMessage(ChatColor.GOLD + "Pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " could not be found.");
             }
         }

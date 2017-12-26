@@ -4,6 +4,7 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
+import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -22,7 +23,7 @@ public class ListCommand extends InternalCommand
     {
         if (AACAdditionPro.getInstance().getConfig().getBoolean("InventoryHeuristics.enabled"))
         {
-            sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
+            sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
 
             if (!InventoryHeuristics.getPATTERNS().isEmpty())
             {

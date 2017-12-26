@@ -42,7 +42,7 @@ public class TrainCommand extends InternalCommand
 
                 if (possiblePatterns.isEmpty())
                 {
-                    sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
+                    sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                     sender.sendMessage(ChatColor.GOLD + "Pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " could not be found.");
                 }
                 else if (possiblePatterns.size() > 1)
@@ -66,7 +66,7 @@ public class TrainCommand extends InternalCommand
                     }
                     else
                     {
-                        sender.sendMessage(ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------");
+                        sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                         sender.sendMessage(ChatColor.GOLD + "Output \"" + ChatColor.RED + output + ChatColor.GOLD + "\"" + " is not allowed.");
                         sender.sendMessage(ChatColor.GOLD + "Allowed outputs: " + ChatColor.RED + "VANILLA" + ChatColor.GOLD + " | " + ChatColor.RED + "CHEATING");
                     }

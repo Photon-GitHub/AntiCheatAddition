@@ -116,7 +116,7 @@ public final class VerboseSender implements Listener
         try
         {
             // Get the logfile that is in use currently or create a new one if needed.
-            final File log_File = FileUtilities.saveFileInFolder(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log", FileUtilities.AACADDITIONPRO_DATAFOLDER.getPath() + "/logs");
+            final File log_File = FileUtilities.saveFileInFolder("logs/" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
 
             // Add the beginning of the prefix
             final StringBuilder time = new StringBuilder("[");

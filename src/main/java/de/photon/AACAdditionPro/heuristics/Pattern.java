@@ -188,7 +188,7 @@ public class Pattern implements Serializable
         {
             // Create the file and open a FileOutputStream for it.
             final FileOutputStream fileOutputStream = new FileOutputStream(
-                    FileUtilities.saveFileInFolder(this.name + ".pattern", FileUtilities.AACADDITIONPRO_DATAFOLDER + "/heuristics")
+                    FileUtilities.saveFileInFolder("heuristics/" + this.name + ".pattern")
             );
 
             final ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);

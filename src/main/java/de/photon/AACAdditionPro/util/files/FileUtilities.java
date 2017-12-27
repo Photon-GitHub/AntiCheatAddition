@@ -2,7 +2,6 @@ package de.photon.AACAdditionPro.util.files;
 
 import com.google.common.io.ByteStreams;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,27 +12,7 @@ import java.lang.reflect.Method;
 
 public final class FileUtilities
 {
-    public static final File AACADDITIONPRO_DATAFOLDER = AACAdditionPro.getInstance().getDataFolder();
-
-    /**
-     * This {@link Method} saves a file in the directory of the {@link Plugin}
-     * on the server and writes content into it if a default resource exists in this plugin.
-     * <p>
-     * This method ensures that the given path exists.
-     * If the path does not exist it tries to create it.
-     * The path is appended to the DataFolder of AACAdditionPro.
-     * The path must not end with '/'
-     * <p>
-     * If the file does not exist it tries to create it.
-     *
-     * @param file_name the name of the file that should be saved
-     *
-     * @throws IOException in the case of a failed file / folder creation.
-     */
-    public static File saveFileInFolder(final String file_name) throws IOException
-    {
-        return saveFileInFolder(file_name, AACADDITIONPRO_DATAFOLDER.getPath());
-    }
+    public static final File AACADDITIONPRO_DATA_FOLDER = AACAdditionPro.getInstance().getDataFolder();
 
     /**
      * This {@link Method} saves a file in the directory of the {@link org.bukkit.plugin.Plugin}
@@ -46,43 +25,46 @@ public final class FileUtilities
      * <p>
      * If the file does not exist it tries to create it.
      *
-     * @param file_name the name of the file that should be saved
-     * @param path      the path that should be checked inside the DataFolder
+     * @param resourcePath the full path that should be appended to the default data folder.
      *
      * @throws IOException in the case of a failed file / folder creation.
      */
-    public static File saveFileInFolder(final String file_name, final String path) throws IOException
+    public static File saveFileInFolder(String resourcePath) throws IOException
     {
-        // Create the directory
-        final File dirFile = new File(path);
-
-        // Create the directory if it does not exist
-        if (!dirFile.exists())
+        if (resourcePath == null || resourcePath.equals(""))
         {
-            if (!dirFile.mkdirs())
+            throw new IllegalArgumentException("ResourcePath cannot be null or empty");
+        }
+
+        resourcePath = resourcePath.replace('\\', '/');
+
+        File outFile = new File(AACADDITIONPRO_DATA_FOLDER, resourcePath);
+        int lastIndex = resourcePath.lastIndexOf('/');
+        File outDir = new File(AACADDITIONPRO_DATA_FOLDER, resourcePath.substring(0, lastIndex >= 0 ? lastIndex : 0));
+
+        if (!outDir.exists())
+        {
+            if (!outDir.mkdirs())
             {
-                throw new IOException("Unable to create the directory \"" + path + "\"");
+                throw new IOException("Unable to create the directory \"" + outDir.getPath() + "\"");
             }
         }
 
-        // Create the file
-        final File fileToSave = new File(path, file_name);
-
         // Create the file if it does not exist
-        if (!fileToSave.exists())
+        if (!outFile.exists())
         {
-            if (!fileToSave.createNewFile())
+            if (!outFile.createNewFile())
             {
                 // Could not create the file
-                throw new IOException("The file " + fileToSave.getName() + " could not be created in " + fileToSave.getPath());
+                throw new IOException("The file " + outFile.getName() + " could not be created in " + outFile.getPath());
             }
             else
             {
                 // Stream to read from the default-file
-                final InputStream in = AACAdditionPro.getInstance().getResource(file_name);
+                final InputStream in = AACAdditionPro.getInstance().getResource(resourcePath);
 
                 // Stream to write into the newly created file
-                final OutputStream out = new FileOutputStream(fileToSave);
+                final OutputStream out = new FileOutputStream(outFile);
 
                 if (in != null)
                 {
@@ -91,7 +73,6 @@ public final class FileUtilities
                 }
             }
         }
-
-        return fileToSave;
+        return outFile;
     }
 }

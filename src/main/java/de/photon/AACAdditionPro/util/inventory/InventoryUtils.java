@@ -21,7 +21,7 @@ public final class InventoryUtils
     public static double[] locateSlot(int rawSlot, InventoryType inventoryType)
     {
         // Debug:
-        System.out.println("InventoryLocation: " + rawSlot + " | " + inventoryType);
+        // System.out.println("InventoryLocation: " + rawSlot + " | " + inventoryType);
         switch (inventoryType)
         {
             case CHEST:

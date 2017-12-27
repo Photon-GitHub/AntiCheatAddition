@@ -125,12 +125,12 @@ public class ModuleManager extends ArrayList<Module>
         if (state)
         {
             module.enable();
-            stringBuilder.append("enabled");
+            stringBuilder.append("enabled.");
         }
         else
         {
             module.disable();
-            stringBuilder.append("disabled");
+            stringBuilder.append("disabled.");
         }
 
         // Send / log the message

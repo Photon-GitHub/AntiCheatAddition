@@ -27,7 +27,7 @@ public class Pattern implements Serializable
     private transient boolean currentlyBlockedByInvalidData;
 
     // The default initial capacity of 16 is not used in most cases.
-    private transient Set<TrainingData> trainingDataList;
+    private transient Set<TrainingData> trainingDataSet;
 
     public Pattern(String name, InputData[] inputs, int samples, OutputData[] outputs, int[] hiddenNeuronsPerLayer)
     {
@@ -55,11 +55,7 @@ public class Pattern implements Serializable
      */
     public void addTrainingData(final TrainingData trainingData)
     {
-        if (trainingDataList == null)
-        {
-            trainingDataList = new HashSet<>(8);
-        }
-        this.trainingDataList.add(trainingData);
+        this.assureTrainingData().add(trainingData);
     }
 
     /**
@@ -133,7 +129,7 @@ public class Pattern implements Serializable
         }
 
         // Actual analyse
-        for (TrainingData trainingData : trainingDataList)
+        for (final TrainingData trainingData : this.assureTrainingData())
         {
             if (checkedUUID.equals(trainingData.getUuid()))
             {
@@ -147,7 +143,7 @@ public class Pattern implements Serializable
                         if (--trainingData.trainingCycles < 0)
                         {
                             VerboseSender.sendVerboseMessage("Training of pattern " + this.name + " of output " + this.outputs[i].getName() + " finished.");
-                            this.trainingDataList.remove(trainingData);
+                            this.trainingDataSet.remove(trainingData);
                         }
                         return null;
                     }
@@ -205,5 +201,20 @@ public class Pattern implements Serializable
             VerboseSender.sendVerboseMessage("Could not save pattern " + this.name + ". See the logs for further information.", true, true);
             e.printStackTrace();
         }
+    }
+
+    /**
+     * As of the serialization the {@link TrainingData} - {@link Set} is lost.
+     * This method assures the existence of this very {@link Set}
+     *
+     * @return the {@link TrainingData} - {@link Set}
+     */
+    private Set<TrainingData> assureTrainingData()
+    {
+        if (this.trainingDataSet == null)
+        {
+            trainingDataSet = new HashSet<>(8);
+        }
+        return this.trainingDataSet;
     }
 }

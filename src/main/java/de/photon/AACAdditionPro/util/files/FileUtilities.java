@@ -53,76 +53,45 @@ public final class FileUtilities
      */
     public static File saveFileInFolder(final String file_name, final String path) throws IOException
     {
-        final String[] pathParts = path.split("/");
-        final StringBuilder currentPath = new StringBuilder(path.length());
+        // Create the directory
+        final File dirFile = new File(path);
 
-        for (final String s : pathParts)
+        // Create the directory if it does not exist
+        if (!dirFile.exists())
         {
-            currentPath.append(s);
-            currentPath.append('/');
-
-            createFileOrDirectory(new File(currentPath.toString()), true);
+            if (!dirFile.mkdirs())
+            {
+                throw new IOException("Unable to create the directory \"" + path + "\"");
+            }
         }
 
         // Create the file
-        final File resourceFile = new File(path, file_name);
+        final File fileToSave = new File(path, file_name);
 
-        if (createFileOrDirectory(resourceFile, false))
+        // Create the file if it does not exist
+        if (!fileToSave.exists())
         {
-            // Stream to read from the default-file
-            final InputStream in = AACAdditionPro.getInstance().getResource(file_name);
-
-            // Stream to write into the newly created file
-            final OutputStream out = new FileOutputStream(resourceFile);
-
-            if (in != null)
-            {
-                // Write the content of the default file to the newly created file
-                ByteStreams.copy(in, out);
-            }
-        }
-        return resourceFile;
-    }
-
-    /**
-     * Creates a {@link File}, which can also represent a directory.
-     * <br>
-     * The method checks that the {@link File} is not already existing and does not override it in this case.
-     *
-     * @param file      the {@link File} which should be created
-     * @param directory is the provided {@link File} a directory (true) or a normal file (false)
-     *
-     * @return true if the {@link File} was created and false if not.
-     */
-    private static boolean createFileOrDirectory(File file, boolean directory) throws IOException
-    {
-        // The file must not exist.
-        if (file.exists())
-        {
-            return false;
-        }
-
-        // Create a folder
-        if (directory)
-        {
-            // Create the folder if it does not exist
-            if (!file.mkdir())
-            {
-                throw new IOException("The folder " + file.getPath() + " could not be created.");
-            }
-
-        }
-        // Create a normal file
-        else
-        {
-            // Create the file if it does not exist
-            if (!file.createNewFile())
+            if (!fileToSave.createNewFile())
             {
                 // Could not create the file
-                throw new IOException("The file " + file.getName() + " could not be created in " + file.getPath());
+                throw new IOException("The file " + fileToSave.getName() + " could not be created in " + fileToSave.getPath());
+            }
+            else
+            {
+                // Stream to read from the default-file
+                final InputStream in = AACAdditionPro.getInstance().getResource(file_name);
+
+                // Stream to write into the newly created file
+                final OutputStream out = new FileOutputStream(fileToSave);
+
+                if (in != null)
+                {
+                    // Write the content of the default file to the newly created file
+                    ByteStreams.copy(in, out);
+                }
             }
         }
 
-        return true;
+        return fileToSave;
     }
 }

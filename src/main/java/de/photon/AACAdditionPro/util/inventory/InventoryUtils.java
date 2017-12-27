@@ -18,10 +18,10 @@ public final class InventoryUtils
      *
      * @return the coords of a slot or null if it is invalid.
      */
-    public static double[] locateSlot(int rawSlot, InventoryType inventoryType, InventoryType.SlotType slotType)
+    public static double[] locateSlot(int rawSlot, InventoryType inventoryType)
     {
         // Debug:
-        // System.out.println("InventoryLocation: " + rawSlot + " | " + inventoryType + " | " + slotType);
+        System.out.println("InventoryLocation: " + rawSlot + " | " + inventoryType);
         switch (inventoryType)
         {
             case CHEST:
@@ -284,48 +284,39 @@ public final class InventoryUtils
              * */
             case CRAFTING:
             case PLAYER:
-                if (slotType != null)
+                // Result slot
+                if (rawSlot == 0)
                 {
-                    switch (slotType)
-                    {
-                        // Y = 0
-                        case QUICKBAR:
-                            return new double[]{
-                                    rawSlot % 9, 0
-                            };
-
-                        case CRAFTING:
-                            return new double[]
-                                    {
-                                            // 80 and 82
-                                            rawSlot % 2 == 0 ?
-                                            5.5D :
-                                            6.5D,
-                                            // 82 and 83
-                                            rawSlot > 81 ?
-                                            6.5D :
-                                            7.5D
-                                    };
-
-                        case RESULT:
-                            return new double[]{
-                                    7.5D,
-                                    7
-                            };
-
-                        case ARMOR:
-                            break;
-                        case CONTAINER:
-                            break;
-                        case FUEL:
-                            break;
-                        default:
-                            break;
-                    }
+                    return new double[]{
+                            7.5D,
+                            1.5D
+                    };
                 }
 
-                // cases: OUTSIDE
-                return null;
+                // Crafting slots
+                if (rawSlot <= 4)
+                {
+                    return new double[]{
+                            5.5D - (rawSlot % 2),
+                            rawSlot <= 2 ? 1D : 2D
+                    };
+                }
+
+                // Armor slots
+                if (rawSlot <= 8)
+                {
+                    return new double[]{
+                            0D,
+                            (rawSlot - 5)
+                    };
+                }
+
+                // Normal slots
+                rawSlot -= 9;
+                return new double[]{
+                        rawSlot % 9,
+                        Math.floor(rawSlot / 9)
+                };
             case CREATIVE:
                 break;
             case SHULKER_BOX:

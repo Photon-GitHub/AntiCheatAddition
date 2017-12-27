@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.util.storage.management;
 
-public abstract class DoubleBuffer extends Buffer<Double>
+public class DoubleBuffer extends Buffer<Double>
 {
     public DoubleBuffer(int buffer_size)
     {

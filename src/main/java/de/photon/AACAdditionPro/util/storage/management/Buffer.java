@@ -3,23 +3,15 @@ package de.photon.AACAdditionPro.util.storage.management;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
-public abstract class Buffer<T> extends ArrayList<T>
+public class Buffer<T> extends ArrayList<T>
 {
-    private final int buffer_size;
+    protected final int buffer_size;
 
-    protected Buffer(final int buffer_size)
+    public Buffer(final int buffer_size)
     {
         super(buffer_size);
         this.buffer_size = buffer_size;
     }
-
-    /**
-     * This is used to verify an object before it gets added to the buffer,
-     * and therefore useful for checking e.g. adjacency of blocks or similar.
-     *
-     * @return true if the object should be added to the buffer and false if the buffer should be cleared
-     */
-    protected abstract boolean verifyObject(T object);
 
     /**
      * Adds a {@link T} to the buffer, or clears the buffer if verifyObject returns false
@@ -30,11 +22,7 @@ public abstract class Buffer<T> extends ArrayList<T>
      */
     public boolean bufferObject(final T object)
     {
-        if (verifyObject(object)) {
-            this.add(object);
-        } else {
-            this.clear();
-        }
+        this.add(object);
         return this.size() >= this.buffer_size;
     }
 
@@ -46,10 +34,12 @@ public abstract class Buffer<T> extends ArrayList<T>
      */
     public void clearLastObjectIteration(final BiConsumer<T, T> code)
     {
-        if (!this.isEmpty()) {
+        if (!this.isEmpty())
+        {
             T last = this.remove(this.size() - 1);
             T current;
-            while (!this.isEmpty()) {
+            while (!this.isEmpty())
+            {
                 current = this.remove(this.size() - 1);
                 code.accept(last, current);
                 last = current;

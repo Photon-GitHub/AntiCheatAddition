@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.userdata.data;
 
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.util.storage.datawrappers.BlockPlace;
-import de.photon.AACAdditionPro.util.storage.management.Buffer;
+import de.photon.AACAdditionPro.util.storage.management.ConditionalBuffer;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 
 
@@ -11,7 +11,7 @@ import de.photon.AACAdditionPro.util.world.BlockUtils;
  */
 public class BlockPlaceData extends TimeData
 {
-    protected final Buffer<BlockPlace> blockPlaces;
+    protected final ConditionalBuffer<BlockPlace> blockPlaces;
     private final int buffer_size;
 
     public BlockPlaceData(final boolean horizontal, final int buffer_size, final User theUser)
@@ -19,7 +19,7 @@ public class BlockPlaceData extends TimeData
         super(false, theUser);
         this.buffer_size = buffer_size;
 
-        blockPlaces = new Buffer<BlockPlace>(buffer_size)
+        blockPlaces = new ConditionalBuffer<BlockPlace>(buffer_size)
         {
             @Override
             public boolean verifyObject(final BlockPlace object)
@@ -66,7 +66,7 @@ public class BlockPlaceData extends TimeData
         return fraction[0] / fraction[1];
     }
 
-    public Buffer<BlockPlace> getBlockPlaces()
+    public ConditionalBuffer<BlockPlace> getBlockPlaces()
     {
         return blockPlaces;
     }

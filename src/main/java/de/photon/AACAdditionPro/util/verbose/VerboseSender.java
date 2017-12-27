@@ -124,7 +124,8 @@ public final class VerboseSender implements Listener
             time.append(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));
 
             // Add a 0 if it is too short
-            while (time.length() < 12)
+            // Technically only 12, but we already appended the "[", thus one more.
+            while (time.length() < 13)
             {
                 time.append("0");
             }

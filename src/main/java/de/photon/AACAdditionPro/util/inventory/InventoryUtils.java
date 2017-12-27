@@ -5,8 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 
-import java.util.Objects;
-
 public final class InventoryUtils
 {
     /**
@@ -22,7 +20,8 @@ public final class InventoryUtils
      */
     public static double[] locateSlot(int rawSlot, InventoryType inventoryType, InventoryType.SlotType slotType)
     {
-        System.out.println("InventoryLocation: " + rawSlot + " | " + inventoryType + " | " + slotType);
+        // Debug:
+        // System.out.println("InventoryLocation: " + rawSlot + " | " + inventoryType + " | " + slotType);
         switch (inventoryType)
         {
             case CHEST:

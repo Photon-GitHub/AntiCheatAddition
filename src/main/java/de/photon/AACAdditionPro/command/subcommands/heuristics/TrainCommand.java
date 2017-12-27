@@ -68,7 +68,6 @@ public class TrainCommand extends InternalCommand
                 {
                     // The cycles argument is optional
                     final int cycles = arguments.isEmpty() ? 3 : Integer.valueOf(arguments.remove());
-                    System.out.println("Player: " + trainingPlayer + " UUID: " + trainingPlayer.getUniqueId() + " output: " + output + " cycles: " + cycles);
 
                     user.getInventoryData().inventoryClicks.clear();
                     possiblePatterns.forEach(pattern -> pattern.addTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output), cycles)));

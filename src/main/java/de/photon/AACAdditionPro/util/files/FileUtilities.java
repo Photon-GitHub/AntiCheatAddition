@@ -53,12 +53,7 @@ public final class FileUtilities
         // Create the file if it does not exist
         if (!outFile.exists())
         {
-            if (!outFile.createNewFile())
-            {
-                // Could not create the file
-                throw new IOException("The file " + outFile.getName() + " could not be created in " + outFile.getPath());
-            }
-            else
+            if (outFile.createNewFile())
             {
                 // Stream to read from the default-file
                 final InputStream in = AACAdditionPro.getInstance().getResource(resourcePath);
@@ -71,6 +66,11 @@ public final class FileUtilities
                     // Write the content of the default file to the newly created file
                     ByteStreams.copy(in, out);
                 }
+            }
+            else
+            {
+                // Could not create the file
+                throw new IOException("The file " + outFile.getName() + " could not be created in " + outFile.getPath());
             }
         }
         return outFile;

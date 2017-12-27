@@ -88,7 +88,7 @@ public class CreateCommand extends InternalCommand
                 "Format: /aacadditionpro create <name of pattern> <inputs> <neuron count of layer 1> <neuron count of layer 2> ...",
                 "You may use any combination of the following letters as a valid input specification.",
                 "Guide to the letters: T = TimeDeltas | M = Materials | X = X-Distances | Y = Y-Distances | I = InventoryType | S = SlotTypes | C = ClickTypes",
-                "Examples: TRM, TM, RM, CS, TMRISC"
+                "Examples: TXYM, TM, RM, CS, TMYXISC"
         };
     }
 

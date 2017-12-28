@@ -4,6 +4,7 @@ import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class Pattern implements Serializable
 {
     @Getter
+    @Setter
     private String name;
     private Graph graph;
 

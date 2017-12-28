@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.CreateCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.ListCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.RemoveCommand;
+import de.photon.AACAdditionPro.command.subcommands.heuristics.RenameCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.SaveCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.TrainCommand;
 import org.bukkit.ChatColor;
@@ -33,6 +34,7 @@ public class HeuristicsCommand extends InternalCommand
               new CreateCommand(),
               new ListCommand(),
               new RemoveCommand(),
+              new RenameCommand(),
               new SaveCommand(),
               new TrainCommand());
     }

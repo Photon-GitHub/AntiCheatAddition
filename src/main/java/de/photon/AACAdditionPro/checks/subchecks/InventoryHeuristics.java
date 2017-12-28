@@ -46,6 +46,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
             if (heuristicsFolder.mkdirs())
             {
                 //TODO: ADD THE CORRECT URL
+                VerboseSender.sendVerboseMessage("InventoryHeuristics folder created.", true, false);
                 VerboseSender.sendVerboseMessage("Please download the latest patterns from github.", true, false);
             }
             else

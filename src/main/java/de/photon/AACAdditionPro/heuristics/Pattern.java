@@ -128,6 +128,8 @@ public class Pattern implements Serializable
             inputArray[i] = this.inputs[i].getData();
         }
 
+        System.out.println(Arrays.deepToString(inputArray));
+
         // Actual analyse
         for (final TrainingData trainingData : this.assureTrainingData())
         {
@@ -158,11 +160,9 @@ public class Pattern implements Serializable
         // Get the max. confidence
         int maxIndex = -1;
         double maxResult = -1;
-        double resultSum = 0;
 
         for (int i = 0; i < results.length; i++)
         {
-            resultSum += results[i];
             if (results[i] > maxResult)
             {
                 maxIndex = i;
@@ -176,7 +176,7 @@ public class Pattern implements Serializable
         }
 
         // Return the max result divided by the sum of all results as the confidence of the pattern.
-        return new OutputData(this.outputs[maxIndex].getName()).setConfidence(maxResult / resultSum);
+        return new OutputData(this.outputs[maxIndex].getName()).setConfidence(maxResult);
     }
 
     /**

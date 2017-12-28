@@ -22,17 +22,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class InventoryHeuristics implements Listener, ViolationModule
 {
-    ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 600);
+    ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), -1);
 
     // Concurrency as patterns are potentially added concurrently.
     @Getter
@@ -163,19 +161,17 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
             // Filter out all the VANILLA results
             final Set<Map.Entry<Pattern, OutputData>> flagEntrySet = outputDataMap.entrySet().stream().filter(entry -> !entry.getValue().getName().equals("VANILLA")).collect(Collectors.toSet());
-            flagEntrySet.forEach(entry -> VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue().getConfidence()));
 
-            // Get the highest confidence and flag:
-            Optional<Map.Entry<Pattern, OutputData>> maxConfidenceData = flagEntrySet.stream().max(Comparator.comparingDouble(entry -> entry.getValue().getConfidence()));
+            double flagSum = 0;
+            for (Map.Entry<Pattern, OutputData> entry : flagEntrySet)
+            {
+                flagSum += entry.getValue().getConfidence();
+                VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue().getConfidence());
+            }
 
+            final double vl = Math.abs(10 / (Math.tanh(flagSum) - 1.1));
             // Might not be the case, i.e. no detections
-            maxConfidenceData.ifPresent(maxConfidenceEntry -> vlManager.flag(
-                    user.getPlayer(),
-                    // Use power 7 here to make sure higher confidences will flag significantly more.
-                    (int) (100 * Math.pow(maxConfidenceEntry.getValue().getConfidence(), 7)),
-                    -1,
-                    () -> {},
-                    () -> {}));
+            vlManager.setVL(user.getPlayer(), (int) vl);
         }
     }
 

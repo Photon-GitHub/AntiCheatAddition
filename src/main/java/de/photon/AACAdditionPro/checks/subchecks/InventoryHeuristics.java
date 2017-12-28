@@ -49,7 +49,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
     @Override
     public void subEnable()
     {
-        File heuristicsFolder = new File(FileUtilities.AACADDITIONPRO_DATA_FOLDER + "/heuristics");
+        final File heuristicsFolder = new File(FileUtilities.AACADDITIONPRO_DATA_FOLDER + "/heuristics");
 
         if (!heuristicsFolder.exists())
         {
@@ -65,9 +65,6 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 }
             });
         }
-
-
-        heuristicsFolder = new File(FileUtilities.AACADDITIONPRO_DATA_FOLDER + "/heuristics");
 
         final File[] patternFiles = heuristicsFolder.listFiles();
         if (patternFiles != null)

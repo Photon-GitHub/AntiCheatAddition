@@ -1,6 +1,5 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.heuristics.InputData;
@@ -23,9 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,15 +30,7 @@ import java.util.stream.Collectors;
 
 public class InventoryHeuristics implements Listener, ViolationModule
 {
-    /**
-     * Registry of all pattern names in the heuristics folder of resources.
-     */
-    private static final Set<String> PATTERN_NAMES = new HashSet<>(Arrays.asList(
-            "AAAA00290001.pattern",
-            "AAAB00080001.pattern")
-    );
-
-    ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), -1);
+    final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), -1);
 
     // Concurrency as heuristics are potentially added concurrently.
     @Getter
@@ -54,8 +43,15 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
         if (!heuristicsFolder.exists())
         {
-            // Default heuristics
-            PATTERN_NAMES.forEach(patternName -> AACAdditionPro.getInstance().saveResource("heuristics/" + patternName, false));
+            if (heuristicsFolder.mkdirs())
+            {
+                //TODO: ADD THE CORRECT URL
+                VerboseSender.sendVerboseMessage("Please download the latest patterns from github.", true, false);
+            }
+            else
+            {
+                VerboseSender.sendVerboseMessage("Unable to load file create the heuristics-folder.", true, true);
+            }
         }
 
         final File[] patternFiles = heuristicsFolder.listFiles();
@@ -65,8 +61,8 @@ public class InventoryHeuristics implements Listener, ViolationModule
             {
                 try
                 {
-                    FileInputStream fileInputStream = new FileInputStream(file);
-                    ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                    final FileInputStream fileInputStream = new FileInputStream(file);
+                    final ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 
                     PATTERNS.add((Pattern) objectInputStream.readObject());
 
@@ -74,7 +70,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     fileInputStream.close();
                 } catch (IOException | ClassNotFoundException e)
                 {
-                    VerboseSender.sendVerboseMessage("Unable to load file " + file.getPath() + " as a pattern.");
+                    VerboseSender.sendVerboseMessage("Unable to load file " + file.getPath() + " as a pattern.", true, true);
                     e.printStackTrace();
                 }
             }

@@ -200,7 +200,7 @@ InventoryChat:
 InventoryHeuristics:
    # Do you want to enable the InventoryHeuristics
    enabled: true
-   # This will allow you to access all of the framework, including the creation of your own patterns and training them.
+   # This will allow you to access all of the framework, including the creation of your own heuristics and training them.
    #
    # Required knowledge:
    # - Understanding Java's SERIALIZATION

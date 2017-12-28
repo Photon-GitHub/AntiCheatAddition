@@ -22,7 +22,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,38 +32,61 @@ import java.util.stream.Collectors;
 
 public class InventoryHeuristics implements Listener, ViolationModule
 {
+    /**
+     * Registry of all pattern names in the heuristics folder of resources.
+     */
+    private static final Set<String> PATTERN_NAMES = new HashSet<>(Arrays.asList(
+            "AAAA00290001.pattern",
+            "AAAB00080001.pattern")
+    );
+
     ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), -1);
 
-    // Concurrency as patterns are potentially added concurrently.
+    // Concurrency as heuristics are potentially added concurrently.
     @Getter
     private static final Set<Pattern> PATTERNS = ConcurrentHashMap.newKeySet();
 
     @Override
     public void subEnable()
     {
-        final File heuristicsFolder = new File(FileUtilities.AACADDITIONPRO_DATA_FOLDER + "/heuristics");
+        File heuristicsFolder = new File(FileUtilities.AACADDITIONPRO_DATA_FOLDER + "/heuristics");
 
-        if (heuristicsFolder.exists())
+        if (!heuristicsFolder.exists())
         {
-            final File[] patternFiles = heuristicsFolder.listFiles();
-            if (patternFiles != null)
-            {
-                for (File file : patternFiles)
+            // Default heuristics
+            PATTERN_NAMES.forEach(patternName -> {
+                try
                 {
-                    try
-                    {
-                        FileInputStream fileInputStream = new FileInputStream(file);
-                        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                    FileUtilities.saveFileInFolder("heuristics/" + patternName);
+                } catch (IOException e)
+                {
+                    VerboseSender.sendVerboseMessage("Unable to save pattern " + patternName + " as a pattern.");
+                    e.printStackTrace();
+                }
+            });
+        }
 
-                        PATTERNS.add((Pattern) objectInputStream.readObject());
 
-                        objectInputStream.close();
-                        fileInputStream.close();
-                    } catch (IOException | ClassNotFoundException e)
-                    {
-                        VerboseSender.sendVerboseMessage("Unable to load file " + file.getPath() + " as a pattern.");
-                        e.printStackTrace();
-                    }
+        heuristicsFolder = new File(FileUtilities.AACADDITIONPRO_DATA_FOLDER + "/heuristics");
+
+        final File[] patternFiles = heuristicsFolder.listFiles();
+        if (patternFiles != null)
+        {
+            for (final File file : patternFiles)
+            {
+                try
+                {
+                    FileInputStream fileInputStream = new FileInputStream(file);
+                    ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+
+                    PATTERNS.add((Pattern) objectInputStream.readObject());
+
+                    objectInputStream.close();
+                    fileInputStream.close();
+                } catch (IOException | ClassNotFoundException e)
+                {
+                    VerboseSender.sendVerboseMessage("Unable to load file " + file.getPath() + " as a pattern.");
+                    e.printStackTrace();
                 }
             }
         }

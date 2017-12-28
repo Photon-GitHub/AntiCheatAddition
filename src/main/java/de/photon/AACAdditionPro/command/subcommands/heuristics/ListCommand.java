@@ -29,7 +29,7 @@ public class ListCommand extends InternalCommand
             {
                 final StringBuilder messageBuilder = new StringBuilder(64);
                 messageBuilder.append(ChatColor.RED);
-                messageBuilder.append("Active patterns: \n");
+                messageBuilder.append("Active heuristics: \n");
                 messageBuilder.append(ChatColor.GOLD);
 
                 int patterns = 0;
@@ -56,7 +56,7 @@ public class ListCommand extends InternalCommand
             }
             else
             {
-                sender.sendMessage(ChatColor.RED + "No active patterns found.");
+                sender.sendMessage(ChatColor.RED + "No active heuristics found.");
             }
         }
         else
@@ -68,7 +68,7 @@ public class ListCommand extends InternalCommand
     @Override
     protected String[] getCommandHelp()
     {
-        return new String[]{"Lists all active patterns."};
+        return new String[]{"Lists all active heuristics."};
     }
 
     @Override

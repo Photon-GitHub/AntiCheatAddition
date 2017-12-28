@@ -65,7 +65,10 @@ public final class FileUtilities
                 {
                     // Write the content of the default file to the newly created file
                     ByteStreams.copy(in, out);
+                    in.close();
                 }
+
+                out.close();
             }
             else
             {

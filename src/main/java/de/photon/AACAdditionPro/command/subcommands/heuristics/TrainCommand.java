@@ -41,7 +41,7 @@ public class TrainCommand extends InternalCommand
             }
             else if (possiblePatterns.size() > 1)
             {
-                throw new IllegalStateException("Two patterns with the same name exist.");
+                throw new IllegalStateException("Two heuristics with the same name exist.");
             }
             else
             {

@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
+import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.heuristics.InputData;
@@ -54,16 +55,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
         if (!heuristicsFolder.exists())
         {
             // Default heuristics
-            PATTERN_NAMES.forEach(patternName -> {
-                try
-                {
-                    FileUtilities.saveFileInFolder("heuristics/" + patternName);
-                } catch (IOException e)
-                {
-                    VerboseSender.sendVerboseMessage("Unable to save pattern " + patternName + " as a pattern.");
-                    e.printStackTrace();
-                }
-            });
+            PATTERN_NAMES.forEach(patternName -> AACAdditionPro.getInstance().saveResource("heuristics/" + patternName, false));
         }
 
         final File[] patternFiles = heuristicsFolder.listFiles();

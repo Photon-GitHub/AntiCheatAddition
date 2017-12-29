@@ -117,7 +117,7 @@ public class ViolationLevelManagement implements Listener
             this.addVL(player, vlIncrease);
 
             //Cancel
-            if (cancelVl > 0 && cancelVl < this.getVL(player.getUniqueId()))
+            if (cancelVl > 0 && cancelVl <= this.getVL(player.getUniqueId()))
             {
                 onCancel.run();
             }
@@ -145,7 +145,7 @@ public class ViolationLevelManagement implements Listener
      */
     void setVL(final Player player, final int newVl, final boolean punish)
     {
-        final int oldVl = getVL(player.getUniqueId());
+        final int oldVl = this.getVL(player.getUniqueId());
 
         // A value smaller than 0 can be removed
         if (newVl > 0 &&
@@ -197,29 +197,26 @@ public class ViolationLevelManagement implements Listener
      */
     private void punishPlayer(final Player player, final int fromVl, final int toVl)
     {
-        // Iterate through all the keys
-        for (final Integer key : thresholds.keySet())
+        // Only schedule the command execution if the plugin is loaded
+        if (AACAdditionPro.getInstance().isLoaded())
         {
-
-            // If the key should be applied here
-            if (key > fromVl && key <= toVl)
-            {
-
-                // Iterate through all the commands that are presented in the threshold of key
-                for (final String s : thresholds.get(key))
+            // Iterate through all the keys
+            thresholds.forEach((threshold, commandList) -> {
+                // If the key should be applied here
+                if (threshold > fromVl && threshold <= toVl)
                 {
-                    // Command cannot be null as of the new loading process.
-                    final String realCommand = Placeholders.applyPlaceholders(s, player, String.valueOf(toVl));
-
-                    // Only schedule the command execution if the plugin is loaded
-                    if (AACAdditionPro.getInstance().isLoaded())
+                    // Iterate through all the commands that are presented in the threshold of key
+                    for (final String s : commandList)
                     {
-
                         // Calling of the event + Sync command execution
-                        CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.moduleType));
+                        CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(
+                                player,
+                                Placeholders.applyPlaceholders(s, player, String.valueOf(toVl)),
+                                this.moduleType));
+
                     }
                 }
-            }
+            });
         }
     }
 

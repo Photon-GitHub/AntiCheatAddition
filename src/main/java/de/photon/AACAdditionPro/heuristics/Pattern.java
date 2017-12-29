@@ -76,13 +76,11 @@ public class Pattern implements Serializable
 
         for (InputData inputValue : inputValues)
         {
-            for (InputData input : this.inputs)
+            for (int i = 0; i < this.inputs.length; i++)
             {
-                if (input.getName().equals(inputValue.getName()))
+                if (this.inputs[i].getName().equals(inputValue.getName()))
                 {
-                    input.setData(inputValue.getData());
-
-                    for (double d : input.getData())
+                    for (double d : inputValue.getData())
                     {
                         if (d == Double.MIN_VALUE)
                         {
@@ -93,12 +91,14 @@ public class Pattern implements Serializable
 
                     if (dataEntries == -1)
                     {
-                        dataEntries = input.getData().length;
+                        dataEntries = this.inputs[i].getData().length;
                     }
-                    else if (input.getData().length != dataEntries)
+                    else if (this.inputs[i].getData().length != dataEntries)
                     {
-                        throw new NeuralNetworkException("Input " + input.getName() + " in " + this.name + " has a different length.");
+                        throw new NeuralNetworkException("Input " + this.inputs[i].getName() + " in " + this.name + " has a different length.");
                     }
+
+                    this.inputs[i] = inputValue;
                 }
             }
 
@@ -129,8 +129,6 @@ public class Pattern implements Serializable
         {
             inputArray[i] = this.inputs[i].getData();
         }
-
-        System.out.println(Arrays.deepToString(inputArray));
 
         // Actual analyse
         for (final TrainingData trainingData : this.assureTrainingData())

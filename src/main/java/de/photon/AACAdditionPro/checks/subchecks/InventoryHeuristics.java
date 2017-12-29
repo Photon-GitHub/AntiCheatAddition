@@ -113,45 +113,36 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 inputData[dataIndex++].setData(new double[user.getInventoryData().inventoryClicks.size()]);
             }
 
-            InventoryClick[] lastAndCurrent = new InventoryClick[]{
-                    user.getInventoryData().inventoryClicks.get(0),
-                    user.getInventoryData().inventoryClicks.get(1)
-            };
-
-            // Start at 1 to make deltas happen.
-            for (int i = 1; !user.getInventoryData().inventoryClicks.isEmpty(); i++)
-            {
-                lastAndCurrent[0] = lastAndCurrent[1];
-                lastAndCurrent[1] = user.getInventoryData().inventoryClicks.remove(0);
-
+            final int[] i = {0};
+            user.getInventoryData().inventoryClicks.clearLastObjectIteration((laterClick, priorClick) -> {
                 // Slot distance
                 // Must be done first as of the continue!
-                double[] locationOfLastClick = InventoryUtils.locateSlot(lastAndCurrent[0].clickedRawSlot, lastAndCurrent[0].inventoryType);
-                double[] locationOfCurrentClick = InventoryUtils.locateSlot(lastAndCurrent[1].clickedRawSlot, lastAndCurrent[1].inventoryType);
+                double[] locationOfLastClick = InventoryUtils.locateSlot(laterClick.clickedRawSlot, laterClick.inventoryType);
+                double[] locationOfCurrentClick = InventoryUtils.locateSlot(priorClick.clickedRawSlot, priorClick.inventoryType);
 
                 if (locationOfCurrentClick == null || locationOfLastClick == null)
                 {
-                    inputData[2].getData()[i - 1] = Double.MIN_VALUE;
-                    inputData[3].getData()[i - 1] = Double.MIN_VALUE;
+                    inputData[2].getData()[i[0]] = Double.MIN_VALUE;
+                    inputData[3].getData()[i[0]] = Double.MIN_VALUE;
                 }
                 else
                 {
-                    inputData[2].getData()[i - 1] = locationOfLastClick[0] - locationOfCurrentClick[0];
-                    inputData[3].getData()[i - 1] = locationOfLastClick[1] - locationOfCurrentClick[1];
+                    inputData[2].getData()[i[0]] = locationOfLastClick[0] - locationOfCurrentClick[0];
+                    inputData[3].getData()[i[0]] = locationOfLastClick[1] - locationOfCurrentClick[1];
                 }
 
                 // Timestamps
-                inputData[0].getData()[i - 1] = lastAndCurrent[1].timeStamp - lastAndCurrent[0].timeStamp;
+                inputData[0].getData()[i[0]] = laterClick.timeStamp - priorClick.timeStamp;
 
                 // Materials
-                inputData[1].getData()[i - 1] = lastAndCurrent[0].type.ordinal();
+                inputData[1].getData()[i[0]] = laterClick.type.ordinal();
 
                 // SlotTypes
-                inputData[3].getData()[i - 1] = lastAndCurrent[0].slotType.ordinal();
+                inputData[3].getData()[i[0]] = laterClick.slotType.ordinal();
 
                 // ClickTypes
-                inputData[4].getData()[i - 1] = lastAndCurrent[0].clickType.ordinal();
-            }
+                inputData[4].getData()[i[0]++] = laterClick.clickType.ordinal();
+            });
 
             final Map<Pattern, OutputData> outputDataMap = new HashMap<>(PATTERNS.size());
 

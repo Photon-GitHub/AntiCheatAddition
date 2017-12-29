@@ -133,11 +133,7 @@ public class ViolationLevelManagement implements Listener
      */
     public final int getVL(final UUID uuid)
     {
-        final Integer vl = violationLevels.get(uuid);
-        // If the vl would be null 0 is returned.
-        return vl == null ?
-               0 :
-               vl;
+        return violationLevels.getOrDefault(uuid, 0);
     }
 
     /**

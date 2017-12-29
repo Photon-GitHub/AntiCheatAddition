@@ -136,8 +136,9 @@ public class Graph implements Serializable
                     // Save the old weightChange here.
                     final double lastDelta = deltas[currentNeuron];
 
+                    // First factor is a part of the momentum calculation.
                     // weight change = train parameter * activation level of sending neuron * delta
-                    double weightChange = TRAIN_PARAMETER * activatedNeurons[from];
+                    double weightChange = (1 - MOMENTUM_PARAMETER) * TRAIN_PARAMETER * activatedNeurons[from];
 
                     // Deltas are dependent of the neuron class.
                     switch (classifyNeuron(currentNeuron))
@@ -170,7 +171,6 @@ public class Graph implements Serializable
                     }
 
                     weightChange *= deltas[currentNeuron];
-                    weightChange *= (1 - MOMENTUM_PARAMETER);
                     weightChange += (MOMENTUM_PARAMETER * lastDelta);
 
                     // Update deltas with weightChange as not the delta is important, but the whole weight change.

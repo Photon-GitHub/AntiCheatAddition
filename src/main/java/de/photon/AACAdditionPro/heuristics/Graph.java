@@ -133,10 +133,11 @@ public class Graph implements Serializable
             {
                 if (matrix[from][currentNeuron] != null)
                 {
+                    // Save the old weightChange here.
+                    final double lastDelta = deltas[currentNeuron];
+
                     // weight change = train parameter * activation level of sending neuron * delta
-                    // first and last parameters are parts of momentum
-                    // deltas[currentNeuron] has not been set by now, thus it can be used as momentum.
-                    double weightChange = (1 - MOMENTUM_PARAMETER) * TRAIN_PARAMETER * activatedNeurons[from] + (MOMENTUM_PARAMETER * deltas[currentNeuron]);
+                    double weightChange = TRAIN_PARAMETER * activatedNeurons[from];
 
                     // Deltas are dependent of the neuron class.
                     switch (classifyNeuron(currentNeuron))
@@ -168,13 +169,12 @@ public class Graph implements Serializable
                             break;
                     }
 
-                    //Debug:
-                            /*System.out.println("Classification: " + classifyNeuron(currentNeuron) +
-                                               " | Neuron: " + currentNeuron +
-                                               " | Delta-Value: " + deltas[currentNeuron] +
-                                               " | Trained: " + (currentNeuron == indexOfOutputNeuron));*/
-
                     weightChange *= deltas[currentNeuron];
+                    weightChange *= (1 - MOMENTUM_PARAMETER);
+                    weightChange += (MOMENTUM_PARAMETER * lastDelta);
+
+                    // Update deltas with weightChange as not the delta is important, but the whole weight change.
+                    deltas[currentNeuron] = weightChange;
 
                     matrix[from][currentNeuron] += weightChange;
                 }

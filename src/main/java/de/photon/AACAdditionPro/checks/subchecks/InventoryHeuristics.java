@@ -95,53 +95,57 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
                 event.getRawSlot(),
 
-                // The inventory might be null and causes NPEs when .getType() is invoked.
-                event.getClickedInventory() == null ?
-                event.getWhoClicked().getOpenInventory().getType() :
-                event.getClickedInventory().getType(),
+                event.getWhoClicked().getOpenInventory().getTopInventory().getType(),
 
                 event.getSlotType(),
 
                 event.getClick())))
         {
-            InputData[] inputData = new InputData[InputData.VALID_INPUTS.size()];
+            final InputData[] inputData = new InputData[InputData.VALID_INPUTS.size()];
 
-            int dataIndex = 0;
-            for (InputData data : InputData.VALID_INPUTS.values())
+            // You cannot loop here without inconsistencies.
+            inputData[0] = new InputData(InputData.VALID_INPUTS.get("T").getName());
+            inputData[1] = new InputData(InputData.VALID_INPUTS.get("M").getName());
+            inputData[2] = new InputData(InputData.VALID_INPUTS.get("X").getName());
+            inputData[3] = new InputData(InputData.VALID_INPUTS.get("Y").getName());
+            inputData[4] = new InputData(InputData.VALID_INPUTS.get("I").getName());
+            inputData[5] = new InputData(InputData.VALID_INPUTS.get("S").getName());
+            inputData[6] = new InputData(InputData.VALID_INPUTS.get("C").getName());
+
+            for (InputData anInputData : inputData)
             {
-                inputData[dataIndex] = new InputData(data.getName());
-                inputData[dataIndex++].setData(new double[user.getInventoryData().inventoryClicks.size()]);
+                anInputData.setData(new double[user.getInventoryData().inventoryClicks.size()]);
             }
 
             final int[] i = {0};
-            user.getInventoryData().inventoryClicks.clearLastObjectIteration((laterClick, priorClick) -> {
+            user.getInventoryData().inventoryClicks.clearLastObjectIteration((youngerClick, olderClick) -> {
                 // Slot distance
                 // Must be done first as of the continue!
-                double[] locationOfLastClick = InventoryUtils.locateSlot(laterClick.clickedRawSlot, laterClick.inventoryType);
-                double[] locationOfCurrentClick = InventoryUtils.locateSlot(priorClick.clickedRawSlot, priorClick.inventoryType);
+                double[] locationOfYoungerClick = InventoryUtils.locateSlot(youngerClick.clickedRawSlot, youngerClick.inventoryType);
+                double[] locationOfOlderClick = InventoryUtils.locateSlot(olderClick.clickedRawSlot, olderClick.inventoryType);
 
-                if (locationOfCurrentClick == null || locationOfLastClick == null)
+                if (locationOfOlderClick == null || locationOfYoungerClick == null)
                 {
                     inputData[2].getData()[i[0]] = Double.MIN_VALUE;
                     inputData[3].getData()[i[0]] = Double.MIN_VALUE;
                 }
                 else
                 {
-                    inputData[2].getData()[i[0]] = locationOfLastClick[0] - locationOfCurrentClick[0];
-                    inputData[3].getData()[i[0]] = locationOfLastClick[1] - locationOfCurrentClick[1];
+                    inputData[2].getData()[i[0]] = locationOfYoungerClick[0] - locationOfOlderClick[0];
+                    inputData[3].getData()[i[0]] = locationOfYoungerClick[1] - locationOfOlderClick[1];
                 }
 
                 // Timestamps
-                inputData[0].getData()[i[0]] = laterClick.timeStamp - priorClick.timeStamp;
+                inputData[0].getData()[i[0]] = youngerClick.timeStamp - olderClick.timeStamp;
 
                 // Materials
-                inputData[1].getData()[i[0]] = laterClick.type.ordinal();
+                inputData[1].getData()[i[0]] = youngerClick.type.ordinal();
 
                 // SlotTypes
-                inputData[3].getData()[i[0]] = laterClick.slotType.ordinal();
+                inputData[4].getData()[i[0]] = youngerClick.slotType.ordinal();
 
                 // ClickTypes
-                inputData[4].getData()[i[0]++] = laterClick.clickType.ordinal();
+                inputData[5].getData()[i[0]++] = youngerClick.clickType.ordinal();
             });
 
             final Map<Pattern, OutputData> outputDataMap = new HashMap<>(PATTERNS.size());

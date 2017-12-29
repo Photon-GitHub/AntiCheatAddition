@@ -80,7 +80,8 @@ public class Pattern implements Serializable
             {
                 if (this.inputs[i].getName().equals(inputValue.getName()))
                 {
-                    for (double d : inputValue.getData())
+                    this.inputs[i] = inputValue;
+                    for (double d : this.inputs[i].getData())
                     {
                         if (d == Double.MIN_VALUE)
                         {
@@ -97,8 +98,6 @@ public class Pattern implements Serializable
                     {
                         throw new NeuralNetworkException("Input " + this.inputs[i].getName() + " in " + this.name + " has a different length.");
                     }
-
-                    this.inputs[i] = inputValue;
                 }
             }
 

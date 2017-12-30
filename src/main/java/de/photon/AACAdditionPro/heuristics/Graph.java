@@ -119,13 +119,13 @@ public class Graph implements Serializable
      */
     public void train(double[][] inputValues, int outputNeuron)
     {
-        if (outputNeuron >= neuronsInLayers[neuronsInLayers.length - 1])
+        // The parameter outputNeuron is an index here.
+        int indexOfOutputNeuron = matrix.length - neuronsInLayers[neuronsInLayers.length - 1] + outputNeuron;
+
+        if (this.neurons.length >= indexOfOutputNeuron)
         {
             throw new NeuralNetworkException("OutputNeuron index " + outputNeuron + " is not recognized.");
         }
-
-        // The parameter outputNeuron is an index here.
-        int indexOfOutputNeuron = matrix.length - neuronsInLayers[neuronsInLayers.length - 1] + outputNeuron;
 
         // Only calculate so that the neurons array is updated.
         analyse(inputValues);

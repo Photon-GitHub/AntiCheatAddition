@@ -123,9 +123,9 @@ public class Graph implements Serializable
         // The parameter outputNeuron is an index here.
         int indexOfOutputNeuron = matrix.length - neuronsInLayers[neuronsInLayers.length - 1] + outputNeuron;
 
-        if (this.neurons.length >= indexOfOutputNeuron)
+        if (indexOfOutputNeuron >= this.neurons.length)
         {
-            throw new NeuralNetworkException("OutputNeuron index " + outputNeuron + " is not recognized.");
+            throw new NeuralNetworkException("OutputNeuron index " + indexOfOutputNeuron + " is not recognized.");
         }
 
         // Only calculate so that the neurons array is updated.

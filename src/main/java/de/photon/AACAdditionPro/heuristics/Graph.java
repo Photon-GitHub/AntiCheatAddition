@@ -129,13 +129,13 @@ public class Graph implements Serializable
 
         for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
         {
+            // Save the old weightChange here.
+            final double lastWeightChange = deltas[currentNeuron];
+
             for (int from = matrix.length - 1; from >= 0; from--)
             {
                 if (matrix[from][currentNeuron] != null)
                 {
-                    // Save the old weightChange here.
-                    final double lastWeightChange = deltas[currentNeuron];
-
                     // First factor is a part of the momentum calculation.
                     // weight change = train parameter * activation level of sending neuron * delta
                     double weightChange = (1 - MOMENTUM_PARAMETER) * TRAIN_PARAMETER * activatedNeurons[from];

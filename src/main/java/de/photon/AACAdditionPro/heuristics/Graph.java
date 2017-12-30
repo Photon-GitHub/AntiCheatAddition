@@ -168,7 +168,8 @@ public class Graph implements Serializable
                 {
                     // Calculate the new weightChange.
                     // The old weight change is in here as a part of the momentum.
-                    weightChangeMatrix[from][currentNeuron] = (1 - MOMENTUM_PARAMETER) * TRAIN_PARAMETER * activatedNeurons[from] * deltas[currentNeuron] + (MOMENTUM_PARAMETER * weightChangeMatrix[from][currentNeuron]);
+                    weightChangeMatrix[from][currentNeuron] = (1 - MOMENTUM_PARAMETER) * TRAIN_PARAMETER * activatedNeurons[from] * deltas[currentNeuron] +
+                                                              (MOMENTUM_PARAMETER * weightChangeMatrix[from][currentNeuron]);
 
                     matrix[from][currentNeuron] += weightChangeMatrix[from][currentNeuron];
                 }

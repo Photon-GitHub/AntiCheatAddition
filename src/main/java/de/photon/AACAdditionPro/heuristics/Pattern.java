@@ -29,6 +29,7 @@ public class Pattern implements Serializable
     private transient boolean currentlyBlockedByInvalidData;
 
     // The default initial capacity of 16 is not used in most cases.
+    @Getter
     private transient Set<TrainingData> trainingDataSet;
 
     public Pattern(String name, InputData[] inputs, int samples, OutputData[] outputs, int[] hiddenNeuronsPerLayer)

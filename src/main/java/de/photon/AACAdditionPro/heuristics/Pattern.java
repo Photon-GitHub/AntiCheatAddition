@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public class Pattern implements Serializable
 {
-    private static final int EPOCH = 50000;
+    private static final int EPOCH = 15000;
 
     @Getter
     @Setter
@@ -161,6 +161,8 @@ public class Pattern implements Serializable
         }
 
         double[] results = graph.analyse(inputArray);
+
+        VerboseSender.sendVerboseMessage("Full network output: " + Arrays.toString(results), true, false);
 
         // Get the max. confidence
         int maxIndex = -1;

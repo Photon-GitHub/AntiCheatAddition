@@ -16,6 +16,8 @@ public class Graph implements Serializable
     // The main matrix containing the weights of all connections
     // Use Wrapper class to be able to set a value to null
     private Double[][] matrix;
+    private double[][] weightChangeMatrix;
+
     // Working array does not need to be serialized
     private double[] neurons;
     private double[] activatedNeurons;
@@ -37,6 +39,7 @@ public class Graph implements Serializable
         }
 
         this.matrix = new Double[sumOfNeurons][sumOfNeurons];
+        this.weightChangeMatrix = new double[sumOfNeurons][sumOfNeurons];
         this.neurons = new double[sumOfNeurons];
         this.activatedNeurons = new double[sumOfNeurons];
         this.deltas = new double[sumOfNeurons];
@@ -129,52 +132,48 @@ public class Graph implements Serializable
 
         for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
         {
-            // Save the old weightChange here.
-            final double lastWeightChange = deltas[currentNeuron];
+            // Deltas are dependent of the neuron class.
+            switch (classifyNeuron(currentNeuron))
+            {
+                case INPUT:
+                    break;
+                case HIDDEN:
+                    // f'(netinput) * Sum(delta_this,toHigherLayer * matrix[this][toHigherLayer])
+                    deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true);
+
+                    double sum = 0;
+
+                    int[] indices = nextLayerIndexBoundaries(currentNeuron);
+                    for (int i = indices[0]; i <= indices[1]; i++)
+                    {
+                        if (matrix[currentNeuron][i] != null)
+                        {
+                            sum += deltas[i] * matrix[currentNeuron][i];
+                        }
+                    }
+
+                    deltas[currentNeuron] *= sum;
+                    break;
+                case OUTPUT:
+                    // f'(netInput) * (a_wanted - a_real)
+                    deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true) * ((currentNeuron == indexOfOutputNeuron ?
+                                                                                                      1D :
+                                                                                                      0D) - activatedNeurons[currentNeuron]);
+                    break;
+            }
 
             for (int from = matrix.length - 1; from >= 0; from--)
             {
                 if (matrix[from][currentNeuron] != null)
                 {
+                    final double lastWeightChange = weightChangeMatrix[from][currentNeuron];
+
                     // First factor is a part of the momentum calculation.
                     // weight change = train parameter * activation level of sending neuron * delta
-                    double weightChange = (1 - MOMENTUM_PARAMETER) * TRAIN_PARAMETER * activatedNeurons[from];
-
-                    // Deltas are dependent of the neuron class.
-                    switch (classifyNeuron(currentNeuron))
-                    {
-                        case INPUT:
-                            break;
-                        case HIDDEN:
-                            // f'(netinput) * Sum(delta_this,toHigherLayer * matrix[this][toHigherLayer])
-                            deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true);
-
-                            double sum = 0;
-
-                            int[] indices = nextLayerIndexBoundaries(currentNeuron);
-                            for (int i = indices[0]; i <= indices[1]; i++)
-                            {
-                                if (matrix[currentNeuron][i] != null)
-                                {
-                                    sum += deltas[i] * matrix[currentNeuron][i];
-                                }
-                            }
-
-                            deltas[currentNeuron] *= sum;
-                            break;
-                        case OUTPUT:
-                            // f'(netInput) * (a_wanted - a_real)
-                            deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true) * ((currentNeuron == indexOfOutputNeuron ?
-                                                                                                              1D :
-                                                                                                              0D) - activatedNeurons[currentNeuron]);
-                            break;
-                    }
-
-                    weightChange *= deltas[currentNeuron];
-                    weightChange += (MOMENTUM_PARAMETER * lastWeightChange);
+                    final double weightChange = (1 - MOMENTUM_PARAMETER) * TRAIN_PARAMETER * activatedNeurons[from] * deltas[currentNeuron] + (MOMENTUM_PARAMETER * lastWeightChange);
 
                     // Update deltas with weightChange as not the delta is important, but the whole weight change.
-                    deltas[currentNeuron] = weightChange;
+                    weightChangeMatrix[from][currentNeuron] = weightChange;
 
                     matrix[from][currentNeuron] += weightChange;
                 }

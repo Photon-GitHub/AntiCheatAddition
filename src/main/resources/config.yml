@@ -211,6 +211,9 @@ InventoryHeuristics:
    # THIS IS A VERY POWERFUL TOOL AND CAN CRIPPLE YOUR SERVER IF USED IN THE WRONG WAY.
    # I WILL _NOT_ PROVIDE SUPPORT FOR THIS FUNCTION: USE ON YOUR OWN RISK!
    unlock_full_framework: false
+   # The epoch when training a neural net.
+   # You may change this if you have the option above set to true.
+   epoch: 5000
    # Map of confidence levels to command
    # Confidences will not add up.
    # 100 is the maximum confidence possible to reach.

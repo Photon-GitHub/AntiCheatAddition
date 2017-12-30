@@ -1,5 +1,7 @@
 package de.photon.AACAdditionPro.heuristics;
 
+import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
@@ -18,7 +20,7 @@ import java.util.UUID;
 
 public class Pattern implements Serializable
 {
-    private static final int EPOCH = 15000;
+    private static final int EPOCH = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".epoch");
 
     @Getter
     @Setter

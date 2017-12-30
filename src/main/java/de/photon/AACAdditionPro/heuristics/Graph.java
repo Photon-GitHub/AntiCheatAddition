@@ -68,7 +68,6 @@ public class Graph implements Serializable
                 for (int to = nextLayerFirstNeuron; to < nextNextLayerFirstNeuron; to++)
                 {
                     // Validate allowed connections.
-                    // A connection should never be 0 to begin with as of the backpropagation algorithm.
                     this.matrix[currentNeuron][to] = 0D;
                 }
                 // Increment the neuron here as the matrix otherwise sets the connections of the next neuron.

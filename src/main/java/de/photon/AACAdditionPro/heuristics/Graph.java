@@ -70,6 +70,7 @@ public class Graph implements Serializable
                     // Validate allowed connections.
                     this.matrix[currentNeuron][to] = 0D;
                 }
+
                 // Increment the neuron here as the matrix otherwise sets the connections of the next neuron.
                 currentNeuron++;
             }

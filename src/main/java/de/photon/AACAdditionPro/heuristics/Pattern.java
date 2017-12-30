@@ -66,13 +66,13 @@ public class Pattern implements Serializable
      */
     public void provideInputData(InputData[] inputValues)
     {
-        int dataEntries = -1;
-
         if (Objects.requireNonNull(inputValues, "The input values of pattern " + this.getName() + " are null.").length == 0)
         {
             this.currentlyBlockedByInvalidData = true;
             return;
         }
+
+        int dataEntries = -1;
 
         for (InputData inputValue : inputValues)
         {

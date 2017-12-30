@@ -169,7 +169,7 @@ public class Pattern implements Serializable
             }
         }
 
-        if (maxIndex == -1)
+        if (maxIndex == Double.MIN_VALUE)
         {
             throw new NeuralNetworkException("Invalid confidences: " + Arrays.toString(results));
         }

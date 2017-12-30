@@ -10,8 +10,8 @@ import java.io.Serializable;
  */
 public class Graph implements Serializable
 {
-    private static final double TRAIN_PARAMETER = 0.3;
-    private static final double MOMENTUM_PARAMETER = 0.1;
+    private static final double TRAIN_PARAMETER = 0.6;
+    private static final double MOMENTUM_PARAMETER = 0.2;
 
     // The main matrix containing the weights of all connections
     // Use Wrapper class to be able to set a value to null
@@ -133,7 +133,7 @@ public class Graph implements Serializable
         for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
         {
             // Deltas are dependent of the neuron class.
-            switch (classifyNeuron(currentNeuron))
+            switch (this.classifyNeuron(currentNeuron))
             {
                 case INPUT:
                     break;
@@ -142,8 +142,7 @@ public class Graph implements Serializable
                     deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true);
 
                     double sum = 0;
-
-                    int[] indices = nextLayerIndexBoundaries(currentNeuron);
+                    final int[] indices = nextLayerIndexBoundaries(currentNeuron);
                     for (int i = indices[0]; i <= indices[1]; i++)
                     {
                         if (matrix[currentNeuron][i] != null)

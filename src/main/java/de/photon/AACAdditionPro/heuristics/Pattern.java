@@ -162,7 +162,7 @@ public class Pattern implements Serializable
 
         for (int i = 0; i < results.length; i++)
         {
-            if (results[i] > maxResult)
+                if (results[i] > maxResult)
             {
                 maxIndex = i;
                 maxResult = results[i];

@@ -18,6 +18,8 @@ import java.util.UUID;
 
 public class Pattern implements Serializable
 {
+    private static final int EPOCH = 500;
+
     @Getter
     @Setter
     private String name;
@@ -140,7 +142,10 @@ public class Pattern implements Serializable
                 {
                     if (trainingData.getOutputData().getName().equals(this.outputs[i].getName()))
                     {
-                        this.graph.train(inputArray, i);
+                        for (int epochs = 0; epochs < EPOCH; epochs++)
+                        {
+                            this.graph.train(inputArray, i);
+                        }
 
                         if (--trainingData.trainingCycles < 0)
                         {

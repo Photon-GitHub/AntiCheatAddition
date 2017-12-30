@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public class Pattern implements Serializable
 {
-    private static final int EPOCH = 5000;
+    private static final int EPOCH = 500;
 
     @Getter
     @Setter

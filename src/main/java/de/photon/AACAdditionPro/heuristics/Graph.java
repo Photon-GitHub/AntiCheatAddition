@@ -10,8 +10,8 @@ import java.io.Serializable;
  */
 public class Graph implements Serializable
 {
-    private static final double TRAIN_PARAMETER = 0.03;
-    private static final double MOMENTUM_PARAMETER = 0.01;
+    private static final double TRAIN_PARAMETER = 0.3;
+    private static final double MOMENTUM_PARAMETER = 0.1;
 
     // The main matrix containing the weights of all connections
     // Use Wrapper class to be able to set a value to null

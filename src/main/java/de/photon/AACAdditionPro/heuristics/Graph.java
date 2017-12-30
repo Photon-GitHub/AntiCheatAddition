@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.heuristics;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  * The graph of a neural network including the matrix.
@@ -67,7 +66,7 @@ public class Graph implements Serializable
                 {
                     // Validate allowed connections.
                     // A connection should never be 0 to begin with as of the backpropagation algorithm.
-                    this.matrix[currentNeuron][to] = 1D;
+                    this.matrix[currentNeuron][to] = 0D;
                 }
                 // Increment the neuron here as the matrix otherwise sets the connections of the next neuron.
                 currentNeuron++;
@@ -279,10 +278,12 @@ public class Graph implements Serializable
     {
         if (derived)
         {
-            final double cosh = Math.cosh(input);
-            return 1 / (cosh * cosh);
+            final double epowx = Math.pow(Math.E, input);
+            // e^x / (e^x + 1)^2 =
+            // e^x / ((e^x)^2 + 2*e^x + 1)
+            return epowx / (epowx * epowx + 2 * epowx + 1);
         }
 
-        return Math.tanh(input);
+        return 1 / (1 + Math.pow(Math.E, (-input)));
     }
 }

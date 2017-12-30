@@ -60,7 +60,7 @@ public class TrainingProgressCommand extends InternalCommand
                     sb.append(ChatColor.GOLD);
                     sb.append("Player ");
                     sb.append(ChatColor.RED);
-                    sb.append(trainingPlayer);
+                    sb.append(trainingPlayer.getName());
                     sb.append(ChatColor.GOLD);
 
 
@@ -92,12 +92,15 @@ public class TrainingProgressCommand extends InternalCommand
     @Override
     protected String[] getCommandHelp()
     {
-        return new String[]{"Displays the progress of a player who is training a pattern."};
+        return new String[]{
+                "Displays the progress of a player who is training a pattern.",
+                "Format: /aacadditionpro progress <name of pattern> <player>",
+                };
     }
 
     @Override
     protected String[] getTabPossibilities()
     {
-        return getChildTabs();
+        return getPlayerNameTabs();
     }
 }

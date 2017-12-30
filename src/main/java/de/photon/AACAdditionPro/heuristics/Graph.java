@@ -124,7 +124,7 @@ public class Graph implements Serializable
             throw new NeuralNetworkException("OutputNeuron index " + outputNeuron + " is not recognized.");
         }
 
-        // outputNeuron is an index here.
+        // The parameter outputNeuron is an index here.
         int indexOfOutputNeuron = matrix.length - neuronsInLayers[neuronsInLayers.length - 1] + outputNeuron;
 
         // Only calculate so that the neurons array is updated.
@@ -132,32 +132,31 @@ public class Graph implements Serializable
 
         for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
         {
-            // Deltas are dependent of the neuron class.
+            deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true);
+
+            // Deltas depend on the neuron class.
             switch (this.classifyNeuron(currentNeuron))
             {
                 case INPUT:
                     break;
                 case HIDDEN:
-                    // f'(netinput) * Sum(delta_this,toHigherLayer * matrix[this][toHigherLayer])
-                    deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true);
-
                     double sum = 0;
                     final int[] indices = nextLayerIndexBoundaries(currentNeuron);
-                    for (int i = indices[0]; i <= indices[1]; i++)
+                    for (int higherLayerNeuron = indices[0]; higherLayerNeuron <= indices[1]; higherLayerNeuron++)
                     {
-                        if (matrix[currentNeuron][i] != null)
-                        {
-                            sum += deltas[i] * matrix[currentNeuron][i];
-                        }
+                        // matrix[currentNeuron][i] should never be null as every neuron is connected with all the
+                        // neurons of the previous layer.
+                        sum += (deltas[higherLayerNeuron] * matrix[currentNeuron][higherLayerNeuron]);
                     }
 
+                    // f'(netinput) * Sum(delta_(toHigherLayer) * matrix[thisNeuron][toHigherLayer])
                     deltas[currentNeuron] *= sum;
                     break;
                 case OUTPUT:
                     // f'(netInput) * (a_wanted - a_real)
-                    deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true) * ((currentNeuron == indexOfOutputNeuron ?
-                                                                                                      1D :
-                                                                                                      0D) - activatedNeurons[currentNeuron]);
+                    deltas[currentNeuron] *= (currentNeuron == indexOfOutputNeuron ?
+                                              1D :
+                                              0D) - activatedNeurons[currentNeuron];
                     break;
             }
 

@@ -4,6 +4,7 @@ import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.util.storage.datawrappers.BlockPlace;
 import de.photon.AACAdditionPro.util.storage.management.ConditionalBuffer;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
+import lombok.Getter;
 
 
 /**
@@ -11,6 +12,7 @@ import de.photon.AACAdditionPro.util.world.BlockUtils;
  */
 public class BlockPlaceData extends TimeData
 {
+    @Getter
     protected final ConditionalBuffer<BlockPlace> blockPlaces;
 
     public BlockPlaceData(final boolean horizontal, final int bufferSize, final User theUser)
@@ -30,13 +32,13 @@ public class BlockPlaceData extends TimeData
     /**
      * Adds a {@link BlockPlace} to the buffer
      *
-     * @param blockplace The blockplace which should be added.
+     * @param blockPlace The blockplace which should be added.
      *
      * @return true if the buffersize is bigger than the max_size.
      */
-    public boolean bufferBlockPlace(final BlockPlace blockplace)
+    public boolean bufferBlockPlace(final BlockPlace blockPlace)
     {
-        return blockPlaces.bufferObject(blockplace);
+        return blockPlaces.bufferObject(blockPlace);
     }
 
     /**
@@ -69,13 +71,5 @@ public class BlockPlaceData extends TimeData
                     fraction[1]++;
                 });
         return fraction[0] / fraction[1];
-    }
-
-    /**
-     * @return the internal {@link ConditionalBuffer}.
-     */
-    public ConditionalBuffer<BlockPlace> getBlockPlaces()
-    {
-        return blockPlaces;
     }
 }

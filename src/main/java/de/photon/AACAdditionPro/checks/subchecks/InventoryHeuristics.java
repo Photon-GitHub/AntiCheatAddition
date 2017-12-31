@@ -178,9 +178,6 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 }
             }
 
-            //Debug
-            outputDataMap.forEach((pattern, outputData) -> System.out.println("Pattern: " + pattern + " | OutputData: " + outputData));
-
             // Filter out all the VANILLA results
             final Set<Map.Entry<Pattern, OutputData>> flagEntrySet = outputDataMap.entrySet().stream().filter(entry -> !entry.getValue().getName().equals("VANILLA")).collect(Collectors.toSet());
 

@@ -53,7 +53,6 @@ public class CreateCommand extends InternalCommand
                 }
                 else
                 {
-
                     final List<String> hiddenLayerConfigStrings = new ArrayList<>(arguments);
                     int[] hiddenLayerConfig = new int[hiddenLayerConfigStrings.size()];
 

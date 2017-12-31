@@ -25,9 +25,11 @@ public class RenameCommand extends InternalCommand
             final String patternName = arguments.remove();
             final Pattern patternToRename = InventoryHeuristics.getPatternByName(patternName);
 
+            // The Heuristics Header will always be sent.
+            sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
+
             if (patternToRename == null)
             {
-                sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                 sender.sendMessage(HeuristicsCommand.createPatternNotFoundMessage(patternName));
             }
             else
@@ -36,14 +38,11 @@ public class RenameCommand extends InternalCommand
 
                 if (InventoryHeuristics.getPATTERNS().stream().anyMatch(pattern -> pattern.getName().equals(newName)))
                 {
-                    sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                     sender.sendMessage(ChatColor.GOLD + "Cannot rename the pattern to " + ChatColor.RED + newName + ChatColor.GOLD + " as another pattern with the same name exists.");
                 }
                 else
                 {
                     patternToRename.setName(newName);
-
-                    sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                     sender.sendMessage(ChatColor.GOLD + "Renamed pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\" to " + ChatColor.RED + newName);
                 }
             }

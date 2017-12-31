@@ -2,9 +2,9 @@ package de.photon.AACAdditionPro.util.storage.management;
 
 public abstract class ConditionalBuffer<T> extends Buffer<T>
 {
-    protected ConditionalBuffer(final int buffer_size)
+    protected ConditionalBuffer(final int bufferSize)
     {
-        super(buffer_size);
+        super(bufferSize);
     }
 
     /**
@@ -33,6 +33,6 @@ public abstract class ConditionalBuffer<T> extends Buffer<T>
         {
             this.clear();
         }
-        return this.size() >= this.buffer_size;
+        return this.size() >= this.getBufferSize();
     }
 }

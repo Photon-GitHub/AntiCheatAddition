@@ -12,14 +12,12 @@ import de.photon.AACAdditionPro.util.world.BlockUtils;
 public class BlockPlaceData extends TimeData
 {
     protected final ConditionalBuffer<BlockPlace> blockPlaces;
-    private final int buffer_size;
 
-    public BlockPlaceData(final boolean horizontal, final int buffer_size, final User theUser)
+    public BlockPlaceData(final boolean horizontal, final int bufferSize, final User theUser)
     {
         super(false, theUser);
-        this.buffer_size = buffer_size;
 
-        blockPlaces = new ConditionalBuffer<BlockPlace>(buffer_size)
+        blockPlaces = new ConditionalBuffer<BlockPlace>(bufferSize)
         {
             @Override
             public boolean verifyObject(final BlockPlace object)
@@ -33,6 +31,7 @@ public class BlockPlaceData extends TimeData
      * Adds a {@link BlockPlace} to the buffer
      *
      * @param blockplace The blockplace which should be added.
+     *
      * @return true if the buffersize is bigger than the max_size.
      */
     public boolean bufferBlockPlace(final BlockPlace blockplace)
@@ -57,7 +56,7 @@ public class BlockPlaceData extends TimeData
         // fraction[1] is the divider
         final double[] fraction = new double[2];
 
-        this.blockPlaces.clearLastObjectIteration(
+        this.blockPlaces.clearLastTwoObjectsIteration(
                 (last, current) ->
                 {
                     fraction[0] += (last.getTime() - current.getTime());
@@ -66,14 +65,11 @@ public class BlockPlaceData extends TimeData
         return fraction[0] / fraction[1];
     }
 
+    /**
+     * @return the internal {@link ConditionalBuffer}.
+     */
     public ConditionalBuffer<BlockPlace> getBlockPlaces()
     {
         return blockPlaces;
     }
-
-    public int getBuffer_size()
-    {
-        return buffer_size;
-    }
-
 }

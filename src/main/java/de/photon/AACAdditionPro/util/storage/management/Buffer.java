@@ -1,16 +1,20 @@
 package de.photon.AACAdditionPro.util.storage.management;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class Buffer<T> extends ArrayList<T>
 {
-    protected final int buffer_size;
+    @Getter
+    private final int bufferSize;
 
-    public Buffer(final int buffer_size)
+    public Buffer(final int bufferSize)
     {
-        super(buffer_size);
-        this.buffer_size = buffer_size;
+        super(bufferSize);
+        this.bufferSize = bufferSize;
     }
 
     /**
@@ -23,16 +27,31 @@ public class Buffer<T> extends ArrayList<T>
     public boolean bufferObject(final T object)
     {
         this.add(object);
-        return this.size() >= this.buffer_size;
+        return this.size() >= this.bufferSize;
+    }
+
+    /**
+     * Iterates through the buffer and clears it at the same time.
+     *
+     * @param lastObjectConsumer the code which should run for each element.
+     */
+    public void clearLastObjectIteration(final Consumer<T> lastObjectConsumer)
+    {
+        while (!this.isEmpty())
+        {
+            T current = this.remove(this.size() - 1);
+            lastObjectConsumer.accept(current);
+        }
     }
 
     /**
      * Iterates through the buffer and clears it at the same time
      * The most recently added element will always be in last.
+     * After one cycle the current object will be written to last.
      *
-     * @param code the code which should be run in each cycle
+     * @param lastObjectsConsumer the code which should be run in each cycle, consuming the last and the current object.
      */
-    public void clearLastObjectIteration(final BiConsumer<T, T> code)
+    public void clearLastTwoObjectsIteration(final BiConsumer<T, T> lastObjectsConsumer)
     {
         if (!this.isEmpty())
         {
@@ -41,7 +60,7 @@ public class Buffer<T> extends ArrayList<T>
             while (!this.isEmpty())
             {
                 current = this.remove(this.size() - 1);
-                code.accept(last, current);
+                lastObjectsConsumer.accept(last, current);
                 last = current;
             }
         }

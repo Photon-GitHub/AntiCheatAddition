@@ -96,7 +96,7 @@ public class Tower implements Listener, ViolationModule
                 }
 
                 // Expected Average
-                threshold /= user.getTowerData().getBuffer_size();
+                threshold /= user.getTowerData().getBlockPlaces().getBufferSize();
 
                 // Apply lenience
                 final double lenientThreshold = threshold;

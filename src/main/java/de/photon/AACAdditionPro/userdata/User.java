@@ -40,7 +40,7 @@ public class User
             // fraction[1] is the divider
             final double[] fraction = new double[2];
 
-            this.blockPlaces.clearLastObjectIteration(
+            this.blockPlaces.clearLastTwoObjectsIteration(
                     (last, current) ->
                     {
                         final double speed_modifier;

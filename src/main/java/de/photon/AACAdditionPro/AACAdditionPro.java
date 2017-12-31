@@ -21,7 +21,7 @@ import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
 import de.photon.AACAdditionPro.checks.subchecks.MultiInteraction;
 import de.photon.AACAdditionPro.checks.subchecks.Pingspoof;
 import de.photon.AACAdditionPro.checks.subchecks.Scaffold;
-import de.photon.AACAdditionPro.checks.subchecks.Skinblinker;
+import de.photon.AACAdditionPro.checks.subchecks.SkinBlinker;
 import de.photon.AACAdditionPro.checks.subchecks.Teaming;
 import de.photon.AACAdditionPro.checks.subchecks.Tower;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.BetterSprintingControl;
@@ -226,7 +226,7 @@ public class AACAdditionPro extends JavaPlugin
                     new MultiInteraction(),
                     new Pingspoof(),
                     new Scaffold(),
-                    new Skinblinker(),
+                    new SkinBlinker(),
                     new Teaming(),
                     new Tower()
             );

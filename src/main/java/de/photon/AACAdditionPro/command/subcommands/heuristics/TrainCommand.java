@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
 import de.photon.AACAdditionPro.heuristics.OutputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
+import de.photon.AACAdditionPro.heuristics.TrainingData;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
@@ -42,7 +43,11 @@ public class TrainCommand extends InternalCommand
 
                 if (playerOrFinishArgument.equalsIgnoreCase("finish"))
                 {
+                    pattern.train();
 
+                    sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
+                    final String messageString = ChatColor.GOLD + "Training of pattern " + ChatColor.RED + pattern.getName() + ChatColor.GOLD + " finished.";
+                    VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString));
                 }
                 else
                 {
@@ -68,7 +73,7 @@ public class TrainCommand extends InternalCommand
                     if (output.equals("VANILLA") || output.equals("CHEATING"))
                     {
                         user.getInventoryData().inventoryClicks.clear();
-                        pattern.getTrainingUUIDsSet().add(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output)));
+                        pattern.getTrainingDataSet().add(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output)));
 
                         final String messageString = ChatColor.GOLD + "[HEURISTICS] Training " + ChatColor.RED + patternName +
                                                      ChatColor.GOLD + " | Player: " + ChatColor.RED + trainingPlayer.getName() +

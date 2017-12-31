@@ -44,31 +44,33 @@ public class CreateCommand extends InternalCommand
                             }
                         });
 
+                // The Heuristics Header will always be sent.
+                sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
+
                 if (InventoryHeuristics.getPATTERNS().stream().anyMatch(pattern -> pattern.getName().equals(patternName)))
                 {
-                    sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                     sender.sendMessage(ChatColor.GOLD + "Pattern name \"" + patternName + "\"" + " is already in use.");
-                    return;
                 }
-
-                final List<String> hiddenLayerConfigStrings = new ArrayList<>(arguments);
-                int[] hiddenLayerConfig = new int[hiddenLayerConfigStrings.size()];
-
-                for (int i = 0; i < hiddenLayerConfigStrings.size(); i++)
+                else
                 {
-                    hiddenLayerConfig[i] = Integer.valueOf(hiddenLayerConfigStrings.get(i));
+
+                    final List<String> hiddenLayerConfigStrings = new ArrayList<>(arguments);
+                    int[] hiddenLayerConfig = new int[hiddenLayerConfigStrings.size()];
+
+                    for (int i = 0; i < hiddenLayerConfigStrings.size(); i++)
+                    {
+                        hiddenLayerConfig[i] = Integer.valueOf(hiddenLayerConfigStrings.get(i));
+                    }
+
+                    sender.sendMessage(ChatColor.GOLD + "Created new pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " with " + hiddenLayerConfig.length + " hidden layers and " + inputDataList.size() + " inputs.");
+
+                    InventoryHeuristics.getPATTERNS().add(new Pattern(
+                            patternName,
+                            inputDataList.toArray(new InputData[inputDataList.size()]),
+                            InventoryClick.SAMPLES,
+                            OutputData.DEFAULT_OUTPUT_DATA,
+                            hiddenLayerConfig));
                 }
-
-                sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
-                sender.sendMessage(ChatColor.GOLD + "Created new pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " with " + hiddenLayerConfig.length + " hidden layers and " + inputDataList.size() + " inputs.");
-
-                InventoryHeuristics.getPATTERNS().add(new Pattern(
-                        patternName,
-                        inputDataList.toArray(new InputData[inputDataList.size()]),
-                        InventoryClick.SAMPLES,
-                        OutputData.DEFAULT_OUTPUT_DATA,
-                        hiddenLayerConfig));
-
             } catch (NumberFormatException exception)
             {
                 sender.sendMessage(prefix + ChatColor.RED + "Formatting error. Please utilize the command help for formatting.");

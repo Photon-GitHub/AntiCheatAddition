@@ -8,7 +8,6 @@ import de.photon.AACAdditionPro.heuristics.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Optional;
 import java.util.Queue;
 
 public class SaveCommand extends InternalCommand
@@ -24,20 +23,18 @@ public class SaveCommand extends InternalCommand
         if (HeuristicsCommand.heuristicsUnlocked())
         {
             final String patternName = arguments.remove();
+            final Pattern patternToDelete = InventoryHeuristics.getPatternByName(patternName);
 
-            final Optional<Pattern> patternToDelete = InventoryHeuristics.getPATTERNS().stream().filter(pattern -> pattern.getName().equals(patternName)).findAny();
+            sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
 
-            if (patternToDelete.isPresent())
+            if (patternToDelete == null)
             {
-                patternToDelete.get().saveToFile();
-
-                sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
-                sender.sendMessage(ChatColor.GOLD + "Saved pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"");
+                sender.sendMessage(HeuristicsCommand.createPatternNotFoundMessage(patternName));
             }
             else
             {
-                sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
-                sender.sendMessage(ChatColor.GOLD + "Pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " could not be found.");
+                patternToDelete.saveToFile();
+                sender.sendMessage(ChatColor.GOLD + "Saved pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"");
             }
         }
         else

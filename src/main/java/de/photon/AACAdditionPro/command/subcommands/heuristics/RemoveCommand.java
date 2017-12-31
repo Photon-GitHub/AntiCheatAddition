@@ -8,7 +8,6 @@ import de.photon.AACAdditionPro.heuristics.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Optional;
 import java.util.Queue;
 
 public class RemoveCommand extends InternalCommand
@@ -24,12 +23,11 @@ public class RemoveCommand extends InternalCommand
         if (HeuristicsCommand.heuristicsUnlocked())
         {
             final String patternName = arguments.remove();
+            final Pattern patternToDelete = InventoryHeuristics.getPatternByName(patternName);
 
-            final Optional<Pattern> patternToDelete = InventoryHeuristics.getPATTERNS().stream().filter(pattern -> pattern.getName().equals(patternName)).findAny();
-
-            if (patternToDelete.isPresent())
+            if (patternToDelete != null)
             {
-                InventoryHeuristics.getPATTERNS().remove(patternToDelete.get());
+                InventoryHeuristics.getPATTERNS().remove(patternToDelete);
 
                 sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                 sender.sendMessage(ChatColor.GOLD + "Deleted pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"");
@@ -37,7 +35,7 @@ public class RemoveCommand extends InternalCommand
             else
             {
                 sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
-                sender.sendMessage(ChatColor.GOLD + "Pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " could not be found.");
+                sender.sendMessage(HeuristicsCommand.createPatternNotFoundMessage(patternName));
             }
         }
         else

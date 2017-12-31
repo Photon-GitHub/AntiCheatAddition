@@ -35,7 +35,7 @@ public class TrainCommand extends InternalCommand
             if (pattern == null)
             {
                 sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
-                sender.sendMessage(ChatColor.GOLD + "Pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " could not be found.");
+                sender.sendMessage(HeuristicsCommand.createPatternNotFoundMessage(patternName));
             }
             else
             {

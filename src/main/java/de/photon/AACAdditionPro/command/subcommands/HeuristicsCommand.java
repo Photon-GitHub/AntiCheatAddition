@@ -9,7 +9,6 @@ import de.photon.AACAdditionPro.command.subcommands.heuristics.RemoveCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.RenameCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.SaveCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.TrainCommand;
-import de.photon.AACAdditionPro.command.subcommands.heuristics.TrainingProgressCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -37,8 +36,7 @@ public class HeuristicsCommand extends InternalCommand
               new RemoveCommand(),
               new RenameCommand(),
               new SaveCommand(),
-              new TrainCommand(),
-              new TrainingProgressCommand());
+              new TrainCommand());
     }
 
     @Override
@@ -72,6 +70,21 @@ public class HeuristicsCommand extends InternalCommand
 
             sender.sendMessage(welcomeBuilder.toString());
         }
+    }
+
+    /**
+     * Creates a new pattern not found message with {@link ChatColor}s.
+     *
+     * @param nameOfPattern the name of the pattern that should be used for the message.
+     */
+    public static String createPatternNotFoundMessage(final String nameOfPattern)
+    {
+        return String.valueOf(ChatColor.GOLD) +
+               "Pattern \"" +
+               ChatColor.RED +
+               nameOfPattern +
+               ChatColor.GOLD +
+               "\" could not be found.";
     }
 
     @Override

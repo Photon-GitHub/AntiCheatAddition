@@ -118,7 +118,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
             }
 
             final int[] i = {0};
-            user.getInventoryData().inventoryClicks.clearLastObjectIteration((youngerClick, olderClick) -> {
+            user.getInventoryData().inventoryClicks.clearLastTwoObjectsIteration((youngerClick, olderClick) -> {
                 // Slot distance
                 // Must be done first as of the continue!
                 double[] locationOfYoungerClick = InventoryUtils.locateSlot(youngerClick.clickedRawSlot, youngerClick.inventoryType);
@@ -179,6 +179,23 @@ public class InventoryHeuristics implements Listener, ViolationModule
             // Might not be the case, i.e. no detections
             vlManager.setVL(user.getPlayer(), (int) vl);
         }
+    }
+
+    /**
+     * Gets a {@link Pattern} by its name.
+     *
+     * @return the {@link Pattern} which has the name equal to the provided {@link String} or null if no pattern was found.
+     */
+    public static Pattern getPatternByName(final String patternName)
+    {
+        for (Pattern pattern : PATTERNS)
+        {
+            if (pattern.getName().equals(patternName))
+            {
+                return pattern;
+            }
+        }
+        return null;
     }
 
     @Override

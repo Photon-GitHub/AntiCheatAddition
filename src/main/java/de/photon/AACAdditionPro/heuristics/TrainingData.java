@@ -14,8 +14,6 @@ public class TrainingData
     @Getter
     private final OutputData outputData;
 
-    public int trainingCycles;
-
     @Override
     public boolean equals(Object o)
     {

@@ -16,8 +16,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Queue;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class TrainCommand extends InternalCommand
 {
@@ -32,56 +30,60 @@ public class TrainCommand extends InternalCommand
         if (HeuristicsCommand.heuristicsUnlocked())
         {
             final String patternName = arguments.remove();
-            final Set<Pattern> possiblePatterns = InventoryHeuristics.getPATTERNS().stream().filter(pattern -> pattern.getName().equals(patternName)).collect(Collectors.toSet());
+            final Pattern pattern = InventoryHeuristics.getPatternByName(patternName);
 
-            if (possiblePatterns.isEmpty())
+            if (pattern == null)
             {
                 sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                 sender.sendMessage(ChatColor.GOLD + "Pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " could not be found.");
             }
-            else if (possiblePatterns.size() > 1)
-            {
-                throw new IllegalStateException("Two heuristics with the same name exist.");
-            }
             else
             {
-                final Player trainingPlayer = Bukkit.getServer().getPlayer(arguments.remove());
+                final String playerOrFinishArgument = arguments.remove();
 
-                if (trainingPlayer == null)
+                if (playerOrFinishArgument.equalsIgnoreCase("finish"))
                 {
-                    sender.sendMessage(playerNotFoundMessage);
-                    return;
-                }
 
-                final User user = UserManager.getUser(trainingPlayer.getUniqueId());
-
-                // Not bypassed
-                if (user == null)
-                {
-                    sender.sendMessage(playerNotFoundMessage);
-                    return;
-                }
-
-                final String output = arguments.remove().toUpperCase();
-
-                if (output.equals("VANILLA") || output.equals("CHEATING"))
-                {
-                    // The cycles argument is optional
-                    final int cycles = arguments.isEmpty() ? 3 : Integer.valueOf(arguments.remove());
-
-                    user.getInventoryData().inventoryClicks.clear();
-                    possiblePatterns.forEach(pattern -> pattern.addTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output), cycles)));
-
-                    final String messageString = "[HEURISTICS] Training " + patternName + " | Player: " + trainingPlayer.getName() + " | Output: " + output + " | Cycles: " + cycles;
-
-                    sender.sendMessage(prefix + ChatColor.GOLD + messageString);
-                    VerboseSender.sendVerboseMessage(messageString);
                 }
                 else
                 {
-                    sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
-                    sender.sendMessage(ChatColor.GOLD + "Output \"" + ChatColor.RED + output + ChatColor.GOLD + "\"" + " is not allowed.");
-                    sender.sendMessage(ChatColor.GOLD + "Allowed outputs: " + ChatColor.RED + "VANILLA" + ChatColor.GOLD + " | " + ChatColor.RED + "CHEATING");
+                    final Player trainingPlayer = Bukkit.getServer().getPlayer(playerOrFinishArgument);
+
+                    if (trainingPlayer == null)
+                    {
+                        sender.sendMessage(playerNotFoundMessage);
+                        return;
+                    }
+
+                    final User user = UserManager.getUser(trainingPlayer.getUniqueId());
+
+                    // Not bypassed
+                    if (user == null)
+                    {
+                        sender.sendMessage(playerNotFoundMessage);
+                        return;
+                    }
+
+                    final String output = arguments.remove().toUpperCase();
+
+                    if (output.equals("VANILLA") || output.equals("CHEATING"))
+                    {
+                        user.getInventoryData().inventoryClicks.clear();
+                        pattern.addTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output)));
+
+                        final String messageString = ChatColor.GOLD + "[HEURISTICS] Training " + ChatColor.RED + patternName +
+                                                     ChatColor.GOLD + " | Player: " + ChatColor.RED + trainingPlayer.getName() +
+                                                     ChatColor.GOLD + " | Output: " + ChatColor.RED + output;
+
+                        sender.sendMessage(prefix + messageString);
+                        VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString));
+                    }
+                    else
+                    {
+                        sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
+                        sender.sendMessage(ChatColor.GOLD + "Output \"" + ChatColor.RED + output + ChatColor.GOLD + "\"" + " is not allowed.");
+                        sender.sendMessage(ChatColor.GOLD + "Allowed outputs: " + ChatColor.RED + "VANILLA" + ChatColor.GOLD + " | " + ChatColor.RED + "CHEATING");
+                    }
                 }
             }
         }
@@ -96,7 +98,8 @@ public class TrainCommand extends InternalCommand
     {
         return new String[]{
                 "Train a pattern with an example.",
-                "Format: /aacadditionpro train <name of pattern> <player to learn from> <output> [<cycles>]"
+                "Train syntax  : /aacadditionpro train <name of pattern> <player to learn from> <output>",
+                "Finish syntax : /aacadditionpro train <name of pattern> finish"
         };
     }
 

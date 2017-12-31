@@ -8,7 +8,6 @@ import de.photon.AACAdditionPro.heuristics.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Optional;
 import java.util.Queue;
 
 public class RenameCommand extends InternalCommand
@@ -24,21 +23,29 @@ public class RenameCommand extends InternalCommand
         if (HeuristicsCommand.heuristicsUnlocked())
         {
             final String patternName = arguments.remove();
+            final Pattern patternToRename = InventoryHeuristics.getPatternByName(patternName);
 
-            final Optional<Pattern> patternToRename = InventoryHeuristics.getPATTERNS().stream().filter(pattern -> pattern.getName().equals(patternName)).findAny();
-
-            if (patternToRename.isPresent())
-            {
-                final String newName = arguments.remove();
-                patternToRename.get().setName(newName);
-
-                sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
-                sender.sendMessage(ChatColor.GOLD + "Renamed pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\" to " + ChatColor.RED + newName);
-            }
-            else
+            if (patternToRename == null)
             {
                 sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                 sender.sendMessage(ChatColor.GOLD + "Pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " could not be found.");
+            }
+            else
+            {
+                final String newName = arguments.remove();
+
+                if (InventoryHeuristics.getPATTERNS().stream().anyMatch(pattern -> pattern.getName().equals(newName)))
+                {
+                    sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
+                    sender.sendMessage(ChatColor.GOLD + "Cannot rename the pattern to " + ChatColor.RED + newName + ChatColor.GOLD + " as another pattern with the same name exists.");
+                }
+                else
+                {
+                    patternToRename.setName(newName);
+
+                    sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
+                    sender.sendMessage(ChatColor.GOLD + "Renamed pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\" to " + ChatColor.RED + newName);
+                }
             }
         }
         else

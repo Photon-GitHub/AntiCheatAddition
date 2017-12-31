@@ -149,11 +149,8 @@ public class Pattern implements Serializable
                             this.graph.train(inputArray, i);
                         }
 
-                        if (--trainingData.trainingCycles < 0)
-                        {
-                            VerboseSender.sendVerboseMessage("Training of pattern " + this.name + " of output " + this.outputs[i].getName() + " finished.");
-                            this.trainingDataSet.remove(trainingData);
-                        }
+                        //VerboseSender.sendVerboseMessage("Training of pattern " + this.name + " of output " + this.outputs[i].getName() + " finished.");
+                        //this.trainingDataSet.remove(trainingData);
                         return null;
                     }
                 }

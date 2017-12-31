@@ -19,6 +19,9 @@ import java.util.UUID;
 
 public class InventoryData extends TimeData
 {
+    /**
+     * Used to record inventory interactions for training the neural net.
+     */
     public final Buffer<InventoryClick> inventoryClicks = new Buffer<>(InventoryClick.SAMPLES);
 
     /**

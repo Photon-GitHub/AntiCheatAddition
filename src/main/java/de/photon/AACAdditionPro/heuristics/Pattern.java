@@ -13,17 +13,19 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
+import java.util.Stack;
 
 public class Pattern implements Serializable
 {
     /**
      * The epoch count.
      */
-    public static final int EPOCH = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".epoch");
+    private static final int EPOCH = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".epoch");
 
     @Getter
     @Setter
@@ -37,6 +39,10 @@ public class Pattern implements Serializable
 
     @Getter
     private transient Set<TrainingData> trainingDataSet;
+
+
+    @Getter
+    private final transient Map<OutputData, Stack<InputData[]>> trainingInputs;
 
     public Pattern(String name, InputData[] inputs, int samples, OutputData[] outputs, int[] hiddenNeuronsPerLayer)
     {
@@ -69,6 +75,12 @@ public class Pattern implements Serializable
     {
         // The default initial capacity of 16 is not used in most cases.
         this.trainingDataSet = new HashSet<>(8);
+        this.trainingInputs = new HashMap<>(2, 1);
+
+        for (OutputData defaultOutputDatum : OutputData.DEFAULT_OUTPUT_DATA)
+        {
+            this.trainingInputs.put(defaultOutputDatum, new Stack<>());
+        }
     }
 
     /**
@@ -120,11 +132,9 @@ public class Pattern implements Serializable
      * Make the pattern analyse the current input data.
      * Provide data via {@link Graph}.{@link #provideInputData(InputData[])}
      *
-     * @param checkedUUID the {@link UUID} of the player who is checked. This identifies players who are training the graph.
-     *
      * @return the result of the analyse in form of an {@link OutputData}
      */
-    public OutputData analyse(UUID checkedUUID)
+    public OutputData analyse()
     {
         if (this.currentlyBlockedByInvalidData)
         {
@@ -133,36 +143,7 @@ public class Pattern implements Serializable
             return this.outputs[0].setConfidence(1);
         }
 
-        // Convert the input data into a double tensor
-        double[][] inputArray = new double[this.inputs.length][this.inputs[0].getData().length];
-        for (int i = 0; i < this.inputs.length; i++)
-        {
-            inputArray[i] = this.inputs[i].getData();
-        }
-
-        // Actual analyse
-        for (final TrainingData trainingData : this.trainingDataSet)
-        {
-            if (checkedUUID.equals(trainingData.getUuid()))
-            {
-                // Look for the index of the trained output
-                for (int i = 0; i < this.outputs.length; i++)
-                {
-                    if (trainingData.getOutputData().getName().equals(this.outputs[i].getName()))
-                    {
-                        this.graph.train(inputArray, i);
-
-                        //VerboseSender.sendVerboseMessage("Training of pattern " + this.name + " of output " + this.outputs[i].getName() + " finished.");
-                        //this.trainingDataSet.remove(trainingData);
-                        return null;
-                    }
-                }
-
-                throw new NeuralNetworkException("Cannot identify output " + trainingData.getOutputData().getName() + " in pattern " + this.name);
-            }
-        }
-
-        double[] results = graph.analyse(inputArray);
+        double[] results = graph.analyse(prepareInputData());
 
         VerboseSender.sendVerboseMessage("Full network output: " + Arrays.toString(results), true, false);
 
@@ -186,6 +167,54 @@ public class Pattern implements Serializable
 
         // Return the max result divided by the sum of all results as the confidence of the pattern.
         return new OutputData(this.outputs[maxIndex].getName()).setConfidence(maxResult);
+    }
+
+    /**
+     * This clears the trainingInputs - stacks and learns from them.
+     */
+    public void train()
+    {
+        for (int epoch = 0; epoch < EPOCH; epoch++)
+        {
+            for (int dataIndex = 0; dataIndex < OutputData.DEFAULT_OUTPUT_DATA.length; dataIndex++)
+            {
+                for (InputData[] inputData : this.getTrainingInputs().get(OutputData.DEFAULT_OUTPUT_DATA[dataIndex]))
+                {
+                    this.provideInputData(inputData);
+
+                    if (this.currentlyBlockedByInvalidData)
+                    {
+                        continue;
+                    }
+
+                    this.graph.train(prepareInputData(), dataIndex);
+                }
+            }
+        }
+
+        // Clear the data.
+        this.trainingDataSet.clear();
+
+        for (OutputData defaultOutputDatum : OutputData.DEFAULT_OUTPUT_DATA)
+        {
+            this.trainingInputs.get(defaultOutputDatum).clear();
+        }
+    }
+
+    /**
+     * Transforms {@link Pattern}.{@link #inputs} to a double matrix.
+     *
+     * @return the double matrix
+     */
+    private double[][] prepareInputData()
+    {
+        // Convert the input data into a double tensor
+        final double[][] inputArray = new double[this.inputs.length][this.inputs[0].getData().length];
+        for (int i = 0; i < this.inputs.length; i++)
+        {
+            inputArray[i] = this.inputs[i].getData();
+        }
+        return inputArray;
     }
 
     /**

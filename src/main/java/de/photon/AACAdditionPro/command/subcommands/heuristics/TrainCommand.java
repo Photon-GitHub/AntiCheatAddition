@@ -6,7 +6,6 @@ import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
 import de.photon.AACAdditionPro.heuristics.OutputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
-import de.photon.AACAdditionPro.heuristics.TrainingData;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
@@ -69,7 +68,7 @@ public class TrainCommand extends InternalCommand
                     if (output.equals("VANILLA") || output.equals("CHEATING"))
                     {
                         user.getInventoryData().inventoryClicks.clear();
-                        pattern.getTrainingDataSet().add(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output)));
+                        pattern.getTrainingUUIDsSet().add(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output)));
 
                         final String messageString = ChatColor.GOLD + "[HEURISTICS] Training " + ChatColor.RED + patternName +
                                                      ChatColor.GOLD + " | Player: " + ChatColor.RED + trainingPlayer.getName() +

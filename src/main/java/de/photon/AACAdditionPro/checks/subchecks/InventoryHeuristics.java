@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.heuristics.InputData;
 import de.photon.AACAdditionPro.heuristics.OutputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
+import de.photon.AACAdditionPro.heuristics.TrainingData;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
@@ -152,13 +153,28 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
             for (Pattern pattern : PATTERNS)
             {
-                // Totally ok to do with the array as the provideInputData() method filters out the required information and ignores the rest.
-                pattern.provideInputData(inputData);
-
-                final OutputData result = pattern.analyse(user.getPlayer().getUniqueId());
-                if (result != null)
+                boolean training = false;
+                for (TrainingData trainingData : pattern.getTrainingDataSet())
                 {
-                    outputDataMap.put(pattern, result);
+                    if (trainingData.getUuid().equals(user.getPlayer().getUniqueId()))
+                    {
+                        training = true;
+                        pattern.getTrainingInputs().get(new OutputData(trainingData.getOutputData().getName())).push(inputData);
+                        break;
+                    }
+                }
+
+                // No analysis when training.
+                if (!training)
+                {
+                    // Totally ok to do with the array as the provideInputData() method filters out the required information and ignores the rest.
+                    pattern.provideInputData(inputData);
+
+                    final OutputData result = pattern.analyse();
+                    if (result != null)
+                    {
+                        outputDataMap.put(pattern, result);
+                    }
                 }
             }
 

@@ -1,5 +1,7 @@
 package de.photon.AACAdditionPro.heuristics;
 
+import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 
 import java.io.Serializable;
@@ -10,8 +12,8 @@ import java.io.Serializable;
  */
 public class Graph implements Serializable
 {
-    private static final double TRAIN_PARAMETER = 0.1;
-    private static final double MOMENTUM_PARAMETER = 0.04;
+    private static final double TRAIN_PARAMETER = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".train_parameter");
+    private static final double MOMENTUM_PARAMETER = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".momentum_parameter");
 
     // The main matrix containing the weights of all connections
     // Use Wrapper class to be able to set a value to null

@@ -39,6 +39,12 @@ public class BlockPlaceData extends TimeData
         return blockPlaces.bufferObject(blockplace);
     }
 
+    /**
+     * The public method to calculate the time.
+     * This method is designed to be overridden.
+     *
+     * @return {@link BlockPlaceData}{@link #calculateAverageTime()} if not overridden.
+     */
     public double calculateRealTime()
     {
         return this.calculateAverageTime();
@@ -50,7 +56,7 @@ public class BlockPlaceData extends TimeData
      *
      * @return the average time between {@link BlockPlace}s.
      */
-    protected double calculateAverageTime()
+    private double calculateAverageTime()
     {
         // fraction[0] is the enumerator
         // fraction[1] is the divider

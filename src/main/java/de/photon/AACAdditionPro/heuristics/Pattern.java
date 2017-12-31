@@ -20,7 +20,10 @@ import java.util.UUID;
 
 public class Pattern implements Serializable
 {
-    private static final int EPOCH = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".epoch");
+    /**
+     * The epoch count.
+     */
+    public static final int EPOCH = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".epoch");
 
     @Getter
     @Setter
@@ -32,12 +35,14 @@ public class Pattern implements Serializable
 
     private transient boolean currentlyBlockedByInvalidData;
 
-    // The default initial capacity of 16 is not used in most cases.
     @Getter
     private transient Set<TrainingData> trainingDataSet;
 
     public Pattern(String name, InputData[] inputs, int samples, OutputData[] outputs, int[] hiddenNeuronsPerLayer)
     {
+        // Default constructor for trainingDataSet.
+        this();
+
         this.name = name;
 
         // The input and output neurons need to be added prior to building the graph.
@@ -58,11 +63,12 @@ public class Pattern implements Serializable
     }
 
     /**
-     * Adds a training data to the list.
+     * No-args constructor called upon deserialization.
      */
-    public void addTrainingData(final TrainingData trainingData)
+    protected Pattern()
     {
-        this.assureTrainingData().add(trainingData);
+        // The default initial capacity of 16 is not used in most cases.
+        this.trainingDataSet = new HashSet<>(8);
     }
 
     /**
@@ -135,7 +141,7 @@ public class Pattern implements Serializable
         }
 
         // Actual analyse
-        for (final TrainingData trainingData : this.assureTrainingData())
+        for (final TrainingData trainingData : this.trainingDataSet)
         {
             if (checkedUUID.equals(trainingData.getUuid()))
             {
@@ -144,10 +150,7 @@ public class Pattern implements Serializable
                 {
                     if (trainingData.getOutputData().getName().equals(this.outputs[i].getName()))
                     {
-                        for (int epochs = 0; epochs < EPOCH; epochs++)
-                        {
-                            this.graph.train(inputArray, i);
-                        }
+                        this.graph.train(inputArray, i);
 
                         //VerboseSender.sendVerboseMessage("Training of pattern " + this.name + " of output " + this.outputs[i].getName() + " finished.");
                         //this.trainingDataSet.remove(trainingData);
@@ -207,20 +210,5 @@ public class Pattern implements Serializable
             VerboseSender.sendVerboseMessage("Could not save pattern " + this.name + ". See the logs for further information.", true, true);
             e.printStackTrace();
         }
-    }
-
-    /**
-     * As of the serialization the {@link TrainingData} - {@link Set} is lost.
-     * This method assures the existence of this very {@link Set}
-     *
-     * @return the {@link TrainingData} - {@link Set}
-     */
-    private Set<TrainingData> assureTrainingData()
-    {
-        if (this.trainingDataSet == null)
-        {
-            trainingDataSet = new HashSet<>(8);
-        }
-        return this.trainingDataSet;
     }
 }

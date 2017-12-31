@@ -69,7 +69,7 @@ public class TrainCommand extends InternalCommand
                     if (output.equals("VANILLA") || output.equals("CHEATING"))
                     {
                         user.getInventoryData().inventoryClicks.clear();
-                        pattern.addTrainingData(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output)));
+                        pattern.getTrainingDataSet().add(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output)));
 
                         final String messageString = ChatColor.GOLD + "[HEURISTICS] Training " + ChatColor.RED + patternName +
                                                      ChatColor.GOLD + " | Player: " + ChatColor.RED + trainingPlayer.getName() +

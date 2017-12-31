@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class InventoryHeuristics implements Listener, ViolationModule
 {
@@ -178,16 +177,16 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 }
             }
 
-            // Filter out all the VANILLA results
-            final Set<Map.Entry<Pattern, OutputData>> flagEntrySet = outputDataMap.entrySet().stream().filter(entry -> !entry.getValue().getName().equals("VANILLA")).collect(Collectors.toSet());
-
             double flagSum = 0;
-            for (Map.Entry<Pattern, OutputData> entry : flagEntrySet)
+            for (Map.Entry<Pattern, OutputData> entry : outputDataMap.entrySet())
             {
-                flagSum += entry.getValue().getConfidence();
-                VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue().getConfidence());
+                if (!entry.getValue().getName().equals("VANILLA"))
+                {
+                    flagSum += entry.getValue().getConfidence();
+                    VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue().getConfidence());
+                }
             }
-
+            
             final double vl = Math.abs(10 / (Math.tanh(flagSum) - 1.1));
             // Might not be the case, i.e. no detections
             vlManager.setVL(user.getPlayer(), (int) vl);

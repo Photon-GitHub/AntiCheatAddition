@@ -186,7 +186,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue().getConfidence());
                 }
             }
-            
+
             final double vl = Math.abs(10 / (Math.tanh(flagSum) - 1.1));
             // Might not be the case, i.e. no detections
             vlManager.setVL(user.getPlayer(), (int) vl);

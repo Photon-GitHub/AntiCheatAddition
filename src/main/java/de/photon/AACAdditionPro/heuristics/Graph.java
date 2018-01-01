@@ -192,7 +192,7 @@ public class Graph implements Serializable
         for (int neuron = 0; neuron < matrix.length; neuron++)
         {
             // Activation function
-            activatedNeurons[neuron] = applyActivationFunction(neurons[neuron], false);
+            activatedNeurons[neuron] = applyActivationFunction(neurons[neuron]);
 
             // Forward - pass of the values
             for (int connectionTo = 0; connectionTo < matrix.length; connectionTo++)
@@ -265,21 +265,12 @@ public class Graph implements Serializable
     /**
      * Calculated the activated value of a neuron.
      *
-     * @param input   the netinput of the neuron
-     * @param derived whether the derived activation function should be used.
+     * @param input the netinput of the neuron
      *
      * @return the value of the activated neuron or the derived neuron, depending on the parameter derived.
      */
-    private static double applyActivationFunction(double input, boolean derived)
+    private static double applyActivationFunction(double input)
     {
-        if (derived)
-        {
-            final double epowx = Math.pow(Math.E, input);
-            // e^x / (e^x + 1)^2 =
-            // e^x / ((e^x)^2 + 2*e^x + 1)
-            return epowx / (epowx * epowx + 2 * epowx + 1);
-        }
-
         return 1 / (1 + Math.pow(Math.E, (-input)));
     }
 }

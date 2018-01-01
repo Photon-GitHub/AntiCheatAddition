@@ -131,7 +131,7 @@ public class Graph implements Serializable
         }
 
         // Only calculate so that the neurons array is updated.
-        analyse(inputValues);
+        this.analyse(inputValues);
 
         for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
         {

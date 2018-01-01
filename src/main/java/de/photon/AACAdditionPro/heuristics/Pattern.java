@@ -84,7 +84,7 @@ public class Pattern implements Serializable
         }
 
         // Convert the input data into a double tensor
-        final double[][] inputArray = new double[this.inputs.length][this.inputs[0].getData().length];
+        final double[][] inputArray = new double[this.inputs.length][inputValues[0].getData().length];
 
         for (InputData inputValue : inputValues)
         {

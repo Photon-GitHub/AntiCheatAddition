@@ -225,8 +225,8 @@ InventoryHeuristics:
    # Confidences will not add up.
    # 100 is the maximum confidence possible to reach.
    thresholds:
-      80: "aacstaffnotify {player} in {world} is suspected for inventory cheats. Pattern {pattern} | Confidence: {confidence}"
-      90: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats. Pattern {pattern} | Confidence: {confidence}"
+      80: "aacstaffnotify {player} in {world} is suspected for inventory cheats. Pattern {pattern} | Confidence: {vl}"
+      90: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats. Pattern {pattern} | Confidence: {vl}"
       95: "aackick {player} Inventory cheats."
 
 # InventoryHit checks if a player modifies his inventory while hitting at the same time.

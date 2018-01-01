@@ -62,7 +62,7 @@ public class AutoPotion implements Listener, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed())
+        if (User.isUserInvalid(user))
         {
             return;
         }

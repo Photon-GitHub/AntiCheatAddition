@@ -175,7 +175,7 @@ public class Graph implements Serializable
      * Calculate the current {@link Graph}.
      * Prior to this method call the input neurons should be set.
      *
-     * @return an array of doubles representing the output neurons.
+     * @return the output value of the activated output neuron.
      */
     private double calculate()
     {
@@ -201,7 +201,9 @@ public class Graph implements Serializable
     }
 
     /**
-     * @return the start index of the next layer in index 0 and the end in index 1
+     * @return an array of integers. <br>
+     * [0] -> the start index of the next layer <br>
+     * [1] -> the end index of the next layer
      */
     private int[] nextLayerIndexBoundaries(int index)
     {

@@ -35,8 +35,6 @@ public class Pattern implements Serializable
     private InputData[] inputs;
     private OutputData[] outputs;
 
-    private transient boolean currentlyBlockedByInvalidData;
-
     @Getter
     private Set<TrainingData> trainingDataSet;
 
@@ -78,15 +76,15 @@ public class Pattern implements Serializable
      * Prepares the calculation of the {@link Graph} by setting the values of the {@link InputData}s.
      * The {@link InputData}s should have the same internal array length.
      */
-    public void provideInputData(InputData[] inputValues)
+    public double[][] provideInputData(InputData[] inputValues)
     {
         if (Objects.requireNonNull(inputValues, "The input values of pattern " + this.getName() + " are null.").length == 0)
         {
-            this.currentlyBlockedByInvalidData = true;
-            return;
+            return null;
         }
 
-        int dataEntries = -1;
+        // Convert the input data into a double tensor
+        final double[][] inputArray = new double[this.inputs.length][this.inputs[0].getData().length];
 
         for (InputData inputValue : inputValues)
         {
@@ -94,29 +92,23 @@ public class Pattern implements Serializable
             {
                 if (this.inputs[i].getName().equals(inputValue.getName()))
                 {
-                    this.inputs[i] = inputValue;
-                    for (double d : this.inputs[i].getData())
+                    inputArray[i] = inputValue.getData();
+
+                    // Validate the values.
+                    for (double d : inputArray[i])
                     {
                         if (d == Double.MIN_VALUE)
                         {
-                            this.currentlyBlockedByInvalidData = true;
-                            return;
+                            return null;
                         }
                     }
 
-                    if (dataEntries == -1)
-                    {
-                        dataEntries = this.inputs[i].getData().length;
-                    }
-                    else if (this.inputs[i].getData().length != dataEntries)
-                    {
-                        throw new NeuralNetworkException("Input " + this.inputs[i].getName() + " in " + this.name + " has a different length.");
-                    }
+                    // Assert the inputs have the same length.
                 }
             }
-
-            this.currentlyBlockedByInvalidData = false;
         }
+
+        return inputArray;
     }
 
     /**
@@ -125,16 +117,18 @@ public class Pattern implements Serializable
      *
      * @return the result of the analyse in form of an {@link OutputData}
      */
-    public OutputData analyse()
+    public OutputData analyse(final InputData[] inputData)
     {
-        if (this.currentlyBlockedByInvalidData)
+        final double[][] inputArray = this.provideInputData(inputData);
+
+        if (inputArray == null)
         {
             // Debug
             // System.out.println("Blocked by invalid data.");
             return this.outputs[0].setConfidence(1);
         }
 
-        double[] results = graph.analyse(prepareInputData());
+        double[] results = graph.analyse(inputArray);
 
         VerboseSender.sendVerboseMessage("Full network output: " + Arrays.toString(results), true, false);
 
@@ -171,14 +165,14 @@ public class Pattern implements Serializable
             {
                 for (InputData[] inputData : this.getTrainingInputs().get(OutputData.DEFAULT_OUTPUT_DATA[dataIndex].getName()))
                 {
-                    this.provideInputData(inputData);
+                    final double[][] inputArray = this.provideInputData(inputData);
 
-                    if (this.currentlyBlockedByInvalidData)
+                    if (inputArray == null)
                     {
                         continue;
                     }
 
-                    this.graph.train(prepareInputData(), dataIndex);
+                    this.graph.train(inputArray, dataIndex);
                 }
             }
         }
@@ -210,22 +204,6 @@ public class Pattern implements Serializable
             VerboseSender.sendVerboseMessage("Could not save pattern " + this.name + ". See the logs for further information.", true, true);
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Transforms {@link Pattern}.{@link #inputs} to a double matrix.
-     *
-     * @return the double matrix
-     */
-    private double[][] prepareInputData()
-    {
-        // Convert the input data into a double tensor
-        final double[][] inputArray = new double[this.inputs.length][this.inputs[0].getData().length];
-        for (int i = 0; i < this.inputs.length; i++)
-        {
-            inputArray[i] = this.inputs[i].getData();
-        }
-        return inputArray;
     }
 
     /**

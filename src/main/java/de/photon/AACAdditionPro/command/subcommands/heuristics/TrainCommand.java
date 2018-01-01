@@ -47,6 +47,7 @@ public class TrainCommand extends InternalCommand
 
                     sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                     final String messageString = ChatColor.GOLD + "Training of pattern " + ChatColor.RED + pattern.getName() + ChatColor.GOLD + " finished.";
+                    sender.sendMessage(messageString);
                     VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString));
                 }
                 else

@@ -4,7 +4,6 @@ import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
-import de.photon.AACAdditionPro.heuristics.OutputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.heuristics.TrainingData;
 import de.photon.AACAdditionPro.userdata.User;
@@ -72,13 +71,13 @@ public class TrainCommand extends InternalCommand
 
                     final String output = arguments.remove().toUpperCase();
 
-                    for (OutputData outputData : OutputData.DEFAULT_OUTPUT_DATA)
+                    for (String outputDataName : Pattern.VALID_OUTPUTS)
                     {
-                        if (outputData.getName().equals(output))
+                        if (outputDataName.equals(output))
                         {
                             user.getInventoryData().inventoryClicks.clear();
 
-                            final TrainingData trainingData = new TrainingData(trainingPlayer.getUniqueId(), outputData);
+                            final TrainingData trainingData = new TrainingData(trainingPlayer.getUniqueId(), outputDataName);
 
                             // Override previous choices.
                             pattern.getTrainingDataSet().remove(trainingData);
@@ -100,10 +99,10 @@ public class TrainCommand extends InternalCommand
                     sb.append(ChatColor.GOLD);
                     sb.append("Allowed outputs: ");
 
-                    for (OutputData outputData : OutputData.DEFAULT_OUTPUT_DATA)
+                    for (String outputDataName : Pattern.VALID_OUTPUTS)
                     {
                         sb.append(ChatColor.RED);
-                        sb.append(outputData.getName());
+                        sb.append(outputDataName);
                         sb.append(ChatColor.GOLD);
                         sb.append(" | ");
                     }

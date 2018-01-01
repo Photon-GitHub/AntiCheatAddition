@@ -12,7 +12,7 @@ public class TrainingData
     @Getter
     private final UUID uuid;
     @Getter
-    private final OutputData outputData;
+    private final String outputDataName;
 
     @Override
     public boolean equals(Object o)

@@ -88,7 +88,7 @@ public class Graph implements Serializable
      *
      * @return the output values of the output neurons.
      */
-    public double[] analyse(double[][] inputValues)
+    public double analyse(double[][] inputValues)
     {
         for (int i = 0; i < neurons.length; i++)
         {
@@ -116,20 +116,12 @@ public class Graph implements Serializable
     /**
      * Train the neural network.
      *
-     * @param inputValues  the input values as a matrix with the different tests being the first index and the
-     *                     different input sources (e.g. time delta, slot distance, etc.) being the second index.
-     * @param outputNeuron the index of the output neuron that is the correct result
+     * @param inputValues the input values as a matrix with the different tests being the first index and the
+     *                    different input sources (e.g. time delta, slot distance, etc.) being the second index.
+     * @param cheating    whether or not the data is regarded as cheating.
      */
-    public void train(double[][] inputValues, int outputNeuron)
+    public void train(double[][] inputValues, boolean cheating)
     {
-        // The parameter outputNeuron is an index here.
-        int indexOfOutputNeuron = matrix.length - neuronsInLayers[neuronsInLayers.length - 1] + outputNeuron;
-
-        if (indexOfOutputNeuron >= this.neurons.length)
-        {
-            throw new NeuralNetworkException("OutputNeuron index " + indexOfOutputNeuron + " is not recognized.");
-        }
-
         // Only calculate so that the neurons array is updated.
         this.analyse(inputValues);
 
@@ -157,7 +149,7 @@ public class Graph implements Serializable
                     break;
                 case OUTPUT:
                     // f'(netInput) * (a_wanted - a_real)
-                    deltas[currentNeuron] *= (currentNeuron == indexOfOutputNeuron ?
+                    deltas[currentNeuron] *= (cheating ?
                                               1D :
                                               0D) - activatedNeurons[currentNeuron];
                     break;
@@ -184,29 +176,27 @@ public class Graph implements Serializable
      *
      * @return an array of doubles representing the output neurons.
      */
-    private double[] calculate()
+    private double calculate()
     {
-        double[] outputs = new double[neuronsInLayers[neuronsInLayers.length - 1]];
-
         // Perform all the adding
-        for (int neuron = 0; neuron < matrix.length; neuron++)
+        for (int neuron = 0; neuron < this.matrix.length; neuron++)
         {
             // Activation function
-            activatedNeurons[neuron] = applyActivationFunction(neurons[neuron]);
+            this.activatedNeurons[neuron] = applyActivationFunction(this.neurons[neuron]);
 
             // Forward - pass of the values
-            for (int connectionTo = 0; connectionTo < matrix.length; connectionTo++)
+            for (int connectionTo = 0; connectionTo < this.matrix.length; connectionTo++)
             {
                 // Forbid a connection in null - values
                 if (matrix[neuron][connectionTo] != null)
                 {
-                    neurons[connectionTo] += (activatedNeurons[neuron] * matrix[neuron][connectionTo]);
+                    this.neurons[connectionTo] += (this.activatedNeurons[neuron] * this.matrix[neuron][connectionTo]);
                 }
             }
         }
 
-        System.arraycopy(activatedNeurons, (activatedNeurons.length - outputs.length), outputs, 0, outputs.length);
-        return outputs;
+        // The last neuron is the output neuron.
+        return this.activatedNeurons[this.activatedNeurons.length - 1];
     }
 
     /**
@@ -244,12 +234,13 @@ public class Graph implements Serializable
             return NeuronType.INPUT;
         }
 
-        if (indexOfNeuron < matrix.length - neuronsInLayers[neuronsInLayers.length - 1])
+        // Only the last neuron is output.
+        if (indexOfNeuron == matrix.length - 1)
         {
-            return NeuronType.HIDDEN;
+            return NeuronType.OUTPUT;
         }
 
-        return NeuronType.OUTPUT;
+        return NeuronType.HIDDEN;
     }
 
     /**

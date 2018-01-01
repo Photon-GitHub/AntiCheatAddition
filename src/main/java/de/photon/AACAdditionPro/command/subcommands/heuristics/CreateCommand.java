@@ -5,7 +5,6 @@ import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
 import de.photon.AACAdditionPro.heuristics.InputData;
-import de.photon.AACAdditionPro.heuristics.OutputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
 import org.bukkit.ChatColor;
@@ -67,7 +66,6 @@ public class CreateCommand extends InternalCommand
                             patternName,
                             inputDataList.toArray(new InputData[inputDataList.size()]),
                             InventoryClick.SAMPLES,
-                            OutputData.DEFAULT_OUTPUT_DATA,
                             hiddenLayerConfig));
                 }
             } catch (NumberFormatException exception)

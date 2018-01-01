@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.checks.subchecks;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.heuristics.InputData;
-import de.photon.AACAdditionPro.heuristics.OutputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.heuristics.TrainingData;
 import de.photon.AACAdditionPro.userdata.User;
@@ -148,7 +147,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 inputData[5].getData()[i[0]++] = youngerClick.clickType.ordinal();
             });
 
-            final Map<Pattern, OutputData> outputDataMap = new HashMap<>(PATTERNS.size(), 1);
+            final Map<Pattern, Double> outputDataMap = new HashMap<>(PATTERNS.size(), 1);
 
             for (Pattern pattern : PATTERNS)
             {
@@ -158,7 +157,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     if (trainingData.getUuid().equals(user.getPlayer().getUniqueId()))
                     {
                         training = true;
-                        pattern.getTrainingInputs().get(trainingData.getOutputData().getName()).push(inputData);
+                        pattern.getTrainingInputs().get(trainingData.getOutputDataName()).push(inputData);
                         break;
                     }
                 }
@@ -166,7 +165,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 // No analysis when training.
                 if (!training)
                 {
-                    final OutputData result = pattern.analyse(inputData);
+                    final Double result = pattern.analyse(inputData);
                     if (result != null)
                     {
                         outputDataMap.put(pattern, result);
@@ -175,13 +174,10 @@ public class InventoryHeuristics implements Listener, ViolationModule
             }
 
             double flagSum = 0;
-            for (Map.Entry<Pattern, OutputData> entry : outputDataMap.entrySet())
+            for (Map.Entry<Pattern, Double> entry : outputDataMap.entrySet())
             {
-                if (!entry.getValue().getName().equals("VANILLA"))
-                {
-                    flagSum += entry.getValue().getConfidence();
-                    VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue().getConfidence());
-                }
+                flagSum += entry.getValue();
+                VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue());
             }
 
             final double vl = Math.abs(10 / (Math.tanh(flagSum) - 1.1));

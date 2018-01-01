@@ -12,7 +12,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +23,11 @@ import java.util.Vector;
 
 public class Pattern implements Serializable
 {
+    public static final String[] VALID_OUTPUTS = new String[]{
+            "VANILLA",
+            "CHEATING"
+    };
+
     /**
      * The epoch count.
      */
@@ -35,7 +39,6 @@ public class Pattern implements Serializable
     private Graph graph;
 
     private InputData[] inputs;
-    private OutputData[] outputs;
 
     @Getter
     private Set<TrainingData> trainingDataSet;
@@ -43,7 +46,7 @@ public class Pattern implements Serializable
     @Getter
     private final Map<String, Stack<InputData[]>> trainingInputs;
 
-    public Pattern(String name, InputData[] inputs, int samples, OutputData[] outputs, int[] hiddenNeuronsPerLayer)
+    public Pattern(String name, InputData[] inputs, int samples, int[] hiddenNeuronsPerLayer)
     {
         this.name = name;
 
@@ -56,21 +59,20 @@ public class Pattern implements Serializable
         // Hidden
         System.arraycopy(hiddenNeuronsPerLayer, 0, completeNeurons, 1, hiddenNeuronsPerLayer.length);
 
-        // Outputs
-        completeNeurons[completeNeurons.length - 1] = outputs.length;
+        // One output neuron.
+        completeNeurons[completeNeurons.length - 1] = 1;
 
         this.graph = new Graph(completeNeurons);
         this.inputs = inputs;
-        this.outputs = outputs;
 
         // The default initial capacity of 16 is not used in most cases.
         this.trainingDataSet = new HashSet<>(8);
 
+        // Training input map.
         this.trainingInputs = new HashMap<>(2, 1);
-
-        for (OutputData defaultOutputDatum : OutputData.DEFAULT_OUTPUT_DATA)
+        for (String validOutput : VALID_OUTPUTS)
         {
-            this.trainingInputs.put(defaultOutputDatum.getName(), new Stack<>());
+            this.trainingInputs.put(validOutput, new Stack<>());
         }
     }
 
@@ -115,11 +117,10 @@ public class Pattern implements Serializable
 
     /**
      * Make the pattern analyse the current input data.
-     * Provide data via {@link Graph}.{@link #provideInputData(InputData[])}
      *
-     * @return the result of the analyse in form of an {@link OutputData}
+     * @return the confidence for cheating or null if invalid data was provided.
      */
-    public OutputData analyse(final InputData[] inputData)
+    public Double analyse(final InputData[] inputData)
     {
         final double[][] inputArray = this.provideInputData(inputData);
 
@@ -130,30 +131,7 @@ public class Pattern implements Serializable
             return null;
         }
 
-        double[] results = graph.analyse(inputArray);
-
-        VerboseSender.sendVerboseMessage("Full network output: " + Arrays.toString(results), true, false);
-
-        // Get the max. confidence
-        int maxIndex = -1;
-        double maxResult = Double.MIN_VALUE;
-
-        for (int i = 0; i < results.length; i++)
-        {
-            if (results[i] > maxResult)
-            {
-                maxIndex = i;
-                maxResult = results[i];
-            }
-        }
-
-        if (maxIndex == Double.MIN_VALUE)
-        {
-            throw new NeuralNetworkException("Invalid confidences: " + Arrays.toString(results));
-        }
-
-        // Return the max result divided by the sum of all results as the confidence of the pattern.
-        return new OutputData(this.outputs[maxIndex].getName()).setConfidence(maxResult);
+        return graph.analyse(inputArray);
     }
 
     /**
@@ -163,12 +141,12 @@ public class Pattern implements Serializable
     {
         final Stack<InputData[]> maxSize = this.trainingInputs.values().stream().min(Comparator.comparingInt(Vector::size)).orElseThrow(() -> new NeuralNetworkException("The training inputs do not have a max size."));
 
-        this.trainingInputs.forEach((key, value) -> System.out.print("Key: " + key + " ValueSize " + value.size()));
         for (int epoch = 0; epoch < EPOCH; epoch++)
         {
-            for (int dataIndex = 0; dataIndex < OutputData.DEFAULT_OUTPUT_DATA.length; dataIndex++)
+            for (String validOutput : VALID_OUTPUTS)
             {
-                Stack<InputData[]> possibleTrainingInputs = this.getTrainingInputs().get(OutputData.DEFAULT_OUTPUT_DATA[dataIndex].getName());
+                Stack<InputData[]> possibleTrainingInputs = this.getTrainingInputs().get(validOutput);
+                final boolean cheating = validOutput.equalsIgnoreCase("CHEATING");
 
                 for (int i = 0; i < maxSize.size(); i++)
                 {
@@ -180,7 +158,7 @@ public class Pattern implements Serializable
                         continue;
                     }
 
-                    this.graph.train(inputArray, dataIndex);
+                    this.graph.train(inputArray, cheating);
                 }
             }
         }
@@ -221,10 +199,6 @@ public class Pattern implements Serializable
     {
         // Clear the data.
         this.trainingDataSet.clear();
-
-        for (OutputData defaultOutputDatum : OutputData.DEFAULT_OUTPUT_DATA)
-        {
-            this.trainingInputs.get(defaultOutputDatum.getName()).clear();
-        }
+        this.trainingInputs.values().forEach(Vector::clear);
     }
 }

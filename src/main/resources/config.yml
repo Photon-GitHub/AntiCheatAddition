@@ -216,11 +216,11 @@ InventoryHeuristics:
    # Options which belong to this section will only effect you if unlock_full_framework is set to true.
    framework:
       # The epoch when training a neural net.
-      epoch: 5000
+      epoch: 15000
       # The train parameter of all neural nets
-      train_parameter: 0.1
+      train_parameter: 0.3
       # The momentum parameter of all neural nets
-      momentum_parameter: 0.04
+      momentum_parameter: 0.1
    # Map of confidence levels to command
    # Confidences will not add up.
    # 100 is the maximum confidence possible to reach.

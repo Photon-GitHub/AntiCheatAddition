@@ -32,9 +32,11 @@ public class TrainCommand extends InternalCommand
             final String patternName = arguments.remove();
             final Pattern pattern = InventoryHeuristics.getPatternByName(patternName);
 
+            // The Heuristics Header will always be sent.
+            sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
+
             if (pattern == null)
             {
-                sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                 sender.sendMessage(HeuristicsCommand.createPatternNotFoundMessage(patternName));
             }
             else
@@ -45,7 +47,6 @@ public class TrainCommand extends InternalCommand
                 {
                     pattern.train();
 
-                    sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                     final String messageString = ChatColor.GOLD + "Training of pattern " + ChatColor.RED + pattern.getName() + ChatColor.GOLD + " finished.";
                     sender.sendMessage(messageString);
                     VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString));
@@ -56,7 +57,7 @@ public class TrainCommand extends InternalCommand
 
                     if (trainingPlayer == null)
                     {
-                        sender.sendMessage(playerNotFoundMessage);
+                        sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
                         return;
                     }
 
@@ -65,7 +66,7 @@ public class TrainCommand extends InternalCommand
                     // Not bypassed
                     if (user == null)
                     {
-                        sender.sendMessage(playerNotFoundMessage);
+                        sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
                         return;
                     }
 
@@ -80,12 +81,11 @@ public class TrainCommand extends InternalCommand
                                                      ChatColor.GOLD + " | Player: " + ChatColor.RED + trainingPlayer.getName() +
                                                      ChatColor.GOLD + " | Output: " + ChatColor.RED + output;
 
-                        sender.sendMessage(prefix + messageString);
+                        sender.sendMessage(messageString);
                         VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString));
                     }
                     else
                     {
-                        sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
                         sender.sendMessage(ChatColor.GOLD + "Output \"" + ChatColor.RED + output + ChatColor.GOLD + "\"" + " is not allowed.");
                         sender.sendMessage(ChatColor.GOLD + "Allowed outputs: " + ChatColor.RED + "VANILLA" + ChatColor.GOLD + " | " + ChatColor.RED + "CHEATING");
                     }
@@ -94,7 +94,7 @@ public class TrainCommand extends InternalCommand
         }
         else
         {
-            sender.sendMessage(prefix + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
+            sender.sendMessage(PREFIX + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
         }
     }
 

@@ -25,6 +25,7 @@ public class SaveCommand extends InternalCommand
             final String patternName = arguments.remove();
             final Pattern patternToDelete = InventoryHeuristics.getPatternByName(patternName);
 
+            // The Heuristics Header will always be sent.
             sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
 
             if (patternToDelete == null)
@@ -39,7 +40,7 @@ public class SaveCommand extends InternalCommand
         }
         else
         {
-            sender.sendMessage(prefix + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
+            sender.sendMessage(PREFIX + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
         }
     }
 

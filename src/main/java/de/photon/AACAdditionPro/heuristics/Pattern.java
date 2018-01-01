@@ -76,7 +76,7 @@ public class Pattern implements Serializable
      * Prepares the calculation of the {@link Graph} by setting the values of the {@link InputData}s.
      * The {@link InputData}s should have the same internal array length.
      */
-    public double[][] provideInputData(InputData[] inputValues)
+    private double[][] provideInputData(InputData[] inputValues)
     {
         if (Objects.requireNonNull(inputValues, "The input values of pattern " + this.getName() + " are null.").length == 0)
         {
@@ -125,7 +125,7 @@ public class Pattern implements Serializable
         {
             // Debug
             // System.out.println("Blocked by invalid data.");
-            return this.outputs[0].setConfidence(1);
+            return null;
         }
 
         double[] results = graph.analyse(inputArray);

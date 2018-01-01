@@ -72,12 +72,12 @@ public class CreateCommand extends InternalCommand
                 }
             } catch (NumberFormatException exception)
             {
-                sender.sendMessage(prefix + ChatColor.RED + "Formatting error. Please utilize the command help for formatting.");
+                sender.sendMessage(PREFIX + ChatColor.RED + "Formatting error. Please utilize the command help for formatting.");
             }
         }
         else
         {
-            sender.sendMessage(prefix + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
+            sender.sendMessage(PREFIX + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
         }
     }
 

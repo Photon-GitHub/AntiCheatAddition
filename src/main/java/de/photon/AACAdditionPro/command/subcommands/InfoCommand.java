@@ -27,7 +27,7 @@ public class InfoCommand extends InternalCommand
 
         if (p == null)
         {
-            sender.sendMessage(playerNotFoundMessage);
+            sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
         }
         else
         {
@@ -61,11 +61,11 @@ public class InfoCommand extends InternalCommand
                 }
             }
 
-            sender.sendMessage(prefix + ChatColor.GOLD + p.getName());
+            sender.sendMessage(PREFIX + ChatColor.GOLD + p.getName());
 
             if (messages.isEmpty())
             {
-                sender.sendMessage(prefix + ChatColor.GOLD + "The player has no violations.");
+                sender.sendMessage(PREFIX + ChatColor.GOLD + "The player has no violations.");
             }
             else
             {

@@ -13,12 +13,14 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
+import java.util.Vector;
 
 public class Pattern implements Serializable
 {
@@ -159,12 +161,18 @@ public class Pattern implements Serializable
      */
     public void train()
     {
+        final Stack<InputData[]> maxSize = this.trainingInputs.values().stream().min(Comparator.comparingInt(Vector::size)).orElseThrow(() -> new NeuralNetworkException("The training inputs do not have a max size."));
+
+        this.trainingInputs.forEach((key, value) -> System.out.print("Key: " + key + " ValueSize " + value.size()));
         for (int epoch = 0; epoch < EPOCH; epoch++)
         {
             for (int dataIndex = 0; dataIndex < OutputData.DEFAULT_OUTPUT_DATA.length; dataIndex++)
             {
-                for (InputData[] inputData : this.getTrainingInputs().get(OutputData.DEFAULT_OUTPUT_DATA[dataIndex].getName()))
+                Stack<InputData[]> possibleTrainingInputs = this.getTrainingInputs().get(OutputData.DEFAULT_OUTPUT_DATA[dataIndex].getName());
+
+                for (int i = 0; i < maxSize.size(); i++)
                 {
+                    InputData[] inputData = possibleTrainingInputs.get(i);
                     final double[][] inputArray = this.provideInputData(inputData);
 
                     if (inputArray == null)

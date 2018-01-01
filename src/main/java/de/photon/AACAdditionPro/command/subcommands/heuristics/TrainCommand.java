@@ -72,23 +72,40 @@ public class TrainCommand extends InternalCommand
 
                     final String output = arguments.remove().toUpperCase();
 
-                    if (output.equals("VANILLA") || output.equals("CHEATING"))
+                    for (OutputData outputData : OutputData.DEFAULT_OUTPUT_DATA)
                     {
-                        user.getInventoryData().inventoryClicks.clear();
-                        pattern.getTrainingDataSet().add(new TrainingData(trainingPlayer.getUniqueId(), new OutputData(output)));
+                        if (outputData.getName().equals(output))
+                        {
+                            user.getInventoryData().inventoryClicks.clear();
+                            pattern.getTrainingDataSet().add(new TrainingData(trainingPlayer.getUniqueId(), outputData));
 
-                        final String messageString = ChatColor.GOLD + "[HEURISTICS] Training " + ChatColor.RED + patternName +
-                                                     ChatColor.GOLD + " | Player: " + ChatColor.RED + trainingPlayer.getName() +
-                                                     ChatColor.GOLD + " | Output: " + ChatColor.RED + output;
+                            final String messageString = ChatColor.GOLD + "[HEURISTICS] Training " + ChatColor.RED + patternName +
+                                                         ChatColor.GOLD + " | Player: " + ChatColor.RED + trainingPlayer.getName() +
+                                                         ChatColor.GOLD + " | Output: " + ChatColor.RED + output;
 
-                        sender.sendMessage(messageString);
-                        VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString));
+                            sender.sendMessage(messageString);
+                            VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString));
+                            return;
+                        }
                     }
-                    else
+
+                    sender.sendMessage(ChatColor.GOLD + "Output \"" + ChatColor.RED + output + ChatColor.GOLD + "\"" + " is not allowed.");
+
+                    final StringBuilder sb = new StringBuilder();
+                    sb.append(ChatColor.GOLD);
+                    sb.append("Allowed outputs: ");
+
+                    for (OutputData outputData : OutputData.DEFAULT_OUTPUT_DATA)
                     {
-                        sender.sendMessage(ChatColor.GOLD + "Output \"" + ChatColor.RED + output + ChatColor.GOLD + "\"" + " is not allowed.");
-                        sender.sendMessage(ChatColor.GOLD + "Allowed outputs: " + ChatColor.RED + "VANILLA" + ChatColor.GOLD + " | " + ChatColor.RED + "CHEATING");
+                        sb.append(ChatColor.RED);
+                        sb.append(outputData.getName());
+                        sb.append(ChatColor.GOLD);
+                        sb.append(" | ");
                     }
+
+                    // Delete the last " | ".
+                    sb.delete(sb.length() - 2, sb.length());
+                    sender.sendMessage(sb.toString());
                 }
             }
         }

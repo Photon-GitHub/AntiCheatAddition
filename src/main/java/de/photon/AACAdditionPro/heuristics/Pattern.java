@@ -38,17 +38,13 @@ public class Pattern implements Serializable
     private transient boolean currentlyBlockedByInvalidData;
 
     @Getter
-    private transient Set<TrainingData> trainingDataSet;
-
+    private Set<TrainingData> trainingDataSet;
 
     @Getter
-    private final transient Map<OutputData, Stack<InputData[]>> trainingInputs;
+    private final Map<String, Stack<InputData[]>> trainingInputs;
 
     public Pattern(String name, InputData[] inputs, int samples, OutputData[] outputs, int[] hiddenNeuronsPerLayer)
     {
-        // Default constructor for trainingDataSet.
-        this();
-
         this.name = name;
 
         // The input and output neurons need to be added prior to building the graph.
@@ -66,20 +62,15 @@ public class Pattern implements Serializable
         this.graph = new Graph(completeNeurons);
         this.inputs = inputs;
         this.outputs = outputs;
-    }
 
-    /**
-     * No-args constructor called upon deserialization.
-     */
-    protected Pattern()
-    {
         // The default initial capacity of 16 is not used in most cases.
         this.trainingDataSet = new HashSet<>(8);
+
         this.trainingInputs = new HashMap<>(2, 1);
 
         for (OutputData defaultOutputDatum : OutputData.DEFAULT_OUTPUT_DATA)
         {
-            this.trainingInputs.put(defaultOutputDatum, new Stack<>());
+            this.trainingInputs.put(defaultOutputDatum.getName(), new Stack<>());
         }
     }
 
@@ -178,7 +169,7 @@ public class Pattern implements Serializable
         {
             for (int dataIndex = 0; dataIndex < OutputData.DEFAULT_OUTPUT_DATA.length; dataIndex++)
             {
-                for (InputData[] inputData : this.getTrainingInputs().get(OutputData.DEFAULT_OUTPUT_DATA[dataIndex]))
+                for (InputData[] inputData : this.getTrainingInputs().get(OutputData.DEFAULT_OUTPUT_DATA[dataIndex].getName()))
                 {
                     this.provideInputData(inputData);
 
@@ -192,12 +183,32 @@ public class Pattern implements Serializable
             }
         }
 
-        // Clear the data.
-        this.trainingDataSet.clear();
+        clearTrainingData();
+    }
 
-        for (OutputData defaultOutputDatum : OutputData.DEFAULT_OUTPUT_DATA)
+    /**
+     * Saves this pattern as a file.
+     */
+    public void saveToFile()
+    {
+        clearTrainingData();
+
+        try
         {
-            this.trainingInputs.get(defaultOutputDatum).clear();
+            // Create the file and open a FileOutputStream for it.
+            final FileOutputStream fileOutputStream = new FileOutputStream(
+                    FileUtilities.saveFileInFolder("heuristics/" + this.name + ".pattern")
+            );
+
+            final ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(this);
+            objectOutputStream.close();
+
+            fileOutputStream.close();
+        } catch (IOException e)
+        {
+            VerboseSender.sendVerboseMessage("Could not save pattern " + this.name + ". See the logs for further information.", true, true);
+            e.printStackTrace();
         }
     }
 
@@ -218,26 +229,16 @@ public class Pattern implements Serializable
     }
 
     /**
-     * Saves this pattern as a file.
+     * Clears the training data to reduce the serialized file size or prepare a new training cycle.
      */
-    public void saveToFile()
+    private void clearTrainingData()
     {
-        try
-        {
-            // Create the file and open a FileOutputStream for it.
-            final FileOutputStream fileOutputStream = new FileOutputStream(
-                    FileUtilities.saveFileInFolder("heuristics/" + this.name + ".pattern")
-            );
+        // Clear the data.
+        this.trainingDataSet.clear();
 
-            final ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-            objectOutputStream.writeObject(this);
-            objectOutputStream.close();
-
-            fileOutputStream.close();
-        } catch (IOException e)
+        for (OutputData defaultOutputDatum : OutputData.DEFAULT_OUTPUT_DATA)
         {
-            VerboseSender.sendVerboseMessage("Could not save pattern " + this.name + ". See the logs for further information.", true, true);
-            e.printStackTrace();
+            this.trainingInputs.get(defaultOutputDatum.getName()).clear();
         }
     }
 }

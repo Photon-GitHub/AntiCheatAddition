@@ -12,8 +12,8 @@ import java.io.Serializable;
  */
 public class Graph implements Serializable
 {
-    private static final double TRAIN_PARAMETER = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.train_parameter");
-    private static final double MOMENTUM_PARAMETER = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.momentum_parameter");
+    private static final double TRAIN_PARAMETER = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.train_parameter");
+    private static final double MOMENTUM_PARAMETER = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.momentum_parameter");
 
     // The main matrix containing the weights of all connections
     // Use Wrapper class to be able to set a value to null

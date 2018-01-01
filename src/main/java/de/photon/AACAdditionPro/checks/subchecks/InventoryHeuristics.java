@@ -148,7 +148,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 inputData[5].getData()[i[0]++] = youngerClick.clickType.ordinal();
             });
 
-            final Map<Pattern, OutputData> outputDataMap = new HashMap<>(PATTERNS.size());
+            final Map<Pattern, OutputData> outputDataMap = new HashMap<>(PATTERNS.size(), 1);
 
             for (Pattern pattern : PATTERNS)
             {

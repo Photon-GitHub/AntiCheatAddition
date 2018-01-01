@@ -61,7 +61,7 @@ public class ListCommand extends InternalCommand
         }
         else
         {
-            sender.sendMessage(PREFIX + ChatColor.RED + "InventoryHeuristics framework is not loaded or enabled.");
+            sender.sendMessage(HeuristicsCommand.FRAMEWORK_DISABLED);
         }
     }
 

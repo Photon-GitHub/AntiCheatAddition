@@ -77,7 +77,7 @@ public class CreateCommand extends InternalCommand
         }
         else
         {
-            sender.sendMessage(PREFIX + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
+            sender.sendMessage(HeuristicsCommand.FRAMEWORK_DISABLED);
         }
     }
 

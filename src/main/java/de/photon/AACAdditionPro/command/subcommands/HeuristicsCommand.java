@@ -21,6 +21,7 @@ public class HeuristicsCommand extends InternalCommand
      * This is the header that appears on top of each message block sent by the {@link de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics}.
      */
     public static final String HEURISTICS_HEADER = ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------";
+    public static final String FRAMEWORK_DISABLED = PREFIX + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.";
 
     public static boolean heuristicsUnlocked()
     {
@@ -79,7 +80,7 @@ public class HeuristicsCommand extends InternalCommand
      */
     public static String createPatternNotFoundMessage(final String nameOfPattern)
     {
-        return String.valueOf(ChatColor.GOLD) +
+        return ChatColor.GOLD +
                "Pattern \"" +
                ChatColor.RED +
                nameOfPattern +

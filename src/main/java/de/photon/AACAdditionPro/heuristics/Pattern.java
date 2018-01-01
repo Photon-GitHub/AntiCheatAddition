@@ -25,7 +25,7 @@ public class Pattern implements Serializable
     /**
      * The epoch count.
      */
-    private static final int EPOCH = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".epoch");
+    private static final int EPOCH = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.epoch");
 
     @Getter
     @Setter

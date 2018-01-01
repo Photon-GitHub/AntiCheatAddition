@@ -213,15 +213,14 @@ InventoryHeuristics:
    # THIS IS A VERY POWERFUL TOOL AND CAN CRIPPLE YOUR SERVER IF USED IN THE WRONG WAY.
    # I WILL _NOT_ PROVIDE SUPPORT FOR THIS FUNCTION: USE ON YOUR OWN RISK!
    unlock_full_framework: false
-   # The epoch when training a neural net.
-   # This only effects you if unlock_full_framework is true.
-   epoch: 5000
-   # The train parameter of all neural nets
-   # This only effects you if unlock_full_framework is true.
-   train_parameter: 0.1
-   # The momentum parameter of all neural nets
-   # This only effects you if unlock_full_framework is true.
-   momentum_parameter: 0.1
+   # Options which belong to this section will only effect you if unlock_full_framework is set to true.
+   framework:
+      # The epoch when training a neural net.
+      epoch: 5000
+      # The train parameter of all neural nets
+      train_parameter: 0.1
+      # The momentum parameter of all neural nets
+      momentum_parameter: 0.04
    # Map of confidence levels to command
    # Confidences will not add up.
    # 100 is the maximum confidence possible to reach.

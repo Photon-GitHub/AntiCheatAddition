@@ -137,6 +137,8 @@ public class Graph implements Serializable
                 case HIDDEN:
                     double sum = 0;
                     final int[] indices = nextLayerIndexBoundaries(currentNeuron);
+
+                    // f'(netinput) * Sum(delta_(toHigherLayer) * matrix[thisNeuron][toHigherLayer])
                     for (int higherLayerNeuron = indices[0]; higherLayerNeuron <= indices[1]; higherLayerNeuron++)
                     {
                         // matrix[currentNeuron][i] should never be null as every neuron is connected with all the
@@ -144,7 +146,6 @@ public class Graph implements Serializable
                         sum += (deltas[higherLayerNeuron] * matrix[currentNeuron][higherLayerNeuron]);
                     }
 
-                    // f'(netinput) * Sum(delta_(toHigherLayer) * matrix[thisNeuron][toHigherLayer])
                     deltas[currentNeuron] *= sum;
                     break;
                 case OUTPUT:
@@ -179,18 +180,18 @@ public class Graph implements Serializable
     private double calculate()
     {
         // Perform all the adding
-        for (int neuron = 0; neuron < this.matrix.length; neuron++)
+        for (int currentNeuron = 0; currentNeuron < this.matrix.length; currentNeuron++)
         {
             // Activation function
-            this.activatedNeurons[neuron] = applyActivationFunction(this.neurons[neuron]);
+            this.activatedNeurons[currentNeuron] = applyActivationFunction(this.neurons[currentNeuron]);
 
             // Forward - pass of the values
-            for (int connectionTo = 0; connectionTo < this.matrix.length; connectionTo++)
+            for (int to = 0; to < this.matrix.length; to++)
             {
                 // Forbid a connection in null - values
-                if (matrix[neuron][connectionTo] != null)
+                if (matrix[currentNeuron][to] != null)
                 {
-                    this.neurons[connectionTo] += (this.activatedNeurons[neuron] * this.matrix[neuron][connectionTo]);
+                    this.neurons[to] += (this.activatedNeurons[currentNeuron] * this.matrix[currentNeuron][to]);
                 }
             }
         }

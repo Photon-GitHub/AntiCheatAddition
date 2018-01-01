@@ -127,7 +127,8 @@ public class Graph implements Serializable
 
         for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
         {
-            deltas[currentNeuron] = activatedNeurons[currentNeuron] * (1 - activatedNeurons[currentNeuron]);
+            deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true);
+            //deltas[currentNeuron] = activatedNeurons[currentNeuron] * (1 - activatedNeurons[currentNeuron]);
 
             // Deltas depend on the neuron class.
             switch (this.classifyNeuron(currentNeuron))
@@ -183,7 +184,7 @@ public class Graph implements Serializable
         for (int currentNeuron = 0; currentNeuron < this.matrix.length; currentNeuron++)
         {
             // Activation function
-            this.activatedNeurons[currentNeuron] = applyActivationFunction(this.neurons[currentNeuron]);
+            this.activatedNeurons[currentNeuron] = applyActivationFunction(this.neurons[currentNeuron], false);
 
             // Forward - pass of the values
             for (int to = 0; to < this.matrix.length; to++)
@@ -263,8 +264,14 @@ public class Graph implements Serializable
      *
      * @return the value of the activated neuron or the derived neuron, depending on the parameter derived.
      */
-    private static double applyActivationFunction(double input)
+    private static double applyActivationFunction(double input, boolean derived)
     {
+        if (derived)
+        {
+            final double epowx = Math.pow(Math.E, input);
+
+            return epowx / (epowx * epowx + 2 * epowx + 1);
+        }
         return 1 / (1 + Math.pow(Math.E, (-input)));
     }
 }

@@ -189,7 +189,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     if (!inventoryHeuristicsEvent.isCancelled())
                     {
                         flagSum += entry.getValue();
-                        VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue());
+                        VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + entry.getKey().getName() + " with a confidence of " + entry.getValue());
                     }
                 }
             }

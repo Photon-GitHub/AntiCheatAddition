@@ -30,9 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ClientsidePlayerEntity extends ClientsideEntity
 {
-    private boolean shouldAssignTeam;
-    private boolean shouldSwing;
-    private boolean shouldSwap;
+    private boolean visible_in_tablist, shouldAssignTeam, shouldSwing, shouldSwap;
 
     @Getter
     private final WrappedGameProfile gameProfile;
@@ -66,6 +64,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         this.equipment = new Equipment(this);
 
         // Init additional behaviour configs
+        visible_in_tablist = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.visible_in_tablist");
         shouldAssignTeam = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.team.enabled");
         shouldSwing = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swing.enabled");
         shouldSwap = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swap.enabled");
@@ -191,12 +190,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         if (this.isSpawned())
         {
-            final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
-            playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY);
-            playerInfoWrapper.setData(Collections.singletonList(
-                    // The new information of about the Entity.
-                    new PlayerInfoData(this.getGameProfile(), ping, EnumWrappers.NativeGameMode.SURVIVAL, null)));
-            playerInfoWrapper.sendPacket(this.observedPlayer);
+            updatePlayerInfo(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY, ping);
         }
     }
 
@@ -249,14 +243,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         super.spawn(location);
         this.lastLocation = location.clone();
         this.move(location);
-        // Add the player with PlayerInfo
-        final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
 
-        final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
-        playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
-        playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
-
-        playerInfoWrapper.sendPacket(observedPlayer);
+        // Add the player in the Tablist via PlayerInfo
+        this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, this.ping);
 
         // DataWatcher
         final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
@@ -316,22 +305,30 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         if (isSpawned())
         {
-            removeFromTab();
+            updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, 0);
             Bukkit.getScheduler().cancelTask(pingTask);
         }
 
         super.despawn();
     }
 
-    private void removeFromTab()
+    /**
+     * Utility method to set whether or not the entity appears in tab.
+     */
+    private void updatePlayerInfo(EnumWrappers.PlayerInfoAction action, int ping)
     {
-        // Remove the player with PlayerInfo
-        final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, 0, EnumWrappers.NativeGameMode.SURVIVAL, null);
+        // Only send these packets if requested.
+        // The visibility in the tablist is caused by the PlayerInformation packet.
+        if (this.visible_in_tablist)
+        {
+            // Remove the player with PlayerInfo
+            final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
 
-        final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
-        playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);
-        playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
+            final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
+            playerInfoWrapper.setAction(action);
+            playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
 
-        playerInfoWrapper.sendPacket(observedPlayer);
+            playerInfoWrapper.sendPacket(observedPlayer);
+        }
     }
 }

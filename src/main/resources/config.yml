@@ -288,6 +288,10 @@ KillauraEntity:
    #
    # The entity will only be visible for one player and only spawns behind players in survival and adventure mode
    behaviour:
+      # This determines whether the player will see the entity in the tablist.
+      # WARNING: Disabling this setting will make the entity VERY easy to bypass.
+      #          DO NOT REPORT BYPASSES WITH THIS SETTING DISABLED, I WILL CLOSE THEM WITHOUT FURTHER NOTICE.
+      visible_in_tablist: true
       # Should the entity join a team
       team:
          enabled: true

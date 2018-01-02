@@ -45,8 +45,6 @@ public class TrainCommand extends InternalCommand
                 if (playerOrFinishArgument.equalsIgnoreCase("finish"))
                 {
                     final Thread trainThread = pattern.train();
-                    trainThread.start();
-
                     try
                     {
                         trainThread.join();

@@ -190,9 +190,7 @@ public class Pattern implements Serializable
         return this.trainingThread;
     }
 
-    /**
-     * This pushes a new {@link InputData} - Array to the trainingInputs if there is no current training.
-     */
+    /**This pushes a new {@link InputData} - Array to the trainingInputs if there is no current training.*/
     public void pushInputData(final String outputNeuronName, final InputData[] inputData)
     {
         // Only push when not training.

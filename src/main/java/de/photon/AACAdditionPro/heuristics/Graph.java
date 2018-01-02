@@ -129,7 +129,7 @@ public class Graph implements Serializable
         for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
         {
             // Wikipedia's alternative solution: deltas[currentNeuron] = activatedNeurons[currentNeuron] * (1 - activatedNeurons[currentNeuron]);
-            deltas[currentNeuron] = activationFunction.applyDerivedActivationFunction(neurons[currentNeuron] + activationFunction.getBias());
+            deltas[currentNeuron] = activationFunction.applyDerivedActivationFunction(neurons[currentNeuron]);
 
             // Deltas depend on the neuron class.
             switch (this.classifyNeuron(currentNeuron))
@@ -186,7 +186,7 @@ public class Graph implements Serializable
         for (int currentNeuron = 0; currentNeuron < this.matrix.length; currentNeuron++)
         {
             // Activation function
-            this.activatedNeurons[currentNeuron] = activationFunction.applyActivationFunction(this.neurons[currentNeuron] + activationFunction.getBias());
+            this.activatedNeurons[currentNeuron] = activationFunction.applyActivationFunction(this.neurons[currentNeuron]);
 
             // Forward - pass of the values
             // "to" will never be smaller or equal to "currentNeuron" as of the layer principle.

@@ -29,13 +29,13 @@ public enum ActivationFunctions implements ActivationFunction
                 @Override
                 public double applyActivationFunction(double input)
                 {
-                    return Math.tanh(input);
+                    return Math.tanh(input - this.getBias());
                 }
 
                 @Override
                 public double applyDerivedActivationFunction(double input)
                 {
-                    double cosh = Math.cosh(input);
+                    double cosh = Math.cosh(this.getBias() - input);
                     return 1 / (cosh * cosh);
                 }
 

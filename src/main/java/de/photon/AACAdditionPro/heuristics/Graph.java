@@ -16,19 +16,22 @@ public class Graph implements Serializable
     private static final double TRAIN_PARAMETER = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.train_parameter");
     private static final double MOMENTUM_PARAMETER = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.momentum_parameter");
 
+    // The activation function of this Graph.
+    private final ActivationFunction activationFunction;
+
     // The main matrix containing the weights of all connections
     // Use Wrapper class to be able to set a value to null
-    private Double[][] matrix;
-    private double[][] weightChangeMatrix;
+    private final Double[][] matrix;
+    private final double[][] weightChangeMatrix;
 
     // Working array does not need to be serialized
-    private double[] neurons;
-    private double[] activatedNeurons;
-    private double[] deltas;
+    private final double[] neurons;
+    private final double[] activatedNeurons;
+    private final double[] deltas;
 
-    private int[] neuronsInLayers;
+    private final int[] neuronsInLayers;
 
-    private final ActivationFunction activationFunction;
+    private double currentTrainParameter = TRAIN_PARAMETER;
 
     /**
      * Constructs a new Graph
@@ -163,10 +166,15 @@ public class Graph implements Serializable
                 {
                     // Calculate the new weightChange.
                     // The old weight change is in here as a part of the momentum.
-                    weightChangeMatrix[from][currentNeuron] = (1 - MOMENTUM_PARAMETER) * TRAIN_PARAMETER * activatedNeurons[from] * deltas[currentNeuron] +
+                    weightChangeMatrix[from][currentNeuron] = (1 - MOMENTUM_PARAMETER) * currentTrainParameter * activatedNeurons[from] * deltas[currentNeuron] +
                                                               (MOMENTUM_PARAMETER * weightChangeMatrix[from][currentNeuron]);
 
                     matrix[from][currentNeuron] += weightChangeMatrix[from][currentNeuron];
+
+                    if (currentTrainParameter > (TRAIN_PARAMETER / 100))
+                    {
+                        currentTrainParameter -= 4E-5;
+                    }
                 }
             }
         }

@@ -290,7 +290,14 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             DisplayInformation.applyTeams(this);
         }
 
-        this.recursiveUpdatePing();
+        if (this.visible_in_tablist)
+        {
+            this.recursiveUpdatePing();
+        }
+        else
+        {
+            this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, this.ping);
+        }
 
         // Entity equipment + armor
         this.equipment.equipArmor();
@@ -305,7 +312,10 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         if (isSpawned())
         {
-            updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, 0);
+            if (this.visible_in_tablist)
+            {
+                updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, 0);
+            }
             Bukkit.getScheduler().cancelTask(pingTask);
         }
 
@@ -317,18 +327,14 @@ public class ClientsidePlayerEntity extends ClientsideEntity
      */
     private void updatePlayerInfo(EnumWrappers.PlayerInfoAction action, int ping)
     {
-        // Only send these packets if requested.
         // The visibility in the tablist is caused by the PlayerInformation packet.
-        if (this.visible_in_tablist)
-        {
-            // Remove the player with PlayerInfo
-            final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
+        // Remove the player with PlayerInfo
+        final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
 
-            final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
-            playerInfoWrapper.setAction(action);
-            playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
+        final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
+        playerInfoWrapper.setAction(action);
+        playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
 
-            playerInfoWrapper.sendPacket(observedPlayer);
-        }
+        playerInfoWrapper.sendPacket(observedPlayer);
     }
 }

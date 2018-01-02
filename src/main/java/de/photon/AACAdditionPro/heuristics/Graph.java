@@ -80,8 +80,8 @@ public class Graph implements Serializable
     /**
      * Set the input values of the {@link Graph} and {@link #calculate()}.
      *
-     * @param inputValues the input values as a matrix with the different tests being the second index and the
-     *                    different input sources (e.g. time delta, slot distance, etc.) being the first index.
+     * @param inputValues the input values as a matrix different with the input sources (e.g. time delta, slot distance, etc.) being the first index
+     *                    and with the different tests being the second index.
      *
      * @return the output values of the output neurons.
      */

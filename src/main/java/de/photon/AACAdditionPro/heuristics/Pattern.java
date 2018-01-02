@@ -13,13 +13,13 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class Pattern implements Serializable
 {
@@ -33,18 +33,26 @@ public class Pattern implements Serializable
      */
     private static final int EPOCH = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.epoch");
 
+    // SERIALIZATION: CONTENT
     @Getter
     @Setter
     private String name;
+    // SERIALIZATION: CONTENT
     private Graph graph;
 
+    // SERIALIZATION: CONTENT
     private InputData[] inputs;
 
+    // SERIALIZATION: NON-null, CONTENT NOT IMPORTANT
     @Getter
     private Set<TrainingData> trainingDataSet;
 
+    // SERIALIZATION: NON-null, CONTENT NOT IMPORTANT
     @Getter
-    private final Map<String, Stack<InputData[]>> trainingInputs;
+    private final ConcurrentMap<String, Stack<InputData[]>> trainingInputs;
+
+    // SERIALIZATION: CONTENT NOT IMPORTANT, MUST BE NULL
+    private transient Thread trainingThread = null;
 
     public Pattern(String name, InputData[] inputs, int samples, int[] hiddenNeuronsPerLayer)
     {
@@ -69,7 +77,7 @@ public class Pattern implements Serializable
         this.trainingDataSet = new HashSet<>(8);
 
         // Training input map.
-        this.trainingInputs = new HashMap<>(2, 1);
+        this.trainingInputs = new ConcurrentHashMap<>(2, 1);
         for (String validOutput : VALID_OUTPUTS)
         {
             this.trainingInputs.put(validOutput, new Stack<>());
@@ -136,35 +144,57 @@ public class Pattern implements Serializable
 
     /**
      * This clears the trainingInputs - stacks and learns from them.
+     *
+     * @return the {@link Thread} which does the training to wait for it.
+     *
+     * @throws IllegalStateException if a training is already taking place.
      */
-    public void train()
+    public Thread train() throws IllegalStateException
     {
-        final Stack<InputData[]> maxSize = this.trainingInputs.values().stream().min(Comparator.comparingInt(Vector::size)).orElseThrow(() -> new NeuralNetworkException("The training inputs of pattern " + this.name + " do not have a max size."));
-
-        for (int epoch = 0; epoch < EPOCH; epoch++)
+        if (this.trainingThread != null)
         {
-            for (int validOutputIndex = 0; validOutputIndex < VALID_OUTPUTS.length; validOutputIndex++)
-            {
-                Stack<InputData[]> possibleTrainingInputs = this.getTrainingInputs().get(VALID_OUTPUTS[validOutputIndex]);
-
-                for (int i = 0; i < maxSize.size(); i++)
-                {
-                    InputData[] inputData = possibleTrainingInputs.get(i);
-                    final double[][] inputArray = this.provideInputData(inputData);
-
-                    if (inputArray == null)
-                    {
-                        continue;
-                    }
-
-                    // There are only 2 outputs and adding more outputs would require lots of changes, thus the index check for cheating here is ok.
-                    this.graph.train(inputArray, (validOutputIndex == 1));
-                }
-            }
+            throw new IllegalStateException("Pattern " + this.name + " is already training.");
         }
 
-        clearTrainingData();
-        saveToFile();
+        this.trainingThread = new Thread(() -> {
+            final Stack<InputData[]> maxSize = this.trainingInputs.values().stream().min(Comparator.comparingInt(Vector::size)).orElseThrow(() -> new NeuralNetworkException("The training inputs of pattern " + this.name + " do not have a max size."));
+
+            for (int epoch = 0; epoch < EPOCH; epoch++)
+            {
+                for (int validOutputIndex = 0; validOutputIndex < VALID_OUTPUTS.length; validOutputIndex++)
+                {
+                    Stack<InputData[]> possibleTrainingInputs = this.getTrainingInputs().get(VALID_OUTPUTS[validOutputIndex]);
+
+                    for (int i = 0; i < maxSize.size(); i++)
+                    {
+                        InputData[] inputData = possibleTrainingInputs.get(i);
+                        final double[][] inputArray = this.provideInputData(inputData);
+
+                        if (inputArray == null)
+                        {
+                            continue;
+                        }
+
+                        // There are only 2 outputs and adding more outputs would require lots of changes, thus the index check for cheating here is ok.
+                        this.graph.train(inputArray, (validOutputIndex == 1));
+                    }
+                }
+            }
+
+            System.out.println("Finished training.");
+            clearTrainingData();
+            saveToFile();
+            this.trainingThread = null;
+        });
+        this.trainingThread.start();
+
+        return this.trainingThread;
+    }
+
+    /***/
+    public void pushInputData(final String outputNeuronName, final InputData[] inputData)
+    {
+
     }
 
     /**

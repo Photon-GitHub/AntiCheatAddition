@@ -17,18 +17,23 @@ public class Graph implements Serializable
     private static final double MOMENTUM_PARAMETER = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.momentum_parameter");
 
     // The activation function of this Graph.
+    // SERIALIZATION: CONTENT
     private final ActivationFunction activationFunction;
 
     // The main matrix containing the weights of all connections
     // Use Wrapper class to be able to set a value to null
+    // SERIALIZATION: CONTENT
     private final Double[][] matrix;
+    // SERIALIZATION: CONTENT
     private final double[][] weightChangeMatrix;
 
     // Working array does not need to be serialized
+    // SERIALIZATION: SIZE ONLY, CONTENT NOT IMPORTANT
     private final double[] neurons;
+    // SERIALIZATION: SIZE ONLY, CONTENT NOT IMPORTANT
     private final double[] activatedNeurons;
-    private final double[] deltas;
 
+    // SERIALIZATION: CONTENT
     private final int[] neuronsInLayers;
 
     /**
@@ -39,14 +44,13 @@ public class Graph implements Serializable
         this.activationFunction = ActivationFunctions.LOGISTIC;
         this.neuronsInLayers = neuronsInLayers;
 
-        int sumOfNeurons = Arrays.stream(neuronsInLayers).sum();
+        final int sumOfNeurons = Arrays.stream(neuronsInLayers).sum();
 
         this.matrix = new Double[sumOfNeurons][sumOfNeurons];
         this.weightChangeMatrix = new double[sumOfNeurons][sumOfNeurons];
 
         this.neurons = new double[sumOfNeurons];
         this.activatedNeurons = new double[sumOfNeurons];
-        this.deltas = new double[sumOfNeurons];
 
         // Invalidate every connection
         for (int i = 0; i < this.matrix.length; i++)
@@ -125,6 +129,9 @@ public class Graph implements Serializable
     {
         // Only calculate so that the neurons array is updated.
         this.analyse(inputValues);
+
+        // The delta values are only important in this training cycle.
+        final double[] deltas = new double[neurons.length];
 
         for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
         {

@@ -44,7 +44,16 @@ public class TrainCommand extends InternalCommand
 
                 if (playerOrFinishArgument.equalsIgnoreCase("finish"))
                 {
-                    pattern.train();
+                    final Thread trainThread = pattern.train();
+                    trainThread.start();
+
+                    try
+                    {
+                        trainThread.join();
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
 
                     final String messageString = ChatColor.GOLD + "Training of pattern " + ChatColor.RED + pattern.getName() + ChatColor.GOLD + " finished.";
                     sender.sendMessage(messageString);

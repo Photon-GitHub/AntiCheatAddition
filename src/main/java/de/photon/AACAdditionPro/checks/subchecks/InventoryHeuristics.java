@@ -173,8 +173,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     final Double result = pattern.analyse(inputData);
                     if (result != null)
                     {
-                        //TODO: WHY IS THE GRAPH BIASED TO 0.5?
-                        outputDataMap.put(pattern, 2 * (result - 0.5D));
+                        outputDataMap.put(pattern, result);
                     }
                 }
             }

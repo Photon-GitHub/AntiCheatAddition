@@ -28,11 +28,14 @@ public class Graph implements Serializable
 
     private int[] neuronsInLayers;
 
+    private final ActivationFunction activationFunction;
+
     /**
      * Constructs a new Graph
      */
     Graph(int[] neuronsInLayers)
     {
+        this.activationFunction = ActivationFunctions.HYPERBOLIC_TANGENT;
         this.neuronsInLayers = neuronsInLayers;
 
         int sumOfNeurons = Arrays.stream(neuronsInLayers).sum();
@@ -124,7 +127,7 @@ public class Graph implements Serializable
 
         for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
         {
-            deltas[currentNeuron] = applyActivationFunction(neurons[currentNeuron], true);
+            deltas[currentNeuron] = activationFunction.applyDerivedActivationFunction(neurons[currentNeuron] + activationFunction.getBias());
             //deltas[currentNeuron] = activatedNeurons[currentNeuron] * (1 - activatedNeurons[currentNeuron]);
 
             // Deltas depend on the neuron class.
@@ -181,7 +184,7 @@ public class Graph implements Serializable
         for (int currentNeuron = 0; currentNeuron < this.matrix.length; currentNeuron++)
         {
             // Activation function
-            this.activatedNeurons[currentNeuron] = applyActivationFunction(this.neurons[currentNeuron], false);
+            this.activatedNeurons[currentNeuron] = activationFunction.applyActivationFunction(this.neurons[currentNeuron] + activationFunction.getBias());
 
             // Forward - pass of the values
             for (int to = 0; to < this.matrix.length; to++)
@@ -252,23 +255,5 @@ public class Graph implements Serializable
         INPUT,
         HIDDEN,
         OUTPUT
-    }
-
-    /**
-     * Calculated the activated value of a neuron.
-     *
-     * @param input the netinput of the neuron
-     *
-     * @return the value of the activated neuron or the derived neuron, depending on the parameter derived.
-     */
-    private static double applyActivationFunction(double input, boolean derived)
-    {
-        if (derived)
-        {
-            final double epowx = Math.pow(Math.E, input);
-
-            return epowx / (epowx * epowx + 2 * epowx + 1);
-        }
-        return 1 / (1 + Math.pow(Math.E, (-input)));
     }
 }

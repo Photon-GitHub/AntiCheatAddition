@@ -161,7 +161,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     if (trainingData.getUuid().equals(user.getPlayer().getUniqueId()))
                     {
                         training = true;
-                        pattern.getTrainingInputs().get(trainingData.getOutputDataName()).push(inputData);
+                        pattern.pushInputData(trainingData.getOutputDataName(), inputData);
                         break;
                     }
                 }

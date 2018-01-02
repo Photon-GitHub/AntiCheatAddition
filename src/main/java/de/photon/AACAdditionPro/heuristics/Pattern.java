@@ -48,7 +48,6 @@ public class Pattern implements Serializable
     private Set<TrainingData> trainingDataSet;
 
     // SERIALIZATION: NON-null, CONTENT NOT IMPORTANT
-    @Getter
     private final ConcurrentMap<String, Stack<InputData[]>> trainingInputs;
 
     // SERIALIZATION: CONTENT NOT IMPORTANT, MUST BE NULL
@@ -163,7 +162,7 @@ public class Pattern implements Serializable
             {
                 for (int validOutputIndex = 0; validOutputIndex < VALID_OUTPUTS.length; validOutputIndex++)
                 {
-                    Stack<InputData[]> possibleTrainingInputs = this.getTrainingInputs().get(VALID_OUTPUTS[validOutputIndex]);
+                    Stack<InputData[]> possibleTrainingInputs = this.trainingInputs.get(VALID_OUTPUTS[validOutputIndex]);
 
                     for (int i = 0; i < maxSize.size(); i++)
                     {
@@ -191,10 +190,16 @@ public class Pattern implements Serializable
         return this.trainingThread;
     }
 
-    /***/
+    /**
+     * This pushes a new {@link InputData} - Array to the trainingInputs if there is no current training.
+     */
     public void pushInputData(final String outputNeuronName, final InputData[] inputData)
     {
-
+        // Only push when not training.
+        if (this.trainingThread == null)
+        {
+            this.trainingInputs.get(outputNeuronName).push(inputData);
+        }
     }
 
     /**

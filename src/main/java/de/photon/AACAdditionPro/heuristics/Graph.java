@@ -158,7 +158,7 @@ public class Graph implements Serializable
                     break;
             }
 
-            // "from" will never be bigger than currentNeuron as of the layer principle.
+            // "from" will never be bigger than "currentNeuron" as of the layer principle.
             for (int from = 0; from < currentNeuron; from++)
             {
                 if (matrix[from][currentNeuron] != null)
@@ -189,7 +189,7 @@ public class Graph implements Serializable
             this.activatedNeurons[currentNeuron] = activationFunction.applyActivationFunction(this.neurons[currentNeuron] + activationFunction.getBias());
 
             // Forward - pass of the values
-            // "to" will never be smaller or equal to currentNeuron as of the layer principle.
+            // "to" will never be smaller or equal to "currentNeuron" as of the layer principle.
             for (int to = currentNeuron; to < this.matrix.length; to++)
             {
                 // Forbid a connection in null - values

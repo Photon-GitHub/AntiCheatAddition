@@ -86,7 +86,8 @@ public class TrainCommand extends InternalCommand
                                                          ChatColor.GOLD + " | Output: " + ChatColor.RED + output;
 
                             sender.sendMessage(messageString);
-                            VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString));
+                            // .substring(14) to remove the [HEURISTICS] label.
+                            VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString).substring(14));
                             return;
                         }
                     }

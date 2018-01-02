@@ -143,10 +143,10 @@ public class Pattern implements Serializable
 
         for (int epoch = 0; epoch < EPOCH; epoch++)
         {
-            for (String validOutput : VALID_OUTPUTS)
+            for (int validOutputIndex = 0; validOutputIndex < VALID_OUTPUTS.length; validOutputIndex++)
             {
-                Stack<InputData[]> possibleTrainingInputs = this.getTrainingInputs().get(validOutput);
-                final boolean cheating = validOutput.equalsIgnoreCase("CHEATING");
+                final boolean cheating = (validOutputIndex == 1);
+                Stack<InputData[]> possibleTrainingInputs = this.getTrainingInputs().get(VALID_OUTPUTS[validOutputIndex]);
 
                 for (int i = 0; i < maxSize.size(); i++)
                 {
@@ -170,7 +170,7 @@ public class Pattern implements Serializable
     /**
      * Saves this pattern as a file.
      */
-    public void saveToFile()
+    private void saveToFile()
     {
         clearTrainingData();
 

@@ -35,7 +35,7 @@ public class Graph implements Serializable
      */
     Graph(int[] neuronsInLayers)
     {
-        this.activationFunction = ActivationFunctions.LOGISTIC;
+        this.activationFunction = ActivationFunctions.HYPERBOLIC_TANGENT;
         this.neuronsInLayers = neuronsInLayers;
 
         int sumOfNeurons = Arrays.stream(neuronsInLayers).sum();
@@ -152,8 +152,8 @@ public class Graph implements Serializable
                 case OUTPUT:
                     // f'(netInput) * (a_wanted - a_real)
                     deltas[currentNeuron] *= (cheating ?
-                                              1D :
-                                              0D) - activatedNeurons[currentNeuron];
+                                              activationFunction.max() :
+                                              activationFunction.min()) - activatedNeurons[currentNeuron];
                     break;
             }
 

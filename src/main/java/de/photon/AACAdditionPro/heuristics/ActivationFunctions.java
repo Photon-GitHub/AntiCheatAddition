@@ -17,6 +17,12 @@ public enum ActivationFunctions implements ActivationFunction
 
                     return epowx / (epowx * epowx + 2 * epowx + 1);
                 }
+
+                @Override
+                public double min()
+                {
+                    return 0;
+                }
             },
     HYPERBOLIC_TANGENT
             {

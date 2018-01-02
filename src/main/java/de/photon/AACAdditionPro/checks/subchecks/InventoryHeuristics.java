@@ -180,7 +180,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
             double flagSum = 0;
             for (Map.Entry<Pattern, Double> entry : outputDataMap.entrySet())
             {
-                System.out.println("Player: " + user.getPlayer() + " Pattern: " + entry.getKey().getName() + " Confidence: " + entry.getValue());
+                System.out.println("Player: " + user.getPlayer().getName() + " Pattern: " + entry.getKey().getName() + " Confidence: " + entry.getValue());
                 if (entry.getValue() > detection_confidence)
                 {
                     final InventoryHeuristicsEvent inventoryHeuristicsEvent = new InventoryHeuristicsEvent(user.getPlayer(), entry.getKey().getName(), entry.getValue());

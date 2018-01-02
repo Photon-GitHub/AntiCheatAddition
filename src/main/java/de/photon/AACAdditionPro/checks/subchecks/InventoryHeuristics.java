@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.checks.subchecks;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
+import de.photon.AACAdditionPro.events.InventoryHeuristicsEvent;
 import de.photon.AACAdditionPro.heuristics.InputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.heuristics.TrainingData;
@@ -14,6 +15,7 @@ import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -182,14 +184,23 @@ public class InventoryHeuristics implements Listener, ViolationModule
             {
                 if (entry.getValue() > detection_confidence)
                 {
-                    flagSum += entry.getValue();
-                    VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue());
+                    final InventoryHeuristicsEvent inventoryHeuristicsEvent = new InventoryHeuristicsEvent(user.getPlayer(), entry.getKey().getName(), entry.getValue());
+                    Bukkit.getPluginManager().callEvent(inventoryHeuristicsEvent);
+
+                    if (!inventoryHeuristicsEvent.isCancelled())
+                    {
+                        flagSum += entry.getValue();
+                        VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue());
+                    }
                 }
             }
 
-            final double vl = Math.abs(Math.tanh(flagSum - 0.15));
-            // Might not be the case, i.e. no detections
-            vlManager.setVL(user.getPlayer(), (int) vl);
+            if (flagSum != 0)
+            {
+                final double vl = Math.abs(Math.tanh(flagSum - 0.15));
+                // Might not be the case, i.e. no detections
+                vlManager.setVL(user.getPlayer(), (int) vl);
+            }
         }
     }
 

@@ -169,9 +169,16 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 // No analysis when training.
                 if (!training)
                 {
-                    final Double result = pattern.analyse(inputData);
+                    Double result = pattern.analyse(inputData);
                     if (result != null)
                     {
+                        //TODO: THIS IS ONLY A WORKAROUND FOR THE 0.5 PROBLEM!!!
+                        if (result >= 0.5)
+                        {
+                            result -= 0.5;
+                        }
+                        result *= 2;
+
                         outputDataMap.put(pattern, result);
                     }
                 }
@@ -180,7 +187,6 @@ public class InventoryHeuristics implements Listener, ViolationModule
             double flagSum = 0;
             for (Map.Entry<Pattern, Double> entry : outputDataMap.entrySet())
             {
-                System.out.println("Player: " + user.getPlayer().getName() + " Pattern: " + entry.getKey().getName() + " Confidence: " + entry.getValue());
                 if (entry.getValue() > detection_confidence)
                 {
                     final InventoryHeuristicsEvent inventoryHeuristicsEvent = new InventoryHeuristicsEvent(user.getPlayer(), entry.getKey().getName(), entry.getValue());

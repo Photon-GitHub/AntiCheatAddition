@@ -144,11 +144,9 @@ public class Pattern implements Serializable
     /**
      * This clears the trainingInputs - stacks and learns from them.
      *
-     * @return the {@link Thread} which does the training to wait for it.
-     *
      * @throws IllegalStateException if a training is already taking place.
      */
-    public Thread train() throws IllegalStateException
+    public synchronized void train() throws IllegalStateException
     {
         if (this.trainingThread != null)
         {
@@ -180,17 +178,17 @@ public class Pattern implements Serializable
                 }
             }
 
-            System.out.println("Finished training.");
+            VerboseSender.sendVerboseMessage("Training of pattern " + this.name + " finished.");
             clearTrainingData();
             saveToFile();
             this.trainingThread = null;
         });
         this.trainingThread.start();
-
-        return this.trainingThread;
     }
 
-    /**This pushes a new {@link InputData} - Array to the trainingInputs if there is no current training.*/
+    /**
+     * This pushes a new {@link InputData} - Array to the trainingInputs if there is no current training.
+     */
     public void pushInputData(final String outputNeuronName, final InputData[] inputData)
     {
         // Only push when not training.

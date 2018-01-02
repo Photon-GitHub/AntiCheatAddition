@@ -44,18 +44,9 @@ public class TrainCommand extends InternalCommand
 
                 if (playerOrFinishArgument.equalsIgnoreCase("finish"))
                 {
-                    final Thread trainThread = pattern.train();
-                    try
-                    {
-                        trainThread.join();
-                    } catch (InterruptedException e)
-                    {
-                        e.printStackTrace();
-                    }
-
-                    final String messageString = ChatColor.GOLD + "Training of pattern " + ChatColor.RED + pattern.getName() + ChatColor.GOLD + " finished.";
-                    sender.sendMessage(messageString);
-                    VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString));
+                    pattern.train();
+                    sender.sendMessage(ChatColor.GOLD + "Pattern " + ChatColor.RED + pattern.getName() + ChatColor.GOLD + " is now training.");
+                    sender.sendMessage(ChatColor.GOLD + "Please watch the verbose - messages to see the end of training.");
                 }
                 else
                 {

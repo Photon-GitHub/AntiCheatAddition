@@ -145,8 +145,6 @@ public class Pattern implements Serializable
         {
             for (int validOutputIndex = 0; validOutputIndex < VALID_OUTPUTS.length; validOutputIndex++)
             {
-                // There are only 2 outputs and adding more outputs would require lots of changes, thus the index check here is ok.
-                final boolean cheating = (validOutputIndex == 1);
                 Stack<InputData[]> possibleTrainingInputs = this.getTrainingInputs().get(VALID_OUTPUTS[validOutputIndex]);
 
                 for (int i = 0; i < maxSize.size(); i++)
@@ -159,7 +157,8 @@ public class Pattern implements Serializable
                         continue;
                     }
 
-                    this.graph.train(inputArray, cheating);
+                    // There are only 2 outputs and adding more outputs would require lots of changes, thus the index check for cheating here is ok.
+                    this.graph.train(inputArray, (validOutputIndex == 1));
                 }
             }
         }

@@ -35,7 +35,7 @@ public class Graph implements Serializable
      */
     Graph(int[] neuronsInLayers)
     {
-        this.activationFunction = ActivationFunctions.HYPERBOLIC_TANGENT;
+        this.activationFunction = ActivationFunctions.LOGISTIC;
         this.neuronsInLayers = neuronsInLayers;
 
         int sumOfNeurons = Arrays.stream(neuronsInLayers).sum();

@@ -49,9 +49,8 @@ public class InventoryHeuristics implements Listener, ViolationModule
         {
             if (heuristicsFolder.mkdirs())
             {
-                //TODO: ADD THE CORRECT URL
                 VerboseSender.sendVerboseMessage("InventoryHeuristics folder created.", true, false);
-                VerboseSender.sendVerboseMessage("Please download the latest patterns from github.", true, false);
+                VerboseSender.sendVerboseMessage("Please download the latest patterns from https://github.com/Photon-GitHub/AACAdditionPro/tree/master/patterns", true, false);
             }
             else
             {
@@ -181,6 +180,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
             double flagSum = 0;
             for (Map.Entry<Pattern, Double> entry : outputDataMap.entrySet())
             {
+                System.out.println("Player: " + user.getPlayer() + " Pattern: " + entry.getKey().getName() + " Confidence: " + entry.getValue());
                 if (entry.getValue() > detection_confidence)
                 {
                     final InventoryHeuristicsEvent inventoryHeuristicsEvent = new InventoryHeuristicsEvent(user.getPlayer(), entry.getKey().getName(), entry.getValue());

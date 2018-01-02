@@ -145,6 +145,7 @@ public class Pattern implements Serializable
         {
             for (int validOutputIndex = 0; validOutputIndex < VALID_OUTPUTS.length; validOutputIndex++)
             {
+                // There are only 2 outputs and adding more outputs would require lots of changes, thus the index check here is ok.
                 final boolean cheating = (validOutputIndex == 1);
                 Stack<InputData[]> possibleTrainingInputs = this.getTrainingInputs().get(VALID_OUTPUTS[validOutputIndex]);
 

@@ -164,6 +164,7 @@ public class Pattern implements Serializable
         }
 
         clearTrainingData();
+        saveToFile();
     }
 
     /**

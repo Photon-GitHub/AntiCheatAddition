@@ -128,8 +128,8 @@ public class Graph implements Serializable
 
         for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
         {
+            // Wikipedia's alternative solution: deltas[currentNeuron] = activatedNeurons[currentNeuron] * (1 - activatedNeurons[currentNeuron]);
             deltas[currentNeuron] = activationFunction.applyDerivedActivationFunction(neurons[currentNeuron] + activationFunction.getBias());
-            //deltas[currentNeuron] = activatedNeurons[currentNeuron] * (1 - activatedNeurons[currentNeuron]);
 
             // Deltas depend on the neuron class.
             switch (this.classifyNeuron(currentNeuron))

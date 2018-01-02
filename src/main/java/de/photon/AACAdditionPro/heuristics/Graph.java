@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * The graph of a neural network including the matrix.
@@ -34,11 +35,7 @@ public class Graph implements Serializable
     {
         this.neuronsInLayers = neuronsInLayers;
 
-        int sumOfNeurons = 0;
-        for (int sizeOfLayer : this.neuronsInLayers)
-        {
-            sumOfNeurons += sizeOfLayer;
-        }
+        int sumOfNeurons = Arrays.stream(neuronsInLayers).sum();
 
         this.matrix = new Double[sumOfNeurons][sumOfNeurons];
         this.weightChangeMatrix = new double[sumOfNeurons][sumOfNeurons];

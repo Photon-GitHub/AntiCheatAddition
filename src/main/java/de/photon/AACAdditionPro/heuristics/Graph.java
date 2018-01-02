@@ -240,7 +240,7 @@ public class Graph implements Serializable
         }
 
         // Only the last neuron is output.
-        if (indexOfNeuron == matrix.length - 1)
+        if (indexOfNeuron == neurons.length - 1)
         {
             return NeuronType.OUTPUT;
         }

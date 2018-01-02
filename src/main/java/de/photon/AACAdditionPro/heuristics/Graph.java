@@ -143,8 +143,8 @@ public class Graph implements Serializable
                     // f'(netinput) * Sum(delta_(toHigherLayer) * matrix[thisNeuron][toHigherLayer])
                     for (int higherLayerNeuron = indices[0]; higherLayerNeuron <= indices[1]; higherLayerNeuron++)
                     {
-                        // matrix[currentNeuron][i] should never be null as every neuron is connected with all the
-                        // neurons of the previous layer.
+                        // matrix[currentNeuron][higherLayerNeuron] is never 0 as the higher-layer neuron's matrix
+                        // entries are updated prior to this neuron's matrix entries in the algorithm.
                         sum += (deltas[higherLayerNeuron] * matrix[currentNeuron][higherLayerNeuron]);
                     }
 

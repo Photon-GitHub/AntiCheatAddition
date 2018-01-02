@@ -10,8 +10,7 @@ public enum InternalPermission
     ENTITYCHECK("aacadditionpro.entitycheck"),
     NEURAL("aacadditionpro.neural"),
     NEURAL_CREATE("aacadditionpro.neural.create"),
-    NEURAL_TRAIN("aacadditionpro.neural.train"),
-    NEURAL_SAVE("aacadditionpro.neural.save");
+    NEURAL_TRAIN("aacadditionpro.neural.train");
 
     private final String realPermission;
 

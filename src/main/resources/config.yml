@@ -200,6 +200,8 @@ InventoryChat:
 InventoryHeuristics:
    # Do you want to enable the InventoryHeuristics
    enabled: true
+   # The min confidence a single pattern must have to count as detection
+   detection_confidence: 50.5
    # This will allow you to access all of the framework, including the creation of your own heuristics and training them.
    #
    # Required knowledge:

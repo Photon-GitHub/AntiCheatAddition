@@ -8,6 +8,7 @@ import de.photon.AACAdditionPro.heuristics.TrainingData;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
@@ -30,6 +31,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InventoryHeuristics implements Listener, ViolationModule
 {
     final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), -1);
+
+    @LoadFromConfiguration(configPath = ".detection_confidence")
+    private double detection_confidence;
 
     // Concurrency as heuristics are potentially added concurrently.
     @Getter
@@ -177,11 +181,14 @@ public class InventoryHeuristics implements Listener, ViolationModule
             double flagSum = 0;
             for (Map.Entry<Pattern, Double> entry : outputDataMap.entrySet())
             {
-                flagSum += entry.getValue();
-                VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue());
+                if (entry.getValue() > detection_confidence)
+                {
+                    flagSum += entry.getValue();
+                    VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by " + entry.getKey().getName() + " with a confidence of " + entry.getValue());
+                }
             }
 
-            final double vl = Math.abs(10 / (Math.tanh(flagSum) - 1.1));
+            final double vl = Math.abs(Math.tanh(flagSum - 0.15));
             // Might not be the case, i.e. no detections
             vlManager.setVL(user.getPlayer(), (int) vl);
         }

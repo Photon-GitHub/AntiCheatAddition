@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Queue;
+import java.util.Set;
 
 public class RemoveCommand extends InternalCommand
 {
@@ -53,6 +54,15 @@ public class RemoveCommand extends InternalCommand
     @Override
     protected String[] getTabPossibilities()
     {
-        return getChildTabs();
+        final Set<Pattern> currentPatterns = InventoryHeuristics.getPATTERNS();
+        String[] patternNames = new String[currentPatterns.size()];
+
+        int index = 0;
+        for (Pattern currentPattern : currentPatterns)
+        {
+            patternNames[index++] = currentPattern.getName();
+        }
+
+        return patternNames;
     }
 }

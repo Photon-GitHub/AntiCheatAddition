@@ -33,32 +33,33 @@ public class EntityCheckCommand extends InternalCommand
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        final Player player = AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove());
 
-        if (player == null)
+        if (on_command)
         {
-            sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
-        }
-        else
-        {
-            final short checkDuration;
-            try
+            final Player player = AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove());
+            
+            if (player == null)
             {
-                checkDuration = Short.valueOf(arguments.remove());
-            } catch (NumberFormatException exception)
-            {
-                sender.sendMessage(PREFIX + ChatColor.RED + "Please enter a valid duration");
-                return;
+                sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
             }
-
-            if (checkDuration > 10000)
+            else
             {
-                sender.sendMessage(PREFIX + ChatColor.RED + "The duration must at most be 10000 ticks.");
-                return;
-            }
+                final short checkDuration;
+                try
+                {
+                    checkDuration = Short.valueOf(arguments.remove());
+                } catch (NumberFormatException exception)
+                {
+                    sender.sendMessage(PREFIX + ChatColor.RED + "Please enter a valid duration");
+                    return;
+                }
 
-            if (on_command)
-            {
+                if (checkDuration > 10000)
+                {
+                    sender.sendMessage(PREFIX + ChatColor.RED + "The duration must at most be 10000 ticks.");
+                    return;
+                }
+
                 final User user = UserManager.getUser(player.getUniqueId());
 
                 if (user == null)
@@ -118,10 +119,10 @@ public class EntityCheckCommand extends InternalCommand
                     }
                 }
             }
-            else
-            {
-                sender.sendMessage(PREFIX + ChatColor.RED + "The command is disabled in the config.");
-            }
+        }
+        else
+        {
+            sender.sendMessage(PREFIX + ChatColor.RED + "The command is disabled in the config.");
         }
     }
 

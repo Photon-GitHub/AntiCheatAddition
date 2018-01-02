@@ -37,7 +37,7 @@ public class EntityCheckCommand extends InternalCommand
         if (on_command)
         {
             final Player player = AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove());
-            
+
             if (player == null)
             {
                 sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);

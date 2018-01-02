@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
+import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.heuristics.InputData;
@@ -8,7 +9,6 @@ import de.photon.AACAdditionPro.heuristics.TrainingData;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
@@ -32,8 +32,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
 {
     final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), -1);
 
-    @LoadFromConfiguration(configPath = ".detection_confidence")
-    private double detection_confidence;
+    private double detection_confidence = AACAdditionPro.getInstance().getConfig().getDouble(this.getConfigString() + ".detection_confidence") / 100;
 
     // Concurrency as heuristics are potentially added concurrently.
     @Getter

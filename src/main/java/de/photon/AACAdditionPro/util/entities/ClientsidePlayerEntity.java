@@ -226,7 +226,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
      * Used to make the {@link ClientsidePlayerEntity} leave its current {@link Team}
      * If the {@link ClientsidePlayerEntity} is in no team nothing will happen.
      */
-    public void leaveTeam() throws IllegalStateException
+    private void leaveTeam() throws IllegalStateException
     {
         if (this.getCurrentTeam() != null)
         {

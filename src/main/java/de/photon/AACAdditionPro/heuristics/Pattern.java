@@ -139,7 +139,7 @@ public class Pattern implements Serializable
      */
     public void train()
     {
-        final Stack<InputData[]> maxSize = this.trainingInputs.values().stream().min(Comparator.comparingInt(Vector::size)).orElseThrow(() -> new NeuralNetworkException("The training inputs do not have a max size."));
+        final Stack<InputData[]> maxSize = this.trainingInputs.values().stream().min(Comparator.comparingInt(Vector::size)).orElseThrow(() -> new NeuralNetworkException("The training inputs of pattern " + this.name + " do not have a max size."));
 
         for (int epoch = 0; epoch < EPOCH; epoch++)
         {

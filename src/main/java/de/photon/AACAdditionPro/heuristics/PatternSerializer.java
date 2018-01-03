@@ -2,7 +2,10 @@ package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -22,8 +25,8 @@ public class PatternSerializer
 
         try
         {
-            this.writer = new DataOutputStream( new GZIPOutputStream( new FileOutputStream( new File( AACAdditionPro.getInstance().getDataFolder(), pattern.getName() + ".ptrn" ) ) ) );
-        } catch ( IOException e )
+            this.writer = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(AACAdditionPro.getInstance().getDataFolder(), pattern.getName() + ".ptrn"))));
+        } catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -64,54 +67,55 @@ public class PatternSerializer
 
         // ------------------------- PATTERN
         // Version first
-        this.writer.write( PATTERN_VERSION );
+        this.writer.write(PATTERN_VERSION);
 
         // Name
-        this.writer.writeUTF( this.pattern.getName() );
+        this.writer.writeUTF(this.pattern.getName());
 
         // Inputs
-        this.writer.write( this.pattern.getInputs().length );
-        for ( InputData inputData : this.pattern.getInputs() )
+        this.writer.write(this.pattern.getInputs().length);
+        for (InputData inputData : this.pattern.getInputs())
         {
-            this.writer.write( inputData.getName().charAt( 0 ) );
+            this.writer.write(inputData.getName().charAt(0));
         }
 
         // ------------------------- GRAPH
-        this.writer.writeBoolean( this.pattern.getGraph().getActivationFunction() != ActivationFunctions.LOGISTIC );
+        this.writer.writeBoolean(this.pattern.getGraph().getActivationFunction() != ActivationFunctions.LOGISTIC);
 
-        this.writer.writeInt( this.pattern.getGraph().getMatrix().length );
-        for ( Double[] layer : this.pattern.getGraph().getMatrix() )
+        this.writer.writeInt(this.pattern.getGraph().getMatrix().length);
+        for (Double[] layer : this.pattern.getGraph().getMatrix())
         {
-            this.writer.writeInt( layer.length );
-            for ( Double data : layer )
+            this.writer.writeInt(layer.length);
+            for (Double data : layer)
             {
-                if ( data == null )
+                if (data == null)
                 {
-                    this.writer.write( 0 );
-                } else
+                    this.writer.write(0);
+                }
+                else
                 {
-                    this.writer.write( 1 );
-                    this.writer.writeDouble( data );
+                    this.writer.write(1);
+                    this.writer.writeDouble(data);
                 }
             }
         }
 
-        this.writer.writeInt( this.pattern.getGraph().getWeightChangeMatrix().length );
-        for ( double[] layer : this.pattern.getGraph().getWeightChangeMatrix() )
+        this.writer.writeInt(this.pattern.getGraph().getWeightChangeMatrix().length);
+        for (double[] layer : this.pattern.getGraph().getWeightChangeMatrix())
         {
-            this.writer.writeInt( layer.length );
-            for ( double data : layer )
+            this.writer.writeInt(layer.length);
+            for (double data : layer)
             {
-                this.writer.writeDouble( data );
+                this.writer.writeDouble(data);
             }
         }
 
-        this.writer.writeInt( this.pattern.getGraph().getNeurons().length ); // neurons and activatedNeurons have the same length
+        this.writer.writeInt(this.pattern.getGraph().getNeurons().length); // neurons and activatedNeurons have the same length
 
-        this.writer.writeInt( this.pattern.getGraph().getNeuronsInLayers().length );
-        for ( int data : this.pattern.getGraph().getNeuronsInLayers() )
+        this.writer.writeInt(this.pattern.getGraph().getNeuronsInLayers().length);
+        for (int data : this.pattern.getGraph().getNeuronsInLayers())
         {
-            this.writer.writeInt( data );
+            this.writer.writeInt(data);
         }
 
         this.writer.flush();

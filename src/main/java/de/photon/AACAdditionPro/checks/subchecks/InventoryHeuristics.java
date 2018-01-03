@@ -39,7 +39,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
     @Override
     public void subEnable()
     {
-        new PatternLoader( PATTERNS );
+        new PatternLoader(PATTERNS);
     }
 
     @EventHandler
@@ -100,7 +100,8 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 }
 
                 // Timestamps
-                inputData[0].getData()[i[0]] = youngerClick.timeStamp - olderClick.timeStamp;
+                // Decrease by approximately the factor 1 million to have more exact millis again.
+                inputData[0].getData()[i[0]] = 60 / ((youngerClick.timeStamp - olderClick.timeStamp) >> 20);
 
                 // Materials
                 inputData[1].getData()[i[0]] = youngerClick.type.ordinal();

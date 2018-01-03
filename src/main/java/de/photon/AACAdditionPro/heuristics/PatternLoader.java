@@ -14,35 +14,34 @@ import java.util.jar.JarFile;
  */
 public class PatternLoader
 {
-
     public PatternLoader(Set<Pattern> patterns)
     {
         try
         {
-            File jarFile = new File( PatternLoader.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath() );
-            try ( JarFile pluginFile = new JarFile( jarFile ) )
+            File jarFile = new File(PatternLoader.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            try (JarFile pluginFile = new JarFile(jarFile))
             {
                 Enumeration<JarEntry> entries = pluginFile.entries();
-                while ( entries.hasMoreElements() )
+                while (entries.hasMoreElements())
                 {
                     JarEntry entry = entries.nextElement();
-                    if ( entry.getName().endsWith( ".ptrn" ) )
+                    if (entry.getName().endsWith(".ptrn"))
                     {
-                        PatternDeserializer deserializer = new PatternDeserializer( entry.getName() );
+                        PatternDeserializer deserializer = new PatternDeserializer(entry.getName());
                         try
                         {
-                            patterns.add( deserializer.load() );
-                        } catch ( IOException e )
+                            patterns.add(deserializer.load());
+                        } catch (IOException e)
                         {
                             e.printStackTrace();
                         }
                     }
                 }
-            } catch ( IOException e )
+            } catch (IOException e)
             {
                 e.printStackTrace();
             }
-        } catch ( URISyntaxException e )
+        } catch (URISyntaxException e)
         {
             e.printStackTrace();
         }

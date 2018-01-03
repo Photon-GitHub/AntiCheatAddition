@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.heuristics;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
+import lombok.Getter;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -18,23 +19,39 @@ public class Graph implements Serializable
 
     // The activation function of this Graph.
     // SERIALIZATION: CONTENT
+    @Getter
     private final ActivationFunction activationFunction;
 
     // The main matrix containing the weights of all connections
     // Use Wrapper class to be able to set a value to null
     // SERIALIZATION: CONTENT
+    @Getter
     private final Double[][] matrix;
     // SERIALIZATION: CONTENT
+    @Getter
     private final double[][] weightChangeMatrix;
 
     // Working array does not need to be serialized
     // SERIALIZATION: SIZE ONLY, CONTENT NOT IMPORTANT
+    @Getter
     private final double[] neurons;
     // SERIALIZATION: SIZE ONLY, CONTENT NOT IMPORTANT
+    @Getter
     private final double[] activatedNeurons;
 
     // SERIALIZATION: CONTENT
+    @Getter
     private final int[] neuronsInLayers;
+
+    Graph( ActivationFunction function, Double[][] matrix, double[][] weightMatrix, int neuronLength, int[] neuronLayer )
+    {
+        this.activationFunction = function;
+        this.matrix = matrix;
+        this.weightChangeMatrix = weightMatrix;
+        this.neurons = new double[neuronLength];
+        this.activatedNeurons = new double[neuronLength];
+        this.neuronsInLayers = neuronLayer;
+    }
 
     /**
      * Constructs a new Graph

@@ -38,9 +38,11 @@ public class Pattern implements Serializable
     @Setter
     private String name;
     // SERIALIZATION: CONTENT
+    @Getter
     private Graph graph;
 
     // SERIALIZATION: CONTENT
+    @Getter
     private InputData[] inputs;
 
     // SERIALIZATION: NON-null, CONTENT NOT IMPORTANT
@@ -52,6 +54,24 @@ public class Pattern implements Serializable
 
     // SERIALIZATION: CONTENT NOT IMPORTANT, MUST BE NULL
     private transient Thread trainingThread = null;
+
+    // ONLY USE FOR DESERIALIZER !!!!!!!
+    public Pattern(String name, InputData[] inputs, Graph graph)
+    {
+        this.name = name;
+        this.inputs = inputs;
+        this.graph = graph;
+
+        // The default initial capacity of 16 is not used in most cases.
+        this.trainingDataSet = new HashSet<>(8);
+
+        // Training input map.
+        this.trainingInputs = new ConcurrentHashMap<>(2, 1);
+        for (String validOutput : VALID_OUTPUTS)
+        {
+            this.trainingInputs.put(validOutput, new Stack<>());
+        }
+    }
 
     public Pattern(String name, InputData[] inputs, int samples, int[] hiddenNeuronsPerLayer)
     {
@@ -207,16 +227,8 @@ public class Pattern implements Serializable
 
         try
         {
-            // Create the file and open a FileOutputStream for it.
-            final FileOutputStream fileOutputStream = new FileOutputStream(
-                    FileUtilities.saveFileInFolder("heuristics/" + this.name + ".pattern")
-            );
-
-            final ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-            objectOutputStream.writeObject(this);
-            objectOutputStream.close();
-
-            fileOutputStream.close();
+            PatternSerializer serializer = new PatternSerializer(this);
+            serializer.save();
         } catch (IOException e)
         {
             VerboseSender.sendVerboseMessage("Could not save pattern " + this.name + ". See the logs for further information.", true, true);

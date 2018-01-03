@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.events.InventoryHeuristicsEvent;
 import de.photon.AACAdditionPro.heuristics.InputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
+import de.photon.AACAdditionPro.heuristics.PatternLoader;
 import de.photon.AACAdditionPro.heuristics.TrainingData;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -43,42 +44,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
     @Override
     public void subEnable()
     {
-        final File heuristicsFolder = new File(FileUtilities.AACADDITIONPRO_DATA_FOLDER + "/heuristics");
-
-        if (!heuristicsFolder.exists())
-        {
-            if (heuristicsFolder.mkdirs())
-            {
-                VerboseSender.sendVerboseMessage("InventoryHeuristics folder created.", true, false);
-                VerboseSender.sendVerboseMessage("Please download the latest patterns from https://github.com/Photon-GitHub/AACAdditionPro/tree/master/patterns", true, false);
-            }
-            else
-            {
-                VerboseSender.sendVerboseMessage("Unable to load file create the heuristics-folder.", true, true);
-            }
-        }
-
-        final File[] patternFiles = heuristicsFolder.listFiles();
-        if (patternFiles != null)
-        {
-            for (final File file : patternFiles)
-            {
-                try
-                {
-                    final FileInputStream fileInputStream = new FileInputStream(file);
-                    final ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-
-                    PATTERNS.add((Pattern) objectInputStream.readObject());
-
-                    objectInputStream.close();
-                    fileInputStream.close();
-                } catch (IOException | ClassNotFoundException e)
-                {
-                    VerboseSender.sendVerboseMessage("Unable to load file " + file.getPath() + " as a pattern.", true, true);
-                    e.printStackTrace();
-                }
-            }
-        }
+        new PatternLoader( PATTERNS );
     }
 
     @EventHandler

@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 /**
- * @author geNAZt
- * @version 1.0
+ * Deserializes a pattern to put it in memory again.
+ * The name of the pattern must be known.
  */
 public class PatternDeserializer
 {
@@ -21,10 +21,12 @@ public class PatternDeserializer
     public Pattern load() throws IOException
     {
         InputStream inputStream = PatternDeserializer.class.getClassLoader().getResourceAsStream(this.name);
-        try (DataInputStream input = new DataInputStream(new GZIPInputStream(inputStream))) {
+        try (DataInputStream input = new DataInputStream(new GZIPInputStream(inputStream)))
+        {
             // Documentation of the data is in PatternSerializer#save()
             byte version = input.readByte();
-            if (version != 0) {
+            if (version != 0)
+            {
                 throw new IOException("Wrong version in pattern file: " + this.name);
             }
 
@@ -32,10 +34,12 @@ public class PatternDeserializer
             String patternName = input.readUTF();
             int inputLength = input.readByte() & 0xFF;
             InputData[] inputs = new InputData[inputLength];
-            for (int i = 0; i < inputLength; i++) {
+            for (int i = 0; i < inputLength; i++)
+            {
                 String inputName = new String(new char[]{(char) (input.readByte() & 0xFF)});
                 inputs[i] = InputData.VALID_INPUTS.get(inputName);
-                if (inputs[i] == null) {
+                if (inputs[i] == null)
+                {
                     throw new IOException("Pattern " + this.name + " wanted to get input " + inputName + " which is not valid");
                 }
             }
@@ -47,14 +51,19 @@ public class PatternDeserializer
 
             int matrixLength = input.readInt();
             Double[][] matrix = new Double[matrixLength][];
-            for (int i = 0; i < matrixLength; i++) {
+            for (int i = 0; i < matrixLength; i++)
+            {
                 int layerLength = input.readInt();
                 matrix[i] = new Double[layerLength];
-                for (int i1 = 0; i1 < layerLength; i1++) {
+                for (int i1 = 0; i1 < layerLength; i1++)
+                {
                     boolean data = input.readBoolean();
-                    if (data) {
+                    if (data)
+                    {
                         matrix[i][i1] = input.readDouble();
-                    } else {
+                    }
+                    else
+                    {
                         matrix[i][i1] = null;
                     }
                 }
@@ -62,10 +71,12 @@ public class PatternDeserializer
 
             int weightMatrixLength = input.readInt();
             double[][] weightMatrix = new double[weightMatrixLength][];
-            for (int i = 0; i < weightMatrixLength; i++) {
+            for (int i = 0; i < weightMatrixLength; i++)
+            {
                 int layerLength = input.readInt();
                 weightMatrix[i] = new double[layerLength];
-                for (int i1 = 0; i1 < layerLength; i1++) {
+                for (int i1 = 0; i1 < layerLength; i1++)
+                {
                     weightMatrix[i][i1] = input.readDouble();
                 }
             }
@@ -74,7 +85,8 @@ public class PatternDeserializer
 
             int neuronLayerLength = input.readInt();
             int[] neuronLayer = new int[neuronLayerLength];
-            for (int i = 0; i < neuronLayerLength; i++) {
+            for (int i = 0; i < neuronLayerLength; i++)
+            {
                 neuronLayer[i] = input.readInt();
             }
 

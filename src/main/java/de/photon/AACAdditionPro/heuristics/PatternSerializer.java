@@ -9,8 +9,7 @@ import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * @author geNAZt
- * @version 1.0
+ * Serializes a pattern to a .ptrn file.
  */
 public class PatternSerializer
 {
@@ -19,7 +18,7 @@ public class PatternSerializer
     private DataOutputStream writer;
     private Pattern pattern;
 
-    public PatternSerializer(Pattern pattern)
+    PatternSerializer(Pattern pattern)
     {
         this.pattern = pattern;
 
@@ -121,5 +120,4 @@ public class PatternSerializer
         this.writer.flush();
         this.writer.close();
     }
-
 }

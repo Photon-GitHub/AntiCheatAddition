@@ -10,7 +10,6 @@ import de.photon.AACAdditionPro.heuristics.PatternLoader;
 import de.photon.AACAdditionPro.heuristics.TrainingData;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
@@ -22,10 +21,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -136,6 +131,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 if (!training)
                 {
                     Double result = pattern.analyse(inputData);
+                    VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + pattern.getName() + " with a original confidence of " + result);
                     if (result != null)
                     {
                         //TODO: THIS IS ONLY A WORKAROUND FOR THE 0.5 PROBLEM!!!

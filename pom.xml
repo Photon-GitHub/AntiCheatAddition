@@ -26,6 +26,10 @@
                 <directory>src\main\resources</directory>
                 <filtering>true</filtering>
             </resource>
+            <resource>
+                <directory>pattern</directory>
+                <filtering>false</filtering>
+            </resource>
         </resources>
     </build>
 

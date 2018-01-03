@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -13,6 +14,7 @@ import java.util.zip.GZIPOutputStream;
  */
 public class PatternSerializer
 {
+    private static final File HEURISTICS_FOLDER = new File(AACAdditionPro.getInstance().getDataFolder(), "heuristics");
     private static final byte PATTERN_VERSION = 0;
 
     private DataOutputStream writer;
@@ -24,7 +26,12 @@ public class PatternSerializer
 
         try
         {
-            this.writer = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(AACAdditionPro.getInstance().getDataFolder(), pattern.getName() + ".ptrn"))));
+            if (!HEURISTICS_FOLDER.exists() && !HEURISTICS_FOLDER.mkdirs())
+            {
+                VerboseSender.sendVerboseMessage("Could not create heuristics folder.", true, true);
+                return;
+            }
+            this.writer = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(HEURISTICS_FOLDER, pattern.getName() + ".ptrn"))));
         } catch (IOException e)
         {
             e.printStackTrace();

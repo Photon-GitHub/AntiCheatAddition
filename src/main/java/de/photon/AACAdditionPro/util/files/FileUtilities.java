@@ -12,8 +12,6 @@ import java.lang.reflect.Method;
 
 public final class FileUtilities
 {
-    public static final File AACADDITIONPRO_DATA_FOLDER = AACAdditionPro.getInstance().getDataFolder();
-
     /**
      * This {@link Method} saves a file in the directory of the {@link org.bukkit.plugin.Plugin}
      * on the server and writes content into it if a default resource exists in this plugin.
@@ -38,9 +36,11 @@ public final class FileUtilities
 
         resourcePath = resourcePath.replace('\\', '/');
 
-        File outFile = new File(AACADDITIONPRO_DATA_FOLDER, resourcePath);
+        File outFile = new File(AACAdditionPro.getInstance().getDataFolder(), resourcePath);
         int lastIndex = resourcePath.lastIndexOf('/');
-        File outDir = new File(AACADDITIONPRO_DATA_FOLDER, resourcePath.substring(0, lastIndex >= 0 ? lastIndex : 0));
+        File outDir = new File(AACAdditionPro.getInstance().getDataFolder(), resourcePath.substring(0, lastIndex >= 0 ?
+                                                                                                       lastIndex :
+                                                                                                       0));
 
         if (!outDir.exists())
         {

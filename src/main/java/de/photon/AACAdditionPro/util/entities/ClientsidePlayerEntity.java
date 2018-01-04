@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.util.entities;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
@@ -15,7 +14,6 @@ import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +23,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ClientsidePlayerEntity extends ClientsideEntity
@@ -323,18 +320,18 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     }
 
     /**
-     * Utility method to set whether or not the entity appears in tab.
+     * Updates the PlayerInformation of a player (or {@link ClientsidePlayerEntity}).
+     * This can be used to update the ping ({@link com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction#UPDATE_LATENCY}) <br>
+     * or to add ({@link com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction#ADD_PLAYER}) and
+     * remove ({@link com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction#REMOVE_PLAYER}) a player from the tablist
      */
     private void updatePlayerInfo(EnumWrappers.PlayerInfoAction action, int ping)
     {
-        // The visibility in the tablist is caused by the PlayerInformation packet.
-        // Remove the player with PlayerInfo
-        final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
-
-        final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
-        playerInfoWrapper.setAction(action);
-        playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
-
-        playerInfoWrapper.sendPacket(observedPlayer);
+        DisplayInformation.updatePlayerInformation(action,
+                                                   this.gameProfile,
+                                                   ping,
+                                                   EnumWrappers.NativeGameMode.SURVIVAL,
+                                                   null,
+                                                   this.observedPlayer);
     }
 }

@@ -1,19 +1,17 @@
 package de.photon.AACAdditionPro.command.subcommands;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.command.InternalCommand;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
+import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
 import java.util.Queue;
 
 public class TabListRemoveCommand extends InternalCommand
@@ -61,15 +59,12 @@ public class TabListRemoveCommand extends InternalCommand
 
     private void updatePlayerInfo(final EnumWrappers.PlayerInfoAction action, final Player affectedPlayer, final Player modifiedPlayer)
     {
-        // The visibility in the tablist is caused by the PlayerInformation packet.
-        // Remove the player with PlayerInfo
-        final PlayerInfoData playerInfoData = new PlayerInfoData(WrappedGameProfile.fromPlayer(modifiedPlayer), AACAPIProvider.getAPI().getPing(modifiedPlayer), EnumWrappers.NativeGameMode.SURVIVAL, null);
-
-        final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
-        playerInfoWrapper.setAction(action);
-        playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
-
-        playerInfoWrapper.sendPacket(affectedPlayer);
+        DisplayInformation.updatePlayerInformation(action,
+                                                   WrappedGameProfile.fromPlayer(modifiedPlayer),
+                                                   AACAPIProvider.getAPI().getPing(modifiedPlayer),
+                                                   EnumWrappers.NativeGameMode.fromBukkit(modifiedPlayer.getGameMode()),
+                                                   null,
+                                                   affectedPlayer);
     }
 
     @Override

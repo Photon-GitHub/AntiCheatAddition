@@ -8,6 +8,7 @@ public enum InternalPermission
     VERBOSE("aac.verbose"),
     INFO("aacadditionpro.info"),
     ENTITYCHECK("aacadditionpro.entitycheck"),
+    TABLISTREMOVE("aacadditionpro.tablistremove"),
     NEURAL("aacadditionpro.neural"),
     NEURAL_CREATE("aacadditionpro.neural.create"),
     NEURAL_TRAIN("aacadditionpro.neural.train");

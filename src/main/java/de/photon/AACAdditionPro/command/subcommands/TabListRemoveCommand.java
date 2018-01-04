@@ -24,36 +24,34 @@ public class TabListRemoveCommand extends InternalCommand
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        final Player affectedPlayer = AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove());
+        /*
+         * [0] represents the the affected player
+         * [1] represents the modified player
+         */
+        final Player[] players = new Player[2];
 
-        if (affectedPlayer == null)
+        for (int i = 0; i < players.length; i++)
         {
-            sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
+            players[i] = AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove());
+
+            if (players[i] == null)
+            {
+                sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
+                return;
+            }
+        }
+
+        long ticks = arguments.isEmpty() ? 0 : Long.valueOf(arguments.remove());
+        sender.sendMessage(ChatColor.GOLD + "Removed player " + ChatColor.RED + players[1].getName() + ChatColor.GOLD + " from " + ChatColor.RED + players[0].getName() + ChatColor.GOLD + "'s tablist for " + ChatColor.RED + ticks + ChatColor.GOLD + " ticks.");
+
+        updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, players[0], players[1]);
+        if (ticks == 0)
+        {
+            updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, players[0], players[1]);
         }
         else
         {
-            final Player modifiedPlayer = AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove());
-
-            if (modifiedPlayer == null)
-            {
-                sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
-            }
-            else
-            {
-                long ticks = arguments.isEmpty() ? 0 : Long.valueOf(arguments.remove());
-                sender.sendMessage(ChatColor.GOLD + "Removed player " + ChatColor.RED + modifiedPlayer.getName() + ChatColor.GOLD + " from " + ChatColor.RED + affectedPlayer.getName() + ChatColor.GOLD + "'s tablist for " + ChatColor.RED + ticks + ChatColor.GOLD + " ticks.");
-
-                if (ticks == 0)
-                {
-                    updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, affectedPlayer, modifiedPlayer);
-                    updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, affectedPlayer, modifiedPlayer);
-                }
-                else
-                {
-                    updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, affectedPlayer, modifiedPlayer);
-                    Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, affectedPlayer, modifiedPlayer), ticks);
-                }
-            }
+            Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, players[0], players[1]), ticks);
         }
     }
 

@@ -90,7 +90,9 @@ public class ScaffoldData extends TimeData
                         }
                     }
 
-                    result[1] += (last.getBlockFace() == current.getBlockFace()) ? DELAY_NORMAL : DELAY_DIAGONAL;
+                    result[1] += (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace()) ?
+                                 DELAY_NORMAL :
+                                 DELAY_DIAGONAL;
 
                     // last - current to calculate the delta as the more recent time is always in last.
                     fraction[0] += (last.getTime() - current.getTime()) * speed_modifier;

@@ -4,6 +4,7 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.command.subcommands.EntityCheckCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
 import de.photon.AACAdditionPro.command.subcommands.InfoCommand;
+import de.photon.AACAdditionPro.command.subcommands.TabListRemoveCommand;
 import de.photon.AACAdditionPro.command.subcommands.VerboseCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -27,6 +28,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
               new EntityCheckCommand(),
               new HeuristicsCommand(),
               new InfoCommand(),
+              new TabListRemoveCommand(),
               new VerboseCommand());
     }
 

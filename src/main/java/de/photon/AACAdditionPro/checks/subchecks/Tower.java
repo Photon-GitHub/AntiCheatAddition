@@ -8,7 +8,7 @@ import de.photon.AACAdditionPro.util.entities.movement.Gravitation;
 import de.photon.AACAdditionPro.util.entities.movement.Jumping;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
-import de.photon.AACAdditionPro.util.storage.datawrappers.BlockPlace;
+import de.photon.AACAdditionPro.util.storage.datawrappers.TowerBlockPlace;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
@@ -79,10 +79,8 @@ public class Tower implements Listener, ViolationModule
                 BlockUtils.blocksAround(blockPlaced, false) == (byte) 1 &&
                 // Buffer the block place, continue the check only when we a certain number of block places in check
                 user.getTowerData().bufferBlockPlace(
-                        new BlockPlace(
+                        new TowerBlockPlace(
                                 blockPlaced,
-                                //Speed is not important for this check
-                                null,
                                 //Jump boost effect is important
                                 user.getPotionData().getAmplifier(PotionEffectType.JUMP)
                         )))
@@ -90,7 +88,7 @@ public class Tower implements Listener, ViolationModule
                 // The buffer is filled to the required degree -> Checking now
                 double threshold = 0;
 
-                for (final BlockPlace blockPlace : user.getTowerData().getBlockPlaces())
+                for (final TowerBlockPlace blockPlace : user.getTowerData().getBlockPlaces())
                 {
                     threshold += calculateDelay(blockPlace.getJumpBoostLevel());
                 }
@@ -102,7 +100,7 @@ public class Tower implements Listener, ViolationModule
                 final double lenientThreshold = threshold;
 
                 // Real average
-                final double average = user.getTowerData().calculateRealTime();
+                final double average = user.getTowerData().calculateAverageTime();
 
                 // Real check
                 if (average < threshold)

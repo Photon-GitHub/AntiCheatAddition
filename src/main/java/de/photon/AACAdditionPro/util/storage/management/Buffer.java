@@ -2,18 +2,17 @@ package de.photon.AACAdditionPro.util.storage.management;
 
 import lombok.Getter;
 
-import java.util.ArrayList;
+import java.util.Stack;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class Buffer<T> extends ArrayList<T>
+public class Buffer<T> extends Stack<T>
 {
     @Getter
     private final int bufferSize;
 
     public Buffer(final int bufferSize)
     {
-        super(bufferSize);
         this.bufferSize = bufferSize;
     }
 
@@ -26,7 +25,7 @@ public class Buffer<T> extends ArrayList<T>
      */
     public boolean bufferObject(final T object)
     {
-        this.add(object);
+        this.push(object);
         return this.size() >= this.bufferSize;
     }
 
@@ -39,8 +38,7 @@ public class Buffer<T> extends ArrayList<T>
     {
         while (!this.isEmpty())
         {
-            T current = this.remove(this.size() - 1);
-            lastObjectConsumer.accept(current);
+            lastObjectConsumer.accept(this.pop());
         }
     }
 
@@ -55,11 +53,11 @@ public class Buffer<T> extends ArrayList<T>
     {
         if (!this.isEmpty())
         {
-            T last = this.remove(this.size() - 1);
+            T last = this.pop();
             T current;
             while (!this.isEmpty())
             {
-                current = this.remove(this.size() - 1);
+                current = this.pop();
                 lastObjectsConsumer.accept(last, current);
                 last = current;
             }

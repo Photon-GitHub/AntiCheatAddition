@@ -6,12 +6,11 @@ import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
-import de.photon.AACAdditionPro.util.storage.datawrappers.BlockPlace;
+import de.photon.AACAdditionPro.util.storage.datawrappers.ScaffoldBlockPlace;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -24,9 +23,6 @@ public class Scaffold implements Listener, ViolationModule
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
-
-    @LoadFromConfiguration(configPath = ".scaffold_delay")
-    private int scaffold_delay;
 
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
@@ -71,30 +67,32 @@ public class Scaffold implements Listener, ViolationModule
             user.getPlayer().getLocation().getY() > blockPlaced.getY() - 1 &&
             // Check if this check applies to the block
             blockPlaced.getType().isSolid() &&
-            // Check if the block is placed in the air
-            blockPlaced.getRelative(BlockFace.UP).isEmpty() && blockPlaced.getRelative(BlockFace.DOWN).isEmpty() &&
-            // Check if the block is placed against one block face only
-            BlockUtils.blocksAround(blockPlaced, true) == (byte) 1 &&
+            // Check if the block is placed against one block face only, also implies no blocks above and below.
+            BlockUtils.blocksAround(blockPlaced, false) == (byte) 1 &&
             // Buffer the block place, continue the check only when we a certain number of block places in check
             user.getScaffoldData().bufferBlockPlace(
-                    new BlockPlace(
+                    new ScaffoldBlockPlace(
                             blockPlaced,
+                            blockPlaced.getFace(event.getBlockAgainst()),
                             // Speed-Effect
-                            user.getPotionData().getAmplifier(PotionEffectType.SPEED),
-                            // JumpBoost effect is 0 because it is not relevant for the check
-                            null
+                            user.getPotionData().getAmplifier(PotionEffectType.SPEED)
                     )))
         {
-            // If the buffer is big enough calculate an average time
-            final double average = user.getScaffoldData().calculateRealTime();
+            // Once the buffer is big enough calculate an average time
+            /*
+            Indices:
+            [0] -> Real average
+            [1] -> Maximum allowed average
+             */
+            final double[] results = user.getScaffoldData().calculateTimes();
 
             // delta-times are too low -> flag
-            if (average < scaffold_delay)
+            if (results[0] < results[1])
             {
-                VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + scaffold_delay + " | real: " + average);
+                VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[1] + " | real: " + results[0]);
 
                 // Flag the player
-                vlManager.flag(event.getPlayer(), (int) Math.max(Math.min(1, (scaffold_delay - average) / 15), 6), cancel_vl, () ->
+                vlManager.flag(event.getPlayer(), (int) Math.max(Math.min(1, (results[1] - results[0]) / 15), 6), cancel_vl, () ->
                 {
                     event.setCancelled(true);
                     user.getScaffoldData().updateTimeStamp();

@@ -27,7 +27,7 @@ public abstract class ConditionalBuffer<T> extends Buffer<T>
     {
         if (verifyObject(object))
         {
-            this.add(object);
+            this.push(object);
         }
         else
         {

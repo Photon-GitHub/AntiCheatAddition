@@ -25,7 +25,7 @@ public class VerboseCommand extends InternalCommand
      */
     private static void sendToggleMessage(final CommandSender sender, final boolean enabled)
     {
-        sender.sendMessage(prefix + ChatColor.GOLD + "Verbose " + (enabled ?
+        sender.sendMessage(PREFIX + ChatColor.GOLD + "Verbose " + (enabled ?
                                                                    (ChatColor.DARK_GREEN + "enabled") :
                                                                    (ChatColor.RED + "disabled")
         ));

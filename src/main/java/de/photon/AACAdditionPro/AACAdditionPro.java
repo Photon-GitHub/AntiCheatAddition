@@ -21,7 +21,7 @@ import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
 import de.photon.AACAdditionPro.checks.subchecks.MultiInteraction;
 import de.photon.AACAdditionPro.checks.subchecks.Pingspoof;
 import de.photon.AACAdditionPro.checks.subchecks.Scaffold;
-import de.photon.AACAdditionPro.checks.subchecks.Skinblinker;
+import de.photon.AACAdditionPro.checks.subchecks.SkinBlinker;
 import de.photon.AACAdditionPro.checks.subchecks.Teaming;
 import de.photon.AACAdditionPro.checks.subchecks.Tower;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.BetterSprintingControl;
@@ -41,7 +41,6 @@ import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
@@ -108,6 +107,7 @@ public class AACAdditionPro extends JavaPlugin
      * Parses an int from a version {@link String} that has numbers and dots in it.
      *
      * @param versionString the {@link String} from which the version int should be parsed.
+     *
      * @return the int representation of all numbers in the {@link String} with the dots filtered out.
      */
     private static int getVersionNumber(final String versionString)
@@ -177,14 +177,14 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Is the numerical representation of the min AAC version smaller than the representation of the real version
-            if (getVersionNumber(minimumAACVersion) > getVersionNumber(Bukkit.getPluginManager().getPlugin("AAC").getDescription().getVersion()))
+            if (getVersionNumber(minimumAACVersion) > getVersionNumber(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion()))
             {
                 VerboseSender.sendVerboseMessage("AAC version is not supported.", true, true);
                 VerboseSender.sendVerboseMessage("This plugin needs AAC version " + minimumAACVersion + " or newer.", true, true);
                 return;
             }
 
-            // The first getConfig call will automatically save and cache the config.
+            // The first getConfig call will automatically saveToFile and cache the config.
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //
@@ -226,7 +226,7 @@ public class AACAdditionPro extends JavaPlugin
                     new MultiInteraction(),
                     new Pingspoof(),
                     new Scaffold(),
-                    new Skinblinker(),
+                    new SkinBlinker(),
                     new Teaming(),
                     new Tower()
             );
@@ -260,7 +260,13 @@ public class AACAdditionPro extends JavaPlugin
         VerboseSender.setAllowedToRegisterTasks(false);
 
         // Disable all checks
-        moduleManager.forEach(Module::disable);
+        try
+        {
+            moduleManager.forEach(Module::disable);
+        } catch (NullPointerException ignore)
+        {
+            // This can happen if the modulemanager is already finalized.
+        }
 
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);

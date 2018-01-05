@@ -46,7 +46,7 @@ public final class VerboseSender implements Listener
      * <p>
      * [0] stores whether AACAdditionPro should print verbose output in the console ({@link org.bukkit.command.ConsoleCommandSender} - Verbose)
      * <p>
-     * [1] stores whether AACAdditionPro should save verbose output in a log file ({@link File} - Verbose)
+     * [1] stores whether AACAdditionPro should saveToFile verbose output in a log file ({@link File} - Verbose)
      * <p>
      * [2] stores whether AACAdditionPro should print verbose output in the chat ({@link org.bukkit.entity.Player} - Verbose)
      */
@@ -116,20 +116,21 @@ public final class VerboseSender implements Listener
         try
         {
             // Get the logfile that is in use currently or create a new one if needed.
-            final File log_File = FileUtilities.saveFileInFolder(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log", FileUtilities.AACADDITIONPRO_DATAFOLDER.getPath() + "/logs");
+            final File log_File = FileUtilities.saveFileInFolder("logs/" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
 
-            // Add the beginning of the prefix
+            // Add the beginning of the PREFIX
             final StringBuilder time = new StringBuilder("[");
             // Get the current time
             time.append(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));
 
             // Add a 0 if it is too short
-            while (time.length() < 12)
+            // Technically only 12, but we already appended the "[", thus one more.
+            while (time.length() < 13)
             {
                 time.append("0");
             }
 
-            // Add the rest of the prefix and the message
+            // Add the rest of the PREFIX and the message
             time.append("] ");
             time.append(message);
             time.append("\n");
@@ -145,12 +146,12 @@ public final class VerboseSender implements Listener
     @EventHandler
     public void on(final PlayerAdditionViolationEvent event)
     {
-        sendVerboseMessage(Placeholders.applyPlaceholders(eventPreString + event.getMessage() + " | Vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer()));
+        sendVerboseMessage(Placeholders.applyPlaceholders(eventPreString + event.getMessage() + " | Vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer(), null));
     }
 
     @EventHandler
     public void on(final ClientControlEvent event)
     {
-        sendVerboseMessage(Placeholders.applyPlaceholders(eventPreString + event.getMessage(), event.getPlayer()));
+        sendVerboseMessage(Placeholders.applyPlaceholders(eventPreString + event.getMessage(), event.getPlayer(), null));
     }
 }

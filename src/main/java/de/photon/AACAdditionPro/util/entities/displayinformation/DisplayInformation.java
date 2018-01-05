@@ -1,9 +1,15 @@
 package de.photon.AACAdditionPro.util.entities.displayinformation;
 
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.PlayerInfoData;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
+import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,13 +53,42 @@ public final class DisplayInformation
                     {
                         // The Entity will automatically leave its current team, no extra method call required.
                         clientsidePlayerEntity.joinTeam(team);
+                        // No further team joining.
+                        return;
+                    } catch (IllegalArgumentException entityIsNull)
+                    {
+                        // Here the entity is null and thus additional measures are not required.
+                        return;
                     } catch (IllegalStateException ignore)
                     {
-                        // This is ignored as of the potentially unregistered scoreboard components.
+                        // Here the team is no longer present -> loop through the other teams.
                     }
-                    break;
                 }
             }
         }
+    }
+
+
+    /**
+     * This method updates the player information, and thus the tablist of a player.
+     *
+     * @param action         the {@link com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction} that will be executed.
+     * @param gameProfile    the {@link WrappedGameProfile} of the player whose information will be updated.<br>
+     *                       Use {@link WrappedGameProfile#fromPlayer(Player)} in order to get a {@link WrappedGameProfile} from a {@link Player}.
+     * @param ping           the new ping of the updated {@link Player}.
+     * @param gameMode       the {@link com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode} of the updated {@link Player}.
+     *                       Use {@link me.konsolas.aac.api.AACAPI#getPing(Player)} to get the ping of a {@link Player}.
+     * @param displayName    the new displayName of the updated {@link Player}
+     * @param affectedPlayer the {@link Player} who will see the updated information as the packet is sent to him.
+     */
+    public static void updatePlayerInformation(final EnumWrappers.PlayerInfoAction action, final WrappedGameProfile gameProfile, final int ping, final EnumWrappers.NativeGameMode gameMode, final WrappedChatComponent displayName, final Player affectedPlayer)
+    {
+        final PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, ping, gameMode, displayName);
+
+        final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
+        playerInfoWrapper.setAction(action);
+        playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
+
+        playerInfoWrapper.sendPacket(affectedPlayer);
     }
 }

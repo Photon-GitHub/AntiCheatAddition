@@ -8,9 +8,10 @@ public enum InternalPermission
     VERBOSE("aac.verbose"),
     INFO("aacadditionpro.info"),
     ENTITYCHECK("aacadditionpro.entitycheck"),
+    TABLISTREMOVE("aacadditionpro.tablistremove"),
     NEURAL("aacadditionpro.neural"),
-    NEURAL_TRAIN("aacadditionpro.neural.train"),
-    NEURAL_CHECK("aacadditionpro.neural.check");
+    NEURAL_CREATE("aacadditionpro.neural.create"),
+    NEURAL_TRAIN("aacadditionpro.neural.train");
 
     private final String realPermission;
 

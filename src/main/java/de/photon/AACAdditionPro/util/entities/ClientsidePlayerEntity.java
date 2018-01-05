@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.util.entities;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
@@ -15,7 +14,6 @@ import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,14 +23,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ClientsidePlayerEntity extends ClientsideEntity
 {
-    private boolean shouldAssignTeam;
-    private boolean shouldSwing;
-    private boolean shouldSwap;
+    private boolean visible_in_tablist, shouldAssignTeam, shouldSwing, shouldSwap;
 
     @Getter
     private final WrappedGameProfile gameProfile;
@@ -66,6 +61,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         this.equipment = new Equipment(this);
 
         // Init additional behaviour configs
+        visible_in_tablist = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.visible_in_tablist");
         shouldAssignTeam = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.team.enabled");
         shouldSwing = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swing.enabled");
         shouldSwap = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swap.enabled");
@@ -191,12 +187,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         if (this.isSpawned())
         {
-            final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
-            playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY);
-            playerInfoWrapper.setData(Collections.singletonList(
-                    // The new information of about the Entity.
-                    new PlayerInfoData(this.getGameProfile(), ping, EnumWrappers.NativeGameMode.SURVIVAL, null)));
-            playerInfoWrapper.sendPacket(this.observedPlayer);
+            updatePlayerInfo(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY, ping);
         }
     }
 
@@ -232,7 +223,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
      * Used to make the {@link ClientsidePlayerEntity} leave its current {@link Team}
      * If the {@link ClientsidePlayerEntity} is in no team nothing will happen.
      */
-    public void leaveTeam() throws IllegalStateException
+    private void leaveTeam() throws IllegalStateException
     {
         if (this.getCurrentTeam() != null)
         {
@@ -249,14 +240,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         super.spawn(location);
         this.lastLocation = location.clone();
         this.move(location);
-        // Add the player with PlayerInfo
-        final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, ping, EnumWrappers.NativeGameMode.SURVIVAL, null);
 
-        final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
-        playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
-        playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
-
-        playerInfoWrapper.sendPacket(observedPlayer);
+        // Add the player in the Tablist via PlayerInfo
+        this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, this.ping);
 
         // DataWatcher
         final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
@@ -301,7 +287,14 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             DisplayInformation.applyTeams(this);
         }
 
-        this.recursiveUpdatePing();
+        if (this.visible_in_tablist)
+        {
+            this.recursiveUpdatePing();
+        }
+        else
+        {
+            this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, this.ping);
+        }
 
         // Entity equipment + armor
         this.equipment.equipArmor();
@@ -316,22 +309,29 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         if (isSpawned())
         {
-            removeFromTab();
+            if (this.visible_in_tablist)
+            {
+                updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, 0);
+            }
             Bukkit.getScheduler().cancelTask(pingTask);
         }
 
         super.despawn();
     }
 
-    private void removeFromTab()
+    /**
+     * Updates the PlayerInformation of a player (or {@link ClientsidePlayerEntity}).
+     * This can be used to update the ping ({@link com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction#UPDATE_LATENCY}) <br>
+     * or to add ({@link com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction#ADD_PLAYER}) and
+     * remove ({@link com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction#REMOVE_PLAYER}) a player from the tablist
+     */
+    private void updatePlayerInfo(EnumWrappers.PlayerInfoAction action, int ping)
     {
-        // Remove the player with PlayerInfo
-        final PlayerInfoData playerInfoData = new PlayerInfoData(this.gameProfile, 0, EnumWrappers.NativeGameMode.SURVIVAL, null);
-
-        final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
-        playerInfoWrapper.setAction(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);
-        playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
-
-        playerInfoWrapper.sendPacket(observedPlayer);
+        DisplayInformation.updatePlayerInformation(action,
+                                                   this.gameProfile,
+                                                   ping,
+                                                   EnumWrappers.NativeGameMode.SURVIVAL,
+                                                   null,
+                                                   this.observedPlayer);
     }
 }

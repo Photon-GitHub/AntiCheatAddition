@@ -182,19 +182,6 @@ GravitationalModifier:
       15: "aacstaffnotify {player} in {world} is highly suspected for movement cheats (GravitationalModifier)"
       20: "aackick {player} Illegal movement modification"
 
-# InventoryHit checks if a player modifies his inventory while hitting at the same time.
-InventoryHit:
-   # Do you want to enable the InventoryHit check
-   enabled: true
-   # Violation before AACAdditionPro starts to cancel the hits.
-   # Set this to 0 to never cancel hits.
-   cancel_vl: 3
-   # Map of violation levels to command
-   thresholds:
-      3: "aacstaffnotify {player} in {world} is suspected for Killaura/Autoarmor (InventoryHit)"
-      6: "aacstaffnotify {player} in {world} is highly suspected for Killaura/Autoarmor (InventoryHit)"
-      10: "aackick {player} Killaura/Triggerbot"
-
 # The InventoryChat check detects sending chat messages while being in an inventory
 InventoryChat:
    # Do you want to enable the InventoryChat check
@@ -209,11 +196,53 @@ InventoryChat:
       5: "aacstaffnotify {player} in {world} is highly suspected for InventoryChat"
       8: "aackick {player} InventoryChat"
 
-# The InventoryHeuristics check uses a neural network to detect cheats
-# This is not functional right now!
+# The inventory heuristics provide a neural network framework to detect advanced inventory cheats.
 InventoryHeuristics:
-   # Do you want to enable the InventoryHeuristics check
-   enabled: false
+   # Do you want to enable the InventoryHeuristics
+   enabled: true
+   # The min confidence a single pattern must have to count as detection
+   detection_confidence: 65.0
+   # This will allow you to access all of the framework, including the creation of your own heuristics and training them.
+   #
+   # Required knowledge:
+   # - Basic knowledge of Java's SERIALIZATION
+   # - Advanced knowledge of NEURAL NETWORKS (function, building and training)
+   # - Understanding what Backpropagation is
+   # - Understanding the principle of HIDDEN LAYERS
+   # - Acknowledging that training a neural network will require lots of performance
+   #
+   # UNDER NO CIRCUMSTANCES ENABLE THIS IF YOU DO NOT HAVE THE REQUIRED KNOWLEDGE.
+   # THIS IS A VERY POWERFUL TOOL AND CAN CRIPPLE YOUR SERVER IF USED IN THE WRONG WAY.
+   # I WILL _NOT_ PROVIDE SUPPORT FOR THIS FUNCTION: USE AT YOUR OWN RISK!
+   unlock_full_framework: false
+   # Options which belong to this section will only effect you if unlock_full_framework is set to true.
+   framework:
+      # The epoch when training a neural net.
+      epoch: 15000
+      # The train parameter of all neural nets
+      train_parameter: 0.6931
+      # The momentum parameter of all neural nets
+      momentum_parameter: 0.4055
+   # Map of confidence levels to command
+   # Confidences will not add up.
+   # 100 is the maximum confidence possible to reach.
+   thresholds:
+      80: "aacstaffnotify {player} in {world} is suspected for inventory cheats. Pattern {pattern} | Confidence: {vl}"
+      90: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats. Pattern {pattern} | Confidence: {vl}"
+      95: "aackick {player} Inventory cheats."
+
+# InventoryHit checks if a player modifies his inventory while hitting at the same time.
+InventoryHit:
+   # Do you want to enable the InventoryHit check
+   enabled: true
+   # Violation before AACAdditionPro starts to cancel the hits.
+   # Set this to 0 to never cancel hits.
+   cancel_vl: 3
+   # Map of violation levels to command
+   thresholds:
+      3: "aacstaffnotify {player} in {world} is suspected for Killaura/Autoarmor (InventoryHit)"
+      6: "aacstaffnotify {player} in {world} is highly suspected for Killaura/Autoarmor (InventoryHit)"
+      10: "aackick {player} Killaura/Triggerbot"
 
 # The InventoryMove check detects inventory clicks while moving
 InventoryMove:
@@ -259,6 +288,10 @@ KillauraEntity:
    #
    # The entity will only be visible for one player and only spawns behind players in survival and adventure mode
    behaviour:
+      # This determines whether the player will see the entity in the tablist.
+      # WARNING: Disabling this setting will make the entity VERY easy to bypass.
+      #          DO NOT REPORT BYPASSES WITH THIS SETTING DISABLED, I WILL CLOSE THESE ISSUES.
+      visible_in_tablist: true
       # Should the entity join a team
       team:
          enabled: true
@@ -397,7 +430,11 @@ Scaffold:
    # Over how many values should AACAdditionPro take the average for the check
    buffer_size: 6
    # The minimum delay between blockplaces that will be enforced by AACAdditionPro (measured in ms)
-   scaffold_delay: 300
+   delays:
+      # This delay applies to any kind of straight building.
+      normal: 259
+      # This delay applies to diagonal building
+      diagonal: 159
    # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
    # to prevent further scaffolding (measured in ms)
    timeout: 1000

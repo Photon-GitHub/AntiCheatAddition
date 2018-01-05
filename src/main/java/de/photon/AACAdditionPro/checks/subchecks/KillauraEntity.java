@@ -17,6 +17,7 @@ import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -170,6 +171,7 @@ public class KillauraEntity implements ViolationModule, Listener
                     // Check if we can serve OfflinePlayer profiles.
                     if (offlinePlayers.isEmpty())
                     {
+                        VerboseSender.sendVerboseMessage("KillauraEntity: Could not spawn entity as of too few game profiles for player " + player, true, true);
                         // No WrappedGameProfile can be set as there are no valid offline players.
                         return;
                     }
@@ -177,7 +179,7 @@ public class KillauraEntity implements ViolationModule, Listener
                     // Choose a random OfflinePlayer
                     chosenOfflinePlayer = offlinePlayers.remove(ThreadLocalRandom.current().nextInt(offlinePlayers.size()));
                     // and make sure it is not the player himself
-                } while (chosenOfflinePlayer.getUniqueId().equals(player.getUniqueId()));
+                } while (chosenOfflinePlayer.getName().equals(player.getName()));
 
                 // Get the GameProfile
                 gameProfile = new WrappedGameProfile(chosenOfflinePlayer.getUniqueId(), chosenOfflinePlayer.getName());

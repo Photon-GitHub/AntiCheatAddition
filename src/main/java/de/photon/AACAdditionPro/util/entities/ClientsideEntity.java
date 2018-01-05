@@ -36,8 +36,8 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public abstract class ClientsideEntity
@@ -512,21 +512,33 @@ public abstract class ClientsideEntity
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
-                entityMetadataWrapper.setMetadata(Collections.singletonList(new WrappedWatchableObject(0, (byte) (
-                        visible ?
-                        0 :
-                        0x20))));
+                final List<WrappedWatchableObject> wrappedWatchableObjectsOldMC = Arrays.asList(
+                        // Invisibility itself
+                        new WrappedWatchableObject(0, (byte) (
+                                visible ?
+                                0 :
+                                0x20)),
+                        // Arrows in entity.
+                        new WrappedWatchableObject(10, (0)));
+                entityMetadataWrapper.setMetadata(wrappedWatchableObjectsOldMC);
                 break;
+                
             case MC110:
             case MC111:
             case MC112:
-                final WrappedDataWatcher.WrappedDataWatcherObject dataWatcherObject = new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class));
+                final WrappedDataWatcher.WrappedDataWatcherObject visibilityWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class));
+                final WrappedDataWatcher.WrappedDataWatcherObject arrowInEntityWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(Integer.class));
 
                 entityMetadataWrapper.setEntityID(this.getEntityID());
-                entityMetadataWrapper.setMetadata(Collections.singletonList(new WrappedWatchableObject(dataWatcherObject, (byte) (
-                        visible ?
-                        0 :
-                        0x20))));
+                final List<WrappedWatchableObject> wrappedWatchableObjectsNewMC = Arrays.asList(
+                        // Invisibility itself
+                        new WrappedWatchableObject(visibilityWatcher, (byte) (
+                                visible ?
+                                0 :
+                                0x20)),
+                        // Arrows in entity.
+                        new WrappedWatchableObject(arrowInEntityWatcher, (0)));
+                entityMetadataWrapper.setMetadata(wrappedWatchableObjectsNewMC);
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");

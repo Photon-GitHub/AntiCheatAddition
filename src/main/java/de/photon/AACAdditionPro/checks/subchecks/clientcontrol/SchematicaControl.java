@@ -26,7 +26,7 @@ public class SchematicaControl implements Listener, ClientControlModule, PluginM
      * true means that the
      * <p>
      * [0] | printer <br>
-     * [1] | save <br>
+     * [1] | saveToFile <br>
      * [2] | load
      */
     private final boolean[] features = new boolean[3];
@@ -36,7 +36,7 @@ public class SchematicaControl implements Listener, ClientControlModule, PluginM
         // Disable parts
         // True in config = Do disable
         features[0] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.printer");
-        features[1] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.save");
+        features[1] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.saveToFile");
         features[2] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.load");
     }
 

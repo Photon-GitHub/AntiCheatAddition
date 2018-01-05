@@ -20,56 +20,58 @@ import java.util.Queue;
 
 public class EntityCheckCommand extends InternalCommand
 {
-    private final boolean on_command;
+    // If KillauraEntity is not enabled the ModuleManager will throw an error.
+    private final boolean commandActive = AACAdditionPro.getInstance().getConfig().getBoolean("KillauraEntity.commandActive") &&
+                                          // The on_command mode must be enabled, otherwise this command is useless.
+                                          AACAdditionPro.getInstance().getConfig().getBoolean("KillauraEntity.on_command");
 
-    private static final byte MAX_ITERATIONS = 1;
+    private static final byte MAX_ITERATIONS = 2;
 
     public EntityCheckCommand()
     {
         super("entitycheck", InternalPermission.ENTITYCHECK, false, (byte) 2, (byte) 2);
-        on_command = AACAdditionPro.getInstance().getConfig().getBoolean("KillauraEntity.on_command");
     }
 
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        final Player player = AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove());
-
-        if (player == null)
+        if (commandActive)
         {
-            sender.sendMessage(playerNotFoundMessage);
-        }
-        else
-        {
-            final short checkDuration;
-            try
-            {
-                checkDuration = Short.valueOf(arguments.remove());
-            } catch (NumberFormatException exception)
-            {
-                sender.sendMessage(prefix + ChatColor.RED + "Please enter a valid duration");
-                return;
-            }
+            final Player player = AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove());
 
-            if (checkDuration > 10000)
+            if (player == null)
             {
-                sender.sendMessage(prefix + ChatColor.RED + "The duration must at most be 10000 ticks.");
-                return;
+                sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
             }
-
-            if (on_command)
+            else
             {
+                final short checkDuration;
+                try
+                {
+                    checkDuration = Short.valueOf(arguments.remove());
+                } catch (NumberFormatException exception)
+                {
+                    sender.sendMessage(PREFIX + ChatColor.RED + "Please enter a valid duration");
+                    return;
+                }
+
+                if (checkDuration > 10000)
+                {
+                    sender.sendMessage(PREFIX + ChatColor.RED + "The duration must at most be 10000 ticks.");
+                    return;
+                }
+
                 final User user = UserManager.getUser(player.getUniqueId());
 
                 if (user == null)
                 {
-                    sender.sendMessage(prefix + ChatColor.RED + "Invalid user parsing. Has the player logged recently?");
+                    sender.sendMessage(PREFIX + ChatColor.RED + "Invalid user parsing. Has the player logged recently?");
                     return;
                 }
 
                 if (user.isBypassed())
                 {
-                    sender.sendMessage(prefix + ChatColor.RED + "The target user has bypass permissions.");
+                    sender.sendMessage(PREFIX + ChatColor.RED + "The target user has bypass permissions.");
                     return;
                 }
 
@@ -94,7 +96,7 @@ public class EntityCheckCommand extends InternalCommand
                         Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> this.execute(sender, arguments), 5L);
                     } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | IllegalStateException e)
                     {
-                        sender.sendMessage(prefix + ChatColor.RED + "Critical error whilst trying to respawn the entity.");
+                        sender.sendMessage(PREFIX + ChatColor.RED + "Critical error whilst trying to respawn the entity.");
                         VerboseSender.sendVerboseMessage("Critical error whilst trying to respawn the entity.", true, true);
                         e.printStackTrace();
                     }
@@ -104,11 +106,11 @@ public class EntityCheckCommand extends InternalCommand
                     user.getClientSideEntityData().respawnTrys = 0;
                     if (user.getClientSideEntityData().clientSidePlayerEntity.isVisible())
                     {
-                        sender.sendMessage(prefix + ChatColor.RED + "A check of the player is already in progress.");
+                        sender.sendMessage(PREFIX + ChatColor.RED + "A check of the player is already in progress.");
                     }
                     else
                     {
-                        sender.sendMessage(prefix + ChatColor.GOLD + "Now checking player " + user.getPlayer().getName() + " for " + checkDuration + " ticks.");
+                        sender.sendMessage(PREFIX + ChatColor.GOLD + "Now checking player " + user.getPlayer().getName() + " for " + checkDuration + " ticks.");
                         VerboseSender.sendVerboseMessage("Manual entity check issued by " + sender.getName() + ": Player: " + user.getPlayer().getName() + " | Time: " + checkDuration + " ticks.");
                         user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(true);
 
@@ -118,10 +120,10 @@ public class EntityCheckCommand extends InternalCommand
                     }
                 }
             }
-            else
-            {
-                sender.sendMessage(prefix + ChatColor.RED + "The command is disabled in the config.");
-            }
+        }
+        else
+        {
+            sender.sendMessage(PREFIX + ChatColor.RED + "KillauraEntity is disabled or not in on_command mode.");
         }
     }
 

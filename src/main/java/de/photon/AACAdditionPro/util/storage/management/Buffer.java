@@ -1,25 +1,20 @@
 package de.photon.AACAdditionPro.util.storage.management;
 
-import java.util.ArrayList;
+import lombok.Getter;
+
+import java.util.Stack;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-public abstract class Buffer<T> extends ArrayList<T>
+public class Buffer<T> extends Stack<T>
 {
-    private final int buffer_size;
+    @Getter
+    private final int bufferSize;
 
-    protected Buffer(final int buffer_size)
+    public Buffer(final int bufferSize)
     {
-        super(buffer_size);
-        this.buffer_size = buffer_size;
+        this.bufferSize = bufferSize;
     }
-
-    /**
-     * This is used to verify an object before it gets added to the buffer,
-     * and therefore useful for checking e.g. adjacency of blocks or similar.
-     *
-     * @return true if the object should be added to the buffer and false if the buffer should be cleared
-     */
-    protected abstract boolean verifyObject(T object);
 
     /**
      * Adds a {@link T} to the buffer, or clears the buffer if verifyObject returns false
@@ -30,28 +25,40 @@ public abstract class Buffer<T> extends ArrayList<T>
      */
     public boolean bufferObject(final T object)
     {
-        if (verifyObject(object)) {
-            this.add(object);
-        } else {
-            this.clear();
+        this.push(object);
+        return this.size() >= this.bufferSize;
+    }
+
+    /**
+     * Iterates through the buffer and clears it at the same time.
+     *
+     * @param lastObjectConsumer the code which should run for each element.
+     */
+    public void clearLastObjectIteration(final Consumer<T> lastObjectConsumer)
+    {
+        while (!this.isEmpty())
+        {
+            lastObjectConsumer.accept(this.pop());
         }
-        return this.size() >= this.buffer_size;
     }
 
     /**
      * Iterates through the buffer and clears it at the same time
      * The most recently added element will always be in last.
+     * After one cycle the current object will be written to last.
      *
-     * @param code the code which should be run in each cycle
+     * @param lastObjectsConsumer the code which should be run in each cycle, consuming the last and the current object.
      */
-    public void clearLastObjectIteration(final BiConsumer<T, T> code)
+    public void clearLastTwoObjectsIteration(final BiConsumer<T, T> lastObjectsConsumer)
     {
-        if (!this.isEmpty()) {
-            T last = this.remove(this.size() - 1);
+        if (!this.isEmpty())
+        {
+            T last = this.pop();
             T current;
-            while (!this.isEmpty()) {
-                current = this.remove(this.size() - 1);
-                code.accept(last, current);
+            while (!this.isEmpty())
+            {
+                current = this.pop();
+                lastObjectsConsumer.accept(last, current);
                 last = current;
             }
         }

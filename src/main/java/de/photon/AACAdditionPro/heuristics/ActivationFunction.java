@@ -1,28 +1,42 @@
 package de.photon.AACAdditionPro.heuristics;
 
-import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
-
-public enum ActivationFunction
+public interface ActivationFunction
 {
-    TANGENS_HYPERBOLICUS;
+    /**
+     * Applies the {@link ActivationFunction} to the input.
+     *
+     * @return the result of the application.
+     */
+    double applyActivationFunction(double input);
 
-    public static Double applyActivationFunction(final Double input, final ActivationFunction activationFunction)
+    /**
+     * Applies the derived {@link ActivationFunction} to the input.
+     *
+     * @return the result of the application.
+     */
+    double applyDerivedActivationFunction(double input);
+
+    /**
+     * This handles the bias if the {@link Graph} must not have 0 neurons to start with in order to learn.
+     */
+    default double getBias()
     {
-        switch (activationFunction) {
-            case TANGENS_HYPERBOLICUS:
-                return Math.tanh(input);
-            default:
-                throw new NeuralNetworkException("ActivationFunction not found.");
-        }
+        return 0;
     }
 
-    public static Double applyDerivedActivationFunction(final Double input, final ActivationFunction activationFunction)
+    /**
+     * The minimum value the function can reach.
+     */
+    default double min()
     {
-        switch (activationFunction) {
-            case TANGENS_HYPERBOLICUS:
-                return (4 * Math.pow(Math.cosh(input), 2)) / Math.pow(Math.cosh(2 * input), 2);
-            default:
-                throw new NeuralNetworkException("ActivationFunction not found.");
-        }
+        return -1;
+    }
+
+    /**
+     * The maximum value the function can reach.
+     */
+    default double max()
+    {
+        return 1;
     }
 }

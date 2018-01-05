@@ -37,6 +37,12 @@ public class ViolationLevelManagement implements Listener
      */
     private final ModuleType moduleType;
 
+    /**
+     * Create a new {@link ViolationLevelManagement}
+     *
+     * @param moduleType    the {@link ModuleType} of the module this {@link ViolationLevelManagement} is being used by.
+     * @param decreaseDelay the time in ticks until the vl of a player is decreased by one. If this is negative no decrease will happen.
+     */
     public ViolationLevelManagement(final ModuleType moduleType, final long decreaseDelay)
     {
         // The ModuleType of the check
@@ -48,22 +54,26 @@ public class ViolationLevelManagement implements Listener
         // Load the thresholds
         thresholds = ConfigUtils.loadThresholds(moduleType.getConfigString() + ".thresholds");
 
-        //The vl-decrease
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(
-                AACAdditionPro.getInstance(), () -> violationLevels.forEach(
-                        (uuid, vl) ->
-                        {
-                            final int newVl = vl - 1;
+        // Might need to have a vl manager without vl decrease
+        if (decreaseDelay > 0)
+        {
+            //The vl-decrease
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(
+                    AACAdditionPro.getInstance(), () -> violationLevels.forEach(
+                            (uuid, vl) ->
+                            {
+                                final int newVl = vl - 1;
 
-                            if (newVl > 0)
-                            {
-                                violationLevels.put(uuid, newVl);
-                            }
-                            else
-                            {
-                                violationLevels.remove(uuid);
-                            }
-                        }), 0L, decreaseDelay);
+                                if (newVl > 0)
+                                {
+                                    violationLevels.put(uuid, newVl);
+                                }
+                                else
+                                {
+                                    violationLevels.remove(uuid);
+                                }
+                            }), 0L, decreaseDelay);
+        }
     }
 
     /**
@@ -107,7 +117,7 @@ public class ViolationLevelManagement implements Listener
             this.addVL(player, vlIncrease);
 
             //Cancel
-            if (cancelVl > 0 && cancelVl < this.getVL(player.getUniqueId()))
+            if (cancelVl > 0 && cancelVl <= this.getVL(player.getUniqueId()))
             {
                 onCancel.run();
             }
@@ -118,15 +128,12 @@ public class ViolationLevelManagement implements Listener
 
     /**
      * @param uuid the {@link UUID} of the {@link Player} whose vl should be returned.
+     *
      * @return the vl of the given uuid.
      */
     public final int getVL(final UUID uuid)
     {
-        final Integer vl = violationLevels.get(uuid);
-        // If the vl would be null 0 is returned.
-        return vl == null ?
-               0 :
-               vl;
+        return violationLevels.getOrDefault(uuid, 0);
     }
 
     /**
@@ -138,7 +145,7 @@ public class ViolationLevelManagement implements Listener
      */
     void setVL(final Player player, final int newVl, final boolean punish)
     {
-        final int oldVl = getVL(player.getUniqueId());
+        final int oldVl = this.getVL(player.getUniqueId());
 
         // A value smaller than 0 can be removed
         if (newVl > 0 &&
@@ -190,30 +197,26 @@ public class ViolationLevelManagement implements Listener
      */
     private void punishPlayer(final Player player, final int fromVl, final int toVl)
     {
-        // Iterate through all the keys
-        for (final Integer key : thresholds.keySet())
+        // Only schedule the command execution if the plugin is loaded
+        if (AACAdditionPro.getInstance().isLoaded())
         {
-
-            // If the key should be applied here
-            if (key > fromVl && key <= toVl)
-            {
-
-                // Iterate through all the commands that are presented in the threshold of key
-                for (final String s : thresholds.get(key))
+            // Iterate through all the keys
+            thresholds.forEach((threshold, commandList) -> {
+                // If the key should be applied here
+                if (threshold > fromVl && threshold <= toVl)
                 {
-
-                    // Command cannot be null as of the new loading process.
-                    final String realCommand = Placeholders.applyPlaceholders(s, player);
-
-                    // Only schedule the command execution if the plugin is loaded
-                    if (AACAdditionPro.getInstance().isLoaded())
+                    // Iterate through all the commands that are presented in the threshold of key
+                    for (final String s : commandList)
                     {
-
                         // Calling of the event + Sync command execution
-                        CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.moduleType));
+                        CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(
+                                player,
+                                Placeholders.applyPlaceholders(s, player, String.valueOf(toVl)),
+                                this.moduleType));
+
                     }
                 }
-            }
+            });
         }
     }
 

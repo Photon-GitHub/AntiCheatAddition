@@ -17,7 +17,7 @@ public final class CommandUtils
      */
     public static void executeCommandWithPlaceholders(final String command, final Player player)
     {
-        executeCommand(Placeholders.applyPlaceholders(command, player));
+        executeCommand(Placeholders.applyPlaceholders(command, player, null));
     }
 
     /**
@@ -32,7 +32,8 @@ public final class CommandUtils
     {
         Bukkit.getPluginManager().callEvent(commandEvent);
 
-        if (!commandEvent.isCancelled()) {
+        if (!commandEvent.isCancelled())
+        {
             executeCommand(commandEvent.getCommand());
         }
     }
@@ -49,10 +50,12 @@ public final class CommandUtils
                 AACAdditionPro.getInstance(),
                 () -> {
                     //Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
-                    try {
+                    try
+                    {
                         AACAdditionPro.getInstance().getServer().dispatchCommand(AACAdditionPro.getInstance().getServer().getConsoleSender(), command);
                         VerboseSender.sendVerboseMessage(ChatColor.GOLD + "Executed command: " + command);
-                    } catch (final Exception e) {
+                    } catch (final Exception e)
+                    {
                         VerboseSender.sendVerboseMessage("Could not execute command /" + command, true, true);
                     }
                 });

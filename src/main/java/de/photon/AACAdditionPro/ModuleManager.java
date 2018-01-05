@@ -65,7 +65,9 @@ public class ModuleManager extends ArrayList<Module>
      * Gets a {@link Module} from its {@link ModuleType}.
      *
      * @param moduleType the {@link ModuleType} of the {@link Module} that should be found
+     *
      * @return the {@link Module} if a match was found
+     *
      * @throws IllegalArgumentException if the provided {@link ModuleType} parameter is not used in a {@link Module}
      */
     public Module getModule(final ModuleType moduleType)
@@ -84,7 +86,9 @@ public class ModuleManager extends ArrayList<Module>
      * Gets a the {@link ViolationLevelManagement} of a module from its {@link ModuleType}.
      *
      * @param moduleType the {@link ModuleType} of the check which {@link ViolationLevelManagement} is searched for.
+     *
      * @return the check if it was found
+     *
      * @throws IllegalArgumentException            if the provided {@link ModuleType} parameter is not used in a check
      * @throws NoViolationLevelManagementException if the module doesn't have a {@link ViolationLevelManagement}
      */
@@ -109,21 +113,27 @@ public class ModuleManager extends ArrayList<Module>
         final Module module = this.getModule(moduleType);
 
         // The message that will be printed in the logs / console
-        String message = "Check " + module.getName() + "has been ";
+        // 23 is capacity needed by the message
+        // 29 the maximum length of a module.
+        // Thus a capacity of 52
+        final StringBuilder stringBuilder = new StringBuilder(52);
+        stringBuilder.append("Check ");
+        stringBuilder.append(module.getName());
+        stringBuilder.append(" has been ");
 
         // Should it be enabled or disabled
         if (state)
         {
             module.enable();
-            message += "enabled.";
+            stringBuilder.append("enabled.");
         }
         else
         {
             module.disable();
-            message += "disabled.";
+            stringBuilder.append("disabled.");
         }
 
         // Send / log the message
-        VerboseSender.sendVerboseMessage(message);
+        VerboseSender.sendVerboseMessage(stringBuilder.toString());
     }
 }

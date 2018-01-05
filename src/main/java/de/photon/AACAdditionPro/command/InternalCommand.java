@@ -15,8 +15,8 @@ import java.util.Set;
 
 public abstract class InternalCommand
 {
-    protected static final String prefix = ChatColor.DARK_RED + "[AACAdditionPro] ";
-    protected static final String playerNotFoundMessage = prefix + ChatColor.RED + "Player could not be found.";
+    protected static final String PREFIX = ChatColor.DARK_RED + "[AACAdditionPro] ";
+    protected static final String PLAYER_NOT_FOUND_MESSAGE = PREFIX + ChatColor.RED + "Player could not be found.";
 
     public final String name;
     private final InternalPermission permission;
@@ -71,7 +71,7 @@ public abstract class InternalCommand
                 {
                     for (final String help : this.getCommandHelp())
                     {
-                        sender.sendMessage(prefix + ChatColor.GOLD + help);
+                        sender.sendMessage(PREFIX + ChatColor.GOLD + help);
                     }
                     return;
                 }
@@ -99,7 +99,7 @@ public abstract class InternalCommand
         }
         else
         {
-            sender.sendMessage(prefix + ChatColor.RED + "You don't have permission to do this.");
+            sender.sendMessage(PREFIX + ChatColor.RED + "You don't have permission to do this.");
         }
     }
 
@@ -113,12 +113,12 @@ public abstract class InternalCommand
             }
             else
             {
-                sender.sendMessage(prefix + ChatColor.RED + "Only a player can use this command.");
+                sender.sendMessage(PREFIX + ChatColor.RED + "Only a player can use this command.");
             }
         }
         else
         {
-            sender.sendMessage(prefix + ChatColor.RED + "Wrong amount of arguments: " + arguments.size() + " expected: " + minArguments + " to " + maxArguments);
+            sender.sendMessage(PREFIX + ChatColor.RED + "Wrong amount of arguments: " + arguments.size() + " expected: " + minArguments + " to " + maxArguments);
         }
     }
 
@@ -130,11 +130,11 @@ public abstract class InternalCommand
 
     protected String[] getChildTabs()
     {
-        final Collection<InternalCommand> childs = this.getChildCommands();
-        final String[] tabs = new String[childs.size()];
+        final Collection<InternalCommand> children = this.getChildCommands();
+        final String[] tabs = new String[children.size()];
 
         int index = 0;
-        for (InternalCommand child : childs)
+        for (InternalCommand child : children)
         {
             tabs[index++] = child.name;
         }

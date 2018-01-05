@@ -13,14 +13,7 @@ public class FishingData extends TimeData
      */
     public int failedCounter = 0;
 
-    public final DoubleBuffer consistencyBuffer = new DoubleBuffer(AACAdditionPro.getInstance().getConfig().getInt(ModuleType.AUTO_FISH.getConfigString() + ".parts.consistency.consistency_events"))
-    {
-        @Override
-        public boolean verifyObject(Double object)
-        {
-            return true;
-        }
-    };
+    public final DoubleBuffer consistencyBuffer = new DoubleBuffer(AACAdditionPro.getInstance().getConfig().getInt(ModuleType.AUTO_FISH.getConfigString() + ".parts.consistency.consistency_events"));
 
     /**
      * Adds a new delta to the consistencyBuffer by reading the last timestamp and buffering the difference between

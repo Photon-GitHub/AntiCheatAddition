@@ -62,15 +62,17 @@ public class AutoPotion implements Listener, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (user == null || user.isBypassed()) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
-        if (user.getAutoPotionData().alreadyThrown) {
+        if (user.getAutoPotionData().alreadyThrown)
+        {
             // The pitch and yaw values are nearly the same as before
             if (MathUtils.roughlyEquals(event.getTo().getPitch(), user.getAutoPotionData().lastSuddenPitch, angle_offset) &&
                 MathUtils.roughlyEquals(event.getTo().getYaw(), user.getAutoPotionData().lastSuddenYaw, angle_offset) &&
-                // Happened in a short timeframe
+                // Happened in a short time frame
                 user.getAutoPotionData().recentlyUpdated(0, time_offset))
             {
                 // Flag
@@ -79,7 +81,9 @@ public class AutoPotion implements Listener, ViolationModule
                     user.getAutoPotionData().updateTimeStamp(1);
                 }, () -> user.getAutoPotionData().nullifyTimeStamp(0));
             }
-        } else {
+        }
+        else
+        {
             // The angle_start_threshold is reached
             if (event.getTo().getPitch() - event.getFrom().getPitch() > this.angle_start_threshold &&
                 // The previous pitch is not representing looking down
@@ -103,12 +107,14 @@ public class AutoPotion implements Listener, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
         // Timeout
-        if (user.getAutoPotionData().recentlyUpdated(1, timeout)) {
+        if (user.getAutoPotionData().recentlyUpdated(1, timeout))
+        {
             event.setCancelled(true);
             return;
         }

@@ -101,7 +101,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
                 // Timestamps
                 // Decrease by approximately the factor 1 million to have more exact millis again.
-                inputData[0].getData()[i[0]] = 60 / ((youngerClick.timeStamp - olderClick.timeStamp) >> 20);
+                inputData[0].getData()[i[0]] = 60 / Math.min(1E-10, (youngerClick.timeStamp - olderClick.timeStamp) >> 20);
 
                 // Materials
                 inputData[1].getData()[i[0]] = youngerClick.type.ordinal();
@@ -132,7 +132,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 if (!training)
                 {
                     Double result = pattern.analyse(inputData);
-                    VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + pattern.getName() + " with a original confidence of " + result);
+
                     if (result != null)
                     {
                         //TODO: THIS IS ONLY A WORKAROUND FOR THE 0.5 PROBLEM!!!

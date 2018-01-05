@@ -92,7 +92,7 @@ public class Scaffold implements Listener, ViolationModule
                 VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[1] + " | real: " + results[0]);
 
                 // Flag the player
-                vlManager.flag(event.getPlayer(), (int) Math.max(Math.min(1, (results[1] - results[0]) / 15), 6), cancel_vl, () ->
+                vlManager.flag(event.getPlayer(), (int) Math.max(Math.min(1, ((results[1] - results[0]) / 15)), 6), cancel_vl, () ->
                 {
                     event.setCancelled(true);
                     user.getScaffoldData().updateTimeStamp();

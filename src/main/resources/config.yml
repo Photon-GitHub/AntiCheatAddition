@@ -434,7 +434,7 @@ Scaffold:
       # This delay applies to any kind of straight building.
       normal: 300
       # This delay applies to diagonal building
-      diagonal: 180
+      diagonal: 160
    # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
    # to prevent further scaffolding (measured in ms)
    timeout: 1000

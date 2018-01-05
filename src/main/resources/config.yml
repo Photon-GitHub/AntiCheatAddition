@@ -426,7 +426,7 @@ Scaffold:
    enabled: true
    # Violation before AACAdditionPro starts to cancel the block-places.
    # Set this to 0 to never cancel block-places.
-   cancel_vl: 7
+   cancel_vl: 5
    # Over how many values should AACAdditionPro take the average for the check
    buffer_size: 6
    # The minimum delay between blockplaces that will be enforced by AACAdditionPro (measured in ms)

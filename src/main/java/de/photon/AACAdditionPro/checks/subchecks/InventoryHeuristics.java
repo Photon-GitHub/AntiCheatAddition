@@ -143,21 +143,21 @@ public class InventoryHeuristics implements Listener, ViolationModule
             double flagSum = 0;
             for (Map.Entry<Pattern, Double> entry : outputDataMap.entrySet())
             {
-                if (entry.getValue() > detection_confidence)
+                double value = entry.getValue();
+                //TODO: THIS IS ONLY A WORKAROUND FOR THE 0.5 PROBLEM!!!
+                if (value >= 0.5)
+                {
+                    value -= 0.5;
+                }
+                value *= 2;
+                
+                if (value > detection_confidence)
                 {
                     final InventoryHeuristicsEvent inventoryHeuristicsEvent = new InventoryHeuristicsEvent(user.getPlayer(), entry.getKey().getName(), entry.getValue());
                     Bukkit.getPluginManager().callEvent(inventoryHeuristicsEvent);
 
                     if (!inventoryHeuristicsEvent.isCancelled())
                     {
-                        double value = entry.getValue();
-                        //TODO: THIS IS ONLY A WORKAROUND FOR THE 0.5 PROBLEM!!!
-                        if (value >= 0.5)
-                        {
-                            value -= 0.5;
-                        }
-                        value *= 2;
-
                         flagSum += value;
                         VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + entry.getKey().getName() + " with a confidence of " + value + " (Original: " + entry.getValue() + ")");
                     }

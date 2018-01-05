@@ -41,6 +41,13 @@ public class TabListRemoveCommand extends InternalCommand
             }
         }
 
+        // This prevents the crashing of the player.
+        if (players[0].getUniqueId().equals(players[1].getUniqueId()))
+        {
+            sender.sendMessage(PREFIX + ChatColor.RED + "The affected player must not be the removed player.");
+            return;
+        }
+
         long ticks = arguments.isEmpty() ? 0 : Long.valueOf(arguments.remove());
         sender.sendMessage(ChatColor.GOLD + "Removed player " + ChatColor.RED + players[1].getName() + ChatColor.GOLD + " from " + ChatColor.RED + players[0].getName() + ChatColor.GOLD + "'s tablist for " + ChatColor.RED + ticks + ChatColor.GOLD + " ticks.");
 

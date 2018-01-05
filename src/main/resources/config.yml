@@ -211,7 +211,7 @@ InventoryHeuristics:
    # - Understanding the principle of HIDDEN LAYERS
    # - Acknowledging that training a neural network will require lots of performance
    #
-   # DO UNDER NO CIRCUMSTANCES ENABLE THIS IF YOU DO NOT HAVE THE REQUIRED KNOWLEDGE.
+   # UNDER NO CIRCUMSTANCES ENABLE THIS IF YOU DO NOT HAVE THE REQUIRED KNOWLEDGE.
    # THIS IS A VERY POWERFUL TOOL AND CAN CRIPPLE YOUR SERVER IF USED IN THE WRONG WAY.
    # I WILL _NOT_ PROVIDE SUPPORT FOR THIS FUNCTION: USE AT YOUR OWN RISK!
    unlock_full_framework: false
@@ -432,7 +432,7 @@ Scaffold:
    # The minimum delay between blockplaces that will be enforced by AACAdditionPro (measured in ms)
    delays:
       # This delay applies to any kind of straight building.
-      normal: 258
+      normal: 259
       # This delay applies to diagonal building
       diagonal: 159
    # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe

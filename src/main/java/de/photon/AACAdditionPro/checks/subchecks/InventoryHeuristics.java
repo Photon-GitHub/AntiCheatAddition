@@ -150,7 +150,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     value -= 0.5;
                 }
                 value *= 2;
-                
+
                 if (value > detection_confidence)
                 {
                     final InventoryHeuristicsEvent inventoryHeuristicsEvent = new InventoryHeuristicsEvent(user.getPlayer(), entry.getKey().getName(), entry.getValue());

@@ -171,7 +171,7 @@ public class KillauraEntity implements ViolationModule, Listener
                     // Check if we can serve OfflinePlayer profiles.
                     if (offlinePlayers.isEmpty())
                     {
-                        VerboseSender.sendVerboseMessage("Could not spawn entity as of too few game profiles", true, true);
+                        VerboseSender.sendVerboseMessage("KillauraEntity: Could not spawn entity as of too few game profiles for player " + player, true, true);
                         // No WrappedGameProfile can be set as there are no valid offline players.
                         return;
                     }

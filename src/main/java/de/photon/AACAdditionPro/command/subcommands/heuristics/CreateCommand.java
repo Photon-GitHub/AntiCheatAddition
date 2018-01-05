@@ -53,7 +53,7 @@ public class CreateCommand extends InternalCommand
                 else
                 {
                     int[] hiddenLayerConfig = new int[arguments.size()];
-                    
+
                     for (int i = 0; i < hiddenLayerConfig.length; i++)
                     {
                         try

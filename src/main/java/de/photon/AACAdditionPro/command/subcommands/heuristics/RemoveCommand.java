@@ -48,7 +48,7 @@ public class RemoveCommand extends InternalCommand
     @Override
     protected String[] getCommandHelp()
     {
-        return new String[]{"Removes a pattern from the loaded pattern list. Does not REMOVE the file of a pattern."};
+        return new String[]{"Removes a pattern from the loaded pattern list. Does not remove the file of a pattern."};
     }
 
     @Override

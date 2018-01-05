@@ -135,13 +135,6 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
                     if (result != null)
                     {
-                        //TODO: THIS IS ONLY A WORKAROUND FOR THE 0.5 PROBLEM!!!
-                        if (result >= 0.5)
-                        {
-                            result -= 0.5;
-                        }
-                        result *= 2;
-
                         outputDataMap.put(pattern, result);
                     }
                 }
@@ -157,8 +150,16 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
                     if (!inventoryHeuristicsEvent.isCancelled())
                     {
-                        flagSum += entry.getValue();
-                        VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + entry.getKey().getName() + " with a confidence of " + entry.getValue());
+                        double value = entry.getValue();
+                        //TODO: THIS IS ONLY A WORKAROUND FOR THE 0.5 PROBLEM!!!
+                        if (value >= 0.5)
+                        {
+                            value -= 0.5;
+                        }
+                        value *= 2;
+
+                        flagSum += value;
+                        VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + entry.getKey().getName() + " with a confidence of " + value + " (Original: " + entry.getValue() + ")");
                     }
                 }
             }

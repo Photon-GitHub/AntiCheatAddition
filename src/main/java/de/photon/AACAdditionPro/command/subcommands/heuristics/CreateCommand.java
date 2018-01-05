@@ -52,12 +52,18 @@ public class CreateCommand extends InternalCommand
                 }
                 else
                 {
-                    final List<String> hiddenLayerConfigStrings = new ArrayList<>(arguments);
-                    int[] hiddenLayerConfig = new int[hiddenLayerConfigStrings.size()];
-
-                    for (int i = 0; i < hiddenLayerConfigStrings.size(); i++)
+                    int[] hiddenLayerConfig = new int[arguments.size()];
+                    
+                    for (int i = 0; i < hiddenLayerConfig.length; i++)
                     {
-                        hiddenLayerConfig[i] = Integer.valueOf(hiddenLayerConfigStrings.get(i));
+                        try
+                        {
+                            hiddenLayerConfig[i] = Integer.valueOf(arguments.remove());
+                        } catch (NumberFormatException exception)
+                        {
+                            sender.sendMessage(PREFIX + ChatColor.RED + "Unable to parse the neuron count to an integer.");
+                            return;
+                        }
                     }
 
                     sender.sendMessage(ChatColor.GOLD + "Created new pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " with " + hiddenLayerConfig.length + " hidden layers and " + inputDataList.size() + " inputs.");

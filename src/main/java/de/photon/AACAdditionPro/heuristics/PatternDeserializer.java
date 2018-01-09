@@ -94,5 +94,4 @@ public class PatternDeserializer
             return new Pattern(patternName, inputs, graph);
         }
     }
-
 }

@@ -519,10 +519,11 @@ public abstract class ClientsideEntity
                                 0 :
                                 0x20)),
                         // Arrows in entity.
-                        new WrappedWatchableObject(10, (0)));
+                        // IN 1.8.8 THIS IS A BYTE, NOT AN INTEGER!
+                        new WrappedWatchableObject(10, (byte) 0));
                 entityMetadataWrapper.setMetadata(wrappedWatchableObjectsOldMC);
                 break;
-                
+
             case MC110:
             case MC111:
             case MC112:
@@ -537,7 +538,8 @@ public abstract class ClientsideEntity
                                 0 :
                                 0x20)),
                         // Arrows in entity.
-                        new WrappedWatchableObject(arrowInEntityWatcher, (0)));
+                        // IN 1.12.2 THIS IS AN INTEGER!
+                        new WrappedWatchableObject(arrowInEntityWatcher, 0));
                 entityMetadataWrapper.setMetadata(wrappedWatchableObjectsNewMC);
                 break;
             default:

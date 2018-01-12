@@ -143,6 +143,8 @@ public class InventoryHeuristics implements Listener, ViolationModule
             double flagSum = 0;
             for (Map.Entry<Pattern, Double> entry : outputDataMap.entrySet())
             {
+                // Pattern testing
+                VerboseSender.sendVerboseMessage("DEBUG: Player " + user.getPlayer().getName() + " has been detected by pattern " + entry.getKey().getName());
                 double value = entry.getValue();
                 //TODO: THIS IS ONLY A WORKAROUND FOR THE 0.5 PROBLEM!!!
                 if (value >= 0.5)

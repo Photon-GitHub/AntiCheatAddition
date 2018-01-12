@@ -70,6 +70,7 @@ public class PatternDeserializer
             {
                 for (int i1 = 0; i1 < matrixLength; i1++)
                 {
+                    // No check for existence is required as null values will never be changed, thus a primitive datatype here.
                     weightMatrix[i][i1] = input.readDouble();
                 }
             }

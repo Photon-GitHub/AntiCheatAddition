@@ -102,7 +102,6 @@ public class PatternSerializer
             }
         }
 
-        //this.writer.writeInt(this.pattern.getGraph().getWeightChangeMatrix().length);
         for (double[] layer : this.pattern.getGraph().getWeightChangeMatrix())
         {
             //this.writer.writeInt(layer.length);
@@ -111,8 +110,6 @@ public class PatternSerializer
                 this.writer.writeDouble(data);
             }
         }
-
-        //this.writer.writeInt(this.pattern.getGraph().getNeurons().length); // neurons and activatedNeurons have the same length
 
         this.writer.writeInt(this.pattern.getGraph().getNeuronsInLayers().length);
         for (int data : this.pattern.getGraph().getNeuronsInLayers())

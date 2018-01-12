@@ -30,8 +30,10 @@ public class PatternDeserializer
                 throw new IOException("Wrong version in pattern file: " + this.name);
             }
 
-            // Pattern data
+            // Name
             String patternName = input.readUTF();
+
+            // Inputs
             int inputLength = input.readByte() & 0xFF;
             InputData[] inputs = new InputData[inputLength];
             for (int i = 0; i < inputLength; i++)
@@ -58,19 +60,11 @@ public class PatternDeserializer
                 matrix[i] = new Double[matrixLength];
                 for (int i1 = 0; i1 < matrixLength; i1++)
                 {
-                    boolean data = input.readBoolean();
-                    if (data)
-                    {
-                        matrix[i][i1] = input.readDouble();
-                    }
-                    else
-                    {
-                        matrix[i][i1] = null;
-                    }
+                    // If data exists load it.
+                    matrix[i][i1] = input.readBoolean() ? input.readDouble() : null;
                 }
             }
 
-            //int weightMatrixLength = input.readInt();
             double[][] weightMatrix = new double[matrixLength][];
             for (int i = 0; i < matrixLength; i++)
             {
@@ -82,9 +76,6 @@ public class PatternDeserializer
                     weightMatrix[i][i1] = input.readDouble();
                 }
             }
-
-            // neuronLength == matrixLength
-            // int neuronLength = input.readInt();
 
             int neuronLayerLength = input.readInt();
             int[] neuronLayer = new int[neuronLayerLength];

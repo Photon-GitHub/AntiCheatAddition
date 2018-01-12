@@ -42,9 +42,8 @@ public class PatternSerializer
         /*
          * A pattern file is structured like this:
          *
-         * 1 byte: version number of the data
-         *
          * -------- PATTERN DATA
+         * 1 byte: version number of the data
          * 2+n bytes: length and content of the name string
          * 1 byte: length of the input data
          * :length of input data
@@ -52,10 +51,9 @@ public class PatternSerializer
          *
          * -------- GRAPH DATA
          * 1 byte: 0 for LOGISTIC, 1 for HYPERBOLIC_TANGENT
-         * 4 bytes: length of layers
+         * 4 bytes: length of matrix
          * :length of layers
-         *   4 bytes: length of data in layer
-         *   :length of data in layer
+         *   :length of layer (no byte as of quadratic matrix)
          *     1 byte: 0 for data is not set, 1 for data is set
          *     ?data is set
          *       8 bytes: data point
@@ -64,7 +62,6 @@ public class PatternSerializer
          *   4 bytes: length of data in layer
          *   :length of data in layer
          *     8 bytes: data point
-         * 4 bytes: length of neurons / activatedNeurons
          * 4 bytes: length of neuronsInLayers
          * :length of neuronsInLayers
          *   4 bytes: data point

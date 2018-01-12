@@ -52,11 +52,11 @@ public class PatternDeserializer
                                           ActivationFunctions.LOGISTIC;
 
             int matrixLength = input.readInt();
-            Double[][] matrix = new Double[matrixLength][];
+
+            // The matrix is quadratic
+            Double[][] matrix = new Double[matrixLength][matrixLength];
             for (int i = 0; i < matrixLength; i++)
             {
-                // The matrix is quadratic
-                matrix[i] = new Double[matrixLength];
                 for (int i1 = 0; i1 < matrixLength; i1++)
                 {
                     // If data exists load it.
@@ -64,11 +64,10 @@ public class PatternDeserializer
                 }
             }
 
-            double[][] weightMatrix = new double[matrixLength][];
+            // The matrix is quadratic
+            double[][] weightMatrix = new double[matrixLength][matrixLength];
             for (int i = 0; i < matrixLength; i++)
             {
-                // The matrix is quadratic
-                weightMatrix[i] = new double[matrixLength];
                 for (int i1 = 0; i1 < matrixLength; i1++)
                 {
                     weightMatrix[i][i1] = input.readDouble();

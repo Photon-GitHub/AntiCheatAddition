@@ -105,7 +105,7 @@ public class PatternSerializer
             }
         }
 
-        this.writer.writeInt(this.pattern.getGraph().getWeightChangeMatrix().length);
+        //this.writer.writeInt(this.pattern.getGraph().getWeightChangeMatrix().length);
         for (double[] layer : this.pattern.getGraph().getWeightChangeMatrix())
         {
             //this.writer.writeInt(layer.length);

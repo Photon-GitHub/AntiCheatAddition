@@ -70,9 +70,9 @@ public class PatternDeserializer
                 }
             }
 
-            int weightMatrixLength = input.readInt();
-            double[][] weightMatrix = new double[weightMatrixLength][];
-            for (int i = 0; i < weightMatrixLength; i++)
+            //int weightMatrixLength = input.readInt();
+            double[][] weightMatrix = new double[matrixLength][];
+            for (int i = 0; i < matrixLength; i++)
             {
                 //int layerLength = input.readInt();
                 // The matrix is quadratic

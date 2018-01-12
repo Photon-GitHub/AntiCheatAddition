@@ -72,13 +72,13 @@ public class PatternSerializer
 
         // ------------------------- PATTERN
         // Version first
-        this.writer.write(Pattern.PATTERN_VERSION);
+        this.writer.writeByte(Pattern.PATTERN_VERSION);
 
         // Name
         this.writer.writeUTF(this.pattern.getName());
 
         // Inputs
-        this.writer.write(this.pattern.getInputs().length);
+        this.writer.writeByte(this.pattern.getInputs().length);
         for (InputData inputData : this.pattern.getInputs())
         {
             this.writer.write(inputData.getName().charAt(0));
@@ -95,11 +95,11 @@ public class PatternSerializer
             {
                 if (data == null)
                 {
-                    this.writer.write(0);
+                    this.writer.writeBoolean(false);
                 }
                 else
                 {
-                    this.writer.write(1);
+                    this.writer.writeBoolean(true);
                     this.writer.writeDouble(data);
                 }
             }

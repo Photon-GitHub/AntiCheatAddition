@@ -87,7 +87,6 @@ public class PatternSerializer
         this.writer.writeInt(this.pattern.getGraph().getMatrix().length);
         for (Double[] layer : this.pattern.getGraph().getMatrix())
         {
-            //this.writer.writeInt(layer.length);
             for (Double data : layer)
             {
                 if (data == null)
@@ -104,7 +103,6 @@ public class PatternSerializer
 
         for (double[] layer : this.pattern.getGraph().getWeightChangeMatrix())
         {
-            //this.writer.writeInt(layer.length);
             for (double data : layer)
             {
                 this.writer.writeDouble(data);

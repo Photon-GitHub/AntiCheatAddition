@@ -15,7 +15,6 @@ import java.util.zip.GZIPOutputStream;
 public class PatternSerializer
 {
     private static final File HEURISTICS_FOLDER = new File(AACAdditionPro.getInstance().getDataFolder(), "heuristics");
-    private static final byte PATTERN_VERSION = 0;
 
     private DataOutputStream writer;
     private Pattern pattern;
@@ -73,7 +72,7 @@ public class PatternSerializer
 
         // ------------------------- PATTERN
         // Version first
-        this.writer.write(PATTERN_VERSION);
+        this.writer.write(Pattern.PATTERN_VERSION);
 
         // Name
         this.writer.writeUTF(this.pattern.getName());
@@ -91,7 +90,7 @@ public class PatternSerializer
         this.writer.writeInt(this.pattern.getGraph().getMatrix().length);
         for (Double[] layer : this.pattern.getGraph().getMatrix())
         {
-            this.writer.writeInt(layer.length);
+            //this.writer.writeInt(layer.length);
             for (Double data : layer)
             {
                 if (data == null)
@@ -109,14 +108,14 @@ public class PatternSerializer
         this.writer.writeInt(this.pattern.getGraph().getWeightChangeMatrix().length);
         for (double[] layer : this.pattern.getGraph().getWeightChangeMatrix())
         {
-            this.writer.writeInt(layer.length);
+            //this.writer.writeInt(layer.length);
             for (double data : layer)
             {
                 this.writer.writeDouble(data);
             }
         }
 
-        this.writer.writeInt(this.pattern.getGraph().getNeurons().length); // neurons and activatedNeurons have the same length
+        //this.writer.writeInt(this.pattern.getGraph().getNeurons().length); // neurons and activatedNeurons have the same length
 
         this.writer.writeInt(this.pattern.getGraph().getNeuronsInLayers().length);
         for (int data : this.pattern.getGraph().getNeuronsInLayers())

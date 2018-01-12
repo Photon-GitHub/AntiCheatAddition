@@ -25,7 +25,7 @@ public class PatternDeserializer
         {
             // Documentation of the data is in PatternSerializer#save()
             byte version = input.readByte();
-            if (version != 0)
+            if (version != Pattern.PATTERN_VERSION)
             {
                 throw new IOException("Wrong version in pattern file: " + this.name);
             }
@@ -53,9 +53,10 @@ public class PatternDeserializer
             Double[][] matrix = new Double[matrixLength][];
             for (int i = 0; i < matrixLength; i++)
             {
-                int layerLength = input.readInt();
-                matrix[i] = new Double[layerLength];
-                for (int i1 = 0; i1 < layerLength; i1++)
+                //int layerLength = input.readInt()
+                // The matrix is quadratic
+                matrix[i] = new Double[matrixLength];
+                for (int i1 = 0; i1 < matrixLength; i1++)
                 {
                     boolean data = input.readBoolean();
                     if (data)
@@ -73,15 +74,17 @@ public class PatternDeserializer
             double[][] weightMatrix = new double[weightMatrixLength][];
             for (int i = 0; i < weightMatrixLength; i++)
             {
-                int layerLength = input.readInt();
-                weightMatrix[i] = new double[layerLength];
-                for (int i1 = 0; i1 < layerLength; i1++)
+                //int layerLength = input.readInt();
+                // The matrix is quadratic
+                weightMatrix[i] = new double[matrixLength];
+                for (int i1 = 0; i1 < matrixLength; i1++)
                 {
                     weightMatrix[i][i1] = input.readDouble();
                 }
             }
 
-            int neuronLength = input.readInt();
+            // neuronLength == matrixLength
+            // int neuronLength = input.readInt();
 
             int neuronLayerLength = input.readInt();
             int[] neuronLayer = new int[neuronLayerLength];
@@ -90,7 +93,7 @@ public class PatternDeserializer
                 neuronLayer[i] = input.readInt();
             }
 
-            Graph graph = new Graph(function, matrix, weightMatrix, neuronLength, neuronLayer);
+            final Graph graph = new Graph(function, matrix, weightMatrix, neuronLayer);
             return new Pattern(patternName, inputs, graph);
         }
     }

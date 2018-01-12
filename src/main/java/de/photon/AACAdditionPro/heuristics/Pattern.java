@@ -3,14 +3,11 @@ package de.photon.AACAdditionPro.heuristics;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
-import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -23,6 +20,8 @@ import java.util.concurrent.ConcurrentMap;
 
 public class Pattern implements Serializable
 {
+    // The version byte used for the serialization.
+    static final byte PATTERN_VERSION = 1;
     public static final String[] VALID_OUTPUTS = new String[]{
             "VANILLA",
             "CHEATING"

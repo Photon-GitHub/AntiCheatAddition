@@ -43,13 +43,14 @@ public class Graph implements Serializable
     @Getter
     private final int[] neuronsInLayers;
 
-    Graph( ActivationFunction function, Double[][] matrix, double[][] weightMatrix, int neuronLength, int[] neuronLayer )
+    Graph(ActivationFunction function, Double[][] matrix, double[][] weightMatrix, int[] neuronLayer)
     {
         this.activationFunction = function;
         this.matrix = matrix;
         this.weightChangeMatrix = weightMatrix;
-        this.neurons = new double[neuronLength];
-        this.activatedNeurons = new double[neuronLength];
+        // Neurons and activatedNeurons are as long as the matrix
+        this.neurons = new double[matrix.length];
+        this.activatedNeurons = new double[matrix.length];
         this.neuronsInLayers = neuronLayer;
     }
 

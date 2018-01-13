@@ -84,7 +84,9 @@ public class PatternSerializer
             {
                 if (characterInputDataEntry.getValue().getName().equals(inputData.getName()))
                 {
+                    // Write correct char
                     this.writer.writeChar(characterInputDataEntry.getKey());
+                    break;
                 }
             }
         }

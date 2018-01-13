@@ -68,13 +68,13 @@ public class InventoryHeuristics implements Listener, ViolationModule
             final InputData[] inputData = new InputData[InputData.VALID_INPUTS.size()];
 
             // You cannot loop here without inconsistencies.
-            inputData[0] = new InputData(InputData.VALID_INPUTS.get("T").getName());
-            inputData[1] = new InputData(InputData.VALID_INPUTS.get("M").getName());
-            inputData[2] = new InputData(InputData.VALID_INPUTS.get("X").getName());
-            inputData[3] = new InputData(InputData.VALID_INPUTS.get("Y").getName());
-            inputData[4] = new InputData(InputData.VALID_INPUTS.get("I").getName());
-            inputData[5] = new InputData(InputData.VALID_INPUTS.get("S").getName());
-            inputData[6] = new InputData(InputData.VALID_INPUTS.get("C").getName());
+            inputData[0] = new InputData(InputData.VALID_INPUTS.get('T').getName());
+            inputData[1] = new InputData(InputData.VALID_INPUTS.get('M').getName());
+            inputData[2] = new InputData(InputData.VALID_INPUTS.get('X').getName());
+            inputData[3] = new InputData(InputData.VALID_INPUTS.get('Y').getName());
+            inputData[4] = new InputData(InputData.VALID_INPUTS.get('I').getName());
+            inputData[5] = new InputData(InputData.VALID_INPUTS.get('S').getName());
+            inputData[6] = new InputData(InputData.VALID_INPUTS.get('C').getName());
 
             for (InputData anInputData : inputData)
             {

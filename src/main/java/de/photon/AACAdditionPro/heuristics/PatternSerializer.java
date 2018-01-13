@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -17,7 +18,7 @@ public class PatternSerializer
     private static final File HEURISTICS_FOLDER = new File(AACAdditionPro.getInstance().getDataFolder(), "heuristics");
 
     private DataOutputStream writer;
-    private Pattern pattern;
+    private final Pattern pattern;
 
     PatternSerializer(Pattern pattern)
     {
@@ -78,7 +79,14 @@ public class PatternSerializer
         this.writer.writeByte(this.pattern.getInputs().length);
         for (InputData inputData : this.pattern.getInputs())
         {
-            this.writer.write(inputData.getName().charAt(0));
+            // Find the character in the map.
+            for (Map.Entry<Character, InputData> characterInputDataEntry : InputData.VALID_INPUTS.entrySet())
+            {
+                if (characterInputDataEntry.getValue().getName().equals(inputData.getName()))
+                {
+                    this.writer.writeChar(characterInputDataEntry.getKey());
+                }
+            }
         }
 
         // ------------------------- GRAPH

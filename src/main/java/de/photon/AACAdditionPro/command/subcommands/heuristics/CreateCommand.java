@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 public class CreateCommand extends InternalCommand
@@ -34,14 +35,18 @@ public class CreateCommand extends InternalCommand
                 final String encodedInputs = arguments.remove();
                 final List<InputData> inputDataList = new ArrayList<>(6);
 
-                InputData.VALID_INPUTS.forEach(
-                        (keyChar, data) ->
+                // Search for the characters and add the InputData if necessary.
+                for (Map.Entry<Character, InputData> characterInputDataEntry : InputData.VALID_INPUTS.entrySet())
+                {
+                    for (char c : encodedInputs.toCharArray())
+                    {
+                        if (c == characterInputDataEntry.getKey())
                         {
-                            if (encodedInputs.contains(keyChar))
-                            {
-                                inputDataList.add(data);
-                            }
-                        });
+                            inputDataList.add(characterInputDataEntry.getValue());
+                            break;
+                        }
+                    }
+                }
 
                 // The Heuristics Header will always be sent.
                 sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);

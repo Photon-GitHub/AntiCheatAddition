@@ -38,7 +38,7 @@ public class PatternDeserializer
             InputData[] inputs = new InputData[inputLength];
             for (int i = 0; i < inputLength; i++)
             {
-                String inputName = new String(new char[]{(char) (input.readByte() & 0xFF)});
+                final char inputName = input.readChar();
                 inputs[i] = InputData.VALID_INPUTS.get(inputName);
                 if (inputs[i] == null)
                 {

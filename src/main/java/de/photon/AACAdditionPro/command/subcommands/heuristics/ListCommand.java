@@ -33,7 +33,7 @@ public class ListCommand extends InternalCommand
                 final StringBuilder messageBuilder = new StringBuilder(256);
 
                 messageBuilder.append(ChatColor.DARK_RED);
-                messageBuilder.append("Active heuristics: \n");
+                messageBuilder.append("Active heuristics: ");
                 messageBuilder.append(ChatColor.RED);
 
                 for (Pattern pattern : InventoryHeuristics.getPATTERNS())
@@ -49,23 +49,18 @@ public class ListCommand extends InternalCommand
                     messageBuilder.append(" | ");
 
                     // Neurons
-                    messageBuilder.append(ChatColor.RED);
                     messageBuilder.append(pattern.getGraph().getNeurons().length);
                     messageBuilder.append(" Neurons");
 
-                    messageBuilder.append(ChatColor.GOLD);
                     messageBuilder.append(" | ");
 
                     // Layers
-                    messageBuilder.append(ChatColor.RED);
                     messageBuilder.append(pattern.getGraph().getNeuronsInLayers().length);
                     messageBuilder.append(" Layers");
 
-                    messageBuilder.append(ChatColor.GOLD);
                     messageBuilder.append(" | ");
 
                     // Inputs
-                    messageBuilder.append(ChatColor.RED);
                     for (InputData inputData : pattern.getInputs())
                     {
                         // Find the character in the map.
@@ -80,7 +75,6 @@ public class ListCommand extends InternalCommand
                         }
                     }
 
-                    messageBuilder.append(ChatColor.GOLD);
                     messageBuilder.append(", ");
                 }
 

@@ -5,10 +5,12 @@ import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
+import de.photon.AACAdditionPro.heuristics.InputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.Map;
 import java.util.Queue;
 
 public class ListCommand extends InternalCommand
@@ -27,22 +29,58 @@ public class ListCommand extends InternalCommand
 
             if (!InventoryHeuristics.getPATTERNS().isEmpty())
             {
-                final StringBuilder messageBuilder = new StringBuilder(64);
-                messageBuilder.append(ChatColor.RED);
-                messageBuilder.append("Active heuristics: \n");
-                messageBuilder.append(ChatColor.GOLD);
+                // High initial capacity to cover all the patterns easily
+                final StringBuilder messageBuilder = new StringBuilder(256);
 
-                int patterns = 0;
+                messageBuilder.append(ChatColor.DARK_RED);
+                messageBuilder.append("Active heuristics: \n");
+                messageBuilder.append(ChatColor.RED);
+
                 for (Pattern pattern : InventoryHeuristics.getPATTERNS())
                 {
-                    if (++patterns > 5)
+                    // New line
+                    messageBuilder.append("\n");
+
+                    // Name
+                    messageBuilder.append(ChatColor.RED);
+                    messageBuilder.append(pattern.getName());
+
+                    messageBuilder.append(ChatColor.GOLD);
+                    messageBuilder.append(" | ");
+
+                    // Neurons
+                    messageBuilder.append(ChatColor.RED);
+                    messageBuilder.append(pattern.getGraph().getNeurons().length);
+                    messageBuilder.append(" Neurons");
+
+                    messageBuilder.append(ChatColor.GOLD);
+                    messageBuilder.append(" | ");
+
+                    // Layers
+                    messageBuilder.append(ChatColor.RED);
+                    messageBuilder.append(pattern.getGraph().getNeuronsInLayers().length);
+                    messageBuilder.append(" Layers");
+
+                    messageBuilder.append(ChatColor.GOLD);
+                    messageBuilder.append(" | ");
+
+                    // Inputs
+                    messageBuilder.append(ChatColor.RED);
+                    for (InputData inputData : pattern.getInputs())
                     {
-                        messageBuilder.append("\n");
-                        messageBuilder.append(ChatColor.GOLD);
-                        patterns = 0;
+                        // Find the character in the map.
+                        for (Map.Entry<Character, InputData> characterInputDataEntry : InputData.VALID_INPUTS.entrySet())
+                        {
+                            if (characterInputDataEntry.getValue().getName().equals(inputData.getName()))
+                            {
+                                // Write correct char
+                                messageBuilder.append(characterInputDataEntry.getKey());
+                                break;
+                            }
+                        }
                     }
 
-                    messageBuilder.append(pattern.getName());
+                    messageBuilder.append(ChatColor.GOLD);
                     messageBuilder.append(", ");
                 }
 

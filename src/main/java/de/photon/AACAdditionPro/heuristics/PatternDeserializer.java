@@ -31,18 +31,19 @@ public class PatternDeserializer
             }
 
             // Name
-            String patternName = input.readUTF();
+            final String patternName = input.readUTF();
 
             // Inputs
-            int inputLength = input.readByte() & 0xFF;
-            InputData[] inputs = new InputData[inputLength];
-            for (int i = 0; i < inputLength; i++)
+            final InputData[] inputs = new InputData[input.readByte() & 0xFF];
+            for (int i = 0; i < inputs.length; i++)
             {
-                final char inputName = input.readChar();
-                inputs[i] = InputData.VALID_INPUTS.get(inputName);
+                // The mapping key of the InputData in InputData.VALID_INPUTS
+                final char inputKeyChar = input.readChar();
+
+                inputs[i] = InputData.VALID_INPUTS.get(inputKeyChar);
                 if (inputs[i] == null)
                 {
-                    throw new IOException("Pattern " + this.name + " wanted to get input " + inputName + " which is not valid");
+                    throw new IOException("Pattern " + this.name + " wanted to get input " + inputKeyChar + " which is not valid");
                 }
             }
 
@@ -51,10 +52,11 @@ public class PatternDeserializer
                                           ActivationFunctions.HYPERBOLIC_TANGENT :
                                           ActivationFunctions.LOGISTIC;
 
-            int matrixLength = input.readInt();
+            // The length of the matrix
+            final int matrixLength = input.readInt();
 
             // The matrix is quadratic
-            Double[][] matrix = new Double[matrixLength][matrixLength];
+            final Double[][] matrix = new Double[matrixLength][matrixLength];
             for (int i = 0; i < matrixLength; i++)
             {
                 for (int i1 = 0; i1 < matrixLength; i1++)
@@ -65,7 +67,7 @@ public class PatternDeserializer
             }
 
             // The matrix is quadratic
-            double[][] weightMatrix = new double[matrixLength][matrixLength];
+            final double[][] weightMatrix = new double[matrixLength][matrixLength];
             for (int i = 0; i < matrixLength; i++)
             {
                 for (int i1 = 0; i1 < matrixLength; i1++)
@@ -75,9 +77,8 @@ public class PatternDeserializer
                 }
             }
 
-            int neuronLayerLength = input.readInt();
-            int[] neuronLayer = new int[neuronLayerLength];
-            for (int i = 0; i < neuronLayerLength; i++)
+            final int[] neuronLayer = new int[input.readInt()];
+            for (int i = 0; i < neuronLayer.length; i++)
             {
                 neuronLayer[i] = input.readInt();
             }

@@ -40,7 +40,15 @@ public class InventoryHeuristics implements Listener, ViolationModule
     {
         PATTERNS = ConcurrentHashMap.newKeySet();
         PatternDeserializer.loadPatterns(PATTERNS);
-        PATTERNS.forEach(pattern -> VerboseSender.sendVerboseMessage("InventoryHeuristics: Loaded pattern " + pattern.getName() + "."));
+
+        if (PATTERNS.isEmpty())
+        {
+            VerboseSender.sendVerboseMessage("InventoryHeuristics: No pattern was loaded.");
+        }
+        else
+        {
+            PATTERNS.forEach(pattern -> VerboseSender.sendVerboseMessage("InventoryHeuristics: Loaded pattern " + pattern.getName() + "."));
+        }
     }
 
     @EventHandler

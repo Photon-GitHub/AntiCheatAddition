@@ -149,7 +149,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 }
             }
 
-            double flagSum = 0;
+            user.getInventoryHeuristicsData().prepareCycle();
             for (Map.Entry<Pattern, Double> entry : outputDataMap.entrySet())
             {
                 // Pattern testing
@@ -168,17 +168,17 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
                     if (!inventoryHeuristicsEvent.isCancelled())
                     {
-                        flagSum += value;
+                        user.getInventoryHeuristicsData().setPatternConfidence(entry.getKey().getName(), value);
                         VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + entry.getKey().getName() + " with a confidence of " + value + " (Original: " + entry.getValue() + ")");
                     }
                 }
             }
 
-            if (flagSum != 0)
+            final double globalConfidence = user.getInventoryHeuristicsData().calculateGlobalConfidence();
+            if (globalConfidence != 0)
             {
-                final double vl = Math.abs(Math.tanh(flagSum - 0.15));
                 // Might not be the case, i.e. no detections
-                vlManager.setVL(user.getPlayer(), (int) vl);
+                vlManager.setVL(user.getPlayer(), (int) globalConfidence);
             }
         }
     }

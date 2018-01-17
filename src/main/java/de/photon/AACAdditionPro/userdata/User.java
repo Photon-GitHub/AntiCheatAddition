@@ -8,6 +8,7 @@ import de.photon.AACAdditionPro.userdata.data.EspInformationData;
 import de.photon.AACAdditionPro.userdata.data.FishingData;
 import de.photon.AACAdditionPro.userdata.data.FlyPatchData;
 import de.photon.AACAdditionPro.userdata.data.InventoryData;
+import de.photon.AACAdditionPro.userdata.data.InventoryHeuristicsData;
 import de.photon.AACAdditionPro.userdata.data.LookPacketData;
 import de.photon.AACAdditionPro.userdata.data.PingData;
 import de.photon.AACAdditionPro.userdata.data.PositionData;
@@ -37,6 +38,7 @@ public class User
     private final FishingData fishingData = new FishingData(this);
     private final FlyPatchData flyPatchData = new FlyPatchData();
     private final InventoryData inventoryData = new InventoryData(this);
+    private final InventoryHeuristicsData inventoryHeuristicsData = new InventoryHeuristicsData();
     private final LookPacketData lookPacketData = new LookPacketData(this);
     private final TimeData loginData;
     private final PingData pingData = new PingData(this);

@@ -226,8 +226,7 @@ public class Pattern implements Serializable
 
         try
         {
-            PatternSerializer serializer = new PatternSerializer(this);
-            serializer.save();
+            PatternSerializer.save(this);
         } catch (IOException e)
         {
             VerboseSender.sendVerboseMessage("Could not save pattern " + this.name + ". See the logs for further information.", true, true);

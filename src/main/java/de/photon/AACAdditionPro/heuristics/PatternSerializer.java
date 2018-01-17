@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -10,35 +9,20 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
+
 /**
- * Serializes a pattern to a .ptrn file.
+ * Util class for the serialization of saved {@link Pattern}s.
  */
-public class PatternSerializer
+public final class PatternSerializer
 {
     private static final File HEURISTICS_FOLDER = new File(AACAdditionPro.getInstance().getDataFolder(), "heuristics");
 
-    private DataOutputStream writer;
-    private final Pattern pattern;
+    private PatternSerializer() {}
 
-    PatternSerializer(Pattern pattern)
-    {
-        this.pattern = pattern;
-
-        try
-        {
-            if (!HEURISTICS_FOLDER.exists() && !HEURISTICS_FOLDER.mkdirs())
-            {
-                VerboseSender.sendVerboseMessage("Could not create heuristics folder.", true, true);
-                return;
-            }
-            this.writer = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(HEURISTICS_FOLDER, pattern.getName() + ".ptrn"))));
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    public void save() throws IOException
+    /**
+     * Serializes a pattern to a .ptrn file.
+     */
+    public static void save(final Pattern pattern) throws IOException
     {
         /*
          * A pattern file is structured like this:
@@ -68,16 +52,19 @@ public class PatternSerializer
          *   4 bytes: data point
          */
 
+        // Create the writer.
+        final DataOutputStream writer = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(HEURISTICS_FOLDER, pattern.getName() + ".ptrn"))));
+
         // ------------------------- PATTERN
         // Version first
-        this.writer.writeByte(Pattern.PATTERN_VERSION);
+        writer.writeByte(Pattern.PATTERN_VERSION);
 
         // Name
-        this.writer.writeUTF(this.pattern.getName());
+        writer.writeUTF(pattern.getName());
 
         // Inputs
-        this.writer.writeByte(this.pattern.getInputs().length);
-        for (InputData inputData : this.pattern.getInputs())
+        writer.writeByte(pattern.getInputs().length);
+        for (InputData inputData : pattern.getInputs())
         {
             // Find the character in the map.
             for (Map.Entry<Character, InputData> characterInputDataEntry : InputData.VALID_INPUTS.entrySet())
@@ -85,47 +72,47 @@ public class PatternSerializer
                 if (characterInputDataEntry.getValue().getName().equals(inputData.getName()))
                 {
                     // Write correct char
-                    this.writer.writeChar(characterInputDataEntry.getKey());
+                    writer.writeChar(characterInputDataEntry.getKey());
                     break;
                 }
             }
         }
 
         // ------------------------- GRAPH
-        this.writer.writeBoolean(this.pattern.getGraph().getActivationFunction() != ActivationFunctions.LOGISTIC);
+        writer.writeBoolean(pattern.getGraph().getActivationFunction() != ActivationFunctions.LOGISTIC);
 
-        this.writer.writeInt(this.pattern.getGraph().getMatrix().length);
-        for (Double[] layer : this.pattern.getGraph().getMatrix())
+        writer.writeInt(pattern.getGraph().getMatrix().length);
+        for (Double[] layer : pattern.getGraph().getMatrix())
         {
             for (Double data : layer)
             {
                 if (data == null)
                 {
-                    this.writer.writeBoolean(false);
+                    writer.writeBoolean(false);
                 }
                 else
                 {
-                    this.writer.writeBoolean(true);
-                    this.writer.writeDouble(data);
+                    writer.writeBoolean(true);
+                    writer.writeDouble(data);
                 }
             }
         }
 
-        for (double[] layer : this.pattern.getGraph().getWeightChangeMatrix())
+        for (double[] layer : pattern.getGraph().getWeightChangeMatrix())
         {
             for (double data : layer)
             {
-                this.writer.writeDouble(data);
+                writer.writeDouble(data);
             }
         }
 
-        this.writer.writeInt(this.pattern.getGraph().getNeuronsInLayers().length);
-        for (int data : this.pattern.getGraph().getNeuronsInLayers())
+        writer.writeInt(pattern.getGraph().getNeuronsInLayers().length);
+        for (int data : pattern.getGraph().getNeuronsInLayers())
         {
-            this.writer.writeInt(data);
+            writer.writeInt(data);
         }
 
-        this.writer.flush();
-        this.writer.close();
+        writer.flush();
+        writer.close();
     }
 }

@@ -12,28 +12,27 @@ import java.util.jar.JarFile;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Deserializes a pattern to put it in memory again.
- * The name of the pattern must be known.
+ * Util class for the deserialization of saved {@link Pattern}s.
  */
-public class PatternDeserializer
+public final class PatternDeserializer
 {
-    private final String name;
+    private PatternDeserializer() {}
 
-    private PatternDeserializer(String name)
+    /**
+     * Loads a {@link Pattern}.
+     *
+     * @param name the name of the {@link Pattern}.
+     */
+    private static Pattern load(final String name) throws IOException
     {
-        this.name = name;
-    }
-
-    public Pattern load() throws IOException
-    {
-        InputStream inputStream = PatternDeserializer.class.getClassLoader().getResourceAsStream(this.name);
+        InputStream inputStream = PatternDeserializer.class.getClassLoader().getResourceAsStream(name);
         try (DataInputStream input = new DataInputStream(new GZIPInputStream(inputStream)))
         {
             // Documentation of the data is in PatternSerializer#save()
             byte version = input.readByte();
             if (version != Pattern.PATTERN_VERSION)
             {
-                throw new IOException("Wrong version in pattern file: " + this.name);
+                throw new IOException("Wrong version in pattern file: " + name);
             }
 
             // Name
@@ -49,7 +48,7 @@ public class PatternDeserializer
                 inputs[i] = InputData.VALID_INPUTS.get(inputKeyChar);
                 if (inputs[i] == null)
                 {
-                    throw new IOException("Pattern " + this.name + " wanted to get input " + inputKeyChar + " which is not valid");
+                    throw new IOException("Pattern " + name + " wanted to get input " + inputKeyChar + " which is not valid");
                 }
             }
 
@@ -106,16 +105,15 @@ public class PatternDeserializer
             final File jarFile = new File(PatternDeserializer.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
             try (JarFile pluginFile = new JarFile(jarFile))
             {
-                Enumeration<JarEntry> entries = pluginFile.entries();
+                final Enumeration<JarEntry> entries = pluginFile.entries();
                 while (entries.hasMoreElements())
                 {
-                    JarEntry entry = entries.nextElement();
+                    final JarEntry entry = entries.nextElement();
                     if (entry.getName().endsWith(".ptrn"))
                     {
-                        final PatternDeserializer deserializer = new PatternDeserializer(entry.getName());
                         try
                         {
-                            patternCollection.add(deserializer.load());
+                            patternCollection.add(load(entry.getName()));
                         } catch (IOException e)
                         {
                             e.printStackTrace();

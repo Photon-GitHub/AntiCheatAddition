@@ -34,12 +34,13 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
     // Concurrency as heuristics are potentially added concurrently.
     @Getter
-    private static final Set<Pattern> PATTERNS = ConcurrentHashMap.newKeySet();
+    private static final Set<Pattern> PATTERNS;
 
-    @Override
-    public void subEnable()
+    static
     {
+        PATTERNS = ConcurrentHashMap.newKeySet();
         new PatternLoader(PATTERNS);
+        PATTERNS.forEach(pattern -> VerboseSender.sendVerboseMessage("InventoryHeuristics: Loaded pattern " + pattern.getName() + "."));
     }
 
     @EventHandler

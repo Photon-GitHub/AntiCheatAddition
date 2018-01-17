@@ -6,7 +6,7 @@ import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.events.InventoryHeuristicsEvent;
 import de.photon.AACAdditionPro.heuristics.InputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
-import de.photon.AACAdditionPro.heuristics.PatternLoader;
+import de.photon.AACAdditionPro.heuristics.PatternDeserializer;
 import de.photon.AACAdditionPro.heuristics.TrainingData;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
@@ -39,7 +39,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
     static
     {
         PATTERNS = ConcurrentHashMap.newKeySet();
-        new PatternLoader(PATTERNS);
+        PatternDeserializer.loadPatterns(PATTERNS);
         PATTERNS.forEach(pattern -> VerboseSender.sendVerboseMessage("InventoryHeuristics: Loaded pattern " + pattern.getName() + "."));
     }
 

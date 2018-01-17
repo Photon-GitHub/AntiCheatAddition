@@ -1,8 +1,14 @@
 package de.photon.AACAdditionPro.heuristics;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -85,6 +91,44 @@ public class PatternDeserializer
 
             final Graph graph = new Graph(function, matrix, weightMatrix, neuronLayer);
             return new Pattern(patternName, inputs, graph);
+        }
+    }
+
+    /**
+     * Loads all patterns that can be found as a resource into a {@link Collection} of Patterns.
+     *
+     * @param patternCollection the {@link Collection} the {@link Pattern}s should be added to.
+     */
+    public static void loadPatterns(final Collection<Pattern> patternCollection)
+    {
+        try
+        {
+            final File jarFile = new File(PatternDeserializer.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            try (JarFile pluginFile = new JarFile(jarFile))
+            {
+                Enumeration<JarEntry> entries = pluginFile.entries();
+                while (entries.hasMoreElements())
+                {
+                    JarEntry entry = entries.nextElement();
+                    if (entry.getName().endsWith(".ptrn"))
+                    {
+                        final PatternDeserializer deserializer = new PatternDeserializer(entry.getName());
+                        try
+                        {
+                            patternCollection.add(deserializer.load());
+                        } catch (IOException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        } catch (URISyntaxException e)
+        {
+            e.printStackTrace();
         }
     }
 }

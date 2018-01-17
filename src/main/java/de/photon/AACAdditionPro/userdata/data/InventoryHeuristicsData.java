@@ -10,7 +10,7 @@ public class InventoryHeuristicsData
     /**
      * This should be called prior to {@link #setPatternConfidence(String, double)} to make the confidences decay with legit actions.
      */
-    public void prepareCycle()
+    public void decayCycle()
     {
         patternMap.forEach((patternName, confidence) -> {
             final double newConfidence = confidence - 10;

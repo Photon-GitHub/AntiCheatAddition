@@ -149,7 +149,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 }
             }
 
-            user.getInventoryHeuristicsData().prepareCycle();
+            user.getInventoryHeuristicsData().decayCycle();
             for (Map.Entry<Pattern, Double> entry : outputDataMap.entrySet())
             {
                 // Pattern testing

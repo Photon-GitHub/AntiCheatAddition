@@ -7,7 +7,6 @@ import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
 import de.photon.AACAdditionPro.heuristics.InputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
-import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -51,7 +50,8 @@ public class ListCommand extends InternalCommand
 
                     // Neurons
                     // Subtract the input neurons and the output neuron
-                    messageBuilder.append(pattern.getGraph().getNeurons().length - (InventoryClick.SAMPLES + 1));
+                    final int[] neuronsInLayers = pattern.getGraph().getNeuronsInLayers();
+                    messageBuilder.append(pattern.getGraph().getNeurons().length - (neuronsInLayers[0] + neuronsInLayers[neuronsInLayers.length - 1]));
                     messageBuilder.append(" hidden Neurons");
 
                     messageBuilder.append(" | ");

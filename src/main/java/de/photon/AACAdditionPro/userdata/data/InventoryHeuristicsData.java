@@ -13,7 +13,7 @@ public class InventoryHeuristicsData
     public void decayCycle()
     {
         patternMap.forEach((patternName, confidence) -> {
-            final double newConfidence = confidence - 10;
+            final double newConfidence = confidence - 0.1;
 
             if (newConfidence > 0)
             {

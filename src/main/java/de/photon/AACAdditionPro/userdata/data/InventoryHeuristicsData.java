@@ -50,9 +50,10 @@ public class InventoryHeuristicsData
         double sum = 0;
         for (Double value : patternMap.values())
         {
-            sum += value;
+            sum += (value * value * value) * 1.2D;
         }
 
-        return Math.tanh(sum - 0.12D);
+        // Make sure that the result is greater or equal than 0.
+        return Math.max(0D, Math.tanh(sum - 0.6));
     }
 }

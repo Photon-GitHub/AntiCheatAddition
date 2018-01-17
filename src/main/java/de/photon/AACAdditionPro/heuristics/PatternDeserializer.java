@@ -19,7 +19,7 @@ public class PatternDeserializer
 {
     private final String name;
 
-    PatternDeserializer(String name)
+    private PatternDeserializer(String name)
     {
         this.name = name;
     }

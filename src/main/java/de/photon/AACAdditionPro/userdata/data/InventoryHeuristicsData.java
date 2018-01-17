@@ -50,6 +50,8 @@ public class InventoryHeuristicsData
         double sum = 0;
         for (Double value : patternMap.values())
         {
+            // Make sure too many low-confidence violations won't flag high global confidence
+            // -> use cubic function.
             sum += (value * value * value) * 1.2D;
         }
 

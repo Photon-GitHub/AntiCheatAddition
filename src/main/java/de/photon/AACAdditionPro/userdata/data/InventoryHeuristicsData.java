@@ -53,6 +53,6 @@ public class InventoryHeuristicsData
             sum += value;
         }
 
-        return Math.tanh(sum - 0.2D);
+        return Math.tanh(sum - 0.12D);
     }
 }

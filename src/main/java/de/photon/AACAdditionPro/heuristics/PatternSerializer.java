@@ -52,6 +52,14 @@ public final class PatternSerializer
          *   4 bytes: data point
          */
 
+        if (!HEURISTICS_FOLDER.exists())
+        {
+            if (!HEURISTICS_FOLDER.mkdirs())
+            {
+                throw new IOException("Could not create heuristics folder.");
+            }
+        }
+
         // Create the writer.
         final DataOutputStream writer = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(HEURISTICS_FOLDER, pattern.getName() + ".ptrn"))));
 

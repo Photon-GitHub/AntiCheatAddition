@@ -26,25 +26,25 @@ public class HC00000001 extends Pattern
     @Override
     public Double analyse(Map<Character, InputData> inputData)
     {
-        this.provideInputData(inputData);
-
         // See the constructor for the indices
-        final DoubleSummaryStatistics timeSummary = Arrays.stream(this.getInputs()[0].getData()).summaryStatistics();
+        double[][] inputArray = this.provideInputData(inputData);
 
         // Use a offset sum to detect too consistent clicking.
+        double average = Arrays.stream(inputArray[0]).summaryStatistics().getAverage();
+
         double offsetSum = 0;
-        for (int i = 0; i < this.getInputs()[0].getData().length; i++)
+        for (int i = 0; i < inputArray[0].length; i++)
         {
-            offsetSum += MathUtils.offset(this.getInputs()[0].getData()[i], timeSummary.getAverage()) / 1E12;
+            VerboseSender.sendVerboseMessage("HC1: " + inputArray[0][i]);
+            offsetSum += MathUtils.offset(inputArray[0][i], average);
         }
 
         final DoubleSummaryStatistics distanceSummary = new DoubleSummaryStatistics();
-        for (int i = 0; i < this.getInputs()[1].getData().length; i++)
+        for (int i = 0; i < inputArray[1].length; i++)
         {
-            distanceSummary.accept(Math.hypot(this.getInputs()[1].getData()[i], this.getInputs()[2].getData()[i]));
+            distanceSummary.accept(Math.hypot(inputArray[1][i], inputArray[2][i]));
         }
 
-        VerboseSender.sendVerboseMessage("HC00000001: " + offsetSum + " | " + (distanceSummary.getMax() - distanceSummary.getMin()));
         return Math.tanh((Math.pow(Math.E, -(offsetSum * offsetSum)) * (distanceSummary.getMax() - distanceSummary.getMin())) / 4);
     }
 }

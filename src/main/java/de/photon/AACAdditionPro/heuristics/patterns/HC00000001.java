@@ -10,7 +10,7 @@ import java.util.DoubleSummaryStatistics;
 import java.util.Map;
 
 /**
- * Checks for a plausible distance/time ratio to detect very constant delays even with changes in the deltas
+ * Checks for a plausible distance/time ratio to detect purposefully randomized inventory interactions
  */
 public class HC00000001 extends Pattern
 {

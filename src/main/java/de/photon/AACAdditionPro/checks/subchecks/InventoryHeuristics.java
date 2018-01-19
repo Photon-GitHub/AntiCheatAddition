@@ -104,7 +104,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
                 // Timestamps
                 // Decrease by approximately the factor 1 million to have more exact millis again.
-                inputData.get('T').getData()[i[0]] = 60 / Math.min(1E-10, (youngerClick.timeStamp - olderClick.timeStamp) >> 2);
+                inputData.get('T').getData()[i[0]] = 60 / Math.min(1E-10, (youngerClick.timeStamp - olderClick.timeStamp));
 
                 // Materials
                 inputData.get('M').getData()[i[0]] = youngerClick.type.ordinal();

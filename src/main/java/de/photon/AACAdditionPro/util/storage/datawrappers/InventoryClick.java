@@ -14,7 +14,7 @@ public class InventoryClick
     public static final byte SAMPLES = 20;
 
     public final Material type;
-    public final long timeStamp = System.nanoTime();
+    public final long timeStamp = System.currentTimeMillis();
     public final int clickedRawSlot;
     public final InventoryType inventoryType;
     public final InventoryType.SlotType slotType;

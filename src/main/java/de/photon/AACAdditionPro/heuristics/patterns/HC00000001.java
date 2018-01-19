@@ -14,7 +14,7 @@ import java.util.Map;
 public class HC00000001 extends Pattern
 {
     /**
-     * A threshold after which an inventory interaction is
+     * A threshold after which an inventory interaction is flagged as idling and thus not evaluated.
      */
     private static final double IDLE_THRESHOLD = 600;
 

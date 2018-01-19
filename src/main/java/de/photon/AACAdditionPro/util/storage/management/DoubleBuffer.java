@@ -8,9 +8,9 @@ public class DoubleBuffer extends Buffer<Double>
     }
 
     /**
-     * Adds all the {@link Double}s in this {@link Buffer}.
+     * Adds all the {@link Double}s in this {@link DoubleBuffer}.
      *
-     * @return the sum of all elements in this {@link Buffer}.
+     * @return the sum of all elements in this {@link DoubleBuffer}.
      */
     public double sum()
     {
@@ -20,6 +20,38 @@ public class DoubleBuffer extends Buffer<Double>
             result += d;
         }
         return result;
+    }
+
+    /**
+     * @return the maximum double in this {@link DoubleBuffer}
+     */
+    public double max()
+    {
+        double max = Double.MIN_VALUE;
+        for (double d : this)
+        {
+            if (d > max)
+            {
+                max = d;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * @return the minimum double in this {@link DoubleBuffer}
+     */
+    public double min()
+    {
+        double min = Double.MAX_VALUE;
+        for (double d : this)
+        {
+            if (d < min)
+            {
+                min = d;
+            }
+        }
+        return min;
     }
 
     /**

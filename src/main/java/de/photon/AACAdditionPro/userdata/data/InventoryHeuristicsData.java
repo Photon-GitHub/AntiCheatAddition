@@ -1,5 +1,7 @@
 package de.photon.AACAdditionPro.userdata.data;
 
+import de.photon.AACAdditionPro.heuristics.NeuralPattern;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,10 +29,10 @@ public class InventoryHeuristicsData
     }
 
     /**
-     * Sets the confidence of a {@link de.photon.AACAdditionPro.heuristics.Pattern}.
+     * Sets the confidence of a {@link NeuralPattern}.
      * If the present confidence is higher than the new one, no confidence will be set.
      *
-     * @param patternName the name of the {@link de.photon.AACAdditionPro.heuristics.Pattern}
+     * @param patternName the name of the {@link NeuralPattern}
      * @param confidence  the new confidence.
      */
     public void setPatternConfidence(final String patternName, final double confidence)

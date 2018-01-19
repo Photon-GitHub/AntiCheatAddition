@@ -2,12 +2,11 @@ package de.photon.AACAdditionPro.heuristics;
 
 import lombok.Getter;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
-public class InputData extends Data implements Serializable
+public class InputData extends Data
 {
-    public static final transient HashMap<Character, InputData> VALID_INPUTS;
+    public static final HashMap<Character, InputData> VALID_INPUTS;
 
     static
     {

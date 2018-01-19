@@ -54,11 +54,11 @@ public class RemoveCommand extends InternalCommand
     @Override
     protected String[] getTabPossibilities()
     {
-        final Set<Pattern> currentPatterns = InventoryHeuristics.getPATTERNS();
-        String[] patternNames = new String[currentPatterns.size()];
+        final Set<Pattern> currentNeuralPatterns = InventoryHeuristics.getPATTERNS();
+        String[] patternNames = new String[currentNeuralPatterns.size()];
 
         int index = 0;
-        for (Pattern currentPattern : currentPatterns)
+        for (Pattern currentPattern : currentNeuralPatterns)
         {
             patternNames[index++] = currentPattern.getName();
         }

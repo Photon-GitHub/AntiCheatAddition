@@ -12,18 +12,18 @@ import java.util.jar.JarFile;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Util class for the deserialization of saved {@link Pattern}s.
+ * Util class for the deserialization of saved {@link NeuralPattern}s.
  */
 public final class PatternDeserializer
 {
     private PatternDeserializer() {}
 
     /**
-     * Loads a {@link Pattern}.
+     * Loads a {@link NeuralPattern}.
      *
-     * @param name the name of the {@link Pattern}.
+     * @param name the name of the {@link NeuralPattern}.
      */
-    private static Pattern load(final String name) throws IOException
+    private static NeuralPattern load(final String name) throws IOException
     {
         InputStream inputStream = PatternDeserializer.class.getClassLoader().getResourceAsStream(name);
         try (DataInputStream input = new DataInputStream(new GZIPInputStream(inputStream)))
@@ -89,16 +89,16 @@ public final class PatternDeserializer
             }
 
             final Graph graph = new Graph(function, matrix, weightMatrix, neuronLayer);
-            return new Pattern(patternName, inputs, graph);
+            return new NeuralPattern(patternName, inputs, graph);
         }
     }
 
     /**
      * Loads all patterns that can be found as a resource into a {@link Collection} of Patterns.
      *
-     * @param patternCollection the {@link Collection} the {@link Pattern}s should be added to.
+     * @param neuralPatternCollection the {@link Collection} the {@link NeuralPattern}s should be added to.
      */
-    public static void loadPatterns(final Collection<Pattern> patternCollection)
+    public static void loadPatterns(final Collection<Pattern> neuralPatternCollection)
     {
         try
         {
@@ -113,7 +113,7 @@ public final class PatternDeserializer
                     {
                         try
                         {
-                            patternCollection.add(load(entry.getName()));
+                            neuralPatternCollection.add(load(entry.getName()));
                         } catch (IOException e)
                         {
                             e.printStackTrace();

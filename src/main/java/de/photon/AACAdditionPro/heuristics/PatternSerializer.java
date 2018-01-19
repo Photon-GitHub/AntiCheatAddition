@@ -11,7 +11,7 @@ import java.util.zip.GZIPOutputStream;
 
 
 /**
- * Util class for the serialization of saved {@link Pattern}s.
+ * Util class for the serialization of saved {@link NeuralPattern}s.
  */
 public final class PatternSerializer
 {
@@ -22,7 +22,7 @@ public final class PatternSerializer
     /**
      * Serializes a pattern to a .ptrn file.
      */
-    public static void save(final Pattern pattern) throws IOException
+    public static void save(final NeuralPattern neuralPattern) throws IOException
     {
         /*
          * A pattern file is structured like this:
@@ -61,18 +61,18 @@ public final class PatternSerializer
         }
 
         // Create the writer.
-        final DataOutputStream writer = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(HEURISTICS_FOLDER, pattern.getName() + ".ptrn"))));
+        final DataOutputStream writer = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(HEURISTICS_FOLDER, neuralPattern.getName() + ".ptrn"))));
 
         // ------------------------- PATTERN
         // Version first
         writer.writeByte(Pattern.PATTERN_VERSION);
 
         // Name
-        writer.writeUTF(pattern.getName());
+        writer.writeUTF(neuralPattern.getName());
 
         // Inputs
-        writer.writeByte(pattern.getInputs().length);
-        for (InputData inputData : pattern.getInputs())
+        writer.writeByte(neuralPattern.getInputs().length);
+        for (InputData inputData : neuralPattern.getInputs())
         {
             // Find the character in the map.
             for (Map.Entry<Character, InputData> characterInputDataEntry : InputData.VALID_INPUTS.entrySet())
@@ -87,10 +87,10 @@ public final class PatternSerializer
         }
 
         // ------------------------- GRAPH
-        writer.writeBoolean(pattern.getGraph().getActivationFunction() != ActivationFunctions.LOGISTIC);
+        writer.writeBoolean(neuralPattern.getGraph().getActivationFunction() != ActivationFunctions.LOGISTIC);
 
-        writer.writeInt(pattern.getGraph().getMatrix().length);
-        for (Double[] layer : pattern.getGraph().getMatrix())
+        writer.writeInt(neuralPattern.getGraph().getMatrix().length);
+        for (Double[] layer : neuralPattern.getGraph().getMatrix())
         {
             for (Double data : layer)
             {
@@ -106,7 +106,7 @@ public final class PatternSerializer
             }
         }
 
-        for (double[] layer : pattern.getGraph().getWeightChangeMatrix())
+        for (double[] layer : neuralPattern.getGraph().getWeightChangeMatrix())
         {
             for (double data : layer)
             {
@@ -114,8 +114,8 @@ public final class PatternSerializer
             }
         }
 
-        writer.writeInt(pattern.getGraph().getNeuronsInLayers().length);
-        for (int data : pattern.getGraph().getNeuronsInLayers())
+        writer.writeInt(neuralPattern.getGraph().getNeuronsInLayers().length);
+        for (int data : neuralPattern.getGraph().getNeuronsInLayers())
         {
             writer.writeInt(data);
         }

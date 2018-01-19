@@ -5,9 +5,11 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.events.InventoryHeuristicsEvent;
 import de.photon.AACAdditionPro.heuristics.InputData;
+import de.photon.AACAdditionPro.heuristics.NeuralPattern;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.heuristics.PatternDeserializer;
 import de.photon.AACAdditionPro.heuristics.TrainingData;
+import de.photon.AACAdditionPro.heuristics.patterns.HC00000001;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
@@ -41,9 +43,12 @@ public class InventoryHeuristics implements Listener, ViolationModule
         PATTERNS = ConcurrentHashMap.newKeySet();
         PatternDeserializer.loadPatterns(PATTERNS);
 
+        // Hardcoded patterns
+        PATTERNS.add(new HC00000001());
+
         if (PATTERNS.isEmpty())
         {
-            VerboseSender.sendVerboseMessage("InventoryHeuristics: No pattern was loaded.");
+            VerboseSender.sendVerboseMessage("InventoryHeuristics: No pattern has been loaded.", true, true);
         }
         else
         {
@@ -74,21 +79,10 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
                 event.getClick())))
         {
-            final InputData[] inputData = new InputData[InputData.VALID_INPUTS.size()];
-
-            // You cannot loop here without inconsistencies.
-            inputData[0] = new InputData(InputData.VALID_INPUTS.get('T').getName());
-            inputData[1] = new InputData(InputData.VALID_INPUTS.get('M').getName());
-            inputData[2] = new InputData(InputData.VALID_INPUTS.get('X').getName());
-            inputData[3] = new InputData(InputData.VALID_INPUTS.get('Y').getName());
-            inputData[4] = new InputData(InputData.VALID_INPUTS.get('I').getName());
-            inputData[5] = new InputData(InputData.VALID_INPUTS.get('S').getName());
-            inputData[6] = new InputData(InputData.VALID_INPUTS.get('C').getName());
-
-            for (InputData anInputData : inputData)
-            {
-                anInputData.setData(new double[user.getInventoryData().inventoryClicks.size()]);
-            }
+            // Create the new map and add the standard inputs
+            final Map<Character, InputData> inputData = new HashMap<>(InputData.VALID_INPUTS);
+            // Set the data array length
+            inputData.values().forEach(anInputData -> anInputData.setData(new double[user.getInventoryData().inventoryClicks.size()]));
 
             final int[] i = {0};
             user.getInventoryData().inventoryClicks.clearLastTwoObjectsIteration((youngerClick, olderClick) -> {
@@ -99,58 +93,66 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
                 if (locationOfOlderClick == null || locationOfYoungerClick == null)
                 {
-                    inputData[2].getData()[i[0]] = Double.MIN_VALUE;
-                    inputData[3].getData()[i[0]] = Double.MIN_VALUE;
+                    inputData.get('X').getData()[i[0]] = Double.MIN_VALUE;
+                    inputData.get('Y').getData()[i[0]] = Double.MIN_VALUE;
                 }
                 else
                 {
-                    inputData[2].getData()[i[0]] = locationOfYoungerClick[0] - locationOfOlderClick[0];
-                    inputData[3].getData()[i[0]] = locationOfYoungerClick[1] - locationOfOlderClick[1];
+                    inputData.get('X').getData()[i[0]] = locationOfYoungerClick[0] - locationOfOlderClick[0];
+                    inputData.get('Y').getData()[i[0]] = locationOfYoungerClick[1] - locationOfOlderClick[1];
                 }
 
                 // Timestamps
                 // Decrease by approximately the factor 1 million to have more exact millis again.
-                inputData[0].getData()[i[0]] = 60 / Math.min(1E-10, (youngerClick.timeStamp - olderClick.timeStamp) >> 20);
+                inputData.get('T').getData()[i[0]] = 60 / Math.min(1E-10, (youngerClick.timeStamp - olderClick.timeStamp) >> 20);
 
                 // Materials
-                inputData[1].getData()[i[0]] = youngerClick.type.ordinal();
+                inputData.get('M').getData()[i[0]] = youngerClick.type.ordinal();
+
+                inputData.get('I').getData()[i[0]] = youngerClick.inventoryType.ordinal();
 
                 // SlotTypes
-                inputData[4].getData()[i[0]] = youngerClick.slotType.ordinal();
+                inputData.get('S').getData()[i[0]] = youngerClick.slotType.ordinal();
 
                 // ClickTypes
-                inputData[5].getData()[i[0]++] = youngerClick.clickType.ordinal();
+                inputData.get('C').getData()[i[0]++] = youngerClick.clickType.ordinal();
             });
 
-            final Map<Pattern, Double> outputDataMap = new HashMap<>(PATTERNS.size(), 1);
+            final Map<NeuralPattern, Double> outputDataMap = new HashMap<>(PATTERNS.size(), 1);
 
+            // Training
             for (Pattern pattern : PATTERNS)
             {
-                boolean training = false;
-                for (TrainingData trainingData : pattern.getTrainingDataSet())
+                if (pattern instanceof NeuralPattern)
                 {
-                    if (trainingData.getUuid().equals(user.getPlayer().getUniqueId()))
+                    final NeuralPattern neuralPattern = (NeuralPattern) pattern;
+
+                    boolean training = false;
+                    for (TrainingData trainingData : neuralPattern.getTrainingDataSet())
                     {
-                        training = true;
-                        pattern.pushInputData(trainingData.getOutputDataName(), inputData);
-                        break;
+                        if (trainingData.getUuid().equals(user.getPlayer().getUniqueId()))
+                        {
+                            training = true;
+                            neuralPattern.pushInputData(trainingData.getOutputDataName(), inputData);
+                            break;
+                        }
                     }
-                }
 
-                // No analysis when training.
-                if (!training)
-                {
-                    Double result = pattern.analyse(inputData);
-
-                    if (result != null)
+                    // No analysis when training.
+                    if (!training)
                     {
-                        outputDataMap.put(pattern, result);
+                        Double result = neuralPattern.analyse(inputData);
+
+                        if (result != null)
+                        {
+                            outputDataMap.put(neuralPattern, result);
+                        }
                     }
                 }
             }
 
             user.getInventoryHeuristicsData().decayCycle();
-            for (Map.Entry<Pattern, Double> entry : outputDataMap.entrySet())
+            for (Map.Entry<NeuralPattern, Double> entry : outputDataMap.entrySet())
             {
                 // Pattern testing
                 double value = entry.getValue();
@@ -184,9 +186,9 @@ public class InventoryHeuristics implements Listener, ViolationModule
     }
 
     /**
-     * Gets a {@link Pattern} by its name.
+     * Gets a {@link NeuralPattern} by its name.
      *
-     * @return the {@link Pattern} which has the name equal to the provided {@link String} or null if no pattern was found.
+     * @return the {@link NeuralPattern} which has the name equal to the provided {@link String} or null if no pattern was found.
      */
     public static Pattern getPatternByName(final String patternName)
     {

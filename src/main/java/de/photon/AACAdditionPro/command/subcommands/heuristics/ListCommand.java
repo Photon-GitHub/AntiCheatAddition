@@ -6,7 +6,7 @@ import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
 import de.photon.AACAdditionPro.heuristics.InputData;
-import de.photon.AACAdditionPro.heuristics.Pattern;
+import de.photon.AACAdditionPro.heuristics.NeuralPattern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -36,35 +36,35 @@ public class ListCommand extends InternalCommand
                 messageBuilder.append("Active heuristics: ");
                 messageBuilder.append(ChatColor.RED);
 
-                for (Pattern pattern : InventoryHeuristics.getPATTERNS())
+                for (NeuralPattern neuralPattern : InventoryHeuristics.getPATTERNS())
                 {
                     // New line
                     messageBuilder.append("\n");
 
                     // Name
                     messageBuilder.append(ChatColor.RED);
-                    messageBuilder.append(pattern.getName());
+                    messageBuilder.append(neuralPattern.getName());
 
                     messageBuilder.append(ChatColor.GOLD);
                     messageBuilder.append(" | ");
 
                     // Neurons
                     // Subtract the input neurons and the output neuron
-                    final int[] neuronsInLayers = pattern.getGraph().getNeuronsInLayers();
-                    messageBuilder.append(pattern.getGraph().getNeurons().length - (neuronsInLayers[0] + neuronsInLayers[neuronsInLayers.length - 1]));
+                    final int[] neuronsInLayers = neuralPattern.getGraph().getNeuronsInLayers();
+                    messageBuilder.append(neuralPattern.getGraph().getNeurons().length - (neuronsInLayers[0] + neuronsInLayers[neuronsInLayers.length - 1]));
                     messageBuilder.append(" hidden Neurons");
 
                     messageBuilder.append(" | ");
 
                     // Layers
                     //  Subtract the input and output layer
-                    messageBuilder.append(pattern.getGraph().getNeuronsInLayers().length - 2);
+                    messageBuilder.append(neuralPattern.getGraph().getNeuronsInLayers().length - 2);
                     messageBuilder.append(" hidden Layers");
 
                     messageBuilder.append(" | ");
 
                     // Inputs
-                    for (InputData inputData : pattern.getInputs())
+                    for (InputData inputData : neuralPattern.getInputs())
                     {
                         // Find the character in the map.
                         for (Map.Entry<Character, InputData> characterInputDataEntry : InputData.VALID_INPUTS.entrySet())

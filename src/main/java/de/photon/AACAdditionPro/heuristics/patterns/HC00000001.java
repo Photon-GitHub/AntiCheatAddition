@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.heuristics.patterns;
 import de.photon.AACAdditionPro.heuristics.InputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
+import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 
 import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
@@ -43,6 +44,7 @@ public class HC00000001 extends Pattern
             distanceSummary.accept(Math.hypot(this.getInputs()[1].getData()[i], this.getInputs()[2].getData()[i]));
         }
 
+        VerboseSender.sendVerboseMessage("HC00000001: " + offsetSum + " | " + (distanceSummary.getMax() - distanceSummary.getMin()));
         return Math.tanh((Math.pow(Math.E, -(offsetSum * offsetSum)) * (distanceSummary.getMax() - distanceSummary.getMin())) / 4);
     }
 }

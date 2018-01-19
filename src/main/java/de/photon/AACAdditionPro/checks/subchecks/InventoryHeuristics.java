@@ -118,16 +118,16 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 inputData.get('C').getData()[i[0]++] = youngerClick.clickType.ordinal();
             });
 
-            final Map<NeuralPattern, Double> outputDataMap = new HashMap<>(PATTERNS.size(), 1);
+            final Map<Pattern, Double> outputDataMap = new HashMap<>(PATTERNS.size(), 1);
 
             // Training
             for (Pattern pattern : PATTERNS)
             {
+                boolean training = false;
                 if (pattern instanceof NeuralPattern)
                 {
                     final NeuralPattern neuralPattern = (NeuralPattern) pattern;
 
-                    boolean training = false;
                     for (TrainingData trainingData : neuralPattern.getTrainingDataSet())
                     {
                         if (trainingData.getUuid().equals(user.getPlayer().getUniqueId()))
@@ -137,22 +137,22 @@ public class InventoryHeuristics implements Listener, ViolationModule
                             break;
                         }
                     }
+                }
 
-                    // No analysis when training.
-                    if (!training)
+                // No analysis when training.
+                if (!training)
+                {
+                    Double result = pattern.analyse(inputData);
+
+                    if (result != null)
                     {
-                        Double result = neuralPattern.analyse(inputData);
-
-                        if (result != null)
-                        {
-                            outputDataMap.put(neuralPattern, result);
-                        }
+                        outputDataMap.put(pattern, result);
                     }
                 }
             }
 
             user.getInventoryHeuristicsData().decayCycle();
-            for (Map.Entry<NeuralPattern, Double> entry : outputDataMap.entrySet())
+            for (Map.Entry<Pattern, Double> entry : outputDataMap.entrySet())
             {
                 // Pattern testing
                 double value = entry.getValue();
@@ -180,7 +180,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
             if (globalConfidence != 0)
             {
                 // Might not be the case, i.e. no detections
-                vlManager.setVL(user.getPlayer(), (int) globalConfidence);
+                vlManager.setVL(user.getPlayer(), (int) (globalConfidence * 100));
             }
         }
     }

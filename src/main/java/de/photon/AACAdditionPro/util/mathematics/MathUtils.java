@@ -49,11 +49,6 @@ public final class MathUtils
      */
     public static double offset(final double a, final double b)
     {
-        if (a == b)
-        {
-            return 0;
-        }
-
         if (a > b)
         {
             return a - b;

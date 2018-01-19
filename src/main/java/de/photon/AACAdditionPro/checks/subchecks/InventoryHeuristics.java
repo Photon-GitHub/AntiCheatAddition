@@ -157,11 +157,14 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 // Pattern testing
                 double value = entry.getValue();
                 //TODO: THIS IS ONLY A WORKAROUND FOR THE 0.5 PROBLEM!!!
-                if (value >= 0.5)
+                if (entry.getKey() instanceof NeuralPattern)
                 {
-                    value -= 0.5;
+                    if (value >= 0.5)
+                    {
+                        value -= 0.5;
+                    }
+                    value *= 2;
                 }
-                value *= 2;
 
                 if (value > detection_confidence)
                 {

@@ -153,10 +153,7 @@ public abstract class ClientsideEntity
             final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
             if (clientSidePlayerEntity != null)
             {
-                if (clientSidePlayerEntity.getEntityID() == this.entityID)
-                {
-                    return true;
-                }
+                return clientSidePlayerEntity.getEntityID() == this.entityID;
             }
         }
         return false;

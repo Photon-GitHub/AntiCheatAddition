@@ -14,6 +14,8 @@ import java.util.Map;
  */
 public class HC00000001 extends Pattern
 {
+    private static final double IDLE_THRESHOLD = 600;
+
     public HC00000001()
     {
         super("HC000000001", new InputData[]{
@@ -35,8 +37,11 @@ public class HC00000001 extends Pattern
         double offsetSum = 0;
         for (int i = 0; i < inputArray[0].length; i++)
         {
-            VerboseSender.sendVerboseMessage("HC1: " + inputArray[0][i]);
-            offsetSum += MathUtils.offset(inputArray[0][i], average);
+            final double offset = MathUtils.offset(inputArray[0][i], average);
+            if (offset <= IDLE_THRESHOLD)
+            {
+                offsetSum += offset;
+            }
         }
 
         final DoubleSummaryStatistics distanceSummary = new DoubleSummaryStatistics();
@@ -45,6 +50,7 @@ public class HC00000001 extends Pattern
             distanceSummary.accept(Math.hypot(inputArray[1][i], inputArray[2][i]));
         }
 
-        return Math.tanh((Math.pow(Math.E, -(offsetSum * offsetSum)) * (distanceSummary.getMax() - distanceSummary.getMin())) / 4);
+        VerboseSender.sendVerboseMessage("HC1: " + offsetSum + " | " + ((distanceSummary.getMax() - distanceSummary.getMin())) / 4);
+        return Math.tanh(((offsetSum / 150) * (distanceSummary.getMax() - distanceSummary.getMin())) / 4);
     }
 }

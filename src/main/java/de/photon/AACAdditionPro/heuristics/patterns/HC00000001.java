@@ -35,7 +35,7 @@ public class HC00000001 extends Pattern
         double offsetSum = 0;
         for (int i = 0; i < this.getInputs()[0].getData().length; i++)
         {
-            offsetSum += MathUtils.offset(this.getInputs()[0].getData()[i], timeSummary.getAverage());
+            offsetSum += MathUtils.offset(this.getInputs()[0].getData()[i], timeSummary.getAverage()) / 1E12;
         }
 
         final DoubleSummaryStatistics distanceSummary = new DoubleSummaryStatistics();

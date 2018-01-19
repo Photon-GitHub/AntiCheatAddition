@@ -58,6 +58,6 @@ public class InventoryHeuristicsData
         }
 
         // Make sure that the result is greater or equal than 0.
-        return Math.max(0D, Math.tanh(sum - 0.47));
+        return Math.max(0D, Math.tanh(sum - 0.54));
     }
 }

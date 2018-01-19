@@ -34,7 +34,8 @@ public class HC00000001 extends Pattern
         double[][] inputArray = this.provideInputData(inputData);
 
         // Use a offset sum to detect too consistent clicking.
-        double average = Arrays.stream(inputArray[0]).average().orElse(Double.MIN_VALUE);
+        // orElse(0) is ok as the steam (and thus the array) must be empty to reach this part of code.
+        double average = Arrays.stream(inputArray[0]).average().orElse(0);
 
         double offsetSum = 0;
         for (int i = 0; i < inputArray[0].length; i++)

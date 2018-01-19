@@ -3,8 +3,10 @@ package de.photon.AACAdditionPro.heuristics;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public abstract class Pattern
 {
@@ -33,15 +35,15 @@ public abstract class Pattern
     /**
      * Prepares the calculation of the {@link Graph} by setting the values of the {@link InputData}s.
      */
-    protected double[][] provideInputData(final Map<Character, InputData> inputValues)
+    protected double[][] provideInputData(final Map<Character, InputData> providedInputs)
     {
-        if (Objects.requireNonNull(inputValues, "The input values of pattern " + this.getName() + " are null.").size() == 0)
+        if (Objects.requireNonNull(providedInputs, "The input values of pattern " + this.getName() + " are null.").size() == 0)
         {
             return null;
         }
 
         int maxLength = 0;
-        for (InputData inputData : inputValues.values())
+        for (InputData inputData : providedInputs.values())
         {
             if (inputData.getData().length > maxLength)
             {
@@ -50,31 +52,48 @@ public abstract class Pattern
         }
 
         // Convert the input data into a double tensor
-        final double[][] inputArray = new double[this.inputs.length][maxLength];
+        final double[][] rawInputArray = new double[this.inputs.length][];
 
-        for (InputData inputValue : inputValues.values())
+        for (InputData providedInput : providedInputs.values())
         {
-            for (int i = 0; i < this.inputs.length; i++)
+            // Copy important inputs
+            for (int inputIndex = 0; inputIndex < this.inputs.length; inputIndex++)
             {
-                if (this.inputs[i].getName().equals(inputValue.getName()))
+                if (this.inputs[inputIndex].getName().equals(providedInput.getName()))
                 {
-                    inputArray[i] = inputValue.getData();
-
-                    // Validate the values.
-                    for (double d : inputArray[i])
-                    {
-                        if (d == Double.MIN_VALUE)
-                        {
-                            return null;
-                        }
-                    }
-
                     // Assert the inputs have the same length.
+                    rawInputArray[inputIndex] = providedInput.getData();
                 }
             }
         }
 
-        return inputArray;
+        // Flag invalid data sets.
+        final Set<Integer> invalidIndices = new HashSet<>();
+        //noinspection ForLoopReplaceableByForEach
+        for (int i = 0; i < rawInputArray.length; i++)
+        {
+            for (int j = 0; j < rawInputArray[i].length; j++)
+            {
+                if (rawInputArray[i][j] == Double.MIN_VALUE)
+                {
+                    // Flag the whole column for consistency
+                    invalidIndices.add(j);
+                }
+            }
+        }
+
+        // Make the invalid data consistent over the arrays.
+        final double[][] resultingInputArray = new double[this.inputs.length][];
+        for (int i = 0; i < rawInputArray.length; i++)
+        {
+            for (int j = 0; j < rawInputArray[i].length; j++)
+            {
+                // Set to 0 so that these values might not affect the detection.
+                resultingInputArray[i][j] = invalidIndices.contains(j) ? 0 : rawInputArray[i][j];
+            }
+        }
+
+        return resultingInputArray;
     }
 
     /**

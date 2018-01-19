@@ -13,6 +13,9 @@ import java.util.Map;
  */
 public class HC00000001 extends Pattern
 {
+    /**
+     * A threshold after which an inventory interaction is
+     */
     private static final double IDLE_THRESHOLD = 600;
 
     public HC00000001()
@@ -31,7 +34,7 @@ public class HC00000001 extends Pattern
         double[][] inputArray = this.provideInputData(inputData);
 
         // Use a offset sum to detect too consistent clicking.
-        double average = Arrays.stream(inputArray[0]).summaryStatistics().getAverage();
+        double average = Arrays.stream(inputArray[0]).average().orElse(Double.MIN_VALUE);
 
         double offsetSum = 0;
         for (int i = 0; i < inputArray[0].length; i++)

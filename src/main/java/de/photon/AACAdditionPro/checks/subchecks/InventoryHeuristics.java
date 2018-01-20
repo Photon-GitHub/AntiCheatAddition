@@ -10,7 +10,6 @@ import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.heuristics.PatternDeserializer;
 import de.photon.AACAdditionPro.heuristics.TrainingData;
 import de.photon.AACAdditionPro.heuristics.patterns.HC00000001;
-import de.photon.AACAdditionPro.heuristics.patterns.HC00000002;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
@@ -46,7 +45,6 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
         // Hardcoded patterns
         PATTERNS.add(new HC00000001());
-        PATTERNS.add(new HC00000002());
 
         if (PATTERNS.isEmpty())
         {

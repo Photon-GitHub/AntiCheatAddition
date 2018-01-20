@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- * Checks for too constant delta times
+ * Checks for too consistent delta times
  */
 public class HC00000002 extends Pattern
 {

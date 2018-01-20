@@ -42,12 +42,15 @@ public class HC00000003 extends Pattern
             for (int i = 0; i < inputArray[direction].length; i++)
             {
                 // Significant change.
-                if (!MathUtils.roughlyEquals(inputArray[direction][i], averages[direction], 5) &&
-                    // 1 every tenth interaction in stealers.
-                    MathUtils.offset(inputArray[otherDirection][i], averages[otherDirection]) > 0.7)
+                if (!MathUtils.roughlyEquals(inputArray[direction][i], averages[direction], 5))
                 {
-                    flags++;
-                    flagTimeOffset += MathUtils.offset(inputArray[0][i], averages[0]);
+                    double otherDirectionDelta = Math.abs(inputArray[otherDirection][i]);
+                    // 1/10 is expected for "normal" cheststealers. Bypasses?
+                    if (otherDirectionDelta > 0.7 && otherDirectionDelta < 3)
+                    {
+                        flags++;
+                        flagTimeOffset += MathUtils.offset(inputArray[0][i], averages[0]);
+                    }
                 }
             }
         }

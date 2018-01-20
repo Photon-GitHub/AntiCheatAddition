@@ -41,7 +41,7 @@ public class HC00000003 extends Pattern
             for (int i = 0; i < inputArray[direction].length; i++)
             {
                 // Significant change.
-                if (!MathUtils.roughlyEquals(inputArray[direction][i], averages[direction], 4))
+                if (!MathUtils.roughlyEquals(inputArray[direction][i], averages[direction], 6))
                 {
                     flags++;
                     flagTimeOffset += MathUtils.offset(inputArray[0][i], averages[0]);
@@ -53,6 +53,6 @@ public class HC00000003 extends Pattern
         flagTimeOffset /= flags;
 
         // Have some fail-save with the greater 1.
-        return flags > 1 ? Math.pow(Math.E, -0.0005 * (flagTimeOffset * flagTimeOffset)) : 0;
+        return flags > 1 ? Math.pow(Math.E, -0.005 * (flagTimeOffset * flagTimeOffset)) : 0;
     }
 }

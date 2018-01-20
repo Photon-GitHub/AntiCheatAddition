@@ -87,7 +87,7 @@ public class MultiInteraction implements Listener, ViolationModule
                     flag = true;
                     break;
                 case MOVE_TO_OTHER_INVENTORY:
-                    flag = user.getInventoryData().lastMaterial != event.getCurrentItem().getType();
+                    flag = user.getInventoryData().getLastMaterial() != event.getCurrentItem().getType();
                     break;
                 case SWAP_WITH_CURSOR:
                     // No much use besides the armour environment for cheats
@@ -109,9 +109,6 @@ public class MultiInteraction implements Listener, ViolationModule
                     InventoryUtils.syncUpdateInventory(user.getPlayer());
                 }, () -> {});
             }
-
-            // Update the material as the shift-all items causes false positives
-            user.getInventoryData().lastMaterial = event.getCurrentItem().getType();
         }
     }
 

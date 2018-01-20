@@ -32,7 +32,8 @@ public class InventoryData extends TimeData
     @Getter
     private int lastRawSlot = 0;
 
-    public Material lastMaterial = Material.BEDROCK;
+    @Getter
+    private Material lastMaterial = Material.BEDROCK;
 
     public InventoryData(final User theUser)
     {
@@ -76,6 +77,7 @@ public class InventoryData extends TimeData
         }
     }
 
+    // Low to be after the MultiInteract EventHandler.
     @EventHandler(priority = EventPriority.LOW)
     public void on(final InventoryClickEvent event)
     {
@@ -88,6 +90,7 @@ public class InventoryData extends TimeData
             }
             this.updateTimeStamp(1);
             this.lastRawSlot = event.getRawSlot();
+            this.lastMaterial = event.getCurrentItem().getType();
         }
     }
 

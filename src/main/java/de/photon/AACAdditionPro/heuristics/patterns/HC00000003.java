@@ -42,7 +42,7 @@ public class HC00000003 extends Pattern
             for (int i = 0; i < inputArray[direction].length; i++)
             {
                 // Significant change.
-                if (!MathUtils.roughlyEquals(inputArray[direction][i], averages[direction], 4.5))
+                if (!MathUtils.roughlyEquals(inputArray[direction][i], averages[direction], 5))
                 {
                     double otherDirectionDelta = Math.abs(inputArray[otherDirection][i]);
                     // 1/10 is expected for "normal" cheststealers. Bypasses?
@@ -59,6 +59,6 @@ public class HC00000003 extends Pattern
         flagTimeOffset /= flags;
 
         // Have some fail-save with the greater 1.
-        return flags > 1 ? Math.pow(Math.E, -0.005 * (flagTimeOffset * flagTimeOffset)) : 0;
+        return flags > 1 ? Math.pow(Math.E, -0.05 * (flagTimeOffset * flagTimeOffset)) : 0;
     }
 }

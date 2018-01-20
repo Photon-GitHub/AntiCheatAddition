@@ -395,6 +395,7 @@ MultiInteraction:
    # The time AACAdditionPro should force between two interactions
    # Measured in milliseconds.
    min_time: 51
+   # The check will add 3 vl for normal violations and 2 vl for drop violations.
    # Map of violation levels to command
    thresholds:
       18: "aacstaffnotify {player} in {world} may be using MultiInteraction"

@@ -35,17 +35,8 @@ public class HC00000001 extends Pattern
 
         // Use a offset sum to detect too consistent clicking.
         // orElse(0) is ok as the steam (and thus the array) must be empty to reach this part of code.
-        double average = Arrays.stream(inputArray[0]).average().orElse(0);
-
-        double offsetSum = 0;
-        for (int i = 0; i < inputArray[0].length; i++)
-        {
-            final double offset = MathUtils.offset(inputArray[0][i], average);
-            if (offset <= IDLE_THRESHOLD)
-            {
-                offsetSum += offset;
-            }
-        }
+        final double average = Arrays.stream(inputArray[0]).average().orElse(0);
+        final double offsetSum = MathUtils.offsetSum(inputArray[0], average, offset -> offset <= IDLE_THRESHOLD);
 
         final DoubleSummaryStatistics distanceSummary = new DoubleSummaryStatistics();
         for (int i = 0; i < inputArray[1].length; i++)

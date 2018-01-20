@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class HC00000002 extends Pattern
 {
-    private static final double MINIMUM_DISTANCE_CHANGE = 2;
+    private static final double MINIMUM_DISTANCE_CHANGE = 3;
 
     public HC00000002()
     {

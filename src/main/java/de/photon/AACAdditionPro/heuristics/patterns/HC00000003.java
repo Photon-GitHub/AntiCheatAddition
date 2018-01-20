@@ -36,12 +36,15 @@ public class HC00000003 extends Pattern
 
         byte flags = 0;
         double flagTimeOffset = 0D;
-        for (int direction = 1; direction < 3; direction++)
+        for (byte direction = 1; direction <= 2; direction++)
         {
+            byte otherDirection = (byte) ((direction == 1) ? 2 : 1);
             for (int i = 0; i < inputArray[direction].length; i++)
             {
                 // Significant change.
-                if (!MathUtils.roughlyEquals(inputArray[direction][i], averages[direction], 6))
+                if (!MathUtils.roughlyEquals(inputArray[direction][i], averages[direction], 5) &&
+                    // 1 every tenth interaction in stealers.
+                    MathUtils.offset(inputArray[otherDirection][i], averages[otherDirection]) > 0.7)
                 {
                     flags++;
                     flagTimeOffset += MathUtils.offset(inputArray[0][i], averages[0]);

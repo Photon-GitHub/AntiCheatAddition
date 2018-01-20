@@ -51,7 +51,7 @@ public class MultiInteraction implements Listener, ViolationModule
             event.getCurrentItem() != null &&
             event.getCurrentItem().getType() != Material.AIR &&
             // False positive: Click-spamming on the same slot
-            event.getRawSlot() != user.getInventoryData().lastSlot &&
+            event.getRawSlot() != user.getInventoryData().getLastRawSlot() &&
             // Too fast after the last ClickEvent (Detection)
             user.getInventoryData().recentlyClicked(min_time))
         {
@@ -69,12 +69,11 @@ public class MultiInteraction implements Listener, ViolationModule
                 case UNKNOWN:
                     // False positive with collecting all items of one type in the inventory
                 case COLLECT_TO_CURSOR:
-                    // False positive with spamming of the drop key
-                case DROP_ALL_SLOT:
-                case DROP_ONE_SLOT:
                     return;
 
                 // ------------------------------------------ Normal -------------------------------------------- //
+                case DROP_ALL_SLOT:
+                case DROP_ONE_SLOT:
                 case PICKUP_ALL:
                 case PICKUP_SOME:
                 case PICKUP_HALF:
@@ -111,8 +110,6 @@ public class MultiInteraction implements Listener, ViolationModule
                 }, () -> {});
             }
 
-            // Update the slot as excessive clicking on one slot causes false positives
-            user.getInventoryData().lastSlot = event.getRawSlot();
             // Update the material as the shift-all items causes false positives
             user.getInventoryData().lastMaterial = event.getCurrentItem().getType();
         }

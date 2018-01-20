@@ -60,15 +60,15 @@ public class MultiInteraction implements Listener, ViolationModule
             switch (event.getAction())
             {
                 // ------------------------------------------ Exemptions -------------------------------------------- //
-                // Nothing happens, therefore exempted
                 case NOTHING:
-                    // False positive with fast clicking of numbers
+                    // Nothing happens, therefore exempted
                 case HOTBAR_SWAP:
                 case HOTBAR_MOVE_AND_READD:
-                    // Unknown reason might not be save to handle
+                    // False positive with fast clicking of numbers
                 case UNKNOWN:
-                    // False positive with collecting all items of one type in the inventory
+                    // Unknown reason might not be save to handle
                 case COLLECT_TO_CURSOR:
+                    // False positive with collecting all items of one type in the inventory
                     return;
 
                 // ------------------------------------------ Normal -------------------------------------------- //

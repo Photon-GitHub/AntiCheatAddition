@@ -397,10 +397,10 @@ MultiInteraction:
    min_time: 51
    # Map of violation levels to command
    thresholds:
-      6: "aacstaffnotify {player} in {world} may be using MultiInteraction"
-      12: "aacstaffnotify {player} in {world} is suspected for MultiInteraction"
-      22: "aacstaffnotify {player} in {world} is highly suspected for MultiInteraction"
-      34: "aackick {player} MultiInteraction"
+      18: "aacstaffnotify {player} in {world} may be using MultiInteraction"
+      36: "aacstaffnotify {player} in {world} is suspected for MultiInteraction"
+      66: "aacstaffnotify {player} in {world} is highly suspected for MultiInteraction"
+      100: "aackick {player} MultiInteraction"
 
 # The Pingspoof check tries to identify cheaters who try to intentionally increase their ping to bypass
 # AntiCheat-setups. It is a longtime check and will detect cheaters very slowly.

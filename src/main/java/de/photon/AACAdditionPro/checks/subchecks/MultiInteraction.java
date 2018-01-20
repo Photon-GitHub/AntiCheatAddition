@@ -56,6 +56,7 @@ public class MultiInteraction implements Listener, ViolationModule
             user.getInventoryData().recentlyClicked(min_time))
         {
             boolean flag = false;
+            boolean specialDropHandling = false;
 
             switch (event.getAction())
             {
@@ -74,6 +75,7 @@ public class MultiInteraction implements Listener, ViolationModule
                 // ------------------------------------------ Normal -------------------------------------------- //
                 case DROP_ALL_SLOT:
                 case DROP_ONE_SLOT:
+                    specialDropHandling = true;
                 case PICKUP_ALL:
                 case PICKUP_SOME:
                 case PICKUP_HALF:
@@ -103,7 +105,7 @@ public class MultiInteraction implements Listener, ViolationModule
 
             if (flag)
             {
-                vlManager.flag(user.getPlayer(), cancel_vl, () ->
+                vlManager.flag(user.getPlayer(), specialDropHandling ? 2 : 3, cancel_vl, () ->
                 {
                     event.setCancelled(true);
                     InventoryUtils.syncUpdateInventory(user.getPlayer());

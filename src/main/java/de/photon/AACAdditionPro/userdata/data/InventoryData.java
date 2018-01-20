@@ -90,7 +90,7 @@ public class InventoryData extends TimeData
             }
             this.updateTimeStamp(1);
             this.lastRawSlot = event.getRawSlot();
-            this.lastMaterial = event.getCurrentItem() == null ? event.getCurrentItem().getType() : Material.AIR;
+            this.lastMaterial = event.getCurrentItem() == null ? Material.AIR : event.getCurrentItem().getType();
         }
     }
 

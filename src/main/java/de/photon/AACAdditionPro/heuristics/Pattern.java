@@ -83,7 +83,7 @@ public abstract class Pattern
         }
 
         // Make the invalid data consistent over the arrays.
-        final double[][] resultingInputArray = new double[this.inputs.length][];
+        final double[][] resultingInputArray = new double[this.inputs.length][maxLength];
         for (int i = 0; i < rawInputArray.length; i++)
         {
             for (int j = 0; j < rawInputArray[i].length; j++)

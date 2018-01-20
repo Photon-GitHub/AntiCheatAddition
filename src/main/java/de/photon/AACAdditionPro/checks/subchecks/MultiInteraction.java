@@ -18,7 +18,7 @@ import org.bukkit.event.inventory.InventoryType;
 
 public class MultiInteraction implements Listener, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100L);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;

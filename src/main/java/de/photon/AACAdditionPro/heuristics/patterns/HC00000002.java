@@ -11,14 +11,15 @@ import java.util.Map;
  */
 public class HC00000002 extends Pattern
 {
-    private static final double MINIMUM_DISTANCE_CHANGE = 3;
+    private static final double MINIMUM_DISTANCE_CHANGE = 2.5D;
 
     public HC00000002()
     {
         super("HC000000002", new InputData[]{
                 InputData.VALID_INPUTS.get('T'),
                 InputData.VALID_INPUTS.get('X'),
-                InputData.VALID_INPUTS.get('Y')
+                InputData.VALID_INPUTS.get('Y'),
+                InputData.VALID_INPUTS.get('M')
         });
     }
 
@@ -45,7 +46,9 @@ public class HC00000002 extends Pattern
                 final double timeDelta = MathUtils.offset(inputArray[0][i], lastTime) / 100;
 
                 // Very different inventory action
-                if (distanceDelta > MINIMUM_DISTANCE_CHANGE)
+                if (distanceDelta > MINIMUM_DISTANCE_CHANGE &&
+                    // No air-clicks
+                    inputArray[3][i] != 0)
                 {
                     flags += (distanceDelta / 6) * Math.pow(Math.E, -4.5D * (timeDelta * timeDelta));
                 }

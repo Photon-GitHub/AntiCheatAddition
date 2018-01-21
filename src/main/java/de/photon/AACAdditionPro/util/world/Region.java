@@ -69,15 +69,10 @@ public class Region
         }
 
         if (this.corners[1] > this.corners[3]) {
-            if (location.getZ() < corners[3] || location.getZ() > corners[1]) {
-                return false;
-            }
+            return !(location.getZ() < corners[3]) && !(location.getZ() > corners[1]);
         } else {
-            if (location.getZ() < corners[1] || location.getZ() > corners[3]) {
-                return false;
-            }
+            return !(location.getZ() < corners[1]) && !(location.getZ() > corners[3]);
         }
 
-        return true;
     }
 }

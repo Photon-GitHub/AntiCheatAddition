@@ -21,6 +21,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.DoubleSummaryStatistics;
+
 public class Tower implements Listener, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
@@ -85,27 +87,23 @@ public class Tower implements Listener, ViolationModule
                                 user.getPotionData().getAmplifier(PotionEffectType.JUMP)
                         )))
             {
-                // The buffer is filled to the required degree -> Checking now
-                double threshold = 0;
+                DoubleSummaryStatistics summaryStatistics = new DoubleSummaryStatistics();
 
                 for (final TowerBlockPlace blockPlace : user.getTowerData().getBlockPlaces())
                 {
-                    threshold += calculateDelay(blockPlace.getJumpBoostLevel());
+                    summaryStatistics.accept(calculateDelay(blockPlace.getJumpBoostLevel()));
                 }
 
-                // Expected Average
-                threshold /= user.getTowerData().getBlockPlaces().getBufferSize();
-
                 // Apply lenience
-                final double lenientThreshold = threshold;
+                final double lenientThreshold = summaryStatistics.getAverage();
 
                 // Real average
                 final double average = user.getTowerData().calculateAverageTime();
 
                 // Real check
-                if (average < threshold)
+                if (average < lenientThreshold)
                 {
-                    final int vlToAdd = (int) Math.min(1 + Math.floor((threshold - average) / 16), 100);
+                    final int vlToAdd = (int) Math.min(1 + Math.floor((lenientThreshold - average) / 16), 100);
 
                     // Violation-Level handling
                     vlManager.flag(event.getPlayer(), vlToAdd, cancel_vl, () ->

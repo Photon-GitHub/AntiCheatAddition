@@ -1,145 +1,100 @@
 package de.photon.AACAdditionPro.heuristics;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
-import de.photon.AACAdditionPro.util.files.FileUtilities;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Stack;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-public class Pattern implements Serializable
+public abstract class Pattern
 {
+    // The version byte used for the serialization.
+    static final byte PATTERN_VERSION = 1;
     public static final String[] VALID_OUTPUTS = new String[]{
             "VANILLA",
             "CHEATING"
     };
 
-    /**
-     * The epoch count.
-     */
-    private static final int EPOCH = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.epoch");
-
     // SERIALIZATION: CONTENT
     @Getter
     @Setter
     private String name;
-    // SERIALIZATION: CONTENT
-    @Getter
-    private Graph graph;
 
     // SERIALIZATION: CONTENT
     @Getter
     private InputData[] inputs;
 
-    // SERIALIZATION: NON-null, CONTENT NOT IMPORTANT
-    @Getter
-    private Set<TrainingData> trainingDataSet;
-
-    // SERIALIZATION: NON-null, CONTENT NOT IMPORTANT
-    private final ConcurrentMap<String, Stack<InputData[]>> trainingInputs;
-
-    // SERIALIZATION: CONTENT NOT IMPORTANT, MUST BE NULL
-    private transient Thread trainingThread = null;
-
-    // ONLY USE FOR DESERIALIZER !!!!!!!
-    public Pattern(String name, InputData[] inputs, Graph graph)
+    protected Pattern(String name, InputData[] inputs)
     {
         this.name = name;
         this.inputs = inputs;
-        this.graph = graph;
-
-        // The default initial capacity of 16 is not used in most cases.
-        this.trainingDataSet = new HashSet<>(8);
-
-        // Training input map.
-        this.trainingInputs = new ConcurrentHashMap<>(2, 1);
-        for (String validOutput : VALID_OUTPUTS)
-        {
-            this.trainingInputs.put(validOutput, new Stack<>());
-        }
-    }
-
-    public Pattern(String name, InputData[] inputs, int samples, int[] hiddenNeuronsPerLayer)
-    {
-        this.name = name;
-
-        // The input and output neurons need to be added prior to building the graph.
-        int[] completeNeurons = new int[hiddenNeuronsPerLayer.length + 2];
-
-        // Inputs
-        completeNeurons[0] = (inputs.length * samples);
-
-        // Hidden
-        System.arraycopy(hiddenNeuronsPerLayer, 0, completeNeurons, 1, hiddenNeuronsPerLayer.length);
-
-        // One output neuron.
-        completeNeurons[completeNeurons.length - 1] = 1;
-
-        this.graph = new Graph(completeNeurons);
-        this.inputs = inputs;
-
-        // The default initial capacity of 16 is not used in most cases.
-        this.trainingDataSet = new HashSet<>(8);
-
-        // Training input map.
-        this.trainingInputs = new ConcurrentHashMap<>(2, 1);
-        for (String validOutput : VALID_OUTPUTS)
-        {
-            this.trainingInputs.put(validOutput, new Stack<>());
-        }
     }
 
     /**
      * Prepares the calculation of the {@link Graph} by setting the values of the {@link InputData}s.
-     * The {@link InputData}s should have the same internal array length.
      */
-    private double[][] provideInputData(InputData[] inputValues)
+    protected double[][] provideInputData(final Map<Character, InputData> providedInputs)
     {
-        if (Objects.requireNonNull(inputValues, "The input values of pattern " + this.getName() + " are null.").length == 0)
+        if (Objects.requireNonNull(providedInputs, "The input values of pattern " + this.getName() + " are null.").size() == 0)
         {
-            return null;
+            throw new NeuralNetworkException("Illegal input size.");
+        }
+
+        int maxLength = 0;
+        for (InputData inputData : providedInputs.values())
+        {
+            if (inputData.getData().length > maxLength)
+            {
+                maxLength = inputData.getData().length;
+            }
         }
 
         // Convert the input data into a double tensor
-        final double[][] inputArray = new double[this.inputs.length][inputValues[0].getData().length];
+        final double[][] rawInputArray = new double[this.inputs.length][];
 
-        for (InputData inputValue : inputValues)
+        for (InputData providedInput : providedInputs.values())
         {
-            for (int i = 0; i < this.inputs.length; i++)
+            // Copy important inputs
+            for (int inputIndex = 0; inputIndex < this.inputs.length; inputIndex++)
             {
-                if (this.inputs[i].getName().equals(inputValue.getName()))
+                if (this.inputs[inputIndex].getName().equals(providedInput.getName()))
                 {
-                    inputArray[i] = inputValue.getData();
-
-                    // Validate the values.
-                    for (double d : inputArray[i])
-                    {
-                        if (d == Double.MIN_VALUE)
-                        {
-                            return null;
-                        }
-                    }
-
                     // Assert the inputs have the same length.
+                    rawInputArray[inputIndex] = providedInput.getData();
                 }
             }
         }
 
-        return inputArray;
+        // Flag invalid data sets.
+        final Set<Integer> invalidIndices = new HashSet<>();
+        //noinspection ForLoopReplaceableByForEach
+        for (int i = 0; i < rawInputArray.length; i++)
+        {
+            for (int j = 0; j < rawInputArray[i].length; j++)
+            {
+                if (rawInputArray[i][j] == Double.MIN_VALUE)
+                {
+                    // Flag the whole column for consistency
+                    invalidIndices.add(j);
+                }
+            }
+        }
+
+        // Make the invalid data consistent over the arrays.
+        final double[][] resultingInputArray = new double[this.inputs.length][maxLength];
+        for (int i = 0; i < rawInputArray.length; i++)
+        {
+            for (int j = 0; j < rawInputArray[i].length; j++)
+            {
+                // Set to 0 so that these values might not affect the detection.
+                resultingInputArray[i][j] = invalidIndices.contains(j) ? 0 : rawInputArray[i][j];
+            }
+        }
+
+        return resultingInputArray;
     }
 
     /**
@@ -147,102 +102,5 @@ public class Pattern implements Serializable
      *
      * @return the confidence for cheating or null if invalid data was provided.
      */
-    public Double analyse(final InputData[] inputData)
-    {
-        final double[][] inputArray = this.provideInputData(inputData);
-
-        if (inputArray == null)
-        {
-            // Debug
-            // System.out.println("Blocked by invalid data.");
-            return null;
-        }
-
-        return graph.analyse(inputArray);
-    }
-
-    /**
-     * This clears the trainingInputs - stacks and learns from them.
-     *
-     * @throws IllegalStateException if a training is already taking place.
-     */
-    public synchronized void train() throws IllegalStateException
-    {
-        if (this.trainingThread != null)
-        {
-            throw new IllegalStateException("Pattern " + this.name + " is already training.");
-        }
-
-        this.trainingThread = new Thread(() -> {
-            final Stack<InputData[]> maxSize = this.trainingInputs.values().stream().min(Comparator.comparingInt(Vector::size)).orElseThrow(() -> new NeuralNetworkException("The training inputs of pattern " + this.name + " do not have a max size."));
-
-            for (int epoch = 0; epoch < EPOCH; epoch++)
-            {
-                for (int validOutputIndex = 0; validOutputIndex < VALID_OUTPUTS.length; validOutputIndex++)
-                {
-                    Stack<InputData[]> possibleTrainingInputs = this.trainingInputs.get(VALID_OUTPUTS[validOutputIndex]);
-
-                    for (int i = 0; i < maxSize.size(); i++)
-                    {
-                        InputData[] inputData = possibleTrainingInputs.get(i);
-                        final double[][] inputArray = this.provideInputData(inputData);
-
-                        if (inputArray == null)
-                        {
-                            continue;
-                        }
-
-                        // There are only 2 outputs and adding more outputs would require lots of changes, thus the index check for cheating here is ok.
-                        this.graph.train(inputArray, (validOutputIndex == 1));
-                    }
-                }
-            }
-
-            VerboseSender.sendVerboseMessage("Training of pattern " + this.name + " finished.");
-            clearTrainingData();
-            saveToFile();
-            this.trainingThread = null;
-        });
-        this.trainingThread.start();
-    }
-
-    /**
-     * This pushes a new {@link InputData} - Array to the trainingInputs if there is no current training.
-     */
-    public void pushInputData(final String outputNeuronName, final InputData[] inputData)
-    {
-        // Only push when not training.
-        if (this.trainingThread == null)
-        {
-            this.trainingInputs.get(outputNeuronName).push(inputData);
-        }
-    }
-
-    /**
-     * Saves this pattern as a file.
-     */
-    private void saveToFile()
-    {
-        clearTrainingData();
-
-        try
-        {
-            PatternSerializer serializer = new PatternSerializer(this);
-            serializer.save();
-        } catch (IOException e)
-        {
-            VerboseSender.sendVerboseMessage("Could not save pattern " + this.name + ". See the logs for further information.", true, true);
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Clears the training data to reduce the serialized file size or prepare a new training cycle.
-     */
-    private void clearTrainingData()
-    {
-        // Clear the data.
-        this.trainingDataSet.clear();
-        this.trainingInputs.values().forEach(Vector::clear);
-    }
+    public abstract double analyse(final Map<Character, InputData> inputData);
 }

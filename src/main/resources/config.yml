@@ -201,7 +201,7 @@ InventoryHeuristics:
    # Do you want to enable the InventoryHeuristics
    enabled: true
    # The min confidence a single pattern must have to count as detection
-   detection_confidence: 65.0
+   detection_confidence: 55.0
    # This will allow you to access all of the framework, including the creation of your own heuristics and training them.
    #
    # Required knowledge:
@@ -227,8 +227,8 @@ InventoryHeuristics:
    # Confidences will not add up.
    # 100 is the maximum confidence possible to reach.
    thresholds:
-      80: "aacstaffnotify {player} in {world} is suspected for inventory cheats. Pattern {pattern} | Confidence: {vl}"
-      90: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats. Pattern {pattern} | Confidence: {vl}"
+      55: "aacstaffnotify {player} in {world} is suspected for inventory cheats. | Confidence: {vl}"
+      80: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats. | Confidence: {vl}"
       95: "aackick {player} Inventory cheats."
 
 # InventoryHit checks if a player modifies his inventory while hitting at the same time.
@@ -391,14 +391,16 @@ MultiInteraction:
    # The minimum TPS the server must have to activate this check
    # Low TPS will cause an extreme amount of false positives.
    min_tps: 18.5
-   # The time AACAdditionPro should force between two interactions in milliseconds
+   # The time AACAdditionPro should force between two interactions
+   # Measured in milliseconds.
    min_time: 51
+   # The check will add 3 vl for normal violations and 2 vl for drop violations.
    # Map of violation levels to command
    thresholds:
-      6: "aacstaffnotify {player} in {world} may be using MultiInteraction"
-      12: "aacstaffnotify {player} in {world} is suspected for MultiInteraction"
-      22: "aacstaffnotify {player} in {world} is highly suspected for MultiInteraction"
-      34: "aackick {player} MultiInteraction"
+      18: "aacstaffnotify {player} in {world} may be using MultiInteraction"
+      36: "aacstaffnotify {player} in {world} is suspected for MultiInteraction"
+      66: "aacstaffnotify {player} in {world} is highly suspected for MultiInteraction"
+      100: "aackick {player} MultiInteraction"
 
 # The Pingspoof check tries to identify cheaters who try to intentionally increase their ping to bypass
 # AntiCheat-setups. It is a longtime check and will detect cheaters very slowly.

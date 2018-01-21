@@ -4,6 +4,7 @@ import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
+import de.photon.AACAdditionPro.heuristics.NeuralPattern;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.heuristics.TrainingData;
 import de.photon.AACAdditionPro.userdata.User;
@@ -40,12 +41,21 @@ public class TrainCommand extends InternalCommand
             }
             else
             {
+                // Cast the pattern
+                if (!(pattern instanceof NeuralPattern))
+                {
+                    sender.sendMessage(ChatColor.GOLD + "Pattern " + ChatColor.RED + pattern.getName() + ChatColor.GOLD + " cannot be trained.");
+                    return;
+                }
+                final NeuralPattern neuralPattern = (NeuralPattern) pattern;
+
+                // Next argument
                 final String playerOrFinishArgument = arguments.remove();
 
                 if (playerOrFinishArgument.equalsIgnoreCase("finish"))
                 {
-                    pattern.train();
-                    sender.sendMessage(ChatColor.GOLD + "Pattern " + ChatColor.RED + pattern.getName() + ChatColor.GOLD + " is now training.");
+                    neuralPattern.train();
+                    sender.sendMessage(ChatColor.GOLD + "Pattern " + ChatColor.RED + neuralPattern.getName() + ChatColor.GOLD + " is now training.");
                     sender.sendMessage(ChatColor.GOLD + "Please watch the verbose - messages to see the end of training.");
                 }
                 else
@@ -69,7 +79,7 @@ public class TrainCommand extends InternalCommand
 
                     final String output = arguments.remove().toUpperCase();
 
-                    for (String outputDataName : Pattern.VALID_OUTPUTS)
+                    for (String outputDataName : NeuralPattern.VALID_OUTPUTS)
                     {
                         if (outputDataName.equals(output))
                         {
@@ -78,8 +88,8 @@ public class TrainCommand extends InternalCommand
                             final TrainingData trainingData = new TrainingData(trainingPlayer.getUniqueId(), outputDataName);
 
                             // Override previous choices.
-                            pattern.getTrainingDataSet().remove(trainingData);
-                            pattern.getTrainingDataSet().add(trainingData);
+                            neuralPattern.getTrainingDataSet().remove(trainingData);
+                            neuralPattern.getTrainingDataSet().add(trainingData);
 
                             final String messageString = ChatColor.GOLD + "[HEURISTICS] Training " + ChatColor.RED + patternName +
                                                          ChatColor.GOLD + " | Player: " + ChatColor.RED + trainingPlayer.getName() +
@@ -98,7 +108,7 @@ public class TrainCommand extends InternalCommand
                     sb.append(ChatColor.GOLD);
                     sb.append("Allowed outputs: ");
 
-                    for (String outputDataName : Pattern.VALID_OUTPUTS)
+                    for (String outputDataName : NeuralPattern.VALID_OUTPUTS)
                     {
                         sb.append(ChatColor.RED);
                         sb.append(outputDataName);

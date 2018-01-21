@@ -5,6 +5,7 @@ import org.bukkit.Location;
 
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.DoublePredicate;
 
 public final class MathUtils
 {
@@ -43,23 +44,36 @@ public final class MathUtils
     }
 
     /**
+     * Calculates the sum of the offsets in the array based on a value.
+     *
+     * @param inputs     the array of which the offset sum should be calculated
+     * @param offsetBase the reference point for the single offsets
+     * @param predicate  whether or not a certain offset should be added.
+     *
+     * @return the sum of the offsets in the array.
+     */
+    public static double offsetSum(final double[] inputs, final double offsetBase, DoublePredicate predicate)
+    {
+        double offsetSum = 0;
+        for (double input : inputs)
+        {
+            final double offset = MathUtils.offset(input, offsetBase);
+            if (predicate.test(offset))
+            {
+                offsetSum += offset;
+            }
+        }
+        return offsetSum;
+    }
+
+    /**
      * Simple method to calculate the absolute offset of two numbers.
      *
      * @return the absolute offset, always positive or 0 if the numbers are equal.
      */
     public static double offset(final double a, final double b)
     {
-        if (a == b)
-        {
-            return 0;
-        }
-
-        if (a > b)
-        {
-            return a - b;
-        }
-
-        return b - a;
+        return a > b ? (a - b) : (b - a);
     }
 
     /**

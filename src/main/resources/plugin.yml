@@ -1,6 +1,6 @@
 name: AACAdditionPro
 version: '${project.version}'
-description: This plugin provides niche checks for cheats which are not covered by AAC
+description: '${project.description}'
 author: Photon
 
 depend: [AAC, ProtocolLib]

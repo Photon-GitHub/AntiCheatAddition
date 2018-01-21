@@ -18,7 +18,7 @@ import org.bukkit.event.inventory.InventoryType;
 
 public class MultiInteraction implements Listener, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100L);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -51,30 +51,31 @@ public class MultiInteraction implements Listener, ViolationModule
             event.getCurrentItem() != null &&
             event.getCurrentItem().getType() != Material.AIR &&
             // False positive: Click-spamming on the same slot
-            event.getRawSlot() != user.getInventoryData().lastSlot &&
+            event.getRawSlot() != user.getInventoryData().getLastRawSlot() &&
             // Too fast after the last ClickEvent (Detection)
             user.getInventoryData().recentlyClicked(min_time))
         {
             boolean flag = false;
+            boolean specialDropHandling = false;
 
             switch (event.getAction())
             {
                 // ------------------------------------------ Exemptions -------------------------------------------- //
-                // Nothing happens, therefore exempted
                 case NOTHING:
-                    // False positive with fast clicking of numbers
+                    // Nothing happens, therefore exempted
                 case HOTBAR_SWAP:
                 case HOTBAR_MOVE_AND_READD:
-                    // Unknown reason might not be save to handle
+                    // False positive with fast clicking of numbers
                 case UNKNOWN:
-                    // False positive with collecting all items of one type in the inventory
+                    // Unknown reason might not be save to handle
                 case COLLECT_TO_CURSOR:
-                    // False positive with spamming of the drop key
-                case DROP_ALL_SLOT:
-                case DROP_ONE_SLOT:
+                    // False positive with collecting all items of one type in the inventory
                     return;
 
                 // ------------------------------------------ Normal -------------------------------------------- //
+                case DROP_ALL_SLOT:
+                case DROP_ONE_SLOT:
+                    specialDropHandling = true;
                 case PICKUP_ALL:
                 case PICKUP_SOME:
                 case PICKUP_HALF:
@@ -88,7 +89,7 @@ public class MultiInteraction implements Listener, ViolationModule
                     flag = true;
                     break;
                 case MOVE_TO_OTHER_INVENTORY:
-                    flag = user.getInventoryData().lastMaterial != event.getCurrentItem().getType();
+                    flag = user.getInventoryData().getLastMaterial() != event.getCurrentItem().getType();
                     break;
                 case SWAP_WITH_CURSOR:
                     // No much use besides the armour environment for cheats
@@ -104,17 +105,12 @@ public class MultiInteraction implements Listener, ViolationModule
 
             if (flag)
             {
-                vlManager.flag(user.getPlayer(), cancel_vl, () ->
+                vlManager.flag(user.getPlayer(), specialDropHandling ? 2 : 3, cancel_vl, () ->
                 {
                     event.setCancelled(true);
                     InventoryUtils.syncUpdateInventory(user.getPlayer());
                 }, () -> {});
             }
-
-            // Update the slot as excessive clicking on one slot causes false positives
-            user.getInventoryData().lastSlot = event.getRawSlot();
-            // Update the material as the shift-all items causes false positives
-            user.getInventoryData().lastMaterial = event.getCurrentItem().getType();
         }
     }
 

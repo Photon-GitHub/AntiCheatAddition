@@ -12,7 +12,7 @@ import java.util.Arrays;
  * The graph of a neural network including the matrix.
  * This class is {@link Serializable} to allow easy saving of the data.
  */
-public class Graph implements Serializable
+public class Graph
 {
     private static final double TRAIN_PARAMETER = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.train_parameter");
     private static final double MOMENTUM_PARAMETER = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.momentum_parameter");
@@ -43,13 +43,14 @@ public class Graph implements Serializable
     @Getter
     private final int[] neuronsInLayers;
 
-    Graph( ActivationFunction function, Double[][] matrix, double[][] weightMatrix, int neuronLength, int[] neuronLayer )
+    Graph(ActivationFunction function, Double[][] matrix, double[][] weightMatrix, int[] neuronLayer)
     {
         this.activationFunction = function;
         this.matrix = matrix;
         this.weightChangeMatrix = weightMatrix;
-        this.neurons = new double[neuronLength];
-        this.activatedNeurons = new double[neuronLength];
+        // Neurons and activatedNeurons are as long as the matrix
+        this.neurons = new double[matrix.length];
+        this.activatedNeurons = new double[matrix.length];
         this.neuronsInLayers = neuronLayer;
     }
 

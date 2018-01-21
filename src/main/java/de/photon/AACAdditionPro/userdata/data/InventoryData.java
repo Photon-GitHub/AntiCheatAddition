@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.userdata.data;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
 import de.photon.AACAdditionPro.util.storage.management.Buffer;
+import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,9 +29,11 @@ public class InventoryData extends TimeData
      * The last slot a person clicked.<br>
      * This variable is used to prevent false positives based on spam-clicking one slot.
      */
-    public int lastSlot = 0;
+    @Getter
+    private int lastRawSlot = 0;
 
-    public Material lastMaterial = Material.BEDROCK;
+    @Getter
+    private Material lastMaterial = Material.BEDROCK;
 
     public InventoryData(final User theUser)
     {
@@ -74,7 +77,8 @@ public class InventoryData extends TimeData
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    // Low to be after the MultiInteract EventHandler.
+    @EventHandler(priority = EventPriority.LOW)
     public void on(final InventoryClickEvent event)
     {
         if (theUser.refersToUUID(event.getWhoClicked().getUniqueId()) &&
@@ -85,6 +89,8 @@ public class InventoryData extends TimeData
                 this.updateTimeStamp(0);
             }
             this.updateTimeStamp(1);
+            this.lastRawSlot = event.getRawSlot();
+            this.lastMaterial = event.getCurrentItem() == null ? Material.AIR : event.getCurrentItem().getType();
         }
     }
 

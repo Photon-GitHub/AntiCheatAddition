@@ -74,28 +74,11 @@ public class AutoFish implements Listener, ViolationModule
                     // Calculating the average
                     final double average = user.getFishingData().consistencyBuffer.average();
 
-                    // The maximum offset of the values.
-                    double maxOffset = 0;
-
                     // Partially clear the buffer already in the loop to improve performance (instead of get())
-                    while (!user.getFishingData().consistencyBuffer.isEmpty())
-                    {
-                        // Remove the last element to make the ArrayList-remove as performant as possible
-                        final double deltaTime = user.getFishingData().consistencyBuffer.remove(user.getFishingData().consistencyBuffer.size() - 1);
-                        final double offset = MathUtils.offset(deltaTime, average);
+                    final double minValue = user.getFishingData().consistencyBuffer.min();
+                    final double maxValue = user.getFishingData().consistencyBuffer.max();
 
-                        if (offset > maxOffset)
-                        {
-                            maxOffset = offset;
-
-                            // Will not be flagged as of too big offset.
-                            if (maxOffset >= violation_offset)
-                            {
-                                user.getFishingData().consistencyBuffer.clear();
-                                return;
-                            }
-                        }
-                    }
+                    final double maxOffset = Math.max(MathUtils.offset(minValue, average), MathUtils.offset(maxValue, average));
 
                     // Certainly in cheating range (higher values terminate the method in the loop)
                     // First string is the average time, second one the maximum offset

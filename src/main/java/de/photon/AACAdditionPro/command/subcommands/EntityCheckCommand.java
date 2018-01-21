@@ -21,7 +21,7 @@ import java.util.Queue;
 public class EntityCheckCommand extends InternalCommand
 {
     // If KillauraEntity is not enabled the ModuleManager will throw an error.
-    private final boolean commandActive = AACAdditionPro.getInstance().getConfig().getBoolean("KillauraEntity.commandActive") &&
+    private final boolean commandActive = AACAdditionPro.getInstance().getConfig().getBoolean("KillauraEntity.enabled") &&
                                           // The on_command mode must be enabled, otherwise this command is useless.
                                           AACAdditionPro.getInstance().getConfig().getBoolean("KillauraEntity.on_command");
 

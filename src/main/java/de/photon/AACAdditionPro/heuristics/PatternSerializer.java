@@ -1,51 +1,34 @@
 package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
+
 /**
- * Serializes a pattern to a .ptrn file.
+ * Util class for the serialization of saved {@link NeuralPattern}s.
  */
-public class PatternSerializer
+public final class PatternSerializer
 {
     private static final File HEURISTICS_FOLDER = new File(AACAdditionPro.getInstance().getDataFolder(), "heuristics");
-    private static final byte PATTERN_VERSION = 0;
 
-    private DataOutputStream writer;
-    private Pattern pattern;
+    private PatternSerializer() {}
 
-    PatternSerializer(Pattern pattern)
-    {
-        this.pattern = pattern;
-
-        try
-        {
-            if (!HEURISTICS_FOLDER.exists() && !HEURISTICS_FOLDER.mkdirs())
-            {
-                VerboseSender.sendVerboseMessage("Could not create heuristics folder.", true, true);
-                return;
-            }
-            this.writer = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(HEURISTICS_FOLDER, pattern.getName() + ".ptrn"))));
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    public void save() throws IOException
+    /**
+     * Serializes a pattern to a .ptrn file.
+     */
+    public static void save(final NeuralPattern neuralPattern) throws IOException
     {
         /*
          * A pattern file is structured like this:
          *
-         * 1 byte: version number of the data
-         *
          * -------- PATTERN DATA
+         * 1 byte: version number of the data
          * 2+n bytes: length and content of the name string
          * 1 byte: length of the input data
          * :length of input data
@@ -53,10 +36,9 @@ public class PatternSerializer
          *
          * -------- GRAPH DATA
          * 1 byte: 0 for LOGISTIC, 1 for HYPERBOLIC_TANGENT
-         * 4 bytes: length of layers
+         * 4 bytes: length of matrix
          * :length of layers
-         *   4 bytes: length of data in layer
-         *   :length of data in layer
+         *   :length of layer (no byte as of quadratic matrix)
          *     1 byte: 0 for data is not set, 1 for data is set
          *     ?data is set
          *       8 bytes: data point
@@ -65,66 +47,80 @@ public class PatternSerializer
          *   4 bytes: length of data in layer
          *   :length of data in layer
          *     8 bytes: data point
-         * 4 bytes: length of neurons / activatedNeurons
          * 4 bytes: length of neuronsInLayers
          * :length of neuronsInLayers
          *   4 bytes: data point
          */
 
+        if (!HEURISTICS_FOLDER.exists())
+        {
+            if (!HEURISTICS_FOLDER.mkdirs())
+            {
+                throw new IOException("Could not create heuristics folder.");
+            }
+        }
+
+        // Create the writer.
+        final DataOutputStream writer = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(HEURISTICS_FOLDER, neuralPattern.getName() + ".ptrn"))));
+
         // ------------------------- PATTERN
         // Version first
-        this.writer.write(PATTERN_VERSION);
+        writer.writeByte(Pattern.PATTERN_VERSION);
 
         // Name
-        this.writer.writeUTF(this.pattern.getName());
+        writer.writeUTF(neuralPattern.getName());
 
         // Inputs
-        this.writer.write(this.pattern.getInputs().length);
-        for (InputData inputData : this.pattern.getInputs())
+        writer.writeByte(neuralPattern.getInputs().length);
+        for (InputData inputData : neuralPattern.getInputs())
         {
-            this.writer.write(inputData.getName().charAt(0));
+            // Find the character in the map.
+            for (Map.Entry<Character, InputData> characterInputDataEntry : InputData.VALID_INPUTS.entrySet())
+            {
+                if (characterInputDataEntry.getValue().getName().equals(inputData.getName()))
+                {
+                    // Write correct char
+                    writer.writeChar(characterInputDataEntry.getKey());
+                    break;
+                }
+            }
         }
 
         // ------------------------- GRAPH
-        this.writer.writeBoolean(this.pattern.getGraph().getActivationFunction() != ActivationFunctions.LOGISTIC);
+        writer.writeBoolean(neuralPattern.getGraph().getActivationFunction() != ActivationFunctions.LOGISTIC);
 
-        this.writer.writeInt(this.pattern.getGraph().getMatrix().length);
-        for (Double[] layer : this.pattern.getGraph().getMatrix())
+        writer.writeInt(neuralPattern.getGraph().getMatrix().length);
+        for (Double[] layer : neuralPattern.getGraph().getMatrix())
         {
-            this.writer.writeInt(layer.length);
             for (Double data : layer)
             {
                 if (data == null)
                 {
-                    this.writer.write(0);
+                    writer.writeBoolean(false);
                 }
                 else
                 {
-                    this.writer.write(1);
-                    this.writer.writeDouble(data);
+                    writer.writeBoolean(true);
+                    writer.writeDouble(data);
                 }
             }
         }
 
-        this.writer.writeInt(this.pattern.getGraph().getWeightChangeMatrix().length);
-        for (double[] layer : this.pattern.getGraph().getWeightChangeMatrix())
+        for (double[] layer : neuralPattern.getGraph().getWeightChangeMatrix())
         {
-            this.writer.writeInt(layer.length);
             for (double data : layer)
             {
-                this.writer.writeDouble(data);
+                writer.writeDouble(data);
             }
         }
 
-        this.writer.writeInt(this.pattern.getGraph().getNeurons().length); // neurons and activatedNeurons have the same length
-
-        this.writer.writeInt(this.pattern.getGraph().getNeuronsInLayers().length);
-        for (int data : this.pattern.getGraph().getNeuronsInLayers())
+        writer.writeInt(neuralPattern.getGraph().getNeuronsInLayers().length);
+        for (int data : neuralPattern.getGraph().getNeuronsInLayers())
         {
-            this.writer.writeInt(data);
+            writer.writeInt(data);
         }
 
-        this.writer.flush();
-        this.writer.close();
+        writer.flush();
+        writer.close();
     }
 }

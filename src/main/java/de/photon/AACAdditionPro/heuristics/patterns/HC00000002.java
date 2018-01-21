@@ -55,7 +55,9 @@ public class HC00000002 extends Pattern
         {
             double input = idleRemovedData[i];
             final double offset = MathUtils.offset(input, average);
-            if (inputArray[1][i] != ClickType.DOUBLE_CLICK.ordinal())
+            if (inputArray[1][i] != ClickType.DOUBLE_CLICK.ordinal() &&
+                inputArray[1][i] != ClickType.CREATIVE.ordinal() &&
+                inputArray[1][i] != ClickType.UNKNOWN.ordinal())
             {
                 offsetSum += offset;
             }

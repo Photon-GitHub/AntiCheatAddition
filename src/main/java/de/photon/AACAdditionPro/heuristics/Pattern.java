@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.heuristics;
 
+import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,7 +40,7 @@ public abstract class Pattern
     {
         if (Objects.requireNonNull(providedInputs, "The input values of pattern " + this.getName() + " are null.").size() == 0)
         {
-            return null;
+            throw new NeuralNetworkException("Illegal input size.");
         }
 
         int maxLength = 0;
@@ -101,5 +102,5 @@ public abstract class Pattern
      *
      * @return the confidence for cheating or null if invalid data was provided.
      */
-    public abstract Double analyse(final Map<Character, InputData> inputData);
+    public abstract double analyse(final Map<Character, InputData> inputData);
 }

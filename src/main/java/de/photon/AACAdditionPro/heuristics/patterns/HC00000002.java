@@ -33,7 +33,7 @@ public class HC00000002 extends Pattern
     }
 
     @Override
-    public Double analyse(Map<Character, InputData> inputData)
+    public double analyse(Map<Character, InputData> inputData)
     {
         // See the constructor for the indices
         double[][] inputArray = this.provideInputData(inputData);

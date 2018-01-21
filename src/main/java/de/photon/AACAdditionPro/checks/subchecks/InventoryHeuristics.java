@@ -144,12 +144,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 // No analysis when training.
                 if (!training)
                 {
-                    Double result = pattern.analyse(inputData);
-
-                    if (result != null)
-                    {
-                        outputDataMap.put(pattern, result);
-                    }
+                    outputDataMap.put(pattern, pattern.analyse(inputData));
                 }
             }
 

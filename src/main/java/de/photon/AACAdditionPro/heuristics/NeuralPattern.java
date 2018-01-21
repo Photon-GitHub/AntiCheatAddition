@@ -84,18 +84,9 @@ public class NeuralPattern extends Pattern
     }
 
     @Override
-    public Double analyse(final Map<Character, InputData> inputData)
+    public double analyse(final Map<Character, InputData> inputData)
     {
-        final double[][] inputArray = this.provideInputData(inputData);
-
-        if (inputArray == null)
-        {
-            // Debug
-            // System.out.println("Blocked by invalid data.");
-            return null;
-        }
-
-        return this.graph.analyse(inputArray);
+        return this.graph.analyse(this.provideInputData(inputData));
     }
 
     /**

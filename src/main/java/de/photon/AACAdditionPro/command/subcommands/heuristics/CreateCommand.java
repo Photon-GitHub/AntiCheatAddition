@@ -12,7 +12,6 @@ import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
 public class CreateCommand extends InternalCommand
@@ -30,26 +29,29 @@ public class CreateCommand extends InternalCommand
         {
             try
             {
+
+                // The Heuristics Header will always be sent.
+                sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
+
                 final String patternName = arguments.remove();
                 // A full list of all allowed inputs can be found as InputData.VALID_INPUTS
                 final String encodedInputs = arguments.remove();
                 final List<InputData> inputDataList = new ArrayList<>(6);
 
                 // Search for the characters and add the InputData if necessary.
-                for (Map.Entry<Character, InputData> characterInputDataEntry : InputData.VALID_INPUTS.entrySet())
+                for (char c : encodedInputs.toCharArray())
                 {
-                    for (char c : encodedInputs.toCharArray())
+                    final InputData inputData = InputData.VALID_INPUTS.get(Character.toUpperCase(c));
+                    if (inputData == null)
                     {
-                        if (c == characterInputDataEntry.getKey())
-                        {
-                            inputDataList.add(characterInputDataEntry.getValue());
-                            break;
-                        }
+                        sender.sendMessage(ChatColor.GOLD + "Could not create pattern as an invalid input was provided: \"" + c + "\"");
+                        return;
+                    }
+                    else
+                    {
+                        inputDataList.add(inputData);
                     }
                 }
-
-                // The Heuristics Header will always be sent.
-                sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
 
                 if (InventoryHeuristics.getPATTERNS().stream().anyMatch(pattern -> pattern.getName().equals(patternName)))
                 {

@@ -2,12 +2,12 @@ package de.photon.AACAdditionPro.userdata.data;
 
 import de.photon.AACAdditionPro.heuristics.NeuralPattern;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InventoryHeuristicsData
 {
-    private Map<String, Double> patternMap = new HashMap<>();
+    private Map<String, Double> patternMap = new ConcurrentHashMap<>();
 
     /**
      * This should be called prior to {@link #setPatternConfidence(String, double)} to make the confidences decay with legit actions.

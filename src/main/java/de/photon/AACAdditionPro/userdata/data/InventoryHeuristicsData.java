@@ -1,8 +1,11 @@
 package de.photon.AACAdditionPro.userdata.data;
 
+import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.heuristics.NeuralPattern;
 
+import java.util.DoubleSummaryStatistics;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InventoryHeuristicsData
@@ -49,15 +52,14 @@ public class InventoryHeuristicsData
      */
     public double calculateGlobalConfidence()
     {
-        double sum = 0;
-        for (double value : patternMap.values())
-        {
+        DoubleSummaryStatistics summaryStatistics = new DoubleSummaryStatistics();
+        patternMap.forEach((patternName, value) -> {
             // Make sure too many low-confidence violations won't flag high global confidence
             // -> use cubic function.
-            sum += (value * value * value) * 1.2D;
-        }
+            summaryStatistics.accept((value * value * value) * 1.2D * Objects.requireNonNull(InventoryHeuristics.getPatternByName(patternName), "Invalid pattern name: " + patternName).getWeight());
+        });
 
         // Make sure that the result is greater or equal than 0.
-        return Math.max(0D, Math.tanh(sum - 0.42));
+        return Math.max(0D, Math.tanh(summaryStatistics.getSum() - 0.42));
     }
 }

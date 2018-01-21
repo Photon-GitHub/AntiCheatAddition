@@ -69,6 +69,6 @@ public class HC00000002 extends Pattern
     @Override
     public double getWeight()
     {
-        return 0.6D;
+        return 0.55D;
     }
 }

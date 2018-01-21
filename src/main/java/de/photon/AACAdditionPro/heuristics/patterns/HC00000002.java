@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.heuristics.patterns;
 import de.photon.AACAdditionPro.heuristics.InputData;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -26,7 +27,8 @@ public class HC00000002 extends Pattern
     public HC00000002()
     {
         super("HC000000002", new InputData[]{
-                InputData.VALID_INPUTS.get('T')
+                InputData.VALID_INPUTS.get('T'),
+                InputData.VALID_INPUTS.get('C')
         });
     }
 
@@ -47,7 +49,17 @@ public class HC00000002 extends Pattern
         }
 
         final double average = Arrays.stream(idleRemovedData).average().orElse(0);
-        final double offsetSum = MathUtils.offsetSum(idleRemovedData, average, offset -> true);
+
+        double offsetSum = 0;
+        for (int i = 0; i < idleRemovedData.length; i++)
+        {
+            double input = idleRemovedData[i];
+            final double offset = MathUtils.offset(input, average);
+            if (inputArray[1][i] != ClickType.DOUBLE_CLICK.ordinal())
+            {
+                offsetSum += offset;
+            }
+        }
 
         return Math.pow(Math.E, -10 * (offsetSum * offsetSum));
     }

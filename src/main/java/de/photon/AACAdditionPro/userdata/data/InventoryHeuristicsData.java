@@ -50,7 +50,7 @@ public class InventoryHeuristicsData
     public double calculateGlobalConfidence()
     {
         double sum = 0;
-        for (Double value : patternMap.values())
+        for (double value : patternMap.values())
         {
             // Make sure too many low-confidence violations won't flag high global confidence
             // -> use cubic function.

@@ -41,10 +41,11 @@ public class CreateCommand extends InternalCommand
                 // Search for the characters and add the InputData if necessary.
                 for (char c : encodedInputs.toCharArray())
                 {
-                    final InputData inputData = InputData.VALID_INPUTS.get(Character.toUpperCase(c));
+                    final char upChar = Character.toUpperCase(c);
+                    final InputData inputData = InputData.VALID_INPUTS.get(upChar);
                     if (inputData == null)
                     {
-                        sender.sendMessage(ChatColor.GOLD + "Could not create pattern as an invalid input was provided: \"" + c + "\"");
+                        sender.sendMessage(ChatColor.GOLD + "Could not create pattern as an invalid input was provided: \"" + upChar + "\"");
                         return;
                     }
                     else

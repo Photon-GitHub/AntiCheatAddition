@@ -97,10 +97,10 @@ public class CreateCommand extends InternalCommand
     protected String[] getCommandHelp()
     {
         return new String[]{
-                "Creates a new pattern with a clear graph. Saving is required if you want the pattern to be permanent.",
+                "Creates a new pattern with a clear graph. Training is required if you want the pattern to be permanent.",
                 "Format: /aacadditionpro heuristics create <name of pattern> <inputs> <neuron count of layer 1> <neuron count of layer 2> ...",
-                "You may use any combination of the following letters as a valid input specification.",
-                "Guide to the letters: T = TimeDeltas | M = Materials | X = X-Distances | Y = Y-Distances | I = InventoryType | S = SlotTypes | C = ClickTypes",
+                "You may use any combination of the following letters as a valid input specification:",
+                "T = TimeDeltas | M = Materials | X = X-Distances | Y = Y-Distances | I = InventoryType | S = SlotTypes | C = ClickTypes",
                 "Examples: TXYM, TM, RM, CS, TMYXISC"
         };
     }

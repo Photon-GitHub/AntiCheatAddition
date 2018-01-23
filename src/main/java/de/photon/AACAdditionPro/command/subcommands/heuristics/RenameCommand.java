@@ -38,12 +38,12 @@ public class RenameCommand extends InternalCommand
 
                 if (InventoryHeuristics.getPATTERNS().stream().anyMatch(pattern -> pattern.getName().equals(newName)))
                 {
-                    sender.sendMessage(ChatColor.GOLD + "Cannot rename the pattern to " + ChatColor.RED + newName + ChatColor.GOLD + " as another pattern with the same name exists.");
+                    sender.sendMessage(ChatColor.GOLD + "Cannot rename the pattern to \"" + ChatColor.RED + newName + ChatColor.GOLD + "\" as another pattern with the same name exists.");
                 }
                 else
                 {
                     patternToRename.setName(newName);
-                    sender.sendMessage(ChatColor.GOLD + "Renamed pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\" to " + ChatColor.RED + newName);
+                    sender.sendMessage(ChatColor.GOLD + "Renamed pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\" to \"" + ChatColor.RED + newName + ChatColor.GOLD + "\".");
                 }
             }
         }

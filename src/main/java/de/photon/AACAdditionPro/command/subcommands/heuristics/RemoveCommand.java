@@ -32,7 +32,7 @@ public class RemoveCommand extends InternalCommand
             if (patternToDelete != null)
             {
                 InventoryHeuristics.getPATTERNS().remove(patternToDelete);
-                sender.sendMessage(ChatColor.GOLD + "Deleted pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"");
+                sender.sendMessage(ChatColor.GOLD + "Deleted pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\".");
             }
             else
             {

@@ -89,6 +89,12 @@ public class NeuralPattern extends Pattern
         return this.graph.analyse(this.provideInputData(inputData));
     }
 
+    @Override
+    public double getWeight()
+    {
+        return 1D;
+    }
+
     /**
      * This clears the trainingInputs - stacks and learns from them.
      *

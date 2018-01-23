@@ -65,4 +65,10 @@ public class HC00000002 extends Pattern
 
         return Math.pow(Math.E, -10 * (offsetSum * offsetSum));
     }
+
+    @Override
+    public double getWeight()
+    {
+        return 0.55D;
+    }
 }

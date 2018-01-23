@@ -46,4 +46,10 @@ public class HC00000001 extends Pattern
 
         return Math.tanh(((offsetSum / 150) * (distanceSummary.getMax() - distanceSummary.getMin())) / 4);
     }
+
+    @Override
+    public double getWeight()
+    {
+        return 1.3D;
+    }
 }

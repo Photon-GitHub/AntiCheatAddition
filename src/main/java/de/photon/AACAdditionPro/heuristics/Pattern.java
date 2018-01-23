@@ -103,4 +103,9 @@ public abstract class Pattern
      * @return the confidence for cheating or null if invalid data was provided.
      */
     public abstract double analyse(final Map<Character, InputData> inputData);
+
+    /**
+     * Additional weight multiplicand to make sure a close-to-zero {@link Pattern} has more impact than another.
+     */
+    public abstract double getWeight();
 }

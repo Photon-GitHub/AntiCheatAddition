@@ -336,8 +336,8 @@ KillauraEntity:
          wood: true
          stone: true
          gold: true
-         diamond: true
          iron: true
+         diamond: true
          # Flint and Steel
          flint_and_steel: true
          bow: true

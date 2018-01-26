@@ -325,6 +325,7 @@ KillauraEntity:
          # Materials
          leather: true
          gold: true
+         chainmail: true
          iron: true
          diamond: true
       # Normal equipment will be used upon spawning the entity and if behaviour.swap is enabled

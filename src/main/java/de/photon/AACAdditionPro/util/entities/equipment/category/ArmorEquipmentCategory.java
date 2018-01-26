@@ -26,6 +26,12 @@ public class ArmorEquipmentCategory extends EquipmentCategory
                 Material.GOLD_LEGGINGS,
                 Material.GOLD_BOOTS,
 
+                // Chain
+                Material.CHAINMAIL_HELMET,
+                Material.CHAINMAIL_CHESTPLATE,
+                Material.CHAINMAIL_LEGGINGS,
+                Material.CHAINMAIL_BOOTS,
+
                 // Iron
                 Material.IRON_HELMET,
                 Material.IRON_CHESTPLATE,
@@ -36,7 +42,7 @@ public class ArmorEquipmentCategory extends EquipmentCategory
                 Material.DIAMOND_HELMET,
                 Material.DIAMOND_CHESTPLATE,
                 Material.DIAMOND_LEGGINGS,
-                Material.DIAMOND_BOOTS ));
+                Material.DIAMOND_BOOTS));
     }
 
     @Override

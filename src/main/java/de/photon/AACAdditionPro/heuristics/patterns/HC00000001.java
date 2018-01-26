@@ -5,7 +5,6 @@ import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 
 import java.util.Arrays;
-import java.util.DoubleSummaryStatistics;
 import java.util.Map;
 
 /**
@@ -38,13 +37,25 @@ public class HC00000001 extends Pattern
         final double average = Arrays.stream(inputArray[0]).average().orElse(0);
         final double offsetSum = MathUtils.offsetSum(inputArray[0], average, offset -> offset <= IDLE_THRESHOLD);
 
-        final DoubleSummaryStatistics distanceSummary = new DoubleSummaryStatistics();
+        // Calculate min and max
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
         for (int i = 0; i < inputArray[1].length; i++)
         {
-            distanceSummary.accept(Math.hypot(inputArray[1][i], inputArray[2][i]));
+            final double distance = Math.hypot(inputArray[1][i], inputArray[2][i]);
+
+            if (distance < min)
+            {
+                min = distance;
+            }
+
+            if (distance > max)
+            {
+                max = distance;
+            }
         }
 
-        return Math.tanh(((offsetSum / 150) * (distanceSummary.getMax() - distanceSummary.getMin())) / 4);
+        return Math.tanh(((offsetSum / 150) * (max - min)) / 4);
     }
 
     @Override

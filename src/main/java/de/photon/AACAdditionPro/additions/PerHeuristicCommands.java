@@ -41,7 +41,7 @@ public class PerHeuristicCommands implements Module, Listener
         thresholds = ConfigUtils.loadThresholds(this.getConfigString() + ".confidences");
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void on(final PlayerViolationEvent event)
     {
         // Only Heuristics-Events are listened for.

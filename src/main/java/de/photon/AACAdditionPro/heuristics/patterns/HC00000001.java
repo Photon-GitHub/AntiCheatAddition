@@ -37,25 +37,25 @@ public class HC00000001 extends Pattern
         final double average = Arrays.stream(inputArray[0]).average().orElse(0);
         final double offsetSum = MathUtils.offsetSum(inputArray[0], average, offset -> offset <= IDLE_THRESHOLD);
 
-        // Calculate min and max
-        double min = Double.MAX_VALUE;
-        double max = Double.MIN_VALUE;
+        // Calculate min and max distance
+        double minDistance = Double.MAX_VALUE;
+        double maxDistance = Double.MIN_VALUE;
         for (int i = 0; i < inputArray[1].length; i++)
         {
             final double distance = Math.hypot(inputArray[1][i], inputArray[2][i]);
 
-            if (distance < min)
+            if (distance < minDistance)
             {
-                min = distance;
+                minDistance = distance;
             }
 
-            if (distance > max)
+            if (distance > maxDistance)
             {
-                max = distance;
+                maxDistance = distance;
             }
         }
 
-        return Math.tanh(((offsetSum / 150) * (max - min)) / 4);
+        return Math.tanh(((offsetSum / 150) * (maxDistance - minDistance)) / 4);
     }
 
     @Override

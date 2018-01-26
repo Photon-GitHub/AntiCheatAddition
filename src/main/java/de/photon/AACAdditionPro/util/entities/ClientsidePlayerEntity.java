@@ -187,7 +187,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         if (this.isSpawned())
         {
-            updatePlayerInfo(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY, ping);
+            this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY, ping);
         }
     }
 
@@ -311,7 +311,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         {
             if (this.visible_in_tablist)
             {
-                updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, 0);
+                this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, 0);
             }
             Bukkit.getScheduler().cancelTask(pingTask);
         }

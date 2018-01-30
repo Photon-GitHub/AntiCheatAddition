@@ -1,13 +1,12 @@
 package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.util.files.CompressedDataSerializer;
+import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataOutputStream;
 
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.zip.GZIPOutputStream;
 
 
 /**
@@ -61,7 +60,7 @@ public final class PatternSerializer
         }
 
         // Create the writer.
-        final DataOutputStream writer = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(new File(HEURISTICS_FOLDER, neuralPattern.getName() + ".ptrn"))));
+        final EnhancedDataOutputStream writer = CompressedDataSerializer.createOutputStream(new File(HEURISTICS_FOLDER, neuralPattern.getName() + ".ptrn"));
 
         // ------------------------- PATTERN
         // Version first
@@ -92,33 +91,15 @@ public final class PatternSerializer
         writer.writeInt(neuralPattern.getGraph().getMatrix().length);
         for (Double[] layer : neuralPattern.getGraph().getMatrix())
         {
-            for (Double data : layer)
-            {
-                if (data == null)
-                {
-                    writer.writeBoolean(false);
-                }
-                else
-                {
-                    writer.writeBoolean(true);
-                    writer.writeDouble(data);
-                }
-            }
+            writer.writeWrappedDoubleArray(layer, false);
         }
 
         for (double[] layer : neuralPattern.getGraph().getWeightChangeMatrix())
         {
-            for (double data : layer)
-            {
-                writer.writeDouble(data);
-            }
+            writer.writeDoubleArray(layer, false);
         }
 
-        writer.writeInt(neuralPattern.getGraph().getNeuronsInLayers().length);
-        for (int data : neuralPattern.getGraph().getNeuronsInLayers())
-        {
-            writer.writeInt(data);
-        }
+        writer.writeIntegerArray(neuralPattern.getGraph().getNeuronsInLayers(), true);
 
         writer.flush();
         writer.close();

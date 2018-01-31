@@ -39,7 +39,7 @@ public final class BlockUtils
     public static Location getClosestFreeSpaceYAxis(final Location location, final Hitbox hitbox)
     {
         // Short as no hitbox is larger than 32k blocks.
-        // Represents the needed empty blocks.
+        // Represents the needed empty blocks, slabs (or other non-full blocks) are not included
         final short neededHeight = (short) Math.ceil(hitbox.getHeight());
 
         // The offset of the next free space to the location.

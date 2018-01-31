@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.util.world;
 
 import com.google.common.collect.ImmutableList;
+import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.Location;
@@ -10,7 +11,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -123,30 +123,22 @@ public final class BlockUtils
      * @param hitbox    the type of {@link Hitbox} that should be constructed.
      * @param materials the {@link Material}s that should be checked for.
      */
-    public static boolean isHitboxInMaterials(Location location, Hitbox hitbox, Collection<Material> materials)
+    public static boolean isHitboxInMaterials(final Location location, final Hitbox hitbox, final Collection<Material> materials)
     {
-        Iterable<Vector> vectors = hitbox.getCalculationVectors(location, false);
-        // The max. amount of blocks that could be in the collection is 8
-        // Use a check-if present method as getBlock calls are performance-intensive.
-        Collection<int[]> checkedBlockLocations = new ArrayList<>(8);
+        final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
 
-        for (Vector vector : vectors)
+        // Cast the first value as that will only make it smaller, the second one has to be ceiled as it could be the same value once again.
+        for (int x = (int) axisAlignedBB.getMinX(); x <= (int) Math.ceil(axisAlignedBB.getMaxX()); x++)
         {
-            final int[] blockCoordsOfVector = new int[]{
-                    vector.getBlockX(),
-                    vector.getBlockY(),
-                    vector.getBlockZ()
-            };
-
-            // If the location was already checked go further.
-            if (!checkedBlockLocations.contains(blockCoordsOfVector))
+            for (int y = (int) axisAlignedBB.getMinY(); y <= (int) Math.ceil(axisAlignedBB.getMaxY()); y++)
             {
-                if (materials.contains(location.getWorld().getBlockAt(blockCoordsOfVector[0], blockCoordsOfVector[1], blockCoordsOfVector[2]).getType()))
+                for (int z = (int) axisAlignedBB.getMinZ(); z <= (int) Math.ceil(axisAlignedBB.getMaxZ()); z++)
                 {
-                    return true;
+                    if (materials.contains(location.getWorld().getBlockAt(x, y, z).getType()))
+                    {
+                        return true;
+                    }
                 }
-
-                checkedBlockLocations.add(blockCoordsOfVector);
             }
         }
         return false;

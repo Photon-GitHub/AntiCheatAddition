@@ -55,8 +55,8 @@
     <dependencies>
         <dependency>
             <groupId>us.myles</groupId>
-            <artifactId>ViaVersion</artifactId>
-            <version>RELEASE</version>
+            <artifactId>viaversion</artifactId>
+            <version>1.3.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

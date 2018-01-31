@@ -64,7 +64,8 @@ public class AutoFish implements Listener, ViolationModule
                 // Only check if consistency is enabled
                 if (parts[1] &&
                     // Not too many failed attempts in between (afk fish farm false positives)
-                    fails <= maximum_fails &&
+                    // Negative maximum_fails indicate not allowing afk fishing farms.
+                    (maximum_fails < 0 || fails <= maximum_fails) &&
                     // If the timestamp is 0 do not check (false positives)
                     user.getFishingData().getTimeStamp(1) != 0 &&
                     // Add the delta to the consistencyBuffer of the user.

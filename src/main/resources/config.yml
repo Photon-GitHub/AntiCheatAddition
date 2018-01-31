@@ -56,11 +56,10 @@ AutoFish:
          # After how many failed attempts to fish between two successful attempts should a player be exempted from the
          # consistency part?
          #
-         # This is a countermeasure for afk fishing farms.
-         # Do not extensively lower this value because bots can implement this behaviour and the value should
-         # make bots with fail-percentages perform very bad.
+         # This is a countermeasure for afk fishing farm false positives.
+         # Do not extensively lower this value because bots with a custom fail-rate might not be detected.
          #
-         # If you do not allow afk fishing farms on your server set this to a high value (e.g. a million)
+         # If you do not allow afk fishing farms on your server set this to a negative value.
          maximum_fails: 12
    # Map of violation levels to command
    thresholds:

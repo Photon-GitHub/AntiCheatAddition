@@ -192,7 +192,7 @@ public abstract class ClientsideEntity
         if (this.currentMovementCalculator.isTPNeeded() || this.needsTeleport)
         {
             final Location spawnLocation = observedPlayer.getLocation().clone().add(this.getMovement().calculate(observedPlayer.getLocation()));
-            this.location = BlockUtils.getNextFreeSpaceYAxis(spawnLocation, this.getHitbox());
+            this.location = BlockUtils.getClosestFreeSpaceYAxis(spawnLocation, this.getHitbox());
         }
         else
         {

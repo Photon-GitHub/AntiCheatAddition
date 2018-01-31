@@ -240,7 +240,7 @@ public class KillauraEntity implements ViolationModule, Listener
     private static Location calculateSpawningLocation(Player player, ClientsideEntity entity)
     {
         final Location spawnLocation = player.getLocation().clone().add(entity.getMovement().calculate(player.getLocation()));
-        return BlockUtils.getNextFreeSpaceYAxis(spawnLocation, entity.getHitbox());
+        return BlockUtils.getClosestFreeSpaceYAxis(spawnLocation, entity.getHitbox());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

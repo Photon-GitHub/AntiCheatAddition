@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.util.world;
 
 import com.google.common.collect.ImmutableList;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,7 +13,6 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 public final class BlockUtils
@@ -32,76 +32,64 @@ public final class BlockUtils
             BlockFace.EAST);
 
     /**
-     * @return the next Location on the Y-Axis above the input location - 5 where the hitbox could fit in.
+     * This method finds the next free space to a {@link Location} if only searching on the y - Axis.
+     *
+     * @return the {@link Location} of the closest free space found or a {@link Location} of y = 260 if no free space was found.
      */
-    public static Location getNextFreeSpaceYAxis(final Location location, Hitbox hitbox)
+    public static Location getClosestFreeSpaceYAxis(final Location location, final Hitbox hitbox)
     {
+        // Short as no hitbox is larger than 32k blocks.
+        // Represents the needed empty blocks.
         final short neededHeight = (short) Math.ceil(hitbox.getHeight());
 
-        // The y-values
-        final LinkedList<Integer> possibleLocations = new LinkedList<>();
+        // The offset of the next free space to the location.
+        // Set to 260 as that is the default value if nothing else is found.
+        double minDeltaY = 260;
 
-        double minDeltaY = Double.MAX_VALUE;
+        final BlockIterator blockIterator = new BlockIterator(location.getWorld(),
+                                                              location.toVector(),
+                                                              // From the sky to the void to have less needed calculations
+                                                              new Vector(0, -1, 0),
+                                                              // Add 20 to check both over and below the starting location.
+                                                              location.getY() + 20,
+                                                              (int) Math.min(
+                                                                      // Make sure the BlockIterator will not iterate into the void.
+                                                                      location.getY() + 20,
+                                                                      // 40 as default length.
+                                                                      40));
 
-        BlockIterator blockIterator = new BlockIterator(location.getWorld(), location.toVector(), new Vector(0, 1, 0),
-                                                        // Make sure the starting position is not in the void.
-                                                        location.getY() < 20 ?
-                                                        -location.getY() :
-                                                        -20, 40);
+        short currentHeight = 0;
 
         while (blockIterator.hasNext())
         {
             final Block block = blockIterator.next();
 
-            if (Math.abs(location.getY() - block.getY()) > Math.abs(minDeltaY))
+            if (MathUtils.offset(location.getY(), block.getY()) > minDeltaY)
             {
                 // Now we can only get worse results.
                 break;
             }
 
+            // Check if the block is empty
             if (block.isEmpty())
             {
-                boolean insideHeight = true;
-
-                // smaller, not smaller equals as the first block is already counted above.
-                for (short s = 1; s < neededHeight; s++)
+                // If the empty space is big enough
+                if (++currentHeight >= neededHeight)
                 {
-                    // The list has enough entries.
-                    if (possibleLocations.size() < (neededHeight - 1) ||
-                        possibleLocations.get(possibleLocations.size() - s) != (block.getY() - s))
-                    {
-                        insideHeight = false;
-                        break;
-                    }
+                    minDeltaY = block.getY();
                 }
-
-                if (insideHeight)
-                {
-                    // Found at least one match, set the minDelta if it is smaller
-                    double deltaY = block.getY() - neededHeight / 2;
-                    if (deltaY < minDeltaY)
-                    {
-                        minDeltaY = deltaY;
-                    }
-                }
-                possibleLocations.add(block.getY());
+            }
+            else
+            {
+                currentHeight = 0;
             }
         }
 
-        Location result = location.clone();
-        if (minDeltaY != Double.MAX_VALUE)
-        {
-            // +1 to Prevent spawning into the ground.
-            result.setY((minDeltaY - neededHeight / 2) + 1);
-        }
-        else
-        {
-            // Huge value where no blocks can be present.
-            result.setY(260);
-        }
-        return result;
+        final Location spawnLocation = location.clone();
+        spawnLocation.setY(minDeltaY);
+        return spawnLocation;
     }
-
+    
     /**
      * Whether an entity should jump if collided horizontally against that material.
      */

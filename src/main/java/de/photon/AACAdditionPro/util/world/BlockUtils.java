@@ -89,7 +89,7 @@ public final class BlockUtils
         spawnLocation.setY(minDeltaY);
         return spawnLocation;
     }
-    
+
     /**
      * Whether an entity should jump if collided horizontally against that material.
      */

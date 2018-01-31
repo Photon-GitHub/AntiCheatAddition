@@ -49,19 +49,23 @@ public final class BlockUtils
                                                         -location.getY() :
                                                         -20, 40);
 
-        while (blockIterator.hasNext()) {
+        while (blockIterator.hasNext())
+        {
             final Block block = blockIterator.next();
 
-            if (Math.abs(location.getY() - block.getY()) > Math.abs(minDeltaY)) {
+            if (Math.abs(location.getY() - block.getY()) > Math.abs(minDeltaY))
+            {
                 // Now we can only get worse results.
                 break;
             }
 
-            if (block.isEmpty()) {
+            if (block.isEmpty())
+            {
                 boolean insideHeight = true;
 
                 // smaller, not smaller equals as the first block is already counted above.
-                for (short s = 1; s < neededHeight; s++) {
+                for (short s = 1; s < neededHeight; s++)
+                {
                     // The list has enough entries.
                     if (possibleLocations.size() < (neededHeight - 1) ||
                         possibleLocations.get(possibleLocations.size() - s) != (block.getY() - s))
@@ -71,10 +75,12 @@ public final class BlockUtils
                     }
                 }
 
-                if (insideHeight) {
+                if (insideHeight)
+                {
                     // Found at least one match, set the minDelta if it is smaller
                     double deltaY = block.getY() - neededHeight / 2;
-                    if (deltaY < minDeltaY) {
+                    if (deltaY < minDeltaY)
+                    {
                         minDeltaY = deltaY;
                     }
                 }
@@ -83,10 +89,13 @@ public final class BlockUtils
         }
 
         Location result = location.clone();
-        if (minDeltaY != Double.MAX_VALUE) {
+        if (minDeltaY != Double.MAX_VALUE)
+        {
             // +1 to Prevent spawning into the ground.
             result.setY((minDeltaY - neededHeight / 2) + 1);
-        } else {
+        }
+        else
+        {
             // Huge value where no blocks can be present.
             result.setY(260);
         }
@@ -126,7 +135,8 @@ public final class BlockUtils
         // Use a check-if present method as getBlock calls are performance-intensive.
         Collection<int[]> checkedBlockLocations = new ArrayList<>(8);
 
-        for (Vector vector : vectors) {
+        for (Vector vector : vectors)
+        {
             final int[] blockCoordsOfVector = new int[]{
                     vector.getBlockX(),
                     vector.getBlockY(),
@@ -134,8 +144,10 @@ public final class BlockUtils
             };
 
             // If the location was already checked go further.
-            if (!checkedBlockLocations.contains(blockCoordsOfVector)) {
-                if (materials.contains(location.getWorld().getBlockAt(blockCoordsOfVector[0], blockCoordsOfVector[1], blockCoordsOfVector[2]).getType())) {
+            if (!checkedBlockLocations.contains(blockCoordsOfVector))
+            {
+                if (materials.contains(location.getWorld().getBlockAt(blockCoordsOfVector[0], blockCoordsOfVector[1], blockCoordsOfVector[2]).getType()))
+                {
                     return true;
                 }
 
@@ -156,14 +168,17 @@ public final class BlockUtils
      */
     public static boolean isNext(final Block a, final Block b, final boolean onlyHorizontal)
     {
-        if (!a.getWorld().equals(b.getWorld())) {
+        if (!a.getWorld().equals(b.getWorld()))
+        {
             return false;
         }
 
         for (final BlockFace face : onlyHorizontal ?
                                     horizontalFaces :
-                                    allFaces) {
-            if (a.getRelative(face).equals(b)) {
+                                    allFaces)
+        {
+            if (a.getRelative(face).equals(b))
+            {
                 return true;
             }
         }
@@ -183,8 +198,10 @@ public final class BlockUtils
         byte count = 0;
         for (final BlockFace f : onlyHorizontal ?
                                  horizontalFaces :
-                                 allFaces) {
-            if (!block.getRelative(f).isEmpty()) {
+                                 allFaces)
+        {
+            if (!block.getRelative(f).isEmpty())
+            {
                 count++;
             }
         }

@@ -44,19 +44,19 @@ public abstract class PlayerInformationModifier
             AACAdditionPro.getInstance().registerListener(new Listener()
             {
                 @EventHandler
-                public void on(final EntityDeathEvent e)
+                public void on(final EntityDeathEvent event)
                 {
                     Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
-                        removeEntity(e.getEntity());
+                        removeEntity(event.getEntity());
                         return null;
                     });
                 }
 
                 @EventHandler
-                public void on(final ChunkUnloadEvent e)
+                public void on(final ChunkUnloadEvent event)
                 {
                     Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
-                        for (final Entity entity : e.getChunk().getEntities())
+                        for (final Entity entity : event.getChunk().getEntities())
                         {
                             removeEntity(entity);
                         }
@@ -65,11 +65,10 @@ public abstract class PlayerInformationModifier
                 }
 
                 @EventHandler
-                public void on(final PlayerQuitEvent e)
+                public void on(final PlayerQuitEvent event)
                 {
-                    removePlayer(e.getPlayer());
+                    removePlayer(event.getPlayer());
                 }
-
             });
 
             this.manager.addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, this.getAffectedPackets())
@@ -101,6 +100,7 @@ public abstract class PlayerInformationModifier
      *
      * @param observer - the player observer.
      * @param entityID - ID of the entity.
+     *
      * @return TRUE if they are present, FALSE otherwise.
      */
     private boolean getMembership(final Player observer, final int entityID)
@@ -122,6 +122,7 @@ public abstract class PlayerInformationModifier
      * @param observer - the player observer.
      * @param entityID - ID of the entity.
      * @param member   - TRUE if they should be present in the table, FALSE otherwise.
+     *
      * @return TRUE if they already were present, FALSE otherwise.
      */
     // Helper method
@@ -215,6 +216,7 @@ public abstract class PlayerInformationModifier
      *
      * @param observer - the observer player.
      * @param entityID -  ID of the entity that we are testing for visibility.
+     *
      * @return TRUE if the entity is visible, FALSE otherwise.
      */
     protected final boolean isInformationModified(final Player observer, final int entityID)
@@ -230,6 +232,7 @@ public abstract class PlayerInformationModifier
      * @param observer          - the observer player.
      * @param entityID          - ID of the entity that will be hidden or made visible.
      * @param modifyInformation - TRUE if the entity should be made visible, FALSE if not.
+     *
      * @return TRUE if the entity was visible before this method call, FALSE otherwise.
      */
     protected final boolean setModifyInformation(final Player observer, final int entityID, final boolean modifyInformation)

@@ -52,7 +52,7 @@ AutoFish:
          consistency_events: 5
          # The offset minimum offset a player has to have in order to count as non-cheating.
          # Measured in ms
-         violation_offset: 25
+         violation_offset: 30
          # After how many failed attempts to fish between two successful attempts should a player be exempted from the
          # consistency part?
          #

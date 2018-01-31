@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class AutoFish implements Listener, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 3600);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 600);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -94,7 +94,18 @@ public class AutoFish implements Listener, ViolationModule
 
                     VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " + user.getPlayer().getName() + " average time: " + verboseStrings[0] + " | maximum offset: " + verboseStrings[1]);
                     // assert violation_offset - maxOffset > 0 as of the termination in the loop above.
-                    vlManager.flag(event.getPlayer(), (int) Math.max(Math.ceil((violation_offset - maxOffset) * 0.6), 15), cancel_vl, () -> event.setCancelled(true), () -> {});
+                    vlManager.flag(event.getPlayer(),
+                                   // At most 15 vl
+                                   (int) Math.min(
+                                           // At least 1 vl
+                                           Math.max(
+                                                   // Ceil for integer vl.
+                                                   Math.ceil((violation_offset - maxOffset) * 0.5),
+                                                   1),
+                                           15),
+                                   cancel_vl,
+                                   () -> event.setCancelled(true),
+                                   () -> {});
                 }
                 break;
             case CAUGHT_ENTITY:

@@ -43,8 +43,10 @@ public final class BlockUtils
         final short neededHeight = (short) Math.ceil(hitbox.getHeight());
 
         // The offset of the next free space to the location.
+        double minDeltaY = Double.MAX_VALUE;
+
         // Set to 260 as that is the default value if nothing else is found.
-        double minDeltaY = 260;
+        double currentY = 260;
 
         final BlockIterator blockIterator = new BlockIterator(location.getWorld(),
                                                               location.toVector(),
@@ -65,7 +67,10 @@ public final class BlockUtils
         {
             currentBlock = blockIterator.next();
 
-            if (MathUtils.offset(location.getY(), currentBlock.getY()) > minDeltaY)
+            final double originOffset = MathUtils.offset(location.getY(), currentBlock.getY());
+
+            // >= To prefer "higher" positions and improve performance.
+            if (originOffset >= minDeltaY)
             {
                 // Now we can only get worse results.
                 break;
@@ -77,7 +82,8 @@ public final class BlockUtils
                 // If the empty space is big enough
                 if (++currentHeight >= neededHeight)
                 {
-                    minDeltaY = currentBlock.getY();
+                    minDeltaY = originOffset;
+                    currentY = currentBlock.getY();
                 }
             }
             else
@@ -87,7 +93,7 @@ public final class BlockUtils
         }
 
         final Location spawnLocation = location.clone();
-        spawnLocation.setY(minDeltaY);
+        spawnLocation.setY(currentY);
         return spawnLocation;
     }
 

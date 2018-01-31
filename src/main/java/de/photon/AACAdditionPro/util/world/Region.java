@@ -48,6 +48,7 @@ public class Region
      */
     private void constructRegionBox(final double x1, final double z1, final double x2, final double z2)
     {
+        // Make sure the coords are sorted the right way.
         double minCoords[] = new double[2];
         double maxCoords[] = new double[2];
 

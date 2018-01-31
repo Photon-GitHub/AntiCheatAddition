@@ -59,24 +59,25 @@ public final class BlockUtils
                                                                       40));
 
         short currentHeight = 0;
+        Block currentBlock;
 
         while (blockIterator.hasNext())
         {
-            final Block block = blockIterator.next();
+            currentBlock = blockIterator.next();
 
-            if (MathUtils.offset(location.getY(), block.getY()) > minDeltaY)
+            if (MathUtils.offset(location.getY(), currentBlock.getY()) > minDeltaY)
             {
                 // Now we can only get worse results.
                 break;
             }
 
             // Check if the block is empty
-            if (block.isEmpty())
+            if (currentBlock.isEmpty())
             {
                 // If the empty space is big enough
                 if (++currentHeight >= neededHeight)
                 {
-                    minDeltaY = block.getY();
+                    minDeltaY = currentBlock.getY();
                 }
             }
             else

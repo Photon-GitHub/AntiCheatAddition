@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.util.world;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -14,24 +15,14 @@ public class Region
     private final World world;
 
     /**
-     * The corners of the world are stored here.
-     * [0] == x1
-     * [1] == z1
-     * [2] == x2
-     * [3] == z2
+     * The boundaries of the world are stored here.
      */
-    @Getter
-    private final double[] corners;
+    private AxisAlignedBB regionBox;
 
     public Region(final World world, final double x1, final double z1, final double x2, final double z2)
     {
         this.world = world;
-        this.corners = new double[]{
-                x1,
-                z1,
-                x2,
-                z2
-        };
+        this.constructRegionBox(x1, z1, x2, z2);
     }
 
     /* Needs a String in the following format:
@@ -43,10 +34,46 @@ public class Region
         this.world = AACAdditionPro.getInstance().getServer().getWorld(parts[0]);
 
         // Init the corners
-        this.corners = new double[4];
-        for (byte b = 0; b < 4; b++) {
+        double[] corners = new double[4];
+        for (byte b = 0; b < 4; b++)
+        {
             corners[b] = Double.parseDouble(parts[b + 1]);
         }
+
+        this.constructRegionBox(corners[0], corners[1], corners[2], corners[3]);
+    }
+
+    /**
+     * Constructs the {@link AxisAlignedBB} of this region.
+     */
+    private void constructRegionBox(final double x1, final double z1, final double x2, final double z2)
+    {
+        double minCoords[] = new double[2];
+        double maxCoords[] = new double[2];
+
+        if (x1 < x2)
+        {
+            minCoords[0] = x1;
+            maxCoords[0] = x2;
+        }
+        else
+        {
+            minCoords[0] = x2;
+            maxCoords[0] = x1;
+        }
+
+        if (z1 < z2)
+        {
+            minCoords[1] = z1;
+            maxCoords[1] = z2;
+        }
+        else
+        {
+            minCoords[1] = z2;
+            maxCoords[1] = z1;
+        }
+
+        this.regionBox = new AxisAlignedBB(minCoords[0], Double.MIN_VALUE, minCoords[1], minCoords[1], Double.MAX_VALUE, maxCoords[1]);
     }
 
     /**
@@ -58,21 +85,6 @@ public class Region
      */
     public boolean isInsideRegion(final Location location)
     {
-        if (this.corners[0] > this.corners[2]) {
-            if (location.getX() < corners[2] || location.getX() > corners[0]) {
-                return false;
-            }
-        } else {
-            if (location.getX() < corners[0] || location.getX() > corners[2]) {
-                return false;
-            }
-        }
-
-        if (this.corners[1] > this.corners[3]) {
-            return !(location.getZ() < corners[3]) && !(location.getZ() > corners[1]);
-        } else {
-            return !(location.getZ() < corners[1]) && !(location.getZ() > corners[3]);
-        }
-
+        return this.world.equals(location.getWorld()) && regionBox.isVectorInside(location.toVector());
     }
 }

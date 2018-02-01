@@ -53,7 +53,7 @@ public final class BlockUtils
                                                               // From the sky to the void to have less needed calculations
                                                               new Vector(0, -1, 0),
                                                               // Add 20 to check both over and below the starting location.
-                                                              location.getY() + 20,
+                                                              20,
                                                               (int) Math.min(
                                                                       // Make sure the BlockIterator will not iterate into the void.
                                                                       location.getY() + 20,

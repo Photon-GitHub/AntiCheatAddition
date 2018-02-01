@@ -191,8 +191,7 @@ public abstract class ClientsideEntity
 
         if (this.currentMovementCalculator.isTPNeeded() || this.needsTeleport)
         {
-            final Location spawnLocation = observedPlayer.getLocation().clone().add(this.getMovement().calculate(observedPlayer.getLocation()));
-            this.location = BlockUtils.getClosestFreeSpaceYAxis(spawnLocation, this.getHitbox());
+            this.location = this.calculateTeleportLocation();
         }
         else
         {
@@ -420,6 +419,15 @@ public abstract class ClientsideEntity
     public Movement getMovement()
     {
         return this.currentMovementCalculator;
+    }
+
+    /**
+     * Calculates a valid {@link Location} to teleport this {@link ClientsideEntity} to.
+     */
+    public Location calculateTeleportLocation()
+    {
+        final Location spawnLocation = observedPlayer.getLocation().clone().add(this.getMovement().calculate(observedPlayer.getLocation()));
+        return BlockUtils.getClosestFreeSpaceYAxis(spawnLocation, this.getHitbox());
     }
 
     // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //

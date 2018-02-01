@@ -12,13 +12,11 @@ import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.entities.ClientsideEntity;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
-import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -200,8 +198,7 @@ public class KillauraEntity implements ViolationModule, Listener
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
 
                 // Spawn the entity
-                final Location location = calculateSpawningLocation(player, playerEntity);
-                playerEntity.spawn(location);
+                playerEntity.spawn(playerEntity.calculateTeleportLocation());
 
                 if (this.onCommand)
                 {
@@ -223,6 +220,11 @@ public class KillauraEntity implements ViolationModule, Listener
         respawnEntity(event.getPlayer());
     }
 
+    /**
+     * This method respawns the entity as if the player had left the server and would have joined again.
+     *
+     * @param player the player which' entity should be respawned.
+     */
     private void respawnEntity(Player player)
     {
         // Wait one server tick
@@ -235,12 +237,6 @@ public class KillauraEntity implements ViolationModule, Listener
                     // Spawn another entity after the world was changed
                     this.onJoin(new PlayerJoinEvent(player, null));
                 });
-    }
-
-    private static Location calculateSpawningLocation(Player player, ClientsideEntity entity)
-    {
-        final Location spawnLocation = player.getLocation().clone().add(entity.getMovement().calculate(player.getLocation()));
-        return BlockUtils.getClosestFreeSpaceYAxis(spawnLocation, entity.getHitbox());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -302,7 +298,7 @@ public class KillauraEntity implements ViolationModule, Listener
                 }
                 else
                 {
-                    clientSidePlayerEntity.spawn(calculateSpawningLocation(player, clientSidePlayerEntity));
+                    clientSidePlayerEntity.spawn(clientSidePlayerEntity.calculateTeleportLocation());
                 }
                 return true;
             }

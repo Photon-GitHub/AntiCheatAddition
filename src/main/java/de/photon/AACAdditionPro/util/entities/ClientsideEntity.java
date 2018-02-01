@@ -585,7 +585,7 @@ public abstract class ClientsideEntity
 
     public void despawn()
     {
-        if (tickTask > 0)
+        if (tickTask != -1)
         {
             Bukkit.getScheduler().cancelTask(tickTask);
             this.tickTask = -1;

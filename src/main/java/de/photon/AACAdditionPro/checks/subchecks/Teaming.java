@@ -46,12 +46,14 @@ public class Teaming implements Listener, ViolationModule
         proximity_range_squared *= proximity_range_squared;
 
         // Enabled worlds init
-        for (final String nameOfWorld : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".enabled_worlds")) {
+        for (final String nameOfWorld : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".enabled_worlds"))
+        {
             enabled_worlds.add(AACAdditionPro.getInstance().getServer().getWorld(nameOfWorld));
         }
 
         // Safe zone init
-        for (final String safe_zone : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".safe_zones")) {
+        for (final String safe_zone : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".safe_zones"))
+        {
             safe_zones.add(new Region(safe_zone));
         }
 
@@ -65,11 +67,13 @@ public class Teaming implements Listener, ViolationModule
     {
         final LinkedList<Player> currentUsers = new LinkedList<>(Bukkit.getOnlinePlayers());
 
-        while (!currentUsers.isEmpty()) {
+        while (!currentUsers.isEmpty())
+        {
             final User user = UserManager.getUser(currentUsers.removeFirst().getUniqueId());
 
             // User is ok.
-            if (this.userMeetsPreconditions(user)) {
+            if (this.userMeetsPreconditions(user))
+            {
                 final List<User> teamOfCurrentUser = new ArrayList<>(5);
 
                 // Add the user himself
@@ -78,7 +82,8 @@ public class Teaming implements Listener, ViolationModule
                 // The initial User is not returned, thus one does not need to remove the user above here.
                 final List<Player> nearbyPlayers = EntityUtils.getNearbyPlayers(user.getPlayer(), proximity_range_squared);
 
-                for (final Player nearbyPlayer : nearbyPlayers) {
+                for (final Player nearbyPlayer : nearbyPlayers)
+                {
                     final User nearUser = UserManager.getUser(nearbyPlayer.getUniqueId());
 
                     // User is ok
@@ -92,10 +97,12 @@ public class Teaming implements Listener, ViolationModule
                 }
 
                 // Team is too big
-                if (teamOfCurrentUser.size() > this.allowed_size) {
+                if (teamOfCurrentUser.size() > this.allowed_size)
+                {
                     final List<Player> playersOfTeam = new ArrayList<>(teamOfCurrentUser.size());
 
-                    for (final User teamUser : teamOfCurrentUser) {
+                    for (final User teamUser : teamOfCurrentUser)
+                    {
                         playersOfTeam.add(teamUser.getPlayer());
                     }
 
@@ -127,9 +134,12 @@ public class Teaming implements Listener, ViolationModule
      */
     private boolean isPlayerRegionalBypassed(final Player player)
     {
-        if (enabled_worlds.contains(player.getWorld())) {
-            for (final Region safe_zone : safe_zones) {
-                if (safe_zone.isInsideRegion(player.getLocation())) {
+        if (enabled_worlds.contains(player.getWorld()))
+        {
+            for (final Region safe_zone : safe_zones)
+            {
+                if (safe_zone.isInsideRegion(player.getLocation()))
+                {
                     return true;
                 }
             }

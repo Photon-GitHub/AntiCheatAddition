@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.BitSet;
 
 public class EnhancedDataOutputStream extends DataOutputStream
 {
@@ -137,28 +138,17 @@ public class EnhancedDataOutputStream extends DataOutputStream
      */
     private void sendNonNullInformation(final Object[] array) throws IOException
     {
-        // Calculate how many bytes are needed to store all the non-null infos.
-        int nullInformationCount = array.length;
-        nullInformationCount /= 8;
-        nullInformationCount++;
+        final BitSet bitSet = new BitSet(array.length);
 
-        // Encode the non-null info into bytes
-        byte[] nonNullBytes = new byte[nullInformationCount];
-
-        // Current input array position
-        int position = 0;
-
-        // Encode the non-null infos
-        for (int i = 0; i < nonNullBytes.length; i++)
+        for (int i = 0; i < array.length; i++)
         {
-            for (int bytePosition = 1; bytePosition <= 8; bytePosition++)
-            {
-                nonNullBytes[i] |= (array[position] == null) ? 1 : 0;
-                nonNullBytes[i] <<= 1;
+            // true means "nonnull"
+            bitSet.set(i, array[i] != null);
+        }
 
-                position++;
-            }
-            this.writeByte(nonNullBytes[i]);
+        for (byte b : bitSet.toByteArray())
+        {
+            this.writeByte(b);
         }
     }
 }

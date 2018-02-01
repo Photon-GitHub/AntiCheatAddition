@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.util.files.serialization;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.BitSet;
 
 public class EnhancedDataInputStream extends DataInputStream
 {
@@ -155,16 +156,10 @@ public class EnhancedDataInputStream extends DataInputStream
             nonNullBytes[i] = this.readByte();
         }
 
-        // Current output array position
-        int position = 0;
-
-        // Decode the non-null infos
-        for (byte nonNullByte : nonNullBytes)
+        final BitSet readBitSet = BitSet.valueOf(nonNullBytes);
+        for (int i = 0; i < arrayLength; i++)
         {
-            for (int bytePosition = 8; bytePosition > 0; bytePosition++)
-            {
-                nonNullInformation[position++] = (nonNullByte & (1 << bytePosition)) > 0;
-            }
+            nonNullInformation[i] = readBitSet.get(i);
         }
         return nonNullInformation;
     }

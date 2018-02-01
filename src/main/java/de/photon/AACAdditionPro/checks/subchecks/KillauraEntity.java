@@ -255,11 +255,7 @@ public class KillauraEntity implements ViolationModule, Listener
             return;
         }
 
-        final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-        if (clientSidePlayerEntity != null)
-        {
-            clientSidePlayerEntity.despawn();
-        }
+        user.getClientSideEntityData().despawnClientSidePlayerEntity();
     }
 
     @Override
@@ -392,12 +388,7 @@ public class KillauraEntity implements ViolationModule, Listener
         // Despawn on reload
         for (User user : UserManager.getUsersUnwrapped())
         {
-            final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-
-            if (clientSidePlayerEntity != null)
-            {
-                clientSidePlayerEntity.despawn();
-            }
+            user.getClientSideEntityData().despawnClientSidePlayerEntity();
         }
     }
 

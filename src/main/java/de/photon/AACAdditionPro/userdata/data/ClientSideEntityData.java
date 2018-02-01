@@ -13,4 +13,16 @@ public class ClientSideEntityData extends TimeData
     {
         super(false, theUser);
     }
+
+    /**
+     * Despawns the {@link ClientsidePlayerEntity} of this data if it exists.
+     */
+    public void despawnClientSidePlayerEntity()
+    {
+        if (this.clientSidePlayerEntity != null)
+        {
+            this.clientSidePlayerEntity.despawn();
+            this.clientSidePlayerEntity = null;
+        }
+    }
 }

@@ -166,6 +166,14 @@ public class WrapperPlayServerPosition extends AbstractPacket
         getFlagsModifier().write(0, value);
     }
 
+    /**
+     * Sets all flags of this packet, i.e.:
+     * {@link PlayerTeleportFlag#X}, <br>
+     * {@link PlayerTeleportFlag#Y}, <br>
+     * {@link PlayerTeleportFlag#Z}, <br>
+     * {@link PlayerTeleportFlag#X_ROT}, <br>
+     * {@link PlayerTeleportFlag#Y_ROT}
+     */
     public void setAllFlags()
     {
         this.setFlags(

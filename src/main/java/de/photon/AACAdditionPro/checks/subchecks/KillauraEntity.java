@@ -149,7 +149,12 @@ public class KillauraEntity implements ViolationModule, Listener
                 try
                 {
                     gameProfile = killauraEntityAddon.getKillauraEntityGameProfile(player);
-                    movementType = killauraEntityAddon.getController().getMovementType();
+                    final MovementType potentialMovementType = killauraEntityAddon.getController().getMovementType();
+
+                    if (potentialMovementType != null)
+                    {
+                        movementType = potentialMovementType;
+                    }
                 } catch (Throwable t)
                 {
                     new RuntimeException("Error in plugin " + killauraEntityAddon.getPlugin().getName() + " while trying to get a killaura-entity gameprofile for " + player.getName(), t).printStackTrace();

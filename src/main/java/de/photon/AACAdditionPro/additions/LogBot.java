@@ -63,26 +63,12 @@ public class LogBot implements Module, Runnable
     @Override
     public void enable()
     {
-        long[] daysToDelete = new long[]{
-                AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AAC"),
-                AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AACAdditionPro"),
-                AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".Server")
-        };
+        // Put the respective times in milliseconds into the map.
+        logDeletionTimes.put(new File("plugins/AAC", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AAC")));
+        logDeletionTimes.put(new File("plugins/AACAdditionPro", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AACAdditionPro")));
+        logDeletionTimes.put(new File("logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".Server")));
 
-        File[] logFolderLocations = new File[]{
-                new File("plugins/AAC", "logs"),
-                new File("plugins/AACAdditionPro", "logs"),
-                new File("logs")
-        };
-
-        for (byte b = 0; b < daysToDelete.length; b++)
-        {
-            if (daysToDelete[b] > 0)
-            {
-                logDeletionTimes.put(logFolderLocations[b], TimeUnit.DAYS.toMillis(daysToDelete[b]));
-            }
-        }
-
+        // Start a daily executed task to clean up the logs.
         task_number = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this, 1, TimeUnit.DAYS.toMillis(1));
     }
 

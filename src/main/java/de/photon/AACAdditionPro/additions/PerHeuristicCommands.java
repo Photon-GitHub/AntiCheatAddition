@@ -54,8 +54,8 @@ public class PerHeuristicCommands implements Module, Listener
             if (patternMatcher.find() && confidenceMatcher.find())
             {
                 // Directly remove all whitespaces from the matches.
-                final String pattern = patternMatcher.group(1).trim();
-                final Double confidence = Double.parseDouble(confidenceMatcher.group(1).trim());
+                final String pattern = patternMatcher.group().trim();
+                final double confidence = Double.parseDouble(confidenceMatcher.group(1).trim());
 
                 // Heuristics-Event + Cancellation
                 final HeuristicsAdditionViolationEvent additionEvent = new HeuristicsAdditionViolationEvent(event.getPlayer(), confidence, pattern);

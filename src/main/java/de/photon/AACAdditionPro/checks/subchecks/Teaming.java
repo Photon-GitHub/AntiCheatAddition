@@ -54,7 +54,7 @@ public class Teaming implements Listener, ViolationModule
         // Safe zone init
         for (final String safe_zone : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".safe_zones"))
         {
-            safe_zones.add(new Region(safe_zone));
+            safe_zones.add(Region.parseRegion(safe_zone));
         }
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(

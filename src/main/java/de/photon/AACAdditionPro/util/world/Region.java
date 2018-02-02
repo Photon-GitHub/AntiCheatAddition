@@ -25,24 +25,6 @@ public class Region
         this.constructRegionBox(x1, z1, x2, z2);
     }
 
-    /* Needs a String in the following format:
-    - <affected_world> <x1> <z1> <x2> <z2> */
-    public Region(final String toParseString)
-    {
-        // Split the String, the ' ' char is gone after that process.
-        final String[] parts = toParseString.split(" ");
-        this.world = AACAdditionPro.getInstance().getServer().getWorld(parts[0]);
-
-        // Init the corners
-        double[] corners = new double[4];
-        for (byte b = 0; b < 4; b++)
-        {
-            corners[b] = Double.parseDouble(parts[b + 1]);
-        }
-
-        this.constructRegionBox(corners[0], corners[1], corners[2], corners[3]);
-    }
-
     /**
      * Constructs the {@link AxisAlignedBB} of this region.
      */
@@ -87,5 +69,25 @@ public class Region
     public boolean isInsideRegion(final Location location)
     {
         return this.world.equals(location.getWorld()) && regionBox.isVectorInside(location.toVector());
+    }
+
+    /**
+     * Parses a {@link Region} from a {@link String} of the following format: <br></>
+     * <affected_world> <x1> <z1> <x2> <z2>
+     */
+    public static Region parseRegion(final String stringToParse)
+    {
+        // Split the String, the ' ' char is gone after that process.
+        final String[] parts = stringToParse.split(" ");
+
+        // Init the corners
+        double[] corners = new double[4];
+        // 1 to 5 as 0 is the world string.
+        for (byte b = 1; b < 5; b++)
+        {
+            corners[b] = Double.parseDouble(parts[b]);
+        }
+
+        return new Region(AACAdditionPro.getInstance().getServer().getWorld(parts[0]), corners[0], corners[1], corners[2], corners[3]);
     }
 }

@@ -60,7 +60,6 @@ public class Teaming implements Listener, ViolationModule
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
                 () -> {
-
                     for (final World world : Bukkit.getWorlds())
                     {
                         final LinkedList<User> usersOfWorld = new LinkedList<>();

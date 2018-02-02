@@ -141,6 +141,7 @@ Esp:
 # The Fastswitch check prevents players from switching their hotbar-selection too quickly
 Fastswitch:
    # Do you want to enable the Fastswitch check
+   # NOTE: This check will autodisable itself if the server is lagging.
    enabled: true
    # Violation before AACAdditionPro starts to cancel the interacts.
    # Set this to 0 to never cancel interacts.

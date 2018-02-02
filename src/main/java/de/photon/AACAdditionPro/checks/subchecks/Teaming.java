@@ -34,8 +34,8 @@ public class Teaming implements Listener, ViolationModule
     private int allowed_size;
 
     // Region handling
-    private final List<World> enabled_worlds = new ArrayList<>(3);
-    private final List<Region> safe_zones = new ArrayList<>(3);
+    private final List<World> enabledWorlds = new ArrayList<>(3);
+    private final List<Region> safeZones = new ArrayList<>(3);
 
     @Override
     public void subEnable()
@@ -48,19 +48,19 @@ public class Teaming implements Listener, ViolationModule
         // Enabled worlds init
         for (final String nameOfWorld : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".enabled_worlds"))
         {
-            enabled_worlds.add(AACAdditionPro.getInstance().getServer().getWorld(nameOfWorld));
+            enabledWorlds.add(AACAdditionPro.getInstance().getServer().getWorld(nameOfWorld));
         }
 
         // Safe zone init
-        for (final String safe_zone : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".safe_zones"))
+        for (final String safeZone : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".safe_zones"))
         {
-            safe_zones.add(Region.parseRegion(safe_zone));
+            safeZones.add(Region.parseRegion(safeZone));
         }
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
                 () -> {
-                    for (final World world : enabled_worlds)
+                    for (final World world : enabledWorlds)
                     {
                         final LinkedList<User> usersOfWorld = new LinkedList<>();
 
@@ -125,7 +125,7 @@ public class Teaming implements Listener, ViolationModule
      */
     private boolean isPlayerRegionalBypassed(final Player player)
     {
-        for (final Region safe_zone : safe_zones)
+        for (final Region safe_zone : safeZones)
         {
             if (safe_zone.isInsideRegion(player.getLocation()))
             {

@@ -98,20 +98,12 @@ public final class BlockUtils
     }
 
     /**
-     * Whether an entity should jump if collided horizontally against that material.
-     */
-    public static boolean isJumpMaterial(Material material)
-    {
-        return material.isSolid();
-    }
-
-    /**
      * Checks if a {@link Hitbox} at a certain {@link Location} is inside liquids.
      *
      * @param location the {@link Location} to base the {@link Hitbox} on.
      * @param hitbox   the type of {@link Hitbox} that should be constructed.
      */
-    public static boolean isHitboxInLiquids(Location location, Hitbox hitbox)
+    public static boolean isHitboxInLiquids(final Location location, final Hitbox hitbox)
     {
         return isHitboxInMaterials(location, hitbox, Arrays.asList(Material.WATER, Material.LAVA, Material.STATIONARY_WATER, Material.STATIONARY_LAVA));
     }

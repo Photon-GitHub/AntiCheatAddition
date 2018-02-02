@@ -15,8 +15,6 @@ import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 
-import java.util.HashSet;
-
 public class Pingspoof extends PacketAdapter implements Listener, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 500L);
@@ -141,15 +139,7 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
                             user.getPingData().updateTimeStamp();
 
                             final WrapperPlayServerPosition wrapperPlayServerPosition = new WrapperPlayServerPosition();
-                            wrapperPlayServerPosition.setFlags(
-                                    new HashSet<WrapperPlayServerPosition.PlayerTeleportFlag>()
-                                    {{
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.X);
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.Y);
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.Z);
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.Y_ROT);
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.X_ROT);
-                                    }});
+                            wrapperPlayServerPosition.setAllFlags();
 
                             wrapperPlayServerPosition.sendPacket(user.getPlayer());
                         }

@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 
 import java.util.Arrays;
+import java.util.DoubleSummaryStatistics;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -72,41 +73,38 @@ public class AutoFish implements Listener, ViolationModule
                     user.getFishingData().bufferConsistencyData())
                 {
                     // Enough data, now checking
-                    // Calculating the average
-                    final double average = user.getFishingData().consistencyBuffer.average();
+                    final DoubleSummaryStatistics consistencyStatistics = user.getFishingData().consistencyBuffer.clearSummary();
 
-                    // Partially clear the buffer already in the loop to improve performance (instead of get())
-                    final double minValue = user.getFishingData().consistencyBuffer.min();
-                    final double maxValue = user.getFishingData().consistencyBuffer.max();
+                    // Calculate the maximum offset.
+                    final double maxOffset = Math.max(MathUtils.offset(consistencyStatistics.getMin(), consistencyStatistics.getAverage()), MathUtils.offset(consistencyStatistics.getMax(), consistencyStatistics.getAverage()));
 
-                    final double maxOffset = Math.max(MathUtils.offset(minValue, average), MathUtils.offset(maxValue, average));
+                    // Ceil in order to make sure that the result is at least 1
+                    final double vlOffset = Math.ceil((violation_offset - maxOffset) * 0.5D);
 
-                    // Certainly in cheating range (higher values terminate the method in the loop)
-                    // First string is the average time, second one the maximum offset
                     final String[] verboseStrings = new String[]{
-                            String.valueOf(average),
-                            String.valueOf(maxOffset)
+                            String.valueOf(consistencyStatistics.getAverage()),
+                            String.valueOf(maxOffset),
+                            String.valueOf(vlOffset)
                     };
 
+                    // Make sure the verbose message is readable.
                     for (int i = 0; i < verboseStrings.length; i++)
                     {
                         verboseStrings[i] = verboseStrings[i].substring(0, Math.min(verboseStrings.length, 7));
                     }
 
-                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " + user.getPlayer().getName() + " average time: " + verboseStrings[0] + " | maximum offset: " + verboseStrings[1]);
-                    // assert violation_offset - maxOffset > 0 as of the termination in the loop above.
-                    vlManager.flag(event.getPlayer(),
-                                   // At most 15 vl
-                                   (int) Math.min(
-                                           // At least 1 vl
-                                           Math.max(
-                                                   // Ceil for integer vl.
-                                                   Math.ceil((violation_offset - maxOffset) * 0.5),
-                                                   1),
-                                           15),
-                                   cancel_vl,
-                                   () -> event.setCancelled(true),
-                                   () -> {});
+                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " + user.getPlayer().getName() + " average time: " + verboseStrings[0] + " | maximum offset: " + verboseStrings[1] + " | vl offset: " + verboseStrings[2]);
+
+                    // Has the player violated the check?
+                    if (vlOffset > 0)
+                    {
+                        vlManager.flag(event.getPlayer(),
+                                       // At most 15 vl
+                                       (int) Math.min(vlOffset, 15),
+                                       cancel_vl,
+                                       () -> event.setCancelled(true),
+                                       () -> {});
+                    }
                 }
                 break;
             case CAUGHT_ENTITY:

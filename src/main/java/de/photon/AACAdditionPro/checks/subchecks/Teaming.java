@@ -62,6 +62,11 @@ public class Teaming implements Listener, ViolationModule
                 () -> {
                     for (final World world : Bukkit.getWorlds())
                     {
+                        if (!enabled_worlds.contains(world))
+                        {
+                            continue;
+                        }
+
                         final LinkedList<User> usersOfWorld = new LinkedList<>();
 
                         // Add the users of the world.
@@ -122,14 +127,11 @@ public class Teaming implements Listener, ViolationModule
      */
     private boolean isPlayerRegionalBypassed(final Player player)
     {
-        if (enabled_worlds.contains(player.getWorld()))
+        for (final Region safe_zone : safe_zones)
         {
-            for (final Region safe_zone : safe_zones)
+            if (safe_zone.isInsideRegion(player.getLocation()))
             {
-                if (safe_zone.isInsideRegion(player.getLocation()))
-                {
-                    return true;
-                }
+                return true;
             }
         }
         return false;

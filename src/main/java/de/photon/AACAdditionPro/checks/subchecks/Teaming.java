@@ -57,60 +57,56 @@ public class Teaming implements Listener, ViolationModule
             safe_zones.add(new Region(safe_zone));
         }
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::repeatingTeamingTask, 1L, period);
-    }
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(
+                AACAdditionPro.getInstance(),
+                () -> {
+                    final LinkedList<Player> currentUsers = new LinkedList<>(Bukkit.getOnlinePlayers());
 
-    /**
-     * This is called after the period.
-     */
-    private void repeatingTeamingTask()
-    {
-        final LinkedList<Player> currentUsers = new LinkedList<>(Bukkit.getOnlinePlayers());
-
-        while (!currentUsers.isEmpty())
-        {
-            final User user = UserManager.getUser(currentUsers.removeFirst().getUniqueId());
-
-            // User is ok.
-            if (this.userMeetsPreconditions(user))
-            {
-                final List<User> teamOfCurrentUser = new ArrayList<>(5);
-
-                // Add the user himself
-                teamOfCurrentUser.add(user);
-
-                // The initial User is not returned, thus one does not need to remove the user above here.
-                final List<Player> nearbyPlayers = EntityUtils.getNearbyPlayers(user.getPlayer(), proximity_range_squared);
-
-                for (final Player nearbyPlayer : nearbyPlayers)
-                {
-                    final User nearUser = UserManager.getUser(nearbyPlayer.getUniqueId());
-
-                    // User is ok
-                    if (this.userMeetsPreconditions(nearUser) &&
-                        // User has had no pvp
-                        !nearUser.getTeamingData().recentlyUpdated(no_pvp_time))
+                    while (!currentUsers.isEmpty())
                     {
-                        currentUsers.remove(nearUser.getPlayer());
-                        teamOfCurrentUser.add(nearUser);
+                        final User user = UserManager.getUser(currentUsers.removeFirst().getUniqueId());
+
+                        // User is ok.
+                        if (this.userMeetsPreconditions(user))
+                        {
+                            final List<User> teamOfCurrentUser = new ArrayList<>(5);
+
+                            // Add the user himself
+                            teamOfCurrentUser.add(user);
+
+                            // The initial User is not returned, thus one does not need to remove the user above here.
+                            final List<Player> nearbyPlayers = EntityUtils.getNearbyPlayers(user.getPlayer(), proximity_range_squared);
+
+                            for (final Player nearbyPlayer : nearbyPlayers)
+                            {
+                                final User nearUser = UserManager.getUser(nearbyPlayer.getUniqueId());
+
+                                // User is ok
+                                if (this.userMeetsPreconditions(nearUser) &&
+                                    // User has had no pvp
+                                    !nearUser.getTeamingData().recentlyUpdated(no_pvp_time))
+                                {
+                                    currentUsers.remove(nearUser.getPlayer());
+                                    teamOfCurrentUser.add(nearUser);
+                                }
+                            }
+
+                            // Team is too big
+                            if (teamOfCurrentUser.size() > this.allowed_size)
+                            {
+                                final List<Player> playersOfTeam = new ArrayList<>(teamOfCurrentUser.size());
+
+                                for (final User teamUser : teamOfCurrentUser)
+                                {
+                                    playersOfTeam.add(teamUser.getPlayer());
+                                }
+
+                                // Flag the team
+                                vlManager.flagTeam(playersOfTeam, -1, () -> {}, () -> {});
+                            }
+                        }
                     }
-                }
-
-                // Team is too big
-                if (teamOfCurrentUser.size() > this.allowed_size)
-                {
-                    final List<Player> playersOfTeam = new ArrayList<>(teamOfCurrentUser.size());
-
-                    for (final User teamUser : teamOfCurrentUser)
-                    {
-                        playersOfTeam.add(teamUser.getPlayer());
-                    }
-
-                    // Flag the team
-                    vlManager.flagTeam(playersOfTeam, -1, () -> {}, () -> {});
-                }
-            }
-        }
+                }, 1L, period);
     }
 
     /**

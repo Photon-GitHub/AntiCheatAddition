@@ -82,7 +82,7 @@ public class ViolationLevelManagement implements Listener
      * @param player      the player that should be flagged.
      * @param cancel_vl   the ViolationLevel up from which onCancel is run. Set to -1 to disable
      * @param onCancel    a {@link Runnable} that is executed if the vl is higher that cancel_vl
-     * @param specialCode a {@link Runnable} to define special code such as critical_vl
+     * @param specialCode a {@link Runnable} to define special code such as critical_vl. Contrary to normal code it is only run if the event is not cancelled.
      */
     public void flag(final Player player, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
     {
@@ -96,7 +96,7 @@ public class ViolationLevelManagement implements Listener
      * @param vlIncrease  how much the vl should be increased.
      * @param cancelVl    the ViolationLevel up from which onCancel is run. Set to -1 to disable
      * @param onCancel    a {@link Runnable} that is executed if the vl is higher that cancelVl
-     * @param specialCode a {@link Runnable} to define special code such as critical_vl
+     * @param specialCode a {@link Runnable} to define special code such as critical_vl. Contrary to normal code it is only run if the event is not cancelled.
      */
     public void flag(final Player player, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable specialCode)
     {

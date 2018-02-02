@@ -80,14 +80,10 @@ public class Region
         // Split the String, the ' ' char is gone after that process.
         final String[] parts = stringToParse.split(" ");
 
-        // Init the corners
-        double[] corners = new double[4];
-        // 1 to 5 as 0 is the world string.
-        for (byte b = 1; b < 5; b++)
-        {
-            corners[b] = Double.parseDouble(parts[b]);
-        }
-
-        return new Region(AACAdditionPro.getInstance().getServer().getWorld(parts[0]), corners[0], corners[1], corners[2], corners[3]);
+        return new Region(AACAdditionPro.getInstance().getServer().getWorld(parts[0]),
+                          Double.parseDouble(parts[1]),
+                          Double.parseDouble(parts[2]),
+                          Double.parseDouble(parts[3]),
+                          Double.parseDouble(parts[4]));
     }
 }

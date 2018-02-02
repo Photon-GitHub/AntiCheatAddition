@@ -84,34 +84,37 @@ public class Teaming implements Listener, ViolationModule
                             }
                         }
 
-                        // More than 8 players usually don't team.
-                        final List<User> teamingList = new ArrayList<>(8);
-                        final User currentUser = usersOfWorld.removeFirst();
-
-                        // Add the user himself
-                        teamingList.add(currentUser);
-
-                        for (final User possibleTeamUser : usersOfWorld)
+                        while (!usersOfWorld.isEmpty())
                         {
-                            if (MathUtils.areLocationsInRange(currentUser.getPlayer().getLocation(), possibleTeamUser.getPlayer().getLocation(), proximity_range_squared))
-                            {
-                                usersOfWorld.remove(possibleTeamUser);
-                                teamingList.add(possibleTeamUser);
-                            }
-                        }
+                            // More than 8 players usually don't team.
+                            final List<User> teamingList = new ArrayList<>(8);
+                            final User currentUser = usersOfWorld.removeFirst();
 
-                        // Team is too big
-                        if (teamingList.size() > this.allowed_size)
-                        {
-                            final List<Player> playersOfTeam = new ArrayList<>(teamingList.size());
+                            // Add the user himself
+                            teamingList.add(currentUser);
 
-                            for (final User teamUser : teamingList)
+                            for (final User possibleTeamUser : usersOfWorld)
                             {
-                                playersOfTeam.add(teamUser.getPlayer());
+                                if (MathUtils.areLocationsInRange(currentUser.getPlayer().getLocation(), possibleTeamUser.getPlayer().getLocation(), proximity_range_squared))
+                                {
+                                    usersOfWorld.remove(possibleTeamUser);
+                                    teamingList.add(possibleTeamUser);
+                                }
                             }
 
-                            // Flag the team
-                            vlManager.flagTeam(playersOfTeam, -1, () -> {}, () -> {});
+                            // Team is too big
+                            if (teamingList.size() > this.allowed_size)
+                            {
+                                final List<Player> playersOfTeam = new ArrayList<>(teamingList.size());
+
+                                for (final User teamUser : teamingList)
+                                {
+                                    playersOfTeam.add(teamUser.getPlayer());
+                                }
+
+                                // Flag the team
+                                vlManager.flagTeam(playersOfTeam, -1, () -> {}, () -> {});
+                            }
                         }
                     }
                 }, 1L, period);

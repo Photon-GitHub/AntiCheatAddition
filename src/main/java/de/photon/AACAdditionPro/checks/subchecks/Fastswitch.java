@@ -73,7 +73,9 @@ public class Fastswitch extends PacketAdapter implements ViolationModule
      */
     private static boolean canBeLegit(final int oldSlot, final int newHeldItemSlot)
     {
-        return (oldSlot == 0 && newHeldItemSlot == 8) || (oldSlot == 8 && newHeldItemSlot == 0) || MathUtils.roughlyEquals(oldSlot, newHeldItemSlot, 1);
+        return (oldSlot == 0 && newHeldItemSlot == 8) ||
+               (oldSlot == 8 && newHeldItemSlot == 0) ||
+               MathUtils.roughlyEquals(oldSlot, newHeldItemSlot, 1);
     }
 
     @Override

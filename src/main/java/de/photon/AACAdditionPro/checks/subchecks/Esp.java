@@ -175,7 +175,7 @@ public class Esp implements ViolationModule
 
                                     for (int i = 0; i < cameraVectors.length; i++)
                                     {
-                                        Vector perspective = cameraVectors[i];
+                                        final Vector perspective = cameraVectors[i];
 
                                         for (final Vector calculationVector : watchedHitboxVectors)
                                         {

@@ -7,9 +7,9 @@ import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.ConfigUtils;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.storage.management.TeamViolationLevelManagement;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
-import de.photon.AACAdditionPro.util.world.EntityUtils;
 import de.photon.AACAdditionPro.util.world.Region;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -60,69 +60,62 @@ public class Teaming implements Listener, ViolationModule
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
                 () -> {
-                    final LinkedList<Player> currentUsers = new LinkedList<>(Bukkit.getOnlinePlayers());
 
-                    while (!currentUsers.isEmpty())
+                    for (final World world : Bukkit.getWorlds())
                     {
-                        final User user = UserManager.getUser(currentUsers.removeFirst().getUniqueId());
+                        final LinkedList<User> usersOfWorld = new LinkedList<>();
 
-                        // User is ok.
-                        if (this.userMeetsPreconditions(user))
+                        // Add the users of the world.
+                        for (final Player player : world.getPlayers())
                         {
-                            final List<User> teamOfCurrentUser = new ArrayList<>(5);
+                            final User user = UserManager.getUser(player.getUniqueId());
 
-                            // Add the user himself
-                            teamOfCurrentUser.add(user);
-
-                            // The initial User is not returned, thus one does not need to remove the user above here.
-                            final List<Player> nearbyPlayers = EntityUtils.getNearbyPlayers(user.getPlayer(), proximity_range_squared);
-
-                            for (final Player nearbyPlayer : nearbyPlayers)
+                            // Only add users if they meet the preconditions
+                            // User has to be online and not bypassed
+                            if (!User.isUserInvalid(user) &&
+                                // Correct gamemodes
+                                user.getPlayer().getGameMode() != GameMode.CREATIVE &&
+                                user.getPlayer().getGameMode() != GameMode.CREATIVE &&
+                                // Not engaged in pvp
+                                !user.getTeamingData().recentlyUpdated(no_pvp_time) &&
+                                // Not in a bypassed region
+                                !this.isPlayerRegionalBypassed(user.getPlayer()))
                             {
-                                final User nearUser = UserManager.getUser(nearbyPlayer.getUniqueId());
+                                usersOfWorld.add(user);
+                            }
+                        }
 
-                                // User is ok
-                                if (this.userMeetsPreconditions(nearUser) &&
-                                    // User has had no pvp
-                                    !nearUser.getTeamingData().recentlyUpdated(no_pvp_time))
-                                {
-                                    currentUsers.remove(nearUser.getPlayer());
-                                    teamOfCurrentUser.add(nearUser);
-                                }
+                        // More than 8 players usually don't team.
+                        final List<User> teamingList = new ArrayList<>(8);
+                        final User currentUser = usersOfWorld.removeFirst();
+
+                        // Add the user himself
+                        teamingList.add(currentUser);
+
+                        for (final User possibleTeamUser : usersOfWorld)
+                        {
+                            if (MathUtils.areLocationsInRange(currentUser.getPlayer().getLocation(), possibleTeamUser.getPlayer().getLocation(), proximity_range_squared))
+                            {
+                                usersOfWorld.remove(possibleTeamUser);
+                                teamingList.add(possibleTeamUser);
+                            }
+                        }
+
+                        // Team is too big
+                        if (teamingList.size() > this.allowed_size)
+                        {
+                            final List<Player> playersOfTeam = new ArrayList<>(teamingList.size());
+
+                            for (final User teamUser : teamingList)
+                            {
+                                playersOfTeam.add(teamUser.getPlayer());
                             }
 
-                            // Team is too big
-                            if (teamOfCurrentUser.size() > this.allowed_size)
-                            {
-                                final List<Player> playersOfTeam = new ArrayList<>(teamOfCurrentUser.size());
-
-                                for (final User teamUser : teamOfCurrentUser)
-                                {
-                                    playersOfTeam.add(teamUser.getPlayer());
-                                }
-
-                                // Flag the team
-                                vlManager.flagTeam(playersOfTeam, -1, () -> {}, () -> {});
-                            }
+                            // Flag the team
+                            vlManager.flagTeam(playersOfTeam, -1, () -> {}, () -> {});
                         }
                     }
                 }, 1L, period);
-    }
-
-    /**
-     * Determines whether {@link AACAdditionPro} should check this {@link User}
-     */
-    private boolean userMeetsPreconditions(final User user)
-    {
-        // User has to be online
-        return user != null &&
-               // User must not be bypassed
-               !user.isBypassed() &&
-               // User must be in the right GameMode
-               user.getPlayer().getGameMode() != GameMode.CREATIVE &&
-               user.getPlayer().getGameMode() != GameMode.CREATIVE &&
-               // Player must be in an enabled world and must not be in a safe zone
-               !this.isPlayerRegionalBypassed(user.getPlayer());
     }
 
     /**

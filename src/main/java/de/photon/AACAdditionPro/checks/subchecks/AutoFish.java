@@ -58,6 +58,8 @@ public class AutoFish implements Listener, ViolationModule
         switch (event.getState())
         {
             case FISHING:
+                // ------------------------------------------ consistency ------------------------------------------- //
+
                 // Get the fails
                 final int fails = user.getFishingData().failedCounter;
                 user.getFishingData().failedCounter = 0;
@@ -108,7 +110,12 @@ public class AutoFish implements Listener, ViolationModule
                 }
                 break;
             case CAUGHT_ENTITY:
+                // CAUGHT_FISH covers all forms of items from the water.
+                // CAUGHT_ENTITY is e.g. caused upon casting the rod on a player, thus break.
+                break;
             case CAUGHT_FISH:
+                // ---------------------------------------- inhuman reaction ---------------------------------------- //
+                
                 // Only check if inhuman reaction is enabled
                 if (parts[0])
                 {

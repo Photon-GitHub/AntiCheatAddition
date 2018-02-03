@@ -79,12 +79,12 @@ public class AutoFish implements Listener, ViolationModule
                     final double maxOffset = Math.max(MathUtils.offset(consistencyStatistics.getMin(), consistencyStatistics.getAverage()), MathUtils.offset(consistencyStatistics.getMax(), consistencyStatistics.getAverage()));
 
                     // Ceil in order to make sure that the result is at least 1
-                    final double vlOffset = Math.ceil((violation_offset - maxOffset) * 0.5D);
+                    final double flagOffset = Math.ceil((violation_offset - maxOffset) * 0.5D);
 
                     final String[] verboseStrings = new String[]{
                             String.valueOf(consistencyStatistics.getAverage()),
                             String.valueOf(maxOffset),
-                            String.valueOf(vlOffset)
+                            String.valueOf(flagOffset)
                     };
 
                     // Make sure the verbose message is readable.
@@ -93,14 +93,14 @@ public class AutoFish implements Listener, ViolationModule
                         verboseStrings[i] = verboseStrings[i].substring(0, Math.min(verboseStrings.length, 7));
                     }
 
-                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " + user.getPlayer().getName() + " average time: " + verboseStrings[0] + " | maximum offset: " + verboseStrings[1] + " | vl offset: " + verboseStrings[2]);
+                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " + user.getPlayer().getName() + " average time: " + verboseStrings[0] + " | maximum offset: " + verboseStrings[1] + " | flag offset: " + verboseStrings[2]);
 
                     // Has the player violated the check?
-                    if (vlOffset > 0)
+                    if (flagOffset > 0)
                     {
                         vlManager.flag(event.getPlayer(),
                                        // At most 15 vl
-                                       (int) Math.min(vlOffset, 15),
+                                       (int) Math.min(flagOffset, 15),
                                        cancel_vl,
                                        () -> event.setCancelled(true),
                                        () -> {});

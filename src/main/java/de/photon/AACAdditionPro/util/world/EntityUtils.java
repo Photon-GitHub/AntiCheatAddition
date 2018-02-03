@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public final class EntityUtils
 {
@@ -59,19 +60,12 @@ public final class EntityUtils
             e.printStackTrace();
             return Collections.emptyList();
         }
+        return initialLivingEntities.stream().filter(
+                livingEntity ->
+                        // Not the player himself.
+                        !livingEntity.getUniqueId().equals(initialPlayer.getUniqueId()) &&
+                        // In range
+                        MathUtils.areLocationsInRange(initialPlayer.getLocation(), livingEntity.getLocation(), x, y, z)).collect(Collectors.toList());
 
-        final List<LivingEntity> nearbyLivingEntities = new ArrayList<>(5);
-
-        for (final LivingEntity livingEntity : initialLivingEntities)
-        {
-            if (!initialPlayer.getUniqueId().equals(livingEntity.getUniqueId()) &&
-                // Check coordinates
-                MathUtils.areLocationsInRange(initialPlayer.getLocation(), livingEntity.getLocation(), x, y, z))
-            {
-                nearbyLivingEntities.add(livingEntity);
-            }
-        }
-
-        return nearbyLivingEntities;
     }
 }

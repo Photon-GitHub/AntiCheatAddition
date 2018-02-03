@@ -115,7 +115,7 @@ public class AutoFish implements Listener, ViolationModule
                 break;
             case CAUGHT_FISH:
                 // ---------------------------------------- inhuman reaction ---------------------------------------- //
-                
+
                 // Only check if inhuman reaction is enabled
                 if (parts[0])
                 {

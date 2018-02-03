@@ -227,6 +227,7 @@ public class KillauraEntity implements ViolationModule, Listener
 
     /**
      * This method respawns the entity as if the player had left the server and would have joined again.
+     * This can also lead to despawning instead of respawning, e.g. if the player just got bypass permissions.
      *
      * @param player the player which' entity should be respawned.
      */

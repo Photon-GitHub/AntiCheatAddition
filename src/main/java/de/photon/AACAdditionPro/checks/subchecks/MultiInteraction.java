@@ -56,16 +56,22 @@ public class MultiInteraction implements Listener, ViolationModule
             user.getInventoryData().recentlyClicked(min_time))
         {
             boolean flag = false;
-            boolean specialDropHandling = false;
+            // Default vl to 3
+            int addedVl = 3;
 
             switch (event.getAction())
             {
                 // ------------------------------------------ Exemptions -------------------------------------------- //
                 case NOTHING:
                     // Nothing happens, therefore exempted
+                    return;
                 case HOTBAR_SWAP:
                 case HOTBAR_MOVE_AND_READD:
                     // False positive with fast clicking of numbers
+                    addedVl = 2;
+                    // Enough distance to keep false positives at bay.
+                    flag = InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) > 2;
+                    break;
                 case UNKNOWN:
                     // Unknown reason might not be save to handle
                 case COLLECT_TO_CURSOR:
@@ -75,7 +81,8 @@ public class MultiInteraction implements Listener, ViolationModule
                 // ------------------------------------------ Normal -------------------------------------------- //
                 case DROP_ALL_SLOT:
                 case DROP_ONE_SLOT:
-                    specialDropHandling = true;
+                    // Drops might be faster than the others.
+                    addedVl = 2;
                 case PICKUP_ALL:
                 case PICKUP_SOME:
                 case PICKUP_HALF:
@@ -105,7 +112,7 @@ public class MultiInteraction implements Listener, ViolationModule
 
             if (flag)
             {
-                vlManager.flag(user.getPlayer(), specialDropHandling ? 2 : 3, cancel_vl, () ->
+                vlManager.flag(user.getPlayer(), addedVl, cancel_vl, () ->
                 {
                     event.setCancelled(true);
                     InventoryUtils.syncUpdateInventory(user.getPlayer());

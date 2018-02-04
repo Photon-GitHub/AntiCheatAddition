@@ -110,7 +110,6 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
             // Was already in inventory or no air - movement (fall distance + velocity)
             if (user.getInventoryData().notRecentlyOpened(allowedRecentlyOpenedTime))
             {
-
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
                 final List<LivingEntity> nearbyPlayers = EntityUtils.getLivingEntitiesAroundPlayer(

@@ -8,17 +8,39 @@ import org.bukkit.event.inventory.InventoryType;
 public final class InventoryUtils
 {
     /**
+     * Calculates the distance between two raw slots.
+     *
+     * @param rawSlotOne    the first (raw) slot
+     * @param rawSlotTwo    the second (raw) slot
+     * @param inventoryType the inventory layout when the click happened.
+     *
+     * @return the distance between the two slots or -1 if locating the slots failed.
+     */
+    public static double distanceBetweenSlots(final int rawSlotOne, final int rawSlotTwo, final InventoryType inventoryType)
+    {
+        double[] locationOfFirstClick = InventoryUtils.locateSlot(rawSlotOne, inventoryType);
+        double[] locationOfSecondClick = InventoryUtils.locateSlot(rawSlotTwo, inventoryType);
+
+        if (locationOfFirstClick == null || locationOfSecondClick == null)
+        {
+            return -1;
+        }
+
+        return Math.hypot(locationOfFirstClick[0] - locationOfSecondClick[0], locationOfFirstClick[1] - locationOfSecondClick[1]);
+    }
+
+    /**
      * Used to locate a slot in an {@link org.bukkit.inventory.Inventory}.
      * The coordinate-system is (0|0) in upper-left corner.
      * <br>
      * Please make sure that the {@link Player} is not riding a horse, as this method does not support horses/donkeys/mules
      *
      * @param rawSlot       the number that is returned by getRawSlot()
-     * @param inventoryType the inventory layout when
+     * @param inventoryType the inventory layout when the click happened.
      *
-     * @return the coords of a slot or null if it is invalid.
+     * @return the coordinates of a slot or null if it is invalid.
      */
-    public static double[] locateSlot(int rawSlot, InventoryType inventoryType)
+    public static double[] locateSlot(int rawSlot, final InventoryType inventoryType) throws IllegalArgumentException
     {
         // Debug:
         // System.out.println("InventoryLocation: " + rawSlot + " | " + inventoryType);

@@ -28,6 +28,7 @@ permissions:
   aacadditionpro.neural.*:
     description: Grants access to the full heuristics framework (config setting unlock_full_framework is still required)
     children:
+      aacadditionpro.neural: true
       aacadditionpro.neural.create: true
       aacadditionpro.neural.train: true
   aacadditionpro.neural.create:

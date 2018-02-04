@@ -64,21 +64,18 @@ public class MultiInteraction implements Listener, ViolationModule
                 // ------------------------------------------ Exemptions -------------------------------------------- //
                 case NOTHING:
                     // Nothing happens, therefore exempted
-                    return;
-                case HOTBAR_SWAP:
-                case HOTBAR_MOVE_AND_READD:
-                    // False positive with fast clicking of numbers
-                    addedVl = 2;
-                    // Enough distance to keep false positives at bay.
-                    flag = InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) > 2;
-                    break;
                 case UNKNOWN:
                     // Unknown reason might not be save to handle
                 case COLLECT_TO_CURSOR:
                     // False positive with collecting all items of one type in the inventory
                     return;
-
                 // ------------------------------------------ Normal -------------------------------------------- //
+                case HOTBAR_SWAP:
+                case HOTBAR_MOVE_AND_READD:
+                    // Enough distance to keep false positives at bay.
+                    addedVl = 2;
+                    flag = InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) > 2;
+                    break;
                 case DROP_ALL_SLOT:
                 case DROP_ONE_SLOT:
                     // Drops might be faster than the others.

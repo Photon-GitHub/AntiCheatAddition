@@ -55,7 +55,6 @@ public class MultiInteraction implements Listener, ViolationModule
             // Too fast after the last ClickEvent (Detection)
             user.getInventoryData().recentlyClicked(min_time))
         {
-            boolean flag = false;
             // Default vl to 3
             int addedVl = 3;
 
@@ -72,9 +71,12 @@ public class MultiInteraction implements Listener, ViolationModule
                 // ------------------------------------------ Normal -------------------------------------------- //
                 case HOTBAR_SWAP:
                 case HOTBAR_MOVE_AND_READD:
-                    // Enough distance to keep false positives at bay.
                     addedVl = 2;
-                    flag = InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) > 2;
+                    // Enough distance to keep false positives at bay.
+                    if (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) > 2)
+                    {
+                        return;
+                    }
                     break;
                 case DROP_ALL_SLOT:
                 case DROP_ONE_SLOT:
@@ -90,31 +92,31 @@ public class MultiInteraction implements Listener, ViolationModule
                 case DROP_ALL_CURSOR:
                 case DROP_ONE_CURSOR:
                 case CLONE_STACK:
-                    flag = true;
+                    // No false positives to check for.
                     break;
                 case MOVE_TO_OTHER_INVENTORY:
-                    flag = user.getInventoryData().getLastMaterial() != event.getCurrentItem().getType();
+                    // Last material false positive.
+                    if (user.getInventoryData().getLastMaterial() == event.getCurrentItem().getType())
+                    {
+                        return;
+                    }
                     break;
                 case SWAP_WITH_CURSOR:
                     // No much use besides the armour environment for cheats
-                    if (event.getSlotType() == InventoryType.SlotType.ARMOR ||
+                    if (event.getSlotType() != InventoryType.SlotType.ARMOR &&
                         // No false positives possible in fuel or crafting slot as it is only one slot which is separated from others
-                        event.getSlotType() == InventoryType.SlotType.FUEL ||
-                        event.getSlotType() == InventoryType.SlotType.RESULT)
+                        event.getSlotType() != InventoryType.SlotType.FUEL &&
+                        event.getSlotType() != InventoryType.SlotType.RESULT)
                     {
-                        flag = true;
-                        break;
+                        return;
                     }
             }
 
-            if (flag)
+            vlManager.flag(user.getPlayer(), addedVl, cancel_vl, () ->
             {
-                vlManager.flag(user.getPlayer(), addedVl, cancel_vl, () ->
-                {
-                    event.setCancelled(true);
-                    InventoryUtils.syncUpdateInventory(user.getPlayer());
-                }, () -> {});
-            }
+                event.setCancelled(true);
+                InventoryUtils.syncUpdateInventory(user.getPlayer());
+            }, () -> {});
         }
     }
 

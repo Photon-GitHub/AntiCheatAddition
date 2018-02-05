@@ -68,10 +68,11 @@ public class Teaming implements Listener, ViolationModule
                         usersOfWorld.clear();
 
                         // The list might be null if no players are present.
-                        if (world.getPlayers() != null)
+                        final List<Player> worldPlayers = world.getPlayers();
+                        if (worldPlayers != null)
                         {
                             // Add the users of the world.
-                            for (final Player player : world.getPlayers())
+                            for (final Player player : worldPlayers)
                             {
                                 final User user = UserManager.getUser(player.getUniqueId());
 

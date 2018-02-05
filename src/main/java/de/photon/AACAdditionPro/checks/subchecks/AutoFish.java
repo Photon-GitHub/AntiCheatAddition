@@ -111,7 +111,7 @@ public class AutoFish implements Listener, ViolationModule
                 break;
             case CAUGHT_ENTITY:
                 // CAUGHT_FISH covers all forms of items from the water.
-                // CAUGHT_ENTITY is e.g. caused upon casting the rod on a player, thus break.
+                // CAUGHT_ENTITY is e.g. called upon casting the rod on a player, thus causing false positives with spam clicking.
                 break;
             case CAUGHT_FISH:
                 // ---------------------------------------- inhuman reaction ---------------------------------------- //

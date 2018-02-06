@@ -70,28 +70,23 @@ public class Teaming implements Listener, ViolationModule
                         // Clear the old world's data.
                         usersOfWorld.clear();
 
-                        // The list might be null if no players are present.
-                        final List<Player> worldPlayers = world.getPlayers();
-                        if (worldPlayers != null)
+                        // Add the users of the world.
+                        for (final Player player : world.getPlayers())
                         {
-                            // Add the users of the world.
-                            for (final Player player : worldPlayers)
-                            {
-                                final User user = UserManager.getUser(player.getUniqueId());
+                            final User user = UserManager.getUser(player.getUniqueId());
 
-                                // Only add users if they meet the preconditions
-                                // User has to be online and not bypassed
-                                if (!User.isUserInvalid(user) &&
-                                    // Correct gamemodes
-                                    user.getPlayer().getGameMode() != GameMode.CREATIVE &&
-                                    user.getPlayer().getGameMode() != GameMode.CREATIVE &&
-                                    // Not engaged in pvp
-                                    !user.getTeamingData().recentlyUpdated(no_pvp_time) &&
-                                    // Not in a bypassed region
-                                    !this.isPlayerRegionalBypassed(user.getPlayer()))
-                                {
-                                    usersOfWorld.add(user);
-                                }
+                            // Only add users if they meet the preconditions
+                            // User has to be online and not bypassed
+                            if (!User.isUserInvalid(user) &&
+                                // Correct gamemodes
+                                user.getPlayer().getGameMode() != GameMode.CREATIVE &&
+                                user.getPlayer().getGameMode() != GameMode.CREATIVE &&
+                                // Not engaged in pvp
+                                !user.getTeamingData().recentlyUpdated(no_pvp_time) &&
+                                // Not in a bypassed region
+                                !this.isPlayerRegionalBypassed(user.getPlayer()))
+                            {
+                                usersOfWorld.add(user);
                             }
                         }
 

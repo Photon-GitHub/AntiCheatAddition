@@ -18,8 +18,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class Teaming implements Listener, ViolationModule
 {
@@ -34,8 +37,8 @@ public class Teaming implements Listener, ViolationModule
     private int allowed_size;
 
     // Region handling
-    private final List<World> enabledWorlds = new ArrayList<>(3);
-    private final List<Region> safeZones = new ArrayList<>(3);
+    private final Set<World> enabledWorlds = new HashSet<>(3);
+    private final Set<Region> safeZones = new HashSet<>(3);
 
     @Override
     public void subEnable()
@@ -48,7 +51,7 @@ public class Teaming implements Listener, ViolationModule
         // Enabled worlds init
         for (final String nameOfWorld : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".enabled_worlds"))
         {
-            enabledWorlds.add(AACAdditionPro.getInstance().getServer().getWorld(nameOfWorld));
+            enabledWorlds.add(Objects.requireNonNull(Bukkit.getWorld(nameOfWorld), "Config loading error: Unable to get world " + nameOfWorld + " for the teaming check."));
         }
 
         // Safe zone init

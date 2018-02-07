@@ -71,9 +71,9 @@ public class MultiInteraction implements Listener, ViolationModule
                 // ------------------------------------------ Normal -------------------------------------------- //
                 case HOTBAR_SWAP:
                 case HOTBAR_MOVE_AND_READD:
-                    addedVl = 2;
+                    addedVl = 1;
                     // Enough distance to keep false positives at bay.
-                    if (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) > 2)
+                    if (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) > 3)
                     {
                         return;
                     }

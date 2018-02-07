@@ -43,7 +43,6 @@ public class TimeData extends Data
      */
     public boolean recentlyUpdated(final int index, final long milliseconds)
     {
-        System.out.print("Timedata: " + timeStamps[index]);
         return timeStamps[index] + milliseconds >= System.currentTimeMillis();
     }
 

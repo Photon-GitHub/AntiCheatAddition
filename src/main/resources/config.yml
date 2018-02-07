@@ -392,9 +392,6 @@ MultiInteraction:
    # The minimum TPS the server must have to activate this check
    # Low TPS will cause an extreme amount of false positives.
    min_tps: 18.5
-   # The time AACAdditionPro should force between two interactions
-   # Measured in milliseconds.
-   min_time: 51
    # The check will add 3 vl for normal violations and 2 vl for drop violations.
    # Map of violation levels to command
    thresholds:

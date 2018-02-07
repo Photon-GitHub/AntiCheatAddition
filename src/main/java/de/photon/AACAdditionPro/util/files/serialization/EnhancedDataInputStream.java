@@ -21,6 +21,30 @@ public class EnhancedDataInputStream extends DataInputStream
     /**
      * Reads a whole array of integers from the stream.
      */
+    public byte[] readByteArray() throws IOException
+    {
+        return readByteArrayWithLength(this.readInt());
+    }
+
+    /**
+     * Reads a whole array of integers from the stream.
+     *
+     * @param length the length of the array.
+     */
+    public byte[] readByteArrayWithLength(int length) throws IOException
+    {
+        byte[] bytes = new byte[length];
+
+        for (int i = 0; i < bytes.length; i++)
+        {
+            bytes[i] = this.readByte();
+        }
+        return bytes;
+    }
+
+    /**
+     * Reads a whole array of integers from the stream.
+     */
     public int[] readIntegerArray() throws IOException
     {
         return readIntegerArrayWithLength(this.readInt());
@@ -143,20 +167,9 @@ public class EnhancedDataInputStream extends DataInputStream
     {
         final boolean[] nonNullInformation = new boolean[arrayLength];
 
-        // Calculate how many bytes are needed to store all the non-null infos.
-        int nullInformationCount = arrayLength;
-        nullInformationCount /= 8;
-        nullInformationCount++;
+        final byte[] bytes = this.readByteArray();
+        final BitSet readBitSet = BitSet.valueOf(bytes);
 
-        // Encode the non-null info into bytes
-        byte[] nonNullBytes = new byte[nullInformationCount];
-
-        for (int i = 0; i < nonNullBytes.length; i++)
-        {
-            nonNullBytes[i] = this.readByte();
-        }
-
-        final BitSet readBitSet = BitSet.valueOf(nonNullBytes);
         for (int i = 0; i < arrayLength; i++)
         {
             nonNullInformation[i] = readBitSet.get(i);

@@ -26,6 +26,25 @@ public class EnhancedDataOutputStream extends DataOutputStream
     /**
      * Writes a whole array of integers to the stream.
      *
+     * @param byteArray   the array which should be written to the stream.
+     * @param writeLength whether or not the length of the array should be written to the stream.
+     */
+    public void writeByteArray(final byte[] byteArray, final boolean writeLength) throws IOException
+    {
+        if (writeLength)
+        {
+            this.writeInt(byteArray.length);
+        }
+
+        for (byte b : byteArray)
+        {
+            this.writeByte(b);
+        }
+    }
+
+    /**
+     * Writes a whole array of integers to the stream.
+     *
      * @param integerArray the array which should be written to the stream.
      * @param writeLength  whether or not the length of the array should be written to the stream.
      */
@@ -146,9 +165,7 @@ public class EnhancedDataOutputStream extends DataOutputStream
             bitSet.set(i, array[i] != null);
         }
 
-        for (byte b : bitSet.toByteArray())
-        {
-            this.writeByte(b);
-        }
+        final byte[] bytes = bitSet.toByteArray();
+        this.writeByteArray(bytes, true);
     }
 }

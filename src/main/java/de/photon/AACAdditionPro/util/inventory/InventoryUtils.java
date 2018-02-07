@@ -42,6 +42,12 @@ public final class InventoryUtils
      */
     public static double[] locateSlot(int rawSlot, final InventoryType inventoryType) throws IllegalArgumentException
     {
+        // Invalid slot (including the -999 outside rawslot constant)
+        if (rawSlot < 0)
+        {
+            return null;
+        }
+
         // Debug:
         // System.out.println("InventoryLocation: " + rawSlot + " | " + inventoryType);
         switch (inventoryType)

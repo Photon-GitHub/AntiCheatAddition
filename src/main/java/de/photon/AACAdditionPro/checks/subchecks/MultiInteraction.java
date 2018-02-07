@@ -37,8 +37,6 @@ public class MultiInteraction implements Listener, ViolationModule
             return;
         }
 
-        System.out.println("Action: " + event.getAction().name());
-
         // Creative-clear might trigger this.
         if ((user.getPlayer().getGameMode() == GameMode.SURVIVAL || user.getPlayer().getGameMode() == GameMode.ADVENTURE) &&
             // Minimum TPS before the check is activated as of a huge amount of fps

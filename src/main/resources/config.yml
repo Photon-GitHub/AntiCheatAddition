@@ -384,7 +384,7 @@ MultiInteraction:
    enabled: true
    # Violation before AACAdditionPro starts to cancel the interacts.
    # Set this to 0 to never cancel interacts.
-   cancel_vl: 6
+   cancel_vl: 18
    # If a player has a ping higher than that value he bypasses the check
    # Please make sure that you have some pingspoofer protection enabled if you use this feature
    # Set this to -1 to disable

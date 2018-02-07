@@ -105,7 +105,6 @@ public final class BlockUtils
      */
     public static boolean isHitboxInLiquids(final Location location, final Hitbox hitbox)
     {
-        System.out.println(isHitboxInMaterials(location, hitbox, Arrays.asList(Material.WATER, Material.LAVA, Material.STATIONARY_WATER, Material.STATIONARY_LAVA)));
         return isHitboxInMaterials(location, hitbox, Arrays.asList(Material.WATER, Material.LAVA, Material.STATIONARY_WATER, Material.STATIONARY_LAVA));
     }
 

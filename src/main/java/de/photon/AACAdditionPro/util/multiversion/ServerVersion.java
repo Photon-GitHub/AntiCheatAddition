@@ -41,6 +41,7 @@ public enum ServerVersion
      * Used to check whether the current server version is included in the supported server versions of a {@link de.photon.AACAdditionPro.Module}
      *
      * @param supportedServerVersions the {@link Set} of supported server versions of the module
+     *
      * @return true if the active server version is included in the provided {@link Set} or false if it is not.
      */
     public static boolean supportsActiveServerVersion(Set<ServerVersion> supportedServerVersions)

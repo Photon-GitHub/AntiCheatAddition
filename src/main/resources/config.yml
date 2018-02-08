@@ -52,15 +52,14 @@ AutoFish:
          consistency_events: 5
          # The offset minimum offset a player has to have in order to count as non-cheating.
          # Measured in ms
-         violation_offset: 25
+         violation_offset: 30
          # After how many failed attempts to fish between two successful attempts should a player be exempted from the
          # consistency part?
          #
-         # This is a countermeasure for afk fishing farms.
-         # Do not extensively lower this value because bots can implement this behaviour and the value should
-         # make bots with fail-percentages perform very bad.
+         # This is a countermeasure for afk fishing farm false positives.
+         # Do not extensively lower this value because bots with a custom fail-rate might not be detected.
          #
-         # If you do not allow afk fishing farms on your server set this to a high value (e.g. a million)
+         # If you do not allow afk fishing farms on your server set this to a negative value.
          maximum_fails: 12
    # Map of violation levels to command
    thresholds:
@@ -142,6 +141,7 @@ Esp:
 # The Fastswitch check prevents players from switching their hotbar-selection too quickly
 Fastswitch:
    # Do you want to enable the Fastswitch check
+   # NOTE: This check will automatically disable itself if the server is lagging.
    enabled: true
    # Violation before AACAdditionPro starts to cancel the interacts.
    # Set this to 0 to never cancel interacts.
@@ -282,6 +282,13 @@ KillauraEntity:
    #
    # Please be aware that this will allow for
    on_command: false
+   # This will ensure that entities will change their identities after a certain period of time
+   # This option is the minimum time before an entity can change its identity, the real time is randomized.
+   #
+   # Too low values can be exploited by ticks-existed bypasses.
+   # If you want to disable this feature set this to a negative value.
+   # Measured in seconds.
+   respawn_timer: 450
    # The general behaviour of the entity, mostly important for certain gamemodes.
    # Please configure this correctly for your server to have the best setup
    # (e.g. servers who have no teams should disable team)
@@ -290,7 +297,7 @@ KillauraEntity:
    behaviour:
       # This determines whether the player will see the entity in the tablist.
       # WARNING: Disabling this setting will make the entity VERY easy to bypass.
-      #          DO NOT REPORT BYPASSES WITH THIS SETTING DISABLED, I WILL CLOSE THESE ISSUES.
+      #          ANY BYPASSES REPORTED WITH THIS SET TO 'FALSE' WILL BE CLOSED!
       visible_in_tablist: true
       # Should the entity join a team
       team:
@@ -384,7 +391,7 @@ MultiInteraction:
    enabled: true
    # Violation before AACAdditionPro starts to cancel the interacts.
    # Set this to 0 to never cancel interacts.
-   cancel_vl: 6
+   cancel_vl: 18
    # If a player has a ping higher than that value he bypasses the check
    # Please make sure that you have some pingspoofer protection enabled if you use this feature
    # Set this to -1 to disable
@@ -392,9 +399,6 @@ MultiInteraction:
    # The minimum TPS the server must have to activate this check
    # Low TPS will cause an extreme amount of false positives.
    min_tps: 18.5
-   # The time AACAdditionPro should force between two interactions
-   # Measured in milliseconds.
-   min_time: 51
    # The check will add 3 vl for normal violations and 2 vl for drop violations.
    # Map of violation levels to command
    thresholds:

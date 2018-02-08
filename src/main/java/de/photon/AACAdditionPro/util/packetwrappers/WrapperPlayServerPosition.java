@@ -7,17 +7,21 @@ import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 
+import java.util.HashSet;
 import java.util.Set;
 
-public class WrapperPlayServerPosition extends AbstractPacket {
+public class WrapperPlayServerPosition extends AbstractPacket
+{
     public static final PacketType TYPE = PacketType.Play.Server.POSITION;
 
-    public WrapperPlayServerPosition() {
+    public WrapperPlayServerPosition()
+    {
         super(new PacketContainer(TYPE), TYPE);
         handle.getModifier().writeDefaults();
     }
 
-    public WrapperPlayServerPosition(final PacketContainer packet) {
+    public WrapperPlayServerPosition(final PacketContainer packet)
+    {
         super(packet, TYPE);
     }
 
@@ -28,7 +32,8 @@ public class WrapperPlayServerPosition extends AbstractPacket {
      *
      * @return The current X
      */
-    public double getX() {
+    public double getX()
+    {
         return handle.getDoubles().read(0);
     }
 
@@ -37,7 +42,8 @@ public class WrapperPlayServerPosition extends AbstractPacket {
      *
      * @param value - new value.
      */
-    public void setX(final double value) {
+    public void setX(final double value)
+    {
         handle.getDoubles().write(0, value);
     }
 
@@ -48,7 +54,8 @@ public class WrapperPlayServerPosition extends AbstractPacket {
      *
      * @return The current Y
      */
-    public double getY() {
+    public double getY()
+    {
         return handle.getDoubles().read(1);
     }
 
@@ -57,7 +64,8 @@ public class WrapperPlayServerPosition extends AbstractPacket {
      *
      * @param value - new value.
      */
-    public void setY(final double value) {
+    public void setY(final double value)
+    {
         handle.getDoubles().write(1, value);
     }
 
@@ -68,7 +76,8 @@ public class WrapperPlayServerPosition extends AbstractPacket {
      *
      * @return The current Z
      */
-    public double getZ() {
+    public double getZ()
+    {
         return handle.getDoubles().read(2);
     }
 
@@ -77,7 +86,8 @@ public class WrapperPlayServerPosition extends AbstractPacket {
      *
      * @param value - new value.
      */
-    public void setZ(final double value) {
+    public void setZ(final double value)
+    {
         handle.getDoubles().write(2, value);
     }
 
@@ -88,7 +98,8 @@ public class WrapperPlayServerPosition extends AbstractPacket {
      *
      * @return The current Yaw
      */
-    public float getYaw() {
+    public float getYaw()
+    {
         return handle.getFloat().read(0);
     }
 
@@ -97,7 +108,8 @@ public class WrapperPlayServerPosition extends AbstractPacket {
      *
      * @param value - new value.
      */
-    public void setYaw(final float value) {
+    public void setYaw(final float value)
+    {
         handle.getFloat().write(0, value);
     }
 
@@ -108,7 +120,8 @@ public class WrapperPlayServerPosition extends AbstractPacket {
      *
      * @return The current Pitch
      */
-    public float getPitch() {
+    public float getPitch()
+    {
         return handle.getFloat().read(1);
     }
 
@@ -117,7 +130,8 @@ public class WrapperPlayServerPosition extends AbstractPacket {
      *
      * @param value - new value.
      */
-    public void setPitch(final float value) {
+    public void setPitch(final float value)
+    {
         handle.getFloat().write(1, value);
     }
 
@@ -125,22 +139,51 @@ public class WrapperPlayServerPosition extends AbstractPacket {
             .getMinecraftClass("EnumPlayerTeleportFlags",
                                "PacketPlayOutPosition$EnumPlayerTeleportFlags");
 
-    public enum PlayerTeleportFlag {
-        X, Y, Z, Y_ROT, X_ROT
+    public enum PlayerTeleportFlag
+    {
+        X,
+        Y,
+        Z,
+        Y_ROT,
+        X_ROT
     }
 
-    private StructureModifier<Set<PlayerTeleportFlag>> getFlagsModifier() {
+    private StructureModifier<Set<PlayerTeleportFlag>> getFlagsModifier()
+    {
         return handle.getModifier().withType(
                 Set.class,
                 BukkitConverters.getSetConverter(FLAGS_CLASS, EnumWrappers
                         .getGenericConverter(PlayerTeleportFlag.class)));
     }
 
-    public Set<PlayerTeleportFlag> getFlags() {
+    public Set<PlayerTeleportFlag> getFlags()
+    {
         return getFlagsModifier().read(0);
     }
 
-    public void setFlags(final Set<PlayerTeleportFlag> value) {
+    public void setFlags(final Set<PlayerTeleportFlag> value)
+    {
         getFlagsModifier().write(0, value);
+    }
+
+    /**
+     * Sets all flags of this packet, i.e.:
+     * {@link PlayerTeleportFlag#X}, <br>
+     * {@link PlayerTeleportFlag#Y}, <br>
+     * {@link PlayerTeleportFlag#Z}, <br>
+     * {@link PlayerTeleportFlag#X_ROT}, <br>
+     * {@link PlayerTeleportFlag#Y_ROT}
+     */
+    public void setAllFlags()
+    {
+        this.setFlags(
+                new HashSet<PlayerTeleportFlag>()
+                {{
+                    add(WrapperPlayServerPosition.PlayerTeleportFlag.X);
+                    add(WrapperPlayServerPosition.PlayerTeleportFlag.Y);
+                    add(WrapperPlayServerPosition.PlayerTeleportFlag.Z);
+                    add(WrapperPlayServerPosition.PlayerTeleportFlag.Y_ROT);
+                    add(WrapperPlayServerPosition.PlayerTeleportFlag.X_ROT);
+                }});
     }
 }

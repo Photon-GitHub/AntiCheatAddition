@@ -22,7 +22,8 @@ public class PositionData extends TimeData
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void on(final PlayerMoveEvent event)
     {
-        if (this.theUser.refersToUUID(event.getPlayer().getUniqueId())) {
+        if (this.theUser.refersToUUID(event.getPlayer().getUniqueId()))
+        {
             // Head + normal movement
             this.updateTimeStamp(0);
 
@@ -40,6 +41,7 @@ public class PositionData extends TimeData
      * This checks if a player moved recently.
      *
      * @param ignoreHead Should head-movement be ignored
+     *
      * @return true if the player has moved in the last second
      */
     public boolean hasPlayerMovedRecently(final boolean ignoreHead)
@@ -51,13 +53,11 @@ public class PositionData extends TimeData
      * This checks if a player moved recently.
      *
      * @param ignoreHead Should head-movement be ignored
+     *
      * @return true if the player has moved in the last second
      */
     public boolean hasPlayerMovedRecently(final long milliseconds, final boolean ignoreHead)
     {
-        if (ignoreHead) {
-            return this.recentlyUpdated(1, milliseconds);
-        }
-        return this.recentlyUpdated(0, milliseconds);
+        return this.recentlyUpdated(ignoreHead ? 1 : 0, milliseconds);
     }
 }

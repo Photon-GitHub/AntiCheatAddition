@@ -11,8 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryType;
 
-import java.util.HashSet;
-
 public class Freecam implements ViolationModule
 {
     @LoadFromConfiguration(configPath = ".idle_time")
@@ -47,15 +45,7 @@ public class Freecam implements ViolationModule
                                 !user.getPositionData().hasPlayerMovedRecently(idle_time, true))
                         {
                             final WrapperPlayServerPosition setBackPacketWrapper = new WrapperPlayServerPosition();
-                            setBackPacketWrapper.setFlags(
-                                    new HashSet<WrapperPlayServerPosition.PlayerTeleportFlag>()
-                                    {{
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.X);
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.Y);
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.Z);
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.Y_ROT);
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.X_ROT);
-                                    }});
+                            setBackPacketWrapper.setAllFlags();
                             setBackPacketWrapper.sendPacket(user.getPlayer());
                         }
                     }

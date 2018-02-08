@@ -12,13 +12,11 @@ import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.entities.ClientsideEntity;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.verbose.VerboseSender;
-import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -33,6 +31,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
@@ -55,6 +54,10 @@ public class KillauraEntity implements ViolationModule, Listener
 
     @LoadFromConfiguration(configPath = ".on_command")
     private boolean onCommand;
+
+    private final int respawnTimer = 20 * AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".respawn_timer");
+
+    private BukkitTask respawnTask;
 
     @EventHandler
     public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)
@@ -151,7 +154,12 @@ public class KillauraEntity implements ViolationModule, Listener
                 try
                 {
                     gameProfile = killauraEntityAddon.getKillauraEntityGameProfile(player);
-                    movementType = killauraEntityAddon.getController().getMovementType();
+                    final MovementType potentialMovementType = killauraEntityAddon.getController().getMovementType();
+
+                    if (potentialMovementType != null)
+                    {
+                        movementType = potentialMovementType;
+                    }
                 } catch (Throwable t)
                 {
                     new RuntimeException("Error in plugin " + killauraEntityAddon.getPlugin().getName() + " while trying to get a killaura-entity gameprofile for " + player.getName(), t).printStackTrace();
@@ -171,7 +179,7 @@ public class KillauraEntity implements ViolationModule, Listener
                     // Check if we can serve OfflinePlayer profiles.
                     if (offlinePlayers.isEmpty())
                     {
-                        VerboseSender.sendVerboseMessage("KillauraEntity: Could not spawn entity as of too few game profiles for player " + player, true, true);
+                        VerboseSender.sendVerboseMessage("KillauraEntity: Could not spawn entity as of too few game profiles for player " + player.getName(), true, true);
                         // No WrappedGameProfile can be set as there are no valid offline players.
                         return;
                     }
@@ -200,8 +208,7 @@ public class KillauraEntity implements ViolationModule, Listener
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
 
                 // Spawn the entity
-                final Location location = calculateSpawningLocation(player, playerEntity);
-                playerEntity.spawn(location);
+                playerEntity.spawn(playerEntity.calculateTeleportLocation());
 
                 if (this.onCommand)
                 {
@@ -223,6 +230,12 @@ public class KillauraEntity implements ViolationModule, Listener
         respawnEntity(event.getPlayer());
     }
 
+    /**
+     * This method respawns the entity as if the player had left the server and would have joined again.
+     * This can also lead to despawning instead of respawning, e.g. if the player just got bypass permissions.
+     *
+     * @param player the player which' entity should be respawned.
+     */
     private void respawnEntity(Player player)
     {
         // Wait one server tick
@@ -237,12 +250,6 @@ public class KillauraEntity implements ViolationModule, Listener
                 });
     }
 
-    private static Location calculateSpawningLocation(Player player, ClientsideEntity entity)
-    {
-        final Location spawnLocation = player.getLocation().clone().add(entity.getMovement().calculate(player.getLocation()));
-        return BlockUtils.getNextFreeSpaceYAxis(spawnLocation, entity.getHitbox());
-    }
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onQuit(PlayerQuitEvent event)
     {
@@ -255,11 +262,7 @@ public class KillauraEntity implements ViolationModule, Listener
             return;
         }
 
-        final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-        if (clientSidePlayerEntity != null)
-        {
-            clientSidePlayerEntity.despawn();
-        }
+        user.getClientSideEntityData().despawnClientSidePlayerEntity();
     }
 
     @Override
@@ -306,7 +309,7 @@ public class KillauraEntity implements ViolationModule, Listener
                 }
                 else
                 {
-                    clientSidePlayerEntity.spawn(calculateSpawningLocation(player, clientSidePlayerEntity));
+                    clientSidePlayerEntity.spawn(clientSidePlayerEntity.calculateTeleportLocation());
                 }
                 return true;
             }
@@ -381,6 +384,28 @@ public class KillauraEntity implements ViolationModule, Listener
         {
             onJoin(new PlayerJoinEvent(player, null));
         }
+
+        if (this.respawnTimer > 0)
+        {
+            this.respawnScheduler();
+        }
+    }
+
+    /**
+     * Schedules a asynchronous respawn timer which activates a series of entity respawns if the entities existed for too long.
+     */
+    private void respawnScheduler()
+    {
+        // Use the wrapped one to ensure no ConcurrentModificationExceptions can appear.
+        for (final User user : UserManager.getUsers())
+        {
+            if (user.getClientSideEntityData().clientSidePlayerEntity.getTicksExisted() > this.respawnTimer)
+            {
+                this.respawnEntity(user.getPlayer());
+            }
+        }
+
+        respawnTask = Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), this::respawnScheduler, ThreadLocalRandom.current().nextLong(300, 800));
     }
 
     @Override
@@ -392,12 +417,12 @@ public class KillauraEntity implements ViolationModule, Listener
         // Despawn on reload
         for (User user : UserManager.getUsersUnwrapped())
         {
-            final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+            user.getClientSideEntityData().despawnClientSidePlayerEntity();
+        }
 
-            if (clientSidePlayerEntity != null)
-            {
-                clientSidePlayerEntity.despawn();
-            }
+        if (this.respawnTask != null)
+        {
+            this.respawnTask.cancel();
         }
     }
 

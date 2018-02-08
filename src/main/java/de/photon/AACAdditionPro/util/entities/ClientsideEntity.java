@@ -97,6 +97,9 @@ public abstract class ClientsideEntity
     @Getter
     private boolean visible = true;
 
+    @Getter
+    private long ticksExisted = 0;
+
     private int tickTask = -1;
 
     // Movement state machine
@@ -164,6 +167,9 @@ public abstract class ClientsideEntity
      */
     protected void tick()
     {
+        // TicksExisted
+        ticksExisted++;
+
         // Calculate velocity
         this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
 
@@ -191,8 +197,7 @@ public abstract class ClientsideEntity
 
         if (this.currentMovementCalculator.isTPNeeded() || this.needsTeleport)
         {
-            final Location spawnLocation = observedPlayer.getLocation().clone().add(this.getMovement().calculate(observedPlayer.getLocation()));
-            this.location = BlockUtils.getNextFreeSpaceYAxis(spawnLocation, this.getHitbox());
+            this.location = this.calculateTeleportLocation();
         }
         else
         {
@@ -210,7 +215,7 @@ public abstract class ClientsideEntity
                         // Due to gravity a player always have a negative velocity if walking/running on the ground.
                         velocity.getY() <= 0 &&
                         // Make sure the entity only jumps on real blocks, not e.g. grass.
-                        BlockUtils.isJumpMaterial(this.location.clone().add(0, -0.05, 0).getBlock().getType());
+                        this.location.clone().add(0, -0.05, 0).getBlock().getType().isSolid();
 
         sendMove();
         sendHeadYaw();
@@ -422,6 +427,15 @@ public abstract class ClientsideEntity
         return this.currentMovementCalculator;
     }
 
+    /**
+     * Calculates a valid {@link Location} to teleport this {@link ClientsideEntity} to.
+     */
+    public Location calculateTeleportLocation()
+    {
+        final Location spawnLocation = observedPlayer.getLocation().clone().add(this.currentMovementCalculator.calculate(observedPlayer.getLocation()));
+        return BlockUtils.getClosestFreeSpaceYAxis(spawnLocation, this.getHitbox());
+    }
+
     // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //
 
     /**
@@ -585,7 +599,7 @@ public abstract class ClientsideEntity
 
     public void despawn()
     {
-        if (tickTask > 0)
+        if (tickTask != -1)
         {
             Bukkit.getScheduler().cancelTask(tickTask);
             this.tickTask = -1;

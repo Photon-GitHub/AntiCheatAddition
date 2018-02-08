@@ -1,7 +1,9 @@
 package de.photon.AACAdditionPro.util.world;
 
 import com.google.common.collect.ImmutableList;
+import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,10 +11,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 public final class BlockUtils
@@ -32,73 +32,69 @@ public final class BlockUtils
             BlockFace.EAST);
 
     /**
-     * @return the next Location on the Y-Axis above the input location - 5 where the hitbox could fit in.
+     * This method finds the next free space to a {@link Location} if only searching on the y - Axis.
+     *
+     * @return the {@link Location} of the closest free space found or a {@link Location} of y = 260 if no free space was found.
      */
-    public static Location getNextFreeSpaceYAxis(final Location location, Hitbox hitbox)
+    public static Location getClosestFreeSpaceYAxis(final Location location, final Hitbox hitbox)
     {
+        // Short as no hitbox is larger than 32k blocks.
+        // Represents the needed empty blocks, slabs (or other non-full blocks) are not included
         final short neededHeight = (short) Math.ceil(hitbox.getHeight());
 
-        // The y-values
-        final LinkedList<Integer> possibleLocations = new LinkedList<>();
-
+        // The offset of the next free space to the location.
         double minDeltaY = Double.MAX_VALUE;
 
-        BlockIterator blockIterator = new BlockIterator(location.getWorld(), location.toVector(), new Vector(0, 1, 0),
-                                                        // Make sure the starting position is not in the void.
-                                                        location.getY() < 20 ?
-                                                        -location.getY() :
-                                                        -20, 40);
+        // Set to 260 as that is the default value if nothing else is found.
+        double currentY = 260;
 
-        while (blockIterator.hasNext()) {
-            final Block block = blockIterator.next();
+        final BlockIterator blockIterator = new BlockIterator(location.getWorld(),
+                                                              location.toVector(),
+                                                              // From the sky to the void to have less needed calculations
+                                                              new Vector(0, -1, 0),
+                                                              // Add 20 to check both over and below the starting location.
+                                                              20,
+                                                              (int) Math.min(
+                                                                      // Make sure the BlockIterator will not iterate into the void.
+                                                                      location.getY() + 20,
+                                                                      // 40 as default length.
+                                                                      40));
 
-            if (Math.abs(location.getY() - block.getY()) > Math.abs(minDeltaY)) {
+        short currentHeight = 0;
+        Block currentBlock;
+
+        while (blockIterator.hasNext())
+        {
+            currentBlock = blockIterator.next();
+
+            final double originOffset = MathUtils.offset(location.getY(), currentBlock.getY());
+
+            // >= To prefer "higher" positions and improve performance.
+            if (originOffset >= minDeltaY)
+            {
                 // Now we can only get worse results.
                 break;
             }
 
-            if (block.isEmpty()) {
-                boolean insideHeight = true;
-
-                // smaller, not smaller equals as the first block is already counted above.
-                for (short s = 1; s < neededHeight; s++) {
-                    // The list has enough entries.
-                    if (possibleLocations.size() < (neededHeight - 1) ||
-                        possibleLocations.get(possibleLocations.size() - s) != (block.getY() - s))
-                    {
-                        insideHeight = false;
-                        break;
-                    }
+            // Check if the block is empty
+            if (currentBlock.isEmpty())
+            {
+                // If the empty space is big enough
+                if (++currentHeight >= neededHeight)
+                {
+                    minDeltaY = originOffset;
+                    currentY = currentBlock.getY();
                 }
-
-                if (insideHeight) {
-                    // Found at least one match, set the minDelta if it is smaller
-                    double deltaY = block.getY() - neededHeight / 2;
-                    if (deltaY < minDeltaY) {
-                        minDeltaY = deltaY;
-                    }
-                }
-                possibleLocations.add(block.getY());
+            }
+            else
+            {
+                currentHeight = 0;
             }
         }
 
-        Location result = location.clone();
-        if (minDeltaY != Double.MAX_VALUE) {
-            // +1 to Prevent spawning into the ground.
-            result.setY((minDeltaY - neededHeight / 2) + 1);
-        } else {
-            // Huge value where no blocks can be present.
-            result.setY(260);
-        }
-        return result;
-    }
-
-    /**
-     * Whether an entity should jump if collided horizontally against that material.
-     */
-    public static boolean isJumpMaterial(Material material)
-    {
-        return material.isSolid();
+        final Location spawnLocation = location.clone();
+        spawnLocation.setY(currentY);
+        return spawnLocation;
     }
 
     /**
@@ -107,7 +103,7 @@ public final class BlockUtils
      * @param location the {@link Location} to base the {@link Hitbox} on.
      * @param hitbox   the type of {@link Hitbox} that should be constructed.
      */
-    public static boolean isHitboxInLiquids(Location location, Hitbox hitbox)
+    public static boolean isHitboxInLiquids(final Location location, final Hitbox hitbox)
     {
         return isHitboxInMaterials(location, hitbox, Arrays.asList(Material.WATER, Material.LAVA, Material.STATIONARY_WATER, Material.STATIONARY_LAVA));
     }
@@ -119,27 +115,22 @@ public final class BlockUtils
      * @param hitbox    the type of {@link Hitbox} that should be constructed.
      * @param materials the {@link Material}s that should be checked for.
      */
-    public static boolean isHitboxInMaterials(Location location, Hitbox hitbox, Collection<Material> materials)
+    public static boolean isHitboxInMaterials(final Location location, final Hitbox hitbox, final Collection<Material> materials)
     {
-        Iterable<Vector> vectors = hitbox.getCalculationVectors(location, false);
-        // The max. amount of blocks that could be in the collection is 8
-        // Use a check-if present method as getBlock calls are performance-intensive.
-        Collection<int[]> checkedBlockLocations = new ArrayList<>(8);
+        final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
 
-        for (Vector vector : vectors) {
-            final int[] blockCoordsOfVector = new int[]{
-                    vector.getBlockX(),
-                    vector.getBlockY(),
-                    vector.getBlockZ()
-            };
-
-            // If the location was already checked go further.
-            if (!checkedBlockLocations.contains(blockCoordsOfVector)) {
-                if (materials.contains(location.getWorld().getBlockAt(blockCoordsOfVector[0], blockCoordsOfVector[1], blockCoordsOfVector[2]).getType())) {
-                    return true;
+        // Cast the first value as that will only make it smaller, the second one has to be ceiled as it could be the same value once again.
+        for (int x = (int) axisAlignedBB.getMinX(); x <= (int) Math.ceil(axisAlignedBB.getMaxX()); x++)
+        {
+            for (int y = (int) axisAlignedBB.getMinY(); y <= (int) Math.ceil(axisAlignedBB.getMaxY()); y++)
+            {
+                for (int z = (int) axisAlignedBB.getMinZ(); z <= (int) Math.ceil(axisAlignedBB.getMaxZ()); z++)
+                {
+                    if (materials.contains(location.getWorld().getBlockAt(x, y, z).getType()))
+                    {
+                        return true;
+                    }
                 }
-
-                checkedBlockLocations.add(blockCoordsOfVector);
             }
         }
         return false;
@@ -156,14 +147,17 @@ public final class BlockUtils
      */
     public static boolean isNext(final Block a, final Block b, final boolean onlyHorizontal)
     {
-        if (!a.getWorld().equals(b.getWorld())) {
+        if (!a.getWorld().equals(b.getWorld()))
+        {
             return false;
         }
 
         for (final BlockFace face : onlyHorizontal ?
                                     horizontalFaces :
-                                    allFaces) {
-            if (a.getRelative(face).equals(b)) {
+                                    allFaces)
+        {
+            if (a.getRelative(face).equals(b))
+            {
                 return true;
             }
         }
@@ -183,8 +177,10 @@ public final class BlockUtils
         byte count = 0;
         for (final BlockFace f : onlyHorizontal ?
                                  horizontalFaces :
-                                 allFaces) {
-            if (!block.getRelative(f).isEmpty()) {
+                                 allFaces)
+        {
+            if (!block.getRelative(f).isEmpty())
+            {
                 count++;
             }
         }

@@ -9,13 +9,12 @@ import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
-
-import java.util.HashSet;
 
 public class Pingspoof extends PacketAdapter implements Listener, ViolationModule
 {
@@ -49,9 +48,10 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
         // Checking right now
         if (user.getPingData().isCurrentlyChecking && user.getPingData().teleportLocation != null &&
             // Little distance from the real location
-            Math.abs(event.getPacket().getDoubles().readSafely(0) - user.getPingData().teleportLocation.getX()) < 0.5 &&
-            event.getPacket().getDoubles().readSafely(1) == user.getPingData().teleportLocation.getY() &&
-            Math.abs(event.getPacket().getDoubles().readSafely(2) - user.getPingData().teleportLocation.getZ()) < 0.5 &&
+            MathUtils.roughlyEquals(event.getPacket().getDoubles().readSafely(0), user.getPingData().teleportLocation.getX(), 0.5D) &&
+            // Also little difference here as of potential y - changes (i.e. on water lilies, redstone, etc.)
+            MathUtils.roughlyEquals(event.getPacket().getDoubles().readSafely(1), user.getPingData().teleportLocation.getY(), 0.14D) &&
+            MathUtils.roughlyEquals(event.getPacket().getDoubles().readSafely(2), user.getPingData().teleportLocation.getZ(), 0.5D) &&
             !event.getPacket().getBooleans().readSafely(0))
         {
             this.check(user);
@@ -141,15 +141,7 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
                             user.getPingData().updateTimeStamp();
 
                             final WrapperPlayServerPosition wrapperPlayServerPosition = new WrapperPlayServerPosition();
-                            wrapperPlayServerPosition.setFlags(
-                                    new HashSet<WrapperPlayServerPosition.PlayerTeleportFlag>()
-                                    {{
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.X);
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.Y);
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.Z);
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.Y_ROT);
-                                        add(WrapperPlayServerPosition.PlayerTeleportFlag.X_ROT);
-                                    }});
+                            wrapperPlayServerPosition.setAllFlags();
 
                             wrapperPlayServerPosition.sendPacket(user.getPlayer());
                         }

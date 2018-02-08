@@ -1,5 +1,7 @@
 package de.photon.AACAdditionPro.util.storage.management;
 
+import java.util.DoubleSummaryStatistics;
+
 public class DoubleBuffer extends Buffer<Double>
 {
     public DoubleBuffer(int buffer_size)
@@ -60,5 +62,17 @@ public class DoubleBuffer extends Buffer<Double>
     public double average()
     {
         return this.sum() / this.size();
+    }
+
+    /**
+     * Clears the {@link DoubleBuffer} whilst creating a {@link DoubleSummaryStatistics}
+     *
+     * @return the {@link DoubleSummaryStatistics} which has been created.
+     */
+    public DoubleSummaryStatistics clearSummary()
+    {
+        final DoubleSummaryStatistics doubleSummaryStatistics = new DoubleSummaryStatistics();
+        this.clearLastObjectIteration(doubleSummaryStatistics::accept);
+        return doubleSummaryStatistics;
     }
 }

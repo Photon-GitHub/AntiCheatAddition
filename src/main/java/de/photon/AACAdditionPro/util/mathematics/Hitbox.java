@@ -30,9 +30,9 @@ public enum Hitbox
      */
     public List<Vector> getCalculationVectors(final Location location, final boolean addCenterVectors)
     {
-        final ArrayList<Vector> vectors = new ArrayList<>(addCenterVectors ?
-                                                          11 :
-                                                          8);
+        final List<Vector> vectors = new ArrayList<>(addCenterVectors ?
+                                                     11 :
+                                                     8);
         final Vector start = location.toVector();
 
         //Lower corners
@@ -47,16 +47,13 @@ public enum Hitbox
         vectors.add(new Vector(start.getX() + this.offsetX, start.getY() + this.height, start.getZ() - this.offsetZ));
         vectors.add(new Vector(start.getX() - this.offsetX, start.getY() + this.height, start.getZ() - this.offsetZ));
 
-        if (addCenterVectors) {
-            final double step_size;
-            if (location.getY() - location.getBlockX() > 0.1) {
-                // Steps and other blocks with irregular hitboxes need more steps (below 0.5 blocks)
-                step_size = 0.47D;
-            } else {
-                step_size = 1D;
-            }
+        if (addCenterVectors)
+        {
+            // Steps and other blocks with irregular hitboxes need more steps (below 0.5 blocks)
+            final double step_size = (location.getY() - location.getBlockX() > 0.1) ? 0.47D : 1D;
 
-            for (double d = 1.47; d < this.height - 1; d += step_size) {
+            for (double d = 1.47; d < this.height - 1; d += step_size)
+            {
                 vectors.add(new Vector(start.getX(), start.getY() + d, start.getZ()));
             }
         }

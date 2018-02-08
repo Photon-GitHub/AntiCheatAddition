@@ -15,12 +15,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 
 import java.util.Arrays;
+import java.util.DoubleSummaryStatistics;
 import java.util.HashSet;
 import java.util.Set;
 
 public class AutoFish implements Listener, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 3600);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 600);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -57,6 +58,8 @@ public class AutoFish implements Listener, ViolationModule
         switch (event.getState())
         {
             case FISHING:
+                // ------------------------------------------ consistency ------------------------------------------- //
+
                 // Get the fails
                 final int fails = user.getFishingData().failedCounter;
                 user.getFishingData().failedCounter = 0;
@@ -64,41 +67,55 @@ public class AutoFish implements Listener, ViolationModule
                 // Only check if consistency is enabled
                 if (parts[1] &&
                     // Not too many failed attempts in between (afk fish farm false positives)
-                    fails <= maximum_fails &&
+                    // Negative maximum_fails indicate not allowing afk fishing farms.
+                    (maximum_fails < 0 || fails <= maximum_fails) &&
                     // If the timestamp is 0 do not check (false positives)
                     user.getFishingData().getTimeStamp(1) != 0 &&
                     // Add the delta to the consistencyBuffer of the user.
                     user.getFishingData().bufferConsistencyData())
                 {
                     // Enough data, now checking
-                    // Calculating the average
-                    final double average = user.getFishingData().consistencyBuffer.average();
+                    final DoubleSummaryStatistics consistencyStatistics = user.getFishingData().consistencyBuffer.clearSummary();
 
-                    // Partially clear the buffer already in the loop to improve performance (instead of get())
-                    final double minValue = user.getFishingData().consistencyBuffer.min();
-                    final double maxValue = user.getFishingData().consistencyBuffer.max();
+                    // Calculate the maximum offset.
+                    final double maxOffset = Math.max(MathUtils.offset(consistencyStatistics.getMin(), consistencyStatistics.getAverage()), MathUtils.offset(consistencyStatistics.getMax(), consistencyStatistics.getAverage()));
 
-                    final double maxOffset = Math.max(MathUtils.offset(minValue, average), MathUtils.offset(maxValue, average));
+                    // Ceil in order to make sure that the result is at least 1
+                    final double flagOffset = Math.ceil((violation_offset - maxOffset) * 0.5D);
 
-                    // Certainly in cheating range (higher values terminate the method in the loop)
-                    // First string is the average time, second one the maximum offset
                     final String[] verboseStrings = new String[]{
-                            String.valueOf(average),
-                            String.valueOf(maxOffset)
+                            String.valueOf(consistencyStatistics.getAverage()),
+                            String.valueOf(maxOffset),
+                            String.valueOf(flagOffset)
                     };
 
+                    // Make sure the verbose message is readable.
                     for (int i = 0; i < verboseStrings.length; i++)
                     {
                         verboseStrings[i] = verboseStrings[i].substring(0, Math.min(verboseStrings.length, 7));
                     }
 
-                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " + user.getPlayer().getName() + " average time: " + verboseStrings[0] + " | maximum offset: " + verboseStrings[1]);
-                    // assert violation_offset - maxOffset > 0 as of the termination in the loop above.
-                    vlManager.flag(event.getPlayer(), (int) Math.max(Math.ceil((violation_offset - maxOffset) * 0.6), 15), cancel_vl, () -> event.setCancelled(true), () -> {});
+                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " + user.getPlayer().getName() + " average time: " + verboseStrings[0] + " | maximum offset: " + verboseStrings[1] + " | flag offset: " + verboseStrings[2]);
+
+                    // Has the player violated the check?
+                    if (flagOffset > 0)
+                    {
+                        vlManager.flag(event.getPlayer(),
+                                       // At most 15 vl
+                                       (int) Math.min(flagOffset, 15),
+                                       cancel_vl,
+                                       () -> event.setCancelled(true),
+                                       () -> {});
+                    }
                 }
                 break;
             case CAUGHT_ENTITY:
+                // CAUGHT_FISH covers all forms of items from the water.
+                // CAUGHT_ENTITY is e.g. called upon casting the rod on a player, thus causing false positives with spam clicking.
+                break;
             case CAUGHT_FISH:
+                // ---------------------------------------- inhuman reaction ---------------------------------------- //
+
                 // Only check if inhuman reaction is enabled
                 if (parts[0])
                 {

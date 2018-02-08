@@ -1,15 +1,15 @@
 package de.photon.AACAdditionPro.heuristics;
 
-import java.io.DataInputStream;
+import de.photon.AACAdditionPro.util.files.CompressedDataSerializer;
+import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataInputStream;
+
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.zip.GZIPInputStream;
 
 /**
  * Util class for the deserialization of saved {@link NeuralPattern}s.
@@ -25,8 +25,7 @@ public final class PatternDeserializer
      */
     private static NeuralPattern load(final String name) throws IOException
     {
-        InputStream inputStream = PatternDeserializer.class.getClassLoader().getResourceAsStream(name);
-        try (DataInputStream input = new DataInputStream(new GZIPInputStream(inputStream)))
+        try (EnhancedDataInputStream input = CompressedDataSerializer.createInputStream(name))
         {
             // Documentation of the data is in PatternSerializer#save()
             byte version = input.readByte();
@@ -39,7 +38,7 @@ public final class PatternDeserializer
             final String patternName = input.readUTF();
 
             // Inputs
-            final InputData[] inputs = new InputData[input.readByte() & 0xFF];
+            final InputData[] inputs = new InputData[input.readByte()];
             for (int i = 0; i < inputs.length; i++)
             {
                 // The mapping key of the InputData in InputData.VALID_INPUTS
@@ -48,7 +47,7 @@ public final class PatternDeserializer
                 inputs[i] = InputData.VALID_INPUTS.get(inputKeyChar);
                 if (inputs[i] == null)
                 {
-                    throw new IOException("Pattern " + name + " wanted to get input " + inputKeyChar + " which is not valid");
+                    throw new IOException("Pattern " + name + " tried to load invalid input key \'" + inputKeyChar + "\'");
                 }
             }
 
@@ -61,32 +60,20 @@ public final class PatternDeserializer
             final int matrixLength = input.readInt();
 
             // The matrix is quadratic
-            final Double[][] matrix = new Double[matrixLength][matrixLength];
+            final Double[][] matrix = new Double[matrixLength][];
             for (int i = 0; i < matrixLength; i++)
             {
-                for (int i1 = 0; i1 < matrixLength; i1++)
-                {
-                    // If data exists load it.
-                    matrix[i][i1] = input.readBoolean() ? input.readDouble() : null;
-                }
+                matrix[i] = input.readWrappedDoubleArrayWithLength(matrixLength);
             }
 
             // The matrix is quadratic
-            final double[][] weightMatrix = new double[matrixLength][matrixLength];
+            final double[][] weightMatrix = new double[matrixLength][];
             for (int i = 0; i < matrixLength; i++)
             {
-                for (int i1 = 0; i1 < matrixLength; i1++)
-                {
-                    // No check for existence is required as null values will never be changed, thus a primitive datatype here.
-                    weightMatrix[i][i1] = input.readDouble();
-                }
+                weightMatrix[i] = input.readDoubleArrayWithLength(matrixLength);
             }
 
-            final int[] neuronLayer = new int[input.readInt()];
-            for (int i = 0; i < neuronLayer.length; i++)
-            {
-                neuronLayer[i] = input.readInt();
-            }
+            final int[] neuronLayer = input.readIntegerArray();
 
             final Graph graph = new Graph(function, matrix, weightMatrix, neuronLayer);
             return new NeuralPattern(patternName, inputs, graph);

@@ -9,16 +9,14 @@ import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 
 public class MultiInteraction implements Listener, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100L);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 50L);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -26,8 +24,6 @@ public class MultiInteraction implements Listener, ViolationModule
     private double max_ping;
     @LoadFromConfiguration(configPath = ".min_tps")
     private double min_tps;
-    @LoadFromConfiguration(configPath = ".min_time")
-    private int min_time;
 
     //Priority below the priority in InventoryData of the InvClickListener required, otherwise every click will be flagged
     @EventHandler(priority = EventPriority.LOWEST)
@@ -47,35 +43,42 @@ public class MultiInteraction implements Listener, ViolationModule
             AACAPIProvider.getAPI().getTPS() > min_tps &&
             // Minimum ping
             (max_ping < 0 || AACAPIProvider.getAPI().getPing(user.getPlayer()) <= max_ping) &&
-            // A valid material was moved
-            event.getCurrentItem() != null &&
-            event.getCurrentItem().getType() != Material.AIR &&
             // False positive: Click-spamming on the same slot
-            event.getRawSlot() != user.getInventoryData().getLastRawSlot() &&
-            // Too fast after the last ClickEvent (Detection)
-            user.getInventoryData().recentlyClicked(min_time))
+            event.getRawSlot() != user.getInventoryData().getLastRawSlot())
         {
-            boolean flag = false;
-            boolean specialDropHandling = false;
+            // Default vl to 3
+            int addedVl = 3;
+            // Time in ms that will flag if it has not passed
+            int enforcedTicks = 0;
 
             switch (event.getAction())
             {
                 // ------------------------------------------ Exemptions -------------------------------------------- //
                 case NOTHING:
                     // Nothing happens, therefore exempted
-                case HOTBAR_SWAP:
-                case HOTBAR_MOVE_AND_READD:
-                    // False positive with fast clicking of numbers
                 case UNKNOWN:
                     // Unknown reason might not be save to handle
                 case COLLECT_TO_CURSOR:
                     // False positive with collecting all items of one type in the inventory
                     return;
-
                 // ------------------------------------------ Normal -------------------------------------------- //
+                case HOTBAR_SWAP:
+                case HOTBAR_MOVE_AND_READD:
+                    addedVl = 1;
+                    enforcedTicks = 1;
+                    // Enough distance to keep false positives at bay.
+                    if (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) >= 3)
+                    {
+                        return;
+                    }
+                    break;
+
                 case DROP_ALL_SLOT:
                 case DROP_ONE_SLOT:
-                    specialDropHandling = true;
+                    // Drops might be faster than the others.
+                    enforcedTicks = 1;
+                    break;
+
                 case PICKUP_ALL:
                 case PICKUP_SOME:
                 case PICKUP_HALF:
@@ -83,29 +86,57 @@ public class MultiInteraction implements Listener, ViolationModule
                 case PLACE_ALL:
                 case PLACE_SOME:
                 case PLACE_ONE:
+                    // No false positives to check for.
+                    addedVl = 3;
+
+                    enforcedTicks = (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) < 4) ?
+                                    1 :
+                                    5;
+                    break;
+
                 case DROP_ALL_CURSOR:
                 case DROP_ONE_CURSOR:
                 case CLONE_STACK:
-                    flag = true;
+                    // No false positives to check for.
+                    enforcedTicks = 2;
                     break;
+
                 case MOVE_TO_OTHER_INVENTORY:
-                    flag = user.getInventoryData().getLastMaterial() != event.getCurrentItem().getType();
-                    break;
-                case SWAP_WITH_CURSOR:
-                    // No much use besides the armour environment for cheats
-                    if (event.getSlotType() == InventoryType.SlotType.ARMOR ||
-                        // No false positives possible in fuel or crafting slot as it is only one slot which is separated from others
-                        event.getSlotType() == InventoryType.SlotType.FUEL ||
-                        event.getSlotType() == InventoryType.SlotType.RESULT)
+                    // Last material false positive.
+                    if (user.getInventoryData().getLastMaterial() == event.getCurrentItem().getType())
                     {
-                        flag = true;
-                        break;
+                        return;
                     }
+
+                    // Depending on the distance of the clicks.
+                    enforcedTicks = (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) < 4) ?
+                                    1 :
+                                    2;
+                    break;
+
+                case SWAP_WITH_CURSOR:
+                    switch (event.getSlotType())
+                    {
+                        // Armor slots are not eligible for less ticks as of quick change problems with the feet slot.
+                        // No false positives possible in fuel or crafting slot as it is only one slot which is separated from others
+                        case FUEL:
+                        case RESULT:
+                            enforcedTicks = 4;
+                            break;
+
+                        // Default tested value.
+                        default:
+                            enforcedTicks = 2;
+                            break;
+                    }
+                    break;
             }
 
-            if (flag)
+            // Convert ticks to millis.
+            // 25 to account for server lag.
+            if (user.getInventoryData().recentlyClicked(25 + (enforcedTicks * 50)))
             {
-                vlManager.flag(user.getPlayer(), specialDropHandling ? 2 : 3, cancel_vl, () ->
+                vlManager.flag(user.getPlayer(), addedVl, cancel_vl, () ->
                 {
                     event.setCancelled(true);
                     InventoryUtils.syncUpdateInventory(user.getPlayer());

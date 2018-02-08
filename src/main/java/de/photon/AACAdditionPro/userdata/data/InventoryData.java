@@ -16,8 +16,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import java.util.UUID;
-
 public class InventoryData extends TimeData
 {
     /**
@@ -50,6 +48,9 @@ public class InventoryData extends TimeData
         return this.recentlyUpdated(1, milliseconds);
     }
 
+    /**
+     * Determines whether the {@link User} of this {@link de.photon.AACAdditionPro.userdata.Data} currently has an open inventory.
+     */
     public boolean hasOpenInventory()
     {
         return this.getTimeStamp(0) != 0;
@@ -70,11 +71,8 @@ public class InventoryData extends TimeData
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void on(final InventoryOpenEvent event)
     {
-        if (theUser.refersToUUID(event.getPlayer().getUniqueId()) &&
-            theUser.getPlayer().getOpenInventory().getType() != InventoryType.CRAFTING)
-        {
-            this.updateTimeStamp(0);
-        }
+        // Removed theUser.getPlayer().getOpenInventory().getType() != InventoryType.CRAFTING.
+        this.updateIfRefersToUser(event.getPlayer().getUniqueId());
     }
 
     // Low to be after the MultiInteract EventHandler.
@@ -84,7 +82,8 @@ public class InventoryData extends TimeData
         if (theUser.refersToUUID(event.getWhoClicked().getUniqueId()) &&
             event.getSlotType() != InventoryType.SlotType.QUICKBAR)
         {
-            if (this.getTimeStamp(0) == 0)
+            // Only update if the inventory is currently closed to not interfere with opening time checks.
+            if (!this.hasOpenInventory())
             {
                 this.updateTimeStamp(0);
             }
@@ -110,13 +109,5 @@ public class InventoryData extends TimeData
     public void on(final PlayerChangedWorldEvent event)
     {
         this.nullifyIfRefersToUser(event.getPlayer().getUniqueId());
-    }
-
-    private void nullifyIfRefersToUser(UUID uuid)
-    {
-        if (theUser.refersToUUID(uuid))
-        {
-            this.nullifyTimeStamp(0);
-        }
     }
 }

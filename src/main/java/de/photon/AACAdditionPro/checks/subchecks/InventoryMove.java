@@ -14,7 +14,6 @@ import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.reflection.Reflect;
-import de.photon.AACAdditionPro.util.reflection.ReflectionUtils;
 import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import de.photon.AACAdditionPro.util.world.EntityUtils;
@@ -55,9 +54,11 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
         }
 
         // Get motX and motZ
-        final Object nmsHandle = Reflect.from("org.bukkit.craftbukkit." + ReflectionUtils.getVersionString() + ".entity.CraftPlayer").method("getHandle").invoke(user.getPlayer());
-        final double motX = Reflect.from("net.minecraft.server." + ReflectionUtils.getVersionString() + ".Entity").field("motX").from(nmsHandle).asDouble();
-        final double motZ = Reflect.from("net.minecraft.server." + ReflectionUtils.getVersionString() + ".Entity").field("motZ").from(nmsHandle).asDouble();
+        final Object nmsHandle = Reflect.fromOBC("entity.CraftPlayer").method("getHandle").invoke(user.getPlayer());
+
+        // motX and motZ are not 0 if the player is collided accordingly.
+        final double motX = Reflect.fromNMS("Entity").field("motX").from(nmsHandle).asDouble();
+        final double motZ = Reflect.fromNMS("Entity").field("motZ").from(nmsHandle).asDouble();
 
         final Vector input = new Vector(event.getPacket().getDoubles().readSafely(0),
                                         event.getPacket().getDoubles().readSafely(1),
@@ -66,12 +67,10 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
 
         final Vector knownPosition = user.getPlayer().getLocation().toVector();
 
-        final double diffXYZ = Math.abs(input.getX() - knownPosition.getX()) + Math.abs(input.getY() - knownPosition.getY()) + Math.abs(input.getZ() - knownPosition.getZ());
-
-        // No need to remove the Player himself as he is not added here
-
         // Check if this is a client side movement
-        if (diffXYZ > 0.0D && motX != 0 && motZ != 0 &&
+        if (input.distanceSquared(knownPosition) > 0.0D &&
+            motX != 0 &&
+            motZ != 0 &&
             // Not inside a vehicle
             !user.getPlayer().isInsideVehicle() &&
             // Not flying (may trigger some fps)
@@ -110,7 +109,6 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
             // Was already in inventory or no air - movement (fall distance + velocity)
             if (user.getInventoryData().notRecentlyOpened(allowedRecentlyOpenedTime))
             {
-
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
                 final List<LivingEntity> nearbyPlayers = EntityUtils.getLivingEntitiesAroundPlayer(

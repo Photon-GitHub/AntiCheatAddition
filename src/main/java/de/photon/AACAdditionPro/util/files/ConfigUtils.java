@@ -3,7 +3,11 @@ package de.photon.AACAdditionPro.util.files;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -14,6 +18,7 @@ public final class ConfigUtils
      * is a {@link String} or a {@link List} of {@link String}s
      *
      * @param path the path which should be loaded
+     *
      * @return a {@link List} of {@link String}s with the path as entries.
      */
     public static List<String> loadStringOrStringList(final String path)
@@ -48,7 +53,9 @@ public final class ConfigUtils
      * Tries to load all keys from a path in the config.
      *
      * @param sectionPath the given path to the section which keys should be loaded.
+     *
      * @return a {@link Set} of {@link String}s that represent the keys
+     *
      * @throws NullPointerException in the case that the loaded {@link ConfigurationSection} is null.
      */
     public static Set<String> loadKeys(final String sectionPath)
@@ -65,6 +72,7 @@ public final class ConfigUtils
      * Tries to load all thresholds from the given config key.
      *
      * @param thresholdSectionPath the given path to the section that contains the thresholds
+     *
      * @return a {@link Map} where the keys are {@link Integer}s and representing the threshold and Objects that are {@link List}s of {@link String}(s) which contain the commands that should be run when triggering the threshold.
      */
     public static ConcurrentMap<Integer, List<String>> loadThresholds(final String thresholdSectionPath)

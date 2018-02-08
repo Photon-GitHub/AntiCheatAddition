@@ -31,6 +31,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
@@ -53,6 +54,10 @@ public class KillauraEntity implements ViolationModule, Listener
 
     @LoadFromConfiguration(configPath = ".on_command")
     private boolean onCommand;
+
+    private final int respawnTimer = 20 * AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".respawn_timer");
+
+    private BukkitTask respawnTask;
 
     @EventHandler
     public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)
@@ -379,6 +384,28 @@ public class KillauraEntity implements ViolationModule, Listener
         {
             onJoin(new PlayerJoinEvent(player, null));
         }
+
+        if (this.respawnTimer > 0)
+        {
+            this.respawnScheduler();
+        }
+    }
+
+    /**
+     * Schedules a asynchronous respawn timer which activates a series of entity respawns if the entities existed for too long.
+     */
+    private void respawnScheduler()
+    {
+        // Use the wrapped one to ensure no ConcurrentModificationExceptions can appear.
+        for (final User user : UserManager.getUsers())
+        {
+            if (user.getClientSideEntityData().clientSidePlayerEntity.getTicksExisted() > this.respawnTimer)
+            {
+                this.respawnEntity(user.getPlayer());
+            }
+        }
+
+        respawnTask = Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), this::respawnScheduler, ThreadLocalRandom.current().nextLong(300, 800));
     }
 
     @Override
@@ -391,6 +418,11 @@ public class KillauraEntity implements ViolationModule, Listener
         for (User user : UserManager.getUsersUnwrapped())
         {
             user.getClientSideEntityData().despawnClientSidePlayerEntity();
+        }
+
+        if (this.respawnTask != null)
+        {
+            this.respawnTask.cancel();
         }
     }
 

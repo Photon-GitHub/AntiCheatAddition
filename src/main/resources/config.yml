@@ -282,6 +282,11 @@ KillauraEntity:
    #
    # Please be aware that this will allow for
    on_command: false
+   # This will ensure that entities will change their identities after a certain period of time
+   # This option is the minimum time before an entity can change its identity, the real time is randomized.
+   # If you want to disable this feature set this to a negative value.
+   # Measured in seconds.
+   respawn_timer: 450
    # The general behaviour of the entity, mostly important for certain gamemodes.
    # Please configure this correctly for your server to have the best setup
    # (e.g. servers who have no teams should disable team)

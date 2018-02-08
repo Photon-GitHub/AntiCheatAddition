@@ -97,6 +97,9 @@ public abstract class ClientsideEntity
     @Getter
     private boolean visible = true;
 
+    @Getter
+    private long ticksExisted = 0;
+
     private int tickTask = -1;
 
     // Movement state machine
@@ -164,6 +167,9 @@ public abstract class ClientsideEntity
      */
     protected void tick()
     {
+        // TicksExisted
+        ticksExisted++;
+
         // Calculate velocity
         this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
 

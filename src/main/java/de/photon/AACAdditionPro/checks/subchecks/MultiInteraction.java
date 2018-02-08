@@ -117,11 +117,7 @@ public class MultiInteraction implements Listener, ViolationModule
                 case SWAP_WITH_CURSOR:
                     switch (event.getSlotType())
                     {
-                        // Armor slots are equipment - based, thus you need to pick up a new item
-                        case ARMOR:
-                            enforcedTicks = 2;
-                            break;
-
+                        // Armor slots are not eligible for less ticks as of quick change problems with the feet slot.
                         // No false positives possible in fuel or crafting slot as it is only one slot which is separated from others
                         case FUEL:
                         case RESULT:

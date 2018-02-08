@@ -284,6 +284,8 @@ KillauraEntity:
    on_command: false
    # This will ensure that entities will change their identities after a certain period of time
    # This option is the minimum time before an entity can change its identity, the real time is randomized.
+   #
+   # Too low values can be exploited by ticks-existed bypasses.
    # If you want to disable this feature set this to a negative value.
    # Measured in seconds.
    respawn_timer: 450

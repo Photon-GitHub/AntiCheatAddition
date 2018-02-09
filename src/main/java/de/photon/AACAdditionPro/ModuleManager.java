@@ -23,7 +23,7 @@ public class ModuleManager extends ArrayList<Module>
         }
     }
 
-    private void registerObject(Module object)
+    public void registerObject(Module object)
     {
         try
         {

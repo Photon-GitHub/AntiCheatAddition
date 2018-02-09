@@ -27,6 +27,7 @@ import de.photon.AACAdditionPro.checks.subchecks.Tower;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.BetterSprintingControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.FiveZigControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.ForgeControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LabyModControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LiteloaderControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.OldLabyModControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.SchematicaControl;
@@ -186,6 +187,13 @@ public class AACAdditionPro extends JavaPlugin
 
             // The first getConfig call will automatically saveToFile and cache the config.
 
+
+            // ------------------------------------------------------------------------------------------------------ //
+            //                                              Plugin hooks                                              //
+            // ------------------------------------------------------------------------------------------------------ //
+
+            boolean labyModAPIHook = this.getServer().getPluginManager().isPluginEnabled("LabyModAPI");
+
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //
             // ------------------------------------------------------------------------------------------------------ //
@@ -230,6 +238,11 @@ public class AACAdditionPro extends JavaPlugin
                     new Teaming(),
                     new Tower()
             );
+
+            if (labyModAPIHook)
+            {
+                this.moduleManager.registerObject(new LabyModControl());
+            }
 
             // Commands
             this.getCommand(MainCommand.instance.name).setExecutor(MainCommand.instance);

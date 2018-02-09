@@ -583,7 +583,10 @@ ClientControl:
    #
    # If enabled this ClientControl will override the config options of the LabyModAPI plugin.
    LabyMod:
+      # Do you want to enable the LabyMod-Control
       enabled: true
+      # This mod provides a method to disable parts of it.
+      # Set the corresponding value to true if you want to block a part of the mod
       disable:
          # Fixes a rendering bug in minecraft with fast lava placement (ghost blocks)
          # This can be seen as semi-cheat-like as normal players will see the ghost block, but it is essentially a bug fix.
@@ -619,11 +622,13 @@ ClientControl:
          # Even though this is sometimes considered as an unfair advantage it is often just handy information
          # which is not really affecting the gameplay.
          saturation_bar: false
+      commands_on_detection:
+         - "aacstaffnotify {player} in {world} uses LabyMod"
 
    # This covers outdated versions of LabyMod prior to version 3.0
    # A very popular PvP modification similar to 5zig but with more features and TS3 support
    OldLabyMod:
-      # Do you want to enable the LabyMod-Control
+      # Do you want to enable the OldLabyMod-Control
       enabled: false
       # This mod provides a method to disable parts of it.
       # Set the corresponding value to true if you want to block a part of the mod

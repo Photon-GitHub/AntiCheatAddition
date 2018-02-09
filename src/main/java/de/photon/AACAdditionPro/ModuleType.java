@@ -35,6 +35,7 @@ public enum ModuleType
     BETTERSPRINTING_CONTROL("ClientControl.BetterSprinting", "uses BetterSprinting"),
     FIVEZIG_CONTROL("ClientControl.5zig", "uses 5zig"),
     FORGE_CONTROL("ClientControl.Forge", "uses Forge"),
+    LABYMOD_CONTROL("ClientControl.LabyMod", "uses LabyMod"),
     OLD_LABYMOD_CONTROL("ClientControl.OldLabyMod", "uses LabyMod"),
     LITELOADER_CONTROL("ClientControl.LiteLoader", "uses LiteLoader"),
     SCHEMATICA_CONTROL("ClientControl.Schematica", "uses Schematica"),

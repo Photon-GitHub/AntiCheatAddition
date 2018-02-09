@@ -1,20 +1,18 @@
 package de.photon.AACAdditionPro.checks;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.events.ClientControlEvent;
-import de.photon.AACAdditionPro.events.PlayerAdditionViolationCommandEvent;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
-import de.photon.AACAdditionPro.util.commands.Placeholders;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
+import java.util.Collection;
 
 public interface ClientControlModule extends ViolationModule
 {
     String MCBRANDCHANNEL = "MC|Brand";
 
-    List<String> getCommandsOnDetection();
+    Collection<String> getCommandsOnDetection();
 
     /**
      * This is used for the ClientControl checks as they do not need full thresholds
@@ -29,18 +27,13 @@ public interface ClientControlModule extends ViolationModule
                 this.getModuleType()
         );
 
-        AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(clientControlEvent);
+        Bukkit.getPluginManager().callEvent(clientControlEvent);
 
         // The event must not be cancelled
-        if (!clientControlEvent.isCancelled()) {
-
+        if (!clientControlEvent.isCancelled())
+        {
             // Execution of the commands
-            for (final String rawCommand : this.getCommandsOnDetection()) {
-                final String realCommand = Placeholders.applyPlaceholders(rawCommand, player, null);
-
-                // Calling of the event + Sync command execution
-                CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.getModuleType()));
-            }
+            this.getCommandsOnDetection().forEach(rawCommand -> CommandUtils.executeCommandWithPlaceholders(rawCommand, player, this.getModuleType(), null));
         }
     }
 
@@ -59,10 +52,13 @@ public interface ClientControlModule extends ViolationModule
      */
     static String getBrand(final String channel, final byte[] message)
     {
-        if (isBranded(channel)) {
-            try {
+        if (isBranded(channel))
+        {
+            try
+            {
                 return new String(message, "UTF-8");
-            } catch (final UnsupportedEncodingException e) {
+            } catch (final UnsupportedEncodingException e)
+            {
                 System.out.println("Unable to encode message.");
                 e.printStackTrace();
             }
@@ -77,16 +73,19 @@ public interface ClientControlModule extends ViolationModule
 
     static boolean stringContainsFlag(String input, final String[] flags)
     {
-        if (input == null || flags == null) {
+        if (input == null || flags == null)
+        {
             return false;
         }
 
         input = input.toLowerCase();
 
-        for (final String flag : flags) {
+        for (final String flag : flags)
+        {
             final String lowerflag = flag.toLowerCase();
 
-            if (input.contains(lowerflag)) {
+            if (input.contains(lowerflag))
+            {
                 return true;
             }
         }

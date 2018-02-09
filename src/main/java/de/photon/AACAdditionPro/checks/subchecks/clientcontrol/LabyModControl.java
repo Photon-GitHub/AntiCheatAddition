@@ -26,13 +26,11 @@ public class LabyModControl implements ClientControlModule
     @Override
     public void subEnable()
     {
-        final Map<String, Boolean> stringMap = new HashMap<>();
         for (String key : ConfigUtils.loadKeys(this.getModuleType().getConfigString() + ".disable"))
         {
-            stringMap.put(key, AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable." + key));
+            featureMap.put(Permission.valueOf(key.toUpperCase()),
+                           AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable." + key));
         }
-
-        stringMap.forEach((nameOfPermission, value) -> featureMap.put(Permission.valueOf(nameOfPermission.toUpperCase()), value));
     }
 
     @EventHandler

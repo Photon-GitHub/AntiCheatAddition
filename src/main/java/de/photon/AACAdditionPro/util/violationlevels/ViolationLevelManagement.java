@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.storage.management;
+package de.photon.AACAdditionPro.util.violationlevels;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
@@ -207,7 +207,7 @@ public class ViolationLevelManagement implements Listener
                     for (final String command : commandList)
                     {
                         // Calling of the event + Sync command execution
-                        CommandUtils.executeCommandWithPlaceholders(command, player, this.moduleType, toVl);
+                        CommandUtils.executeCommandWithPlaceholders(command, player, this.moduleType, (double) toVl);
                     }
                 }
             });

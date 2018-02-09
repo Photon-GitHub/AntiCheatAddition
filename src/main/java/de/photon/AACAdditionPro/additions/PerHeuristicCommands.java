@@ -3,9 +3,9 @@ package de.photon.AACAdditionPro.additions;
 import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.events.HeuristicsAdditionViolationEvent;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.files.ConfigUtils;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import me.konsolas.aac.api.HackType;
 import me.konsolas.aac.api.PlayerViolationEvent;
 import org.bukkit.Bukkit;
@@ -91,7 +91,7 @@ public class PerHeuristicCommands implements Module, Listener
                             {
                                 // Command cannot be null as of the new loading process.
                                 // Sync command execution
-                                CommandUtils.executeCommandWithPlaceholders(command, player);
+                                CommandUtils.executeCommandWithPlaceholders(command, player, this.getModuleType(), confidence);
                             }
                         }
                     });

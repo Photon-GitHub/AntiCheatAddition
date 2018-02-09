@@ -3,9 +3,9 @@ package de.photon.AACAdditionPro.userdata.data;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.util.storage.datawrappers.BlockPlace;
-import de.photon.AACAdditionPro.util.storage.datawrappers.TowerBlockPlace;
-import de.photon.AACAdditionPro.util.storage.management.ConditionalBuffer;
+import de.photon.AACAdditionPro.util.datastructures.ConditionalBuffer;
+import de.photon.AACAdditionPro.util.datawrappers.BlockPlace;
+import de.photon.AACAdditionPro.util.datawrappers.TowerBlockPlace;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 

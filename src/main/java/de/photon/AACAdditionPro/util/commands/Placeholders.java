@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.util.commands;
 
+import de.photon.AACAdditionPro.util.general.StringUtils;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.entity.Player;
 
@@ -87,7 +88,6 @@ public final class Placeholders
      */
     private static String applySinglePlaceholder(String original, String placeholder, String replacement, byte maximumChars)
     {
-        // No need to reduce replacement.lengh() by 1 as substring's last letter handling is exclusive.
-        return original.replace(placeholder, replacement.substring(0, Math.min(replacement.length(), maximumChars)));
+        return original.replace(placeholder, StringUtils.limitStringLength(replacement, maximumChars));
     }
 }

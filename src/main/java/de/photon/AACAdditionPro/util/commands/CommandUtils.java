@@ -3,7 +3,7 @@ package de.photon.AACAdditionPro.util.commands;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationCommandEvent;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -16,7 +16,7 @@ public final class CommandUtils
      * @param player  the player that should be used for the {@link Placeholders}
      * @param command the command with placeholders that should be executed
      */
-    public static void executeCommandWithPlaceholders(final String command, final Player player, final ModuleType moduleType, final Integer newVl)
+    public static void executeCommandWithPlaceholders(final String command, final Player player, final ModuleType moduleType, final Double newVl)
     {
         final PlayerAdditionViolationCommandEvent commandEvent = new PlayerAdditionViolationCommandEvent(
                 player,

@@ -3,7 +3,7 @@ package de.photon.AACAdditionPro.userdata.data;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.util.storage.management.DoubleBuffer;
+import de.photon.AACAdditionPro.util.datastructures.DoubleBuffer;
 
 public class FishingData extends TimeData
 {

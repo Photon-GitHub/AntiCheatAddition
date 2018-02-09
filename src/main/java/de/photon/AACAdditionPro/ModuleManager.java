@@ -2,9 +2,9 @@ package de.photon.AACAdditionPro;
 
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
-import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 
 import java.util.ArrayList;
 

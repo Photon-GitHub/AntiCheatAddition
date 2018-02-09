@@ -35,10 +35,10 @@ import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.WorldDownloaderCo
 import de.photon.AACAdditionPro.command.MainCommand;
 import de.photon.AACAdditionPro.events.APILoadedEvent;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;

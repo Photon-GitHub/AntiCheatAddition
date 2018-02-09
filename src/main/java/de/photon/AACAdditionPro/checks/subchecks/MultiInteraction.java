@@ -6,7 +6,7 @@ import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
-import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;

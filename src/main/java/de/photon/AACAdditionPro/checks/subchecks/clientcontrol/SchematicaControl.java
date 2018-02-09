@@ -45,7 +45,8 @@ public class SchematicaControl implements Listener, ClientControlModule, PluginM
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
@@ -53,12 +54,15 @@ public class SchematicaControl implements Listener, ClientControlModule, PluginM
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
 
-        try {
+        try
+        {
             dataOutputStream.writeByte(0);
-            for (final boolean b : features) {
+            for (final boolean b : features)
+            {
                 dataOutputStream.writeBoolean(b);
             }
-        } catch (final IOException e) {
+        } catch (final IOException e)
+        {
             e.printStackTrace();
         }
 
@@ -66,7 +70,8 @@ public class SchematicaControl implements Listener, ClientControlModule, PluginM
         final byte[] pluginMessage = byteArrayOutputStream.toByteArray();
 
         // TODO: Is this working? Maybe have a deeper look into Schematica.
-        if (pluginMessage != null) {
+        if (pluginMessage != null)
+        {
             user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), SCHEMATICA_CHANNEL, pluginMessage);
         }
     }

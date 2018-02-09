@@ -42,15 +42,18 @@ public class VapeControl implements Listener, PluginMessageListener, ClientContr
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
         String clientData;
 
-        try {
+        try
+        {
             clientData = new String(message);
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             clientData = "";
         }
 

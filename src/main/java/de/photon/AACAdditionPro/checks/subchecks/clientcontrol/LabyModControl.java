@@ -55,7 +55,8 @@ public class LabyModControl implements Listener, ClientControlModule
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
@@ -63,10 +64,12 @@ public class LabyModControl implements Listener, ClientControlModule
         packetWrapper.setChannel("LABYMOD");
 
         final ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-        try {
+        try
+        {
             final ObjectOutputStream out = new ObjectOutputStream(byteOut);
             out.writeObject(featureMap);
-        } catch (final IOException e) {
+        } catch (final IOException e)
+        {
             e.printStackTrace();
         }
 
@@ -90,7 +93,8 @@ public class LabyModControl implements Listener, ClientControlModule
     public void subEnable()
     {
         // Get all functions that can be disabled and put them in the HashMap
-        for (final LabyModFeature feature : LabyModFeature.values()) {
+        for (final LabyModFeature feature : LabyModFeature.values())
+        {
             // Inversion here as true in the config means disable.
             featureMap.put(feature.getPacketName(), !AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable." + feature.name().toLowerCase()));
         }

@@ -18,9 +18,6 @@ public class LiteloaderControl implements PluginMessageListener, ClientControlMo
             "Lite"
     };
 
-    // Plugin -> Client Channel for disabling mods: PERMISSIONSREPL
-    // Client -> Plugin Channel: PERMISSIONSREPL
-
     @Override
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
     {

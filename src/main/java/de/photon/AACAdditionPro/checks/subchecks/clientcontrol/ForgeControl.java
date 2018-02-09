@@ -46,7 +46,7 @@ public class ForgeControl implements PluginMessageListener, ClientControlModule
         return new String[]{
                 "FML",
                 "FMLHS",
-                MCBRANDCHANNEL
+                MC_BRAND_CHANNEL
         };
     }
 }

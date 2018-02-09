@@ -4,6 +4,7 @@ import de.photon.AACAdditionPro.events.ClientControlEvent;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
+import de.photon.AACAdditionPro.util.general.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -12,7 +13,7 @@ import java.util.Collection;
 
 public interface ClientControlModule extends ViolationModule
 {
-    String MCBRANDCHANNEL = "MC|Brand";
+    String MC_BRAND_CHANNEL = "MC|Brand";
 
     Collection<String> getCommandsOnDetection();
 
@@ -39,9 +40,14 @@ public interface ClientControlModule extends ViolationModule
         }
     }
 
-    static boolean isBranded(final String channel)
+    /**
+     * Determines whether a channel is the MC_BRAND_CHANNEL.
+     *
+     * @param channel the channel which should be tested.
+     */
+    static boolean isBrandChannel(final String channel)
     {
-        return channel.equals(MCBRANDCHANNEL);
+        return channel.equals(MC_BRAND_CHANNEL);
     }
 
     /**
@@ -54,7 +60,7 @@ public interface ClientControlModule extends ViolationModule
      */
     static String getBrand(final String channel, final byte[] message)
     {
-        if (isBranded(channel))
+        if (isBrandChannel(channel))
         {
             try
             {
@@ -91,7 +97,11 @@ public interface ClientControlModule extends ViolationModule
 
     static boolean brandContains(final String channel, final byte[] message, final String[] flags)
     {
-        return stringContainsFlag(getBrand(channel, message), flags);
+        final String brandMessage = getBrand(channel, message);
+
+        // Preconditions for StringUtils
+        return (brandMessage != null && flags != null) &&
+               StringUtils.stringContainsFlagsIgnoreCase(brandMessage, flags);
     }
 
     static boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String[] flags)
@@ -107,7 +117,7 @@ public interface ClientControlModule extends ViolationModule
         boolean flag = true;
 
         // MC-Brand for vanilla world-downloader
-        if (isBranded(channel))
+        if (isBrandChannel(channel))
         {
             flag = ClientControlModule.brandContains(channel, message, flags);
         }

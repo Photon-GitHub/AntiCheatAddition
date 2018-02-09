@@ -45,7 +45,7 @@ public class WorldDownloaderControl implements PluginMessageListener, ClientCont
                 "WDL|INIT",
                 "WDL|CONTROL",
                 "WDL|REQUEST",
-                MCBRANDCHANNEL
+                MC_BRAND_CHANNEL
         };
     }
 }

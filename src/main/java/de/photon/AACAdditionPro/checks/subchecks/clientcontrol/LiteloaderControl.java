@@ -41,6 +41,6 @@ public class LiteloaderControl implements PluginMessageListener, ClientControlMo
     @Override
     public String[] getPluginMessageChannels()
     {
-        return new String[]{MCBRANDCHANNEL};
+        return new String[]{MC_BRAND_CHANNEL};
     }
 }

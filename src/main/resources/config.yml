@@ -575,8 +575,53 @@ ClientControl:
       commands_on_detection:
          - "aacstaffnotify {player} in {world} uses Forge"
 
+   # This covers the latest version of LabyMod.
+   #
+   # THIS REQUIRES INSTALLING THE OFFICIAL LABYMOD API, OTHERWISE IT WILL NOT WORK:
+   # https://www.spigotmc.org/resources/labymod-server-api.52423/
+   #
    # A very popular PvP modification similar to 5zig but with more features and TS3 support
    LabyMod:
+      enabled: true
+      disable:
+         # Fixes a rendering bug in minecraft with fast lava placement (ghost blocks)
+         # This can be seen as semi-cheat-like as normal players will see the ghost block, but it is essentially a bug fix.
+         improved_lava: false
+         # Fixes a rendering bug in minecraft with fast head movement which makes the crosshair fall slightly behind
+         # This can be seen as cheat-like as it grants a minor aiming advantage in fights.
+         crosshair_sync: true
+         # This fixes some pot and soup refill bugs and
+         # This is regarded as cheat-like behaviour as it grants major reliability and timing boni.
+         refill_fix: true
+         # General GUI adjustments inside the mod, such as position, direction and current system time
+         # Not recommended to disable as it is a purely cosmetic feature
+         gui_all: false
+         # This renders the potion effect of the player on the display in form of a HUD
+         gui_potion_effects: false
+         # This displays the current armour of a player (including durability) in a HUD
+         gui_armor_hud: false
+         # This allows the client to additionally render the current weapon as well as the number of arrows in ones inventory.
+         gui_item_hud: false
+         # Brings back old building animations
+         # Not recommended to disable as it is a purely cosmetic feature
+         blockbuild: false
+         # Various cosmetic features
+         tags: false
+         # Adds additional features such as different channels or filters to the chat (only clientsided)
+         # This is semi-cheat-like behaviour as chat also contains an AutoText module (write predefined messages instantly)
+         # as well as special characters (chat-filter bypass).
+         chat: false
+         # Purely cosmetic feature to switch back to the old animations of MC 1.7
+         # Not recommended to disable as it is a purely cosmetic feature
+         animations: false
+         # This renders the saturation of a player additional to the current food.
+         # Even though this is sometimes considered as an unfair advantage it is often just handy information
+         # which is not really affecting the gameplay.
+         saturation_bar: false
+
+   # This covers outdated versions of LabyMod prior to version 3.0
+   # A very popular PvP modification similar to 5zig but with more features and TS3 support
+   OldLabyMod:
       # Do you want to enable the LabyMod-Control
       enabled: false
       # This mod provides a method to disable parts of it.
@@ -591,7 +636,8 @@ ClientControl:
          # Provides custom nicknames for a person.
          # Purely cosmetic
          nick: false
-         # blockbuild
+         # Brings back old building animations
+         # Not recommended to disable as it is a purely cosmetic feature
          blockbuild: false
          # This is an internal chat that connects LabyMod users.
          # Purely cosmetic
@@ -599,7 +645,7 @@ ClientControl:
          # Cosmetics inside the mod
          extras: false
          # Purely cosmetic feature to switch back to the old animations of MC 1.7
-         # Not recommended to disable as no advantage is given
+         # Not recommended to disable as it is a purely cosmetic feature
          old_animations: false
          # This renders the potion effect of the player on the display in form of a HUD
          potion_effect_hud: false

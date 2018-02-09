@@ -27,8 +27,8 @@ import de.photon.AACAdditionPro.checks.subchecks.Tower;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.BetterSprintingControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.FiveZigControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.ForgeControl;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LabyModControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LiteloaderControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.OldLabyModControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.SchematicaControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VapeControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.WorldDownloaderControl;
@@ -203,7 +203,7 @@ public class AACAdditionPro extends JavaPlugin
                     new BetterSprintingControl(),
                     new FiveZigControl(),
                     new ForgeControl(),
-                    new LabyModControl(),
+                    new OldLabyModControl(),
                     new LiteloaderControl(),
                     new SchematicaControl(),
                     new VapeControl(),

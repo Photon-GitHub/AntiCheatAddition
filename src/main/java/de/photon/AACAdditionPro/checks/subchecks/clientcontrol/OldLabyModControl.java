@@ -17,10 +17,10 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.List;
 
-public class LabyModControl implements Listener, ClientControlModule
+public class OldLabyModControl implements Listener, ClientControlModule
 {
     @Getter
-    private enum LabyModFeature
+    private enum OldLabyModFeature
     {
         // FOOD, GUI, NICK, BLOCKBUILD, CHAT, EXTRAS, ANIMATIONS, POTIONS, ARMOR, DAMAGEINDICATOR, MINIMAP_RADAR
         PLAYER_SATURATION("FOOD"),
@@ -37,12 +37,12 @@ public class LabyModControl implements Listener, ClientControlModule
 
         private final String packetName;
 
-        LabyModFeature()
+        OldLabyModFeature()
         {
             this.packetName = this.name();
         }
 
-        LabyModFeature(final String name)
+        OldLabyModFeature(final String name)
         {
             this.packetName = name;
         }
@@ -86,14 +86,14 @@ public class LabyModControl implements Listener, ClientControlModule
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.LABYMOD_CONTROL;
+        return ModuleType.OLD_LABYMOD_CONTROL;
     }
 
     @Override
     public void subEnable()
     {
         // Get all functions that can be disabled and put them in the HashMap
-        for (final LabyModFeature feature : LabyModFeature.values())
+        for (final OldLabyModFeature feature : OldLabyModFeature.values())
         {
             // Inversion here as true in the config means disable.
             featureMap.put(feature.getPacketName(), !AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable." + feature.name().toLowerCase()));

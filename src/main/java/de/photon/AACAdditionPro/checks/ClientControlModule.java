@@ -74,27 +74,6 @@ public interface ClientControlModule extends ViolationModule
         return null;
     }
 
-    static boolean stringContainsFlag(final String input, final String[] flags)
-    {
-        if (input == null || flags == null)
-        {
-            return false;
-        }
-
-        final String lowerCaseInput = input.toLowerCase();
-
-        for (final String flag : flags)
-        {
-            final String lowerflag = flag.toLowerCase();
-
-            if (lowerCaseInput.contains(lowerflag))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     static boolean brandContains(final String channel, final byte[] message, final String[] flags)
     {
         final String brandMessage = getBrand(channel, message);

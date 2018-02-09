@@ -1,6 +1,8 @@
 package de.photon.AACAdditionPro.checks;
 
 import de.photon.AACAdditionPro.events.ClientControlEvent;
+import de.photon.AACAdditionPro.userdata.User;
+import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -64,6 +66,28 @@ public interface ClientControlModule extends ViolationModule
             }
         }
         return null;
+    }
+
+    static boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String[] flags)
+    {
+        final User user = UserManager.getUser(player.getUniqueId());
+
+        if (User.isUserInvalid(user))
+        {
+            return false;
+        }
+
+        // Bypassed players are already filtered out.
+        boolean flag = true;
+
+        // MC-Brand for vanilla world-downloader
+        if (ClientControlModule.isBranded(channel))
+        {
+            flag = ClientControlModule.brandContains(channel, message, flags);
+        }
+
+        // Should flag
+        return flag;
     }
 
     static boolean brandContains(final String channel, final byte[] message, final String[] flags)

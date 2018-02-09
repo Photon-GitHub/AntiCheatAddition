@@ -2,8 +2,6 @@ package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -24,23 +22,9 @@ public class ForgeControl implements PluginMessageListener, ClientControlModule
     @Override
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
     {
-        final User user = UserManager.getUser(player.getUniqueId());
-
-        if (User.isUserInvalid(user)) {
-            return;
-        }
-
-        // Bypassed players are already filtered out.
-        boolean flag = true;
-
-        // MC-Brand for vanilla world-downloader
-        if (ClientControlModule.isBranded(channel)) {
-            flag = ClientControlModule.brandContains(channel, message, FORGEFLAGS);
-        }
-
-        // Should flag
-        if (flag) {
-            executeCommands(user.getPlayer());
+        if (ClientControlModule.shouldFlagBrandCheck(channel, player, message, FORGEFLAGS))
+        {
+            executeCommands(player);
         }
     }
 

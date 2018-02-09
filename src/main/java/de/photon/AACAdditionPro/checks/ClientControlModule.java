@@ -68,33 +68,6 @@ public interface ClientControlModule extends ViolationModule
         return null;
     }
 
-    static boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String[] flags)
-    {
-        final User user = UserManager.getUser(player.getUniqueId());
-
-        if (User.isUserInvalid(user))
-        {
-            return false;
-        }
-
-        // Bypassed players are already filtered out.
-        boolean flag = true;
-
-        // MC-Brand for vanilla world-downloader
-        if (ClientControlModule.isBranded(channel))
-        {
-            flag = ClientControlModule.brandContains(channel, message, flags);
-        }
-
-        // Should flag
-        return flag;
-    }
-
-    static boolean brandContains(final String channel, final byte[] message, final String[] flags)
-    {
-        return stringContainsFlag(getBrand(channel, message), flags);
-    }
-
     static boolean stringContainsFlag(final String input, final String[] flags)
     {
         if (input == null || flags == null)
@@ -114,6 +87,33 @@ public interface ClientControlModule extends ViolationModule
             }
         }
         return false;
+    }
+
+    static boolean brandContains(final String channel, final byte[] message, final String[] flags)
+    {
+        return stringContainsFlag(getBrand(channel, message), flags);
+    }
+
+    static boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String[] flags)
+    {
+        final User user = UserManager.getUser(player.getUniqueId());
+
+        if (User.isUserInvalid(user))
+        {
+            return false;
+        }
+
+        // Bypassed players are already filtered out.
+        boolean flag = true;
+
+        // MC-Brand for vanilla world-downloader
+        if (isBranded(channel))
+        {
+            flag = ClientControlModule.brandContains(channel, message, flags);
+        }
+
+        // Should flag
+        return flag;
     }
 
     @Override

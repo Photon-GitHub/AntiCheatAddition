@@ -9,6 +9,7 @@ import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
+import java.util.BitSet;
 import java.util.List;
 
 public class FiveZigControl implements PluginMessageListener, ClientControlModule
@@ -36,35 +37,28 @@ public class FiveZigControl implements PluginMessageListener, ClientControlModul
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
-        try {
-            // ------------------------------------------------ 5zig confirmed -------------------------------------------- //
+        // ------------------------------------------------ 5zig confirmed -------------------------------------------- //
 
-            // Bypassed players are already filtered out.
-            // The mod provides a method to disable parts of it
-            byte disableByte = (byte) 0;
+        // Bypassed players are already filtered out.
+        // The mod provides a method to disable parts of it
+        final BitSet disableBitSet = new BitSet();
 
-            // Set the according bits
-            for (byte b = 0; b < features.length; b++) {
-                if (features[b]) {
-                    // --------------------------------------------------- //
-                    // BE SURE THAT THIS CANNOT CAUSE THE BYTE TO OVERFLOW
-                    // --------------------------------------------------- //
-
-                    disableByte |= (0x01 << b);
-                }
-            }
-
-            user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), FIVEZIGCHANNEL, new byte[]{disableByte});
-            executeCommands(user.getPlayer());
-
-            // ------------------------------------------------ 5zig end -------------------------------------------- //
-        } catch (final Exception e) {
-            e.printStackTrace();
+        // Set the according bits
+        for (byte b = 0; b < features.length; b++)
+        {
+            disableBitSet.set(b, features[b]);
         }
+
+        user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), FIVEZIGCHANNEL, disableBitSet.toByteArray());
+        executeCommands(user.getPlayer());
+
+        // ------------------------------------------------ 5zig end -------------------------------------------- //
+
     }
 
     @Override

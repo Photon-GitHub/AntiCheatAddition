@@ -89,18 +89,6 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
     }
 
     @Override
-    public ViolationLevelManagement getViolationLevelManagement()
-    {
-        return vlManager;
-    }
-
-    @Override
-    public ModuleType getModuleType()
-    {
-        return ModuleType.PINGSPOOF;
-    }
-
-    @Override
     public void subEnable()
     {
         // Task
@@ -153,5 +141,17 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
     public void subDisable()
     {
         Bukkit.getScheduler().cancelTask(task_number);
+    }
+
+    @Override
+    public ViolationLevelManagement getViolationLevelManagement()
+    {
+        return vlManager;
+    }
+
+    @Override
+    public ModuleType getModuleType()
+    {
+        return ModuleType.PINGSPOOF;
     }
 }

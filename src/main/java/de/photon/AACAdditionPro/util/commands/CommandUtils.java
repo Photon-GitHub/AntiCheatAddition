@@ -18,13 +18,17 @@ public final class CommandUtils
      */
     public static void executeCommandWithPlaceholders(final String command, final Player player, final ModuleType moduleType, final Integer newVl)
     {
-        final String resultCommand = Placeholders.applyPlaceholders(command,
-                                                                    player,
-                                                                    // Violation information for {vl} placeholder
-                                                                    (newVl == null) ? null : String.valueOf(newVl));
-        final PlayerAdditionViolationCommandEvent commandEvent = new PlayerAdditionViolationCommandEvent(player, resultCommand, moduleType);
-        Bukkit.getPluginManager().callEvent(commandEvent);
+        final PlayerAdditionViolationCommandEvent commandEvent = new PlayerAdditionViolationCommandEvent(
+                player,
+                Placeholders.applyPlaceholders(command,
+                                               player,
+                                               // Violation information for {vl} placeholder
+                                               (newVl == null) ?
+                                               null :
+                                               String.valueOf(newVl)),
+                moduleType);
 
+        Bukkit.getPluginManager().callEvent(commandEvent);
         if (!commandEvent.isCancelled())
         {
             executeCommand(commandEvent.getCommand());
@@ -45,7 +49,7 @@ public final class CommandUtils
                     //Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
                     try
                     {
-                        AACAdditionPro.getInstance().getServer().dispatchCommand(AACAdditionPro.getInstance().getServer().getConsoleSender(), command);
+                        Bukkit.dispatchCommand(AACAdditionPro.getInstance().getServer().getConsoleSender(), command);
                         VerboseSender.sendVerboseMessage(ChatColor.GOLD + "Executed command: " + command);
                     } catch (final Exception e)
                     {

@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.heuristics;
 
-import de.photon.AACAdditionPro.util.files.CompressedDataSerializer;
+import de.photon.AACAdditionPro.util.files.serialization.CompressedDataSerializer;
 import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataInputStream;
 
 import java.io.File;

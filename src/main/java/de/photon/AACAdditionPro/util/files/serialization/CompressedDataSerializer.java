@@ -1,8 +1,6 @@
-package de.photon.AACAdditionPro.util.files;
+package de.photon.AACAdditionPro.util.files.serialization;
 
 import de.photon.AACAdditionPro.heuristics.PatternDeserializer;
-import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataInputStream;
-import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataOutputStream;
 
 import java.io.File;
 import java.io.FileInputStream;

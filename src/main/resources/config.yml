@@ -643,6 +643,7 @@ ClientControl:
 
    # Vape is a very popular ghost-client, often seen in ranked pvp gameplay and optimized to be especially hard to find
    # in screenshares
+   # This will only detect some cracked versions of the client.
    Vape:
       # Do you want to enable the Vape-Control
       enabled: false

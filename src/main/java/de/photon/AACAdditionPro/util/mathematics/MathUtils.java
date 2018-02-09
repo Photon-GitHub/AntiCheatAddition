@@ -31,7 +31,7 @@ public final class MathUtils
      *
      * @return the sum of the offsets in the array.
      */
-    public static double offsetSum(final double[] inputs, final double offsetBase, DoublePredicate predicate)
+    public static double offsetSum(final double[] inputs, final double offsetBase, final DoublePredicate predicate)
     {
         double offsetSum = 0;
         for (double input : inputs)

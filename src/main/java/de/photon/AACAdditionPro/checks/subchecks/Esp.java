@@ -208,7 +208,7 @@ public class Esp implements ViolationModule
                                                 continue;
                                             }
 
-                                            final double intersect = VectorUtils.getFirstVectorIntersectionWithBlock(start, between);
+                                            final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
 
                                             // No intersection found
                                             if (intersect == 0)
@@ -291,8 +291,8 @@ public class Esp implements ViolationModule
 
         // Do the Cameras intersect with Blocks
         // Get the length of the first intersection or 0 if there is none
-        final double frontIntersection = VectorUtils.getFirstVectorIntersectionWithBlock(eyeLocation, vectors[1]);
-        final double behindIntersection = VectorUtils.getFirstVectorIntersectionWithBlock(eyeLocation, vectors[2]);
+        final double frontIntersection = VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[1]);
+        final double behindIntersection = VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[2]);
 
         // There is an intersection in the front-vector
         if (frontIntersection != 0)

@@ -576,11 +576,12 @@ ClientControl:
          - "aacstaffnotify {player} in {world} uses Forge"
 
    # This covers the latest version of LabyMod.
+   # A very popular PvP modification similar to 5zig but with more features and TS3 support
    #
    # THIS REQUIRES INSTALLING THE OFFICIAL LABYMOD API, OTHERWISE IT WILL NOT WORK:
    # https://www.spigotmc.org/resources/labymod-server-api.52423/
    #
-   # A very popular PvP modification similar to 5zig but with more features and TS3 support
+   # If enabled this ClientControl will override the config options of the LabyModAPI plugin.
    LabyMod:
       enabled: true
       disable:

@@ -79,6 +79,13 @@
             <systemPath>${project.basedir}/lib/AAC.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>net.labymod</groupId>
+            <artifactId>serverapi</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/labymod-server-api.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.14</version>

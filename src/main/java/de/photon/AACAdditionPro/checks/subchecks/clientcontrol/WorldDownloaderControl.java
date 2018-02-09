@@ -32,7 +32,10 @@ public class WorldDownloaderControl implements PluginMessageListener, ClientCont
     @Override
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
     {
-        if (ClientControlModule.shouldFlagBrandCheck(channel, player, message, WDLFLAGS))
+        // MCBrand channel with flag
+        if (ClientControlModule.shouldFlagBrandCheck(channel, player, message, WDLFLAGS) ||
+            // or other channel
+            !ClientControlModule.isBrandChannel(channel))
         {
             executeCommands(player);
         }

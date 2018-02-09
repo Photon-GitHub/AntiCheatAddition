@@ -51,7 +51,7 @@ public class LabyModControl implements Listener, ClientControlModule
     private final HashMap<String, Boolean> featureMap = new HashMap<>();
 
     @EventHandler
-    public void on(final PlayerJoinEvent event)
+    public void onJoin(final PlayerJoinEvent event)
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 

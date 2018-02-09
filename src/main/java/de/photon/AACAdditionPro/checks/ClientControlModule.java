@@ -95,20 +95,20 @@ public interface ClientControlModule extends ViolationModule
         return stringContainsFlag(getBrand(channel, message), flags);
     }
 
-    static boolean stringContainsFlag(String input, final String[] flags)
+    static boolean stringContainsFlag(final String input, final String[] flags)
     {
         if (input == null || flags == null)
         {
             return false;
         }
 
-        input = input.toLowerCase();
+        final String lowerCaseInput = input.toLowerCase();
 
         for (final String flag : flags)
         {
             final String lowerflag = flag.toLowerCase();
 
-            if (input.contains(lowerflag))
+            if (lowerCaseInput.contains(lowerflag))
             {
                 return true;
             }

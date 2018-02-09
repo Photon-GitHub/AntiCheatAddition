@@ -14,8 +14,7 @@ public class LiteloaderControl implements PluginMessageListener, ClientControlMo
     private List<String> commandsOnDetection;
 
     private static final String[] LITELOADERFLAGS = {
-            "LiteLoader",
-            "Lite"
+            "LiteLoader"
     };
 
     @Override

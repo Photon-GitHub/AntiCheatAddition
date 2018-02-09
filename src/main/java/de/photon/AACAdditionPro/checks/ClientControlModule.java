@@ -61,7 +61,7 @@ public interface ClientControlModule extends ViolationModule
                 return new String(message, "UTF-8");
             } catch (final UnsupportedEncodingException e)
             {
-                System.out.println("Unable to encode message.");
+                System.out.println("Unable to encode channel message.");
                 e.printStackTrace();
             }
         }

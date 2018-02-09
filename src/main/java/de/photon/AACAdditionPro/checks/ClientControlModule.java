@@ -58,7 +58,7 @@ public interface ClientControlModule extends ViolationModule
      *
      * @return the decoded message or null if either the channel was not MC|Brand or there was a problem while decoding the message.
      */
-    static String getBrand(final String channel, final byte[] message)
+    static String getMCBrandMessage(final String channel, final byte[] message)
     {
         if (isBrandChannel(channel))
         {
@@ -74,9 +74,12 @@ public interface ClientControlModule extends ViolationModule
         return null;
     }
 
-    static boolean brandContains(final String channel, final byte[] message, final String[] flags)
+    /**
+     * Tests if the MC|Brand message contains certain {@link String}s.
+     */
+    static boolean mcBrandMessageContains(final String channel, final byte[] message, final String[] flags)
     {
-        final String brandMessage = getBrand(channel, message);
+        final String brandMessage = getMCBrandMessage(channel, message);
 
         // Preconditions for StringUtils
         return (brandMessage != null && flags != null) &&
@@ -95,10 +98,9 @@ public interface ClientControlModule extends ViolationModule
         // Bypassed players are already filtered out.
         boolean flag = true;
 
-        // MC-Brand for vanilla world-downloader
         if (isBrandChannel(channel))
         {
-            flag = ClientControlModule.brandContains(channel, message, flags);
+            flag = ClientControlModule.mcBrandMessageContains(channel, message, flags);
         }
 
         // Should flag

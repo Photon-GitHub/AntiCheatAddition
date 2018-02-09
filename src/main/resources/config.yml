@@ -105,10 +105,10 @@ EqualRotation:
    enabled: true
    # Violation before AACAdditionPro starts to cancel the rotations.
    # Set this to 0 to never cancel rotations.
-   cancel_vl: 15
+   cancel_vl: 10
    # After a detection which surpasses cancel_vl AACAdditionPro cancels all (head-)movement to effectively
    # prevent the cheat for this amount of milliseconds
-   timeout: 1000
+   timeout: 3000
    # Map of violation levels to command
    thresholds:
       9: "aacstaffnotify {player} in {world} is suspected for EqualRotation"

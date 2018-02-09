@@ -331,8 +331,8 @@ public class Esp implements ViolationModule
                     observer.getEspInformationData().hiddenPlayers.put(object, HideMode.INFORMATION_ONLY);
 
                     // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
-                    fullHider.unModifyInformation(observer.getPlayer(), object);
                     informationOnlyHider.modifyInformation(observer.getPlayer(), object);
+                    fullHider.unModifyInformation(observer.getPlayer(), object);
                     break;
                 case NONE:
                     observer.getEspInformationData().hiddenPlayers.remove(object);

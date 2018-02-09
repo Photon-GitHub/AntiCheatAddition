@@ -584,7 +584,7 @@ ClientControl:
    # If enabled this ClientControl will override the config options of the LabyModAPI plugin.
    LabyMod:
       # Do you want to enable the LabyMod-Control
-      enabled: true
+      enabled: false
       # This mod provides a method to disable parts of it.
       # Set the corresponding value to true if you want to block a part of the mod
       disable:

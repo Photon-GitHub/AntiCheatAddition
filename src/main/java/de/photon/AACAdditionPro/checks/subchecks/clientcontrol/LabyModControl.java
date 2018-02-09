@@ -75,6 +75,6 @@ public class LabyModControl implements ClientControlModule
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.LITELOADER_CONTROL;
+        return ModuleType.LABYMOD_CONTROL;
     }
 }

@@ -11,12 +11,13 @@ import net.labymod.serverapi.Permission;
 import net.labymod.serverapi.bukkit.event.LabyModPlayerJoinEvent;
 import net.labymod.serverapi.bukkit.event.PermissionsSendEvent;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LabyModControl implements ClientControlModule
+public class LabyModControl implements Listener, ClientControlModule
 {
     @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
     private List<String> commandsOnDetection;

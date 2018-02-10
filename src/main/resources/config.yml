@@ -625,6 +625,15 @@ ClientControl:
       commands_on_detection:
          - "aacstaffnotify {player} in {world} uses LabyMod"
 
+   # LiteLoader is alternative mod-loader to forge.
+   # Many ghost clients exist for LiteLoader, therefore I recommend to block it.
+   LiteLoader:
+      # Do you want to enable the LiteLoader-Control
+      # This cannot be blocked; I recommend to kick if desired
+      enabled: false
+      commands_on_detection:
+         - "aackick {player} LiteLoader"
+
    # This covers outdated versions of LabyMod prior to version 3.0
    # A very popular PvP modification similar to 5zig but with more features and TS3 support
    OldLabyMod:
@@ -665,15 +674,6 @@ ClientControl:
          # thus being considered as a huge advantage and recommended to disable.
          minimap_radar: true
        # The mod cannot be detected, just disabled
-
-   # LiteLoader is alternative mod-loader to forge.
-   # Many ghost clients exist for LiteLoader, therefore I recommend to block it.
-   LiteLoader:
-      # Do you want to enable the LiteLoader-Control
-      # This cannot be blocked; I recommend to kick if desired
-      enabled: false
-      commands_on_detection:
-         - "aackick {player} LiteLoader"
 
    # A mod that lets you display (clientside) holograms to improve building, but also has
    # a module to download worlds.

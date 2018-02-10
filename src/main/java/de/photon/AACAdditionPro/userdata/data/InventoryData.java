@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.userdata.data;
 
 import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.util.storage.datawrappers.InventoryClick;
-import de.photon.AACAdditionPro.util.storage.management.Buffer;
+import de.photon.AACAdditionPro.util.datastructures.Buffer;
+import de.photon.AACAdditionPro.util.datawrappers.InventoryClick;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;

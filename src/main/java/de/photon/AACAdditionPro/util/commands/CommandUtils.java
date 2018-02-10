@@ -1,8 +1,9 @@
 package de.photon.AACAdditionPro.util.commands;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationCommandEvent;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,23 +16,19 @@ public final class CommandUtils
      * @param player  the player that should be used for the {@link Placeholders}
      * @param command the command with placeholders that should be executed
      */
-    public static void executeCommandWithPlaceholders(final String command, final Player player)
+    public static void executeCommandWithPlaceholders(final String command, final Player player, final ModuleType moduleType, final Double newVl)
     {
-        executeCommand(Placeholders.applyPlaceholders(command, player, null));
-    }
+        final PlayerAdditionViolationCommandEvent commandEvent = new PlayerAdditionViolationCommandEvent(
+                player,
+                Placeholders.applyPlaceholders(command,
+                                               player,
+                                               // Violation information for {vl} placeholder
+                                               (newVl == null) ?
+                                               null :
+                                               String.valueOf(newVl)),
+                moduleType);
 
-    /**
-     * Calls the given {@link PlayerAdditionViolationCommandEvent} and looks up the cancelled state.
-     * <p>
-     * If it is not cancelled, it executes the command synchronously and sends an error message via {@link VerboseSender} if something went wrong.
-     * No {@link Placeholders} are allowed to exist in this method, use executeCommandWithPlaceholders() for this.
-     *
-     * @param commandEvent the {@link PlayerAdditionViolationCommandEvent} that should be called and contains the command.
-     */
-    public static void executeCommand(final PlayerAdditionViolationCommandEvent commandEvent)
-    {
         Bukkit.getPluginManager().callEvent(commandEvent);
-
         if (!commandEvent.isCancelled())
         {
             executeCommand(commandEvent.getCommand());
@@ -52,7 +49,7 @@ public final class CommandUtils
                     //Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
                     try
                     {
-                        AACAdditionPro.getInstance().getServer().dispatchCommand(AACAdditionPro.getInstance().getServer().getConsoleSender(), command);
+                        Bukkit.dispatchCommand(AACAdditionPro.getInstance().getServer().getConsoleSender(), command);
                         VerboseSender.sendVerboseMessage(ChatColor.GOLD + "Executed command: " + command);
                     } catch (final Exception e)
                     {

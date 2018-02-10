@@ -1,11 +1,13 @@
 package de.photon.AACAdditionPro.util.commands;
 
+import de.photon.AACAdditionPro.util.general.StringUtils;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class Placeholders
 {
@@ -42,33 +44,14 @@ public final class Placeholders
                 // Team handling
                 if (players.size() > 1)
                 {
+                    final Set<String> teamMemberNames = new HashSet<>();
+                    players.forEach(player -> teamMemberNames.add(player.getName()));
 
-                    // Team
-                    final StringBuilder teamString = new StringBuilder();
-
-                    Iterator<Player> playerIterator = players.iterator();
-                    Player player;
-                    while (true)
-                    {
-                        player = playerIterator.next();
-                        teamString.append(player.getName());
-
-                        if (playerIterator.hasNext())
-                        {
-                            teamString.append(", ");
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-
-                    input = applySinglePlaceholder(input, "{team}", teamString.toString(), Byte.MAX_VALUE);
-                    // Single-Player handling
+                    input = applySinglePlaceholder(input, "{team}", String.join(", ", teamMemberNames), Byte.MAX_VALUE);
                 }
+                // Single-Player handling
                 else
                 {
-
                     // Player
                     input = applySinglePlaceholder(input, "{player}", players.get(0).getName(), (byte) 32);
 
@@ -105,7 +88,6 @@ public final class Placeholders
      */
     private static String applySinglePlaceholder(String original, String placeholder, String replacement, byte maximumChars)
     {
-        // No need to reduce replacement.lengh() by 1 as substring's last letter handling is exclusive.
-        return original.replace(placeholder, replacement.substring(0, Math.min(replacement.length(), maximumChars)));
+        return original.replace(placeholder, StringUtils.limitStringLength(replacement, maximumChars));
     }
 }

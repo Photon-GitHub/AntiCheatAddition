@@ -3,32 +3,11 @@ package de.photon.AACAdditionPro.util.mathematics;
 
 import org.bukkit.Location;
 
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.DoublePredicate;
 
 public final class MathUtils
 {
-    /**
-     * Calculates the distance between two vectors in n-dimensional space.
-     */
-    public static double vectorDistance(double[] firstVector, double[] secondVector)
-    {
-        if (Objects.requireNonNull(firstVector, "First vector is null").length != Objects.requireNonNull(secondVector, "Second vector is null").length)
-        {
-            throw new IllegalArgumentException("Vectors have not the same amount of dimensions.");
-        }
-
-        // float is sufficient here as the data will not be based on very accurate numbers.
-        double sum = 0;
-        for (int i = 0; i < firstVector.length; i++)
-        {
-            sum += Math.pow(secondVector[i] - firstVector[i], 2);
-        }
-
-        return Math.sqrt(sum);
-    }
-
     /**
      * Simple method to know if a number is close to another number
      *
@@ -52,7 +31,7 @@ public final class MathUtils
      *
      * @return the sum of the offsets in the array.
      */
-    public static double offsetSum(final double[] inputs, final double offsetBase, DoublePredicate predicate)
+    public static double offsetSum(final double[] inputs, final double offsetBase, final DoublePredicate predicate)
     {
         double offsetSum = 0;
         for (double input : inputs)

@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.storage.management;
+package de.photon.AACAdditionPro.util.datastructures;
 
 public abstract class ConditionalBuffer<T> extends Buffer<T>
 {

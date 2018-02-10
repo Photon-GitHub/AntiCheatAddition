@@ -11,7 +11,7 @@ import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
-import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
 
 public class Fastswitch extends PacketAdapter implements ViolationModule

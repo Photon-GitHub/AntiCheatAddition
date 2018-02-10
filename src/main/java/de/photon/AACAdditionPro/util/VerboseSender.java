@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.verbose;
+package de.photon.AACAdditionPro.util;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.events.ClientControlEvent;

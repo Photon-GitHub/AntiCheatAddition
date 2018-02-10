@@ -3,7 +3,7 @@ package de.photon.AACAdditionPro.additions;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.ModuleType;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import org.bukkit.Bukkit;
 
 import java.io.File;

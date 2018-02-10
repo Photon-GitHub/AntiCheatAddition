@@ -4,8 +4,8 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -42,15 +42,18 @@ public class VapeControl implements Listener, PluginMessageListener, ClientContr
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
         String clientData;
 
-        try {
+        try
+        {
             clientData = new String(message);
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             clientData = "";
         }
 

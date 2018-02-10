@@ -12,11 +12,11 @@ import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
-import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -37,6 +37,7 @@ import org.bukkit.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class KillauraEntity implements ViolationModule, Listener
@@ -62,21 +63,7 @@ public class KillauraEntity implements ViolationModule, Listener
     @EventHandler
     public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)
     {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        // Not bypassed
-        if (user == null)
-        {
-            return;
-        }
-
-        if (user.isBypassed())
-        {
-            respawnEntity(user.getPlayer());
-            return;
-        }
-
-        final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+        final ClientsidePlayerEntity playerEntity = this.getClientSidePlayerEntity(event.getPlayer().getUniqueId());
 
         if (playerEntity != null &&
             StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken()))
@@ -88,25 +75,11 @@ public class KillauraEntity implements ViolationModule, Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerVelocity(final PlayerVelocityEvent event)
     {
-        // Add velocity to the bot so the bot does never stand inside or in front of the player
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        // Not bypassed
-        if (user == null)
-        {
-            return;
-        }
-
-        if (user.isBypassed())
-        {
-            respawnEntity(user.getPlayer());
-            return;
-        }
-
-        final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+        final ClientsidePlayerEntity playerEntity = this.getClientSidePlayerEntity(event.getPlayer().getUniqueId());
 
         if (playerEntity != null)
         {
+            // Add velocity to the bot so the bot does never stand inside or in front of the player
             playerEntity.setVelocity(event.getVelocity());
         }
     }
@@ -391,23 +364,6 @@ public class KillauraEntity implements ViolationModule, Listener
         }
     }
 
-    /**
-     * Schedules a asynchronous respawn timer which activates a series of entity respawns if the entities existed for too long.
-     */
-    private void respawnScheduler()
-    {
-        // Use the wrapped one to ensure no ConcurrentModificationExceptions can appear.
-        for (final User user : UserManager.getUsers())
-        {
-            if (user.getClientSideEntityData().clientSidePlayerEntity.getTicksExisted() > this.respawnTimer)
-            {
-                this.respawnEntity(user.getPlayer());
-            }
-        }
-
-        respawnTask = Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), this::respawnScheduler, ThreadLocalRandom.current().nextLong(300, 800));
-    }
-
     @Override
     public void subDisable()
     {
@@ -426,6 +382,46 @@ public class KillauraEntity implements ViolationModule, Listener
         }
     }
 
+    /**
+     * Schedules a asynchronous respawn timer which activates a series of entity respawns if the entities existed for too long.
+     */
+    private void respawnScheduler()
+    {
+        // Use the wrapped one to ensure no ConcurrentModificationExceptions can appear.
+        for (final User user : UserManager.getUsers())
+        {
+            final ClientsidePlayerEntity playerEntity = this.getClientSidePlayerEntity(user.getPlayer().getUniqueId());
+
+            if (playerEntity != null && playerEntity.getTicksExisted() > this.respawnTimer)
+            {
+                this.respawnEntity(user.getPlayer());
+            }
+        }
+
+        respawnTask = Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), this::respawnScheduler, ThreadLocalRandom.current().nextLong(300, 800));
+    }
+
+    /**
+     * Gets the {@link ClientsidePlayerEntity} of an {@link User} and handles a possible respawn request.
+     */
+    private ClientsidePlayerEntity getClientSidePlayerEntity(final UUID uuid)
+    {
+        final User user = UserManager.getUser(uuid);
+
+        // Not bypassed
+        if (user == null)
+        {
+            return null;
+        }
+
+        if (user.isBypassed())
+        {
+            respawnEntity(user.getPlayer());
+            return null;
+        }
+
+        return user.getClientSideEntityData().clientSidePlayerEntity;
+    }
 
     @Override
     public ViolationLevelManagement getViolationLevelManagement()

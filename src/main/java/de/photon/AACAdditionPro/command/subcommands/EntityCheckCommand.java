@@ -8,7 +8,7 @@ import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

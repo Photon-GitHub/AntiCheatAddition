@@ -23,9 +23,7 @@ public class ClientControlEvent extends PlayerEvent implements Cancellable
 
     public ClientControlEvent(final Player p, final ModuleType moduleType)
     {
-        super(p);
-        this.moduleType = moduleType;
-        this.message = this.moduleType.getViolationMessage();
+        this(p, moduleType, moduleType.getViolationMessage());
     }
 
     //Needed for 1.8.8

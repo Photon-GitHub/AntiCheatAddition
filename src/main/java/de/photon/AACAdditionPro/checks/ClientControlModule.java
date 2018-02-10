@@ -1,20 +1,21 @@
 package de.photon.AACAdditionPro.checks;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.events.ClientControlEvent;
-import de.photon.AACAdditionPro.events.PlayerAdditionViolationCommandEvent;
+import de.photon.AACAdditionPro.userdata.User;
+import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
-import de.photon.AACAdditionPro.util.commands.Placeholders;
+import de.photon.AACAdditionPro.util.general.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
+import java.util.Collection;
 
 public interface ClientControlModule extends ViolationModule
 {
-    String MCBRANDCHANNEL = "MC|Brand";
+    String MC_BRAND_CHANNEL = "MC|Brand";
 
-    List<String> getCommandsOnDetection();
+    Collection<String> getCommandsOnDetection();
 
     /**
      * This is used for the ClientControl checks as they do not need full thresholds
@@ -29,24 +30,24 @@ public interface ClientControlModule extends ViolationModule
                 this.getModuleType()
         );
 
-        AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(clientControlEvent);
+        Bukkit.getPluginManager().callEvent(clientControlEvent);
 
         // The event must not be cancelled
-        if (!clientControlEvent.isCancelled()) {
-
+        if (!clientControlEvent.isCancelled())
+        {
             // Execution of the commands
-            for (final String rawCommand : this.getCommandsOnDetection()) {
-                final String realCommand = Placeholders.applyPlaceholders(rawCommand, player, null);
-
-                // Calling of the event + Sync command execution
-                CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(player, realCommand, this.getModuleType()));
-            }
+            this.getCommandsOnDetection().forEach(rawCommand -> CommandUtils.executeCommandWithPlaceholders(rawCommand, player, this.getModuleType(), null));
         }
     }
 
-    static boolean isBranded(final String channel)
+    /**
+     * Determines whether a channel is the MC_BRAND_CHANNEL.
+     *
+     * @param channel the channel which should be tested.
+     */
+    static boolean isBrandChannel(final String channel)
     {
-        return channel.equals(MCBRANDCHANNEL);
+        return channel.equals(MC_BRAND_CHANNEL);
     }
 
     /**
@@ -57,40 +58,53 @@ public interface ClientControlModule extends ViolationModule
      *
      * @return the decoded message or null if either the channel was not MC|Brand or there was a problem while decoding the message.
      */
-    static String getBrand(final String channel, final byte[] message)
+    static String getMCBrandMessage(final String channel, final byte[] message)
     {
-        if (isBranded(channel)) {
-            try {
+        if (isBrandChannel(channel))
+        {
+            try
+            {
                 return new String(message, "UTF-8");
-            } catch (final UnsupportedEncodingException e) {
-                System.out.println("Unable to encode message.");
+            } catch (final UnsupportedEncodingException e)
+            {
+                System.out.println("Unable to encode channel message.");
                 e.printStackTrace();
             }
         }
         return null;
     }
 
-    static boolean brandContains(final String channel, final byte[] message, final String[] flags)
+    /**
+     * Tests if the MC|Brand message contains certain {@link String}s.
+     */
+    static boolean mcBrandMessageContains(final String channel, final byte[] message, final String[] flags)
     {
-        return stringContainsFlag(getBrand(channel, message), flags);
+        final String brandMessage = getMCBrandMessage(channel, message);
+
+        // Preconditions for StringUtils
+        return (brandMessage != null && flags != null) &&
+               StringUtils.stringContainsFlagsIgnoreCase(brandMessage, flags);
     }
 
-    static boolean stringContainsFlag(String input, final String[] flags)
+    static boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String[] flags)
     {
-        if (input == null || flags == null) {
+        final User user = UserManager.getUser(player.getUniqueId());
+
+        if (User.isUserInvalid(user))
+        {
             return false;
         }
 
-        input = input.toLowerCase();
+        // Bypassed players are already filtered out.
+        boolean flag = true;
 
-        for (final String flag : flags) {
-            final String lowerflag = flag.toLowerCase();
-
-            if (input.contains(lowerflag)) {
-                return true;
-            }
+        if (isBrandChannel(channel))
+        {
+            flag = ClientControlModule.mcBrandMessageContains(channel, message, flags);
         }
-        return false;
+
+        // Should flag
+        return flag;
     }
 
     @Override

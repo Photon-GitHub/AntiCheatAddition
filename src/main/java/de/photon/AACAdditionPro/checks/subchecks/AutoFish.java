@@ -5,11 +5,12 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.general.StringUtils;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
-import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -83,19 +84,14 @@ public class AutoFish implements Listener, ViolationModule
                     // Ceil in order to make sure that the result is at least 1
                     final double flagOffset = Math.ceil((violation_offset - maxOffset) * 0.5D);
 
-                    final String[] verboseStrings = new String[]{
-                            String.valueOf(consistencyStatistics.getAverage()),
-                            String.valueOf(maxOffset),
-                            String.valueOf(flagOffset)
-                    };
-
-                    // Make sure the verbose message is readable.
-                    for (int i = 0; i < verboseStrings.length; i++)
-                    {
-                        verboseStrings[i] = verboseStrings[i].substring(0, Math.min(verboseStrings.length, 7));
-                    }
-
-                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " + user.getPlayer().getName() + " average time: " + verboseStrings[0] + " | maximum offset: " + verboseStrings[1] + " | flag offset: " + verboseStrings[2]);
+                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " +
+                                                     user.getPlayer().getName() +
+                                                     " average time: " +
+                                                     StringUtils.limitStringLength(String.valueOf(consistencyStatistics.getAverage()), 7) +
+                                                     " | maximum offset: " +
+                                                     StringUtils.limitStringLength(String.valueOf(maxOffset), 7) +
+                                                     " | flag offset: " +
+                                                     StringUtils.limitStringLength(String.valueOf(flagOffset), 7));
 
                     // Has the player violated the check?
                     if (flagOffset > 0)

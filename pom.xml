@@ -6,7 +6,7 @@
 
     <groupId>de.photon</groupId>
     <artifactId>AACAdditionPro</artifactId>
-    <version>3.6.4</version>
+    <version>3.7.0</version>
 
     <name>AACAdditionPro</name>
     <description>This plugin provides niche checks for cheats which are not covered by AAC</description>
@@ -74,9 +74,16 @@
         <dependency>
             <groupId>net.konsolas</groupId>
             <artifactId>aac</artifactId>
-            <version>3.2.1</version>
+            <version>3.3.9</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/AAC.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>net.labymod</groupId>
+            <artifactId>serverapi</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/labymod-server-api.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

@@ -3,7 +3,7 @@ package de.photon.AACAdditionPro.heuristics;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import lombok.Getter;
 
 import java.io.IOException;

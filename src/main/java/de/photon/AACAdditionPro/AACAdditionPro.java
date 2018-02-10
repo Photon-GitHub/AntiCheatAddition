@@ -29,16 +29,18 @@ import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.FiveZigControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.ForgeControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LabyModControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LiteloaderControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.OldLabyModControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.PXModControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.SchematicaControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VapeControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.WorldDownloaderControl;
 import de.photon.AACAdditionPro.command.MainCommand;
 import de.photon.AACAdditionPro.events.APILoadedEvent;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -186,50 +188,62 @@ public class AACAdditionPro extends JavaPlugin
 
             // The first getConfig call will automatically saveToFile and cache the config.
 
+
+            // ------------------------------------------------------------------------------------------------------ //
+            //                                              Plugin hooks                                              //
+            // ------------------------------------------------------------------------------------------------------ //
+
+            boolean labyModAPIHook = this.getServer().getPluginManager().isPluginEnabled("LabyModAPI");
+
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //
             // ------------------------------------------------------------------------------------------------------ //
 
-            // UserManager
-            this.registerListener(new UserManager());
-
             // Managers
-            this.moduleManager = new ModuleManager(
-                    // Additions
-                    new PerHeuristicCommands(),
-                    new LogBot(),
+            this.registerListener(new UserManager());
+            this.moduleManager = new ModuleManager(30);
 
-                    // ClientControl
-                    new BetterSprintingControl(),
-                    new FiveZigControl(),
-                    new ForgeControl(),
-                    new LabyModControl(),
-                    new LiteloaderControl(),
-                    new SchematicaControl(),
-                    new VapeControl(),
-                    new WorldDownloaderControl(),
+            // Additions
+            this.moduleManager.registerObject(new PerHeuristicCommands());
+            this.moduleManager.registerObject(new LogBot());
 
-                    // Normal checks
-                    new AutoFish(),
-                    new AutoPotion(),
-                    new EqualRotation(),
-                    new Esp(),
-                    new Fastswitch(),
-                    new Freecam(),
-                    new GravitationalModifier(),
-                    new InventoryChat(),
-                    new InventoryHeuristics(),
-                    new InventoryHit(),
-                    new InventoryMove(),
-                    new InventoryRotation(),
-                    new KillauraEntity(),
-                    new MultiInteraction(),
-                    new Pingspoof(),
-                    new Scaffold(),
-                    new SkinBlinker(),
-                    new Teaming(),
-                    new Tower()
-            );
+            // ClientControl
+            this.moduleManager.registerObject(new BetterSprintingControl());
+            this.moduleManager.registerObject(new FiveZigControl());
+            this.moduleManager.registerObject(new ForgeControl());
+
+            if (labyModAPIHook)
+            {
+                this.moduleManager.registerObject(new LabyModControl());
+            }
+
+            this.moduleManager.registerObject(new LiteloaderControl());
+            this.moduleManager.registerObject(new OldLabyModControl());
+            this.moduleManager.registerObject(new PXModControl());
+            this.moduleManager.registerObject(new SchematicaControl());
+            this.moduleManager.registerObject(new VapeControl());
+            this.moduleManager.registerObject(new WorldDownloaderControl());
+
+            // Normal checks
+            this.moduleManager.registerObject(new AutoFish());
+            this.moduleManager.registerObject(new AutoPotion());
+            this.moduleManager.registerObject(new EqualRotation());
+            this.moduleManager.registerObject(new Esp());
+            this.moduleManager.registerObject(new Fastswitch());
+            this.moduleManager.registerObject(new Freecam());
+            this.moduleManager.registerObject(new GravitationalModifier());
+            this.moduleManager.registerObject(new InventoryChat());
+            this.moduleManager.registerObject(new InventoryHeuristics());
+            this.moduleManager.registerObject(new InventoryHit());
+            this.moduleManager.registerObject(new InventoryMove());
+            this.moduleManager.registerObject(new InventoryRotation());
+            this.moduleManager.registerObject(new KillauraEntity());
+            this.moduleManager.registerObject(new MultiInteraction());
+            this.moduleManager.registerObject(new Pingspoof());
+            this.moduleManager.registerObject(new Scaffold());
+            this.moduleManager.registerObject(new SkinBlinker());
+            this.moduleManager.registerObject(new Teaming());
+            this.moduleManager.registerObject(new Tower());
 
             // Commands
             this.getCommand(MainCommand.instance.name).setExecutor(MainCommand.instance);

@@ -2,9 +2,10 @@ package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
+import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -58,6 +59,12 @@ public class GravitationalModifier implements ViolationModule, Listener
                 user.getVelocityChangeData().positiveVelocity = positveVelocity;
             }
         }
+    }
+
+    @Override
+    public ViolationLevelManagement getViolationLevelManagement() throws NoViolationLevelManagementException
+    {
+        return vlManager;
     }
 
     @Override

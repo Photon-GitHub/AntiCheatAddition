@@ -9,12 +9,12 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLook;
-import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 
 public class EqualRotation extends PacketAdapter implements ViolationModule
 {

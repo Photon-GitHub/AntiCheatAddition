@@ -2,9 +2,9 @@ package de.photon.AACAdditionPro;
 
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
-import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
-import de.photon.AACAdditionPro.util.verbose.VerboseSender;
+import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 
 import java.util.ArrayList;
 
@@ -14,6 +14,11 @@ import java.util.ArrayList;
  */
 public class ModuleManager extends ArrayList<Module>
 {
+    ModuleManager(final int initialCapacity)
+    {
+        super(initialCapacity);
+    }
+
     ModuleManager(final Module... initialObjects)
     {
         super(initialObjects.length);
@@ -23,7 +28,7 @@ public class ModuleManager extends ArrayList<Module>
         }
     }
 
-    private void registerObject(Module object)
+    public void registerObject(Module object)
     {
         try
         {

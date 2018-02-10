@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.storage.management;
+package de.photon.AACAdditionPro.util.datastructures;
 
 import java.util.DoubleSummaryStatistics;
 

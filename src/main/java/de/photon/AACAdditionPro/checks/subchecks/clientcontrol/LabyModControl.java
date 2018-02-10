@@ -5,94 +5,75 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
 import de.photon.AACAdditionPro.userdata.User;
 import de.photon.AACAdditionPro.userdata.UserManager;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerCustomPayload;
-import lombok.Getter;
+import de.photon.AACAdditionPro.util.files.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import net.labymod.serverapi.Permission;
+import net.labymod.serverapi.bukkit.event.LabyModPlayerJoinEvent;
+import net.labymod.serverapi.bukkit.event.PermissionsSendEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LabyModControl implements Listener, ClientControlModule
 {
-    @Getter
-    private enum LabyModFeature
+    @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
+    private List<String> commandsOnDetection;
+
+    private final Map<Permission, Boolean> featureMap = new HashMap<>();
+
+    @Override
+    public void subEnable()
     {
-        // FOOD, GUI, NICK, BLOCKBUILD, CHAT, EXTRAS, ANIMATIONS, POTIONS, ARMOR, DAMAGEINDICATOR, MINIMAP_RADAR
-        PLAYER_SATURATION("FOOD"),
-        GUI(),
-        NICK(),
-        BLOCKBUILD(),
-        CHAT(),
-        EXTRAS(),
-        OLD_ANIMATIONS("ANIMATIONS"),
-        POTION_EFFECT_HUD("POTIONS"),
-        ARMOUR_HUD("ARMOR"),
-        DAMAGE_INDICATOR("DAMAGEINDICATOR"),
-        MINIMAP_RADAR();
-
-        private final String packetName;
-
-        LabyModFeature()
+        for (String key : ConfigUtils.loadKeys(this.getModuleType().getConfigString() + ".disable"))
         {
-            this.packetName = this.name();
-        }
-
-        LabyModFeature(final String name)
-        {
-            this.packetName = name;
+            featureMap.put(Permission.valueOf(key.toUpperCase()),
+                           !AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable." + key));
         }
     }
 
-    private final HashMap<String, Boolean> featureMap = new HashMap<>();
-
     @EventHandler
-    public void on(final PlayerJoinEvent event)
+    public void onLabyModPlayerJoinEvent(LabyModPlayerJoinEvent event)
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
-        final WrapperPlayServerCustomPayload packetWrapper = new WrapperPlayServerCustomPayload();
-        packetWrapper.setChannel("LABYMOD");
+        this.executeCommands(event.getPlayer());
+    }
 
-        final ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-        try {
-            final ObjectOutputStream out = new ObjectOutputStream(byteOut);
-            out.writeObject(featureMap);
-        } catch (final IOException e) {
-            e.printStackTrace();
+    @EventHandler
+    public void onPermissionsSend(PermissionsSendEvent event)
+    {
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        if (User.isUserInvalid(user))
+        {
+            return;
         }
 
-        packetWrapper.setContents(byteOut.toByteArray());
-        packetWrapper.sendPacket(user.getPlayer());
+        // Iterating through all permissions
+        for (Map.Entry<Permission, Boolean> permissionEntry : event.getPermissions().entrySet())
+        {
+            // Allow by default.
+            permissionEntry.setValue(featureMap.getOrDefault(permissionEntry.getKey(), true));
+        }
     }
 
     @Override
     public List<String> getCommandsOnDetection()
     {
-        return null;
+        return commandsOnDetection;
     }
 
     @Override
     public ModuleType getModuleType()
     {
         return ModuleType.LABYMOD_CONTROL;
-    }
-
-    @Override
-    public void subEnable()
-    {
-        // Get all functions that can be disabled and put them in the HashMap
-        for (final LabyModFeature feature : LabyModFeature.values()) {
-            // Inversion here as true in the config means disable.
-            featureMap.put(feature.getPacketName(), !AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable." + feature.name().toLowerCase()));
-        }
     }
 }

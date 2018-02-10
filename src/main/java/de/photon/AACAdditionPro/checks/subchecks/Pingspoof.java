@@ -11,7 +11,7 @@ import de.photon.AACAdditionPro.userdata.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
-import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -89,18 +89,6 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
     }
 
     @Override
-    public ViolationLevelManagement getViolationLevelManagement()
-    {
-        return vlManager;
-    }
-
-    @Override
-    public ModuleType getModuleType()
-    {
-        return ModuleType.PINGSPOOF;
-    }
-
-    @Override
     public void subEnable()
     {
         // Task
@@ -153,5 +141,17 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
     public void subDisable()
     {
         Bukkit.getScheduler().cancelTask(task_number);
+    }
+
+    @Override
+    public ViolationLevelManagement getViolationLevelManagement()
+    {
+        return vlManager;
+    }
+
+    @Override
+    public ModuleType getModuleType()
+    {
+        return ModuleType.PINGSPOOF;
     }
 }

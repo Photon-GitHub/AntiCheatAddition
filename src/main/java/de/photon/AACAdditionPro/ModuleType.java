@@ -37,6 +37,7 @@ public enum ModuleType
     FORGE_CONTROL("ClientControl.Forge", "uses Forge"),
     LABYMOD_CONTROL("ClientControl.LabyMod", "uses LabyMod"),
     LITELOADER_CONTROL("ClientControl.LiteLoader", "uses LiteLoader"),
+    OLD_LABYMOD_CONTROL("ClientControl.OldLabyMod", "uses LabyMod"),
     SCHEMATICA_CONTROL("ClientControl.Schematica", "uses Schematica"),
     VAPE_CONTROL("ClientControl.Vape", "uses Vape"),
     WORLDDOWNLOAD_CONTROL("ClientControl.WorldDownloader", "uses WorldDownloader");

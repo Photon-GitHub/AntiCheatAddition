@@ -46,7 +46,7 @@ public class BetterSprintingControl implements PluginMessageListener, ClientCont
     @Override
     public String[] getPluginMessageChannels()
     {
-        return new String[]{"BSM"};
+        return new String[]{"BSM", "BSprint"};
     }
 
     @Override

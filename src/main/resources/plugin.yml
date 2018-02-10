@@ -4,6 +4,7 @@ description: '${project.description}'
 author: Photon
 
 depend: [AAC, ProtocolLib]
+softdepend: [LabyModAPI]
 main: de.photon.AACAdditionPro.AACAdditionPro
 
 commands:

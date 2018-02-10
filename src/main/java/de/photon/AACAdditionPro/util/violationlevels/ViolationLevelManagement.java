@@ -1,11 +1,9 @@
-package de.photon.AACAdditionPro.util.storage.management;
+package de.photon.AACAdditionPro.util.violationlevels;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
-import de.photon.AACAdditionPro.events.PlayerAdditionViolationCommandEvent;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationEvent;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
-import de.photon.AACAdditionPro.util.commands.Placeholders;
 import de.photon.AACAdditionPro.util.files.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -206,14 +204,10 @@ public class ViolationLevelManagement implements Listener
                 if (threshold > fromVl && threshold <= toVl)
                 {
                     // Iterate through all the commands that are presented in the threshold of key
-                    for (final String s : commandList)
+                    for (final String command : commandList)
                     {
                         // Calling of the event + Sync command execution
-                        CommandUtils.executeCommand(new PlayerAdditionViolationCommandEvent(
-                                player,
-                                Placeholders.applyPlaceholders(s, player, String.valueOf(toVl)),
-                                this.moduleType));
-
+                        CommandUtils.executeCommandWithPlaceholders(command, player, this.moduleType, (double) toVl);
                     }
                 }
             });

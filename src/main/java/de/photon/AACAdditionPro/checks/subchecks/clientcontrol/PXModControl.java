@@ -8,22 +8,21 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.util.List;
 
-public class LiteloaderControl implements PluginMessageListener, ClientControlModule
+public class PXModControl implements ClientControlModule, PluginMessageListener
 {
     @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
     private List<String> commandsOnDetection;
 
-    private static final String[] LITELOADERFLAGS = {
-            "LiteLoader"
-    };
-
     @Override
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
     {
-        if (ClientControlModule.shouldFlagBrandCheck(channel, player, message, LITELOADERFLAGS))
-        {
-            executeCommands(player);
-        }
+        executeCommands(player);
+    }
+
+    @Override
+    public String[] getPluginMessageChannels()
+    {
+        return new String[]{"PX|Version"};
     }
 
     @Override
@@ -35,12 +34,6 @@ public class LiteloaderControl implements PluginMessageListener, ClientControlMo
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.LITELOADER_CONTROL;
-    }
-
-    @Override
-    public String[] getPluginMessageChannels()
-    {
-        return new String[]{MC_BRAND_CHANNEL};
+        return ModuleType.BETTERSPRINTING_CONTROL;
     }
 }

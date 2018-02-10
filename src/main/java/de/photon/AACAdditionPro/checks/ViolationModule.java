@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.checks;
 
 import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
-import de.photon.AACAdditionPro.util.storage.management.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 
 public interface ViolationModule extends Module
 {

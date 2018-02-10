@@ -594,7 +594,7 @@ ClientControl:
          # Fixes a rendering bug in minecraft with fast head movement which makes the crosshair fall slightly behind
          # This can be seen as cheat-like as it grants a minor aiming advantage in fights.
          crosshair_sync: true
-         # This fixes some pot and soup refill bugs and
+         # This fixes some inventory bugs to improved pot and soup refill.
          # This is regarded as cheat-like behaviour as it grants major reliability and timing boni.
          refill_fix: true
          # General GUI adjustments inside the mod, such as position, direction and current system time

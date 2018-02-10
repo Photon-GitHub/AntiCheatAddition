@@ -675,6 +675,13 @@ ClientControl:
          minimap_radar: true
        # The mod cannot be detected, just disabled
 
+   # A pvp modification from France
+   PXMod:
+      # Do you want to enable the PXMod-Control
+      enabled: false
+      commands_on_detection:
+         - "aackick {player} PXMod"
+
    # A mod that lets you display (clientside) holograms to improve building, but also has
    # a module to download worlds.
    Schematica:

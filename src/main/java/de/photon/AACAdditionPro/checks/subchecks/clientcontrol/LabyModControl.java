@@ -30,7 +30,7 @@ public class LabyModControl implements Listener, ClientControlModule
         for (String key : ConfigUtils.loadKeys(this.getModuleType().getConfigString() + ".disable"))
         {
             featureMap.put(Permission.valueOf(key.toUpperCase()),
-                           AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable." + key));
+                           !AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable." + key));
         }
     }
 

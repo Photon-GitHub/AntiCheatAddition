@@ -30,6 +30,7 @@ import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.ForgeControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LabyModControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LiteloaderControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.OldLabyModControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.PXModControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.SchematicaControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VapeControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.WorldDownloaderControl;
@@ -218,6 +219,7 @@ public class AACAdditionPro extends JavaPlugin
 
             this.moduleManager.registerObject(new LiteloaderControl());
             this.moduleManager.registerObject(new OldLabyModControl());
+            this.moduleManager.registerObject(new PXModControl());
             this.moduleManager.registerObject(new SchematicaControl());
             this.moduleManager.registerObject(new VapeControl());
             this.moduleManager.registerObject(new WorldDownloaderControl());

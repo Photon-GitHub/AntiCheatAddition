@@ -589,13 +589,13 @@ ClientControl:
       # Set the corresponding value to true if you want to block a part of the mod
       disable:
          # Fixes a rendering bug in minecraft with fast lava placement (ghost blocks)
-         # This can be seen as semi-cheat-like as normal players will see the ghost block, but it is essentially a bug fix.
+         # This can be seen as semi-cheat-like if lava plays a major role on your server
          improved_lava: false
          # Fixes a rendering bug in minecraft with fast head movement which makes the crosshair fall slightly behind
-         # This can be seen as cheat-like as it grants a minor aiming advantage in fights.
-         crosshair_sync: true
+         # This can be seen as semi-cheat-like as it grants a minor aiming advantage in fights.
+         crosshair_sync: false
          # This fixes some inventory bugs to improved pot and soup refill.
-         # This is regarded as cheat-like behaviour as it grants major reliability and timing boni.
+         # This is regarded as cheat-like behaviour as it grants a major reliability bonus.
          refill_fix: true
          # General GUI adjustments inside the mod, such as position, direction and current system time
          # Not recommended to disable as it is a purely cosmetic feature

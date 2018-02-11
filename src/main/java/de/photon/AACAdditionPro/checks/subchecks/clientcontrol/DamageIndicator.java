@@ -14,7 +14,6 @@ import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityMetadata;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -64,7 +63,6 @@ public class DamageIndicator extends PacketAdapter implements Module
                 (livingEntity instanceof Animals) && spoofAnimals)
             {
                 final List<WrappedWatchableObject> wrappedWatchableObjects = entityMetadataWrapper.getMetadata();
-                final float maxHealth = (float) livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
 
                 // Remove original health.
                 wrappedWatchableObjects.removeIf(wrappedWatchableObject -> wrappedWatchableObject.getIndex() == 7);
@@ -73,15 +71,14 @@ public class DamageIndicator extends PacketAdapter implements Module
                 {
                     case MC188:
                         // Add spoofed health
-                        wrappedWatchableObjects.add(new WrappedWatchableObject(7, maxHealth));
+                        wrappedWatchableObjects.add(new WrappedWatchableObject(7,20F));
                         break;
 
                     case MC110:
                     case MC111:
                     case MC112:
                         final WrappedDataWatcher.WrappedDataWatcherObject healthWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(7, WrappedDataWatcher.Registry.get(Float.class));
-
-                        wrappedWatchableObjects.add(new WrappedWatchableObject(healthWatcher, maxHealth));
+                        wrappedWatchableObjects.add(new WrappedWatchableObject(healthWatcher, 20F));
                         break;
                     default:
                         throw new IllegalStateException("Unknown minecraft version");

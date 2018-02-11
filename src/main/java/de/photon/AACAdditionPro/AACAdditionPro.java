@@ -25,6 +25,7 @@ import de.photon.AACAdditionPro.checks.subchecks.SkinBlinker;
 import de.photon.AACAdditionPro.checks.subchecks.Teaming;
 import de.photon.AACAdditionPro.checks.subchecks.Tower;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.BetterSprintingControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.DamageIndicator;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.FiveZigControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.ForgeControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LabyModControl;
@@ -209,6 +210,7 @@ public class AACAdditionPro extends JavaPlugin
 
             // ClientControl
             this.moduleManager.registerObject(new BetterSprintingControl());
+            this.moduleManager.registerObject(new DamageIndicator());
             this.moduleManager.registerObject(new FiveZigControl());
             this.moduleManager.registerObject(new ForgeControl());
 

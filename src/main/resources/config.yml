@@ -567,6 +567,18 @@ ClientControl:
       commands_on_detection:
          - "aacstaffnotify {player} in {world} uses BetterSprinting"
 
+   # This will spoof the health of all players on your server so that DamageIndicators (and any other mod to that tries
+   # to show other players' health, like HealthTags and ESP) becomes useless.
+   # This is a clientsided spoof, meaning that your plugins are able to get the correct health.
+   DamageIndicator:
+      # Do you want to enable the DamageIndicators - countermeasure
+      enabled: false
+      # Spoof the health of the following entity categories.
+      spoof:
+         players: true
+         animals: true
+         monsters: true
+
    # A very popular mod-loader.
    Forge:
       # Do you want to enable the Forge-Control

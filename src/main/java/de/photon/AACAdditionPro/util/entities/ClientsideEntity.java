@@ -32,6 +32,7 @@ import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
@@ -101,6 +102,7 @@ public abstract class ClientsideEntity
     private long ticksExisted = 0;
 
     private int tickTask = -1;
+    private BukkitTask hurtTask = null;
 
     // Movement state machine
     private Set<Movement> movementStates = new HashSet<>();
@@ -443,7 +445,7 @@ public abstract class ClientsideEntity
      */
     public void hurtByObserved()
     {
-        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
+        hurtTask = Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
             lastHurtMillis = System.currentTimeMillis();
             hurt();
 
@@ -599,10 +601,17 @@ public abstract class ClientsideEntity
 
     public void despawn()
     {
+        // Cancel tick task
         if (tickTask != -1)
         {
             Bukkit.getScheduler().cancelTask(tickTask);
             this.tickTask = -1;
+        }
+
+        // Cancel hurt task
+        if (hurtTask != null)
+        {
+            hurtTask.cancel();
         }
 
         if (spawned)

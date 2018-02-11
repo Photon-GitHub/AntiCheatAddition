@@ -71,7 +71,7 @@ public class DamageIndicator extends PacketAdapter implements Module
                 {
                     case MC188:
                         // Add spoofed health
-                        wrappedWatchableObjects.add(new WrappedWatchableObject(7,20F));
+                        wrappedWatchableObjects.add(new WrappedWatchableObject(7, 20F));
                         break;
 
                     case MC110:

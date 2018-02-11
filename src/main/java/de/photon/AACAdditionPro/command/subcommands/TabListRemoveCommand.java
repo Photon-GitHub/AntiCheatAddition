@@ -5,7 +5,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.command.InternalCommand;
-import de.photon.AACAdditionPro.util.entities.displayinformation.DisplayInformation;
+import de.photon.AACAdditionPro.util.fakeentity.displayinformation.DisplayInformation;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

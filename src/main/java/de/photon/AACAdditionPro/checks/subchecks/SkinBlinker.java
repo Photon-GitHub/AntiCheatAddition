@@ -6,8 +6,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 
 public class SkinBlinker extends PacketAdapter implements ViolationModule
@@ -43,16 +43,16 @@ public class SkinBlinker extends PacketAdapter implements ViolationModule
             final int newSkinComponents = event.getPacket().getIntegers().readSafely(1);
 
             // In the beginning oldSkinComponents is 0.
-            if (user.getSettingsData().skinComponents != 0 &&
+            if (user.getSkinData().skinComponents != 0 &&
                 // Actual detection.
-                newSkinComponents != user.getSettingsData().skinComponents)
+                newSkinComponents != user.getSkinData().skinComponents)
             {
                 vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
             }
 
             // There is no need to update the skinComponents when not sprinting / sneaking as this is only
             // unnecessary writing and the detection doesn't need the additional info. (At max 1 false vl)
-            user.getSettingsData().skinComponents = newSkinComponents;
+            user.getSkinData().skinComponents = newSkinComponents;
         }
     }
 

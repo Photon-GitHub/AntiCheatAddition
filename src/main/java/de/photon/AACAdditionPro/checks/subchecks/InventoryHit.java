@@ -2,8 +2,8 @@ package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.entity.Player;
@@ -23,11 +23,13 @@ public class InventoryHit implements Listener, ViolationModule
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void on(final EntityDamageByEntityEvent event)
     {
-        if (event.getDamager() instanceof Player) {
+        if (event.getDamager() instanceof Player)
+        {
             final User user = UserManager.getUser(event.getDamager().getUniqueId());
 
             // Not bypassed
-            if (User.isUserInvalid(user)) {
+            if (User.isUserInvalid(user))
+            {
                 return;
             }
 

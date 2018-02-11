@@ -2,8 +2,8 @@ package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,7 +19,8 @@ public class InventoryRotation implements Listener, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
@@ -28,7 +29,7 @@ public class InventoryRotation implements Listener, ViolationModule
             // Head-Rotation has changed (detection)
             (event.getFrom().getPitch() != event.getTo().getPitch() || event.getFrom().getYaw() != event.getTo().getYaw()) &&
             // No recently tp
-            !user.getTeleportData().recentlyUpdated(1000) &&
+            !user.getTeleportData().recentlyUpdated(0, 1000) &&
             // Player is in an inventory
             user.getInventoryData().hasOpenInventory() &&
             // Was already in inventory

@@ -7,8 +7,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
@@ -41,7 +41,7 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
             return;
         }
 
-        if (user.getLookPacketData().recentlyUpdated(timeout))
+        if (user.getLookPacketData().recentlyUpdated(0, timeout))
         {
             event.setCancelled(true);
             user.getLookPacketData().lastYaw = Float.MIN_VALUE;
@@ -75,7 +75,7 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
         // Boat false positive (usually worse cheats in vehicles as well)
         if (!user.getPlayer().isInsideVehicle() &&
             // Not recently teleported
-            !user.getTeleportData().recentlyUpdated(5000) &&
+            !user.getTeleportData().recentlyUpdated(0, 5000) &&
             // Same rotation values
             currentYaw == user.getLookPacketData().lastYaw &&
             currentPitch == user.getLookPacketData().lastPitch &&
@@ -85,7 +85,7 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
             vlManager.flag(user.getPlayer(), cancel_vl, () ->
             {
                 event.setCancelled(true);
-                user.getLookPacketData().updateTimeStamp();
+                user.getLookPacketData().updateTimeStamp(0);
             }, () -> {});
         }
         else

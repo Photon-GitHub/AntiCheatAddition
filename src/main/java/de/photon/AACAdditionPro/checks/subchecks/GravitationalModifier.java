@@ -3,8 +3,8 @@ package de.photon.AACAdditionPro.checks.subchecks;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.event.EventHandler;
@@ -30,7 +30,7 @@ public class GravitationalModifier implements ViolationModule, Listener
         }
 
         // Time of a check cycle is over
-        if (!user.getVelocityChangeData().recentlyUpdated(3000))
+        if (!user.getVelocityChangeData().recentlyUpdated(0, 3000))
         {
             final int additionalChanges = user.getVelocityChangeData().velocityChangeCounter - MAX_VELOCITY_CHANGES;
 
@@ -40,13 +40,13 @@ public class GravitationalModifier implements ViolationModule, Listener
             }
 
             user.getVelocityChangeData().velocityChangeCounter = 0;
-            user.getVelocityChangeData().updateTimeStamp();
+            user.getVelocityChangeData().updateTimeStamp(0);
         }
 
         // The player wasn't hurt and got velocity for that.
         if (user.getPlayer().getNoDamageTicks() == 0 &&
             // Recent teleports can cause bugs
-            !user.getTeleportData().recentlyUpdated(1000) &&
+            !user.getTeleportData().recentlyUpdated(0, 1000) &&
             // Players can jump up and down more often if there is a block above them
             user.getPlayer().getEyeLocation().getBlock().isEmpty() &&
             BlockUtils.blocksAround(user.getPlayer().getEyeLocation().getBlock(), false) == 0)

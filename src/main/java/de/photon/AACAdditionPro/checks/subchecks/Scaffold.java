@@ -2,10 +2,11 @@ package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.datawrappers.ScaffoldBlockPlace;
+import de.photon.AACAdditionPro.util.entity.livingentity.PotionUtil;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
@@ -39,7 +40,7 @@ public class Scaffold implements Listener, ViolationModule
         }
 
         //To prevent too fast towering -> Timeout
-        if (user.getScaffoldData().recentlyUpdated(timeout))
+        if (user.getScaffoldData().recentlyUpdated(0, timeout))
         {
             event.setCancelled(true);
             InventoryUtils.syncUpdateInventory(user.getPlayer());
@@ -75,7 +76,7 @@ public class Scaffold implements Listener, ViolationModule
                             blockPlaced,
                             blockPlaced.getFace(event.getBlockAgainst()),
                             // Speed-Effect
-                            user.getPotionData().getAmplifier(PotionEffectType.SPEED)
+                            PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED))
                     )))
         {
             // Once the buffer is big enough calculate an average time
@@ -95,7 +96,7 @@ public class Scaffold implements Listener, ViolationModule
                 vlManager.flag(event.getPlayer(), (int) Math.max(Math.ceil((results[1] - results[0]) / 15D), 6), cancel_vl, () ->
                 {
                     event.setCancelled(true);
-                    user.getScaffoldData().updateTimeStamp();
+                    user.getScaffoldData().updateTimeStamp(0);
                     InventoryUtils.syncUpdateInventory(user.getPlayer());
                 }, () -> {});
             }

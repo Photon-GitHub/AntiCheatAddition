@@ -18,7 +18,7 @@ public class TeleportData extends TimeData implements Listener
 {
     public TeleportData(final User user)
     {
-        super(user);
+        super(user, 0);
         AACAdditionPro.getInstance().registerListener(this);
     }
 

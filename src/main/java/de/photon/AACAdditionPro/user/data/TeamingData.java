@@ -12,7 +12,7 @@ public class TeamingData extends TimeData implements Listener
 {
     public TeamingData(final User user)
     {
-        super(user);
+        super(user, 0);
         AACAdditionPro.getInstance().registerListener(this);
     }
 

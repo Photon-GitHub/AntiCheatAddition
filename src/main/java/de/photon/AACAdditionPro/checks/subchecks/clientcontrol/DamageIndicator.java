@@ -14,6 +14,7 @@ import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityMetadata;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -54,13 +55,16 @@ public class DamageIndicator extends PacketAdapter implements Module
         // Entity must be living to have health.
         if (entity instanceof LivingEntity)
         {
+            final LivingEntity livingEntity = (LivingEntity) entity;
+
             // Should spoof?
-            if (!entity.isDead() &&
-                (entity instanceof HumanEntity && spoofPlayers) ||
-                (entity instanceof Monster && spoofMonsters) ||
-                (entity instanceof Animals) && spoofAnimals)
+            if (!livingEntity.isDead() &&
+                (livingEntity instanceof HumanEntity && spoofPlayers) ||
+                (livingEntity instanceof Monster && spoofMonsters) ||
+                (livingEntity instanceof Animals) && spoofAnimals)
             {
                 final List<WrappedWatchableObject> wrappedWatchableObjects = entityMetadataWrapper.getMetadata();
+                final float maxHealth = (float) livingEntity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
 
                 // Remove original health.
                 wrappedWatchableObjects.removeIf(wrappedWatchableObject -> wrappedWatchableObject.getIndex() == 7);
@@ -69,7 +73,7 @@ public class DamageIndicator extends PacketAdapter implements Module
                 {
                     case MC188:
                         // Add spoofed health
-                        wrappedWatchableObjects.add(new WrappedWatchableObject(7, 20F));
+                        wrappedWatchableObjects.add(new WrappedWatchableObject(7, maxHealth));
                         break;
 
                     case MC110:
@@ -77,7 +81,7 @@ public class DamageIndicator extends PacketAdapter implements Module
                     case MC112:
                         final WrappedDataWatcher.WrappedDataWatcherObject healthWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(7, WrappedDataWatcher.Registry.get(Float.class));
 
-                        wrappedWatchableObjects.add(new WrappedWatchableObject(healthWatcher, 20F));
+                        wrappedWatchableObjects.add(new WrappedWatchableObject(healthWatcher, maxHealth));
                         break;
                     default:
                         throw new IllegalStateException("Unknown minecraft version");

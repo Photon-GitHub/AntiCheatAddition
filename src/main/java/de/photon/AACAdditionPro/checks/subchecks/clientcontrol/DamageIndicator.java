@@ -30,14 +30,14 @@ public class DamageIndicator extends PacketAdapter implements Module
     private boolean spoofAnimals;
     @LoadFromConfiguration(configPath = ".spoof.monsters")
     private boolean spoofMonsters;
-    
+
     public DamageIndicator()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.HIGH, PacketType.Play.Server.ENTITY_METADATA);
     }
 
     @Override
-    public void onPacketReceiving(PacketEvent event)
+    public void onPacketSending(PacketEvent event)
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 

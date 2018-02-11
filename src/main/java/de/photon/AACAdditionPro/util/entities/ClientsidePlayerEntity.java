@@ -150,8 +150,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     private boolean isSwingable(Material material)
     {
-        WeaponsEquipmentCategory weaponsEquipmentCategory = new WeaponsEquipmentCategory();
-        return weaponsEquipmentCategory.getMaterials().contains(material);
+        return new WeaponsEquipmentCategory().getMaterials().contains(material);
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //

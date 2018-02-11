@@ -66,16 +66,18 @@ public class DamageIndicator extends PacketAdapter implements Module
                 // Remove original health.
                 wrappedWatchableObjects.removeIf(wrappedWatchableObject -> wrappedWatchableObject.getIndex() == 7);
 
+                // Add spoofed health
                 switch (ServerVersion.getActiveServerVersion())
                 {
                     case MC188:
-                        // Add spoofed health
+                        // index 6 in 1.8
                         wrappedWatchableObjects.add(new WrappedWatchableObject(6, 20F));
                         break;
 
                     case MC110:
                     case MC111:
                     case MC112:
+                        // index 7 in 1.10+
                         final WrappedDataWatcher.WrappedDataWatcherObject healthWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(7, WrappedDataWatcher.Registry.get(Float.class));
                         wrappedWatchableObjects.add(new WrappedWatchableObject(healthWatcher, 20F));
                         break;

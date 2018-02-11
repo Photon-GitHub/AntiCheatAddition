@@ -51,7 +51,9 @@ public class DamageIndicator extends PacketAdapter implements Module
         final Entity entity = entityMetadataWrapper.getEntity(event);
 
         // Entity must be living to have health.
-        if (entity instanceof LivingEntity)
+        if (entity instanceof LivingEntity &&
+            // Not the player himself.
+            !user.getPlayer().getUniqueId().equals(entity.getUniqueId()))
         {
             final LivingEntity livingEntity = (LivingEntity) entity;
 

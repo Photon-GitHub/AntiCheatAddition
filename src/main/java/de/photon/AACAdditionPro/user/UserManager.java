@@ -57,7 +57,7 @@ public class UserManager implements Listener
     @EventHandler
     public void onQuit(final PlayerQuitEvent event)
     {
-        final de.photon.AACAdditionPro.user.User removedUser = users.remove(event.getPlayer().getUniqueId());
+        final User removedUser = users.remove(event.getPlayer().getUniqueId());
         removedUser.unregister();
     }
 }

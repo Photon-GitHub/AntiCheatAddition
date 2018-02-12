@@ -52,59 +52,55 @@ public class DamageIndicator extends PacketAdapter implements Module
         final Entity entity = entityMetadataWrapper.getEntity(event);
 
         // Entity must be living to have health.
+        // Should spoof?
         if (entity instanceof LivingEntity &&
             // Not the player himself.
             // Offline mode servers have name-based UUIDs, so that should be no problem.
-            !event.getPlayer().getUniqueId().equals(entity.getUniqueId()))
+            !event.getPlayer().getUniqueId().equals(entity.getUniqueId()) &&
+            !entity.isDead() &&
+            // Bossbar problems
+            !(entity instanceof Wither) &&
+            !(entity instanceof EnderDragon) &&
+            // Categories
+            (entity instanceof HumanEntity && spoofPlayers) ||
+            (entity instanceof Monster && spoofMonsters) ||
+            (entity instanceof Animals) && spoofAnimals)
         {
-            final LivingEntity livingEntity = (LivingEntity) entity;
+            final List<WrappedWatchableObject> wrappedWatchableObjects = entityMetadataWrapper.getMetadata();
 
-            // Should spoof?
-            if (!livingEntity.isDead() &&
-                // Bossbar problems
-                !(livingEntity instanceof Wither) &&
-                !(livingEntity instanceof EnderDragon) &&
-                // Categories
-                (livingEntity instanceof HumanEntity && spoofPlayers) ||
-                (livingEntity instanceof Monster && spoofMonsters) ||
-                (livingEntity instanceof Animals) && spoofAnimals)
+            // Index of the health value in ENTITY_METADATA
+            final int index;
+
+            switch (ServerVersion.getActiveServerVersion())
             {
-                final List<WrappedWatchableObject> wrappedWatchableObjects = entityMetadataWrapper.getMetadata();
+                case MC188:
+                    // index 6 in 1.8
+                    index = 6;
+                    break;
 
-                // Index of the health value in ENTITY_METADATA
-                final int index;
-
-                switch (ServerVersion.getActiveServerVersion())
-                {
-                    case MC188:
-                        // index 6 in 1.8
-                        index = 6;
-                        break;
-
-                    case MC110:
-                    case MC111:
-                    case MC112:
-                        // index 7 in 1.10+
-                        index = 7;
-                        break;
-                    default:
-                        throw new IllegalStateException("Unknown minecraft version");
-                }
-
-                for (WrappedWatchableObject wrappedWatchableObject : wrappedWatchableObjects)
-                {
-                    if (wrappedWatchableObject.getIndex() == index)
-                    {
-                        // Set spoofed health
-                        wrappedWatchableObject.setValue(20F);
-                        break;
-                    }
-                }
-
-                // Set the new metadata.
-                entityMetadataWrapper.setMetadata(wrappedWatchableObjects);
-                System.out.print("Modified metadata: " + livingEntity.getName() + " | " + event.getPlayer().getName());
+                case MC110:
+                case MC111:
+                case MC112:
+                    // index 7 in 1.10+
+                    index = 7;
+                    break;
+                default:
+                    throw new IllegalStateException("Unknown minecraft version");
             }
+
+            for (WrappedWatchableObject wrappedWatchableObject : wrappedWatchableObjects)
+            {
+                if (wrappedWatchableObject.getIndex() == index)
+                {
+                    // Set spoofed health
+                    wrappedWatchableObject.setValue(20F);
+                    break;
+                }
+            }
+
+            // Set the new metadata.
+            entityMetadataWrapper.setMetadata(wrappedWatchableObjects);
+            System.out.print("Modified metadata: " + entity.getName() + " | " + event.getPlayer().getName());
         }
     }
 

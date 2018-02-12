@@ -59,9 +59,9 @@ public class DamageIndicator extends PacketAdapter implements Module
             !(entity instanceof Wither) &&
             !(entity instanceof EnderDragon) &&
             // Entity must be living to have health; all categories extend LivingEntity.
-            (entity instanceof HumanEntity && spoofPlayers) ||
-            (entity instanceof Monster && spoofMonsters) ||
-            (entity instanceof Animals) && spoofAnimals)
+            ((entity instanceof HumanEntity && spoofPlayers) ||
+             (entity instanceof Monster && spoofMonsters) ||
+             (entity instanceof Animals) && spoofAnimals))
         {
             final List<WrappedWatchableObject> wrappedWatchableObjects = entityMetadataWrapper.getMetadata();
 

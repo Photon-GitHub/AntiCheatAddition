@@ -86,7 +86,6 @@ public class DamageIndicator extends PacketAdapter implements Module
                     case MC111:
                     case MC112:
                         // index 7 in 1.10+
-                        // Remove original health.
                         index = 7;
                         break;
                     default:

@@ -17,7 +17,6 @@ import org.bukkit.entity.Animals;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Wither;
 
@@ -51,17 +50,15 @@ public class DamageIndicator extends PacketAdapter implements Module
         final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata(event.getPacket());
         final Entity entity = entityMetadataWrapper.getEntity(event);
 
-        // Entity must be living to have health.
         // Should spoof?
-        if (entity instanceof LivingEntity &&
-            // Not the player himself.
-            // Offline mode servers have name-based UUIDs, so that should be no problem.
-            !event.getPlayer().getUniqueId().equals(entity.getUniqueId()) &&
+        // Not the player himself.
+        // Offline mode servers have name-based UUIDs, so that should be no problem.
+        if (!event.getPlayer().getUniqueId().equals(entity.getUniqueId()) &&
             !entity.isDead() &&
             // Bossbar problems
             !(entity instanceof Wither) &&
             !(entity instanceof EnderDragon) &&
-            // Categories
+            // Entity must be living to have health; all categories extend LivingEntity.
             (entity instanceof HumanEntity && spoofPlayers) ||
             (entity instanceof Monster && spoofMonsters) ||
             (entity instanceof Animals) && spoofAnimals)

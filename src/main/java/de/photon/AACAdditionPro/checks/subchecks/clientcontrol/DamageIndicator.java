@@ -45,7 +45,7 @@ public class DamageIndicator extends PacketAdapter implements Module
             return;
         }
 
-        // Clone the packet
+        // Clone the packet to prevent a serversided connection of the health.
         event.setPacket(event.getPacket().deepClone());
 
         final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata(event.getPacket());

@@ -47,9 +47,6 @@ public class DamageIndicator extends PacketAdapter implements Module
             return;
         }
 
-        // Clone the packet to prevent a serversided connection of the health.
-        event.setPacket(event.getPacket().deepClone());
-
         final Entity entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
 
         // Should spoof?
@@ -94,6 +91,9 @@ public class DamageIndicator extends PacketAdapter implements Module
                 default:
                     throw new IllegalStateException("Unknown minecraft version");
             }
+            
+            // Clone the packet to prevent a serversided connection of the health.
+            event.setPacket(event.getPacket().deepClone());
 
             final StructureModifier<List<WrappedWatchableObject>> watcher = event.getPacket().getWatchableCollectionModifier();
             if (watcher != null)

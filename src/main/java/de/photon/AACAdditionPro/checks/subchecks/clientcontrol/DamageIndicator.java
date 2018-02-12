@@ -61,8 +61,6 @@ public class DamageIndicator extends PacketAdapter implements Module
              (entity instanceof Monster && spoofMonsters) ||
              (entity instanceof Animals && spoofAnimals)))
         {
-            // final List<WrappedWatchableObject> wrappedWatchableObjects = ;
-
             // Index of the health value in ENTITY_METADATA
             final int index;
 
@@ -94,7 +92,6 @@ public class DamageIndicator extends PacketAdapter implements Module
             }
 
             // Set the new metadata.
-            //entityMetadataWrapper.setMetadata(wrappedWatchableObjects);
             System.out.print("Modified metadata: " + entity.getName() + " | " + event.getPlayer().getName());
         }
     }

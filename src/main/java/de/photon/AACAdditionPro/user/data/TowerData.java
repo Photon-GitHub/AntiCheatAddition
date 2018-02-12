@@ -30,7 +30,7 @@ public class TowerData extends TimeData
 
     public TowerData(final User user)
     {
-        super(user);
+        super(user, 0);
     }
 
     /**

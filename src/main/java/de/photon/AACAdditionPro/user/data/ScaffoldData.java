@@ -27,7 +27,7 @@ public class ScaffoldData extends TimeData
 
     public ScaffoldData(User user)
     {
-        super(user);
+        super(user, 0);
     }
 
     /**

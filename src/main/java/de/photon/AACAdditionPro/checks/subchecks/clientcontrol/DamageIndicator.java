@@ -72,8 +72,8 @@ public class DamageIndicator extends PacketAdapter implements Module
                 case MC188:
                     // index 6 in 1.8
                     index = 6;
-
-                    if (!entity.getPassengers().isEmpty())
+                    
+                    if (entity.getPassenger() == null)
                     {
                         return;
                     }
@@ -84,7 +84,8 @@ public class DamageIndicator extends PacketAdapter implements Module
                 case MC112:
                     // index 7 in 1.10+
                     index = 7;
-                    if (entity.getPassenger() == null)
+
+                    if (!entity.getPassengers().isEmpty())
                     {
                         return;
                     }

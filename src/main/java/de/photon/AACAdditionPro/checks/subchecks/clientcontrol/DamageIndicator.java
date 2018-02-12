@@ -31,7 +31,7 @@ public class DamageIndicator extends PacketAdapter implements Module
 
     public DamageIndicator()
     {
-        super(AACAdditionPro.getInstance(), ListenerPriority.HIGH, PacketType.Play.Server.ENTITY_METADATA);
+        super(AACAdditionPro.getInstance(), ListenerPriority.HIGH, PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN);
     }
 
     @Override
@@ -45,6 +45,9 @@ public class DamageIndicator extends PacketAdapter implements Module
             return;
         }
 
+        // Clone the packet
+        event.setPacket(event.getPacket().deepClone());
+
         final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata(event.getPacket());
         final Entity entity = entityMetadataWrapper.getEntity(event);
 
@@ -52,7 +55,8 @@ public class DamageIndicator extends PacketAdapter implements Module
         // Not the player himself.
         // Offline mode servers have name-based UUIDs, so that should be no problem.
         if (event.getPlayer().getEntityId() != entityMetadataWrapper.getEntityID() &&
-            !entity.isDead() &&
+            // Passenger problems
+            entity.getPassengers().isEmpty() &&
             // Bossbar problems
             !(entity instanceof Wither) &&
             !(entity instanceof EnderDragon) &&
@@ -85,8 +89,11 @@ public class DamageIndicator extends PacketAdapter implements Module
             {
                 if (wrappedWatchableObject.getIndex() == index)
                 {
+                    if ((float) wrappedWatchableObject.getValue() > 0F)
                     // Set spoofed health
-                    wrappedWatchableObject.setValue(20F);
+                    {
+                        wrappedWatchableObject.setValue(Float.NaN);
+                    }
                     break;
                 }
             }

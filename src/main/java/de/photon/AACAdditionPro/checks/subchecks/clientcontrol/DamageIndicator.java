@@ -110,8 +110,6 @@ public class DamageIndicator extends PacketAdapter implements Module
                     }
                 }
             }
-
-            System.out.print("Modified metadata: " + entity.getName() + " | " + event.getPlayer().getName());
         }
     }
 

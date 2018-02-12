@@ -5,8 +5,8 @@ import com.google.common.io.ByteStreams;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -26,13 +26,15 @@ public class BetterSprintingControl implements PluginMessageListener, ClientCont
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user)) {
+        if (User.isUserInvalid(user))
+        {
             return;
         }
 
         // Bypassed players are already filtered out.
         // The mod provides a method to disable it
-        if (disable) {
+        if (disable)
+        {
             final ByteArrayDataOutput out1 = ByteStreams.newDataOutput();
             out1.writeByte(1);
 

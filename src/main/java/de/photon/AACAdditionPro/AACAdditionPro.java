@@ -25,6 +25,7 @@ import de.photon.AACAdditionPro.checks.subchecks.SkinBlinker;
 import de.photon.AACAdditionPro.checks.subchecks.Teaming;
 import de.photon.AACAdditionPro.checks.subchecks.Tower;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.BetterSprintingControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.DamageIndicator;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.FiveZigControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.ForgeControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LabyModControl;
@@ -36,9 +37,9 @@ import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VapeControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.WorldDownloaderControl;
 import de.photon.AACAdditionPro.command.MainCommand;
 import de.photon.AACAdditionPro.events.APILoadedEvent;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
-import de.photon.AACAdditionPro.util.entities.DelegatingKillauraEntityController;
+import de.photon.AACAdditionPro.util.fakeentity.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import lombok.Getter;
@@ -209,6 +210,7 @@ public class AACAdditionPro extends JavaPlugin
 
             // ClientControl
             this.moduleManager.registerObject(new BetterSprintingControl());
+            this.moduleManager.registerObject(new DamageIndicator());
             this.moduleManager.registerObject(new FiveZigControl());
             this.moduleManager.registerObject(new ForgeControl());
 

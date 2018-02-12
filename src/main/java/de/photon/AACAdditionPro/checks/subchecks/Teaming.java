@@ -3,8 +3,8 @@ package de.photon.AACAdditionPro.checks.subchecks;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.ConfigUtils;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
@@ -82,7 +82,7 @@ public class Teaming implements Listener, ViolationModule
                                 user.getPlayer().getGameMode() != GameMode.CREATIVE &&
                                 user.getPlayer().getGameMode() != GameMode.CREATIVE &&
                                 // Not engaged in pvp
-                                !user.getTeamingData().recentlyUpdated(no_pvp_time) &&
+                                !user.getTeamingData().recentlyUpdated(0, no_pvp_time) &&
                                 // Not in a bypassed region
                                 !this.isPlayerRegionalBypassed(user.getPlayer()))
                             {

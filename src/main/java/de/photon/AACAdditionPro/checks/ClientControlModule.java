@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.checks;
 
 import de.photon.AACAdditionPro.events.ClientControlEvent;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.general.StringUtils;
 import org.bukkit.Bukkit;

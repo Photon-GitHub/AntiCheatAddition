@@ -6,8 +6,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
@@ -50,7 +50,7 @@ public class Fastswitch extends PacketAdapter implements ViolationModule
             !canBeLegit(user.getPlayer().getInventory().getHeldItemSlot(), event.getPacket().getBytes().readSafely(0)))
         {
             // Already switched in the given timeframe
-            if (user.getFastSwitchData().recentlyUpdated(switch_milliseconds))
+            if (user.getFastSwitchData().recentlyUpdated(0, switch_milliseconds))
             {
 
                 // The ping is valid and in the borders that are set in the config
@@ -63,7 +63,7 @@ public class Fastswitch extends PacketAdapter implements ViolationModule
                 }
             }
 
-            user.getFastSwitchData().updateTimeStamp();
+            user.getFastSwitchData().updateTimeStamp(0);
         }
     }
 

@@ -6,8 +6,9 @@ import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
@@ -65,8 +66,8 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
 
     private void check(final User user)
     {
-        final int ping = (int) (System.currentTimeMillis() - user.getPingData().getTimeStamp());
-        final int nmsPing = AACAPIProvider.getAPI().getPing(user.getPlayer());
+        final long ping = user.getPingData().passedTime(0);
+        final long nmsPing = AACAPIProvider.getAPI().getPing(user.getPlayer());
 
         /*
             If the measured ping is too high for a sophisticated result or a ping-update is scheduled soon ignore this to
@@ -99,7 +100,7 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
                     for (final User user : UserManager.getUsersUnwrapped())
                     {
                         //Took too long to check
-                        if (user.getPingData().isCurrentlyChecking && user.getPingData().recentlyUpdated(1000))
+                        if (user.getPingData().isCurrentlyChecking && user.getPingData().recentlyUpdated(0, 1000))
                         {
                             user.getPingData().teleportLocation = null;
                             user.getPingData().isCurrentlyChecking = false;
@@ -114,11 +115,11 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
                                 // Player is onGround
                                 user.getPlayer().isOnGround() &&
                                 // Player moving (Freecam compatibility)
-                                user.getPositionData().hasPlayerMovedRecently(Freecam.getIdle_time(), false) &&
+                                user.getPositionData().hasPlayerMovedRecently(Freecam.getIdle_time(), PositionData.MovementType.NONHEAD) &&
                                 // The Player has a high ping or the check is scheduled
                                 (user.getPingData().forceUpdatePing || AACAPIProvider.getAPI().getPing(user.getPlayer()) > max_real_ping * ping_offset) &&
                                 // Safe-Time upon login as of fluctuating ping
-                                !user.getLoginData().recentlyUpdated(10000))
+                                !user.getLoginData().recentlyUpdated(0, 10000))
                         {
                             // Now checking
                             user.getPingData().isCurrentlyChecking = true;
@@ -126,7 +127,7 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
                             user.getPingData().forceUpdatePing = false;
 
                             user.getPingData().teleportLocation = user.getPlayer().getLocation();
-                            user.getPingData().updateTimeStamp();
+                            user.getPingData().updateTimeStamp(0);
 
                             final WrapperPlayServerPosition wrapperPlayServerPosition = new WrapperPlayServerPosition();
                             wrapperPlayServerPosition.setAllFlags();

@@ -7,8 +7,10 @@ import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.user.data.PositionData;
+import de.photon.AACAdditionPro.util.entity.livingentity.ElytraUtil;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
@@ -80,7 +82,7 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
                                                                           Hitbox.SNEAKING_PLAYER :
                                                                           Hitbox.PLAYER) &&
             // Not using an Elytra
-            user.getElytraData().isNotFlyingWithElytra() &&
+            !ElytraUtil.isFlyingWithElytra(user.getPlayer()) &&
             // Player is in an inventory
             user.getInventoryData().hasOpenInventory() &&
             // Player has not been hit recently
@@ -161,7 +163,7 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
         // Flight may trigger this
         if (!user.getPlayer().getAllowFlight() &&
             // Not using an Elytra
-            user.getElytraData().isNotFlyingWithElytra() &&
+            !ElytraUtil.isFlyingWithElytra(user.getPlayer()) &&
             // Sprinting and Sneaking as detection
             (user.getPlayer().isSprinting() || user.getPlayer().isSneaking()) &&
             // The player has an opened inventory
@@ -169,7 +171,7 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
             // The player opened the inventory at least a quarter second ago
             user.getInventoryData().notRecentlyOpened(250) &&
             // Is the player moving
-            user.getPositionData().hasPlayerMovedRecently(true))
+            user.getPositionData().hasPlayerMovedRecently(1000, PositionData.MovementType.ANY))
         {
             vlManager.flag(user.getPlayer(), 4, cancel_vl, () ->
             {

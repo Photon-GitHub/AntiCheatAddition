@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.api.killauraentity;
 
 /**
  * This is used to determine where to set an {@link org.bukkit.inventory.ItemStack} in the {@link org.bukkit.inventory.Inventory}
- * of the {@link de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity}
+ * of the {@link de.photon.AACAdditionPro.util.fakeentity.ClientsidePlayerEntity}
  */
 public enum KillauraEntityEquipmentCategory
 {

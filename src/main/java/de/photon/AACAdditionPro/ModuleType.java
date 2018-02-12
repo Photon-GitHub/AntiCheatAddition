@@ -33,6 +33,7 @@ public enum ModuleType
 
     // Client control
     BETTERSPRINTING_CONTROL("ClientControl.BetterSprinting", "uses BetterSprinting"),
+    DAMAGE_INDICATOR("ClientControl.DamageIndicator", "uses DamageIndicator"),
     FIVEZIG_CONTROL("ClientControl.5zig", "uses 5zig"),
     FORGE_CONTROL("ClientControl.Forge", "uses Forge"),
     LABYMOD_CONTROL("ClientControl.LabyMod", "uses LabyMod"),

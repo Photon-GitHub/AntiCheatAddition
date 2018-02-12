@@ -2,12 +2,13 @@ package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.datawrappers.TowerBlockPlace;
-import de.photon.AACAdditionPro.util.entities.movement.Gravitation;
-import de.photon.AACAdditionPro.util.entities.movement.Jumping;
+import de.photon.AACAdditionPro.util.entity.livingentity.PotionUtil;
+import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
+import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
@@ -48,7 +49,7 @@ public class Tower implements Listener, ViolationModule
         }
 
         //To prevent too fast towering -> Timeout
-        if (user.getTowerData().recentlyUpdated(timeout))
+        if (user.getTowerData().recentlyUpdated(0, timeout))
         {
             event.setCancelled(true);
             InventoryUtils.syncUpdateInventory(user.getPlayer());
@@ -84,7 +85,7 @@ public class Tower implements Listener, ViolationModule
                         new TowerBlockPlace(
                                 blockPlaced,
                                 //Jump boost effect is important
-                                user.getPotionData().getAmplifier(PotionEffectType.JUMP)
+                                PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.JUMP))
                         )))
             {
                 DoubleSummaryStatistics summaryStatistics = new DoubleSummaryStatistics();
@@ -109,7 +110,7 @@ public class Tower implements Listener, ViolationModule
                     vlManager.flag(event.getPlayer(), vlToAdd, cancel_vl, () ->
                     {
                         event.setCancelled(true);
-                        user.getTowerData().updateTimeStamp();
+                        user.getTowerData().updateTimeStamp(0);
                         InventoryUtils.syncUpdateInventory(user.getPlayer());
                         // If not cancelled run the verbose message with additional data
                     }, () -> VerboseSender.sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + lenientThreshold + " | real: " + average));

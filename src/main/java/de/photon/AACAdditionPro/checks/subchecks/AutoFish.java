@@ -3,8 +3,8 @@ package de.photon.AACAdditionPro.checks.subchecks;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.general.StringUtils;
@@ -116,7 +116,7 @@ public class AutoFish implements Listener, ViolationModule
                 if (parts[0])
                 {
                     // Too few time has passed since the fish bit.
-                    if (user.getFishingData().recentlyUpdated(fishing_milliseconds))
+                    if (user.getFishingData().recentlyUpdated(0, fishing_milliseconds))
                     {
 
                         // Get the correct amount of vl.
@@ -125,7 +125,7 @@ public class AutoFish implements Listener, ViolationModule
                         // Function: 1 - 0.125x
                         for (byte b = 5; b > 0; b--)
                         {
-                            if (user.getFishingData().recentlyUpdated((long) (1 - 0.125 * b) * fishing_milliseconds))
+                            if (user.getFishingData().recentlyUpdated(0, (long) (1 - 0.125 * b) * fishing_milliseconds))
                             {
                                 // Flag for vl = b + 1 because there would otherwise be a "0-vl"
                                 vlManager.flag(event.getPlayer(), b + 1, cancel_vl, () -> event.setCancelled(true), () -> {});
@@ -135,7 +135,7 @@ public class AutoFish implements Listener, ViolationModule
                     }
 
                     // Reset the bite-timestamp to be ready for the next one
-                    user.getFishingData().nullifyTimeStamp();
+                    user.getFishingData().nullifyTimeStamp(0);
 
                     // Consistency check
                     user.getFishingData().updateTimeStamp(1);
@@ -148,7 +148,7 @@ public class AutoFish implements Listener, ViolationModule
                 user.getFishingData().failedCounter++;
                 break;
             case BITE:
-                user.getFishingData().updateTimeStamp();
+                user.getFishingData().updateTimeStamp(0);
                 break;
         }
     }

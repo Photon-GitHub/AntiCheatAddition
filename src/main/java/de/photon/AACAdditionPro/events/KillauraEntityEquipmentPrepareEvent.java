@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerEvent;
 import java.util.List;
 
 /**
- * This event is called once a {@link de.photon.AACAdditionPro.util.entities.ClientsidePlayerEntity} modifies an item in
+ * This event is called once a {@link de.photon.AACAdditionPro.util.fakeentity.ClientsidePlayerEntity} modifies an item in
  * its {@link org.bukkit.inventory.Inventory}. The replacing {@link Material} will be chosen from the provided {@link List}
  * of {@link Material}s. The {@link KillauraEntityEquipmentCategory} enables you to see the usage of the {@link org.bukkit.entity.Item}.
  * <p>

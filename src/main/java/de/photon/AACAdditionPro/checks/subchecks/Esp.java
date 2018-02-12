@@ -3,8 +3,8 @@ package de.photon.AACAdditionPro.checks.subchecks;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
-import de.photon.AACAdditionPro.userdata.User;
-import de.photon.AACAdditionPro.userdata.UserManager;
+import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.VectorUtils;
@@ -161,7 +161,7 @@ public class Esp implements ViolationModule
                                 // Not bypassed
                                 if (!pair.usersOfPair[b].isBypassed() &&
                                     // Has not logged in recently to prevent bugs
-                                    !pair.usersOfPair[b].getLoginData().recentlyUpdated(3000))
+                                    !pair.usersOfPair[b].getLoginData().recentlyUpdated(0, 3000))
                                 {
                                     final Vector[] cameraVectors = getCameraVectors(observer);
 

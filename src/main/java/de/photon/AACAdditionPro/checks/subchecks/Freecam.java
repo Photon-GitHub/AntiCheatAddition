@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import org.bukkit.Bukkit;
@@ -42,7 +43,7 @@ public class Freecam implements ViolationModule
                                 // No item on the cursor
                                 user.getPlayer().getItemOnCursor().getType() == Material.AIR &&
                                 // Not moving
-                                !user.getPositionData().hasPlayerMovedRecently(idle_time, true))
+                                !user.getPositionData().hasPlayerMovedRecently(idle_time, PositionData.MovementType.ANY))
                         {
                             final WrapperPlayServerPosition setBackPacketWrapper = new WrapperPlayServerPosition();
                             setBackPacketWrapper.setAllFlags();

@@ -9,6 +9,7 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.entity.livingentity.ElytraUtil;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
@@ -170,7 +171,7 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
             // The player opened the inventory at least a quarter second ago
             user.getInventoryData().notRecentlyOpened(250) &&
             // Is the player moving
-            user.getPositionData().hasPlayerMovedRecently(true))
+            user.getPositionData().hasPlayerMovedRecently(1000, PositionData.MovementType.ANY))
         {
             vlManager.flag(user.getPlayer(), 4, cancel_vl, () ->
             {

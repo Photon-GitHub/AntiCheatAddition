@@ -20,7 +20,8 @@ public class PositionData extends TimeData implements Listener
 
     public PositionData(final User user)
     {
-        super(user, System.currentTimeMillis(), System.currentTimeMillis());
+        // First one is head movement, second one normal movement and third one xz-movement.
+        super(user, System.currentTimeMillis(), System.currentTimeMillis(), System.currentTimeMillis());
         AACAdditionPro.getInstance().registerListener(this);
     }
 
@@ -32,12 +33,17 @@ public class PositionData extends TimeData implements Listener
             // Head + normal movement
             this.updateTimeStamp(0);
 
+            // xz movement only
             if (event.getFrom().getX() != event.getTo().getX() ||
-                event.getFrom().getY() != event.getTo().getY() ||
                 event.getFrom().getZ() != event.getTo().getZ())
             {
-                // Normal movement only
                 this.updateTimeStamp(1);
+                this.updateTimeStamp(2);
+            }
+            // Any non-head movement.
+            else if (event.getFrom().getY() != event.getTo().getY())
+            {
+                updateTimeStamp(1);
             }
         }
     }
@@ -45,25 +51,13 @@ public class PositionData extends TimeData implements Listener
     /**
      * This checks if a player moved recently.
      *
-     * @param ignoreHead Should head-movement be ignored
+     * @param movementType what movement should be checked
      *
      * @return true if the player has moved in the last second
      */
-    public boolean hasPlayerMovedRecently(final boolean ignoreHead)
+    public boolean hasPlayerMovedRecently(final long milliseconds, final MovementType movementType)
     {
-        return hasPlayerMovedRecently(1000, ignoreHead);
-    }
-
-    /**
-     * This checks if a player moved recently.
-     *
-     * @param ignoreHead Should head-movement be ignored
-     *
-     * @return true if the player has moved in the last second
-     */
-    public boolean hasPlayerMovedRecently(final long milliseconds, final boolean ignoreHead)
-    {
-        return this.recentlyUpdated(ignoreHead ? 1 : 0, milliseconds);
+        return this.recentlyUpdated(movementType.ordinal(), milliseconds);
     }
 
     @Override
@@ -71,5 +65,16 @@ public class PositionData extends TimeData implements Listener
     {
         HandlerList.unregisterAll(this);
         super.unregister();
+    }
+
+    /**
+     * Determines what index should be checkd in the {@link PositionData}.
+     */
+    public enum MovementType
+    {
+        // Position here is important as ordinal is used!
+        ANY,
+        NONHEAD,
+        XZONLY
     }
 }

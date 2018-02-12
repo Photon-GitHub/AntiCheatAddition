@@ -8,6 +8,7 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
@@ -114,7 +115,7 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
                                 // Player is onGround
                                 user.getPlayer().isOnGround() &&
                                 // Player moving (Freecam compatibility)
-                                user.getPositionData().hasPlayerMovedRecently(Freecam.getIdle_time(), false) &&
+                                user.getPositionData().hasPlayerMovedRecently(Freecam.getIdle_time(), PositionData.MovementType.NONHEAD) &&
                                 // The Player has a high ping or the check is scheduled
                                 (user.getPingData().forceUpdatePing || AACAPIProvider.getAPI().getPing(user.getPlayer()) > max_real_ping * ping_offset) &&
                                 // Safe-Time upon login as of fluctuating ping

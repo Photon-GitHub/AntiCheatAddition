@@ -9,6 +9,7 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
@@ -80,7 +81,7 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
             currentYaw == user.getLookPacketData().lastYaw &&
             currentPitch == user.getLookPacketData().lastPitch &&
             // Labymod fp when standing still
-            user.getPositionData().hasPlayerMovedRecently(100, true))
+            user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
         {
             vlManager.flag(user.getPlayer(), cancel_vl, () ->
             {

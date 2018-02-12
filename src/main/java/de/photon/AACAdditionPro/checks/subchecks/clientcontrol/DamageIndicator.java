@@ -106,6 +106,7 @@ public class DamageIndicator extends PacketAdapter implements Module
 
                 // Set the new metadata.
                 entityMetadataWrapper.setMetadata(wrappedWatchableObjects);
+                System.out.print("Modified metadata: " + livingEntity.getName() + " | " + event.getPlayer().getName());
             }
         }
     }

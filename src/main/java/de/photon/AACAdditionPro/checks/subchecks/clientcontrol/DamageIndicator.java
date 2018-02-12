@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.Module;
@@ -12,13 +13,14 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityMetadata;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Wither;
+
+import java.util.List;
 
 public class DamageIndicator extends PacketAdapter implements Module
 {
@@ -48,13 +50,12 @@ public class DamageIndicator extends PacketAdapter implements Module
         // Clone the packet to prevent a serversided connection of the health.
         event.setPacket(event.getPacket().deepClone());
 
-        final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata(event.getPacket());
-        final Entity entity = entityMetadataWrapper.getEntity(event);
+        final Entity entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
 
         // Should spoof?
         // Not the player himself.
         // Offline mode servers have name-based UUIDs, so that should be no problem.
-        if (event.getPlayer().getEntityId() != entityMetadataWrapper.getEntityID() &&
+        if (event.getPlayer().getEntityId() != entity.getEntityId() &&
             // Bossbar problems
             !(entity instanceof Wither) &&
             !(entity instanceof EnderDragon) &&
@@ -72,7 +73,7 @@ public class DamageIndicator extends PacketAdapter implements Module
                 case MC188:
                     // index 6 in 1.8
                     index = 6;
-                    
+
                     if (entity.getPassenger() == null)
                     {
                         return;
@@ -94,16 +95,19 @@ public class DamageIndicator extends PacketAdapter implements Module
                     throw new IllegalStateException("Unknown minecraft version");
             }
 
-            for (WrappedWatchableObject wrappedWatchableObject : entityMetadataWrapper.getMetadata())
+            final StructureModifier<List<WrappedWatchableObject>> watcher = event.getPacket().getWatchableCollectionModifier();
+            if (watcher != null)
             {
-                if (wrappedWatchableObject.getIndex() == index)
+                List<WrappedWatchableObject> read = watcher.read(0);
+                if (read != null)
                 {
-                    if ((float) wrappedWatchableObject.getValue() > 0F)
-                    // Set spoofed health
+                    for (WrappedWatchableObject watch : read)
                     {
-                        wrappedWatchableObject.setValue(Float.NaN);
+                        if ((watch.getIndex() == index) && ((Float) watch.getValue() > 0.0F))
+                        {
+                            watch.setValue(Float.NaN);
+                        }
                     }
-                    break;
                 }
             }
 

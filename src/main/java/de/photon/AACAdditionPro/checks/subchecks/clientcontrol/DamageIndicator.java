@@ -15,10 +15,12 @@ import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityMetadata;
 import org.bukkit.entity.Animals;
+import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.Wither;
 
 import java.util.List;
 
@@ -61,12 +63,15 @@ public class DamageIndicator extends PacketAdapter implements Module
 
             // Should spoof?
             if (!livingEntity.isDead() &&
+                // Bossbar problems
+                !(livingEntity instanceof Wither) &&
+                !(livingEntity instanceof EnderDragon) &&
+                // Categories
                 (livingEntity instanceof HumanEntity && spoofPlayers) ||
                 (livingEntity instanceof Monster && spoofMonsters) ||
                 (livingEntity instanceof Animals) && spoofAnimals)
             {
                 final List<WrappedWatchableObject> wrappedWatchableObjects = entityMetadataWrapper.getMetadata();
-
 
                 // Add spoofed health
                 switch (ServerVersion.getActiveServerVersion())

@@ -55,8 +55,6 @@ public class DamageIndicator extends PacketAdapter implements Module
         // Not the player himself.
         // Offline mode servers have name-based UUIDs, so that should be no problem.
         if (event.getPlayer().getEntityId() != entityMetadataWrapper.getEntityID() &&
-            // Passenger problems
-            entity.getPassengers().isEmpty() &&
             // Bossbar problems
             !(entity instanceof Wither) &&
             !(entity instanceof EnderDragon) &&
@@ -68,11 +66,17 @@ public class DamageIndicator extends PacketAdapter implements Module
             // Index of the health value in ENTITY_METADATA
             final int index;
 
+            // Passenger problems
             switch (ServerVersion.getActiveServerVersion())
             {
                 case MC188:
                     // index 6 in 1.8
                     index = 6;
+
+                    if (!entity.getPassengers().isEmpty())
+                    {
+                        return;
+                    }
                     break;
 
                 case MC110:
@@ -80,6 +84,10 @@ public class DamageIndicator extends PacketAdapter implements Module
                 case MC112:
                     // index 7 in 1.10+
                     index = 7;
+                    if (entity.getPassenger() == null)
+                    {
+                        return;
+                    }
                     break;
                 default:
                     throw new IllegalStateException("Unknown minecraft version");

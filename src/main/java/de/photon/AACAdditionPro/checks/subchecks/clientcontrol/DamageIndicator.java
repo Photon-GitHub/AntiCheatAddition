@@ -20,8 +20,6 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Wither;
 
-import java.util.List;
-
 public class DamageIndicator extends PacketAdapter implements Module
 {
     @LoadFromConfiguration(configPath = ".spoof.players")
@@ -63,7 +61,7 @@ public class DamageIndicator extends PacketAdapter implements Module
              (entity instanceof Monster && spoofMonsters) ||
              (entity instanceof Animals && spoofAnimals)))
         {
-            final List<WrappedWatchableObject> wrappedWatchableObjects = entityMetadataWrapper.getMetadata();
+            // final List<WrappedWatchableObject> wrappedWatchableObjects = ;
 
             // Index of the health value in ENTITY_METADATA
             final int index;
@@ -85,7 +83,7 @@ public class DamageIndicator extends PacketAdapter implements Module
                     throw new IllegalStateException("Unknown minecraft version");
             }
 
-            for (WrappedWatchableObject wrappedWatchableObject : wrappedWatchableObjects)
+            for (WrappedWatchableObject wrappedWatchableObject : entityMetadataWrapper.getMetadata())
             {
                 if (wrappedWatchableObject.getIndex() == index)
                 {
@@ -96,7 +94,7 @@ public class DamageIndicator extends PacketAdapter implements Module
             }
 
             // Set the new metadata.
-            entityMetadataWrapper.setMetadata(wrappedWatchableObjects);
+            //entityMetadataWrapper.setMetadata(wrappedWatchableObjects);
             System.out.print("Modified metadata: " + entity.getName() + " | " + event.getPlayer().getName());
         }
     }

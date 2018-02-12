@@ -98,7 +98,7 @@ public class DamageIndicator extends PacketAdapter implements Module
             final StructureModifier<List<WrappedWatchableObject>> watcher = event.getPacket().getWatchableCollectionModifier();
             if (watcher != null)
             {
-                List<WrappedWatchableObject> read = watcher.read(0);
+                final List<WrappedWatchableObject> read = watcher.read(0);
                 if (read != null)
                 {
                     for (WrappedWatchableObject watch : read)

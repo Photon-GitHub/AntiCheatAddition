@@ -4,7 +4,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.Module;
@@ -73,14 +72,13 @@ public class DamageIndicator extends PacketAdapter implements Module
             {
                 final List<WrappedWatchableObject> wrappedWatchableObjects = entityMetadataWrapper.getMetadata();
 
+                final int index;
                 // Add spoofed health
                 switch (ServerVersion.getActiveServerVersion())
                 {
                     case MC188:
                         // index 6 in 1.8
-                        // Remove original health.
-                        wrappedWatchableObjects.removeIf(wrappedWatchableObject -> wrappedWatchableObject.getIndex() == 6);
-                        wrappedWatchableObjects.add(new WrappedWatchableObject(6, 20F));
+                        index = 6;
                         break;
 
                     case MC110:
@@ -88,12 +86,20 @@ public class DamageIndicator extends PacketAdapter implements Module
                     case MC112:
                         // index 7 in 1.10+
                         // Remove original health.
-                        wrappedWatchableObjects.removeIf(wrappedWatchableObject -> wrappedWatchableObject.getIndex() == 7);
-                        final WrappedDataWatcher.WrappedDataWatcherObject healthWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(7, WrappedDataWatcher.Registry.get(Float.class));
-                        wrappedWatchableObjects.add(new WrappedWatchableObject(healthWatcher, 20F));
+                        index = 7;
                         break;
                     default:
                         throw new IllegalStateException("Unknown minecraft version");
+                }
+
+                // Set health
+                for (WrappedWatchableObject wrappedWatchableObject : wrappedWatchableObjects)
+                {
+                    if (wrappedWatchableObject.getIndex() == index)
+                    {
+                        wrappedWatchableObject.setValue(20F, true);
+                        break;
+                    }
                 }
 
                 // Set the new metadata.

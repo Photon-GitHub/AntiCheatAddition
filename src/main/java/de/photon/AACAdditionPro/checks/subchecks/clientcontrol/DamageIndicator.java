@@ -67,14 +67,14 @@ public class DamageIndicator extends PacketAdapter implements Module
             {
                 final List<WrappedWatchableObject> wrappedWatchableObjects = entityMetadataWrapper.getMetadata();
 
-                // Remove original health.
-                wrappedWatchableObjects.removeIf(wrappedWatchableObject -> wrappedWatchableObject.getIndex() == 7);
 
                 // Add spoofed health
                 switch (ServerVersion.getActiveServerVersion())
                 {
                     case MC188:
                         // index 6 in 1.8
+                        // Remove original health.
+                        wrappedWatchableObjects.removeIf(wrappedWatchableObject -> wrappedWatchableObject.getIndex() == 6);
                         wrappedWatchableObjects.add(new WrappedWatchableObject(6, 20F));
                         break;
 
@@ -82,6 +82,8 @@ public class DamageIndicator extends PacketAdapter implements Module
                     case MC111:
                     case MC112:
                         // index 7 in 1.10+
+                        // Remove original health.
+                        wrappedWatchableObjects.removeIf(wrappedWatchableObject -> wrappedWatchableObject.getIndex() == 7);
                         final WrappedDataWatcher.WrappedDataWatcherObject healthWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(7, WrappedDataWatcher.Registry.get(Float.class));
                         wrappedWatchableObjects.add(new WrappedWatchableObject(healthWatcher, 20F));
                         break;

@@ -53,7 +53,9 @@ public class DamageIndicator extends PacketAdapter implements Module
         // Entity must be living to have health.
         if (entity instanceof LivingEntity &&
             // Not the player himself.
-            !user.getPlayer().getUniqueId().equals(entity.getUniqueId()))
+            !user.getPlayer().getUniqueId().equals(entity.getUniqueId()) &&
+            // Offline mode servers
+            !user.getPlayer().getName().equals(entity.getName()))
         {
             final LivingEntity livingEntity = (LivingEntity) entity;
 

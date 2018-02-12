@@ -71,7 +71,7 @@ public class DamageIndicator extends PacketAdapter implements Module
                     // index 6 in 1.8
                     index = 6;
 
-                    if (entity.getPassenger() == null)
+                    if (entity.getPassenger() != null)
                     {
                         return;
                     }
@@ -91,7 +91,7 @@ public class DamageIndicator extends PacketAdapter implements Module
                 default:
                     throw new IllegalStateException("Unknown minecraft version");
             }
-            
+
             // Clone the packet to prevent a serversided connection of the health.
             event.setPacket(event.getPacket().deepClone());
 

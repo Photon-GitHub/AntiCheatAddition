@@ -55,7 +55,7 @@ public class DamageIndicator extends PacketAdapter implements Module
         if (entity instanceof LivingEntity &&
             // Not the player himself.
             // Offline mode servers have name-based UUIDs, so that should pose no problem.
-            !user.getPlayer().getUniqueId().equals(entity.getUniqueId()))
+            !event.getPlayer().getUniqueId().equals(entity.getUniqueId()))
         {
             final LivingEntity livingEntity = (LivingEntity) entity;
 

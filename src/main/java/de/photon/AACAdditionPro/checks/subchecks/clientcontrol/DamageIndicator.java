@@ -51,7 +51,7 @@ public class DamageIndicator extends PacketAdapter implements Module
         // Should spoof?
         // Not the player himself.
         // Offline mode servers have name-based UUIDs, so that should be no problem.
-        if (!event.getPlayer().getUniqueId().equals(entity.getUniqueId()) &&
+        if (event.getPlayer().getEntityId() != entityMetadataWrapper.getEntityID() &&
             !entity.isDead() &&
             // Bossbar problems
             !(entity instanceof Wither) &&

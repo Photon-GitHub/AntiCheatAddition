@@ -72,7 +72,9 @@ public class DamageIndicator extends PacketAdapter implements Module
             {
                 final List<WrappedWatchableObject> wrappedWatchableObjects = entityMetadataWrapper.getMetadata();
 
+                // Index of the health value in ENTITY_METADATA
                 final int index;
+
                 // Add spoofed health
                 switch (ServerVersion.getActiveServerVersion())
                 {

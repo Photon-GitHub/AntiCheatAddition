@@ -54,7 +54,7 @@ public class DamageIndicator extends PacketAdapter implements Module
         // Entity must be living to have health.
         if (entity instanceof LivingEntity &&
             // Not the player himself.
-            // Offline mode servers have name-based UUIDs, so that should pose no problem.
+            // Offline mode servers have name-based UUIDs, so that should be no problem.
             !event.getPlayer().getUniqueId().equals(entity.getUniqueId()))
         {
             final LivingEntity livingEntity = (LivingEntity) entity;
@@ -74,7 +74,6 @@ public class DamageIndicator extends PacketAdapter implements Module
                 // Index of the health value in ENTITY_METADATA
                 final int index;
 
-                // Add spoofed health
                 switch (ServerVersion.getActiveServerVersion())
                 {
                     case MC188:
@@ -92,12 +91,12 @@ public class DamageIndicator extends PacketAdapter implements Module
                         throw new IllegalStateException("Unknown minecraft version");
                 }
 
-                // Set health
                 for (WrappedWatchableObject wrappedWatchableObject : wrappedWatchableObjects)
                 {
                     if (wrappedWatchableObject.getIndex() == index)
                     {
-                        wrappedWatchableObject.setValue(20F, false);
+                        // Set spoofed health
+                        wrappedWatchableObject.setValue(20F);
                         break;
                     }
                 }

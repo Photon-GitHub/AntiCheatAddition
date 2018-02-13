@@ -143,7 +143,7 @@ public class Scaffold implements Listener, ViolationModule
                     user.getScaffoldData().sprintingFails--;
                 }
             }
-            
+
 
             // ----------------------------------------- Suspicious stops ------------------------------------------- //
 

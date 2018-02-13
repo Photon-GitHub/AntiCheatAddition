@@ -64,7 +64,7 @@ public class Scaffold extends PacketAdapter implements Listener, ViolationModule
             return;
         }
 
-        //To prevent too fast towering -> Timeout
+        // To prevent too fast scaffolding -> Timeout
         if (user.getScaffoldData().recentlyUpdated(0, timeout))
         {
             event.setCancelled(true);

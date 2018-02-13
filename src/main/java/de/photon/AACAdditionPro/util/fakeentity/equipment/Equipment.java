@@ -16,7 +16,7 @@ public class Equipment implements Cloneable
     /**
      * The selector is designed to be a singleton. So he can feed multiple inventories at once
      */
-    private static final EquipmentSelector selector = new EquipmentSelector( new EquipmentDatabase() );
+    private static final EquipmentSelector selector = new EquipmentSelector(new EquipmentDatabase());
 
     /**
      * The {@link HashMap} with all {@link ItemStack}s.
@@ -39,8 +39,10 @@ public class Equipment implements Cloneable
     {
         // Let the selector get the armor
         Material[] armor = Equipment.selector.selectArmor(this.entity);
-        if ( armor != null ) {
-            for (int i = 0; i < armor.length; i++) {
+        if (armor != null)
+        {
+            for (int i = 0; i < armor.length; i++)
+            {
                 Material armorPiece = armor[i];
 
                 // Security fallback to prevent NPEs
@@ -80,7 +82,8 @@ public class Equipment implements Cloneable
      */
     private Map<EnumWrappers.ItemSlot, ItemStack> getEquipmentForServerVersion()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion())
+        {
             case MC188:
                 this.equipmentMap.remove(EnumWrappers.ItemSlot.OFFHAND);
                 break;
@@ -119,8 +122,9 @@ public class Equipment implements Cloneable
         return (Equipment) super.clone();
     }
 
-    public ItemStack getMainHand() {
-        return this.equipmentMap.get( EnumWrappers.ItemSlot.MAINHAND );
+    public ItemStack getMainHand()
+    {
+        return this.equipmentMap.get(EnumWrappers.ItemSlot.MAINHAND);
     }
 
 }

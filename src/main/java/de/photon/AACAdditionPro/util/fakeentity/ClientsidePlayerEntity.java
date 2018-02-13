@@ -21,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -105,20 +106,6 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             jump();
         }
 
-        // Swing items if enabled
-        if (shouldSwing)
-        {
-            if (lastSwing++ > MathUtils.randomBoundaryInt(15, 35))
-            {
-                lastSwing = 0;
-
-                if (isSwingable(equipment.getMainHand().getType()))
-                {
-                    swing();
-                }
-            }
-        }
-
         // Swap items if needed
         if (shouldSwap)
         {
@@ -127,6 +114,23 @@ public class ClientsidePlayerEntity extends ClientsideEntity
                 lastSwap = 0;
                 equipment.equipInHand();
                 equipment.equipPlayerEntity();
+            }
+        }
+
+        // Swing items if enabled
+        if (shouldSwing)
+        {
+            if (lastSwing++ > MathUtils.randomBoundaryInt(15, 35))
+            {
+                lastSwing = 0;
+
+                final ItemStack mainHandStack = equipment.getMainHand();
+
+                if (mainHandStack != null &&
+                    this.isSwingable(mainHandStack.getType()))
+                {
+                    swing();
+                }
             }
         }
     }

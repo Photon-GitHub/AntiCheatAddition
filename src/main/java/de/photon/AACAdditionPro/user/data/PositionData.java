@@ -29,8 +29,8 @@ public class PositionData extends TimeData implements Listener
          * 2 -> normal movement
          * 3 -> xz-movement.
          *
-         * 4 -> last sneaking
-         * 5 -> last sprinting
+         * 4 -> last sprinting
+         * 5 -> last sneaking
          */
         super(user, System.currentTimeMillis(), System.currentTimeMillis(), System.currentTimeMillis(), 0, 0);
         AACAdditionPro.getInstance().registerListener(this);
@@ -40,7 +40,7 @@ public class PositionData extends TimeData implements Listener
     public void on(final PlayerToggleSprintEvent event)
     {
         currentlySprinting = event.isSprinting();
-        this.updateTimeStamp(5);
+        this.updateTimeStamp(3);
     }
 
     @EventHandler
@@ -92,7 +92,7 @@ public class PositionData extends TimeData implements Listener
             return true;
         }
 
-        return this.recentlyUpdated(5, milliseconds);
+        return this.recentlyUpdated(3, milliseconds);
     }
 
     public boolean hasPlayerSneakedRecently(final long milliseconds)

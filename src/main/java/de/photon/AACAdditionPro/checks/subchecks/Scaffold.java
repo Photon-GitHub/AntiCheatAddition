@@ -85,7 +85,7 @@ public class Scaffold extends PacketAdapter implements Listener, ViolationModule
             // Check if the block is placed against one block face only, also implies no blocks above and below.
             BlockUtils.blocksAround(blockPlaced, false) == (byte) 1)
         {
-            
+
 
             // ------------------------------------------ Fast Rotations -------------------------------------------- //
 

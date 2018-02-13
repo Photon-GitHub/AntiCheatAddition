@@ -7,6 +7,7 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.util.datastructures.ConditionalBuffer;
 import de.photon.AACAdditionPro.util.datawrappers.ScaffoldBlockPlace;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
+import lombok.Getter;
 
 public class ScaffoldData extends TimeData
 {
@@ -15,6 +16,13 @@ public class ScaffoldData extends TimeData
     private static double DELAY_NORMAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".delays.normal");
     private static double DELAY_DIAGONAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".delays.diagonal");
 
+    /**
+     * This is used to determine fast rotations prior to scaffolding.
+     * One fast rotation might be legit, but more instances are a clear hint.
+     */
+    public byte rotationFails = 0;
+
+    @Getter
     private final ConditionalBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces = new ConditionalBuffer<ScaffoldBlockPlace>(BUFFER_SIZE)
     {
         @Override

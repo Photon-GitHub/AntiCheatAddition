@@ -434,6 +434,9 @@ Scaffold:
    # Violation before AACAdditionPro starts to cancel the block-places.
    # Set this to 0 to never cancel block-places.
    cancel_vl: 5
+   # How many suspicious rotations should Scaffold count as legit
+   # Set this to a negative value to deactivate rotation checking.
+   rotation_threshold: 2
    # Over how many values should AACAdditionPro take the average for the check
    buffer_size: 6
    # The minimum delay between blockplaces that will be enforced by AACAdditionPro (measured in ms)

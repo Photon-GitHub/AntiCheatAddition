@@ -34,6 +34,8 @@ public class Scaffold extends PacketAdapter implements Listener, ViolationModule
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
+    @LoadFromConfiguration(configPath = ".parts.headrotation.enabled")
+    private boolean headrotationEnabled;
     @LoadFromConfiguration(configPath = ".parts.rotation.enabled")
     private boolean rotationEnabled;
     @LoadFromConfiguration(configPath = ".parts.sprinting.enabled")

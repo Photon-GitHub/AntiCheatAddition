@@ -50,9 +50,11 @@ public class DamageIndicator extends PacketAdapter implements Module
         final Entity entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
 
         // Should spoof?
-        // Not the player himself.
-        // Offline mode servers have name-based UUIDs, so that should be no problem.
-        if (event.getPlayer().getEntityId() != entity.getEntityId() &&
+        // Clientside entities will be null in the world's entity list.
+        if (entity != null &&
+            // Not the player himself.
+            // Offline mode servers have name-based UUIDs, so that should be no problem.
+            event.getPlayer().getEntityId() != entity.getEntityId() &&
             // Bossbar problems
             !(entity instanceof Wither) &&
             !(entity instanceof EnderDragon) &&

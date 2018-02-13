@@ -12,15 +12,23 @@ import lombok.Getter;
 public class ScaffoldData extends TimeData
 {
     // Use static here as Datas are often created.
-    private static int BUFFER_SIZE = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".buffer_size");
-    private static double DELAY_NORMAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".delays.normal");
-    private static double DELAY_DIAGONAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".delays.diagonal");
+    private static int BUFFER_SIZE = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.buffer_size");
+    private static double DELAY_NORMAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.normal");
+    private static double DELAY_DIAGONAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.diagonal");
 
     /**
      * This is used to determine fast rotations prior to scaffolding.
      * One fast rotation might be legit, but more instances are a clear hint.
      */
-    public byte rotationFails = 0;
+    public int rotationFails = 0;
+
+    /**
+     * This is used to determine sprinting during scaffolding.
+     * Some sprinting might be legit.
+     */
+    public int sprintingFails = 0;
+
+    public double lastImportantCoordinateValue = 0.5;
 
     @Getter
     private final ConditionalBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces = new ConditionalBuffer<ScaffoldBlockPlace>(BUFFER_SIZE)

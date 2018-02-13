@@ -8,11 +8,13 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.datawrappers.ScaffoldBlockPlace;
 import de.photon.AACAdditionPro.util.entity.livingentity.PotionUtil;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.block.Block;
@@ -32,8 +34,17 @@ public class Scaffold extends PacketAdapter implements Listener, ViolationModule
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
-    @LoadFromConfiguration(configPath = ".rotation_threshold")
+    @LoadFromConfiguration(configPath = ".parts.rotation.enabled")
+    private boolean rotationEnabled;
+    @LoadFromConfiguration(configPath = ".parts.sprinting.enabled")
+    private boolean sprintingEnabled;
+    @LoadFromConfiguration(configPath = ".parts.stopping.enabled")
+    private boolean stoppingEnabled;
+
+    @LoadFromConfiguration(configPath = ".parts.rotation.rotation_threshold")
     private int rotationThreshold;
+    @LoadFromConfiguration(configPath = ".parts.sprinting.sprinting_threshold")
+    private int sprintingThreshold;
 
     public Scaffold()
     {
@@ -87,10 +98,10 @@ public class Scaffold extends PacketAdapter implements Listener, ViolationModule
         {
 
 
-            // ------------------------------------------ Fast Rotations -------------------------------------------- //
+            // --------------------------------------------- Rotations ---------------------------------------------- //
 
             // Rotation check enabled
-            if (this.rotationThreshold >= 0)
+            if (this.rotationEnabled)
             {
                 if (user.getLookPacketData().recentlyUpdated(1, 100))
                 {
@@ -109,6 +120,72 @@ public class Scaffold extends PacketAdapter implements Listener, ViolationModule
                 else if (user.getScaffoldData().rotationFails > 0)
                 {
                     user.getScaffoldData().rotationFails--;
+                }
+            }
+
+
+            // --------------------------------------------- Sprinting ---------------------------------------------- //
+
+            // Rotation check enabled
+            {
+                if (this.sprintingEnabled)
+                {
+                    if (user.getPositionData().hasPlayerSprintedRecently(600))
+                    {
+                        if (++user.getScaffoldData().sprintingFails > this.sprintingThreshold)
+                        {
+                            VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
+                            // Flag the player
+                            vlManager.flag(event.getPlayer(), 1, cancel_vl, () ->
+                            {
+                                event.setCancelled(true);
+                                user.getScaffoldData().updateTimeStamp(0);
+                                InventoryUtils.syncUpdateInventory(user.getPlayer());
+                            }, () -> {});
+                        }
+                    }
+                    else if (user.getScaffoldData().sprintingFails > 0)
+                    {
+                        user.getScaffoldData().sprintingFails--;
+                    }
+                }
+            }
+
+
+            // ----------------------------------------- Suspicious stops ------------------------------------------- //
+
+            // Not moved in the last 2 ticks while not sprinting and at the edge of a block
+            if (this.stoppingEnabled &&
+                user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY) &&
+                !user.getPositionData().hasPlayerSneakedRecently(100))
+            {
+                boolean flag;
+                final double importantCoordinateValue;
+                switch (event.getBlock().getFace(event.getBlockAgainst()))
+                {
+                    case EAST:
+                        flag = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX()) > 0.28;
+                    case WEST:
+                        flag = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX()) > 1.28;
+                    case NORTH:
+                        flag = MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ()) > 1.28;
+                    case SOUTH:
+                        flag = MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ()) > 0.28;
+                        break;
+                    default:
+                        throw new IllegalStateException("Illegal Scaffold blockplace.");
+                }
+
+                if (flag)
+                {
+                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " stopped suspiciously.");
+                    // Flag the player
+                    vlManager.flag(event.getPlayer(), 1, cancel_vl, () ->
+                    {
+                        event.setCancelled(true);
+                        user.getScaffoldData().updateTimeStamp(0);
+                        InventoryUtils.syncUpdateInventory(user.getPlayer());
+                    }, () -> {});
                 }
             }
 
@@ -139,7 +216,7 @@ public class Scaffold extends PacketAdapter implements Listener, ViolationModule
                         VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[1] + " | real: " + results[0]);
 
                         // Flag the player
-                        vlManager.flag(event.getPlayer(), (int) Math.max(Math.ceil((results[1] - results[0]) / 15D), 6), cancel_vl, () ->
+                        vlManager.flag(event.getPlayer(), (int) (2 * Math.max(Math.ceil((results[1] - results[0]) / 15D), 6)), cancel_vl, () ->
                         {
                             event.setCancelled(true);
                             user.getScaffoldData().updateTimeStamp(0);

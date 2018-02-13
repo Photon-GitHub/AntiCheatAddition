@@ -8,6 +8,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.player.PlayerToggleSprintEvent;
 
 /**
  * Used to store when a player moved.
@@ -17,12 +19,35 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public class PositionData extends TimeData implements Listener
 {
     public boolean allowedToJump = true;
+    private boolean currentlySneaking = false;
+    private boolean currentlySprinting = false;
 
     public PositionData(final User user)
     {
-        // First one is head movement, second one normal movement and third one xz-movement.
-        super(user, System.currentTimeMillis(), System.currentTimeMillis(), System.currentTimeMillis());
+        /*
+         * 1 -> is head movement
+         * 2 -> normal movement
+         * 3 -> xz-movement.
+         *
+         * 4 -> last sneaking
+         * 5 -> last sprinting
+         */
+        super(user, System.currentTimeMillis(), System.currentTimeMillis(), System.currentTimeMillis(), 0, 0);
         AACAdditionPro.getInstance().registerListener(this);
+    }
+
+    @EventHandler
+    public void on(final PlayerToggleSprintEvent event)
+    {
+        currentlySprinting = event.isSprinting();
+        this.updateTimeStamp(5);
+    }
+
+    @EventHandler
+    public void on(final PlayerToggleSneakEvent event)
+    {
+        currentlySneaking = event.isSneaking();
+        this.updateTimeStamp(4);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -58,6 +83,26 @@ public class PositionData extends TimeData implements Listener
     public boolean hasPlayerMovedRecently(final long milliseconds, final MovementType movementType)
     {
         return this.recentlyUpdated(movementType.ordinal(), milliseconds);
+    }
+
+    public boolean hasPlayerSprintedRecently(final long milliseconds)
+    {
+        if (currentlySprinting)
+        {
+            return true;
+        }
+
+        return this.recentlyUpdated(5, milliseconds);
+    }
+
+    public boolean hasPlayerSneakedRecently(final long milliseconds)
+    {
+        if (currentlySneaking)
+        {
+            return true;
+        }
+
+        return this.recentlyUpdated(4, milliseconds);
     }
 
     @Override

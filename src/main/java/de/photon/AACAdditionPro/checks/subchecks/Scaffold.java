@@ -85,13 +85,16 @@ public class Scaffold implements Listener, ViolationModule
             // Check if this check applies to the block
             blockPlaced.getType().isSolid() &&
             // Check if the block is placed against one block face only, also implies no blocks above and below.
-            BlockUtils.blocksAround(blockPlaced, false) == (byte) 1)
+            BlockUtils.blocksAround(blockPlaced, false) == (byte) 1 &&
+            // Will buffer.
+            (user.getScaffoldData().getScaffoldBlockPlaces().isEmpty() ||
+             BlockUtils.isNext(user.getScaffoldData().getScaffoldBlockPlaces().peek().getBlock(), blockPlaced, true)))
         {
 
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
-            // Rotation check enabled
+            // Rotation part enabled
             if (this.rotationEnabled)
             {
                 if (user.getLookPacketData().recentlyUpdated(1, 100))
@@ -117,36 +120,36 @@ public class Scaffold implements Listener, ViolationModule
 
             // --------------------------------------------- Sprinting ---------------------------------------------- //
 
-            // Rotation check enabled
+            // Sprinting part enabled
+
+            if (this.sprintingEnabled)
             {
-                if (this.sprintingEnabled)
+                if (user.getPositionData().hasPlayerSprintedRecently(600))
                 {
-                    if (user.getPositionData().hasPlayerSprintedRecently(600))
+                    if (++user.getScaffoldData().sprintingFails > this.sprintingThreshold)
                     {
-                        if (++user.getScaffoldData().sprintingFails > this.sprintingThreshold)
+                        VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
+                        // Flag the player
+                        vlManager.flag(event.getPlayer(), 1, cancel_vl, () ->
                         {
-                            VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
-                            // Flag the player
-                            vlManager.flag(event.getPlayer(), 1, cancel_vl, () ->
-                            {
-                                event.setCancelled(true);
-                                user.getScaffoldData().updateTimeStamp(0);
-                                InventoryUtils.syncUpdateInventory(user.getPlayer());
-                            }, () -> {});
-                        }
-                    }
-                    else if (user.getScaffoldData().sprintingFails > 0)
-                    {
-                        user.getScaffoldData().sprintingFails--;
+                            event.setCancelled(true);
+                            user.getScaffoldData().updateTimeStamp(0);
+                            InventoryUtils.syncUpdateInventory(user.getPlayer());
+                        }, () -> {});
                     }
                 }
+                else if (user.getScaffoldData().sprintingFails > 0)
+                {
+                    user.getScaffoldData().sprintingFails--;
+                }
             }
-
+            
 
             // ----------------------------------------- Suspicious stops ------------------------------------------- //
 
-            // Not moved in the last 2 ticks while not sprinting and at the edge of a block
+            // Stopping part enabled
             if (this.stoppingEnabled &&
+                // Not moved in the last 2 ticks while not sprinting and at the edge of a block
                 user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY) &&
                 !user.getPositionData().hasPlayerSneakedRecently(100))
             {
@@ -184,40 +187,40 @@ public class Scaffold implements Listener, ViolationModule
 
 
             // -------------------------------------------- Consistency --------------------------------------------- //
+
             // Buffer the block place, continue the check only when we a certain number of block places in check
+            if (user.getScaffoldData().bufferBlockPlace(
+                    new ScaffoldBlockPlace(
+                            blockPlaced,
+                            blockPlaced.getFace(event.getBlockAgainst()),
+                            // Speed-Effect
+                            PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED))
+                    )))
             {
-                if (user.getScaffoldData().bufferBlockPlace(
-                        new ScaffoldBlockPlace(
-                                blockPlaced,
-                                blockPlaced.getFace(event.getBlockAgainst()),
-                                // Speed-Effect
-                                PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED))
-                        )))
-                {
-                    // ------------------------------------- Consistency - Average -------------------------------------- //
+                // ------------------------------------- Consistency - Average -------------------------------------- //
 
                 /*
                 Indices:
                 [0] -> Real average
                 [1] -> Maximum allowed average
                  */
-                    final double[] results = user.getScaffoldData().calculateTimes();
+                final double[] results = user.getScaffoldData().calculateTimes();
 
-                    // delta-times are too low -> flag
-                    if (results[0] < results[1])
+                // delta-times are too low -> flag
+                if (results[0] < results[1])
+                {
+                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[1] + " | real: " + results[0]);
+
+                    // Flag the player
+                    vlManager.flag(event.getPlayer(), (int) (2 * Math.max(Math.ceil((results[1] - results[0]) / 15D), 6)), cancel_vl, () ->
                     {
-                        VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[1] + " | real: " + results[0]);
-
-                        // Flag the player
-                        vlManager.flag(event.getPlayer(), (int) (2 * Math.max(Math.ceil((results[1] - results[0]) / 15D), 6)), cancel_vl, () ->
-                        {
-                            event.setCancelled(true);
-                            user.getScaffoldData().updateTimeStamp(0);
-                            InventoryUtils.syncUpdateInventory(user.getPlayer());
-                        }, () -> {});
-                    }
+                        event.setCancelled(true);
+                        user.getScaffoldData().updateTimeStamp(0);
+                        InventoryUtils.syncUpdateInventory(user.getPlayer());
+                    }, () -> {});
                 }
             }
+
         }
     }
 

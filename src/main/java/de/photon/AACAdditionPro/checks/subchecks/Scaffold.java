@@ -1,9 +1,5 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
@@ -24,7 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.potion.PotionEffectType;
 
-public class Scaffold extends PacketAdapter implements Listener, ViolationModule
+public class Scaffold implements Listener, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100L);
 
@@ -45,11 +41,6 @@ public class Scaffold extends PacketAdapter implements Listener, ViolationModule
     private int rotationThreshold;
     @LoadFromConfiguration(configPath = ".parts.sprinting.sprinting_threshold")
     private int sprintingThreshold;
-
-    public Scaffold()
-    {
-        super(AACAdditionPro.getInstance(), ListenerPriority.LOW, PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK);
-    }
 
     // ------------------------------------------- BlockPlace Handling ---------------------------------------------- //
 

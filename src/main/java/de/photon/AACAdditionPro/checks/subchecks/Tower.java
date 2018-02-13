@@ -48,7 +48,7 @@ public class Tower implements Listener, ViolationModule
             return;
         }
 
-        //To prevent too fast towering -> Timeout
+        // To prevent too fast towering -> Timeout
         if (user.getTowerData().recentlyUpdated(0, timeout))
         {
             event.setCancelled(true);

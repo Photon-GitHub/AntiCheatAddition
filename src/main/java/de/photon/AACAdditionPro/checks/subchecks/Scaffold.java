@@ -160,15 +160,17 @@ public class Scaffold extends PacketAdapter implements Listener, ViolationModule
                 !user.getPositionData().hasPlayerSneakedRecently(100))
             {
                 boolean flag;
-                final double importantCoordinateValue;
                 switch (event.getBlock().getFace(event.getBlockAgainst()))
                 {
                     case EAST:
                         flag = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX()) > 0.28;
+                        break;
                     case WEST:
                         flag = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX()) > 1.28;
+                        break;
                     case NORTH:
                         flag = MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ()) > 1.28;
+                        break;
                     case SOUTH:
                         flag = MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ()) > 0.28;
                         break;

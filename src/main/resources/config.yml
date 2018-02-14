@@ -448,7 +448,7 @@ Scaffold:
             # This delay applies to any kind of straight building.
             normal: 259
             # This delay applies to diagonal building
-            diagonal: 148
+            diagonal: 159
          # Over how many values should AACAdditionPro take the average for the check
          buffer_size: 6
       # This part detects suspicious placement positions.

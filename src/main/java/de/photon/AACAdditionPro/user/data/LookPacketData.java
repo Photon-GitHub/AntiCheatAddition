@@ -91,8 +91,8 @@ public class LookPacketData extends TimeData
         while (rotationChangeQueueIterator.hasNext())
         {
             currentRotationChange = rotationChangeQueueIterator.next();
-            this.realLastYaw += MathUtils.offset(lastRotationChange.getYaw(), currentRotationChange.getYaw());
-            this.realLastPitch += MathUtils.offset(lastRotationChange.getPitch(), currentRotationChange.getPitch());
+            resultYaw += MathUtils.offset(lastRotationChange.getYaw(), currentRotationChange.getYaw());
+            resultPitch += MathUtils.offset(lastRotationChange.getPitch(), currentRotationChange.getPitch());
             lastRotationChange = currentRotationChange;
         }
         return new RotationChange(resultYaw, resultPitch);

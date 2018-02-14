@@ -151,21 +151,10 @@ public final class BlockUtils
      */
     public static boolean isNext(final Block a, final Block b, final boolean onlyHorizontal)
     {
-        if (!a.getWorld().equals(b.getWorld()))
-        {
-            return false;
-        }
+        return a.getWorld().equals(b.getWorld()) && (onlyHorizontal ?
+                                                     horizontalFaces.contains(a.getFace(b)) :
+                                                     allFaces.contains(a.getFace(b)));
 
-        for (final BlockFace face : onlyHorizontal ?
-                                    horizontalFaces :
-                                    allFaces)
-        {
-            if (a.getRelative(face).equals(b))
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

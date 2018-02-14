@@ -45,18 +45,6 @@ public class ScaffoldData extends TimeData
     }
 
     /**
-     * Adds a {@link ScaffoldBlockPlace} to the buffer
-     *
-     * @param scaffoldBlockPlace The {@link ScaffoldBlockPlace} which should be added.
-     *
-     * @return whether or not the {@link ScaffoldBlockPlace} was accepted by {@link ConditionalBuffer#verifyObject(Object)}
-     */
-    public boolean bufferBlockPlace(final ScaffoldBlockPlace scaffoldBlockPlace)
-    {
-        return scaffoldBlockPlaces.bufferObject(scaffoldBlockPlace);
-    }
-
-    /**
      * This calculates the maximum expected and real time of this {@link ConditionalBuffer}'s {@link ScaffoldBlockPlace}s.
      *
      * @return the real time in index 0 and the maximum expected time in index 1.

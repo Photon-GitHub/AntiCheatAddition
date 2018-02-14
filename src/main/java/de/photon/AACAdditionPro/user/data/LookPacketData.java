@@ -26,6 +26,9 @@ public class LookPacketData extends TimeData
     public LookPacketData(final User user)
     {
         super(user, 0, 0);
+
+        // Prevent initial problems.
+        this.bufferRotationChange(new RotationChange(0, 0));
     }
 
     public void updateRotations(final float yaw, final float pitch)

@@ -456,7 +456,7 @@ Scaffold:
       position:
          # Should this part of the check be enabled
          enabled: true
-      # This part detects suspicious rotation changes while scaffolding
+      # This part analyzes the rotations of a player while scaffolding
       # The rotation check always adds 1 vl.
       rotation:
          # Should this part of the check be enabled

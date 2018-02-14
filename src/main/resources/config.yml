@@ -466,7 +466,7 @@ Scaffold:
          rotation_threshold: 2
       # This checks for behaviour associated with safe-walk
       # The safe-walk check always adds 1 vl.
-      safe-walk:
+      safewalk:
          # Should this part of the check be enabled
          enabled: true
       # This part detects sprinting between blockplaces.

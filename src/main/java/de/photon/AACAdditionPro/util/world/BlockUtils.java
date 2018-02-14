@@ -154,7 +154,6 @@ public final class BlockUtils
         return a.getWorld().equals(b.getWorld()) && (onlyHorizontal ?
                                                      horizontalFaces.contains(a.getFace(b)) :
                                                      allFaces.contains(a.getFace(b)));
-
     }
 
     /**

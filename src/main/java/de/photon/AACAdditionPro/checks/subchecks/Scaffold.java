@@ -85,7 +85,8 @@ public class Scaffold implements Listener, ViolationModule
             // Check if this check applies to the block
             blockPlaced.getType().isSolid() &&
             // Check if the block is placed against one block face only, also implies no blocks above and below.
-            BlockUtils.blocksAround(blockPlaced, false) == (byte) 1 &&
+            // Only one block that is not a liquid is allowed (the one which the Block is placed against).
+            BlockUtils.getBlocksAround(blockPlaced, false).stream().filter(block -> !BlockUtils.LIQUIDS.contains(block.getType())).count() == 1 &&
             // Buffer the ScaffoldBlockPlace
             user.getScaffoldData().getScaffoldBlockPlaces().bufferObjectIgnoreSize(new ScaffoldBlockPlace(
                     blockPlaced,

@@ -60,7 +60,7 @@ public class LookPacketData extends TimeData
     public void bufferRotationChange(final RotationChange rotationChange)
     {
         // Same tick -> merge
-        if (this.rotationChangeQueue.isEmpty() || rotationChange.getTime() - this.rotationChangeQueue.getLast().getTime() < 50)
+        if (!this.rotationChangeQueue.isEmpty() && rotationChange.getTime() - this.rotationChangeQueue.getLast().getTime() < 50)
         {
             this.rotationChangeQueue.getLast().merge(rotationChange);
         }

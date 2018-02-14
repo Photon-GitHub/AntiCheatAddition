@@ -102,22 +102,12 @@ public class PositionData extends TimeData implements Listener
 
     public boolean hasPlayerSprintedRecently(final long milliseconds)
     {
-        if (this.currentlySprinting)
-        {
-            return true;
-        }
-
-        return this.recentlyUpdated(3, milliseconds);
+        return this.currentlySprinting || this.recentlyUpdated(3, milliseconds);
     }
 
     public boolean hasPlayerSneakedRecently(final long milliseconds)
     {
-        if (this.currentlySneaking)
-        {
-            return true;
-        }
-
-        return this.recentlyUpdated(4, milliseconds);
+        return this.currentlySneaking || this.recentlyUpdated(4, milliseconds);
     }
 
     @Override

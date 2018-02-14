@@ -154,16 +154,33 @@ public class Scaffold implements Listener, ViolationModule
                 final DoubleSummaryStatistics angleChange = user.getLookPacketData().getAngleChange();
                 final DoubleSummaryStatistics angleOffset = user.getLookPacketData().getOffsetAngleChange(angleChange.getAverage());
 
+                boolean flag = false;
+
                 // Big rotation jumps
-                if (user.getLookPacketData().recentlyUpdated(1, 100) ||
-                    // Generally high rotations
-                    angleChange.getSum() > ANGLE_CHANGE_SUM_THRESHOLD ||
-                    // Very random rotations
-                    angleOffset.getSum() > ANGLE_OFFSET_SUM_THRESHOLD)
+                if (user.getLookPacketData().recentlyUpdated(1, 100))
+                {
+                    flag = true;
+                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1");
+                }
+                // Else to obfuscate the algorithm a bit and improve performance.
+                // Generally high rotations
+                else if (angleChange.getSum() > ANGLE_CHANGE_SUM_THRESHOLD)
+                {
+                    flag = true;
+                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2");
+                }
+                // Else to obfuscate the algorithm a bit and improve performance.
+                // Very random rotations
+                else if (angleOffset.getSum() > ANGLE_OFFSET_SUM_THRESHOLD)
+                {
+                    flag = true;
+                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
+                }
+
+                if (flag)
                 {
                     if (++user.getScaffoldData().rotationFails > this.rotationThreshold)
                     {
-                        VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations.");
                         // Flag the player
                         vlManager.flag(event.getPlayer(), 1, cancel_vl, () ->
                         {

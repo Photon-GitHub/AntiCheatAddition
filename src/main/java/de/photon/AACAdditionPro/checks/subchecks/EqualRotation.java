@@ -76,8 +76,8 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
             // Not recently teleported
             !user.getTeleportData().recentlyUpdated(0, 5000) &&
             // Same rotation values
-            currentYaw == user.getLookPacketData().getLastYaw() &&
-            currentPitch == user.getLookPacketData().getLastPitch() &&
+            currentYaw == user.getLookPacketData().getRealLastYaw() &&
+            currentPitch == user.getLookPacketData().getRealLastPitch() &&
             // Labymod fp when standing still / hit in corner fp
             user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
         {

@@ -162,23 +162,26 @@ public class Scaffold implements Listener, ViolationModule
                 user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
                 !user.getPositionData().hasPlayerSneakedRecently(125))
             {
-                System.out.println("X-offset: " + MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX()));
-                System.out.println("Z-offset: " + MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ()));
 
                 boolean flag;
+                System.out.print("Face: " + event.getBlock().getFace(event.getBlockAgainst()));
+                final double xOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
+                final double zOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
+                System.out.println("X-offset: " + xOffset);
+                System.out.println("Z-offset: " + zOffset);
                 switch (event.getBlock().getFace(event.getBlockAgainst()))
                 {
                     case EAST:
-                        flag = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX()) > 0.28;
+                        flag = xOffset > 0.28D && xOffset < 0.305D;
                         break;
                     case WEST:
-                        flag = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX()) > 1.28;
+                        flag = xOffset > 1.28D && xOffset < 1.305D;
                         break;
                     case NORTH:
-                        flag = MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ()) > 1.28;
+                        flag = zOffset > 1.28D && zOffset < 1.305D;
                         break;
                     case SOUTH:
-                        flag = MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ()) > 0.28;
+                        flag = zOffset > 0.28D && zOffset < 0.305D;
                         break;
                     default:
                         // Some other, mostly weird blockplaces.

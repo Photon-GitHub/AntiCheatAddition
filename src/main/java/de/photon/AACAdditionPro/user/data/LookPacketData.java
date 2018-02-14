@@ -97,6 +97,14 @@ public class LookPacketData extends TimeData
             {
                 continue;
             }
+
+            // How many ticks have been left out?
+            for (int i = 0; i < (MathUtils.offset(currentRotationChange.getTime(), lastRotationChange.getTime()) / 50); i++)
+            {
+                // Fill in the gaps.
+                result.accept(0);
+            }
+
             result.accept(RotationUtil.getDirection(lastRotationChange.getYaw(), lastRotationChange.getPitch()).angle(RotationUtil.getDirection(currentRotationChange.getYaw(), currentRotationChange.getPitch())));
             lastRotationChange = currentRotationChange;
         }
@@ -118,11 +126,6 @@ public class LookPacketData extends TimeData
                 continue;
             }
 
-            for (int i = 0; i < (MathUtils.offset(currentRotationChange.getTime(), lastRotationChange.getTime()) / 50); i++)
-            {
-                // Fill in the gaps.
-                result.accept(0);
-            }
             result.accept(MathUtils.offset(angleChangeAverage, RotationUtil.getDirection(lastRotationChange.getYaw(), lastRotationChange.getPitch()).angle(RotationUtil.getDirection(currentRotationChange.getYaw(), currentRotationChange.getPitch()))));
             lastRotationChange = currentRotationChange;
         }

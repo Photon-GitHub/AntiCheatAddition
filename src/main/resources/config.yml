@@ -464,6 +464,11 @@ Scaffold:
          # How many suspicious rotations should Scaffold count as legit
          # The value must be positive.
          rotation_threshold: 2
+      # This checks for behaviour associated with safe-walk
+      # The safe-walk check always adds 1 vl.
+      safe-walk:
+         # Should this part of the check be enabled
+         enabled: true
       # This part detects sprinting between blockplaces.
       # The sprinting check always adds 1 vl.
       sprinting:
@@ -472,12 +477,6 @@ Scaffold:
          # How many suspicious sprinting periods should Scaffold count as legit
          # Set this to a negative value to deactivate sprint checking.
          sprinting_threshold: 3
-      # This detects suspicious stops which are caused by safe walk side effects and detect scaffolds which try to
-      # imitate non-sneaking build techniques.
-      # The stopping check always adds 1 vl.
-      stopping:
-         # Should this part of the check be enabled
-         enabled: true
    # Map of violation levels to command
    thresholds:
       8: "aacstaffnotify {player} in {world} is suspected for Scaffold"

@@ -35,10 +35,10 @@ public class Scaffold implements Listener, ViolationModule
     private boolean positionEnabled;
     @LoadFromConfiguration(configPath = ".parts.rotation.enabled")
     private boolean rotationEnabled;
+    @LoadFromConfiguration(configPath = ".parts.safewalk.enabled")
+    private boolean safeWalkEnabled;
     @LoadFromConfiguration(configPath = ".parts.sprinting.enabled")
     private boolean sprintingEnabled;
-    @LoadFromConfiguration(configPath = ".parts.stopping.enabled")
-    private boolean stoppingEnabled;
 
     @LoadFromConfiguration(configPath = ".parts.rotation.rotation_threshold")
     private int rotationThreshold;
@@ -202,7 +202,7 @@ public class Scaffold implements Listener, ViolationModule
             // ----------------------------------------- Suspicious stops ------------------------------------------- //
 
             // Stopping part enabled
-            if (this.stoppingEnabled &&
+            if (this.safeWalkEnabled &&
                 // Not moved in the last 2 ticks while not sprinting and at the edge of a block
                 user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
                 // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
@@ -231,7 +231,7 @@ public class Scaffold implements Listener, ViolationModule
 
                 if (flag)
                 {
-                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " stopped suspiciously.");
+                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk.");
                     // Flag the player
                     vlManager.flag(event.getPlayer(), 1, cancel_vl, () ->
                     {

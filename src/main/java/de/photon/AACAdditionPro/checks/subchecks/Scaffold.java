@@ -85,12 +85,16 @@ public class Scaffold implements Listener, ViolationModule
             // Check if this check applies to the block
             blockPlaced.getType().isSolid() &&
             // Check if the block is placed against one block face only, also implies no blocks above and below.
-            BlockUtils.blocksAround(blockPlaced, false) == (byte) 1 &&
-            // Will buffer.
-            (user.getScaffoldData().getScaffoldBlockPlaces().isEmpty() ||
-             BlockUtils.isNext(user.getScaffoldData().getScaffoldBlockPlaces().peek().getBlock(), blockPlaced, true)))
+            BlockUtils.blocksAround(blockPlaced, false) == (byte) 1)
         {
-
+            // Should be allowed to buffer.
+            boolean buffer = (user.getScaffoldData().getScaffoldBlockPlaces().isEmpty() ||
+                              BlockUtils.isNext(user.getScaffoldData().getScaffoldBlockPlaces().peek().getBlock(), blockPlaced, true));
+            if (!buffer)
+            {
+                // Clear the buffer otherwise
+                user.getScaffoldData().getScaffoldBlockPlaces().clear();
+            }
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
@@ -147,12 +151,21 @@ public class Scaffold implements Listener, ViolationModule
 
             // ----------------------------------------- Suspicious stops ------------------------------------------- //
 
+
+            System.out.println("Sprint-Offset: " + user.getPositionData().passedTime(3));
+            System.out.println("Sneak-Offset: " + user.getPositionData().passedTime(4));
+            System.out.println("Moved: " + user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY));
+            System.out.println("HasSneaked: " + user.getPositionData().hasPlayerSneakedRecently(125));
+
             // Stopping part enabled
             if (this.stoppingEnabled &&
                 // Not moved in the last 2 ticks while not sprinting and at the edge of a block
-                user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY) &&
-                !user.getPositionData().hasPlayerSneakedRecently(100))
+                user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
+                !user.getPositionData().hasPlayerSneakedRecently(125))
             {
+                System.out.println("X-offset: " + MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX()));
+                System.out.println("Z-offset: " + MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ()));
+
                 boolean flag;
                 switch (event.getBlock().getFace(event.getBlockAgainst()))
                 {
@@ -188,14 +201,16 @@ public class Scaffold implements Listener, ViolationModule
 
             // -------------------------------------------- Consistency --------------------------------------------- //
 
-            // Buffer the block place, continue the check only when we a certain number of block places in check
-            if (user.getScaffoldData().bufferBlockPlace(
-                    new ScaffoldBlockPlace(
-                            blockPlaced,
-                            blockPlaced.getFace(event.getBlockAgainst()),
-                            // Speed-Effect
-                            PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED))
-                    )))
+            // Should buffer?
+            if (buffer &&
+                // Buffer the block place, continue the check only when we a certain number of block places in check
+                user.getScaffoldData().bufferBlockPlace(
+                        new ScaffoldBlockPlace(
+                                blockPlaced,
+                                blockPlaced.getFace(event.getBlockAgainst()),
+                                // Speed-Effect
+                                PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED))
+                        )))
             {
                 // ------------------------------------- Consistency - Average -------------------------------------- //
 

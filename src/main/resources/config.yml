@@ -451,6 +451,11 @@ Scaffold:
             diagonal: 159
          # Over how many values should AACAdditionPro take the average for the check
          buffer_size: 6
+      # This part detects suspicious placement positions.
+      # The position check always adds 1 vl.
+      position:
+         # Should this part of the check be enabled
+         enabled: true
       # This part detects suspicious rotation changes while scaffolding
       # The rotation check always adds 1 vl.
       rotation:
@@ -469,6 +474,7 @@ Scaffold:
          sprinting_threshold: 3
       # This detects suspicious stops which are caused by safe walk side effects and detect scaffolds which try to
       # imitate non-sneaking build techniques.
+      # The stopping check always adds 1 vl.
       stopping:
          # Should this part of the check be enabled
          enabled: true

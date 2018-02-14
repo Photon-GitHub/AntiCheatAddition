@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
+import de.photon.AACAdditionPro.util.datawrappers.RotationChange;
 import de.photon.AACAdditionPro.util.datawrappers.ScaffoldBlockPlace;
 import de.photon.AACAdditionPro.util.entity.livingentity.PotionUtil;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
@@ -30,6 +31,8 @@ public class Scaffold implements Listener, ViolationModule
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
+    @LoadFromConfiguration(configPath = ".parts.position.enabled")
+    private boolean positionEnabled;
     @LoadFromConfiguration(configPath = ".parts.rotation.enabled")
     private boolean rotationEnabled;
     @LoadFromConfiguration(configPath = ".parts.sprinting.enabled")
@@ -95,11 +98,59 @@ public class Scaffold implements Listener, ViolationModule
                     PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED))
             )))
         {
+            final double xOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
+            final double zOffset = MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
+
+
+            // --------------------------------------------- Positions ---------------------------------------------- //
+
+            // Stopping part enabled
+            if (this.positionEnabled)
+            {
+                boolean flag;
+                switch (event.getBlock().getFace(event.getBlockAgainst()))
+                {
+                    case EAST:
+                        flag = xOffset <= 0;
+                        break;
+                    case WEST:
+                        flag = xOffset <= 1;
+                        break;
+                    case NORTH:
+                        flag = zOffset <= 1;
+                        break;
+                    case SOUTH:
+                        flag = zOffset <= 0;
+                        break;
+                    default:
+                        // Some other, mostly weird blockplaces.
+                        flag = false;
+                        break;
+                }
+
+                if (flag)
+                {
+                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " placed from a suspicious location.");
+                    // Flag the player
+                    vlManager.flag(event.getPlayer(), 1, cancel_vl, () ->
+                    {
+                        event.setCancelled(true);
+                        user.getScaffoldData().updateTimeStamp(0);
+                        InventoryUtils.syncUpdateInventory(user.getPlayer());
+                    }, () -> {});
+                }
+            }
+
+
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
             // Rotation part enabled
             if (this.rotationEnabled)
             {
+                final RotationChange rotationChange = user.getLookPacketData().getRotationSum();
+                VerboseSender.sendVerboseMessage("YawChange: " + rotationChange.getYaw());
+                VerboseSender.sendVerboseMessage("PitchChange: " + rotationChange.getPitch());
+
                 if (user.getLookPacketData().recentlyUpdated(1, 100))
                 {
                     if (++user.getScaffoldData().rotationFails > this.rotationThreshold)
@@ -149,9 +200,6 @@ public class Scaffold implements Listener, ViolationModule
 
 
             // ----------------------------------------- Suspicious stops ------------------------------------------- //
-
-            final double xOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
-            final double zOffset = MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
 
             // Stopping part enabled
             if (this.stoppingEnabled &&

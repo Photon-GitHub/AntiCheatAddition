@@ -28,8 +28,6 @@ public class ScaffoldData extends TimeData
      */
     public int sprintingFails = 0;
 
-    public double lastImportantCoordinateValue = 0.5;
-
     @Getter
     private final ConditionalBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces = new ConditionalBuffer<ScaffoldBlockPlace>(BUFFER_SIZE)
     {

@@ -73,7 +73,7 @@ public class Tower implements Listener, ViolationModule
             final Block blockPlaced = event.getBlockPlaced();
             // User must stand above the block (placed from above)1
             // Check if the block is tower-placed (Block belows)
-            if (event.getBlockAgainst().equals(blockPlaced.getRelative(BlockFace.DOWN)) &&
+            if (event.getBlock().getFace(event.getBlockAgainst()) == BlockFace.DOWN &&
                 // The block is placed inside a 2 - block y-radius, this prevents false positives when building from a higher level
                 user.getPlayer().getLocation().getY() - blockPlaced.getY() < 2D &&
                 // Check if this check applies to the block

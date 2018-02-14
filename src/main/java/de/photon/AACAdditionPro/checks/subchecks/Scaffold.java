@@ -150,11 +150,11 @@ public class Scaffold implements Listener, ViolationModule
 
             // ----------------------------------------- Suspicious stops ------------------------------------------- //
 
-
-            System.out.println("Sprint-Offset: " + user.getPositionData().passedTime(3));
-            System.out.println("Sneak-Offset: " + user.getPositionData().passedTime(4));
-            System.out.println("Moved: " + user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY));
-            System.out.println("HasSneaked: " + user.getPositionData().hasPlayerSneakedRecently(125));
+            final double xOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
+            final double zOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
+            System.out.print("Face: " + event.getBlock().getFace(event.getBlockAgainst()));
+            System.out.println("X-offset: " + xOffset);
+            System.out.println("Z-offset: " + zOffset);
 
             // Stopping part enabled
             if (this.stoppingEnabled &&
@@ -164,11 +164,6 @@ public class Scaffold implements Listener, ViolationModule
             {
 
                 boolean flag;
-                System.out.print("Face: " + event.getBlock().getFace(event.getBlockAgainst()));
-                final double xOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
-                final double zOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
-                System.out.println("X-offset: " + xOffset);
-                System.out.println("Z-offset: " + zOffset);
                 switch (event.getBlock().getFace(event.getBlockAgainst()))
                 {
                     case EAST:

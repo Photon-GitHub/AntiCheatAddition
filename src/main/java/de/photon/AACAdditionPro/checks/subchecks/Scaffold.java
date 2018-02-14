@@ -81,7 +81,7 @@ public class Scaffold implements Listener, ViolationModule
             // Not flying
             !user.getPlayer().isFlying() &&
             // Above the block
-            user.getPlayer().getLocation().getY() > blockPlaced.getY() - 1 &&
+            user.getPlayer().getLocation().getY() > blockPlaced.getY() &&
             // Check if this check applies to the block
             blockPlaced.getType().isSolid() &&
             // Check if the block is placed against one block face only, also implies no blocks above and below.

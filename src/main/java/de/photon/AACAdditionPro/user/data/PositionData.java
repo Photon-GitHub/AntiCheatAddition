@@ -46,23 +46,29 @@ public class PositionData extends TimeData implements Listener
     @EventHandler
     public void on(final PlayerToggleSprintEvent event)
     {
-        this.currentlySprinting = event.isSprinting();
-        if (!this.currentlySprinting)
+        if (this.getUser().refersToUUID(event.getPlayer().getUniqueId()))
         {
-            this.lastSprintTime = this.passedTime(3);
+            this.currentlySprinting = event.isSprinting();
+            if (!this.currentlySprinting)
+            {
+                this.lastSprintTime = this.passedTime(3);
+            }
+            this.updateTimeStamp(3);
         }
-        this.updateTimeStamp(3);
     }
 
     @EventHandler
     public void on(final PlayerToggleSneakEvent event)
     {
-        this.currentlySneaking = event.isSneaking();
-        if (!this.currentlySneaking)
+        if (this.getUser().refersToUUID(event.getPlayer().getUniqueId()))
         {
-            this.lastSneakTime = this.passedTime(4);
+            this.currentlySneaking = event.isSneaking();
+            if (!this.currentlySneaking)
+            {
+                this.lastSneakTime = this.passedTime(4);
+            }
+            this.updateTimeStamp(4);
         }
-        this.updateTimeStamp(4);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

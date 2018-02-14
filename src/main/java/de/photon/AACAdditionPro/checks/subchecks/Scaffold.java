@@ -85,17 +85,15 @@ public class Scaffold implements Listener, ViolationModule
             // Check if this check applies to the block
             blockPlaced.getType().isSolid() &&
             // Check if the block is placed against one block face only, also implies no blocks above and below.
-            BlockUtils.blocksAround(blockPlaced, false) == (byte) 1)
+            BlockUtils.blocksAround(blockPlaced, false) == (byte) 1 &&
+            // Buffer the ScaffoldBlockPlace
+            user.getScaffoldData().getScaffoldBlockPlaces().bufferObjectIgnoreSize(new ScaffoldBlockPlace(
+                    blockPlaced,
+                    blockPlaced.getFace(event.getBlockAgainst()),
+                    // Speed-Effect
+                    PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED))
+            )))
         {
-            // Should be allowed to buffer.
-            boolean buffer = (user.getScaffoldData().getScaffoldBlockPlaces().isEmpty() ||
-                              BlockUtils.isNext(user.getScaffoldData().getScaffoldBlockPlaces().peek().getBlock(), blockPlaced, true));
-            if (!buffer)
-            {
-                // Clear the buffer otherwise
-                user.getScaffoldData().getScaffoldBlockPlaces().clear();
-            }
-
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
             // Rotation part enabled
@@ -201,16 +199,8 @@ public class Scaffold implements Listener, ViolationModule
 
             // -------------------------------------------- Consistency --------------------------------------------- //
 
-            // Should buffer?
-            if (buffer &&
-                // Buffer the block place, continue the check only when we a certain number of block places in check
-                user.getScaffoldData().bufferBlockPlace(
-                        new ScaffoldBlockPlace(
-                                blockPlaced,
-                                blockPlaced.getFace(event.getBlockAgainst()),
-                                // Speed-Effect
-                                PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED))
-                        )))
+            // Should check average?
+            if (user.getScaffoldData().getScaffoldBlockPlaces().hasReachedBufferSize())
             {
                 // ------------------------------------- Consistency - Average -------------------------------------- //
 

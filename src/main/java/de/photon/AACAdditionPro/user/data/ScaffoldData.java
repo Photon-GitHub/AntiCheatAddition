@@ -4,9 +4,9 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.util.datastructures.Buffer;
 import de.photon.AACAdditionPro.util.datastructures.ConditionalBuffer;
 import de.photon.AACAdditionPro.util.datawrappers.ScaffoldBlockPlace;
+import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 
 public class ScaffoldData extends TimeData
@@ -31,7 +31,15 @@ public class ScaffoldData extends TimeData
     public double lastImportantCoordinateValue = 0.5;
 
     @Getter
-    private final Buffer<ScaffoldBlockPlace> scaffoldBlockPlaces = new Buffer<>(BUFFER_SIZE);
+    private final ConditionalBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces = new ConditionalBuffer<ScaffoldBlockPlace>(BUFFER_SIZE)
+    {
+        @Override
+        protected boolean verifyObject(ScaffoldBlockPlace object)
+        {
+            return this.isEmpty() ||
+                   BlockUtils.isNext(this.peek().getBlock(), object.getBlock(), true);
+        }
+    };
 
     public ScaffoldData(User user)
     {

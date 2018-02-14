@@ -15,24 +15,18 @@ public abstract class ConditionalBuffer<T> extends Buffer<T>
      */
     protected abstract boolean verifyObject(T object);
 
-    /**
-     * Adds a {@link T} to the buffer, or clears the buffer if verifyObject returns false
-     *
-     * @param object The object which should be added.
-     *
-     * @return true if the buffersize is bigger than the max_size.
-     */
     @Override
-    public boolean bufferObject(final T object)
+    public boolean bufferObjectIgnoreSize(T object)
     {
         if (verifyObject(object))
         {
             this.push(object);
+            return true;
         }
         else
         {
             this.clear();
+            return false;
         }
-        return this.size() >= this.getBufferSize();
     }
 }

@@ -178,7 +178,7 @@ public class Scaffold implements Listener, ViolationModule
 
             if (this.sprintingEnabled)
             {
-                if (user.getPositionData().hasPlayerSprintedRecently(600))
+                if (user.getPositionData().hasPlayerSprintedRecently(400))
                 {
                     if (++user.getScaffoldData().sprintingFails > this.sprintingThreshold)
                     {

@@ -37,7 +37,7 @@ public class LookPacketData extends TimeData
     {
         this.realLastYaw = yaw;
         this.realLastPitch = pitch;
-        this.bufferRotationChange(new RotationChange(yaw, pitch));
+        this.rotationChangeQueue.addLast(new RotationChange(yaw, pitch));
 
         // Huge angle change
         if (RotationUtil.getDirection(this.getLastYaw(), this.getLastPitch()).angle(RotationUtil.getDirection(yaw, pitch)) > 35)
@@ -62,7 +62,7 @@ public class LookPacketData extends TimeData
     public void bufferRotationChange(final RotationChange rotationChange)
     {
         // Same tick -> merge
-        if (!this.rotationChangeQueue.isEmpty() && rotationChange.getTime() - this.rotationChangeQueue.getLast().getTime() < 50)
+        if (rotationChange.getTime() - this.rotationChangeQueue.getLast().getTime() < 50)
         {
             this.rotationChangeQueue.getLast().merge(rotationChange);
         }

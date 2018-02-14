@@ -463,7 +463,7 @@ Scaffold:
          enabled: true
          # How many suspicious rotations should Scaffold count as legit
          # The value must be positive.
-         rotation_threshold: 2
+         rotation_threshold: 3
       # This checks for behaviour associated with safe-walk
       # The safe-walk check always adds 1 vl.
       safewalk:

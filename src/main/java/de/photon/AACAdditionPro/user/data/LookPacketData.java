@@ -8,6 +8,7 @@ import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import lombok.Getter;
 
 import java.util.Deque;
+import java.util.DoubleSummaryStatistics;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -82,9 +83,9 @@ public class LookPacketData extends TimeData
     /**
      * Calculates the total rotation change in the last time.
      */
-    public double getAngleChange()
+    public DoubleSummaryStatistics getAngleChange()
     {
-        float resultAngle = 0;
+        final DoubleSummaryStatistics result = new DoubleSummaryStatistics();
         final Iterator<RotationChange> rotationChangeQueueIterator = this.rotationChangeQueue.iterator();
 
         RotationChange lastRotationChange = rotationChangeQueueIterator.next();
@@ -96,9 +97,35 @@ public class LookPacketData extends TimeData
             {
                 continue;
             }
-            resultAngle += RotationUtil.getDirection(lastRotationChange.getYaw(), lastRotationChange.getPitch()).angle(RotationUtil.getDirection(currentRotationChange.getYaw(), currentRotationChange.getPitch()));
+            result.accept(RotationUtil.getDirection(lastRotationChange.getYaw(), lastRotationChange.getPitch()).angle(RotationUtil.getDirection(currentRotationChange.getYaw(), currentRotationChange.getPitch())));
             lastRotationChange = currentRotationChange;
         }
-        return resultAngle;
+        return result;
+    }
+
+    public DoubleSummaryStatistics getOffsetAngleChange(final double angleChangeAverage)
+    {
+        final DoubleSummaryStatistics result = new DoubleSummaryStatistics();
+        final Iterator<RotationChange> rotationChangeQueueIterator = this.rotationChangeQueue.iterator();
+
+        RotationChange lastRotationChange = rotationChangeQueueIterator.next();
+        RotationChange currentRotationChange;
+        while (rotationChangeQueueIterator.hasNext())
+        {
+            currentRotationChange = rotationChangeQueueIterator.next();
+            if (MathUtils.offset(rotationChangeQueue.getLast().getTime(), currentRotationChange.getTime()) > 1000)
+            {
+                continue;
+            }
+
+            for (int i = 0; i < (MathUtils.offset(currentRotationChange.getTime(), lastRotationChange.getTime()) / 50); i++)
+            {
+                // Fill in the gaps.
+                result.accept(0);
+            }
+            result.accept(MathUtils.offset(angleChangeAverage, RotationUtil.getDirection(lastRotationChange.getYaw(), lastRotationChange.getPitch()).angle(RotationUtil.getDirection(currentRotationChange.getYaw(), currentRotationChange.getPitch()))));
+            lastRotationChange = currentRotationChange;
+        }
+        return result;
     }
 }

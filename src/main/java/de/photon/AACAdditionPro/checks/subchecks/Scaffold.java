@@ -20,9 +20,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.DoubleSummaryStatistics;
+
 public class Scaffold implements Listener, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100L);
+
+    private final static double ANGLE_CHANGE_SUM_THRESHOLD = 11.5D;
+    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 10.0D;
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -146,9 +151,15 @@ public class Scaffold implements Listener, ViolationModule
             // Rotation part enabled
             if (this.rotationEnabled)
             {
-                final double angleChange = user.getLookPacketData().getAngleChange();
+                final DoubleSummaryStatistics angleChange = user.getLookPacketData().getAngleChange();
+                final DoubleSummaryStatistics angleOffset = user.getLookPacketData().getOffsetAngleChange(angleChange.getAverage());
 
-                if (user.getLookPacketData().recentlyUpdated(1, 100) || angleChange > 10)
+                // Big rotation jumps
+                if (user.getLookPacketData().recentlyUpdated(1, 100) ||
+                    // Generally high rotations
+                    angleChange.getSum() > ANGLE_CHANGE_SUM_THRESHOLD ||
+                    // Very random rotations
+                    angleOffset.getSum() > ANGLE_OFFSET_SUM_THRESHOLD)
                 {
                     if (++user.getScaffoldData().rotationFails > this.rotationThreshold)
                     {

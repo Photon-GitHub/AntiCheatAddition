@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.user.data;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.util.datawrappers.RotationChange;
-import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import lombok.Getter;
 
@@ -81,10 +80,9 @@ public class LookPacketData extends TimeData
     /**
      * Calculates the total rotation change in the last time.
      */
-    public RotationChange getRotationDeltaSum()
+    public double getAngleChange()
     {
-        float resultYaw = 0;
-        float resultPitch = 0;
+        float resultAngle = 0;
         final Iterator<RotationChange> rotationChangeQueueIterator = this.rotationChangeQueue.iterator();
 
         RotationChange lastRotationChange = rotationChangeQueueIterator.next();
@@ -92,10 +90,9 @@ public class LookPacketData extends TimeData
         while (rotationChangeQueueIterator.hasNext())
         {
             currentRotationChange = rotationChangeQueueIterator.next();
-            resultYaw += MathUtils.offset(lastRotationChange.getYaw(), currentRotationChange.getYaw());
-            resultPitch += MathUtils.offset(lastRotationChange.getPitch(), currentRotationChange.getPitch());
+            resultAngle += RotationUtil.getDirection(lastRotationChange.getYaw(), lastRotationChange.getPitch()).angle(RotationUtil.getDirection(currentRotationChange.getYaw(), currentRotationChange.getPitch()));
             lastRotationChange = currentRotationChange;
         }
-        return new RotationChange(resultYaw, resultPitch);
+        return resultAngle;
     }
 }

@@ -6,7 +6,6 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
-import de.photon.AACAdditionPro.util.datawrappers.RotationChange;
 import de.photon.AACAdditionPro.util.datawrappers.ScaffoldBlockPlace;
 import de.photon.AACAdditionPro.util.entity.livingentity.PotionUtil;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
@@ -147,8 +146,8 @@ public class Scaffold implements Listener, ViolationModule
             // Rotation part enabled
             if (this.rotationEnabled)
             {
-                final RotationChange rotationChange = user.getLookPacketData().getRotationDeltaSum();
-                VerboseSender.sendVerboseMessage("Player: " + user.getPlayer().getName() + " YawChange: " + rotationChange.getYaw() + " PitchChange: " + rotationChange.getPitch());
+                final double angleChange = user.getLookPacketData().getAngleChange();
+                VerboseSender.sendVerboseMessage("Player: " + user.getPlayer().getName() + " AngleChange: " + angleChange);
 
                 if (user.getLookPacketData().recentlyUpdated(1, 100))
                 {

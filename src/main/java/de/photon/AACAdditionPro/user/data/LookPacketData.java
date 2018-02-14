@@ -94,7 +94,7 @@ public class LookPacketData extends TimeData
             currentRotationChange = rotationChangeQueueIterator.next();
             if (MathUtils.offset(rotationChangeQueue.getLast().getTime(), currentRotationChange.getTime()) > 1000)
             {
-                break;
+                continue;
             }
             resultAngle += RotationUtil.getDirection(lastRotationChange.getYaw(), lastRotationChange.getPitch()).angle(RotationUtil.getDirection(currentRotationChange.getYaw(), currentRotationChange.getPitch()));
             lastRotationChange = currentRotationChange;

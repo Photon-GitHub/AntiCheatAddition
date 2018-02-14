@@ -93,6 +93,7 @@ public class LookPacketData extends TimeData
             currentRotationChange = rotationChangeQueueIterator.next();
             this.realLastYaw += MathUtils.offset(lastRotationChange.getYaw(), currentRotationChange.getYaw());
             this.realLastPitch += MathUtils.offset(lastRotationChange.getPitch(), currentRotationChange.getPitch());
+            lastRotationChange = currentRotationChange;
         }
         return new RotationChange(resultYaw, resultPitch);
     }

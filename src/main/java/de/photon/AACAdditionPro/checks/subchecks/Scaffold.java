@@ -151,18 +151,15 @@ public class Scaffold implements Listener, ViolationModule
             // ----------------------------------------- Suspicious stops ------------------------------------------- //
 
             final double xOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
-            final double zOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
-            System.out.print("Face: " + event.getBlock().getFace(event.getBlockAgainst()));
-            System.out.println("X-offset: " + xOffset);
-            System.out.println("Z-offset: " + zOffset);
+            final double zOffset = MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
 
             // Stopping part enabled
             if (this.stoppingEnabled &&
                 // Not moved in the last 2 ticks while not sprinting and at the edge of a block
                 user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
-                !user.getPositionData().hasPlayerSneakedRecently(125))
+                // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
+                !(user.getPositionData().hasPlayerSneakedRecently(125) && user.getPositionData().getLastSneakTime() > 175))
             {
-
                 boolean flag;
                 switch (event.getBlock().getFace(event.getBlockAgainst()))
                 {

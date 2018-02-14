@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.user.data;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
+import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -22,6 +23,12 @@ public class PositionData extends TimeData implements Listener
     private boolean currentlySneaking = false;
     private boolean currentlySprinting = false;
 
+    @Getter
+    private long lastSprintTime = 0;
+    @Getter
+    private long lastSneakTime = 0;
+
+
     public PositionData(final User user)
     {
         /*
@@ -39,14 +46,22 @@ public class PositionData extends TimeData implements Listener
     @EventHandler
     public void on(final PlayerToggleSprintEvent event)
     {
-        currentlySprinting = event.isSprinting();
+        this.currentlySprinting = event.isSprinting();
+        if (!this.currentlySprinting)
+        {
+            this.lastSprintTime = this.passedTime(3);
+        }
         this.updateTimeStamp(3);
     }
 
     @EventHandler
     public void on(final PlayerToggleSneakEvent event)
     {
-        currentlySneaking = event.isSneaking();
+        this.currentlySneaking = event.isSneaking();
+        if (!this.currentlySneaking)
+        {
+            this.lastSneakTime = this.passedTime(4);
+        }
         this.updateTimeStamp(4);
     }
 

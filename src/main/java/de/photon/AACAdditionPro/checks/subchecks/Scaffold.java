@@ -180,7 +180,9 @@ public class Scaffold implements Listener, ViolationModule
                         flag = MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ()) > 0.28;
                         break;
                     default:
-                        throw new IllegalStateException("Illegal Scaffold blockplace.");
+                        // Some other, mostly weird blockplaces.
+                        flag = false;
+                        break;
                 }
 
                 if (flag)

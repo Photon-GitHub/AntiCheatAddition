@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.user.data;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.util.datawrappers.RotationChange;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import lombok.Getter;
 
@@ -13,6 +14,7 @@ import java.util.LinkedList;
 public class LookPacketData extends TimeData
 {
     private static final int QUEUE_CAPACITY = 20;
+    private static final long RECENT_MILLIS = 1000;
 
     // EqualRotation
     @Getter
@@ -90,6 +92,10 @@ public class LookPacketData extends TimeData
         while (rotationChangeQueueIterator.hasNext())
         {
             currentRotationChange = rotationChangeQueueIterator.next();
+            if (MathUtils.offset(rotationChangeQueue.getLast().getTime(), currentRotationChange.getTime()) > 1000)
+            {
+                break;
+            }
             resultAngle += RotationUtil.getDirection(lastRotationChange.getYaw(), lastRotationChange.getPitch()).angle(RotationUtil.getDirection(currentRotationChange.getYaw(), currentRotationChange.getPitch()));
             lastRotationChange = currentRotationChange;
         }

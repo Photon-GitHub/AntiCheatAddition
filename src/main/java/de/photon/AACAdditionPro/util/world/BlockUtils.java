@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.util.world;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
@@ -11,18 +12,21 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public final class BlockUtils
 {
+    public static final Set<Material> LIQUIDS = ImmutableSet.of(Material.WATER, Material.LAVA, Material.STATIONARY_WATER, Material.STATIONARY_LAVA);
 
     private static final List<BlockFace> horizontalFaces = ImmutableList.of(
             BlockFace.NORTH,
             BlockFace.SOUTH,
             BlockFace.WEST,
             BlockFace.EAST);
+
     private static final List<BlockFace> allFaces = ImmutableList.of(
             BlockFace.UP,
             BlockFace.DOWN,
@@ -105,7 +109,7 @@ public final class BlockUtils
      */
     public static boolean isHitboxInLiquids(final Location location, final Hitbox hitbox)
     {
-        return isHitboxInMaterials(location, hitbox, Arrays.asList(Material.WATER, Material.LAVA, Material.STATIONARY_WATER, Material.STATIONARY_LAVA));
+        return isHitboxInMaterials(location, hitbox, LIQUIDS);
     }
 
     /**
@@ -147,21 +151,9 @@ public final class BlockUtils
      */
     public static boolean isNext(final Block a, final Block b, final boolean onlyHorizontal)
     {
-        if (!a.getWorld().equals(b.getWorld()))
-        {
-            return false;
-        }
-
-        for (final BlockFace face : onlyHorizontal ?
-                                    horizontalFaces :
-                                    allFaces)
-        {
-            if (a.getRelative(face).equals(b))
-            {
-                return true;
-            }
-        }
-        return false;
+        return a.getWorld().equals(b.getWorld()) && (onlyHorizontal ?
+                                                     horizontalFaces.contains(a.getFace(b)) :
+                                                     allFaces.contains(a.getFace(b)));
     }
 
     /**
@@ -172,7 +164,7 @@ public final class BlockUtils
      *
      * @return the amount of {@link Block}s which were counted
      */
-    public static byte blocksAround(final Block block, final boolean onlyHorizontal)
+    public static byte countBlocksAround(final Block block, final boolean onlyHorizontal)
     {
         byte count = 0;
         for (final BlockFace f : onlyHorizontal ?
@@ -185,6 +177,30 @@ public final class BlockUtils
             }
         }
         return count;
+    }
+
+    /**
+     * This gets the {@link Block}s around the given block if they are not air/empty.
+     *
+     * @param block          the block that faces should be checked for other {@link Block}s
+     * @param onlyHorizontal whether only the {@link Block}s should be counted that are horizontal around the block or all {@link Block}s (horizontal + vertical)
+     *
+     * @return a {@link List} of all {@link Block}s which were found.
+     */
+    public static List<Block> getBlocksAround(final Block block, final boolean onlyHorizontal)
+    {
+        final List<Block> blocks = new ArrayList<>(onlyHorizontal ? 4 : 6);
+        for (final BlockFace face : onlyHorizontal ?
+                                    horizontalFaces :
+                                    allFaces)
+        {
+            final Block relative = block.getRelative(face);
+            if (!relative.isEmpty())
+            {
+                blocks.add(relative);
+            }
+        }
+        return blocks;
     }
 
     /**

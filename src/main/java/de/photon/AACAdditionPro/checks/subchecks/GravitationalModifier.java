@@ -49,7 +49,7 @@ public class GravitationalModifier implements ViolationModule, Listener
             !user.getTeleportData().recentlyUpdated(0, 1000) &&
             // Players can jump up and down more often if there is a block above them
             user.getPlayer().getEyeLocation().getBlock().isEmpty() &&
-            BlockUtils.blocksAround(user.getPlayer().getEyeLocation().getBlock(), false) == 0)
+            BlockUtils.countBlocksAround(user.getPlayer().getEyeLocation().getBlock(), false) == 0)
         {
             boolean positveVelocity = event.getFrom().getY() < event.getTo().getY();
 

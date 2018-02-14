@@ -12,7 +12,7 @@ import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Movement;
 import de.photon.AACAdditionPro.util.fakeentity.movement.submovements.StayMovement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
-import de.photon.AACAdditionPro.util.mathematics.MathUtils;
+import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntity;
@@ -374,7 +374,7 @@ public abstract class ClientsideEntity
             final WrapperPlayServerEntityHeadRotation headRotationWrapper = new WrapperPlayServerEntityHeadRotation();
 
             headRotationWrapper.setEntityID(entityID);
-            headRotationWrapper.setHeadYaw(MathUtils.getFixRotation(headYaw));
+            headRotationWrapper.setHeadYaw(RotationUtil.getFixRotation(headYaw));
 
             headRotationWrapper.sendPacket(observedPlayer);
             lastHeadYaw = headYaw;

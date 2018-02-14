@@ -45,8 +45,6 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
         if (user.getLookPacketData().recentlyUpdated(0, timeout))
         {
             event.setCancelled(true);
-            user.getLookPacketData().lastYaw = Float.MIN_VALUE;
-            user.getLookPacketData().lastPitch = Float.MIN_VALUE;
             return;
         }
 
@@ -78,9 +76,9 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
             // Not recently teleported
             !user.getTeleportData().recentlyUpdated(0, 5000) &&
             // Same rotation values
-            currentYaw == user.getLookPacketData().lastYaw &&
-            currentPitch == user.getLookPacketData().lastPitch &&
-            // Labymod fp when standing still
+            currentYaw == user.getLookPacketData().getRealLastYaw() &&
+            currentPitch == user.getLookPacketData().getRealLastPitch() &&
+            // Labymod fp when standing still / hit in corner fp
             user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
         {
             vlManager.flag(user.getPlayer(), cancel_vl, () ->
@@ -91,8 +89,7 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
         }
         else
         {
-            user.getLookPacketData().lastYaw = currentYaw;
-            user.getLookPacketData().lastPitch = currentPitch;
+            user.getLookPacketData().updateRotations(currentYaw, currentPitch);
         }
     }
 

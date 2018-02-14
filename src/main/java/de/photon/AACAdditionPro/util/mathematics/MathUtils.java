@@ -114,12 +114,4 @@ public final class MathUtils
         return firstLocation.getWorld().getName().equals(secondLocation.getWorld().getName()) &&
                firstLocation.distanceSquared(secondLocation) <= squaredDistance;
     }
-
-    /**
-     * Fixes the rotation for the {@link de.photon.AACAdditionPro.util.fakeentity.ClientsideEntity}s
-     */
-    public static byte getFixRotation(final float yawpitch)
-    {
-        return (byte) ((int) (yawpitch * 256.0F / 360.0F));
-    }
 }

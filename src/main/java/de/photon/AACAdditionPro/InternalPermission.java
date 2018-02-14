@@ -30,6 +30,6 @@ public enum InternalPermission
      */
     public static boolean hasPermission(final Permissible permissible, final InternalPermission permission)
     {
-        return permissible.isOp() || permissible.hasPermission(permission.realPermission);
+        return permission == null || permissible.isOp() || permissible.hasPermission(permission.realPermission);
     }
 }

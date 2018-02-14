@@ -17,7 +17,7 @@ public class Buffer<T> extends Stack<T>
     }
 
     /**
-     * Adds a {@link T} to the buffer, or clears the buffer if verifyObject returns false
+     * Adds an {@link Object} of type {@link T} to the buffer
      *
      * @param object The object which should be added.
      *
@@ -25,7 +25,25 @@ public class Buffer<T> extends Stack<T>
      */
     public boolean bufferObject(final T object)
     {
+        this.bufferObjectIgnoreSize(object);
+        return this.size() >= this.bufferSize;
+    }
+
+    /**
+     * Adds an {@link Object} of type {@link T} to the buffer
+     *
+     * @param object The object which should be added.
+     *
+     * @return true if the {@link Object} was accepted
+     */
+    public boolean bufferObjectIgnoreSize(final T object)
+    {
         this.push(object);
+        return true;
+    }
+
+    public boolean hasReachedBufferSize()
+    {
         return this.size() >= this.bufferSize;
     }
 

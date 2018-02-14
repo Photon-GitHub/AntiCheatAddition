@@ -147,9 +147,8 @@ public class Scaffold implements Listener, ViolationModule
             if (this.rotationEnabled)
             {
                 final double angleChange = user.getLookPacketData().getAngleChange();
-                VerboseSender.sendVerboseMessage("Player: " + user.getPlayer().getName() + " AngleChange: " + angleChange);
 
-                if (user.getLookPacketData().recentlyUpdated(1, 100))
+                if (user.getLookPacketData().recentlyUpdated(1, 100) || angleChange > 10)
                 {
                     if (++user.getScaffoldData().rotationFails > this.rotationThreshold)
                     {

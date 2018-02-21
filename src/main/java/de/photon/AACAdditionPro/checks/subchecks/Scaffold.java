@@ -105,6 +105,7 @@ public class Scaffold implements Listener, ViolationModule
             final double xOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
             final double zOffset = MathUtils.offset(user.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
 
+            int vl = 0;
 
             // --------------------------------------------- Positions ---------------------------------------------- //
 
@@ -136,12 +137,7 @@ public class Scaffold implements Listener, ViolationModule
                 {
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " placed from a suspicious location.");
                     // Flag the player
-                    vlManager.flag(event.getPlayer(), 1, cancel_vl, () ->
-                    {
-                        event.setCancelled(true);
-                        user.getScaffoldData().updateTimeStamp(0);
-                        InventoryUtils.syncUpdateInventory(user.getPlayer());
-                    }, () -> {});
+                    vl++;
                 }
             }
 
@@ -182,12 +178,7 @@ public class Scaffold implements Listener, ViolationModule
                     if (++user.getScaffoldData().rotationFails > this.rotationThreshold)
                     {
                         // Flag the player
-                        vlManager.flag(event.getPlayer(), 1, cancel_vl, () ->
-                        {
-                            event.setCancelled(true);
-                            user.getScaffoldData().updateTimeStamp(0);
-                            InventoryUtils.syncUpdateInventory(user.getPlayer());
-                        }, () -> {});
+                        vl++;
                     }
                 }
                 else if (user.getScaffoldData().rotationFails > 0)
@@ -258,12 +249,7 @@ public class Scaffold implements Listener, ViolationModule
                 {
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk.");
                     // Flag the player
-                    vlManager.flag(event.getPlayer(), 1, cancel_vl, () ->
-                    {
-                        event.setCancelled(true);
-                        user.getScaffoldData().updateTimeStamp(0);
-                        InventoryUtils.syncUpdateInventory(user.getPlayer());
-                    }, () -> {});
+                    vl++;
                 }
             }
 
@@ -288,15 +274,19 @@ public class Scaffold implements Listener, ViolationModule
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[1] + " | real: " + results[0]);
 
                     // Flag the player
-                    vlManager.flag(event.getPlayer(), (int) (2 * Math.max(Math.ceil((results[1] - results[0]) / 15D), 6)), cancel_vl, () ->
-                    {
-                        event.setCancelled(true);
-                        user.getScaffoldData().updateTimeStamp(0);
-                        InventoryUtils.syncUpdateInventory(user.getPlayer());
-                    }, () -> {});
+                    vl += (int) (2 * Math.max(Math.ceil((results[1] - results[0]) / 15D), 6));
                 }
             }
 
+            if (vl > 0)
+            {
+                vlManager.flag(event.getPlayer(), vl, cancel_vl, () ->
+                {
+                    event.setCancelled(true);
+                    user.getScaffoldData().updateTimeStamp(0);
+                    InventoryUtils.syncUpdateInventory(user.getPlayer());
+                }, () -> {});
+            }
         }
     }
 

@@ -463,14 +463,14 @@ Scaffold:
          enabled: true
          # How many suspicious rotations should Scaffold count as legit
          # The value must be positive.
-         rotation_threshold: 3
+         rotation_threshold: 5
       # This checks for behaviour associated with safe-walk
       # The safe-walk check always adds 1 vl.
       safewalk:
          # Should this part of the check be enabled
          enabled: true
       # This part detects sprinting between blockplaces.
-      # The sprinting check always adds 1 vl.
+      # The sprinting check always adds 2 vl.
       sprinting:
          # Should this part of the check be enabled
          enabled: true

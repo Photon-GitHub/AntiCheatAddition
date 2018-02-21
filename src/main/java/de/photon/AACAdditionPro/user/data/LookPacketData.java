@@ -15,7 +15,6 @@ import java.util.LinkedList;
 public class LookPacketData extends TimeData
 {
     private static final int QUEUE_CAPACITY = 20;
-    private static final long RECENT_MILLIS = 1000;
 
     // EqualRotation
     @Getter

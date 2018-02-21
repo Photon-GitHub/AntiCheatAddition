@@ -266,10 +266,12 @@ public class Scaffold implements Listener, ViolationModule
                 // delta-times are too low -> flag
                 if (results[0] < results[1])
                 {
-                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[1] + " | real: " + results[0]);
-
                     // Flag the player
-                    vl += (int) (2 * Math.max(Math.ceil((results[1] - results[0]) / 15D), 6));
+                    int vlIncrease = (int) (2 * Math.max(Math.ceil((results[1] - results[0]) / 15D), 6));
+
+                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[1] + " | real: " + results[0] + " | vl increase: " + vlIncrease);
+
+                    vl += vlIncrease;
                 }
             }
 

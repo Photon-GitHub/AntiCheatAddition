@@ -200,12 +200,7 @@ public class Scaffold implements Listener, ViolationModule
                     {
                         VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
                         // Flag the player
-                        vlManager.flag(event.getPlayer(), 1, cancel_vl, () ->
-                        {
-                            event.setCancelled(true);
-                            user.getScaffoldData().updateTimeStamp(0);
-                            InventoryUtils.syncUpdateInventory(user.getPlayer());
-                        }, () -> {});
+                        vl += 2;
                     }
                 }
                 else if (user.getScaffoldData().sprintingFails > 0)

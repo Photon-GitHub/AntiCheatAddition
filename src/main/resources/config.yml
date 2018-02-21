@@ -470,7 +470,7 @@ Scaffold:
          # Should this part of the check be enabled
          enabled: true
       # This part detects sprinting between blockplaces.
-      # The sprinting check always adds 1 vl.
+      # The sprinting check always adds 2 vl.
       sprinting:
          # Should this part of the check be enabled
          enabled: true

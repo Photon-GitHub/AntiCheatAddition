@@ -24,9 +24,9 @@ public class PositionData extends TimeData implements Listener
     private boolean currentlySprinting = false;
 
     @Getter
-    private long lastSprintTime = 0;
+    private long lastSprintTime = Long.MAX_VALUE;
     @Getter
-    private long lastSneakTime = 0;
+    private long lastSneakTime = Long.MAX_VALUE;
 
 
     public PositionData(final User user)

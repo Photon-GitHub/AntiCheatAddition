@@ -393,7 +393,7 @@ public abstract class ClientsideEntity
     {
         return lastLocation == null ?
                null :
-               location.clone();
+               lastLocation.clone();
     }
 
     public Vector getVelocity()

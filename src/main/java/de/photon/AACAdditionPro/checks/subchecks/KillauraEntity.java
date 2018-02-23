@@ -252,12 +252,12 @@ public class KillauraEntity implements ViolationModule, Listener
             @Override
             public boolean isSpawnedFor(Player player)
             {
-                User user = UserManager.getUser(player.getUniqueId());
+                final User user = UserManager.getUser(player.getUniqueId());
                 if (User.isUserInvalid(user))
                 {
                     return false;
                 }
-                ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+                final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
                 return clientSidePlayerEntity != null && clientSidePlayerEntity.isSpawned();
             }
 

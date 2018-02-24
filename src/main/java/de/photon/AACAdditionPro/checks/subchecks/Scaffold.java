@@ -217,39 +217,58 @@ public class Scaffold implements Listener, ViolationModule
             // ----------------------------------------- Suspicious stops ------------------------------------------- //
 
             // Stopping part enabled
-            if (this.safeWalkEnabled &&
-                // Moved to the edge of the block
-                user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
-                // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
-                !(user.getPositionData().hasPlayerSneakedRecently(125) && user.getPositionData().getLastSneakTime() > 148))
+            if (this.safeWalkEnabled)
             {
-                boolean flag;
-                switch (event.getBlock().getFace(event.getBlockAgainst()))
+                byte flagVl = 0;
+
+                // Moved to the edge of the block
+                if (user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
+                    // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
+                    !(user.getPositionData().hasPlayerSneakedRecently(125) && user.getPositionData().getLastSneakTime() > 148))
                 {
-                    case EAST:
-                        flag = xOffset > 0.28D && xOffset < 0.305D;
-                        break;
-                    case WEST:
-                        flag = xOffset > 1.28D && xOffset < 1.305D;
-                        break;
-                    case NORTH:
-                        flag = zOffset > 1.28D && zOffset < 1.305D;
-                        break;
-                    case SOUTH:
-                        flag = zOffset > 0.28D && zOffset < 0.305D;
-                        break;
-                    default:
-                        // Some other, mostly weird blockplaces.
-                        flag = false;
-                        break;
+                    boolean sneakBorder;
+                    switch (event.getBlock().getFace(event.getBlockAgainst()))
+                    {
+                        case EAST:
+                            sneakBorder = xOffset > 0.28D && xOffset < 0.305D;
+                            break;
+                        case WEST:
+                            sneakBorder = xOffset > 1.28D && xOffset < 1.305D;
+                            break;
+                        case NORTH:
+                            sneakBorder = zOffset > 1.28D && zOffset < 1.305D;
+                            break;
+                        case SOUTH:
+                            sneakBorder = zOffset > 0.28D && zOffset < 0.305D;
+                            break;
+                        default:
+                            // Some other, mostly weird blockplaces.
+                            sneakBorder = false;
+                            break;
+                    }
+
+                    if (sneakBorder)
+                    {
+                        VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
+                        flagVl += 1;
+                    }
                 }
 
-                if (flag)
+                // Moved recently
+                if (user.getPositionData().hasPlayerMovedRecently(325, PositionData.MovementType.XZONLY) &&
+                    // Suddenly stopped
+                    !user.getPositionData().hasPlayerMovedRecently(125, PositionData.MovementType.XZONLY) &&
+                    // Has not sneaked recently
+                    !(user.getPositionData().hasPlayerSneakedRecently(175) && user.getPositionData().getLastSneakTime() > 148))
                 {
-                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk.");
+                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
+                    flagVl += 2;
+                }
+
+                if (flagVl > 0)
+                {
                     // Flag the player
-                    // Flag for 2 vl if the player has even stopped before the edge.
-                    vl += !user.getPositionData().hasPlayerMovedRecently(75, PositionData.MovementType.XZONLY) ? 2 : 1;
+                    vl += flagVl;
                 }
             }
 

@@ -457,13 +457,13 @@ Scaffold:
          # Should this part of the check be enabled
          enabled: true
       # This part analyzes the rotations of a player while scaffolding
-      # The rotation check adds 1 or 2 vl, depending on the type of the violation.
+      # The rotation check adds 3 - 9 vl, depending on the type of the violation.
       rotation:
          # Should this part of the check be enabled
          enabled: true
          # How many suspicious rotations should Scaffold count as legit
          # The value must be positive.
-         rotation_threshold: 5
+         rotation_threshold: 3
       # This checks for behaviour associated with safe-walk
       # The safe-walk check always adds 1 or 2 vl.
       safewalk:

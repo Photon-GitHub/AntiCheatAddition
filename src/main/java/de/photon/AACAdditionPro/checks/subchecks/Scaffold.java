@@ -26,8 +26,8 @@ public class Scaffold implements Listener, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 140L);
 
-    private final static double ANGLE_CHANGE_SUM_THRESHOLD = 11.5D;
-    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 7.0D;
+    private final static double ANGLE_CHANGE_SUM_THRESHOLD = 11.3D;
+    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 10.0D;
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -152,28 +152,26 @@ public class Scaffold implements Listener, ViolationModule
                 final DoubleSummaryStatistics angleChange = user.getLookPacketData().getAngleChange();
                 final DoubleSummaryStatistics angleOffset = user.getLookPacketData().getOffsetAngleChange(angleChange.getAverage());
 
-                byte rotationVl = -1;
+                byte rotationVl = 0;
 
-                // Big rotation jumps
-                if (user.getLookPacketData().recentlyUpdated(1, 100))
+                // Big rotation jumps in the last 2 ticks
+                if (user.getLookPacketData().recentlyUpdated(1, 125))
                 {
-                    rotationVl = 2;
+                    rotationVl += 3;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1");
                 }
-                // Else to obfuscate the algorithm a bit and improve performance.
+
                 // Generally high rotations
-                else if (angleChange.getSum() > ANGLE_CHANGE_SUM_THRESHOLD)
+                if (angleChange.getSum() > ANGLE_CHANGE_SUM_THRESHOLD)
                 {
-                    System.out.print("AngleChangeSum: " + angleChange.getSum());
-                    rotationVl = 2;
+                    rotationVl += 3;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2");
                 }
-                // Else to obfuscate the algorithm a bit and improve performance.
+
                 // Very random rotations
-                else if (angleOffset.getSum() > ANGLE_OFFSET_SUM_THRESHOLD)
+                if (angleOffset.getSum() > ANGLE_OFFSET_SUM_THRESHOLD)
                 {
-                    System.out.print("AngleOffsetSum: " + angleOffset.getSum());
-                    rotationVl = 1;
+                    rotationVl += 3;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
                 }
 

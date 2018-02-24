@@ -433,7 +433,7 @@ Scaffold:
    enabled: true
    # Violation before AACAdditionPro starts to cancel the block-places.
    # Set this to 0 to never cancel block-places.
-   cancel_vl: 10
+   cancel_vl: 20
    # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
    # to prevent further scaffolding (measured in ms)
    timeout: 1000
@@ -460,7 +460,7 @@ Scaffold:
          # Should this part of the check be enabled
          enabled: true
       # This part analyzes the rotations of a player while scaffolding
-      # The rotation check adds 2 - 8 vl, depending on the type of the violation.
+      # The rotation check adds 1 - 6 vl, depending on the type of the violation.
       rotation:
          # Should this part of the check be enabled
          enabled: true

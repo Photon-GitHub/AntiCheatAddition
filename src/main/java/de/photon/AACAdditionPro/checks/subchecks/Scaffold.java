@@ -27,7 +27,7 @@ public class Scaffold implements Listener, ViolationModule
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 140L);
 
     private final static double ANGLE_CHANGE_SUM_THRESHOLD = 11.3D;
-    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 10.0D;
+    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 10.5D;
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -166,14 +166,14 @@ public class Scaffold implements Listener, ViolationModule
                 // Generally high rotations
                 if (angleChange.getSum() > ANGLE_CHANGE_SUM_THRESHOLD)
                 {
-                    rotationVl += 3;
+                    rotationVl += 2;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2");
                 }
 
                 // Very random rotations
                 if (angleOffset.getSum() > ANGLE_OFFSET_SUM_THRESHOLD)
                 {
-                    rotationVl += 2;
+                    rotationVl += 1;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
                 }
 

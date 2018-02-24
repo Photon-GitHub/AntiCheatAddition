@@ -99,7 +99,7 @@ public class ScaffoldData extends TimeData
                                  // Apply sneaking modifier?
                                  (DELAY_NORMAL + (current.isSneaked() ?
                                                   // How fast can he move while sneaking?
-                                                  (SNEAKING_ADDITION + (SNEAKING_ADDITION * Math.abs(Math.cos(2 * current.getYaw())))) :
+                                                  (SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2 * current.getYaw())))) :
                                                   0)) :
                                  DELAY_DIAGONAL;
 

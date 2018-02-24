@@ -14,6 +14,8 @@ public class ScaffoldData extends TimeData
     // Use static here as Datas are often created.
     private static int BUFFER_SIZE = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.buffer_size");
     private static double DELAY_NORMAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.normal");
+    private static double SNEAKING_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_addition");
+    private static double SNEAKING_SLOW_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_slow_addition");
     private static double DELAY_DIAGONAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.diagonal");
 
     /**
@@ -94,7 +96,11 @@ public class ScaffoldData extends TimeData
                     }
 
                     result[1] += (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace()) ?
-                                 DELAY_NORMAL :
+                                 // Apply sneaking modifier?
+                                 (DELAY_NORMAL + (current.isSneaked() ?
+                                                  // How fast can he move while sneaking?
+                                                  (SNEAKING_ADDITION + (SNEAKING_ADDITION * Math.abs(Math.cos(2 * current.getYaw())))) :
+                                                  0)) :
                                  DELAY_DIAGONAL;
 
                     // last - current to calculate the delta as the more recent time is always in last.

@@ -102,7 +102,7 @@ public class Scaffold implements Listener, ViolationModule
                     blockPlaced.getFace(event.getBlockAgainst()),
                     // Speed-Effect
                     PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED)),
-                    Math.sin(user.getPlayer().getLocation().getYaw()),
+                    user.getPlayer().getLocation().getYaw(),
                     user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY)
             )))
         {

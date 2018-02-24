@@ -83,7 +83,8 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
         {
             vlManager.flag(user.getPlayer(), cancel_vl, () ->
             {
-                event.setCancelled(true);
+                lookWrapper.setYaw(user.getLookPacketData().getRealLastYaw());
+                lookWrapper.setYaw(user.getLookPacketData().getRealLastPitch());
                 user.getLookPacketData().updateTimeStamp(0);
             }, () -> {});
         }

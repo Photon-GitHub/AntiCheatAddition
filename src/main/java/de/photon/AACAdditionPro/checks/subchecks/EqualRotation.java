@@ -42,12 +42,6 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
             return;
         }
 
-        if (user.getLookPacketData().recentlyUpdated(0, timeout))
-        {
-            event.setCancelled(true);
-            return;
-        }
-
         final IWrapperPlayClientLook lookWrapper;
 
         // Differentiate the packets
@@ -55,7 +49,6 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
         {
             // PositionLook wrapper
             lookWrapper = new WrapperPlayClientPositionLook(event.getPacket());
-
         }
         else if (event.getPacketType() == PacketType.Play.Client.LOOK)
         {
@@ -65,6 +58,13 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
         else
         {
             VerboseSender.sendVerboseMessage("EqualRotation: received invalid packet: " + event.getPacketType().toString(), true, true);
+            return;
+        }
+
+        if (user.getLookPacketData().recentlyUpdated(0, this.timeout))
+        {
+            lookWrapper.setYaw(user.getLookPacketData().getRealLastYaw());
+            lookWrapper.setYaw(user.getLookPacketData().getRealLastPitch());
             return;
         }
 
@@ -83,7 +83,8 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
         {
             vlManager.flag(user.getPlayer(), cancel_vl, () ->
             {
-                event.setCancelled(true);
+                lookWrapper.setYaw(user.getLookPacketData().getRealLastYaw());
+                lookWrapper.setYaw(user.getLookPacketData().getRealLastPitch());
                 user.getLookPacketData().updateTimeStamp(0);
             }, () -> {});
         }

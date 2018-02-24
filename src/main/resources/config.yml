@@ -448,8 +448,8 @@ Scaffold:
             # This delay applies to all straight building techniques
             normal: 248
             # Constants used for building techniques which include sneaking
-            sneaking_addition: 100
-            sneaking_slow_addition: 100
+            sneaking_addition: 75
+            sneaking_slow_addition: 115
             # This delay applies to diagonal building
             diagonal: 148
          # Over how many values should AACAdditionPro take the average for the check

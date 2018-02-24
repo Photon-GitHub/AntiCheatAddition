@@ -291,7 +291,7 @@ public class Scaffold implements Listener, ViolationModule
                 if (results[0] < results[1])
                 {
                     // Flag the player
-                    int vlIncrease = (int) (4 * Math.max(Math.ceil((results[1] - results[0]) / 15D), 6));
+                    int vlIncrease = (int) (4 * Math.min(Math.ceil((results[1] - results[0]) / 15D), 6));
 
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[1] + " | real: " + results[0] + " | vl increase: " + vlIncrease);
 

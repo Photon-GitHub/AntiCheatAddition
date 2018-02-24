@@ -4,6 +4,7 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.datastructures.ConditionalBuffer;
 import de.photon.AACAdditionPro.util.datawrappers.ScaffoldBlockPlace;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
@@ -94,6 +95,16 @@ public class ScaffoldData extends TimeData
                                 break;
                         }
                     }
+
+                    VerboseSender.sendVerboseMessage("Real delay: " + (last.getTime() - current.getTime()) * speed_modifier);
+
+                    VerboseSender.sendVerboseMessage("Expected delay: " + ((last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace()) ?
+                                                                           // Apply sneaking modifier?
+                                                                           (DELAY_NORMAL + (current.isSneaked() ?
+                                                                                            // How fast can he move while sneaking?
+                                                                                            (SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2 * current.getYaw())))) :
+                                                                                            0)) :
+                                                                           DELAY_DIAGONAL));
 
                     result[1] += (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace()) ?
                                  // Apply sneaking modifier?

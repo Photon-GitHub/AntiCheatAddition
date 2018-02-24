@@ -101,7 +101,9 @@ public class Scaffold implements Listener, ViolationModule
                     blockPlaced,
                     blockPlaced.getFace(event.getBlockAgainst()),
                     // Speed-Effect
-                    PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED))
+                    PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED)),
+                    Math.sin(user.getPlayer().getLocation().getYaw()),
+                    user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY)
             )))
         {
             final double xOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
@@ -221,7 +223,6 @@ public class Scaffold implements Listener, ViolationModule
                 // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
                 !(user.getPositionData().hasPlayerSneakedRecently(125) && user.getPositionData().getLastSneakTime() > 148))
             {
-                VerboseSender.sendVerboseMessage("SafeWalkOffset: " + user.getPositionData().passedTime(4) + " sneaktime: " + user.getPositionData().getLastSneakTime());
                 boolean flag;
                 switch (event.getBlock().getFace(event.getBlockAgainst()))
                 {

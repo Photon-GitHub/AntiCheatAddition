@@ -457,7 +457,7 @@ Scaffold:
          # Should this part of the check be enabled
          enabled: true
       # This part analyzes the rotations of a player while scaffolding
-      # The rotation check adds 3 - 9 vl, depending on the type of the violation.
+      # The rotation check adds 2 - 8 vl, depending on the type of the violation.
       rotation:
          # Should this part of the check be enabled
          enabled: true

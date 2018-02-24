@@ -171,7 +171,7 @@ public class Scaffold implements Listener, ViolationModule
                 // Very random rotations
                 if (angleOffset.getSum() > ANGLE_OFFSET_SUM_THRESHOLD)
                 {
-                    rotationVl += 3;
+                    rotationVl += 2;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
                 }
 

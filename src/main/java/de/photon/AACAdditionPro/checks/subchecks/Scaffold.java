@@ -27,7 +27,7 @@ public class Scaffold implements Listener, ViolationModule
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 140L);
 
     private final static double ANGLE_CHANGE_SUM_THRESHOLD = 11.5D;
-    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 7.5D;
+    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 7.0D;
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -139,7 +139,7 @@ public class Scaffold implements Listener, ViolationModule
                 {
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " placed from a suspicious location.");
                     // Flag the player
-                    vl++;
+                    vl += 4;
                 }
             }
 
@@ -152,35 +152,37 @@ public class Scaffold implements Listener, ViolationModule
                 final DoubleSummaryStatistics angleChange = user.getLookPacketData().getAngleChange();
                 final DoubleSummaryStatistics angleOffset = user.getLookPacketData().getOffsetAngleChange(angleChange.getAverage());
 
-                boolean flag = false;
+                byte rotationVl = -1;
 
                 // Big rotation jumps
                 if (user.getLookPacketData().recentlyUpdated(1, 100))
                 {
-                    flag = true;
+                    rotationVl = 2;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1");
                 }
                 // Else to obfuscate the algorithm a bit and improve performance.
                 // Generally high rotations
                 else if (angleChange.getSum() > ANGLE_CHANGE_SUM_THRESHOLD)
                 {
-                    flag = true;
+                    System.out.print("AngleChangeSum: " + angleChange.getSum());
+                    rotationVl = 2;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2");
                 }
                 // Else to obfuscate the algorithm a bit and improve performance.
                 // Very random rotations
                 else if (angleOffset.getSum() > ANGLE_OFFSET_SUM_THRESHOLD)
                 {
-                    flag = true;
+                    System.out.print("AngleOffsetSum: " + angleOffset.getSum());
+                    rotationVl = 1;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
                 }
 
-                if (flag)
+                if (rotationVl > 0)
                 {
                     if (++user.getScaffoldData().rotationFails > this.rotationThreshold)
                     {
                         // Flag the player
-                        vl++;
+                        vl += rotationVl;
                     }
                 }
                 else if (user.getScaffoldData().rotationFails > 0)
@@ -202,7 +204,7 @@ public class Scaffold implements Listener, ViolationModule
                     {
                         VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
                         // Flag the player
-                        vl += 2;
+                        vl += 4;
                     }
                 }
                 else if (user.getScaffoldData().sprintingFails > 0)
@@ -216,11 +218,12 @@ public class Scaffold implements Listener, ViolationModule
 
             // Stopping part enabled
             if (this.safeWalkEnabled &&
-                // Not moved in the last 2 ticks while not sprinting and at the edge of a block
+                // Moved to the edge of the block
                 user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
                 // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
-                !(user.getPositionData().hasPlayerSneakedRecently(125) && user.getPositionData().getLastSneakTime() > 175))
+                !(user.getPositionData().hasPlayerSneakedRecently(125) && user.getPositionData().getLastSneakTime() > 148))
             {
+                VerboseSender.sendVerboseMessage("SafeWalkOffset: " + user.getPositionData().passedTime(4) + " sneaktime: " + user.getPositionData().getLastSneakTime());
                 boolean flag;
                 switch (event.getBlock().getFace(event.getBlockAgainst()))
                 {
@@ -246,7 +249,8 @@ public class Scaffold implements Listener, ViolationModule
                 {
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk.");
                     // Flag the player
-                    vl++;
+                    // Flag for 2 vl if the player has even stopped before the edge.
+                    vl += !user.getPositionData().hasPlayerMovedRecently(75, PositionData.MovementType.XZONLY) ? 2 : 1;
                 }
             }
 
@@ -269,7 +273,7 @@ public class Scaffold implements Listener, ViolationModule
                 if (results[0] < results[1])
                 {
                     // Flag the player
-                    int vlIncrease = (int) (2 * Math.max(Math.ceil((results[1] - results[0]) / 15D), 6));
+                    int vlIncrease = (int) (4 * Math.max(Math.ceil((results[1] - results[0]) / 15D), 6));
 
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[1] + " | real: " + results[0] + " | vl increase: " + vlIncrease);
 

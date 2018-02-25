@@ -58,6 +58,8 @@ public class ScaffoldData extends TimeData
         // fraction[1] is the divider
         final double[] fraction = new double[2];
 
+        boolean moonwalk = this.scaffoldBlockPlaces.stream().filter((blockPlace) -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
+
         this.scaffoldBlockPlaces.clearLastTwoObjectsIteration(
                 (last, current) ->
                 {
@@ -101,7 +103,7 @@ public class ScaffoldData extends TimeData
                     {
                         delay = DELAY_NORMAL;
 
-                        if (last.isSneaked() && current.isSneaked())
+                        if (!moonwalk && last.isSneaked() && current.isSneaked())
                         {
                             delay += SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2 * current.getYaw())));
                         }
@@ -117,6 +119,7 @@ public class ScaffoldData extends TimeData
                     fraction[0] += (last.getTime() - current.getTime()) * speed_modifier;
                     fraction[1]++;
                 });
+
         result[0] = fraction[0] / fraction[1];
         result[1] /= fraction[1];
         return result;

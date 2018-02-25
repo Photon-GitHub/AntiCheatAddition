@@ -24,7 +24,7 @@ import java.util.DoubleSummaryStatistics;
 
 public class Scaffold implements Listener, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 140L);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 130L);
 
     private final static double ANGLE_CHANGE_SUM_THRESHOLD = 11.3D;
     private final static double ANGLE_OFFSET_SUM_THRESHOLD = 10.5D;

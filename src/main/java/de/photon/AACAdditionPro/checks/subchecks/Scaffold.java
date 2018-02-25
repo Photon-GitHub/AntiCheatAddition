@@ -157,7 +157,7 @@ public class Scaffold implements Listener, ViolationModule
                 byte rotationVl = 0;
 
                 // Big rotation jumps in the last 2 ticks
-                if (user.getLookPacketData().recentlyUpdated(1, 125))
+                if (user.getLookPacketData().recentlyUpdated(0, 125))
                 {
                     rotationVl += 3;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1");

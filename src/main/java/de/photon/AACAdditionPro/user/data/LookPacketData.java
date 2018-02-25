@@ -28,7 +28,7 @@ public class LookPacketData extends TimeData
     // First index is for timeout, second one for significant rotation changes (scaffold)
     public LookPacketData(final User user)
     {
-        super(user, 0, 0);
+        super(user, 0);
 
         // Prevent initial problems.
         this.rotationChangeQueue.addLast(new RotationChange(0, 0));
@@ -44,7 +44,7 @@ public class LookPacketData extends TimeData
         // Huge angle change
         if (RotationUtil.getDirection(this.getLastYaw(), this.getLastPitch()).angle(RotationUtil.getDirection(yaw, pitch)) > 35)
         {
-            this.updateTimeStamp(1);
+            this.updateTimeStamp(0);
         }
     }
 

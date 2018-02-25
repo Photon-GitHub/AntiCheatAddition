@@ -95,24 +95,23 @@ public class ScaffoldData extends TimeData
                         }
                     }
 
-                    /* Debug
-                    VerboseSender.sendVerboseMessage("Real delay: " + (last.getTime() - current.getTime()) * speed_modifier);
+                    double delay;
 
-                    VerboseSender.sendVerboseMessage("Expected delay: " + ((last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace()) ?
-                                                                           // Apply sneaking modifier?
-                                                                           (DELAY_NORMAL + (current.isSneaked() ?
-                                                                                            // How fast can he move while sneaking?
-                                                                                            (SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2 * current.getYaw())))) :
-                                                                                            0)) :
-                                                                           DELAY_DIAGONAL));*/
+                    if (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace())
+                    {
+                        delay = DELAY_NORMAL;
 
-                    result[1] += (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace()) ?
-                                 // Apply sneaking modifier?
-                                 (DELAY_NORMAL + (current.isSneaked() ?
-                                                  // How fast can he move while sneaking?
-                                                  (SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2 * current.getYaw())))) :
-                                                  0)) :
-                                 DELAY_DIAGONAL;
+                        if (last.isSneaked() && current.isSneaked())
+                        {
+                            delay += SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2 * current.getYaw())));
+                        }
+                    }
+                    else
+                    {
+                        delay = DELAY_DIAGONAL;
+                    }
+
+                    result[1] += delay;
 
                     // last - current to calculate the delta as the more recent time is always in last.
                     fraction[0] += (last.getTime() - current.getTime()) * speed_modifier;

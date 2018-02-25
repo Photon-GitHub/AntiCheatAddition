@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.user.data;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -32,6 +33,7 @@ public class TeleportData extends TimeData implements Listener
     public void on(final PlayerTeleportEvent event)
     {
         this.updateIfRefersToUser(event.getPlayer().getUniqueId(), 0);
+        VerboseSender.sendVerboseMessage("Teleport");
     }
 
     @Override

@@ -26,8 +26,8 @@ public class Scaffold implements Listener, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 80L);
 
-    private final static double ANGLE_CHANGE_SUM_THRESHOLD = 11.3D;
-    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 10.5D;
+    private final static double ANGLE_CHANGE_SUM_THRESHOLD = 11.5D;
+    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 10.7D;
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;

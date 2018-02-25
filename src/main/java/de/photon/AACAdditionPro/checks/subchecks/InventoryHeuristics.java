@@ -19,6 +19,7 @@ import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -64,7 +65,10 @@ public class InventoryHeuristics implements Listener, ViolationModule
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user))
+        if (User.isUserInvalid(user) ||
+            // Gamemode bypasses
+            user.getPlayer().getGameMode() == GameMode.CREATIVE ||
+            user.getPlayer().getGameMode() == GameMode.SPECTATOR)
         {
             return;
         }

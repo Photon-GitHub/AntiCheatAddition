@@ -219,8 +219,6 @@ public class Scaffold implements Listener, ViolationModule
             // Stopping part enabled
             if (this.safeWalkEnabled)
             {
-                byte flagVl = 0;
-
                 // Moved to the edge of the block
                 if (user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
                     // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
@@ -250,25 +248,18 @@ public class Scaffold implements Listener, ViolationModule
                     if (sneakBorder)
                     {
                         VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
-                        flagVl += 1;
+                        vl += 1;
                     }
                 }
 
                 // Moved recently
-                if (user.getPositionData().hasPlayerMovedRecently(325, PositionData.MovementType.XZONLY) &&
+                if (user.getPositionData().hasPlayerMovedRecently(355, PositionData.MovementType.XZONLY) &&
                     // Suddenly stopped
-                    !user.getPositionData().hasPlayerMovedRecently(125, PositionData.MovementType.XZONLY) &&
+                    !user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
                     // Has not sneaked recently
                     !(user.getPositionData().hasPlayerSneakedRecently(175) && user.getPositionData().getLastSneakTime() > 148))
                 {
-                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
-                    flagVl += 2;
-                }
-
-                if (flagVl > 0)
-                {
-                    // Flag the player
-                    vl += flagVl;
+                    vl += 2;
                 }
             }
 

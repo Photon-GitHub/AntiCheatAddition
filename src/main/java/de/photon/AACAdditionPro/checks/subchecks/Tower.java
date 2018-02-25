@@ -89,7 +89,7 @@ public class Tower implements Listener, ViolationModule
                                 PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.JUMP))
                         )))
             {
-                DoubleSummaryStatistics summaryStatistics = new DoubleSummaryStatistics();
+                final DoubleSummaryStatistics summaryStatistics = new DoubleSummaryStatistics();
 
                 for (final TowerBlockPlace blockPlace : user.getTowerData().getBlockPlaces())
                 {

@@ -10,7 +10,7 @@ import lombok.Getter;
 import java.util.Deque;
 import java.util.DoubleSummaryStatistics;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class LookPacketData extends TimeData
 {
@@ -23,7 +23,7 @@ public class LookPacketData extends TimeData
     private float realLastPitch;
 
     @Getter
-    private final Deque<RotationChange> rotationChangeQueue = new LinkedList<>();
+    private final Deque<RotationChange> rotationChangeQueue = new ConcurrentLinkedDeque<>();
 
     // First index is for timeout, second one for significant rotation changes (scaffold)
     public LookPacketData(final User user)

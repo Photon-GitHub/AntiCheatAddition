@@ -20,8 +20,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.DoubleSummaryStatistics;
-
 public class Scaffold implements Listener, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 70L);
@@ -151,8 +149,7 @@ public class Scaffold implements Listener, ViolationModule
             // Rotation part enabled
             if (this.rotationEnabled)
             {
-                final DoubleSummaryStatistics angleChange = user.getLookPacketData().getAngleChange();
-                final DoubleSummaryStatistics angleOffset = user.getLookPacketData().getOffsetAngleChange(angleChange.getAverage());
+                final float[] angleInformation = user.getLookPacketData().getAngleInformation();
 
                 byte rotationVl = 0;
 
@@ -164,14 +161,14 @@ public class Scaffold implements Listener, ViolationModule
                 }
 
                 // Generally high rotations
-                if (angleChange.getSum() > ANGLE_CHANGE_SUM_THRESHOLD)
+                if (angleInformation[0] > ANGLE_CHANGE_SUM_THRESHOLD)
                 {
                     rotationVl += 2;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2");
                 }
 
                 // Very random rotations
-                if (angleOffset.getSum() > ANGLE_OFFSET_SUM_THRESHOLD)
+                if (angleInformation[1] > ANGLE_OFFSET_SUM_THRESHOLD)
                 {
                     rotationVl += 1;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");

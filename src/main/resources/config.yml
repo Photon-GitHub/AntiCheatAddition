@@ -130,7 +130,7 @@ Esp:
    #
    enabled: true
    # After this amount of ticks the positions will be updated again
-   update_ticks: 3
+   update_ticks: 1
 
 # The Fastswitch check prevents players from switching their hotbar-selection too quickly
 Fastswitch:

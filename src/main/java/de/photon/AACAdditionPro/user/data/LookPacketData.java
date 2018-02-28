@@ -117,13 +117,12 @@ public class LookPacketData extends TimeData
             result[0] += rotation;
         }
 
-        float average = result[0] / (rotationCache.size() + gapFillers);
-
         // Angle offset sum
-        for (Float rotation : rotationCache)
-        {
-            result[1] += MathUtils.offset(average, rotation);
-        }
+        result[1] = (float) MathUtils.offset(
+                // The average of the elements
+                result[0] / (rotationCache.size() + gapFillers) * rotationCache.size(),
+                // The sum of all elements
+                result[0]);
 
         return result;
     }

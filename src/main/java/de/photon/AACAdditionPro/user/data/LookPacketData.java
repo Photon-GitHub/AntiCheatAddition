@@ -64,7 +64,7 @@ public class LookPacketData extends TimeData
     public void bufferRotationChange(final RotationChange rotationChange)
     {
         // Same tick -> merge
-        if (rotationChange.getTime() - this.rotationChangeQueue.getLast().getTime() < 50)
+        if (rotationChange.getTime() - this.rotationChangeQueue.getLast().getTime() < 55)
         {
             this.rotationChangeQueue.getLast().merge(rotationChange);
         }
@@ -108,7 +108,7 @@ public class LookPacketData extends TimeData
             // Using -1 for the last element is fine as there is always the last element.
             gapFillers += MathUtils.offset(elementArray[i].getTime(), elementArray[i - 1].getTime()) / 50;
 
-            rotationCache.add(RotationUtil.getDirection(elementArray[i - 1].getYaw(), elementArray[i - 1].getPitch()).angle(RotationUtil.getDirection(elementArray[i].getYaw(), elementArray[i].getPitch())));
+            rotationCache.add(elementArray[i - 1].angle(elementArray[i]));
         }
 
         // Angle change sum

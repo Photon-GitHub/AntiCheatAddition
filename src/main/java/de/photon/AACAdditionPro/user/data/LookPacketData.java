@@ -91,6 +91,7 @@ public class LookPacketData extends TimeData
         final float[] result = new float[2];
 
         final Collection<Float> rotationCache = new ArrayList<>(this.rotationChangeQueue.size());
+
         // Ticks that must be added to fill up the gaps in the queue.
         short gapFillers = 0;
 
@@ -108,13 +109,11 @@ public class LookPacketData extends TimeData
             // Using -1 for the last element is fine as there is always the last element.
             gapFillers += MathUtils.offset(elementArray[i].getTime(), elementArray[i - 1].getTime()) / 50;
 
-            rotationCache.add(elementArray[i - 1].angle(elementArray[i]));
-        }
-
-        // Angle change sum
-        for (Float rotation : rotationCache)
-        {
-            result[0] += rotation;
+            // Angle calculations
+            float angle = elementArray[i - 1].angle(elementArray[i]);
+            rotationCache.add(angle);
+            // Angle change sum
+            result[0] += angle;
         }
 
         // Angle offset sum

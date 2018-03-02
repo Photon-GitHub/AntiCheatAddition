@@ -24,9 +24,7 @@ import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 public class Esp implements ViolationModule
 {
@@ -45,7 +43,7 @@ public class Esp implements ViolationModule
     private static final double MAX_FOV = Math.toRadians(165D);
 
     // Use a LinkedList design for optimal storage usage as the amount of bypassed / spectator players cannot be estimated.
-    private final Queue<Pair> playerConnections = new LinkedList<>();
+    private final List<Pair> playerConnections = new ArrayList<>();
 
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
@@ -127,7 +125,8 @@ public class Esp implements ViolationModule
                     while (!playerConnections.isEmpty())
                     {
                         // Automatically empty the playerConnections
-                        pair = playerConnections.remove();
+                        // Remove last entry for performance
+                        pair = playerConnections.remove(playerConnections.size() - 1);
 
                         // The Users are in the same world
                         if (pair.usersOfPair[0].getPlayer().getWorld().equals(pair.usersOfPair[1].getPlayer().getWorld()))
@@ -244,6 +243,7 @@ public class Esp implements ViolationModule
                         }
                         // No special HideMode here as of the players being in 2 different worlds to decrease CPU load.
                     }
+
 
                     // Update_Ticks: the refresh-rate of the check.
                 }, 0L, update_ticks);

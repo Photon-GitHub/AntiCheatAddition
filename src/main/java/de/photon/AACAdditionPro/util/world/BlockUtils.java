@@ -21,13 +21,13 @@ public final class BlockUtils
 {
     public static final Set<Material> LIQUIDS = ImmutableSet.of(Material.WATER, Material.LAVA, Material.STATIONARY_WATER, Material.STATIONARY_LAVA);
 
-    private static final List<BlockFace> horizontalFaces = ImmutableList.of(
+    public static final List<BlockFace> HORIZONTAL_FACES = ImmutableList.of(
             BlockFace.NORTH,
             BlockFace.SOUTH,
             BlockFace.WEST,
             BlockFace.EAST);
 
-    private static final List<BlockFace> allFaces = ImmutableList.of(
+    public static final List<BlockFace> ALL_FACES = ImmutableList.of(
             BlockFace.UP,
             BlockFace.DOWN,
             BlockFace.NORTH,
@@ -152,8 +152,8 @@ public final class BlockUtils
     public static boolean isNext(final Block a, final Block b, final boolean onlyHorizontal)
     {
         return a.getWorld().equals(b.getWorld()) && (onlyHorizontal ?
-                                                     horizontalFaces.contains(a.getFace(b)) :
-                                                     allFaces.contains(a.getFace(b)));
+                                                     HORIZONTAL_FACES.contains(a.getFace(b)) :
+                                                     ALL_FACES.contains(a.getFace(b)));
     }
 
     /**
@@ -168,8 +168,8 @@ public final class BlockUtils
     {
         byte count = 0;
         for (final BlockFace f : onlyHorizontal ?
-                                 horizontalFaces :
-                                 allFaces)
+                                 HORIZONTAL_FACES :
+                                 ALL_FACES)
         {
             if (!block.getRelative(f).isEmpty())
             {
@@ -191,8 +191,8 @@ public final class BlockUtils
     {
         final List<Block> blocks = new ArrayList<>(onlyHorizontal ? 4 : 6);
         for (final BlockFace face : onlyHorizontal ?
-                                    horizontalFaces :
-                                    allFaces)
+                                    HORIZONTAL_FACES :
+                                    ALL_FACES)
         {
             final Block relative = block.getRelative(face);
             if (!relative.isEmpty())

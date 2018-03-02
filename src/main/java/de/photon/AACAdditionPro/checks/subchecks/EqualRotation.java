@@ -11,7 +11,6 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLook;
@@ -20,11 +19,6 @@ import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 public class EqualRotation extends PacketAdapter implements ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100);
-
-    @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancel_vl;
-    @LoadFromConfiguration(configPath = ".timeout")
-    private int timeout;
 
     public EqualRotation()
     {
@@ -61,13 +55,6 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
             return;
         }
 
-        if (user.getLookPacketData().recentlyUpdated(0, this.timeout))
-        {
-            lookWrapper.setYaw(user.getLookPacketData().getRealLastYaw());
-            lookWrapper.setYaw(user.getLookPacketData().getRealLastPitch());
-            return;
-        }
-
         final float currentYaw = lookWrapper.getYaw();
         final float currentPitch = lookWrapper.getPitch();
 
@@ -81,12 +68,7 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
             // Labymod fp when standing still / hit in corner fp
             user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
         {
-            vlManager.flag(user.getPlayer(), cancel_vl, () ->
-            {
-                lookWrapper.setYaw(user.getLookPacketData().getRealLastYaw());
-                lookWrapper.setYaw(user.getLookPacketData().getRealLastPitch());
-                user.getLookPacketData().updateTimeStamp(0);
-            }, () -> {});
+            vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
         }
         else
         {

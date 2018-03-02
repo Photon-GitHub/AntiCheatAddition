@@ -14,6 +14,8 @@ public class ScaffoldData extends TimeData
     // Use static here as Datas are often created.
     private static int BUFFER_SIZE = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.buffer_size");
     private static double DELAY_NORMAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.normal");
+    private static double SNEAKING_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_addition");
+    private static double SNEAKING_SLOW_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_slow_addition");
     private static double DELAY_DIAGONAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.diagonal");
 
     /**
@@ -56,6 +58,8 @@ public class ScaffoldData extends TimeData
         // fraction[1] is the divider
         final double[] fraction = new double[2];
 
+        boolean moonwalk = this.scaffoldBlockPlaces.stream().filter((blockPlace) -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
+
         this.scaffoldBlockPlaces.clearLastTwoObjectsIteration(
                 (last, current) ->
                 {
@@ -93,14 +97,29 @@ public class ScaffoldData extends TimeData
                         }
                     }
 
-                    result[1] += (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace()) ?
-                                 DELAY_NORMAL :
-                                 DELAY_DIAGONAL;
+                    double delay;
+
+                    if (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace())
+                    {
+                        delay = DELAY_NORMAL;
+
+                        if (!moonwalk && last.isSneaked() && current.isSneaked())
+                        {
+                            delay += SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2 * current.getYaw())));
+                        }
+                    }
+                    else
+                    {
+                        delay = DELAY_DIAGONAL;
+                    }
+
+                    result[1] += delay;
 
                     // last - current to calculate the delta as the more recent time is always in last.
                     fraction[0] += (last.getTime() - current.getTime()) * speed_modifier;
                     fraction[1]++;
                 });
+
         result[0] = fraction[0] / fraction[1];
         result[1] /= fraction[1];
         return result;

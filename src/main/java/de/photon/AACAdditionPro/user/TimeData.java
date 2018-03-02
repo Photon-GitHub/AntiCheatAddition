@@ -59,7 +59,7 @@ public class TimeData extends Data
     {
         if (this.getUser().refersToUUID(uuid))
         {
-            this.nullifyTimeStamp(index);
+            this.updateTimeStamp(index);
         }
     }
 

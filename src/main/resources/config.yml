@@ -103,12 +103,6 @@ AutoPotion:
 EqualRotation:
    # Do you want to enable the EqualRotation check
    enabled: true
-   # Violation before AACAdditionPro starts to cancel the rotations.
-   # Set this to 0 to never cancel rotations.
-   cancel_vl: 10
-   # After a detection which surpasses cancel_vl AACAdditionPro cancels all (head-)movement to effectively
-   # prevent the cheat for this amount of milliseconds
-   timeout: 3000
    # Map of violation levels to command
    thresholds:
       9: "aacstaffnotify {player} in {world} is suspected for EqualRotation"
@@ -433,7 +427,7 @@ Scaffold:
    enabled: true
    # Violation before AACAdditionPro starts to cancel the block-places.
    # Set this to 0 to never cancel block-places.
-   cancel_vl: 10
+   cancel_vl: 20
    # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
    # to prevent further scaffolding (measured in ms)
    timeout: 1000
@@ -441,36 +435,39 @@ Scaffold:
    parts:
       # The main part of Scaffold preventing too fast Scaffolding
       # This part is always enabled as it provides the basic framework.
-      # The average check might add between 2 and 12 violation levels depending on the severity of the violation.
+      # The average check might add between 4 and 24 violation levels depending on the severity of the violation.
       average:
          # The minimum delay between blockplaces that will be enforced by AACAdditionPro (measured in ms)
          delays:
-            # This delay applies to any kind of straight building.
+            # This delay applies to all straight building techniques
             normal: 248
+            # Constants used for building techniques which include sneaking
+            sneaking_addition: 30
+            sneaking_slow_addition: 40
             # This delay applies to diagonal building
             diagonal: 148
          # Over how many values should AACAdditionPro take the average for the check
          buffer_size: 6
       # This part detects suspicious placement positions.
-      # The position check always adds 1 vl.
+      # The position check always adds 4 vl.
       position:
          # Should this part of the check be enabled
          enabled: true
       # This part analyzes the rotations of a player while scaffolding
-      # The rotation check always adds 1 vl.
+      # The rotation check adds 1 - 6 vl, depending on the type of the violation.
       rotation:
          # Should this part of the check be enabled
          enabled: true
          # How many suspicious rotations should Scaffold count as legit
          # The value must be positive.
-         rotation_threshold: 5
+         rotation_threshold: 6
       # This checks for behaviour associated with safe-walk
-      # The safe-walk check always adds 1 vl.
+      # The safe-walk check always adds 1 - 3 vl, depending on the type of the violation.
       safewalk:
          # Should this part of the check be enabled
          enabled: true
       # This part detects sprinting between blockplaces.
-      # The sprinting check always adds 2 vl.
+      # The sprinting check always adds 6 vl.
       sprinting:
          # Should this part of the check be enabled
          enabled: true
@@ -479,9 +476,9 @@ Scaffold:
          sprinting_threshold: 3
    # Map of violation levels to command
    thresholds:
-      8: "aacstaffnotify {player} in {world} is suspected for Scaffold"
-      12: "aacstaffnotify {player} in {world} is highly suspected for Scaffold"
-      18: "aackick {player} Scaffold"
+      16: "aacstaffnotify {player} in {world} is suspected for Scaffold"
+      24: "aacstaffnotify {player} in {world} is highly suspected for Scaffold"
+      36: "aackick {player} Scaffold"
 
 # The Skinblinker check detects Skinblinker cheats when the player sprints/sneaks.
 Skinblinker:

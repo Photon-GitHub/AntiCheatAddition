@@ -20,14 +20,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.DoubleSummaryStatistics;
-
 public class Scaffold implements Listener, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 140L);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 70L);
 
     private final static double ANGLE_CHANGE_SUM_THRESHOLD = 11.5D;
-    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 7.5D;
+    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 10.7D;
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -94,12 +92,16 @@ public class Scaffold implements Listener, ViolationModule
             // Check if the block is placed against one block face only, also implies no blocks above and below.
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
             BlockUtils.getBlocksAround(blockPlaced, false).stream().filter(block -> !BlockUtils.LIQUIDS.contains(block.getType())).count() == 1 &&
+            // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
+            BlockUtils.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())) &&
             // Buffer the ScaffoldBlockPlace
             user.getScaffoldData().getScaffoldBlockPlaces().bufferObjectIgnoreSize(new ScaffoldBlockPlace(
                     blockPlaced,
                     blockPlaced.getFace(event.getBlockAgainst()),
                     // Speed-Effect
-                    PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED))
+                    PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED)),
+                    user.getPlayer().getLocation().getYaw(),
+                    user.getPositionData().hasPlayerSneakedRecently(175)
             )))
         {
             final double xOffset = MathUtils.offset(user.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
@@ -137,7 +139,7 @@ public class Scaffold implements Listener, ViolationModule
                 {
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " placed from a suspicious location.");
                     // Flag the player
-                    vl++;
+                    vl += 4;
                 }
             }
 
@@ -147,38 +149,37 @@ public class Scaffold implements Listener, ViolationModule
             // Rotation part enabled
             if (this.rotationEnabled)
             {
-                final DoubleSummaryStatistics angleChange = user.getLookPacketData().getAngleChange();
-                final DoubleSummaryStatistics angleOffset = user.getLookPacketData().getOffsetAngleChange(angleChange.getAverage());
+                final float[] angleInformation = user.getLookPacketData().getAngleInformation();
 
-                boolean flag = false;
+                byte rotationVl = 0;
 
-                // Big rotation jumps
-                if (user.getLookPacketData().recentlyUpdated(1, 100))
+                // Big rotation jumps in the last 2 ticks
+                if (user.getLookPacketData().recentlyUpdated(0, 125))
                 {
-                    flag = true;
+                    rotationVl += 3;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1");
                 }
-                // Else to obfuscate the algorithm a bit and improve performance.
+
                 // Generally high rotations
-                else if (angleChange.getSum() > ANGLE_CHANGE_SUM_THRESHOLD)
+                if (angleInformation[0] > ANGLE_CHANGE_SUM_THRESHOLD)
                 {
-                    flag = true;
+                    rotationVl += 2;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2");
                 }
-                // Else to obfuscate the algorithm a bit and improve performance.
+
                 // Very random rotations
-                else if (angleOffset.getSum() > ANGLE_OFFSET_SUM_THRESHOLD)
+                if (angleInformation[1] > ANGLE_OFFSET_SUM_THRESHOLD)
                 {
-                    flag = true;
+                    rotationVl += 1;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
                 }
 
-                if (flag)
+                if (rotationVl > 0)
                 {
                     if (++user.getScaffoldData().rotationFails > this.rotationThreshold)
                     {
                         // Flag the player
-                        vl++;
+                        vl += rotationVl;
                     }
                 }
                 else if (user.getScaffoldData().rotationFails > 0)
@@ -200,7 +201,7 @@ public class Scaffold implements Listener, ViolationModule
                     {
                         VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
                         // Flag the player
-                        vl += 2;
+                        vl += 6;
                     }
                 }
                 else if (user.getScaffoldData().sprintingFails > 0)
@@ -213,38 +214,49 @@ public class Scaffold implements Listener, ViolationModule
             // ----------------------------------------- Suspicious stops ------------------------------------------- //
 
             // Stopping part enabled
-            if (this.safeWalkEnabled &&
-                // Not moved in the last 2 ticks while not sprinting and at the edge of a block
-                user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
-                // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
-                !(user.getPositionData().hasPlayerSneakedRecently(125) && user.getPositionData().getLastSneakTime() > 175))
+            if (this.safeWalkEnabled)
             {
-                boolean flag;
-                switch (event.getBlock().getFace(event.getBlockAgainst()))
+                // Moved to the edge of the block
+                if (user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
+                    // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
+                    !(user.getPositionData().hasPlayerSneakedRecently(125) && user.getPositionData().getLastSneakTime() > 148))
                 {
-                    case EAST:
-                        flag = xOffset > 0.28D && xOffset < 0.305D;
-                        break;
-                    case WEST:
-                        flag = xOffset > 1.28D && xOffset < 1.305D;
-                        break;
-                    case NORTH:
-                        flag = zOffset > 1.28D && zOffset < 1.305D;
-                        break;
-                    case SOUTH:
-                        flag = zOffset > 0.28D && zOffset < 0.305D;
-                        break;
-                    default:
-                        // Some other, mostly weird blockplaces.
-                        flag = false;
-                        break;
+                    boolean sneakBorder;
+                    switch (event.getBlock().getFace(event.getBlockAgainst()))
+                    {
+                        case EAST:
+                            sneakBorder = xOffset > 0.28D && xOffset < 0.305D;
+                            break;
+                        case WEST:
+                            sneakBorder = xOffset > 1.28D && xOffset < 1.305D;
+                            break;
+                        case NORTH:
+                            sneakBorder = zOffset > 1.28D && zOffset < 1.305D;
+                            break;
+                        case SOUTH:
+                            sneakBorder = zOffset > 0.28D && zOffset < 0.305D;
+                            break;
+                        default:
+                            // Some other, mostly weird blockplaces.
+                            sneakBorder = false;
+                            break;
+                    }
+
+                    if (sneakBorder)
+                    {
+                        VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
+                        vl += 1;
+                    }
                 }
 
-                if (flag)
+                // Moved recently
+                if (user.getPositionData().hasPlayerMovedRecently(355, PositionData.MovementType.XZONLY) &&
+                    // Suddenly stopped
+                    !user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
+                    // Has not sneaked recently
+                    !(user.getPositionData().hasPlayerSneakedRecently(175) && user.getPositionData().getLastSneakTime() > 148))
                 {
-                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk.");
-                    // Flag the player
-                    vl++;
+                    vl += 2;
                 }
             }
 
@@ -267,7 +279,7 @@ public class Scaffold implements Listener, ViolationModule
                 if (results[0] < results[1])
                 {
                     // Flag the player
-                    int vlIncrease = (int) (2 * Math.max(Math.ceil((results[1] - results[0]) / 15D), 6));
+                    int vlIncrease = (int) (4 * Math.min(Math.ceil((results[1] - results[0]) / 15D), 6));
 
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[1] + " | real: " + results[0] + " | vl increase: " + vlIncrease);
 

@@ -449,7 +449,7 @@ Scaffold:
          # Over how many values should AACAdditionPro take the average for the check
          buffer_size: 6
       # This part detects suspicious placement positions.
-      # The position check always adds 4 vl.
+      # The position check always adds 5 vl.
       position:
          # Should this part of the check be enabled
          enabled: true
@@ -467,7 +467,7 @@ Scaffold:
          # Should this part of the check be enabled
          enabled: true
       # This part detects sprinting between blockplaces.
-      # The sprinting check always adds 6 vl.
+      # The sprinting check always adds 8 vl.
       sprinting:
          # Should this part of the check be enabled
          enabled: true

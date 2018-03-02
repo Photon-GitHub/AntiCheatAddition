@@ -139,7 +139,7 @@ public class Scaffold implements Listener, ViolationModule
                 {
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " placed from a suspicious location.");
                     // Flag the player
-                    vl += 4;
+                    vl += 5;
                 }
             }
 
@@ -201,7 +201,7 @@ public class Scaffold implements Listener, ViolationModule
                     {
                         VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
                         // Flag the player
-                        vl += 6;
+                        vl += 8;
                     }
                 }
                 else if (user.getScaffoldData().sprintingFails > 0)

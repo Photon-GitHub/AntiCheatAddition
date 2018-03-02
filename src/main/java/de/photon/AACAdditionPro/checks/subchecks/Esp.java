@@ -121,11 +121,12 @@ public class Esp implements ViolationModule
                         }
                     }
 
+                    Pair pair;
                     while (!playerConnections.isEmpty())
                     {
                         // Automatically empty the playerConnections
                         // Remove last entry for performance
-                        final Pair pair = playerConnections.remove(playerConnections.size() - 1);
+                        pair = playerConnections.remove(playerConnections.size() - 1);
 
                         // The Users are in the same world
                         if (pair.usersOfPair[0].getPlayer().getWorld().equals(pair.usersOfPair[1].getPlayer().getWorld()))

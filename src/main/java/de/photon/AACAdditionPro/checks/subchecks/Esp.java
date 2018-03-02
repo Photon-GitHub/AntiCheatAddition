@@ -250,7 +250,7 @@ public class Esp implements ViolationModule
                     }
 
                     executorService.shutdown();
-                    
+
                     // Update_Ticks: the refresh-rate of the check.
                 }, 0L, update_ticks);
     }

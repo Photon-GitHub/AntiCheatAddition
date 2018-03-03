@@ -22,6 +22,25 @@
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
+# A simple check to flag most AutoEat bots and force more legit eating behaviour
+# This check can be bypassed pretty easily and is designed to be an obstacle for very basic clients.
+#
+# This check is EXPERIMENTAL. Please report problems on the issue tracker.
+AutoEat:
+   # Do you want to enable the AutoEat check
+   enabled: true
+   # Violation before AACAdditionPro starts to cancel the eating.
+   # Set this to 0 to never cancel eating.
+   cancel_vl: 2
+   # After a detection which surpasses cancel_vl AACAdditionPro cancels all item consume events to effectively
+   # prevent the cheat (measured in ms)
+   timeout: 5000
+   # Map of violation levels to command
+   thresholds:
+      1: "aacstaffnotify {player} in {world} is suspected for AutoEat"
+      2: "aacstaffnotify {player} in {world} is highly suspected for AutoEat"
+      3: "aackick {player} AutoEat"
+
 # If you have modified fishing time and/or behaviour please test if this check is compatible with your setup.
 # This check does only work on minecraft versions 1.10 and beyond and auto-disables itself on other versions.
 AutoFish:

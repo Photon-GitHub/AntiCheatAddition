@@ -10,6 +10,7 @@ public enum ModuleType
     PER_HEURISTIC_COMMANDS("Heuristic-Addition"),
 
     // Normal checks
+    AUTO_EAT("AutoEat"),
     AUTO_FISH("AutoFish"),
     AUTO_POTION("AutoPotion"),
     EQUAL_ROTATION("EqualRotation"),

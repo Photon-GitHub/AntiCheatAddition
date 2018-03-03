@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.user;
 
 import de.photon.AACAdditionPro.InternalPermission;
+import de.photon.AACAdditionPro.user.data.AutoEatData;
 import de.photon.AACAdditionPro.user.data.AutoPotionData;
 import de.photon.AACAdditionPro.user.data.ClientSideEntityData;
 import de.photon.AACAdditionPro.user.data.EspInformationData;
@@ -26,6 +27,7 @@ public class User
 {
     private final Player player;
 
+    private final AutoEatData autoEatData = new AutoEatData(this);
     private final AutoPotionData autoPotionData = new AutoPotionData(this);
     private final ClientSideEntityData clientSideEntityData = new ClientSideEntityData(this);
     private final EspInformationData espInformationData = new EspInformationData(this);
@@ -84,6 +86,7 @@ public class User
 
     void unregister()
     {
+        autoEatData.unregister();
         autoPotionData.unregister();
         clientSideEntityData.unregister();
         espInformationData.unregister();

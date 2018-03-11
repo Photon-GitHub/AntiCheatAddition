@@ -91,5 +91,11 @@
             <version>1.16.14</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>us.myles</groupId>
+            <artifactId>viaversion</artifactId>
+            <version>1.3.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

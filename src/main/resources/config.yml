@@ -22,25 +22,6 @@
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
-# A simple check to flag most AutoEat bots and force more legit eating behaviour
-# This check can be bypassed pretty easily and is designed to be an obstacle for very basic clients.
-#
-# This check is EXPERIMENTAL. Please report problems on the issue tracker.
-AutoEat:
-   # Do you want to enable the AutoEat check
-   enabled: true
-   # Violation before AACAdditionPro starts to cancel the eating.
-   # Set this to 0 to never cancel eating.
-   cancel_vl: 2
-   # After a detection which surpasses cancel_vl AACAdditionPro cancels all item consume events to effectively
-   # prevent the cheat (measured in ms)
-   timeout: 5000
-   # Map of violation levels to command
-   thresholds:
-      1: "aacstaffnotify {player} in {world} is suspected for AutoEat"
-      2: "aacstaffnotify {player} in {world} is highly suspected for AutoEat"
-      3: "aackick {player} AutoEat"
-
 # If you have modified fishing time and/or behaviour please test if this check is compatible with your setup.
 # This check does only work on minecraft versions 1.10 and beyond and auto-disables itself on other versions.
 AutoFish:
@@ -579,7 +560,7 @@ ClientControl:
    # This is a popular PVP modification granting additional information in various HUDs, such as potion effects.
    # Also has a TS3 module for easier communication, just like LabyMod
    5zig:
-      # Do you want to enable the 5zig-Control
+      # Do you want to enable 5zig-Control
       enabled: false
       # This mod provides a method to disable parts of it.
       # Set the corresponding value to true if you want to block a part of the mod
@@ -606,7 +587,7 @@ ClientControl:
 
    # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
    BetterSprinting:
-      # Do you want to enable the BetterSprinting-Control
+      # Do you want to enable BetterSprinting-Control
       enabled: false
       # This mod provides a method to disable it.
       # Do you want to disable this mod
@@ -618,7 +599,7 @@ ClientControl:
    # to show other players' health, like HealthTags and ESP) becomes useless.
    # This is a clientsided spoof, meaning that your plugins are able to get the correct health.
    DamageIndicator:
-      # Do you want to enable the DamageIndicators - countermeasure
+      # Do you want to enable DamageIndicators - countermeasure
       enabled: false
       # Spoof the health of the following entity categories.
       spoof:
@@ -628,7 +609,7 @@ ClientControl:
 
    # A very popular mod-loader.
    Forge:
-      # Do you want to enable the Forge-Control
+      # Do you want to enable Forge-Control
       # This cannot be blocked; I recommend to kick if desired
       enabled: false
       commands_on_detection:
@@ -642,7 +623,7 @@ ClientControl:
    #
    # If enabled this ClientControl will override the config options of the LabyModAPI plugin.
    LabyMod:
-      # Do you want to enable the LabyMod-Control
+      # Do you want to enable LabyMod-Control
       enabled: false
       # This mod provides a method to disable parts of it.
       # Set the corresponding value to true if you want to block a part of the mod
@@ -687,7 +668,7 @@ ClientControl:
    # LiteLoader is alternative mod-loader to forge.
    # Many ghost clients exist for LiteLoader, therefore I recommend to block it.
    LiteLoader:
-      # Do you want to enable the LiteLoader-Control
+      # Do you want to enable LiteLoader-Control
       # This cannot be blocked; I recommend to kick if desired
       enabled: false
       commands_on_detection:
@@ -696,7 +677,7 @@ ClientControl:
    # This covers outdated versions of LabyMod prior to version 3.0
    # A very popular PvP modification similar to 5zig but with more features and TS3 support
    OldLabyMod:
-      # Do you want to enable the OldLabyMod-Control
+      # Do you want to enable OldLabyMod-Control
       enabled: false
       # This mod provides a method to disable parts of it.
       # Set the corresponding value to true if you want to block a part of the mod
@@ -736,7 +717,7 @@ ClientControl:
 
    # A pvp modification from France
    PXMod:
-      # Do you want to enable the PXMod-Control
+      # Do you want to enable PXMod-Control
       enabled: false
       commands_on_detection:
          - "aackick {player} PXMod"
@@ -744,7 +725,7 @@ ClientControl:
    # A mod that lets you display (clientside) holograms to improve building, but also has
    # a module to download worlds.
    Schematica:
-      # Do you want to enable the Schematica-Control
+      # Do you want to enable Schematica-Control
       enabled: false
       # This mod provides a method to disable parts of it.
       # Set the corresponding value to true if you want to block a part of the mod
@@ -763,14 +744,29 @@ ClientControl:
    # in screenshares
    # This will only detect some cracked versions of the client.
    Vape:
-      # Do you want to enable the Vape-Control
+      # Do you want to enable Vape-Control
       enabled: false
       commands_on_detection:
          - "ban {player} Illegal client modification"
 
+   # This allows you to control which minecraft versions can join your server if your server runs ViaVersion.
+   # YOU NEED TO ENABLE THIS AND DISALLOW 1.9 CLIENTS IF YOU WANT TO USE THE KILLAURAENTITY CHECK ON A VIAVERSION SERVER
+   VersionControl:
+      # Do you want to enable VersionControl
+      enabled: false
+      # What versions should be able to join?
+      # Setting a value to true means "joining allowed"
+      1.8: true
+      # 1.9 is not officially supported by this plugin. Issues can occur.
+      1.9: false
+      1.10: true
+      1.11: true
+      1.12: true
+      1.13: true
+
    # WorldDownloader is a popular modification to get the maps of a server
    WorldDownloader:
-      # Do you want to enable the WorldDownloader-Control
+      # Do you want to enable WorldDownloader-Control
       # This cannot be blocked; I recommend to kick if desired
       enabled: false
       commands_on_detection:

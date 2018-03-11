@@ -5,7 +5,6 @@ import de.photon.AACAdditionPro.additions.LogBot;
 import de.photon.AACAdditionPro.additions.PerHeuristicCommands;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
-import de.photon.AACAdditionPro.checks.subchecks.AutoEat;
 import de.photon.AACAdditionPro.checks.subchecks.AutoFish;
 import de.photon.AACAdditionPro.checks.subchecks.AutoPotion;
 import de.photon.AACAdditionPro.checks.subchecks.EqualRotation;
@@ -228,7 +227,6 @@ public class AACAdditionPro extends JavaPlugin
             this.moduleManager.registerObject(new WorldDownloaderControl());
 
             // Normal checks
-            this.moduleManager.registerObject(new AutoEat());
             this.moduleManager.registerObject(new AutoFish());
             this.moduleManager.registerObject(new AutoPotion());
             this.moduleManager.registerObject(new EqualRotation());

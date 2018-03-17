@@ -128,7 +128,10 @@ Esp:
    # If your server has more than 45 players in one world within its render distance the ESP check will create a
    # medium - high CPU load
    #
-   enabled: true
+   # Chaotic situations with lots of randomly placed blocks might cause internal spigot BlockIterators to return
+   # undesired results, thus hiding otherwise visible players.
+   # I will recode this check once I have more time again.
+   enabled: false
    # After this amount of ticks the positions will be updated again
    update_ticks: 3
 

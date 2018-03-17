@@ -460,6 +460,7 @@ Scaffold:
       # The rotation check adds 1 - 6 vl, depending on the type of the violation.
       rotation:
          # What types of this part should be enabled
+         # Disabling all types will disable the part.
          type1: true
          type2: true
          type3: true
@@ -470,6 +471,7 @@ Scaffold:
       # The safe-walk check always adds 1 - 3 vl, depending on the type of the violation.
       safewalk:
          # What types of this part should be enabled
+         # Disabling all types will disable the part.
          type1: true
          type2: true
       # This part detects sprinting between blockplaces.

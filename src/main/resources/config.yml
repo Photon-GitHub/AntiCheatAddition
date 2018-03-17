@@ -760,6 +760,21 @@ ClientControl:
       commands_on_detection:
          - "ban {player} Illegal client modification"
 
+   # This allows you to control which minecraft versions can join your server if your server runs ViaVersion.
+   # YOU NEED TO ENABLE THIS AND DISALLOW 1.9 CLIENTS IF YOU WANT TO USE THE KILLAURAENTITY CHECK ON A VIAVERSION SERVER
+   VersionControl:
+      # Do you want to enable VersionControl
+      enabled: false
+      # What versions should be able to join?
+      # Setting a value to true means "joining allowed"
+      1.8: true
+      # 1.9 is not officially supported by this plugin. Issues can occur.
+      1.9: false
+      1.10: true
+      1.11: true
+      1.12: true
+      1.13: true
+
    # WorldDownloader is a popular modification to get the maps of a server
    WorldDownloader:
       # Do you want to enable WorldDownloader-Control

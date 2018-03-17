@@ -590,7 +590,7 @@ public abstract class ClientsideEntity
     private static int getNextEntityID() throws IllegalAccessException
     {
         // Get entity id for next entity (this one)
-        int entityID = entityCountField.getInt(null);
+        final int entityID = entityCountField.getInt(null);
 
         // Increase entity id for next entity
         entityCountField.setInt(null, entityID + 1);

@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
+import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
@@ -35,10 +36,19 @@ public class Scaffold implements Listener, ViolationModule
 
     @LoadFromConfiguration(configPath = ".parts.position.enabled")
     private boolean positionEnabled;
-    @LoadFromConfiguration(configPath = ".parts.rotation.enabled")
-    private boolean rotationEnabled;
-    @LoadFromConfiguration(configPath = ".parts.safewalk.enabled")
-    private boolean safeWalkEnabled;
+
+    private boolean rotationCheckingNeeded = false;
+    private final boolean[] rotationEnabled = new boolean[]{
+            AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".parts.rotation.type1"),
+            AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".parts.rotation.type2"),
+            AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".parts.rotation.type3")
+    };
+
+    private final boolean[] safeWalkEnabled = new boolean[]{
+            AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".parts.safewalk.type1"),
+            AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".parts.safewalk.type2")
+    };
+
     @LoadFromConfiguration(configPath = ".parts.sprinting.enabled")
     private boolean sprintingEnabled;
 
@@ -139,7 +149,7 @@ public class Scaffold implements Listener, ViolationModule
                 {
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " placed from a suspicious location.");
                     // Flag the player
-                    vl += 4;
+                    vl += 5;
                 }
             }
 
@@ -147,28 +157,31 @@ public class Scaffold implements Listener, ViolationModule
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
             // Rotation part enabled
-            if (this.rotationEnabled)
+            if (this.rotationCheckingNeeded)
             {
                 final float[] angleInformation = user.getLookPacketData().getAngleInformation();
 
                 byte rotationVl = 0;
 
                 // Big rotation jumps in the last 2 ticks
-                if (user.getLookPacketData().recentlyUpdated(0, 125))
+                if (rotationEnabled[0] &&
+                    user.getLookPacketData().recentlyUpdated(0, 125))
                 {
                     rotationVl += 3;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1");
                 }
 
                 // Generally high rotations
-                if (angleInformation[0] > ANGLE_CHANGE_SUM_THRESHOLD)
+                if (rotationEnabled[1] &&
+                    angleInformation[0] > ANGLE_CHANGE_SUM_THRESHOLD)
                 {
                     rotationVl += 2;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2");
                 }
 
                 // Very random rotations
-                if (angleInformation[1] > ANGLE_OFFSET_SUM_THRESHOLD)
+                if (rotationEnabled[2] &&
+                    angleInformation[1] > ANGLE_OFFSET_SUM_THRESHOLD)
                 {
                     rotationVl += 1;
                     VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
@@ -201,7 +214,7 @@ public class Scaffold implements Listener, ViolationModule
                     {
                         VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
                         // Flag the player
-                        vl += 6;
+                        vl += 8;
                     }
                 }
                 else if (user.getScaffoldData().sprintingFails > 0)
@@ -214,50 +227,50 @@ public class Scaffold implements Listener, ViolationModule
             // ----------------------------------------- Suspicious stops ------------------------------------------- //
 
             // Stopping part enabled
-            if (this.safeWalkEnabled)
-            {
+            if (this.safeWalkEnabled[0] &&
                 // Moved to the edge of the block
-                if (user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
-                    // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
-                    !(user.getPositionData().hasPlayerSneakedRecently(125) && user.getPositionData().getLastSneakTime() > 148))
+                user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
+                // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
+                !(user.getPositionData().hasPlayerSneakedRecently(125) && user.getPositionData().getLastSneakTime() > 148))
+            {
+                boolean sneakBorder;
+                switch (event.getBlock().getFace(event.getBlockAgainst()))
                 {
-                    boolean sneakBorder;
-                    switch (event.getBlock().getFace(event.getBlockAgainst()))
-                    {
-                        case EAST:
-                            sneakBorder = xOffset > 0.28D && xOffset < 0.305D;
-                            break;
-                        case WEST:
-                            sneakBorder = xOffset > 1.28D && xOffset < 1.305D;
-                            break;
-                        case NORTH:
-                            sneakBorder = zOffset > 1.28D && zOffset < 1.305D;
-                            break;
-                        case SOUTH:
-                            sneakBorder = zOffset > 0.28D && zOffset < 0.305D;
-                            break;
-                        default:
-                            // Some other, mostly weird blockplaces.
-                            sneakBorder = false;
-                            break;
-                    }
-
-                    if (sneakBorder)
-                    {
-                        VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
-                        vl += 1;
-                    }
+                    case EAST:
+                        sneakBorder = xOffset > 0.28D && xOffset < 0.305D;
+                        break;
+                    case WEST:
+                        sneakBorder = xOffset > 1.28D && xOffset < 1.305D;
+                        break;
+                    case NORTH:
+                        sneakBorder = zOffset > 1.28D && zOffset < 1.305D;
+                        break;
+                    case SOUTH:
+                        sneakBorder = zOffset > 0.28D && zOffset < 0.305D;
+                        break;
+                    default:
+                        // Some other, mostly weird blockplaces.
+                        sneakBorder = false;
+                        break;
                 }
 
+                if (sneakBorder)
+                {
+                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
+                    vl += 1;
+                }
+            }
+
+            if (safeWalkEnabled[1] &&
                 // Moved recently
-                if (user.getPositionData().hasPlayerMovedRecently(355, PositionData.MovementType.XZONLY) &&
-                    // Suddenly stopped
-                    !user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
-                    // Has not sneaked recently
-                    !(user.getPositionData().hasPlayerSneakedRecently(175) && user.getPositionData().getLastSneakTime() > 148))
-                {
-                    vl += 2;
-                }
+                user.getPositionData().hasPlayerMovedRecently(355, PositionData.MovementType.XZONLY) &&
+                // Suddenly stopped
+                !user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
+                // Has not sneaked recently
+                !(user.getPositionData().hasPlayerSneakedRecently(175) && user.getPositionData().getLastSneakTime() > 148))
+            {
+                VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
+                vl += 2;
             }
 
 
@@ -295,6 +308,19 @@ public class Scaffold implements Listener, ViolationModule
                     user.getScaffoldData().updateTimeStamp(0);
                     InventoryUtils.syncUpdateInventory(user.getPlayer());
                 }, () -> {});
+            }
+        }
+    }
+
+    @Override
+    public void subEnable()
+    {
+        for (boolean b : this.rotationEnabled)
+        {
+            if (b)
+            {
+                this.rotationCheckingNeeded = true;
+                return;
             }
         }
     }

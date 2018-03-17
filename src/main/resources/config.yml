@@ -128,7 +128,10 @@ Esp:
    # If your server has more than 45 players in one world within its render distance the ESP check will create a
    # medium - high CPU load
    #
-   enabled: true
+   # Chaotic situations with lots of randomly placed blocks floating in midair might cause internal spigot
+   # BlockIterators to return undesired results, thus hiding otherwise visible players.
+   # I will recode this check once I have more time again.
+   enabled: false
    # After this amount of ticks the positions will be updated again
    update_ticks: 3
 
@@ -449,25 +452,33 @@ Scaffold:
          # Over how many values should AACAdditionPro take the average for the check
          buffer_size: 6
       # This part detects suspicious placement positions.
-      # The position check always adds 4 vl.
+      # The position check always adds 5 vl.
       position:
          # Should this part of the check be enabled
          enabled: true
       # This part analyzes the rotations of a player while scaffolding
-      # The rotation check adds 1 - 6 vl, depending on the type of the violation.
       rotation:
-         # Should this part of the check be enabled
-         enabled: true
+         # What types of this part should be enabled
+         # Disabling all types will disable the part.
+         # Type1 will add 3 vl
+         type1: true
+         # Type2 will add 2 vl
+         type2: true
+         # Type3 will add 1 vl
+         type3: true
          # How many suspicious rotations should Scaffold count as legit
          # The value must be positive.
          rotation_threshold: 6
       # This checks for behaviour associated with safe-walk
-      # The safe-walk check always adds 1 - 3 vl, depending on the type of the violation.
       safewalk:
-         # Should this part of the check be enabled
-         enabled: true
+         # What types of this part should be enabled
+         # Disabling all types will disable the part.
+         # Type1 will add 1 vl
+         type1: true
+         # Type2 will add 2 vl
+         type2: true
       # This part detects sprinting between blockplaces.
-      # The sprinting check always adds 6 vl.
+      # The sprinting check always adds 8 vl.
       sprinting:
          # Should this part of the check be enabled
          enabled: true
@@ -560,7 +571,7 @@ ClientControl:
    # This is a popular PVP modification granting additional information in various HUDs, such as potion effects.
    # Also has a TS3 module for easier communication, just like LabyMod
    5zig:
-      # Do you want to enable the 5zig-Control
+      # Do you want to enable 5zig-Control
       enabled: false
       # This mod provides a method to disable parts of it.
       # Set the corresponding value to true if you want to block a part of the mod
@@ -587,7 +598,7 @@ ClientControl:
 
    # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
    BetterSprinting:
-      # Do you want to enable the BetterSprinting-Control
+      # Do you want to enable BetterSprinting-Control
       enabled: false
       # This mod provides a method to disable it.
       # Do you want to disable this mod
@@ -599,7 +610,7 @@ ClientControl:
    # to show other players' health, like HealthTags and ESP) becomes useless.
    # This is a clientsided spoof, meaning that your plugins are able to get the correct health.
    DamageIndicator:
-      # Do you want to enable the DamageIndicators - countermeasure
+      # Do you want to enable DamageIndicators - countermeasure
       enabled: false
       # Spoof the health of the following entity categories.
       spoof:
@@ -609,7 +620,7 @@ ClientControl:
 
    # A very popular mod-loader.
    Forge:
-      # Do you want to enable the Forge-Control
+      # Do you want to enable Forge-Control
       # This cannot be blocked; I recommend to kick if desired
       enabled: false
       commands_on_detection:
@@ -623,7 +634,7 @@ ClientControl:
    #
    # If enabled this ClientControl will override the config options of the LabyModAPI plugin.
    LabyMod:
-      # Do you want to enable the LabyMod-Control
+      # Do you want to enable LabyMod-Control
       enabled: false
       # This mod provides a method to disable parts of it.
       # Set the corresponding value to true if you want to block a part of the mod
@@ -668,7 +679,7 @@ ClientControl:
    # LiteLoader is alternative mod-loader to forge.
    # Many ghost clients exist for LiteLoader, therefore I recommend to block it.
    LiteLoader:
-      # Do you want to enable the LiteLoader-Control
+      # Do you want to enable LiteLoader-Control
       # This cannot be blocked; I recommend to kick if desired
       enabled: false
       commands_on_detection:
@@ -677,7 +688,7 @@ ClientControl:
    # This covers outdated versions of LabyMod prior to version 3.0
    # A very popular PvP modification similar to 5zig but with more features and TS3 support
    OldLabyMod:
-      # Do you want to enable the OldLabyMod-Control
+      # Do you want to enable OldLabyMod-Control
       enabled: false
       # This mod provides a method to disable parts of it.
       # Set the corresponding value to true if you want to block a part of the mod
@@ -717,7 +728,7 @@ ClientControl:
 
    # A pvp modification from France
    PXMod:
-      # Do you want to enable the PXMod-Control
+      # Do you want to enable PXMod-Control
       enabled: false
       commands_on_detection:
          - "aackick {player} PXMod"
@@ -725,7 +736,7 @@ ClientControl:
    # A mod that lets you display (clientside) holograms to improve building, but also has
    # a module to download worlds.
    Schematica:
-      # Do you want to enable the Schematica-Control
+      # Do you want to enable Schematica-Control
       enabled: false
       # This mod provides a method to disable parts of it.
       # Set the corresponding value to true if you want to block a part of the mod
@@ -744,14 +755,14 @@ ClientControl:
    # in screenshares
    # This will only detect some cracked versions of the client.
    Vape:
-      # Do you want to enable the Vape-Control
+      # Do you want to enable Vape-Control
       enabled: false
       commands_on_detection:
          - "ban {player} Illegal client modification"
 
    # WorldDownloader is a popular modification to get the maps of a server
    WorldDownloader:
-      # Do you want to enable the WorldDownloader-Control
+      # Do you want to enable WorldDownloader-Control
       # This cannot be blocked; I recommend to kick if desired
       enabled: false
       commands_on_detection:

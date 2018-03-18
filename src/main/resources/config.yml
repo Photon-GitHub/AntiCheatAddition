@@ -270,6 +270,9 @@ InventoryRotation:
       35: "aackick {player} Killaura/Autoarmor"
 
 # Brings back an entity check of the old AAC 1.9.10 times but much more advanced.
+#
+# This check can cause performance problems as it needs to calculate movement, select equipment and take many more
+# actions to make the entities mostly bypass-proof. If you encounter TPS drops try to disable this check first.
 KillauraEntity:
    # Do you want to enable the KillauraEntity check
    enabled: true
@@ -760,11 +763,12 @@ ClientControl:
       commands_on_detection:
          - "ban {player} Illegal client modification"
 
-   # This allows you to control which minecraft versions can join your server if your server runs ViaVersion.
+   # This allows you to control which minecraft versions can join your server IF YOUR SERVER RUNS VIAVERSION.
    # YOU NEED TO ENABLE THIS AND DISALLOW 1.9 CLIENTS IF YOU WANT TO USE THE KILLAURAENTITY CHECK ON A VIAVERSION SERVER
    VersionControl:
       # Do you want to enable VersionControl
       enabled: false
+      message: "You are using an unsupported version. Supported Versions are {supportedVersions}"
       # What versions should be able to join?
       # Setting a value to true means "joining allowed"
       1.8: true

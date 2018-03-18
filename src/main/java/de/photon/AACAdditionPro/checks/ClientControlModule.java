@@ -9,13 +9,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Collection;
+import java.util.List;
 
 public interface ClientControlModule extends ViolationModule
 {
     String MC_BRAND_CHANNEL = "MC|Brand";
 
-    Collection<String> getCommandsOnDetection();
+    List getCommandsOnDetection();
 
     /**
      * This is used for the ClientControl checks as they do not need full thresholds

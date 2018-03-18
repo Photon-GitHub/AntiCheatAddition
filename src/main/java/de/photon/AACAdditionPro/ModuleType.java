@@ -42,6 +42,7 @@ public enum ModuleType
     OLD_LABYMOD_CONTROL("ClientControl.OldLabyMod", "uses LabyMod"),
     SCHEMATICA_CONTROL("ClientControl.Schematica", "uses Schematica"),
     VAPE_CONTROL("ClientControl.Vape", "uses Vape"),
+    VERSION_CONTROL("ClientControl.VersionControl"),
     WORLDDOWNLOAD_CONTROL("ClientControl.WorldDownloader", "uses WorldDownloader");
 
     private final String configString;

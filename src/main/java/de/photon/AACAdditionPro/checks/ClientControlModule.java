@@ -15,7 +15,7 @@ public interface ClientControlModule extends ViolationModule
 {
     String MC_BRAND_CHANNEL = "MC|Brand";
 
-    List getCommandsOnDetection();
+    List<String> getCommandsOnDetection();
 
     /**
      * This is used for the ClientControl checks as they do not need full thresholds

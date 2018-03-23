@@ -9,7 +9,10 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import us.myles.ViaVersion.api.Via;
 import us.myles.ViaVersion.api.ViaAPI;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class VersionControl implements Listener, ClientControlModule
 {
@@ -69,6 +72,12 @@ public class VersionControl implements Listener, ClientControlModule
     public List<String> getCommandsOnDetection()
     {
         return null;
+    }
+
+    @Override
+    public Set<String> getDependencies()
+    {
+        return new HashSet<>(Collections.singletonList("ViaVersion"));
     }
 
     @Override

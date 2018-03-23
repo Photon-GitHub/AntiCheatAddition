@@ -10,7 +10,6 @@ import de.photon.AACAdditionPro.checks.subchecks.AutoPotion;
 import de.photon.AACAdditionPro.checks.subchecks.EqualRotation;
 import de.photon.AACAdditionPro.checks.subchecks.Esp;
 import de.photon.AACAdditionPro.checks.subchecks.Fastswitch;
-import de.photon.AACAdditionPro.checks.subchecks.Freecam;
 import de.photon.AACAdditionPro.checks.subchecks.GravitationalModifier;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryChat;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
@@ -34,6 +33,7 @@ import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.OldLabyModControl
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.PXModControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.SchematicaControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VapeControl;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VersionControl;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.WorldDownloaderControl;
 import de.photon.AACAdditionPro.command.MainCommand;
 import de.photon.AACAdditionPro.events.APILoadedEvent;
@@ -189,63 +189,51 @@ public class AACAdditionPro extends JavaPlugin
 
             // The first getConfig call will automatically saveToFile and cache the config.
 
-
-            // ------------------------------------------------------------------------------------------------------ //
-            //                                              Plugin hooks                                              //
-            // ------------------------------------------------------------------------------------------------------ //
-
-            boolean labyModAPIHook = this.getServer().getPluginManager().isPluginEnabled("LabyModAPI");
-
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //
             // ------------------------------------------------------------------------------------------------------ //
 
             // Managers
             this.registerListener(new UserManager());
-            this.moduleManager = new ModuleManager(30);
+            this.moduleManager = new ModuleManager(
+                    // Additions
+                    new LogBot(),
+                    new PerHeuristicCommands(),
 
-            // Additions
-            this.moduleManager.registerObject(new PerHeuristicCommands());
-            this.moduleManager.registerObject(new LogBot());
+                    // ClientControl
+                    new BetterSprintingControl(),
+                    new DamageIndicator(),
+                    new FiveZigControl(),
+                    new ForgeControl(),
+                    new LabyModControl(),
+                    new LiteloaderControl(),
+                    new OldLabyModControl(),
+                    new PXModControl(),
+                    new SchematicaControl(),
+                    new VapeControl(),
+                    new VersionControl(),
+                    new WorldDownloaderControl(),
 
-            // ClientControl
-            this.moduleManager.registerObject(new BetterSprintingControl());
-            this.moduleManager.registerObject(new DamageIndicator());
-            this.moduleManager.registerObject(new FiveZigControl());
-            this.moduleManager.registerObject(new ForgeControl());
-
-            if (labyModAPIHook)
-            {
-                this.moduleManager.registerObject(new LabyModControl());
-            }
-
-            this.moduleManager.registerObject(new LiteloaderControl());
-            this.moduleManager.registerObject(new OldLabyModControl());
-            this.moduleManager.registerObject(new PXModControl());
-            this.moduleManager.registerObject(new SchematicaControl());
-            this.moduleManager.registerObject(new VapeControl());
-            this.moduleManager.registerObject(new WorldDownloaderControl());
-
-            // Normal checks
-            this.moduleManager.registerObject(new AutoFish());
-            this.moduleManager.registerObject(new AutoPotion());
-            this.moduleManager.registerObject(new EqualRotation());
-            this.moduleManager.registerObject(new Esp());
-            this.moduleManager.registerObject(new Fastswitch());
-            this.moduleManager.registerObject(new Freecam());
-            this.moduleManager.registerObject(new GravitationalModifier());
-            this.moduleManager.registerObject(new InventoryChat());
-            this.moduleManager.registerObject(new InventoryHeuristics());
-            this.moduleManager.registerObject(new InventoryHit());
-            this.moduleManager.registerObject(new InventoryMove());
-            this.moduleManager.registerObject(new InventoryRotation());
-            this.moduleManager.registerObject(new KillauraEntity());
-            this.moduleManager.registerObject(new MultiInteraction());
-            this.moduleManager.registerObject(new Pingspoof());
-            this.moduleManager.registerObject(new Scaffold());
-            this.moduleManager.registerObject(new SkinBlinker());
-            this.moduleManager.registerObject(new Teaming());
-            this.moduleManager.registerObject(new Tower());
+                    // Normal checks
+                    new AutoFish(),
+                    new AutoPotion(),
+                    new EqualRotation(),
+                    new Esp(),
+                    new Fastswitch(),
+                    new GravitationalModifier(),
+                    new InventoryChat(),
+                    new InventoryHeuristics(),
+                    new InventoryHit(),
+                    new InventoryMove(),
+                    new InventoryRotation(),
+                    new KillauraEntity(),
+                    new MultiInteraction(),
+                    new Pingspoof(),
+                    new Scaffold(),
+                    new SkinBlinker(),
+                    new Teaming(),
+                    new Tower()
+            );
 
             // Commands
             this.getCommand(MainCommand.instance.name).setExecutor(MainCommand.instance);

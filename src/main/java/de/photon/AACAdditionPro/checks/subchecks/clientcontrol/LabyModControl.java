@@ -13,9 +13,12 @@ import net.labymod.serverapi.bukkit.event.PermissionsSendEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class LabyModControl implements Listener, ClientControlModule
 {
@@ -69,6 +72,12 @@ public class LabyModControl implements Listener, ClientControlModule
     public List<String> getCommandsOnDetection()
     {
         return commandsOnDetection;
+    }
+
+    @Override
+    public Set<String> getDependencies()
+    {
+        return new HashSet<>(Collections.singletonList("LabyModAPI"));
     }
 
     @Override

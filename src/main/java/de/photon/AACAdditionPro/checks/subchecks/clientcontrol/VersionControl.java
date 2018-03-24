@@ -1,14 +1,16 @@
 package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
+import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import us.myles.ViaVersion.api.Via;
 import us.myles.ViaVersion.api.ViaAPI;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -16,21 +18,56 @@ import java.util.Set;
 
 public class VersionControl implements Listener, ClientControlModule
 {
-    @LoadFromConfiguration(configPath = ".1.8")
-    private boolean mc18;
-    @LoadFromConfiguration(configPath = ".1.9")
-    private boolean mc19;
-    @LoadFromConfiguration(configPath = ".1.10")
-    private boolean mc110;
-    @LoadFromConfiguration(configPath = ".1.11")
-    private boolean mc111;
-    @LoadFromConfiguration(configPath = ".1.12")
-    private boolean mc112;
+    private final boolean mc18;
+    private final boolean mc19;
+    private final boolean mc110;
+    private final boolean mc111;
+    private final boolean mc112;
 
-    @LoadFromConfiguration(configPath = ".message")
-    private String message;
+    private final String message;
 
     private final ViaAPI api = Via.getAPI();
+
+    public VersionControl()
+    {
+        mc18 = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl.1.8");
+        mc19 = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl.1.9");
+        mc110 = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl.1.10");
+        mc111 = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl.1.11");
+        mc112 = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl.1.12");
+
+        // Message
+        Collection<String> versionStrings = new ArrayList<>();
+        if (mc18)
+        {
+            versionStrings.add("1.8");
+        }
+
+        if (mc19)
+        {
+            versionStrings.add("1.9");
+        }
+
+        if (mc110)
+        {
+            versionStrings.add("1.10");
+        }
+
+        if (mc111)
+        {
+            versionStrings.add("1.11");
+        }
+
+        if (mc112)
+        {
+            versionStrings.add("1.12");
+        }
+
+        // Get the message
+        this.message = AACAdditionPro.getInstance().getConfig().getString("ClientControl.VersionControl.message")
+                                     // Replace the special placeholder
+                                     .replace("{supportedVersions}", String.join(", ", versionStrings));
+    }
 
     @EventHandler
     // TODO: ASYNCPLAYERPRELOGINEVENT OR PLAYERLOGINEVENT ?

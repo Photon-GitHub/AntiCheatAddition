@@ -46,8 +46,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import us.myles.ViaVersion.api.Via;
+import us.myles.ViaVersion.api.ViaAPI;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,6 +98,9 @@ public class AACAdditionPro extends JavaPlugin
 
     @Getter
     private ModuleManager moduleManager;
+
+    @Getter
+    private ViaAPI<Player> viaAPI;
 
     /**
      * This will get the object of the plugin registered on the server.
@@ -188,6 +194,14 @@ public class AACAdditionPro extends JavaPlugin
             }
 
             // The first getConfig call will automatically saveToFile and cache the config.
+
+            // ------------------------------------------------------------------------------------------------------ //
+            //                                              Plugin hooks                                              //
+            // ------------------------------------------------------------------------------------------------------ //
+
+            // Call is correct here as Bukkit always has a player api.
+            //noinspection unchecked
+            viaAPI = Via.getAPI();
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //

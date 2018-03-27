@@ -20,7 +20,8 @@ import java.util.Set;
 
 public class VersionControl implements Listener, ClientControlModule
 {
-    public VersionControl()
+    @Override
+    public void subEnable()
     {
         // Register all versions
         final Set<ProtocolVersion> protocolVersions = Sets.newHashSet(

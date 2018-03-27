@@ -21,7 +21,8 @@ public class VersionControl implements Listener, ClientControlModule
 {
     public VersionControl()
     {
-        final HashSet<ProtocolVersion> protocolVersions = new HashSet<>();
+        final Set<ProtocolVersion> protocolVersions = new HashSet<>();
+
         // Register all versions
         protocolVersions.add(new ProtocolVersion("1.8", 47));
         protocolVersions.add(new ProtocolVersion("1.9", 107, 108, 109, 110));

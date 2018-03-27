@@ -44,24 +44,19 @@ public class VersionControl implements Listener, ClientControlModule
         final YamlConfiguration viaVersionConfig = YamlConfiguration.loadConfiguration(viaVersionFile);
         viaVersionConfig.set("block-disconnect-msg", message);
 
-        final int[] blockedProtocolNumbers = new int[ProtocolVersion.totalVersionNumbers];
-        int current = 0;
+        final List<Integer> blockedProtocolNumbers = new ArrayList<>();
         for (ProtocolVersion protocolVersion : protocolVersions)
         {
             if (!protocolVersion.allowed)
             {
                 for (int versionNumber : protocolVersion.versionNumbers)
                 {
-                    blockedProtocolNumbers[current++] = versionNumber;
+                    blockedProtocolNumbers.add(versionNumber);
                 }
             }
         }
 
-        final int[] trimmedBlockedProtocolNumbers = new int[current + 1];
-        System.arraycopy(blockedProtocolNumbers, 0, trimmedBlockedProtocolNumbers, 0, current + 1);
-
-        // Trim the array
-        viaVersionConfig.set("block-protocols", trimmedBlockedProtocolNumbers);
+        viaVersionConfig.set("block-protocols", blockedProtocolNumbers);
         try
         {
             viaVersionConfig.save(viaVersionFile);

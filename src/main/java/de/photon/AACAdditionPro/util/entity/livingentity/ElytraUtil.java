@@ -13,7 +13,7 @@ public final class ElytraUtil
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
-                return true;
+                return false;
             case MC110:
             case MC111:
             case MC112:

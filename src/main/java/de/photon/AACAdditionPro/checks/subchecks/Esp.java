@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.VectorUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.visibility.HideMode;
@@ -180,8 +181,8 @@ public class Esp implements ViolationModule
                                     // Has not logged in recently to prevent bugs
                                     !pair.usersOfPair[b].getLoginData().recentlyUpdated(0, 3000))
                                 {
-                                    canSee = observer.hasLineOfSight(watched);
-                                    /*final Vector[] cameraVectors = getCameraVectors(observer);
+                                    //canSee = observer.hasLineOfSight(watched);
+                                    final Vector[] cameraVectors = getCameraVectors(observer);
 
                                     final Hitbox hitboxOfWatched = watched.isSneaking() ?
                                                                    Hitbox.SNEAKING_PLAYER :
@@ -237,7 +238,7 @@ public class Esp implements ViolationModule
 
                                             lastIntersectionCache = intersect;
                                         }
-                                    }*/
+                                    }
                                 }
                                 else
                                 {

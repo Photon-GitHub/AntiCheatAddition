@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -49,10 +50,7 @@ public class VersionControl implements Listener, ClientControlModule
         {
             if (!protocolVersion.allowed)
             {
-                for (int versionNumber : protocolVersion.versionNumbers)
-                {
-                    blockedProtocolNumbers.add(versionNumber);
-                }
+                blockedProtocolNumbers.addAll(protocolVersion.versionNumbers);
             }
         }
 
@@ -85,17 +83,30 @@ public class VersionControl implements Listener, ClientControlModule
         return ModuleType.VERSION_CONTROL;
     }
 
+    /**
+     * Key element for protocol versions.
+     */
     private static class ProtocolVersion
     {
+        /**
+         * The name of the {@link ProtocolVersion}. Intended to be equivalent to minecraft versions.
+         * Examples: 1.8, 1.9, 1.10, etc.
+         */
         private final String name;
+        /**
+         * Whether or not this {@link ProtocolVersion} should be allowed to join the server.
+         */
         private final boolean allowed;
-        private final int[] versionNumbers;
+        /**
+         * An unmodifiable {@link List} of {@link Integer}s that contains all protocol version numbers associated with this {@link ProtocolVersion}
+         */
+        private final List<Integer> versionNumbers;
 
-        private ProtocolVersion(final String name, final int... versionNumbers)
+        private ProtocolVersion(final String name, final Integer... versionNumbers)
         {
             this.name = name;
             this.allowed = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl." + this.name);
-            this.versionNumbers = versionNumbers;
+            this.versionNumbers = Collections.unmodifiableList(Arrays.asList(versionNumbers));
         }
     }
 }

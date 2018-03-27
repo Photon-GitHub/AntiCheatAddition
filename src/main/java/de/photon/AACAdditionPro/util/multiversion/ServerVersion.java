@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.util.multiversion;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.Set;
 
@@ -47,5 +48,13 @@ public enum ServerVersion
     public static boolean supportsActiveServerVersion(Set<ServerVersion> supportedServerVersions)
     {
         return supportedServerVersions.contains(activeServerVersion);
+    }
+
+    /**
+     * Used to get the client version. Might only differ from {@link #getActiveServerVersion()} if ViaVersion is installed.
+     */
+    public static ServerVersion getClientServerVersion(final Player player)
+    {
+
     }
 }

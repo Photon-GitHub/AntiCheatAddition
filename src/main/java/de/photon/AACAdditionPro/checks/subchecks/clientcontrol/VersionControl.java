@@ -87,8 +87,6 @@ public class VersionControl implements Listener, ClientControlModule
 
     private static class ProtocolVersion
     {
-        private static int totalVersionNumbers = 0;
-
         private final String name;
         private final boolean allowed;
         private final int[] versionNumbers;
@@ -98,7 +96,6 @@ public class VersionControl implements Listener, ClientControlModule
             this.name = name;
             this.allowed = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl." + this.name);
             this.versionNumbers = versionNumbers;
-            totalVersionNumbers += this.versionNumbers.length;
         }
     }
 }

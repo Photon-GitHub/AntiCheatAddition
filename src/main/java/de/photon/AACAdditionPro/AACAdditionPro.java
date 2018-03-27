@@ -200,8 +200,11 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Call is correct here as Bukkit always has a player api.
-            //noinspection unchecked
-            viaAPI = Via.getAPI();
+            if (this.getServer().getPluginManager().getPlugin("ViaVersion") != null)
+            {
+                //noinspection unchecked
+                viaAPI = Via.getAPI();
+            }
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //

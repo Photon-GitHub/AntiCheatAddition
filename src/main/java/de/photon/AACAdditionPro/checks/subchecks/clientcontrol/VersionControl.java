@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
+import com.google.common.collect.Sets;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
@@ -21,14 +22,13 @@ public class VersionControl implements Listener, ClientControlModule
 {
     public VersionControl()
     {
-        final Set<ProtocolVersion> protocolVersions = new HashSet<>();
-
         // Register all versions
-        protocolVersions.add(new ProtocolVersion("1.8", 47));
-        protocolVersions.add(new ProtocolVersion("1.9", 107, 108, 109, 110));
-        protocolVersions.add(new ProtocolVersion("1.10", 210));
-        protocolVersions.add(new ProtocolVersion("1.11", 315, 316));
-        protocolVersions.add(new ProtocolVersion("1.12", 335, 338, 340));
+        final Set<ProtocolVersion> protocolVersions = Sets.newHashSet(
+                new ProtocolVersion("1.8", 47),
+                new ProtocolVersion("1.9", 107, 108, 109, 110),
+                new ProtocolVersion("1.10", 210),
+                new ProtocolVersion("1.11", 315, 316),
+                new ProtocolVersion("1.12", 335, 338, 340));
 
         // Message:
         final Collection<String> versionStrings = new ArrayList<>();

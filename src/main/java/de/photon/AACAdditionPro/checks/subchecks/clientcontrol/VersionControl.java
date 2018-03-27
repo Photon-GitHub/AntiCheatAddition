@@ -3,10 +3,12 @@ package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +40,8 @@ public class VersionControl implements Listener, ClientControlModule
                                              // Replace the special placeholder
                                              .replace("{supportedVersions}", String.join(", ", versionStrings));
 
-        final YamlConfiguration viaVersionConfig = YamlConfiguration.loadConfiguration(new File("plugins/ViaVersion/config.yml"));
+        final File viaVersionFile = new File("plugins/ViaVersion/config.yml");
+        final YamlConfiguration viaVersionConfig = YamlConfiguration.loadConfiguration(viaVersionFile);
         viaVersionConfig.set("block-disconnect-msg", message);
 
         final int[] blockedProtocolNumbers = new int[ProtocolVersion.totalVersionNumbers];
@@ -54,11 +57,19 @@ public class VersionControl implements Listener, ClientControlModule
             }
         }
 
-        final int[] trimmedBlockedProtocolNumbers = new int[current];
+        final int[] trimmedBlockedProtocolNumbers = new int[current + 1];
         System.arraycopy(blockedProtocolNumbers, 0, trimmedBlockedProtocolNumbers, 0, current + 1);
 
         // Trim the array
         viaVersionConfig.set("block-protocols", trimmedBlockedProtocolNumbers);
+        try
+        {
+            viaVersionConfig.save(viaVersionFile);
+        } catch (IOException e)
+        {
+            VerboseSender.sendVerboseMessage("Failed to modify ViaVersion config.", true, true);
+            e.printStackTrace();
+        }
     }
 
     @Override

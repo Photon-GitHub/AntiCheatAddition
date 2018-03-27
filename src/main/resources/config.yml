@@ -766,7 +766,7 @@ ClientControl:
    # This allows you to control which minecraft versions can join your server IF YOUR SERVER RUNS VIAVERSION.
    # YOU NEED TO ENABLE THIS AND DISALLOW 1.9 CLIENTS IF YOU WANT TO USE THE KILLAURAENTITY CHECK ON A VIAVERSION SERVER
    #
-   # Joining with snapshot versions will always be denied if you enable VersionControl.
+   # You might need to restart your server TWICE for some changes to take effect.
    VersionControl:
       # Do you want to enable VersionControl
       enabled: false

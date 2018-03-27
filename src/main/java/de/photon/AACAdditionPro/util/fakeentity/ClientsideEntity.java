@@ -253,7 +253,7 @@ public abstract class ClientsideEntity
 
         // Teleport needed ?
         int teleportThreshold;
-        switch (ServerVersion.getActiveServerVersion())
+        switch (ServerVersion.getClientServerVersion(this.observedPlayer))
         {
             case MC188:
                 teleportThreshold = 4;
@@ -270,6 +270,8 @@ public abstract class ClientsideEntity
         if (Math.abs(xDiff) + Math.abs(yDiff) + Math.abs(zDiff) > teleportThreshold || needsTeleport)
         {
             final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
+            // Player
+            teleportWrapper.setTargetPlayer(this.observedPlayer);
             // EntityID
             teleportWrapper.setEntityID(this.entityID);
             // Position
@@ -301,6 +303,7 @@ public abstract class ClientsideEntity
                 if (look)
                 {
                     WrapperPlayServerRelEntityMoveLook moveLookPacketWrapper = new WrapperPlayServerRelEntityMoveLook();
+                    moveLookPacketWrapper.setTargetPlayer(this.observedPlayer);
 
                     // Angle
                     moveLookPacketWrapper.setYaw(this.location.getYaw());
@@ -312,6 +315,7 @@ public abstract class ClientsideEntity
                 else
                 {
                     movePacketWrapper = new WrapperPlayServerRelEntityMove();
+                    movePacketWrapper.setTargetPlayer(this.observedPlayer);
                     // System.out.println("Sending move");
                 }
 
@@ -522,7 +526,7 @@ public abstract class ClientsideEntity
         final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata();
         entityMetadataWrapper.setEntityID(this.getEntityID());
 
-        switch (ServerVersion.getActiveServerVersion())
+        switch (ServerVersion.getClientServerVersion(this.observedPlayer))
         {
             case MC188:
                 final List<WrappedWatchableObject> wrappedWatchableObjectsOldMC = Arrays.asList(

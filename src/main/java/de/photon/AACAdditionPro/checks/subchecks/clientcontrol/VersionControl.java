@@ -5,35 +5,57 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
 import de.photon.AACAdditionPro.util.VerboseSender;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
+import lombok.Getter;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class VersionControl implements Listener, ClientControlModule
 {
+    /**
+     * Unmodifiable {@link Set} containing all registered {@link ProtocolVersion}s.
+     */
+    public static final Set<ProtocolVersion> PROTOCOL_VERSIONS = Collections.unmodifiableSet(Sets.newHashSet(
+            new ProtocolVersion("1.8", ServerVersion.MC188, 47),
+            new ProtocolVersion("1.9", null, 107, 108, 109, 110),
+            new ProtocolVersion("1.10", ServerVersion.MC110, 210),
+            new ProtocolVersion("1.11", ServerVersion.MC111, 315, 316),
+            new ProtocolVersion("1.12", ServerVersion.MC112, 335, 338, 340)));
+
+    /**
+     * Method used to get the {@link ServerVersion} from the protocol version number.
+     *
+     * @param protocolVersion the int returned by {@link us.myles.ViaVersion.api.ViaAPI#getPlayerVersion(Object)} or
+     *                        {@link us.myles.ViaVersion.api.ViaAPI#getPlayerVersion(UUID)}
+     */
+    public static ServerVersion getServerVersionFromProtocolVersion(int protocolVersion)
+    {
+        for (ProtocolVersion version : PROTOCOL_VERSIONS)
+        {
+            if (version.versionNumbers.contains(protocolVersion))
+            {
+                return version.equivalentServerVersion;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void subEnable()
     {
-        // Register all versions
-        final Set<ProtocolVersion> protocolVersions = Sets.newHashSet(
-                new ProtocolVersion("1.8", 47),
-                new ProtocolVersion("1.9", 107, 108, 109, 110),
-                new ProtocolVersion("1.10", 210),
-                new ProtocolVersion("1.11", 315, 316),
-                new ProtocolVersion("1.12", 335, 338, 340));
-
         // Message:
         final Collection<String> versionStrings = new ArrayList<>();
-        for (ProtocolVersion protocolVersion : protocolVersions)
+        for (ProtocolVersion protocolVersion : PROTOCOL_VERSIONS)
         {
             versionStrings.add(protocolVersion.name);
         }
@@ -48,7 +70,7 @@ public class VersionControl implements Listener, ClientControlModule
         viaVersionConfig.set("block-disconnect-msg", message);
 
         final List<Integer> blockedProtocolNumbers = new ArrayList<>();
-        for (ProtocolVersion protocolVersion : protocolVersions)
+        for (ProtocolVersion protocolVersion : PROTOCOL_VERSIONS)
         {
             if (!protocolVersion.allowed)
             {
@@ -88,6 +110,7 @@ public class VersionControl implements Listener, ClientControlModule
     /**
      * Key element for protocol versions.
      */
+    @Getter
     private static class ProtocolVersion
     {
         /**
@@ -95,20 +118,28 @@ public class VersionControl implements Listener, ClientControlModule
          * Examples: 1.8, 1.9, 1.10, etc.
          */
         private final String name;
+
         /**
          * Whether or not this {@link ProtocolVersion} should be allowed to join the server.
          */
         private final boolean allowed;
+
+        /**
+         * What {@link ServerVersion} should be used when using this {@link ProtocolVersion}.
+         */
+        private final ServerVersion equivalentServerVersion;
+
         /**
          * An unmodifiable {@link List} of {@link Integer}s that contains all protocol version numbers associated with this {@link ProtocolVersion}
          */
-        private final List<Integer> versionNumbers;
+        private final Set<Integer> versionNumbers;
 
-        private ProtocolVersion(final String name, final Integer... versionNumbers)
+        private ProtocolVersion(final String name, final ServerVersion equivalentServerVersion, final Integer... versionNumbers)
         {
             this.name = name;
             this.allowed = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl." + this.name);
-            this.versionNumbers = Collections.unmodifiableList(Arrays.asList(versionNumbers));
+            this.equivalentServerVersion = equivalentServerVersion;
+            this.versionNumbers = Collections.unmodifiableSet(Sets.newHashSet(versionNumbers));
         }
     }
 }

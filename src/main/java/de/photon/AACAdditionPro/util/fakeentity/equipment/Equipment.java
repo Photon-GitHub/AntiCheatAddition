@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.util.fakeentity.ClientsideEntity;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.EnumMap;
@@ -80,9 +81,9 @@ public class Equipment implements Cloneable
      *
      * @return all the equipmentMap for the current {@link de.photon.AACAdditionPro.util.multiversion.ServerVersion}.
      */
-    private Map<EnumWrappers.ItemSlot, ItemStack> getEquipmentForServerVersion()
+    private Map<EnumWrappers.ItemSlot, ItemStack> getEquipmentForServerVersion(final Player targetPlayer)
     {
-        switch (ServerVersion.getActiveServerVersion())
+        switch (ServerVersion.getClientServerVersion(targetPlayer))
         {
             case MC188:
                 this.equipmentMap.remove(EnumWrappers.ItemSlot.OFFHAND);
@@ -101,12 +102,13 @@ public class Equipment implements Cloneable
     /**
      * Equips the {@link ClientsideEntity} with this {@link Equipment}.
      */
-    public void equipPlayerEntity()
+    public void equipPlayerEntity(Player targetPlayer)
     {
-        this.getEquipmentForServerVersion().forEach(
+        this.getEquipmentForServerVersion(targetPlayer).forEach(
                 (slot, itemStack) ->
                 {
                     final WrapperPlayServerEntityEquipment entityEquipmentWrapper = new WrapperPlayServerEntityEquipment();
+                    entityEquipmentWrapper.setTargetPlayer(entity.getObservedPlayer());
 
                     entityEquipmentWrapper.setEntityID(entity.getEntityID());
                     entityEquipmentWrapper.setSlot(slot);

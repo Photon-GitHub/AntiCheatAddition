@@ -6,8 +6,7 @@ import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 
 public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity implements IWrapperPlayServerEntityOnGround
 {
-    public static final PacketType TYPE =
-            PacketType.Play.Server.REL_ENTITY_MOVE;
+    public static final PacketType TYPE = PacketType.Play.Server.REL_ENTITY_MOVE;
 
     public WrapperPlayServerRelEntityMove()
     {
@@ -27,7 +26,8 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public double getDx()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        {
             case MC188:
                 return handle.getBytes().read(0) / 32D;
             case MC110:
@@ -41,7 +41,8 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public void setDx(double value)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        {
             case MC188:
                 handle.getBytes().write(0, (byte) (value * 32));
                 break;
@@ -57,7 +58,8 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public double getDy()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        {
             case MC188:
                 return handle.getBytes().read(1) / 32D;
             case MC110:
@@ -71,7 +73,8 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public void setDy(double value)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        {
             case MC188:
                 handle.getBytes().write(1, (byte) (value * 32));
                 break;
@@ -87,7 +90,8 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public double getDz()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        {
             case MC188:
                 return handle.getBytes().read(2) / 32D;
             case MC110:
@@ -101,7 +105,8 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public void setDz(double value)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        {
             case MC188:
                 handle.getBytes().write(2, (byte) (value * 32));
                 break;

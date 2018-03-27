@@ -6,8 +6,7 @@ import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 
 public class WrapperPlayServerEntityTeleport extends AbstractPacket implements IWrapperPlayServerEntityLook
 {
-    public static final PacketType TYPE =
-            PacketType.Play.Server.ENTITY_TELEPORT;
+    public static final PacketType TYPE = PacketType.Play.Server.ENTITY_TELEPORT;
 
     public WrapperPlayServerEntityTeleport()
     {
@@ -22,7 +21,8 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public double getX()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        {
             case MC188:
                 return handle.getIntegers().read(1) / 32.0;
             case MC110:
@@ -36,7 +36,8 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public void setX(double value)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        {
             case MC188:
                 handle.getIntegers().write(1, (int) value * 32);
                 break;
@@ -52,7 +53,8 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public double getY()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        {
             case MC188:
                 return handle.getIntegers().read(2) / 32.0;
             case MC110:
@@ -66,7 +68,8 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public void setY(double value)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        {
             case MC188:
                 handle.getIntegers().write(2, (int) value * 32);
                 break;
@@ -82,7 +85,8 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public double getZ()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        {
             case MC188:
                 return handle.getIntegers().read(3) / 32.0;
             case MC110:
@@ -96,7 +100,8 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public void setZ(double value)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        {
             case MC188:
                 handle.getIntegers().write(3, (int) value * 32);
                 break;

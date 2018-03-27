@@ -113,7 +113,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             {
                 lastSwap = 0;
                 equipment.equipInHand();
-                equipment.equipPlayerEntity();
+                equipment.equipPlayerEntity(this.observedPlayer);
             }
         }
 
@@ -250,7 +250,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // DataWatcher
         final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
 
-        switch (ServerVersion.getActiveServerVersion())
+        switch (ServerVersion.getClientServerVersion(this.observedPlayer))
         {
             case MC188:
                 dataWatcher.setObject(6, 20F);
@@ -272,6 +272,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // Spawn the entity
         final WrapperPlayServerNamedEntitySpawn spawnEntityWrapper = new WrapperPlayServerNamedEntitySpawn();
 
+        spawnEntityWrapper.setTargetPlayer(this.observedPlayer);
         spawnEntityWrapper.setEntityID(this.entityID);
         spawnEntityWrapper.setMetadata(dataWatcher);
         spawnEntityWrapper.setPosition(location.toVector());
@@ -302,7 +303,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // Entity equipment + armor
         this.equipment.equipArmor();
         this.equipment.equipInHand();
-        this.equipment.equipPlayerEntity();
+        this.equipment.equipPlayerEntity(this.observedPlayer);
     }
 
     // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //

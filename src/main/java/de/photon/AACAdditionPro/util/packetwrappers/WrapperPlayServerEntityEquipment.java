@@ -53,6 +53,7 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
      * Retrieve the entity of the painting that will be spawned.
      *
      * @param world - the current world of the entity.
+     *
      * @return The spawned entity.
      */
     public Entity getEntity(final World world)
@@ -64,6 +65,7 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
      * Retrieve the entity of the painting that will be spawned.
      *
      * @param event - the packet event.
+     *
      * @return The spawned entity.
      */
     public Entity getEntity(final PacketEvent event)
@@ -78,7 +80,8 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
 
     public void setSlot(final ItemSlot value)
     {
-        switch (ServerVersion.getActiveServerVersion())
+        // Player = null will return the server version.
+        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
         {
             case MC188:
                 handle.getIntegers().write(1, value.ordinal());
@@ -127,6 +130,7 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
         {
             //Update the equipment with fake-packets
             final WrapperPlayServerEntityEquipment wrapperPlayServerEntityEquipment = new WrapperPlayServerEntityEquipment();
+            wrapperPlayServerEntityEquipment.setTargetPlayer(observer);
 
             wrapperPlayServerEntityEquipment.setEntityID(entityId);
             wrapperPlayServerEntityEquipment.setItem(new ItemStack(Material.AIR));

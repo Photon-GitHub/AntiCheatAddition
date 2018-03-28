@@ -776,12 +776,12 @@ ClientControl:
       # What versions should be able to join?
       # Setting a value to true means "joining allowed"
       # THIS WILL OVERRIDE THE block-protocols OPTION IN THE VIAVERSION CONFIG!
-      1.8: true
+      1_8: true
       # 1.9 is not officially supported by this plugin. Issues can occur.
-      1.9: false
-      1.10: true
-      1.11: true
-      1.12: true
+      1_9: false
+      1_10: true
+      1_11: true
+      1_12: true
 
    # WorldDownloader is a popular modification to get the maps of a server
    WorldDownloader:

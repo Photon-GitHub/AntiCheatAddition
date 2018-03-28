@@ -140,7 +140,7 @@ public class ViolationLevelManagement implements Listener
      * @param player the {@link Player} whose vl should be set
      * @param newVl  the new vl of the player.
      */
-    void setVL(final Player player, final int newVl)
+    public void setVL(final Player player, final int newVl)
     {
         final int oldVl = this.getVL(player.getUniqueId());
 

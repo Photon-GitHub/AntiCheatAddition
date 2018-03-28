@@ -18,20 +18,6 @@ public final class Collision
      * @param dependantEntity the Entity used for the reflection process
      * @param input           the initial {@link Location}
      * @param hitbox          the {@link Hitbox} of the used {@link org.bukkit.entity.Entity}
-     *
-     * @return the nearest, uncollided {@link Location}
-     */
-    public static Vector getNearestUncollidedLocation(Entity dependantEntity, Location input, Hitbox hitbox)
-    {
-        return getNearestUncollidedLocation(dependantEntity, input, hitbox, new Vector());
-    }
-
-    /**
-     * Looks for collisions that could occur during the movement and adds them to the initial {@link Location} to get an uncollided {@link Location}
-     *
-     * @param dependantEntity the Entity used for the reflection process
-     * @param input           the initial {@link Location}
-     * @param hitbox          the {@link Hitbox} of the used {@link org.bukkit.entity.Entity}
      * @param velocity        the planned movement
      *
      * @return the vector to add to the input for the nearest, uncollided {@link Location}

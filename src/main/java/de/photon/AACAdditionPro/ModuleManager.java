@@ -15,11 +15,6 @@ import java.util.ArrayList;
  */
 public class ModuleManager extends ArrayList<Module>
 {
-    ModuleManager(final int initialCapacity)
-    {
-        super(initialCapacity);
-    }
-
     ModuleManager(final Module... initialObjects)
     {
         super(initialObjects.length);

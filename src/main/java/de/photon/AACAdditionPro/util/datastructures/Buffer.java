@@ -21,7 +21,7 @@ public class Buffer<T> extends Stack<T>
      *
      * @param object The object which should be added.
      *
-     * @return true if the buffersize is bigger than the max_size.
+     * @return true if the size of the buffer is bigger than the max_size.
      */
     public boolean bufferObject(final T object)
     {

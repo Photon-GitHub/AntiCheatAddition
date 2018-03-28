@@ -78,7 +78,7 @@ public class CreateCommand extends InternalCommand
 
                     InventoryHeuristics.getPATTERNS().add(new NeuralPattern(
                             patternName,
-                            inputDataList.toArray(new InputData[inputDataList.size()]),
+                            inputDataList.toArray(new InputData[0]),
                             InventoryClick.SAMPLES,
                             hiddenLayerConfig));
                 }

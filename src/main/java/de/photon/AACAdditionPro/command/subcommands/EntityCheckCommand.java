@@ -88,7 +88,7 @@ public class EntityCheckCommand extends InternalCommand
                         arguments.add(player.getName());
                         arguments.add(String.valueOf(checkDuration));
 
-                        if (user.getClientSideEntityData().respawnTrys++ > MAX_ITERATIONS)
+                        if (user.getClientSideEntityData().respawnTries++ > MAX_ITERATIONS)
                         {
                             throw new IllegalStateException("Too many respawn iterations.");
                         }
@@ -103,7 +103,7 @@ public class EntityCheckCommand extends InternalCommand
                 }
                 else
                 {
-                    user.getClientSideEntityData().respawnTrys = 0;
+                    user.getClientSideEntityData().respawnTries = 0;
                     if (user.getClientSideEntityData().clientSidePlayerEntity.isVisible())
                     {
                         sender.sendMessage(PREFIX + ChatColor.RED + "A check of the player is already in progress.");

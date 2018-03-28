@@ -456,7 +456,7 @@ public abstract class ClientsideEntity
             Location observedLoc = observedPlayer.getLocation();
             observedLoc.setPitch(0);
 
-            //Calculate knockback strength
+            // Calculate knockback strength
             int knockbackStrength = 0;
             if (observedPlayer.isSprinting())
             {
@@ -484,7 +484,7 @@ public abstract class ClientsideEntity
                 knockbackStrength += itemInHand.getEnchantmentLevel(Enchantment.KNOCKBACK);
             }
 
-            //Apply velocity
+            // Apply velocity
             if (knockbackStrength > 0)
             {
                 velocity.add(observedLoc.getDirection().normalize().setY(.1).multiply(knockbackStrength * .5));

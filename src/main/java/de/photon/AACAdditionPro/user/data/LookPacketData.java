@@ -95,7 +95,7 @@ public class LookPacketData extends TimeData
         // Ticks that must be added to fill up the gaps in the queue.
         short gapFillers = 0;
 
-        final RotationChange[] elementArray = this.rotationChangeQueue.toArray(new RotationChange[this.rotationChangeQueue.size()]);
+        final RotationChange[] elementArray = this.rotationChangeQueue.toArray(new RotationChange[0]);
 
         // Start at 1 as of the 0 element being the first "last element".
         for (int i = 1; i < elementArray.length; i++)

@@ -25,12 +25,17 @@ public class VersionControl implements Listener, ClientControlModule
     /**
      * Unmodifiable {@link Set} containing all registered {@link ProtocolVersion}s.
      */
-    public static final Set<ProtocolVersion> PROTOCOL_VERSIONS = Collections.unmodifiableSet(Sets.newHashSet(
-            new ProtocolVersion("1.8", ServerVersion.MC188, 47),
-            new ProtocolVersion("1.9", null, 107, 108, 109, 110),
-            new ProtocolVersion("1.10", ServerVersion.MC110, 210),
-            new ProtocolVersion("1.11", ServerVersion.MC111, 315, 316),
-            new ProtocolVersion("1.12", ServerVersion.MC112, 335, 338, 340)));
+    public static final Set<ProtocolVersion> PROTOCOL_VERSIONS;
+
+    static
+    {
+        PROTOCOL_VERSIONS = Sets.newLinkedHashSetWithExpectedSize(5);
+        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.8", ServerVersion.MC188, 47));
+        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.9", null, 107, 108, 109, 110));
+        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.10", ServerVersion.MC110, 210));
+        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.11", ServerVersion.MC111, 315, 316));
+        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.12", ServerVersion.MC112, 335, 338, 340));
+    }
 
     /**
      * Method used to get the {@link ServerVersion} from the protocol version number.
@@ -57,7 +62,10 @@ public class VersionControl implements Listener, ClientControlModule
         final Collection<String> versionStrings = new ArrayList<>();
         for (ProtocolVersion protocolVersion : PROTOCOL_VERSIONS)
         {
-            versionStrings.add(protocolVersion.name);
+            if (protocolVersion.allowed)
+            {
+                versionStrings.add(protocolVersion.name);
+            }
         }
 
         // Get the message

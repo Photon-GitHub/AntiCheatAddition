@@ -123,7 +123,7 @@ public class VersionControl implements Listener, ClientControlModule
     {
         /**
          * The name of the {@link ProtocolVersion}. Intended to be equivalent to minecraft versions.
-         * Examples: 1.8, 1.9, 1.10, etc.
+         * Examples: 1_8, 1_9, 1_10, etc.
          */
         private final String name;
 

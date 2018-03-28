@@ -21,7 +21,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public double getX()
     {
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 return handle.getIntegers().read(1) / 32.0;
@@ -36,7 +36,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public void setX(double value)
     {
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 handle.getIntegers().write(1, (int) value * 32);
@@ -53,7 +53,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public double getY()
     {
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 return handle.getIntegers().read(2) / 32.0;
@@ -68,7 +68,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public void setY(double value)
     {
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 handle.getIntegers().write(2, (int) value * 32);
@@ -85,7 +85,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public double getZ()
     {
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 return handle.getIntegers().read(3) / 32.0;
@@ -100,7 +100,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
     public void setZ(double value)
     {
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 handle.getIntegers().write(3, (int) value * 32);

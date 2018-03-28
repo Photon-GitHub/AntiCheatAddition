@@ -26,7 +26,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public double getDx()
     {
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 return handle.getBytes().read(0) / 32D;
@@ -41,7 +41,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public void setDx(double value)
     {
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 handle.getBytes().write(0, (byte) (value * 32));
@@ -58,7 +58,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public double getDy()
     {
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 return handle.getBytes().read(1) / 32D;
@@ -73,7 +73,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public void setDy(double value)
     {
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 handle.getBytes().write(1, (byte) (value * 32));
@@ -90,7 +90,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public double getDz()
     {
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 return handle.getBytes().read(2) / 32D;
@@ -105,7 +105,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public void setDz(double value)
     {
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 handle.getBytes().write(2, (byte) (value * 32));

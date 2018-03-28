@@ -250,7 +250,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // DataWatcher
         final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
 
-        switch (ServerVersion.getClientServerVersion(this.observedPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 dataWatcher.setObject(6, 20F);

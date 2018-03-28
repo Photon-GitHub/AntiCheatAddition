@@ -81,10 +81,18 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
     public void setSlot(final ItemSlot value)
     {
         // Player = null will return the server version.
-        switch (ServerVersion.getClientServerVersion(this.targetPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
-                handle.getIntegers().write(1, value.ordinal());
+                int index = value.ordinal();
+
+                // Reduce by one if index greater 0 as the offhand (index 1) doesn't exist.
+                if (index > 0)
+                {
+                    index--;
+                }
+
+                handle.getIntegers().write(1, index);
                 break;
             case MC110:
             case MC111:

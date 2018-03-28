@@ -25,16 +25,16 @@ public class VersionControl implements Listener, ClientControlModule
     /**
      * Unmodifiable {@link Set} containing all registered {@link ProtocolVersion}s.
      */
-    public static final Set<ProtocolVersion> PROTOCOL_VERSIONS;
+    private static final Set<ProtocolVersion> PROTOCOL_VERSIONS;
 
     static
     {
         PROTOCOL_VERSIONS = Sets.newLinkedHashSetWithExpectedSize(5);
-        PROTOCOL_VERSIONS.add(new ProtocolVersion("1_8", ServerVersion.MC188, 47));
-        PROTOCOL_VERSIONS.add(new ProtocolVersion("1_9", null, 107, 108, 109, 110));
-        PROTOCOL_VERSIONS.add(new ProtocolVersion("1_10", ServerVersion.MC110, 210));
-        PROTOCOL_VERSIONS.add(new ProtocolVersion("1_11", ServerVersion.MC111, 315, 316));
-        PROTOCOL_VERSIONS.add(new ProtocolVersion("1_12", ServerVersion.MC112, 335, 338, 340));
+        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.8", ServerVersion.MC188, 47));
+        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.9", null, 107, 108, 109, 110));
+        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.10", ServerVersion.MC110, 210));
+        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.11", ServerVersion.MC111, 315, 316));
+        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.12", ServerVersion.MC112, 335, 338, 340));
     }
 
     /**
@@ -145,7 +145,7 @@ public class VersionControl implements Listener, ClientControlModule
         private ProtocolVersion(final String name, final ServerVersion equivalentServerVersion, final Integer... versionNumbers)
         {
             this.name = name;
-            this.allowed = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl." + this.name);
+            this.allowed = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl.allowedVersions." + this.name);
             this.equivalentServerVersion = equivalentServerVersion;
             this.versionNumbers = Collections.unmodifiableSet(Sets.newHashSet(versionNumbers));
         }

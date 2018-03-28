@@ -138,7 +138,6 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
         {
             //Update the equipment with fake-packets
             final WrapperPlayServerEntityEquipment wrapperPlayServerEntityEquipment = new WrapperPlayServerEntityEquipment();
-            wrapperPlayServerEntityEquipment.setTargetPlayer(observer);
 
             wrapperPlayServerEntityEquipment.setEntityID(entityId);
             wrapperPlayServerEntityEquipment.setItem(new ItemStack(Material.AIR));

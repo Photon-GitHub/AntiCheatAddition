@@ -272,7 +272,6 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // Spawn the entity
         final WrapperPlayServerNamedEntitySpawn spawnEntityWrapper = new WrapperPlayServerNamedEntitySpawn();
 
-        spawnEntityWrapper.setTargetPlayer(this.observedPlayer);
         spawnEntityWrapper.setEntityID(this.entityID);
         spawnEntityWrapper.setMetadata(dataWatcher);
         spawnEntityWrapper.setPosition(location.toVector());

@@ -4,7 +4,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.base.Objects;
-import lombok.Setter;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,9 +12,6 @@ public abstract class AbstractPacket
 {
     // The packet we will be modifying
     protected PacketContainer handle;
-
-    @Setter
-    protected Player targetPlayer;
 
     /**
      * Constructs a new strongly typed wrapper for the given packet.

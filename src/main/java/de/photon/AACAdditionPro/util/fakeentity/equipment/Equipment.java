@@ -108,7 +108,6 @@ public class Equipment implements Cloneable
                 (slot, itemStack) ->
                 {
                     final WrapperPlayServerEntityEquipment entityEquipmentWrapper = new WrapperPlayServerEntityEquipment();
-                    entityEquipmentWrapper.setTargetPlayer(entity.getObservedPlayer());
 
                     entityEquipmentWrapper.setEntityID(entity.getEntityID());
                     entityEquipmentWrapper.setSlot(slot);

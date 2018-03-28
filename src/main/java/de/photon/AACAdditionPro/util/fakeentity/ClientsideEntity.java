@@ -270,10 +270,6 @@ public abstract class ClientsideEntity
         if (Math.abs(xDiff) + Math.abs(yDiff) + Math.abs(zDiff) > teleportThreshold || needsTeleport)
         {
             final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
-            // Player
-            teleportWrapper.setTargetPlayer(this.observedPlayer);
-            // EntityID
-            teleportWrapper.setEntityID(this.entityID);
             // Position
             teleportWrapper.setX(this.location.getX());
             teleportWrapper.setY(this.location.getY());
@@ -303,7 +299,6 @@ public abstract class ClientsideEntity
                 if (look)
                 {
                     WrapperPlayServerRelEntityMoveLook moveLookPacketWrapper = new WrapperPlayServerRelEntityMoveLook();
-                    moveLookPacketWrapper.setTargetPlayer(this.observedPlayer);
 
                     // Angle
                     moveLookPacketWrapper.setYaw(this.location.getYaw());
@@ -315,7 +310,6 @@ public abstract class ClientsideEntity
                 else
                 {
                     movePacketWrapper = new WrapperPlayServerRelEntityMove();
-                    movePacketWrapper.setTargetPlayer(this.observedPlayer);
                     // System.out.println("Sending move");
                 }
 

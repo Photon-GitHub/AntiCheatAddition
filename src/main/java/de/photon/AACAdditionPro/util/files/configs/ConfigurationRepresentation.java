@@ -91,6 +91,12 @@ public class ConfigurationRepresentation
                 initialLine += ' ';
                 initialLine += value.toString();
             }
+            else if (value instanceof String)
+            {
+                initialLine += '\"';
+                initialLine += ((String) value);
+                initialLine += '\"';
+            }
             else if (value instanceof List)
             {
                 List list = (List) value;
@@ -116,6 +122,26 @@ public class ConfigurationRepresentation
                     {
                         configLines.add(initialLineIndex + 1, preString + o.toString());
                     }
+                }
+            }
+            else if (value instanceof ConfigActions)
+            {
+                switch ((ConfigActions) value)
+                {
+                    case DELETE_KEYS:
+                        initialLine += " []";
+                        int affectedKeyLines = affectedKeyLines(configLines, initialLineIndex);
+
+                        // Remove old value
+                        if (affectedKeyLines > 1)
+                        {
+                            // > 1 because the initial line should not be removed.
+                            for (int lines = affectedKeyLines; lines > 1; lines--)
+                            {
+                                configLines.remove(initialLineIndex + 1);
+                            }
+                        }
+                        break;
                 }
             }
             configLines.set(initialLineIndex, initialLine);
@@ -186,7 +212,8 @@ public class ConfigurationRepresentation
     {
         int affectedLines = 1;
 
-        final ListIterator<String> listIterator = configLines.listIterator(initialLine);
+        // + 1 as the initial line should not be iterated over.
+        final ListIterator<String> listIterator = configLines.listIterator(initialLine + 1);
         String configLine;
         while (listIterator.hasNext())
         {
@@ -194,6 +221,28 @@ public class ConfigurationRepresentation
 
             // ":" is the indicator of a new value
             if (isComment(configLine) || configLine.indexOf(':') != -1)
+            {
+                break;
+            }
+            affectedLines++;
+        }
+        return affectedLines;
+    }
+
+    private static int affectedKeyLines(List<String> configLines, int initialLineIndex)
+    {
+        final short initialDepth = depth(configLines.get(initialLineIndex));
+        int affectedLines = 1;
+
+        // + 1 as the initial line should not be iterated over.
+        final ListIterator<String> listIterator = configLines.listIterator(initialLineIndex + 1);
+        String configLine;
+        while (listIterator.hasNext())
+        {
+            configLine = listIterator.next();
+
+            // ":" is the indicator of a new value
+            if (depth(configLine) > initialDepth)
             {
                 break;
             }
@@ -223,5 +272,10 @@ public class ConfigurationRepresentation
     private static boolean isComment(final String string)
     {
         return string != null && (string.isEmpty() || string.contains("#"));
+    }
+
+    public enum ConfigActions
+    {
+        DELETE_KEYS
     }
 }

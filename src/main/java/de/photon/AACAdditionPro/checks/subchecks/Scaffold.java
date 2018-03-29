@@ -25,8 +25,8 @@ public class Scaffold implements Listener, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 70L);
 
-    private final static double ANGLE_CHANGE_SUM_THRESHOLD = 11.5D;
-    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 10.7D;
+    private final static double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
+    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 5.2D;
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -160,9 +160,6 @@ public class Scaffold implements Listener, ViolationModule
             if (this.rotationCheckingNeeded)
             {
                 final float[] angleInformation = user.getLookPacketData().getAngleInformation();
-
-                VerboseSender.sendVerboseMessage("Type 2: " + angleInformation[0]);
-                VerboseSender.sendVerboseMessage("Type 3: " + angleInformation[1]);
 
                 byte rotationVl = 0;
 

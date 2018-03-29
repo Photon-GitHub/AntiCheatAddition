@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public enum Configs
 {
-    AAC("plugins/AAC/config.yml", (byte) 2),
+    AAC("plugins/AAC/config.yml", (byte) 3),
     SPIGOT("spigot.yml", (byte) 2),
     VIAVERSION("plugins/ViaVersion/config.yml", (byte) 3);
 

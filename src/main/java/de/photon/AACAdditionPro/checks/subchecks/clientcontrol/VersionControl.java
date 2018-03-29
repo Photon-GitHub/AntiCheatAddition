@@ -81,7 +81,7 @@ public class VersionControl implements Listener, ClientControlModule
                 blockedProtocolNumbers.addAll(protocolVersion.versionNumbers);
             }
         }
-        Configs.VIAVERSION.getConfigurationRepresentation().getYamlConfiguration().set("block-protocols", blockedProtocolNumbers);
+        Configs.VIAVERSION.getConfigurationRepresentation().requestValueChange("block-protocols", blockedProtocolNumbers);
     }
 
     @Override

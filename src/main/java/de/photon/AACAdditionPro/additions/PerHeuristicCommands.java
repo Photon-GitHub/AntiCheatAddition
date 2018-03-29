@@ -43,8 +43,8 @@ public class PerHeuristicCommands implements Module, Listener
         thresholds = ConfigUtils.loadThresholds(this.getConfigString() + ".confidences");
         // Set AAC's min_confidence
         thresholds.keySet().stream().min(Integer::compareTo).ifPresent(
-                minConfidence -> Configs.AAC.getConfigurationRepresentation().getYamlConfiguration().set("heuristics.min_confidence", minConfidence));
-        Configs.AAC.getConfigurationRepresentation().getYamlConfiguration().set("heuristics.thresholds", Collections.EMPTY_LIST);
+                minConfidence -> Configs.AAC.getConfigurationRepresentation().requestValueChange("heuristics.min_confidence", minConfidence));
+        Configs.AAC.getConfigurationRepresentation().requestValueChange("heuristics.thresholds", Collections.EMPTY_LIST);
     }
 
     @EventHandler(ignoreCancelled = true)

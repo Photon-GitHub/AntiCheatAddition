@@ -25,6 +25,7 @@ public class ConfigurationRepresentation
     private final byte depthLevel;
     @Getter
     private final YamlConfiguration yamlConfiguration;
+    private boolean needsUpdate = false;
 
     public ConfigurationRepresentation(File configFile, byte depthLevel)
     {
@@ -33,8 +34,19 @@ public class ConfigurationRepresentation
         yamlConfiguration = YamlConfiguration.loadConfiguration(this.configFile);
     }
 
+    public void requestValueChange(final String key, final Object value)
+    {
+        this.needsUpdate = true;
+        this.yamlConfiguration.set(key, value);
+    }
+
     public void save() throws IOException
     {
+        if (!this.needsUpdate)
+        {
+            return;
+        }
+
         // Map all comments to their keys
         final Map<String, List<String>> commentMap = new HashMap<>();
 

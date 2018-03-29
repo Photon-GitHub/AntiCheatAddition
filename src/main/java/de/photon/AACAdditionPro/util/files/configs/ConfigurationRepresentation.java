@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,9 +32,9 @@ public class ConfigurationRepresentation
         yamlConfiguration = YamlConfiguration.loadConfiguration(this.configFile);
     }
 
-    public void requestValueChange(final String key, final Object value)
+    public void requestValueChange(final String path, final Object value)
     {
-        this.requestedChanges.put(key, value);
+        this.requestedChanges.put(path, value);
     }
 
     public void save() throws IOException
@@ -128,7 +129,10 @@ public class ConfigurationRepresentation
     private static int searchForPath(List<String> configLines, String path)
     {
         // Special handling for paths without a '.'
-        final String[] pathParts = path.indexOf('.') == -1 ? new String[]{path} : path.split(".");
+        final String[] pathParts = path.split("\\.");
+        System.out.println(path);
+        System.out.println(Arrays.toString(pathParts));
+
         int currentPart = 0;
         short minDepth = 0;
         int currentLineIndex = 0;

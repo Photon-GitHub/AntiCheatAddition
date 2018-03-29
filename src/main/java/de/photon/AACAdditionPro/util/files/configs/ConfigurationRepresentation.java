@@ -51,7 +51,7 @@ public class ConfigurationRepresentation
                 }
 
                 // Copy whitespaces to make sure the format is correct.
-                while (line != null && (line.trim().isEmpty() || line.trim().charAt(0) == '#'))
+                while (isComment(line))
                 {
                     commentBlock.add(line);
                     line = br.readLine();
@@ -86,7 +86,7 @@ public class ConfigurationRepresentation
                     break;
                 }
 
-                if (line.trim().isEmpty() || line.trim().charAt(0) == '#')
+                if (isComment(line))
                 {
                     continue;
                 }
@@ -127,5 +127,10 @@ public class ConfigurationRepresentation
                 sb.append('\n');
             }
         }
+    }
+
+    private static boolean isComment(final String string)
+    {
+        return string != null && (string.isEmpty() || string.contains("#"));
     }
 }

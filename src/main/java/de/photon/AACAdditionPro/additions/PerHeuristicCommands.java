@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,8 @@ public class PerHeuristicCommands implements Module, Listener
         thresholds = ConfigUtils.loadThresholds(this.getConfigString() + ".confidences");
         // Set AAC's min_confidence
         thresholds.keySet().stream().min(Integer::compareTo).ifPresent(
-                minConfidence -> ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfig.AAC, new ExternalConfigUtils.RequestedConfigChange("heuristics.min_confidence", minConfidence)));
+                minConfidence -> ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfigs.AAC, new ExternalConfigUtils.RequestedConfigChange("heuristics.min_confidence", minConfidence)));
+        ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfigs.AAC, new ExternalConfigUtils.RequestedConfigChange("heuristics.thresholds", Collections.EMPTY_SET));
     }
 
     @EventHandler(ignoreCancelled = true)

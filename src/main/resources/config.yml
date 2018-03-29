@@ -816,9 +816,9 @@ LogBot:
    Server: 10
 
 # This allows you to run different commands on different confidences
+#
 # This will automatically set AAC's min_confidence option to the optimal value.
-# and delete all
-# thresholds: {}
+# USING THIS WILL AUTOMATICALLY DELETE ALL THRESHOLDS IN THE AAC CONFIG.
 #
 Heuristic-Addition:
    enabled: false

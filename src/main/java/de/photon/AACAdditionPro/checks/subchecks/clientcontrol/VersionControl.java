@@ -70,7 +70,7 @@ public class VersionControl implements Listener, ClientControlModule
                                              // Replace the special placeholder
                                              .replace("{supportedVersions}", String.join(", ", versionStrings));
 
-        ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfig.VIAVERSION, new ExternalConfigUtils.RequestedConfigChange("block-disconnect-msg", message));
+        ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfigs.VIAVERSION, new ExternalConfigUtils.RequestedConfigChange("block-disconnect-msg", message));
 
         // Set the blocked versions
         final List<Integer> blockedProtocolNumbers = new ArrayList<>();
@@ -81,7 +81,7 @@ public class VersionControl implements Listener, ClientControlModule
                 blockedProtocolNumbers.addAll(protocolVersion.versionNumbers);
             }
         }
-        ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfig.VIAVERSION, new ExternalConfigUtils.RequestedConfigChange("block-protocols", blockedProtocolNumbers));
+        ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfigs.VIAVERSION, new ExternalConfigUtils.RequestedConfigChange("block-protocols", blockedProtocolNumbers));
     }
 
     @Override

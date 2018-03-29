@@ -118,6 +118,7 @@ public class ConfigurationRepresentation
                     }
                 }
             }
+            configLines.set(initialLineIndex, initialLine);
         });
     }
 

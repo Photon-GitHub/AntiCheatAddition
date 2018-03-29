@@ -4,7 +4,6 @@ import com.google.common.collect.Sets;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
-import de.photon.AACAdditionPro.util.files.configs.ExternalConfigUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import lombok.Getter;
 import org.bukkit.event.Listener;

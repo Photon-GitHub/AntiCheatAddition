@@ -6,7 +6,6 @@ import de.photon.AACAdditionPro.events.HeuristicsAdditionViolationEvent;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
-import de.photon.AACAdditionPro.util.files.configs.ExternalConfigUtils;
 import me.konsolas.aac.api.HackType;
 import me.konsolas.aac.api.PlayerViolationEvent;
 import org.bukkit.Bukkit;

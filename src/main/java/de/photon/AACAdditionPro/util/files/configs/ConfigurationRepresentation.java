@@ -68,10 +68,7 @@ public class ConfigurationRepresentation
 
         // The StringBuilder containing what should be written to the new file.
         final StringBuilder resultingConfiguration = new StringBuilder();
-
-        // The comment block (null?) of the current key.
-        List<String> potentialComments;
-
+        
         try (BufferedReader br = new BufferedReader(new StringReader(this.yamlConfiguration.saveToString())))
         {
             while (true)
@@ -89,21 +86,16 @@ public class ConfigurationRepresentation
                     continue;
                 }
 
-                potentialComments = commentMap.get(line);
-
-                if (potentialComments != null)
-                {
-                    for (String comment : potentialComments)
-                    {
-                        resultingConfiguration.append(comment);
-                        resultingConfiguration.append('\n');
-                    }
-                }
+                // Also checks for non-null
+                appendComments(resultingConfiguration, commentMap.get(line));
 
                 resultingConfiguration.append(line);
                 resultingConfiguration.append('\n');
             }
         }
+
+        // Add the null - line
+        appendComments(resultingConfiguration, commentMap.get(null));
 
         if (!this.configFile.delete())
         {
@@ -118,5 +110,20 @@ public class ConfigurationRepresentation
         final FileWriter fileWriter = new FileWriter(this.configFile);
         fileWriter.write(resultingConfiguration.toString());
         fileWriter.close();
+    }
+
+    /**
+     * Appends a {@link List} of {@link String}s to a {@link StringBuilder} if the {@link List} is not <code>null<code/>
+     */
+    private void appendComments(StringBuilder sb, List<String> comments)
+    {
+        if (comments != null)
+        {
+            for (String comment : comments)
+            {
+                sb.append(comment);
+                sb.append('\n');
+            }
+        }
     }
 }

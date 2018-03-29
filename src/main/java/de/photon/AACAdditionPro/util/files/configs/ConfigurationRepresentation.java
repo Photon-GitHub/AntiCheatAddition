@@ -36,7 +36,7 @@ public class ConfigurationRepresentation
         final Map<String, List<String>> commentMap = new HashMap<>();
 
         String line;
-        final List<String> commentBlock = new ArrayList<>();
+        List<String> commentBlock = new ArrayList<>();
         // Reads from the file to get the comments
         try (BufferedReader br = new BufferedReader(new FileReader(this.configFile)))
         {
@@ -60,7 +60,9 @@ public class ConfigurationRepresentation
                 // The next line after the comments is a key.
                 // null key are end-of-file comments
                 commentMap.put(line, commentBlock);
-                commentBlock.clear();
+                // Don't clear as all HashMap entries will point at the same value ->
+                // Same comment block over and over again.
+                commentBlock = new ArrayList<>();
             }
         }
 

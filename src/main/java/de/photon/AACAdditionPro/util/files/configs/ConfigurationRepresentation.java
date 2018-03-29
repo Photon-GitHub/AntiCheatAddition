@@ -58,8 +58,8 @@ public class ConfigurationRepresentation
             }
         }
 
-        requestedChanges.forEach((key, value) -> {
-            int initialLineIndex = searchForPath(configLines, key);
+        requestedChanges.forEach((path, value) -> {
+            int initialLineIndex = searchForPath(configLines, path);
             int affectedLines = affectedLines(configLines, initialLineIndex);
 
             // Remove old value
@@ -76,8 +76,48 @@ public class ConfigurationRepresentation
             String initialLine = configLines.get(initialLineIndex);
             // + 1 in order to not delete the ':' char.
             initialLine = initialLine.substring(0, initialLine.lastIndexOf(':') + 1);
+            // Add one whitespace
 
             // Set the new value.
+            // Simple sets
+            if (value instanceof Boolean ||
+                value instanceof Byte ||
+                value instanceof Short ||
+                value instanceof Integer ||
+                value instanceof Long ||
+                value instanceof Float ||
+                value instanceof Double)
+            {
+                initialLine += ' ';
+                initialLine += value.toString();
+            }
+            else if (value instanceof List)
+            {
+                List list = (List) value;
+
+                if (list.isEmpty())
+                {
+                    initialLine += " []";
+                }
+                else
+                {
+                    short entryDepth = depth(initialLine);
+                    final StringBuilder preStringBuilder = new StringBuilder();
+
+                    while (entryDepth-- > 0)
+                    {
+                        preStringBuilder.append(' ');
+                    }
+                    preStringBuilder.append("- ");
+
+                    final String preString = preStringBuilder.toString();
+
+                    for (Object o : list)
+                    {
+                        configLines.add(initialLineIndex + 1, preString + o.toString());
+                    }
+                }
+            }
         });
     }
 
@@ -88,12 +128,12 @@ public class ConfigurationRepresentation
     {
         final String[] pathParts = path.split(".");
         int currentPart = 0;
-        int minDepth = 0;
+        short minDepth = 0;
         int currentLineIndex = 0;
 
         for (String configLine : configLines)
         {
-            final int currentDepth = depth(configLine);
+            final short currentDepth = depth(configLine);
 
             // Value could not be found as not all parts are existing.
             if (minDepth > currentDepth)

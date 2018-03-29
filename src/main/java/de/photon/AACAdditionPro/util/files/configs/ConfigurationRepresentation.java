@@ -22,12 +22,14 @@ import java.util.Stack;
 public class ConfigurationRepresentation
 {
     private final File configFile;
+    private final byte depthLevel;
     @Getter
     private final YamlConfiguration yamlConfiguration;
 
-    public ConfigurationRepresentation(File configFile)
+    public ConfigurationRepresentation(File configFile, byte depthLevel)
     {
         this.configFile = configFile;
+        this.depthLevel = depthLevel;
         yamlConfiguration = YamlConfiguration.loadConfiguration(this.configFile);
     }
 
@@ -72,6 +74,7 @@ public class ConfigurationRepresentation
                 // null key are end-of-file comments
                 commentMap.put(pathBuilder.toString(), commentBlock);
 
+                System.out.println("SAVE: " + pathBuilder.toString());
                 // Don't clear as all HashMap entries will point at the same value ->
                 // Same comment block over and over again.
                 commentBlock = new ArrayList<>();
@@ -112,6 +115,7 @@ public class ConfigurationRepresentation
                     // No need for delimiters as it is only an internal path.
                 }
 
+                System.out.println("LOAD: " + pathBuilder.toString());
                 appendComments(resultingConfiguration, commentMap.get(pathBuilder.toString()));
 
                 resultingConfiguration.append(line);
@@ -137,7 +141,7 @@ public class ConfigurationRepresentation
         fileWriter.close();
     }
 
-    private static void handlePath(String line, Stack<String> currentPath)
+    private void handlePath(String line, Stack<String> currentPath)
     {
         if (currentPath.isEmpty())
         {
@@ -152,7 +156,7 @@ public class ConfigurationRepresentation
             }
 
             // Compare the line to the current path
-            byte compareResult = (byte) (pathDepth(line) - pathDepth(currentPath.peek()));
+            byte compareResult = (byte) (this.pathDepth(line) - this.pathDepth(currentPath.peek()));
 
             // Change the current path accordingly.
             if (compareResult > 0)
@@ -186,7 +190,7 @@ public class ConfigurationRepresentation
         }
     }
 
-    private static byte pathDepth(final String string)
+    private byte pathDepth(final String string)
     {
         if (string == null || string.isEmpty())
         {
@@ -199,8 +203,7 @@ public class ConfigurationRepresentation
             if (chars[b] != ' ')
             {
                 // index + 1 as it starts at 0
-                // / 3 as three spaces equals one level.
-                return (byte) ((b + 1) / 3);
+                return (byte) ((b + 1) / this.depthLevel);
             }
         }
         return -1;

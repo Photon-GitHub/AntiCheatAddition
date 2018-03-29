@@ -137,6 +137,7 @@ public class ConfigurationRepresentation
             while (!configLines.isEmpty())
             {
                 fileWriter.write(configLines.removeFirst());
+                fileWriter.write('\n');
             }
         }
     }

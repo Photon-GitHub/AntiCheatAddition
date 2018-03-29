@@ -50,7 +50,6 @@ public class ConfigurationRepresentation
                     break;
                 }
 
-                commentBlock.clear();
                 // Copy whitespaces to make sure the format is correct.
                 while (line != null && (line.trim().isEmpty() || line.trim().charAt(0) == '#'))
                 {
@@ -61,6 +60,7 @@ public class ConfigurationRepresentation
                 // The next line after the comments is a key.
                 // null key are end-of-file comments
                 commentMap.put(line, commentBlock);
+                commentBlock.clear();
             }
         }
 
@@ -68,7 +68,7 @@ public class ConfigurationRepresentation
 
         // The StringBuilder containing what should be written to the new file.
         final StringBuilder resultingConfiguration = new StringBuilder();
-        
+
         try (BufferedReader br = new BufferedReader(new StringReader(this.yamlConfiguration.saveToString())))
         {
             while (true)

@@ -6,8 +6,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +47,7 @@ public class ConfigurationRepresentation
 
         // Load the whole config.
         // Use LinkedList for fast mid-config tampering.
-        final List<String> configLines = new LinkedList<>();
+        final LinkedList<String> configLines = new LinkedList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(this.configFile)))
         {
             String line = br.readLine();
@@ -121,6 +121,24 @@ public class ConfigurationRepresentation
             }
             configLines.set(initialLineIndex, initialLine);
         });
+
+        if (!this.configFile.delete())
+        {
+            throw new IOException("Unable to delete old file " + this.configFile.getName());
+        }
+
+        if (!this.configFile.createNewFile())
+        {
+            throw new IOException("Unable to create new file " + this.configFile.getName());
+        }
+
+        try (FileWriter fileWriter = new FileWriter(this.configFile))
+        {
+            while (!configLines.isEmpty())
+            {
+                fileWriter.write(configLines.removeFirst());
+            }
+        }
     }
 
     /**
@@ -130,8 +148,6 @@ public class ConfigurationRepresentation
     {
         // Special handling for paths without a '.'
         final String[] pathParts = path.split("\\.");
-        System.out.println(path);
-        System.out.println(Arrays.toString(pathParts));
 
         int currentPart = 0;
         short minDepth = 0;

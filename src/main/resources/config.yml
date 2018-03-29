@@ -816,7 +816,7 @@ LogBot:
    Server: 10
 
 # This allows you to run different commands on different confidences
-# IN ORDER TO USE THIS you MUST change your heuristics - confidence in AAC's config to 50
+# This will automatically set AAC's min_confidence option to the optimal value.
 # and delete all
 # thresholds: {}
 #

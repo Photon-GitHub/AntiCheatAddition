@@ -9,7 +9,7 @@ import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.datawrappers.ScaffoldBlockPlace;
 import de.photon.AACAdditionPro.util.entity.livingentity.PotionUtil;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;

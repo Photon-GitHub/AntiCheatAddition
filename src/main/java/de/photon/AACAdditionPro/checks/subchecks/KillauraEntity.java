@@ -15,7 +15,7 @@ import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.fakeentity.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.fakeentity.DelegatingKillauraEntityController;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

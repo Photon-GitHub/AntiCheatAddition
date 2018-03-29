@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.files;
+package de.photon.AACAdditionPro.util.files.configs;
 
 import de.photon.AACAdditionPro.util.VerboseSender;
 import lombok.AllArgsConstructor;

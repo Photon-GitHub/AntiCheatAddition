@@ -3,7 +3,7 @@ package de.photon.AACAdditionPro;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.util.VerboseSender;
-import de.photon.AACAdditionPro.util.files.ExternalConfigUtils;
+import de.photon.AACAdditionPro.util.files.configs.ExternalConfigUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.Bukkit;

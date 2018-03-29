@@ -6,7 +6,7 @@ import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityEquipmentCatego
 import de.photon.AACAdditionPro.events.KillauraEntityEquipmentPrepareEvent;
 import de.photon.AACAdditionPro.util.fakeentity.ClientsideEntity;
 import de.photon.AACAdditionPro.util.fakeentity.equipment.category.EquipmentCategory;
-import de.photon.AACAdditionPro.util.files.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

@@ -7,7 +7,7 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 

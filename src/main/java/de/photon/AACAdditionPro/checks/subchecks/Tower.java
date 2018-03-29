@@ -9,7 +9,7 @@ import de.photon.AACAdditionPro.util.datawrappers.TowerBlockPlace;
 import de.photon.AACAdditionPro.util.entity.livingentity.PotionUtil;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.BlockUtils;

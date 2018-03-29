@@ -4,7 +4,7 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationEvent;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
-import de.photon.AACAdditionPro.util.files.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

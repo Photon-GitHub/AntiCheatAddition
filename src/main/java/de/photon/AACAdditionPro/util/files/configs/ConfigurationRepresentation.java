@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * {@link ConfigurationRepresentation} is a class to represent a {@link YamlConfiguration} with comments.
@@ -61,7 +62,7 @@ public class ConfigurationRepresentation
 
         requestedChanges.forEach((path, value) -> {
             int initialLineIndex = searchForPath(configLines, path);
-            int affectedLines = affectedLines(configLines, initialLineIndex);
+            int affectedLines = affectedLines(configLines, initialLineIndex, line -> isComment(line) || line.indexOf(':') != -1);
 
             // Remove old value
             if (affectedLines > 1)
@@ -130,7 +131,7 @@ public class ConfigurationRepresentation
                 {
                     case DELETE_KEYS:
                         initialLine += " []";
-                        int affectedKeyLines = affectedKeyLines(configLines, initialLineIndex);
+                        int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> depth(line) > depth(configLines.get(initialLineIndex)));
 
                         // Remove old value
                         if (affectedKeyLines > 1)
@@ -208,7 +209,7 @@ public class ConfigurationRepresentation
     }
 
     // Start at 1 because the initial line is always affected.
-    private static int affectedLines(List<String> configLines, int initialLine)
+    private static int affectedLines(final List<String> configLines, final int initialLine, final Predicate<String> loopBreak)
     {
         int affectedLines = 1;
 
@@ -220,29 +221,7 @@ public class ConfigurationRepresentation
             configLine = listIterator.next();
 
             // ":" is the indicator of a new value
-            if (isComment(configLine) || configLine.indexOf(':') != -1)
-            {
-                break;
-            }
-            affectedLines++;
-        }
-        return affectedLines;
-    }
-
-    private static int affectedKeyLines(List<String> configLines, int initialLineIndex)
-    {
-        final short initialDepth = depth(configLines.get(initialLineIndex));
-        int affectedLines = 1;
-
-        // + 1 as the initial line should not be iterated over.
-        final ListIterator<String> listIterator = configLines.listIterator(initialLineIndex + 1);
-        String configLine;
-        while (listIterator.hasNext())
-        {
-            configLine = listIterator.next();
-
-            // ":" is the indicator of a new value
-            if (depth(configLine) > initialDepth)
+            if (loopBreak.test(configLine))
             {
                 break;
             }

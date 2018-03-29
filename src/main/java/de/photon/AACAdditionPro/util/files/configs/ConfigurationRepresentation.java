@@ -76,6 +76,9 @@ public class ConfigurationRepresentation
                 // Read the whole comment block and save it
                 line = br.readLine();
 
+                // Also checks for non-null
+                appendComments(resultingConfiguration, commentMap.get(line));
+
                 if (line == null)
                 {
                     break;
@@ -86,16 +89,10 @@ public class ConfigurationRepresentation
                     continue;
                 }
 
-                // Also checks for non-null
-                appendComments(resultingConfiguration, commentMap.get(line));
-
                 resultingConfiguration.append(line);
                 resultingConfiguration.append('\n');
             }
         }
-
-        // Add the null - line
-        appendComments(resultingConfiguration, commentMap.get(null));
 
         // Delete old file
         if (!this.configFile.delete())

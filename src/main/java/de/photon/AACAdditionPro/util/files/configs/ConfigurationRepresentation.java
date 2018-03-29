@@ -97,16 +97,19 @@ public class ConfigurationRepresentation
         // Add the null - line
         appendComments(resultingConfiguration, commentMap.get(null));
 
+        // Delete old file
         if (!this.configFile.delete())
         {
             throw new IOException("Unable to delete file " + this.configFile.getName());
         }
 
+        // Create new, empty file
         if (!this.configFile.createNewFile())
         {
             throw new IOException("Unable to create file " + this.configFile.getName());
         }
 
+        // Write the contents of resultingConfiguration.
         final FileWriter fileWriter = new FileWriter(this.configFile);
         fileWriter.write(resultingConfiguration.toString());
         fileWriter.close();

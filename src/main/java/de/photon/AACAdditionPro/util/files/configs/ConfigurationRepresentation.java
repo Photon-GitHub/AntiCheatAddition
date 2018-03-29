@@ -163,7 +163,7 @@ public class ConfigurationRepresentation
                 throw new IllegalArgumentException("Path " + path + " could not be found.");
             }
 
-            if (configLine.contains(pathParts[currentPart]))
+            if (!isComment(configLine) && configLine.contains(pathParts[currentPart]))
             {
                 // Update depth
                 minDepth = currentDepth;

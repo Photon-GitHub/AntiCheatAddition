@@ -77,7 +77,6 @@ public class ConfigurationRepresentation
             String initialLine = configLines.get(initialLineIndex);
             // + 1 in order to not delete the ':' char.
             initialLine = initialLine.substring(0, initialLine.lastIndexOf(':') + 1);
-            // Add one whitespace
 
             // Set the new value.
             // Simple sets
@@ -194,7 +193,7 @@ public class ConfigurationRepresentation
             configLine = listIterator.next();
 
             // ":" is the indicator of a new value
-            if (configLine.indexOf(':') != -1)
+            if (isComment(configLine) || configLine.indexOf(':') != -1)
             {
                 break;
             }

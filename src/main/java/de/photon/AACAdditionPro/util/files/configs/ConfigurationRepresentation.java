@@ -192,6 +192,11 @@ public class ConfigurationRepresentation
 
     private static byte pathDepth(final String string)
     {
+        if (string == null || string.isEmpty())
+        {
+            return -1;
+        }
+
         final char[] chars = string.toCharArray();
         for (byte b = 0; b < chars.length; b++)
         {

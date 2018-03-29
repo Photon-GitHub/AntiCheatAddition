@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.util.files.ExternalConfigUtils;
 import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.VectorUtils;
@@ -24,7 +25,6 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +65,7 @@ public class Esp implements ViolationModule
     {
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
 
-        final YamlConfiguration spigot = YamlConfiguration.loadConfiguration(new File("spigot.yml"));
+        final YamlConfiguration spigot = ExternalConfigUtils.ExternalConfigs.SPIGOT.getConfigYAML();
         final ConfigurationSection worlds = spigot.getConfigurationSection("world-settings");
 
         for (final String world : worlds.getKeys(false))

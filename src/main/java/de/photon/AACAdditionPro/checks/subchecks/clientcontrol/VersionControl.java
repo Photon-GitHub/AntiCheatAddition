@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
+import de.photon.AACAdditionPro.util.files.configs.Configs;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import lombok.Getter;
 import org.bukkit.event.Listener;
@@ -69,7 +70,7 @@ public class VersionControl implements Listener, ClientControlModule
                                              // Replace the special placeholder
                                              .replace("{supportedVersions}", String.join(", ", versionStrings));
 
-        ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfigs.VIAVERSION, new ExternalConfigUtils.RequestedConfigChange("block-disconnect-msg", message));
+        Configs.VIAVERSION.getConfigurationRepresentation().getYamlConfiguration().set("block-disconnect-msg", message);
 
         // Set the blocked versions
         final List<Integer> blockedProtocolNumbers = new ArrayList<>();
@@ -80,7 +81,7 @@ public class VersionControl implements Listener, ClientControlModule
                 blockedProtocolNumbers.addAll(protocolVersion.versionNumbers);
             }
         }
-        ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfigs.VIAVERSION, new ExternalConfigUtils.RequestedConfigChange("block-protocols", blockedProtocolNumbers));
+        Configs.VIAVERSION.getConfigurationRepresentation().getYamlConfiguration().set("block-protocols", blockedProtocolNumbers);
     }
 
     @Override

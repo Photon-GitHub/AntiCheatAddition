@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.util.files.configs.Configs;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.VectorUtils;
@@ -64,7 +65,7 @@ public class Esp implements ViolationModule
     {
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
 
-        final YamlConfiguration spigot = YamlConfiguration.loadConfiguration(ExternalConfigUtils.ExternalConfigs.SPIGOT.getConfigFile());
+        final YamlConfiguration spigot = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration();
         final ConfigurationSection worlds = spigot.getConfigurationSection("world-settings");
 
         for (final String world : worlds.getKeys(false))

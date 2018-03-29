@@ -1,10 +1,12 @@
 package de.photon.AACAdditionPro.util.files.configs;
 
+import lombok.Getter;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.Map;
 public class ConfigurationRepresentation
 {
     private final File configFile;
+    @Getter
     private final YamlConfiguration yamlConfiguration;
 
     public ConfigurationRepresentation(File configFile)
@@ -100,5 +103,19 @@ public class ConfigurationRepresentation
                 resultingConfiguration.append('\n');
             }
         }
+
+        if (!this.configFile.delete())
+        {
+            throw new IOException("Unable to delete file " + this.configFile.getName());
+        }
+
+        if (!this.configFile.createNewFile())
+        {
+            throw new IOException("Unable to create file " + this.configFile.getName());
+        }
+
+        final FileWriter fileWriter = new FileWriter(this.configFile);
+        fileWriter.write(resultingConfiguration.toString());
+        fileWriter.close();
     }
 }

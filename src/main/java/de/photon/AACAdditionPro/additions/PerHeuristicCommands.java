@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.events.HeuristicsAdditionViolationEvent;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.configs.Configs;
 import me.konsolas.aac.api.HackType;
 import me.konsolas.aac.api.PlayerViolationEvent;
 import org.bukkit.Bukkit;
@@ -42,8 +43,8 @@ public class PerHeuristicCommands implements Module, Listener
         thresholds = ConfigUtils.loadThresholds(this.getConfigString() + ".confidences");
         // Set AAC's min_confidence
         thresholds.keySet().stream().min(Integer::compareTo).ifPresent(
-                minConfidence -> ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfigs.AAC, new ExternalConfigUtils.RequestedConfigChange("heuristics.min_confidence", minConfidence)));
-        ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfigs.AAC, new ExternalConfigUtils.RequestedConfigChange("heuristics.thresholds", Collections.EMPTY_LIST));
+                minConfidence -> Configs.AAC.getConfigurationRepresentation().getYamlConfiguration().set("heuristics.min_confidence", minConfidence));
+        Configs.AAC.getConfigurationRepresentation().getYamlConfiguration().set("heuristics.thresholds", Collections.EMPTY_LIST);
     }
 
     @EventHandler(ignoreCancelled = true)

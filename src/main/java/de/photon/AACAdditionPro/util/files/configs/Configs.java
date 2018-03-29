@@ -1,8 +1,10 @@
 package de.photon.AACAdditionPro.util.files.configs;
 
+import de.photon.AACAdditionPro.util.VerboseSender;
 import lombok.Getter;
 
 import java.io.File;
+import java.io.IOException;
 
 public enum Configs
 {
@@ -21,7 +23,15 @@ public enum Configs
         this.configurationRepresentation = new ConfigurationRepresentation(this.configFile);
     }
 
-    public void updateConfig()
+    public void saveChanges()
     {
+        try
+        {
+            this.configurationRepresentation.save();
+        } catch (IOException e)
+        {
+            VerboseSender.sendVerboseMessage("Unable to change and save" + this.name() + "'s config.", true, true);
+            e.printStackTrace();
+        }
     }
 }

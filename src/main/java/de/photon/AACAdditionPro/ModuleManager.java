@@ -27,7 +27,7 @@ public class ModuleManager extends ArrayList<Module>
         // Invoke the changing of configs after all enable calls.
         for (Configs config : Configs.values())
         {
-            config.updateConfig();
+            config.saveChanges();
         }
     }
 

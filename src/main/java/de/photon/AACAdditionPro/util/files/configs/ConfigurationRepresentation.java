@@ -161,7 +161,11 @@ public class ConfigurationRepresentation
             // Change the current path accordingly.
             if (compareResult > 0)
             {
-                currentPath.push(line);
+                // Push mulitple times to ensure multi-level depth increases does not cause errors.
+                for (byte result = 0; result < compareResult; result++)
+                {
+                    currentPath.push(line);
+                }
             }
             else
             {

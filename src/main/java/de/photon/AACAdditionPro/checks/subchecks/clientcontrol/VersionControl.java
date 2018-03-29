@@ -4,14 +4,11 @@ import com.google.common.collect.Sets;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
-import de.photon.AACAdditionPro.util.VerboseSender;
+import de.photon.AACAdditionPro.util.files.ExternalConfigUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import lombok.Getter;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -73,10 +70,9 @@ public class VersionControl implements Listener, ClientControlModule
                                              // Replace the special placeholder
                                              .replace("{supportedVersions}", String.join(", ", versionStrings));
 
-        final File viaVersionFile = new File("plugins/ViaVersion/config.yml");
-        final YamlConfiguration viaVersionConfig = YamlConfiguration.loadConfiguration(viaVersionFile);
-        viaVersionConfig.set("block-disconnect-msg", message);
+        ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfig.VIAVERSION, new ExternalConfigUtils.RequestedConfigChange("block-disconnect-msg", message));
 
+        // Set the blocked versions
         final List<Integer> blockedProtocolNumbers = new ArrayList<>();
         for (ProtocolVersion protocolVersion : PROTOCOL_VERSIONS)
         {
@@ -85,16 +81,7 @@ public class VersionControl implements Listener, ClientControlModule
                 blockedProtocolNumbers.addAll(protocolVersion.versionNumbers);
             }
         }
-
-        viaVersionConfig.set("block-protocols", blockedProtocolNumbers);
-        try
-        {
-            viaVersionConfig.save(viaVersionFile);
-        } catch (IOException e)
-        {
-            VerboseSender.sendVerboseMessage("Failed to modify ViaVersion config.", true, true);
-            e.printStackTrace();
-        }
+        ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfig.VIAVERSION, new ExternalConfigUtils.RequestedConfigChange("block-protocols", blockedProtocolNumbers));
     }
 
     @Override

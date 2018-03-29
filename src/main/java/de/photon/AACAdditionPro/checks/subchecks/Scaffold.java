@@ -161,6 +161,9 @@ public class Scaffold implements Listener, ViolationModule
             {
                 final float[] angleInformation = user.getLookPacketData().getAngleInformation();
 
+                VerboseSender.sendVerboseMessage("Type 2: " + angleInformation[0]);
+                VerboseSender.sendVerboseMessage("Type 3: " + angleInformation[1]);
+
                 byte rotationVl = 0;
 
                 // Big rotation jumps in the last 2 ticks

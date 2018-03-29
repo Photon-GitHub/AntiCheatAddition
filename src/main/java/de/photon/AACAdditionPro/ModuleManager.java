@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.util.VerboseSender;
+import de.photon.AACAdditionPro.util.files.ExternalConfigUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.Bukkit;
@@ -22,6 +23,9 @@ public class ModuleManager extends ArrayList<Module>
         {
             this.registerObject(initialObject);
         }
+
+        // Invoke the changing of configs after all enable calls.
+        ExternalConfigUtils.changeConfigs();
     }
 
     public void registerObject(Module object)

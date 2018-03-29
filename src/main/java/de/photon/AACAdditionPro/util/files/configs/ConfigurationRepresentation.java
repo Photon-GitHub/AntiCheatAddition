@@ -64,14 +64,11 @@ public class ConfigurationRepresentation
             int initialLineIndex = searchForPath(configLines, path);
             int affectedLines = affectedLines(configLines, initialLineIndex, line -> isComment(line) || line.indexOf(':') != -1);
 
-            // Remove old value
-            if (affectedLines > 1)
+            // Remove old values
+            // > 1 because the initial line should not be removed.
+            for (int lines = affectedLines; lines > 0; lines--)
             {
-                // > 1 because the initial line should not be removed.
-                for (int lines = affectedLines; lines > 1; lines--)
-                {
-                    configLines.remove(initialLineIndex + 1);
-                }
+                configLines.remove(initialLineIndex + 1);
             }
 
             // Change the initalLine to remove the old value
@@ -133,14 +130,11 @@ public class ConfigurationRepresentation
                         initialLine += " []";
                         int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> depth(line) > depth(configLines.get(initialLineIndex)));
 
-                        // Remove old value
-                        if (affectedKeyLines > 1)
+                        // Remove old values
+                        // > 1 because the initial line should not be removed.
+                        for (int lines = affectedKeyLines; lines > 0; lines--)
                         {
-                            // > 1 because the initial line should not be removed.
-                            for (int lines = affectedKeyLines; lines > 1; lines--)
-                            {
-                                configLines.remove(initialLineIndex + 1);
-                            }
+                            configLines.remove(initialLineIndex + 1);
                         }
                         break;
                 }
@@ -211,7 +205,7 @@ public class ConfigurationRepresentation
     // Start at 1 because the initial line is always affected.
     private static int affectedLines(final List<String> configLines, final int initialLine, final Predicate<String> loopBreak)
     {
-        int affectedLines = 1;
+        int affectedLines = 0;
 
         // + 1 as the initial line should not be iterated over.
         final ListIterator<String> listIterator = configLines.listIterator(initialLine + 1);

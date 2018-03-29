@@ -6,14 +6,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
-import java.util.Stack;
 
 /**
  * {@link ConfigurationRepresentation} is a class to represent a {@link YamlConfiguration} with comments.
@@ -22,207 +20,142 @@ import java.util.Stack;
 public class ConfigurationRepresentation
 {
     private final File configFile;
-    private final byte depthLevel;
     @Getter
     private final YamlConfiguration yamlConfiguration;
-    private boolean needsUpdate = false;
+    private final Map<String, Object> requestedChanges = new HashMap<>();
+
 
     public ConfigurationRepresentation(File configFile, byte depthLevel)
     {
         this.configFile = configFile;
-        this.depthLevel = depthLevel;
         yamlConfiguration = YamlConfiguration.loadConfiguration(this.configFile);
     }
 
     public void requestValueChange(final String key, final Object value)
     {
-        this.needsUpdate = true;
-        this.yamlConfiguration.set(key, value);
+        this.requestedChanges.put(key, value);
     }
 
     public void save() throws IOException
     {
-        if (!this.needsUpdate)
+        // Directly inject changes.
+        if (requestedChanges.isEmpty())
         {
             return;
         }
 
-        // Map all comments to their keys
-        final Map<String, List<String>> commentMap = new HashMap<>();
-
-        String line;
-        List<String> commentBlock = new ArrayList<>();
-        Stack<String> currentPath = new Stack<>();
-        // Reads from the file to get the comments
+        // Load the whole config.
+        // Use LinkedList for fast mid-config tampering.
+        final List<String> configLines = new LinkedList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(this.configFile)))
         {
-            while (true)
+            String line = br.readLine();
+
+            while (line != null)
             {
-                // Read the whole comment block and save it
+                configLines.add(line);
                 line = br.readLine();
-
-                if (line == null)
-                {
-                    break;
-                }
-
-                // Copy whitespaces to make sure the format is correct.
-                while (isComment(line))
-                {
-                    commentBlock.add(line);
-                    line = br.readLine();
-                }
-
-                handlePath(line, currentPath);
-
-                final StringBuilder pathBuilder = new StringBuilder();
-                for (String s : currentPath)
-                {
-                    pathBuilder.append(s);
-                    // No need for delimiters as it is only an internal path.
-                }
-
-                // The next line after the comments is a key.
-                // null key are end-of-file comments
-                commentMap.put(pathBuilder.toString(), commentBlock);
-
-                System.out.println("SAVE: " + pathBuilder.toString());
-                // Don't clear as all HashMap entries will point at the same value ->
-                // Same comment block over and over again.
-                commentBlock = new ArrayList<>();
             }
         }
 
-        // Clear the path for injection.
-        currentPath.clear();
+        requestedChanges.forEach((key, value) -> {
+            int initialLineIndex = searchForPath(configLines, key);
+            int affectedLines = affectedLines(configLines, initialLineIndex);
 
-        // Now inject those comments into the changed YAML
-
-        // The StringBuilder containing what should be written to the new file.
-        final StringBuilder resultingConfiguration = new StringBuilder();
-
-        try (BufferedReader br = new BufferedReader(new StringReader(this.yamlConfiguration.saveToString())))
-        {
-            while (true)
+            // Remove old value
+            if (affectedLines > 1)
             {
-                // Read the whole comment block and save it
-                line = br.readLine();
-
-                if (line == null)
+                // > 1 because the initial line should not be removed.
+                for (int lines = affectedLines; lines > 1; lines--)
                 {
-                    break;
-                }
-
-                if (isComment(line))
-                {
-                    continue;
-                }
-
-                handlePath(line, currentPath);
-
-                final StringBuilder pathBuilder = new StringBuilder();
-                for (String s : currentPath)
-                {
-                    pathBuilder.append(s);
-                    // No need for delimiters as it is only an internal path.
-                }
-
-                System.out.println("LOAD: " + pathBuilder.toString());
-                appendComments(resultingConfiguration, commentMap.get(pathBuilder.toString()));
-
-                resultingConfiguration.append(line);
-                resultingConfiguration.append('\n');
-            }
-        }
-
-        // Delete old file
-        if (!this.configFile.delete())
-        {
-            throw new IOException("Unable to delete file " + this.configFile.getName());
-        }
-
-        // Create new, empty file
-        if (!this.configFile.createNewFile())
-        {
-            throw new IOException("Unable to create file " + this.configFile.getName());
-        }
-
-        // Write the contents of resultingConfiguration.
-        final FileWriter fileWriter = new FileWriter(this.configFile);
-        fileWriter.write(resultingConfiguration.toString());
-        fileWriter.close();
-    }
-
-    private void handlePath(String line, Stack<String> currentPath)
-    {
-        if (currentPath.isEmpty())
-        {
-            currentPath.push(line);
-        }
-        else
-        {
-            // Empty lines shall not change anything
-            if (pathDepth(line) < 0)
-            {
-                return;
-            }
-
-            // Compare the line to the current path
-            byte compareResult = (byte) (this.pathDepth(line) - this.pathDepth(currentPath.peek()));
-
-            // Change the current path accordingly.
-            if (compareResult > 0)
-            {
-                // Push mulitple times to ensure multi-level depth increases does not cause errors.
-                for (byte result = 0; result < compareResult; result++)
-                {
-                    currentPath.push(line);
+                    configLines.remove(initialLineIndex + 1);
                 }
             }
-            else
-            {
-                // < 1 because one additional removal is needed!
-                for (byte result = compareResult; result < 1; result++)
-                {
-                    currentPath.pop();
-                }
-                currentPath.push(line);
-            }
-        }
+
+            // Change the initalLine to remove the old value
+            String initialLine = configLines.get(initialLineIndex);
+            // + 1 in order to not delete the ':' char.
+            initialLine = initialLine.substring(0, initialLine.lastIndexOf(':') + 1);
+
+            // Set the new value.
+        });
     }
 
     /**
-     * Appends a {@link List} of {@link String}s to a {@link StringBuilder} if the {@link List} is not <code>null<code/>
+     * @return the line number of a path.
      */
-    private void appendComments(StringBuilder sb, List<String> comments)
+    private static int searchForPath(List<String> configLines, String path)
     {
-        if (comments != null)
+        final String[] pathParts = path.split(".");
+        int currentPart = 0;
+        int minDepth = 0;
+        int currentLineIndex = 0;
+
+        for (String configLine : configLines)
         {
-            for (String comment : comments)
+            final int currentDepth = depth(configLine);
+
+            // Value could not be found as not all parts are existing.
+            if (minDepth > currentDepth)
             {
-                sb.append(comment);
-                sb.append('\n');
+                throw new IllegalArgumentException("Path " + path + " could not be found.");
             }
+
+            if (configLine.contains(pathParts[currentPart]))
+            {
+                // Update depth
+                minDepth = currentDepth;
+
+                // Found the whole path?
+                if (++currentPart >= pathParts.length)
+                {
+                    return currentLineIndex;
+                }
+            }
+
+            currentLineIndex++;
         }
+
+        throw new IllegalArgumentException("Path " + path + " could not be found (full iteration).");
     }
 
-    private byte pathDepth(final String string)
+    // Start at 1 because the initial line is always affected.
+    private static int affectedLines(List<String> configLines, int initialLine)
     {
-        if (string == null || string.isEmpty())
-        {
-            return -1;
-        }
+        int affectedLines = 1;
 
-        final char[] chars = string.toCharArray();
-        for (byte b = 0; b < chars.length; b++)
+        final ListIterator<String> listIterator = configLines.listIterator(initialLine);
+        String configLine;
+        while (listIterator.hasNext())
         {
-            if (chars[b] != ' ')
+            configLine = listIterator.next();
+
+            // ":" is the indicator of a new value
+            if (configLine.indexOf(':') != -1)
             {
-                // index + 1 as it starts at 0
-                return (byte) ((b + 1) / this.depthLevel);
+                break;
+            }
+            affectedLines++;
+        }
+        return affectedLines;
+    }
+
+    /**
+     * Counts the leading whitespaces of a {@link String}
+     *
+     * @return the amount of leading whitespaces.
+     */
+    private static short depth(final String string)
+    {
+        final char[] chars = string.toCharArray();
+        for (short i = 0; i < chars.length; i++)
+        {
+            if (chars[i] != ' ')
+            {
+                return i;
             }
         }
-        return -1;
+        return 0;
     }
 
     private static boolean isComment(final String string)

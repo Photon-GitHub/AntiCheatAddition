@@ -51,7 +51,8 @@ public class ConfigurationRepresentation
                 }
 
                 commentBlock.clear();
-                while (line != null && line.trim().charAt(0) == '#')
+                // Copy whitespaces to make sure the format is correct.
+                while (line != null && (line.trim().isEmpty() || line.trim().charAt(0) == '#'))
                 {
                     commentBlock.add(line);
                     line = br.readLine();
@@ -83,7 +84,7 @@ public class ConfigurationRepresentation
                     break;
                 }
 
-                if (line.trim().charAt(0) == '#')
+                if (line.trim().isEmpty() || line.trim().charAt(0) == '#')
                 {
                     continue;
                 }

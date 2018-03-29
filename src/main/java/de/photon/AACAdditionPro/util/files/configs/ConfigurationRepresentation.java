@@ -145,7 +145,7 @@ public class ConfigurationRepresentation
         }
         else
         {
-            // Empty lines should not change anything
+            // Empty lines shall not change anything
             if (pathDepth(line) < 0)
             {
                 return;
@@ -166,7 +166,8 @@ public class ConfigurationRepresentation
             }
             else
             {
-                for (byte result = compareResult; result < 0; result++)
+                // < 1 because one additional removal is needed!
+                for (byte result = compareResult; result < 1; result++)
                 {
                     currentPath.pop();
                 }

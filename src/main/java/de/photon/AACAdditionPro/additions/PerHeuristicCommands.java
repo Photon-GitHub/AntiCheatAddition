@@ -44,7 +44,7 @@ public class PerHeuristicCommands implements Module, Listener
         // Set AAC's min_confidence
         thresholds.keySet().stream().min(Integer::compareTo).ifPresent(
                 minConfidence -> ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfigs.AAC, new ExternalConfigUtils.RequestedConfigChange("heuristics.min_confidence", minConfidence)));
-        ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfigs.AAC, new ExternalConfigUtils.RequestedConfigChange("heuristics.thresholds", Collections.EMPTY_SET));
+        ExternalConfigUtils.requestConfigChange(ExternalConfigUtils.ExternalConfigs.AAC, new ExternalConfigUtils.RequestedConfigChange("heuristics.thresholds", Collections.EMPTY_LIST));
     }
 
     @EventHandler(ignoreCancelled = true)

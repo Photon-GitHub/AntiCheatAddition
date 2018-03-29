@@ -31,6 +31,7 @@ public final class ExternalConfigUtils
         SPIGOT("spigot.yml"),
         VIAVERSION("plugins/ViaVersion/config.yml");
 
+        @Getter
         private final File configFile;
         @Getter
         private FileConfig configuration;

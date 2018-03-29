@@ -65,7 +65,7 @@ public class Esp implements ViolationModule
     {
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
 
-        final YamlConfiguration spigot = ExternalConfigUtils.ExternalConfigs.SPIGOT.getConfigYAML();
+        final YamlConfiguration spigot = YamlConfiguration.loadConfiguration(ExternalConfigUtils.ExternalConfigs.SPIGOT.getConfigFile());
         final ConfigurationSection worlds = spigot.getConfigurationSection("world-settings");
 
         for (final String world : worlds.getKeys(false))

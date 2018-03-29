@@ -155,12 +155,7 @@ public class ConfigurationRepresentation
             byte compareResult = (byte) (pathDepth(line) - pathDepth(currentPath.peek()));
 
             // Change the current path accordingly.
-            if (compareResult == 0)
-            {
-                currentPath.pop();
-                currentPath.push(line);
-            }
-            else if (compareResult > 0)
+            if (compareResult > 0)
             {
                 currentPath.push(line);
             }

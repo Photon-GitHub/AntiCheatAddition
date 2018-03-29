@@ -10,9 +10,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * {@link ConfigurationRepresentation} is a class to represent a {@link YamlConfiguration} with comments.
@@ -33,10 +34,11 @@ public class ConfigurationRepresentation
     public void save() throws IOException
     {
         // Map all comments to their keys
-        final Map<String, List<String>> commentMap = new HashMap<>();
+        final Map<String, List<String>> commentMap = new LinkedHashMap<>();
 
         String line;
         List<String> commentBlock = new ArrayList<>();
+        Stack<String> currentPath = new Stack<>();
         // Reads from the file to get the comments
         try (BufferedReader br = new BufferedReader(new FileReader(this.configFile)))
         {
@@ -57,14 +59,27 @@ public class ConfigurationRepresentation
                     line = br.readLine();
                 }
 
+                handlePath(line, currentPath);
+
+                final StringBuilder pathBuilder = new StringBuilder();
+                for (String s : currentPath)
+                {
+                    pathBuilder.append(s);
+                    // No need for delimiters as it is only an internal path.
+                }
+
                 // The next line after the comments is a key.
                 // null key are end-of-file comments
-                commentMap.put(line, commentBlock);
+                commentMap.put(pathBuilder.toString(), commentBlock);
+
                 // Don't clear as all HashMap entries will point at the same value ->
                 // Same comment block over and over again.
                 commentBlock = new ArrayList<>();
             }
         }
+
+        // Clear the path for injection.
+        currentPath.clear();
 
         // Now inject those comments into the changed YAML
 
@@ -78,9 +93,6 @@ public class ConfigurationRepresentation
                 // Read the whole comment block and save it
                 line = br.readLine();
 
-                // Also checks for non-null
-                appendComments(resultingConfiguration, commentMap.get(line));
-
                 if (line == null)
                 {
                     break;
@@ -90,6 +102,17 @@ public class ConfigurationRepresentation
                 {
                     continue;
                 }
+
+                handlePath(line, currentPath);
+
+                final StringBuilder pathBuilder = new StringBuilder();
+                for (String s : currentPath)
+                {
+                    pathBuilder.append(s);
+                    // No need for delimiters as it is only an internal path.
+                }
+
+                appendComments(resultingConfiguration, commentMap.get(pathBuilder.toString()));
 
                 resultingConfiguration.append(line);
                 resultingConfiguration.append('\n');
@@ -114,6 +137,44 @@ public class ConfigurationRepresentation
         fileWriter.close();
     }
 
+    private static void handlePath(String line, Stack<String> currentPath)
+    {
+        if (currentPath.isEmpty())
+        {
+            currentPath.push(line);
+        }
+        else
+        {
+            // Empty lines should not change anything
+            if (pathDepth(line) < 0)
+            {
+                return;
+            }
+
+            // Compare the line to the current path
+            byte compareResult = (byte) (pathDepth(line) - pathDepth(currentPath.peek()));
+
+            // Change the current path accordingly.
+            if (compareResult == 0)
+            {
+                currentPath.pop();
+                currentPath.push(line);
+            }
+            else if (compareResult > 0)
+            {
+                currentPath.push(line);
+            }
+            else
+            {
+                for (byte result = compareResult; result < 0; result++)
+                {
+                    currentPath.pop();
+                }
+                currentPath.push(line);
+            }
+        }
+    }
+
     /**
      * Appends a {@link List} of {@link String}s to a {@link StringBuilder} if the {@link List} is not <code>null<code/>
      */
@@ -127,6 +188,21 @@ public class ConfigurationRepresentation
                 sb.append('\n');
             }
         }
+    }
+
+    private static byte pathDepth(final String string)
+    {
+        final char[] chars = string.toCharArray();
+        for (byte b = 0; b < chars.length; b++)
+        {
+            if (chars[b] != ' ')
+            {
+                // index + 1 as it starts at 0
+                // / 3 as three spaces equals one level.
+                return (byte) ((b + 1) / 3);
+            }
+        }
+        return -1;
     }
 
     private static boolean isComment(final String string)

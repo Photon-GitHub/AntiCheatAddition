@@ -127,7 +127,8 @@ public class ConfigurationRepresentation
      */
     private static int searchForPath(List<String> configLines, String path)
     {
-        final String[] pathParts = path.split(".");
+        // Special handling for paths without a '.'
+        final String[] pathParts = path.indexOf('.') == -1 ? new String[]{path} : path.split(".");
         int currentPart = 0;
         short minDepth = 0;
         int currentLineIndex = 0;
@@ -142,7 +143,7 @@ public class ConfigurationRepresentation
                 throw new IllegalArgumentException("Path " + path + " could not be found.");
             }
 
-            if (!configLine.isEmpty() && configLine.contains(pathParts[currentPart]))
+            if (configLine.contains(pathParts[currentPart]))
             {
                 // Update depth
                 minDepth = currentDepth;

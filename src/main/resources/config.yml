@@ -29,7 +29,7 @@ AutoFish:
    enabled: true
    # Violation before AACAdditionPro starts to cancel the fishing.
    # Set this to 0 to never cancel fishing.
-   # Please think of potential luck, thus I do not recommend to set this to 1-6.
+   # Please think of potential luck, thus I do not recommend to set this to a value smaller than 7.
    cancel_vl: 10
    # Control the different solutions of AutoFish
    parts:
@@ -50,7 +50,7 @@ AutoFish:
          enabled: true
          # How many FishEvents should be checked by the consistency check
          consistency_events: 5
-         # The offset minimum offset a player has to have in order to count as non-cheating.
+         # The minimum offset a player has to have in order to count as non-cheating.
          # Measured in ms
          violation_offset: 30
          # After how many failed attempts to fish between two successful attempts should a player be exempted from the
@@ -212,7 +212,7 @@ InventoryHeuristics:
    # THIS IS A VERY POWERFUL TOOL AND CAN CRIPPLE YOUR SERVER IF USED IN THE WRONG WAY.
    # I WILL _NOT_ PROVIDE SUPPORT FOR THIS FUNCTION: USE AT YOUR OWN RISK!
    unlock_full_framework: false
-   # Options which belong to this section will only effect you if unlock_full_framework is set to true.
+   # Options in this section will only have effects after enabling unlock_full_framework.
    framework:
       # The epoch when training a neural net.
       epoch: 15000

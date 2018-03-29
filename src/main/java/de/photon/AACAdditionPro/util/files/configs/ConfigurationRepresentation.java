@@ -128,7 +128,8 @@ public class ConfigurationRepresentation
                 {
                     case DELETE_KEYS:
                         initialLine += " []";
-                        int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> depth(line) > depth(configLines.get(initialLineIndex)));
+                        final short initialLineDepth = depth(initialLine);
+                        int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> depth(line) <= initialLineDepth);
 
                         // Remove old values
                         // > 1 because the initial line should not be removed.

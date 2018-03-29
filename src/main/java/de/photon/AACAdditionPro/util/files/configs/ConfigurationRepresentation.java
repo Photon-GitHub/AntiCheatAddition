@@ -65,7 +65,6 @@ public class ConfigurationRepresentation
             int affectedLines = affectedLines(configLines, initialLineIndex, line -> isComment(line) || line.indexOf(':') != -1);
 
             // Remove old values
-            // > 1 because the initial line should not be removed.
             for (int lines = affectedLines; lines > 0; lines--)
             {
                 configLines.remove(initialLineIndex + 1);
@@ -132,7 +131,6 @@ public class ConfigurationRepresentation
                         int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> depth(line) <= initialLineDepth);
 
                         // Remove old values
-                        // > 1 because the initial line should not be removed.
                         for (int lines = affectedKeyLines; lines > 0; lines--)
                         {
                             configLines.remove(initialLineIndex + 1);

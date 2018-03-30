@@ -22,10 +22,12 @@ public abstract class AbstractPacket
     protected AbstractPacket(final PacketContainer handle, final PacketType type)
     {
         // Make sure we're given a valid packet
-        if (handle == null) {
+        if (handle == null)
+        {
             throw new IllegalArgumentException("Packet handle cannot be NULL.");
         }
-        if (!Objects.equal(handle.getType(), type)) {
+        if (!Objects.equal(handle.getType(), type))
+        {
             throw new IllegalArgumentException(handle.getHandle()
                                                + " is not a packet of type " + type);
         }
@@ -52,10 +54,12 @@ public abstract class AbstractPacket
      */
     public void sendPacket(final Player receiver)
     {
-        try {
+        try
+        {
             ProtocolLibrary.getProtocolManager().sendServerPacket(receiver,
                                                                   getHandle());
-        } catch (final InvocationTargetException e) {
+        } catch (final InvocationTargetException e)
+        {
             throw new RuntimeException("Cannot send packet.", e);
         }
     }
@@ -72,10 +76,12 @@ public abstract class AbstractPacket
     @Deprecated
     public void recievePacket(final Player sender)
     {
-        try {
+        try
+        {
             ProtocolLibrary.getProtocolManager().recieveClientPacket(sender,
                                                                      getHandle());
-        } catch (final Exception e) {
+        } catch (final Exception e)
+        {
             throw new RuntimeException("Cannot recieve packet.", e);
         }
     }
@@ -89,10 +95,12 @@ public abstract class AbstractPacket
      */
     public void receivePacket(final Player sender)
     {
-        try {
+        try
+        {
             ProtocolLibrary.getProtocolManager().recieveClientPacket(sender,
                                                                      getHandle());
-        } catch (final Exception e) {
+        } catch (final Exception e)
+        {
             throw new RuntimeException("Cannot recieve packet.", e);
         }
     }

@@ -113,7 +113,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             {
                 lastSwap = 0;
                 equipment.equipInHand();
-                equipment.equipPlayerEntity();
+                equipment.equipPlayerEntity(this.observedPlayer);
             }
         }
 
@@ -302,7 +302,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // Entity equipment + armor
         this.equipment.equipArmor();
         this.equipment.equipInHand();
-        this.equipment.equipPlayerEntity();
+        this.equipment.equipPlayerEntity(this.observedPlayer);
     }
 
     // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //

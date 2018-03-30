@@ -11,7 +11,7 @@ import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EnderDragon;
@@ -67,7 +67,7 @@ public class DamageIndicator extends PacketAdapter implements Module
             final int index;
 
             // Passenger problems
-            switch (ServerVersion.getActiveServerVersion())
+            switch (ServerVersion.getClientServerVersion(event.getPlayer()))
             {
                 case MC188:
                     // index 6 in 1.8

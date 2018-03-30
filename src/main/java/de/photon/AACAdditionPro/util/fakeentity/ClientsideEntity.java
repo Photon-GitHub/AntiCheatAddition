@@ -253,7 +253,7 @@ public abstract class ClientsideEntity
 
         // Teleport needed ?
         int teleportThreshold;
-        switch (ServerVersion.getActiveServerVersion())
+        switch (ServerVersion.getClientServerVersion(this.observedPlayer))
         {
             case MC188:
                 teleportThreshold = 4;
@@ -270,8 +270,6 @@ public abstract class ClientsideEntity
         if (Math.abs(xDiff) + Math.abs(yDiff) + Math.abs(zDiff) > teleportThreshold || needsTeleport)
         {
             final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
-            // EntityID
-            teleportWrapper.setEntityID(this.entityID);
             // Position
             teleportWrapper.setX(this.location.getX());
             teleportWrapper.setY(this.location.getY());
@@ -452,7 +450,7 @@ public abstract class ClientsideEntity
             Location observedLoc = observedPlayer.getLocation();
             observedLoc.setPitch(0);
 
-            //Calculate knockback strength
+            // Calculate knockback strength
             int knockbackStrength = 0;
             if (observedPlayer.isSprinting())
             {
@@ -480,7 +478,7 @@ public abstract class ClientsideEntity
                 knockbackStrength += itemInHand.getEnchantmentLevel(Enchantment.KNOCKBACK);
             }
 
-            //Apply velocity
+            // Apply velocity
             if (knockbackStrength > 0)
             {
                 velocity.add(observedLoc.getDirection().normalize().setY(.1).multiply(knockbackStrength * .5));
@@ -522,7 +520,7 @@ public abstract class ClientsideEntity
         final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata();
         entityMetadataWrapper.setEntityID(this.getEntityID());
 
-        switch (ServerVersion.getActiveServerVersion())
+        switch (ServerVersion.getClientServerVersion(this.observedPlayer))
         {
             case MC188:
                 final List<WrappedWatchableObject> wrappedWatchableObjectsOldMC = Arrays.asList(

@@ -118,7 +118,8 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public double getX()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion())
+        {
             case MC188:
                 return handle.getIntegers().read(1) / 32.0D;
             case MC110:
@@ -132,7 +133,8 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public void setX(double value)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion())
+        {
             case MC188:
                 handle.getIntegers().write(1, (int) (value * 32));
                 break;
@@ -148,7 +150,8 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public double getY()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion())
+        {
             case MC188:
                 return handle.getIntegers().read(2) / 32.0D;
             case MC110:
@@ -162,7 +165,8 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public void setY(double value)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion())
+        {
             case MC188:
                 handle.getIntegers().write(2, (int) (value * 32));
                 break;
@@ -178,7 +182,8 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public double getZ()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion())
+        {
             case MC188:
                 return handle.getIntegers().read(3) / 32.0D;
             case MC110:
@@ -192,7 +197,8 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
 
     public void setZ(double value)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.getActiveServerVersion())
+        {
             case MC188:
                 handle.getIntegers().write(3, (int) (value * 32));
                 break;

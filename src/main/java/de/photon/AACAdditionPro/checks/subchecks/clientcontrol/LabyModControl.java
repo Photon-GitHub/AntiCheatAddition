@@ -5,17 +5,20 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
-import de.photon.AACAdditionPro.util.files.ConfigUtils;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import net.labymod.serverapi.Permission;
 import net.labymod.serverapi.bukkit.event.LabyModPlayerJoinEvent;
 import net.labymod.serverapi.bukkit.event.PermissionsSendEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class LabyModControl implements Listener, ClientControlModule
 {
@@ -69,6 +72,12 @@ public class LabyModControl implements Listener, ClientControlModule
     public List<String> getCommandsOnDetection()
     {
         return commandsOnDetection;
+    }
+
+    @Override
+    public Set<String> getDependencies()
+    {
+        return new HashSet<>(Collections.singletonList("LabyModAPI"));
     }
 
     @Override

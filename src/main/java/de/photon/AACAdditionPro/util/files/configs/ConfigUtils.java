@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.files;
+package de.photon.AACAdditionPro.util.files.configs;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import org.bukkit.configuration.ConfigurationSection;

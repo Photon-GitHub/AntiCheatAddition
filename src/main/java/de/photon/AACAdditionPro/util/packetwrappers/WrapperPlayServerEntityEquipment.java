@@ -53,6 +53,7 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
      * Retrieve the entity of the painting that will be spawned.
      *
      * @param world - the current world of the entity.
+     *
      * @return The spawned entity.
      */
     public Entity getEntity(final World world)
@@ -64,6 +65,7 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
      * Retrieve the entity of the painting that will be spawned.
      *
      * @param event - the packet event.
+     *
      * @return The spawned entity.
      */
     public Entity getEntity(final PacketEvent event)
@@ -78,10 +80,19 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
 
     public void setSlot(final ItemSlot value)
     {
+        // Player = null will return the server version.
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
-                handle.getIntegers().write(1, value.ordinal());
+                int index = value.ordinal();
+
+                // Reduce by one if index greater 0 as the offhand (index 1) doesn't exist.
+                if (index > 0)
+                {
+                    index--;
+                }
+
+                handle.getIntegers().write(1, index);
                 break;
             case MC110:
             case MC111:

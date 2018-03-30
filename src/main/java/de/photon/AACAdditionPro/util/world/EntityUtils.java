@@ -1,44 +1,14 @@
 package de.photon.AACAdditionPro.util.world;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.util.mathematics.MathUtils;
-import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 public final class EntityUtils
 {
-    /**
-     * Gets all {@link Player}s who are in a certain range of the given {@link Player}
-     *
-     * @param initialPlayer   the location from which the distance is measured
-     * @param squaredDistance the squared distance of the maximum range between the two players to include the other {@link Player} in the result.
-     *
-     * @return a {@link List} of {@link Player}s who are in range.
-     */
-    public static List<Player> getNearbyPlayers(final Player initialPlayer, final double squaredDistance)
-    {
-        final List<Player> nearbyPlayers = new ArrayList<>(5);
-
-        for (final Player player : initialPlayer.getWorld().getPlayers())
-        {
-            if (!initialPlayer.getUniqueId().equals(player.getUniqueId()) &&
-                // Check coordinates
-                MathUtils.areLocationsInRange(initialPlayer.getLocation(), player.getLocation(), squaredDistance))
-            {
-                nearbyPlayers.add(player);
-            }
-        }
-
-        return nearbyPlayers;
-    }
-
     /**
      * Gets all {@link Player}s who are in a certain range of the given {@link Player}
      *
@@ -51,21 +21,18 @@ public final class EntityUtils
      */
     public static List<LivingEntity> getLivingEntitiesAroundPlayer(final Player initialPlayer, final double x, final double y, final double z)
     {
-        final List<LivingEntity> initialLivingEntities;
-        try
-        {
-            initialLivingEntities = Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> initialPlayer.getWorld().getLivingEntities()).get();
-        } catch (InterruptedException | ExecutionException e)
-        {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
-        return initialLivingEntities.stream().filter(
-                livingEntity ->
-                        // Not the player himself.
-                        !livingEntity.getUniqueId().equals(initialPlayer.getUniqueId()) &&
-                        // In range
-                        MathUtils.areLocationsInRange(initialPlayer.getLocation(), livingEntity.getLocation(), x, y, z)).collect(Collectors.toList());
+        final List<Entity> nearbyEntities = initialPlayer.getNearbyEntities(x, y, z);
+        // nearbyLivingEntities must be smaller or equal to nearbyEntities in the end.
+        final List<LivingEntity> nearbyLivingEntities = new ArrayList<>(nearbyEntities.size());
 
+        for (Entity nearbyEntity : nearbyEntities)
+        {
+            if (nearbyEntity instanceof LivingEntity)
+            {
+                nearbyLivingEntities.add((LivingEntity) nearbyEntity);
+            }
+        }
+
+        return nearbyLivingEntities;
     }
 }

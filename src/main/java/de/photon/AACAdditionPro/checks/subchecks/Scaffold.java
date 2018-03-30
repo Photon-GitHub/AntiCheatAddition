@@ -9,7 +9,7 @@ import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.datawrappers.ScaffoldBlockPlace;
 import de.photon.AACAdditionPro.util.entity.livingentity.PotionUtil;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
@@ -25,8 +25,8 @@ public class Scaffold implements Listener, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 70L);
 
-    private final static double ANGLE_CHANGE_SUM_THRESHOLD = 11.5D;
-    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 10.7D;
+    private final static double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
+    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 5.2D;
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;

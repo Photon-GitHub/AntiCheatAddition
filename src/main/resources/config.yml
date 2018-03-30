@@ -29,7 +29,7 @@ AutoFish:
    enabled: true
    # Violation before AACAdditionPro starts to cancel the fishing.
    # Set this to 0 to never cancel fishing.
-   # Please think of potential luck, thus I do not recommend to set this to 1-6.
+   # Please think of potential luck, thus I do not recommend to set this to a value smaller than 7.
    cancel_vl: 10
    # Control the different solutions of AutoFish
    parts:
@@ -50,7 +50,7 @@ AutoFish:
          enabled: true
          # How many FishEvents should be checked by the consistency check
          consistency_events: 5
-         # The offset minimum offset a player has to have in order to count as non-cheating.
+         # The minimum offset a player has to have in order to count as non-cheating.
          # Measured in ms
          violation_offset: 30
          # After how many failed attempts to fish between two successful attempts should a player be exempted from the
@@ -212,7 +212,7 @@ InventoryHeuristics:
    # THIS IS A VERY POWERFUL TOOL AND CAN CRIPPLE YOUR SERVER IF USED IN THE WRONG WAY.
    # I WILL _NOT_ PROVIDE SUPPORT FOR THIS FUNCTION: USE AT YOUR OWN RISK!
    unlock_full_framework: false
-   # Options which belong to this section will only effect you if unlock_full_framework is set to true.
+   # Options in this section will only have effects after enabling unlock_full_framework.
    framework:
       # The epoch when training a neural net.
       epoch: 15000
@@ -270,6 +270,9 @@ InventoryRotation:
       35: "aackick {player} Killaura/Autoarmor"
 
 # Brings back an entity check of the old AAC 1.9.10 times but much more advanced.
+#
+# This check can cause performance problems as it needs to calculate movement, select equipment and take many more
+# actions to make the entities mostly bypass-proof. If you encounter TPS drops try to disable this check first.
 KillauraEntity:
    # Do you want to enable the KillauraEntity check
    enabled: true
@@ -760,6 +763,26 @@ ClientControl:
       commands_on_detection:
          - "ban {player} Illegal client modification"
 
+   # This allows you to control which minecraft versions can join your server IF YOUR SERVER RUNS VIAVERSION.
+   # YOU NEED TO ENABLE THIS AND DISALLOW 1.9 CLIENTS IF YOU WANT TO USE THE KILLAURAENTITY CHECK ON A VIAVERSION SERVER
+   #
+   # You might need to restart your server TWICE for some changes to take effect.
+   VersionControl:
+      # Do you want to enable VersionControl
+      enabled: false
+      # This option allows you to define a message of
+      # THIS WILL OVERRIDE THE block-disconnect-msg OPTION IN THE VIAVERSION CONFIG!
+      message: "You are using an unsupported version. Supported Versions are {supportedVersions}"
+      # What versions should be able to join?
+      # THIS WILL OVERRIDE THE block-protocols OPTION IN THE VIAVERSION CONFIG!
+      allowedVersions:
+         '1.8': true
+         # 1.9 is not officially supported by this plugin. Issues can occur.
+         '1.9': false
+         '1.10': true
+         '1.11': true
+         '1.12': true
+
    # WorldDownloader is a popular modification to get the maps of a server
    WorldDownloader:
       # Do you want to enable WorldDownloader-Control
@@ -793,9 +816,9 @@ LogBot:
    Server: 10
 
 # This allows you to run different commands on different confidences
-# IN ORDER TO USE THIS you MUST change your heuristics - confidence in AAC's config to 50
-# and delete all
-# thresholds: {}
+#
+# This will automatically set AAC's min_confidence option to the optimal value.
+# USING THIS WILL AUTOMATICALLY DELETE ALL THRESHOLDS IN THE AAC CONFIG (required to make this work).
 #
 Heuristic-Addition:
    enabled: false

@@ -5,9 +5,11 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.files.configs.Configs;
+import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.VectorUtils;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.visibility.HideMode;
 import de.photon.AACAdditionPro.util.visibility.PlayerInformationModifier;
 import de.photon.AACAdditionPro.util.visibility.informationmodifiers.InformationObfuscator;
@@ -20,9 +22,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +65,7 @@ public class Esp implements ViolationModule
     {
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
 
-        final YamlConfiguration spigot = YamlConfiguration.loadConfiguration(new File("spigot.yml"));
+        final YamlConfiguration spigot = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration();
         final ConfigurationSection worlds = spigot.getConfigurationSection("world-settings");
 
         for (final String world : worlds.getKeys(false))
@@ -155,13 +157,31 @@ public class Esp implements ViolationModule
                                 final Player watched = pair.usersOfPair[1 - b].getPlayer();
 
                                 // ------------------------- Can one Player see the other ? ------------------------- //
-                                boolean canSee = false;
+                                boolean canSee;
 
-                                // Not bypassed
-                                if (!pair.usersOfPair[b].isBypassed() &&
+                                // ------------------------------------- Glowing ------------------------------------ //
+                                switch (ServerVersion.getActiveServerVersion())
+                                {
+                                    case MC188:
+                                        canSee = false;
+                                        break;
+                                    case MC110:
+                                    case MC111:
+                                    case MC112:
+                                        canSee = watched.hasPotionEffect(PotionEffectType.GLOWING);
+                                        break;
+                                    default:
+                                        throw new IllegalStateException("Unknown minecraft version");
+                                }
+
+                                // Not already able to see (due to e.g. glowing)
+                                if (!canSee &&
+                                    // Not bypassed
+                                    !pair.usersOfPair[b].isBypassed() &&
                                     // Has not logged in recently to prevent bugs
                                     !pair.usersOfPair[b].getLoginData().recentlyUpdated(0, 3000))
                                 {
+                                    //canSee = observer.hasLineOfSight(watched);
                                     final Vector[] cameraVectors = getCameraVectors(observer);
 
                                     final Hitbox hitboxOfWatched = watched.isSneaking() ?

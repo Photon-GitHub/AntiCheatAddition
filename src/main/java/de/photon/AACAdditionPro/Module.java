@@ -3,8 +3,8 @@ package de.photon.AACAdditionPro;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketListener;
-import de.photon.AACAdditionPro.util.files.ConfigUtils;
-import de.photon.AACAdditionPro.util.files.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
@@ -16,6 +16,7 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -225,6 +226,14 @@ public interface Module
      * Cancelling tasks and everything else that is not covered by disable() should be done here.
      */
     default void subDisable() {}
+
+    /**
+     * All plugin names this module depends on.
+     */
+    default Set<String> getDependencies()
+    {
+        return Collections.emptySet();
+    }
 
     /**
      * This are the channels a PluginMessageListener should listen to.

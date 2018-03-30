@@ -18,8 +18,8 @@ public abstract class ConditionalBuffer<T> extends Buffer<T>
     @Override
     public boolean bufferObjectIgnoreSize(T object)
     {
-        final boolean verfiy = this.verifyObject(object);
-        if (verfiy)
+        final boolean verify = this.verifyObject(object);
+        if (verify)
         {
             this.push(object);
         }
@@ -27,6 +27,6 @@ public abstract class ConditionalBuffer<T> extends Buffer<T>
         {
             this.clear();
         }
-        return verfiy;
+        return verify;
     }
 }

@@ -4,7 +4,7 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationEvent;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
-import de.photon.AACAdditionPro.util.files.ConfigUtils;
+import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,7 +22,7 @@ public class ViolationLevelManagement implements Listener
     /**
      * The {@link Map} violation-levels of all the players.
      */
-    private final ConcurrentMap<UUID, Integer> violationLevels = new ConcurrentHashMap<>();
+    protected final ConcurrentMap<UUID, Integer> violationLevels = new ConcurrentHashMap<>();
 
     /**
      * The {@link Map} of the command that are defined in the config at certain violation-levels.
@@ -57,20 +57,20 @@ public class ViolationLevelManagement implements Listener
         {
             //The vl-decrease
             Bukkit.getScheduler().scheduleSyncRepeatingTask(
-                    AACAdditionPro.getInstance(), () -> violationLevels.forEach(
-                            (uuid, vl) ->
+                    AACAdditionPro.getInstance(), () -> {
+                        for (Map.Entry<UUID, Integer> entry : violationLevels.entrySet())
+                        {
+                            final int newVl = entry.getValue() - 1;
+                            if (newVl > 0)
                             {
-                                final int newVl = vl - 1;
-
-                                if (newVl > 0)
-                                {
-                                    violationLevels.put(uuid, newVl);
-                                }
-                                else
-                                {
-                                    violationLevels.remove(uuid);
-                                }
-                            }), 0L, decreaseDelay);
+                                entry.setValue(newVl);
+                            }
+                            else
+                            {
+                                violationLevels.remove(entry.getKey());
+                            }
+                        }
+                    }, 0L, decreaseDelay);
         }
     }
 
@@ -139,9 +139,8 @@ public class ViolationLevelManagement implements Listener
      *
      * @param player the {@link Player} whose vl should be set
      * @param newVl  the new vl of the player.
-     * @param punish whether punishing the player should be tried after setting the new value
      */
-    void setVL(final Player player, final int newVl, final boolean punish)
+    public void setVL(final Player player, final int newVl)
     {
         final int oldVl = this.getVL(player.getUniqueId());
 
@@ -154,7 +153,7 @@ public class ViolationLevelManagement implements Listener
 
             // setVL is also called when decreasing the vl
             // thus we must prevent double punishment
-            if (punish && oldVl < newVl)
+            if (oldVl < newVl)
             {
                 this.punishPlayer(player, oldVl, newVl);
             }
@@ -163,17 +162,6 @@ public class ViolationLevelManagement implements Listener
         {
             violationLevels.remove(player.getUniqueId());
         }
-    }
-
-    /**
-     * Sets the vl of a player.
-     *
-     * @param player the {@link Player} whose vl should be set
-     * @param newVl  the new vl of the player.
-     */
-    public void setVL(final Player player, final int newVl)
-    {
-        this.setVL(player, newVl, true);
     }
 
     /**

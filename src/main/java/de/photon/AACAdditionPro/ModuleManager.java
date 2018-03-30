@@ -3,8 +3,10 @@ package de.photon.AACAdditionPro;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.util.VerboseSender;
+import de.photon.AACAdditionPro.util.files.configs.Configs;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 
@@ -14,17 +16,18 @@ import java.util.ArrayList;
  */
 public class ModuleManager extends ArrayList<Module>
 {
-    ModuleManager(final int initialCapacity)
-    {
-        super(initialCapacity);
-    }
-
     ModuleManager(final Module... initialObjects)
     {
         super(initialObjects.length);
         for (Module initialObject : initialObjects)
         {
             this.registerObject(initialObject);
+        }
+
+        // Invoke the changing of configs after all enable calls.
+        for (Configs config : Configs.values())
+        {
+            config.saveChanges();
         }
     }
 
@@ -40,10 +43,18 @@ public class ModuleManager extends ArrayList<Module>
                 // Supports the current server version
                 if (ServerVersion.supportsActiveServerVersion(object.getSupportedVersions()))
                 {
-                    // Enable
-                    this.add(object);
-                    object.enable();
-                    pathOutput = " has been enabled.";
+                    if (object.getDependencies().stream().allMatch(dependency -> Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)))
+                    {
+                        // Enable
+                        this.add(object);
+
+                        object.enable();
+                        pathOutput = " has been enabled.";
+                    }
+                    else
+                    {
+                        pathOutput = " has been not been enabled as of missing dependencies.";
+                    }
                 }
                 else
                 {

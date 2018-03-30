@@ -95,19 +95,26 @@ public class LookPacketData extends TimeData
         // Ticks that must be added to fill up the gaps in the queue.
         short gapFillers = 0;
 
-        final RotationChange[] elementArray = this.rotationChangeQueue.toArray(new RotationChange[this.rotationChangeQueue.size()]);
+        final RotationChange[] elementArray = this.rotationChangeQueue.toArray(new RotationChange[0]);
 
         // Start at 1 as of the 0 element being the first "last element".
         for (int i = 1; i < elementArray.length; i++)
         {
-            if (MathUtils.offset(rotationChangeQueue.getLast().getTime(), elementArray[i].getTime()) > 1000)
+            if (MathUtils.offset(System.currentTimeMillis(), elementArray[i].getTime()) > 1000)
             {
                 continue;
             }
 
-            // How many ticks have been left out?
-            // Using -1 for the last element is fine as there is always the last element.
-            gapFillers += MathUtils.offset(elementArray[i].getTime(), elementArray[i - 1].getTime()) / 50;
+            short ticks = (short) (MathUtils.offset(elementArray[i].getTime(),
+                                                    // Using -1 for the last element is fine as there is always the last element.
+                                                    elementArray[i - 1].getTime()) / 50);
+
+            // The current tick should be ignored, no gap filler.
+            if (ticks > 1)
+            {
+                // How many ticks have been left out?
+                gapFillers += (ticks - 1);
+            }
 
             // Angle calculations
             float angle = elementArray[i - 1].angle(elementArray[i]);

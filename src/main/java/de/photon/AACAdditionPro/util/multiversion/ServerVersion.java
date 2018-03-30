@@ -1,8 +1,12 @@
 package de.photon.AACAdditionPro.util.multiversion;
 
+import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VersionControl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import us.myles.ViaVersion.api.ViaAPI;
 
 import java.util.Set;
 
@@ -47,5 +51,27 @@ public enum ServerVersion
     public static boolean supportsActiveServerVersion(Set<ServerVersion> supportedServerVersions)
     {
         return supportedServerVersions.contains(activeServerVersion);
+    }
+
+    /**
+     * Used to get the client version. Might only differ from {@link #getActiveServerVersion()} if ViaVersion is installed.
+     */
+    public static ServerVersion getClientServerVersion(final Player player)
+    {
+        if (player == null)
+        {
+            return activeServerVersion;
+        }
+
+        final ViaAPI<Player> viaAPI = AACAdditionPro.getInstance().getViaAPI();
+
+        if (viaAPI == null)
+        {
+            return activeServerVersion;
+        }
+        else
+        {
+            return VersionControl.getServerVersionFromProtocolVersion(viaAPI.getPlayerVersion(player));
+        }
     }
 }

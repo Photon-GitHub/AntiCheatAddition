@@ -126,7 +126,7 @@ public class ConfigurationRepresentation
                 switch ((ConfigActions) value)
                 {
                     case DELETE_KEYS:
-                        initialLine += " []";
+                        initialLine += " {}";
                         final short initialLineDepth = depth(initialLine);
                         int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> depth(line) <= initialLineDepth);
 

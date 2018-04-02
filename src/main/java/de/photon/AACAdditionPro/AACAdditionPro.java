@@ -55,9 +55,9 @@ import us.myles.ViaVersion.api.ViaAPI;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class AACAdditionPro extends JavaPlugin
 {
@@ -169,15 +169,15 @@ public class AACAdditionPro extends JavaPlugin
             {
                 VerboseSender.sendVerboseMessage("Server version is not supported.", true, true);
 
-                // Create a List of all the possible server versions
-                final List<String> possibleVersions = new ArrayList<>(ServerVersion.values().length);
-                for (ServerVersion serverVersion : ServerVersion.values())
-                {
-                    possibleVersions.add(serverVersion.getVersionOutputString());
-                }
-
                 // Print the complete message
-                VerboseSender.sendVerboseMessage("Supported versions:" + String.join(", ", possibleVersions), true, true);
+                VerboseSender.sendVerboseMessage(
+                        "Supported versions:" +
+                        String.join(
+                                // Versions should be divided by commas.
+                                ", ",
+                                // Create a List of all the possible server versions
+                                Arrays.stream(ServerVersion.values()).map(ServerVersion::getVersionOutputString).collect(Collectors.toList())),
+                        true, true);
                 return;
             }
 

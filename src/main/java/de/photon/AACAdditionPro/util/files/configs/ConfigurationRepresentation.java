@@ -27,7 +27,7 @@ public class ConfigurationRepresentation
     private final Map<String, Object> requestedChanges = new HashMap<>();
 
 
-    public ConfigurationRepresentation(File configFile, byte depthLevel)
+    public ConfigurationRepresentation(File configFile)
     {
         this.configFile = configFile;
         yamlConfiguration = YamlConfiguration.loadConfiguration(this.configFile);
@@ -126,7 +126,7 @@ public class ConfigurationRepresentation
                 switch ((ConfigActions) value)
                 {
                     case DELETE_KEYS:
-                        initialLine += " []";
+                        initialLine += " {}";
                         final short initialLineDepth = depth(initialLine);
                         int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> depth(line) <= initialLineDepth);
 

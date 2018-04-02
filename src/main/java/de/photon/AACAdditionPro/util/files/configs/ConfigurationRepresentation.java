@@ -27,7 +27,7 @@ public class ConfigurationRepresentation
     private final Map<String, Object> requestedChanges = new HashMap<>();
 
 
-    public ConfigurationRepresentation(File configFile, byte depthLevel)
+    public ConfigurationRepresentation(File configFile)
     {
         this.configFile = configFile;
         yamlConfiguration = YamlConfiguration.loadConfiguration(this.configFile);

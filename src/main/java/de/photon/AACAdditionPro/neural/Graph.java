@@ -85,7 +85,7 @@ public class Graph
      */
     public void train(final DataSet dataSet)
     {
-        
+
     }
 
     /**

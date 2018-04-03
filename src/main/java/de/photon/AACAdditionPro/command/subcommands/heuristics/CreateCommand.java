@@ -16,7 +16,6 @@ import java.util.Queue;
 
 public class CreateCommand extends InternalCommand
 {
-
     public CreateCommand()
     {
         super("create", InternalPermission.NEURAL_CREATE, (byte) 3);

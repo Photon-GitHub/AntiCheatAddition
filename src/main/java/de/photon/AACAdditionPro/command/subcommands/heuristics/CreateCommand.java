@@ -32,11 +32,12 @@ public class CreateCommand extends InternalCommand
                 sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
 
                 final String patternName = arguments.remove();
-                final Input.InputType[] inputTypes = Input.InputType.parseInputTypesFromArgument(arguments.remove());
 
                 final int epoch = Integer.valueOf(arguments.remove());
                 final double trainParameter = Double.valueOf(arguments.remove());
                 final double momentum = Double.valueOf(arguments.remove());
+
+                final Input.InputType[] inputTypes = Input.InputType.parseInputTypesFromArgument(arguments.remove());
 
                 if (InventoryHeuristics.getPATTERNS().stream().anyMatch(pattern -> pattern.getName().equals(patternName)))
                 {

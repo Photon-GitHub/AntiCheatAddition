@@ -1,8 +1,10 @@
-package de.photon.AACAdditionPro.heuristics;
+package de.photon.AACAdditionPro.oldheuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
+import de.photon.AACAdditionPro.neural.ActivationFunction;
+import de.photon.AACAdditionPro.neural.ActivationFunctions;
 import lombok.Getter;
 
 import java.io.Serializable;

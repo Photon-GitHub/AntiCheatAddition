@@ -1,112 +1,50 @@
 package de.photon.AACAdditionPro.heuristics;
 
-import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
+import de.photon.AACAdditionPro.neural.DataSet;
+import de.photon.AACAdditionPro.neural.Output;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-@Deprecated
+@AllArgsConstructor(suppressConstructorProperties = true)
 public abstract class Pattern
 {
-    // The version byte used for the serialization.
-    static final byte PATTERN_VERSION = 1;
-    public static final String[] VALID_OUTPUTS = new String[]{
-            "VANILLA",
-            "CHEATING"
+    public static final byte PATTERN_VERSION = 2;
+    public static Output[] LEGIT_OUTPUT = new Output[]{
+            new Output("cheating", 0),
+            new Output("vanilla", 1)
     };
 
-    // SERIALIZATION: CONTENT
     @Getter
     @Setter
     private String name;
-
-    // SERIALIZATION: CONTENT
-    @Getter
-    private InputData[] inputs;
-
-    protected Pattern(String name, InputData[] inputs)
-    {
-        this.name = name;
-        this.inputs = inputs;
-    }
+    private Input[] inputs;
 
     /**
-     * Prepares the calculation of the {@link Graph} by setting the values of the {@link InputData}s.
-     */
-    protected double[][] provideInputData(final Map<Character, InputData> providedInputs)
-    {
-        if (Objects.requireNonNull(providedInputs, "The input values of pattern " + this.getName() + " are null.").size() == 0)
-        {
-            throw new NeuralNetworkException("Illegal input size.");
-        }
-
-        int maxLength = 0;
-        for (InputData inputData : providedInputs.values())
-        {
-            if (inputData.getData().length > maxLength)
-            {
-                maxLength = inputData.getData().length;
-            }
-        }
-
-        // Convert the input data into a double tensor
-        final double[][] rawInputArray = new double[this.inputs.length][];
-
-        for (InputData providedInput : providedInputs.values())
-        {
-            // Copy important inputs
-            for (int inputIndex = 0; inputIndex < this.inputs.length; inputIndex++)
-            {
-                if (this.inputs[inputIndex].getName().equals(providedInput.getName()))
-                {
-                    // Assert the inputs have the same length.
-                    rawInputArray[inputIndex] = providedInput.getData();
-                }
-            }
-        }
-
-        // Flag invalid data sets.
-        final Set<Integer> invalidIndices = new HashSet<>();
-        //noinspection ForLoopReplaceableByForEach
-        for (int i = 0; i < rawInputArray.length; i++)
-        {
-            for (int j = 0; j < rawInputArray[i].length; j++)
-            {
-                if (rawInputArray[i][j] == Double.MIN_VALUE)
-                {
-                    // Flag the whole column for consistency
-                    invalidIndices.add(j);
-                }
-            }
-        }
-
-        // Make the invalid data consistent over the arrays.
-        final double[][] resultingInputArray = new double[this.inputs.length][maxLength];
-        for (int i = 0; i < rawInputArray.length; i++)
-        {
-            for (int j = 0; j < rawInputArray[i].length; j++)
-            {
-                // Set to 0 so that these values might not affect the detection.
-                resultingInputArray[i][j] = invalidIndices.contains(j) ? 0 : rawInputArray[i][j];
-            }
-        }
-
-        return resultingInputArray;
-    }
-
-    /**
-     * Make the pattern analyse the current input data.
+     * This updates a certain {@link Input}.
+     * If the desired {@link Input} is not present in this {@link Pattern} it will just be ignored.
      *
-     * @return the confidence for cheating or null if invalid data was provided.
+     * @param input the {@link Input} with the new data.
      */
-    public abstract double analyse(final Map<Character, InputData> inputData);
+    private void setInputData(final Input input)
+    {
+        for (Input internalInput : this.inputs)
+        {
+            if (internalInput.sameType(input))
+            {
+                internalInput.data = input.data;
+            }
+        }
+    }
 
     /**
-     * Additional weight multiplicand to make sure a close-to-zero {@link Pattern} has more impact than another.
+     * The actual analysis of the {@link Pattern} happens here.
+     * The {@link DataSet} inputs are sorted alphabetically, so that it correlates with the {@link de.photon.AACAdditionPro.heuristics.Input.InputType} enum.
+     */
+    public abstract Output[] analyse(final DataSet dataSet);
+
+    /**
+     * Additional weight multiplicand to make sure a close-to-zero {@link de.photon.AACAdditionPro.oldheuristics.Pattern} has more impact than another.
      */
     public abstract double getWeight();
 }

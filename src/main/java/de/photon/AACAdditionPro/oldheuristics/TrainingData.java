@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.heuristics;
+package de.photon.AACAdditionPro.oldheuristics;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.user.data;
 
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
-import de.photon.AACAdditionPro.heuristics.NeuralPattern;
+import de.photon.AACAdditionPro.oldheuristics.NeuralPattern;
 
 import java.util.DoubleSummaryStatistics;
 import java.util.Map;

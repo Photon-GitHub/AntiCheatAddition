@@ -1,5 +1,7 @@
-package de.photon.AACAdditionPro.heuristics;
+package de.photon.AACAdditionPro.oldheuristics;
 
+import de.photon.AACAdditionPro.neural.ActivationFunction;
+import de.photon.AACAdditionPro.neural.ActivationFunctions;
 import de.photon.AACAdditionPro.util.files.serialization.CompressedDataSerializer;
 import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataInputStream;
 

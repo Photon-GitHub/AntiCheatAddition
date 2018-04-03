@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.heuristics;
+package de.photon.AACAdditionPro.oldheuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;

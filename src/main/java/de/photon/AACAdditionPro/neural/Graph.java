@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.neural;
 
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
-import de.photon.AACAdditionPro.heuristics.ActivationFunction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -181,7 +180,7 @@ public class Graph
     }
 
     /**
-     * Calculate the current {@link de.photon.AACAdditionPro.heuristics.Graph}.
+     * Calculate the current {@link de.photon.AACAdditionPro.oldheuristics.Graph}.
      * Prior to this method call the input neurons should be set.
      *
      * @return the value of all output neurons.

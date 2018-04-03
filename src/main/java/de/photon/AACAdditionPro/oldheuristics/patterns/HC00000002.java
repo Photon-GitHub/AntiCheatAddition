@@ -1,7 +1,7 @@
-package de.photon.AACAdditionPro.heuristics.patterns;
+package de.photon.AACAdditionPro.oldheuristics.patterns;
 
-import de.photon.AACAdditionPro.heuristics.InputData;
-import de.photon.AACAdditionPro.heuristics.Pattern;
+import de.photon.AACAdditionPro.oldheuristics.InputData;
+import de.photon.AACAdditionPro.oldheuristics.Pattern;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.event.inventory.ClickType;
 

@@ -1,4 +1,6 @@
-package de.photon.AACAdditionPro.heuristics;
+package de.photon.AACAdditionPro.neural;
+
+import de.photon.AACAdditionPro.oldheuristics.Graph;
 
 public interface ActivationFunction
 {

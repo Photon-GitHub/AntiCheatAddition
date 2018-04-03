@@ -61,16 +61,16 @@ public class CreateCommand extends InternalCommand
 
                     sender.sendMessage(ChatColor.GOLD + "Created new pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " with " + hiddenLayerConfig.length + " hidden layers and " + inputTypes.length + " inputs.");
 
-                    InventoryHeuristics.getPATTERNS().add(new NeuralPattern(name, inputTypes, Graph.builder()
-                                                                                                   .setEpoch(epoch)
-                                                                                                   .setTrainParameter(trainParameter)
-                                                                                                   .setMomentum(momentum)
-                                                                                                   .setInputNeurons(InventoryClick.SAMPLES * inputTypes.length)
-                                                                                                   .addHiddenLayers(hiddenLayerConfig)
-                                                                                                   .addOutput("vanilla")
-                                                                                                   .addOutput("cheating")
-                                                                                                   .setActivationFunction(ActivationFunctions.HYPERBOLIC_TANGENT)
-                                                                                                   .build()));
+                    InventoryHeuristics.getPATTERNS().add(new NeuralPattern(patternName, inputTypes, Graph.builder()
+                                                                                                          .setEpoch(epoch)
+                                                                                                          .setTrainParameter(trainParameter)
+                                                                                                          .setMomentum(momentum)
+                                                                                                          .setInputNeurons(InventoryClick.SAMPLES * inputTypes.length)
+                                                                                                          .addHiddenLayers(hiddenLayerConfig)
+                                                                                                          .addOutput("vanilla")
+                                                                                                          .addOutput("cheating")
+                                                                                                          .setActivationFunction(ActivationFunctions.HYPERBOLIC_TANGENT)
+                                                                                                          .build()));
                 }
             } catch (NumberFormatException exception)
             {

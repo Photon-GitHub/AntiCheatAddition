@@ -5,7 +5,6 @@ import de.photon.AACAdditionPro.neural.ActivationFunction;
 import de.photon.AACAdditionPro.neural.ActivationFunctions;
 import de.photon.AACAdditionPro.neural.Graph;
 import de.photon.AACAdditionPro.neural.Output;
-import de.photon.AACAdditionPro.oldheuristics.PatternDeserializer;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.serialization.CompressedDataSerializer;
 import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataInputStream;
@@ -235,7 +234,7 @@ public class NeuralPattern extends Pattern
         final Set<NeuralPattern> neuralPatterns = new HashSet<>();
         try
         {
-            final File jarFile = new File(PatternDeserializer.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            final File jarFile = new File(NeuralPattern.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
             try (JarFile pluginFile = new JarFile(jarFile))
             {
                 final Enumeration<JarEntry> entries = pluginFile.entries();

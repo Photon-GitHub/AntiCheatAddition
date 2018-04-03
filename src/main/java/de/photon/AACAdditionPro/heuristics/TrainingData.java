@@ -6,6 +6,7 @@ import lombok.Getter;
 import java.util.Objects;
 import java.util.UUID;
 
+@Deprecated
 @AllArgsConstructor(suppressConstructorProperties = true)
 public class TrainingData
 {

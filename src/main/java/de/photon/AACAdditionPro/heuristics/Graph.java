@@ -12,6 +12,7 @@ import java.util.Arrays;
  * The graph of a neural network including the matrix.
  * This class is {@link Serializable} to allow easy saving of the data.
  */
+@Deprecated
 public class Graph
 {
     private static final double TRAIN_PARAMETER = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.train_parameter");

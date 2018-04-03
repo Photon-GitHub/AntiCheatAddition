@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.neural;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 import de.photon.AACAdditionPro.heuristics.ActivationFunction;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -298,18 +297,6 @@ public class Graph
         OUTPUT
     }
 
-    public static void serialize(final File file)
-    {
-
-        //TODO: DESERIALIZATION / SERIALIZATION.
-    }
-
-    public static Graph deserialize(final File file)
-    {
-        //TODO: DESERIALIZATION / SERIALIZATION.
-        return null;
-    }
-
     /**
      * Creates a new {@link GraphBuilder} to create a {@link Graph}.
      */
@@ -388,6 +375,22 @@ public class Graph
         public void addHiddenLayer(int neurons)
         {
             this.hiddenNeurons.add(neurons);
+        }
+
+        /**
+         * Adds multiple hidden layers to the {@link Graph}.
+         */
+        public void addHiddenLayers(Integer... neurons)
+        {
+            this.addHiddenLayers(Arrays.asList(neurons));
+        }
+
+        /**
+         * Adds multiple hidden layers to the {@link Graph}.
+         */
+        public void addHiddenLayers(List<Integer> neurons)
+        {
+            this.hiddenNeurons.addAll(neurons);
         }
 
         /**

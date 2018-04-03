@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+@Deprecated
 public abstract class Pattern
 {
     // The version byte used for the serialization.

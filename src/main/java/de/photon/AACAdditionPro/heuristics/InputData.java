@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.util.HashMap;
 
+@Deprecated
 public class InputData extends Data
 {
     public static final HashMap<Character, InputData> VALID_INPUTS;

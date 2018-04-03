@@ -76,21 +76,6 @@ public class Graph
         }
     }
 
-    private void setInputs(final double[] inputs)
-    {
-        // Check lenght of data.
-        if (inputs.length != this.neuronsInLayers[0])
-        {
-            throw new IllegalArgumentException("Wrong input length for Graph. Expected: " + this.neuronsInLayers[0] + " | Real: " + inputs.length);
-        }
-
-        // Clear old data
-        this.resetCalculationArrays();
-
-        // Copy all inputs into neurons.
-        System.arraycopy(inputs, 0, this.neurons, 0, inputs.length);
-    }
-
     /**
      * Evaluates a certain {@link DataSet}.
      * If the {@link DataSet} has multiple samples the {@link Graph} will calculate all of them and take the average.
@@ -106,8 +91,7 @@ public class Graph
 
         for (double[] sample : dataSet)
         {
-            this.setInputs(sample);
-            double[] sampleConfidences = calculate();
+            double[] sampleConfidences = calculate(sample);
 
             // Add the sampleConfidences.
             for (int i = 0; i < confidences.length; i++)
@@ -142,8 +126,7 @@ public class Graph
         {
             for (double[] sample : dataSet)
             {
-                this.setInputs(sample);
-                calculate();
+                calculate(sample);
                 // The delta values are only important in this training cycle.
                 final double[] deltas = new double[neurons.length];
 
@@ -203,8 +186,22 @@ public class Graph
      *
      * @return the value of all output neurons.
      */
-    private double[] calculate()
+    private double[] calculate(final double[] inputs)
     {
+        // Set the inputs
+        // Check lenght of data.
+        if (inputs.length != this.neuronsInLayers[0])
+        {
+            throw new IllegalArgumentException("Wrong input length for Graph. Expected: " + this.neuronsInLayers[0] + " | Real: " + inputs.length);
+        }
+
+        // Clear old data
+        this.resetCalculationArrays();
+
+        // Copy all inputs into neurons.
+        System.arraycopy(inputs, 0, this.neurons, 0, inputs.length);
+
+        // Actually calculate
         // Perform all the adding
         for (int currentNeuron = 0; currentNeuron < this.matrix.length; currentNeuron++)
         {

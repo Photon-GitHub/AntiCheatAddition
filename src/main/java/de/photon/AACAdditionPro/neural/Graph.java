@@ -1,16 +1,32 @@
 package de.photon.AACAdditionPro.neural;
 
-import java.util.Map;
-import java.util.function.DoubleFunction;
+import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
+import de.photon.AACAdditionPro.heuristics.ActivationFunction;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class Graph
 {
-    private Map<Integer, Output> outputs;
-    private int epoch;
-    private Double[][] matrix;
-    private double[] activatedNeurons;
-    private int[] neuronsInLayers;
-    private DoubleFunction<Double> activationFunction;
+    // Constants
+    private final int epoch;
+    private final double trainParameter;
+    private final double momentum;
+
+    // Activation function
+    private final ActivationFunction activationFunction;
+
+    // Neurons
+    private final int[] neuronsInLayers;
+    private final Output[] outputs;
+
+    // Matrix
+    private final Double[][] matrix;
+    // Calculation
+    private final double[] neurons;
+    private final double[] activatedNeurons;
 
     private Output[] evaluate(final DataSet dataSet)
     {
@@ -22,8 +38,132 @@ public class Graph
 
     }
 
+    public Graph(int epoch, double trainParameter, double momentum, ActivationFunction activationFunction, int[] neuronsInLayers, Output[] outputs, int totalNeurons)
+    {
+        this.epoch = epoch;
+        this.trainParameter = trainParameter;
+        this.momentum = momentum;
+        this.activationFunction = activationFunction;
+        this.neuronsInLayers = neuronsInLayers;
+        this.outputs = outputs;
+        this.matrix = new Double[totalNeurons][totalNeurons];
+        this.neurons = new double[totalNeurons];
+        this.activatedNeurons = new double[totalNeurons];
+    }
+
+    /**
+     * Builds a {@link Graph}.
+     */
     private class GraphBuilder
     {
+        // Constants
+        private Integer epoch = null;
+        private Double trainParameter = null;
+        // Momentum might not be used -> default to 0
+        private double momentum = 0;
 
+        // Activation function
+        private ActivationFunction activationFunction = null;
+
+        private Integer inputNeurons = null;
+        private List<Integer> hiddenNeurons = new ArrayList<>();
+        private List<Output> outputs = new ArrayList<>();
+
+        /**
+         * Sets how often a certain {@link DataSet} is trained during training.
+         * High epoch {@link Graph}s will learn faster, but might be more focused on one {@link DataSet}.
+         */
+        public void setEpoch(int epoch)
+        {
+            this.epoch = epoch;
+        }
+
+        /**
+         * Determines how much a single training will effect a connection.
+         * High train parameter networks will learn fast, but might miss the optimal solution.
+         */
+        public void setTrainParameter(double trainParameter)
+        {
+            this.trainParameter = trainParameter;
+        }
+
+        /**
+         * Determines how much the last connection change will effect this connection change.
+         * Too low momentum means that the {@link Graph} may only find a local minimum, too high momentum will prevent
+         * all learning.
+         */
+        public void setMomentum(double momentum)
+        {
+            this.momentum = momentum;
+        }
+
+        /**
+         * The activation function of the {@link Graph}.
+         */
+        public void setActivationFunction(ActivationFunction activationFunction)
+        {
+            this.activationFunction = activationFunction;
+        }
+
+        /**
+         * How many inputs will the {@link Graph} have?
+         */
+        public void setInputNeurons(int inputNeurons)
+        {
+            this.inputNeurons = inputNeurons;
+        }
+
+        /**
+         * Adds a hidden layer to the {@link Graph}.
+         *
+         * @param neurons The neuron count of the hidden layer.
+         */
+        public void addHiddenLayer(int neurons)
+        {
+            this.hiddenNeurons.add(neurons);
+        }
+
+        /**
+         * Adds a new {@link Output} to the {@link Graph}.
+         */
+        public void addOutput(String label)
+        {
+            this.outputs.add(new Output(label, 0));
+        }
+
+        /**
+         * Builds the {@link Graph}.
+         */
+        public Graph build()
+        {
+            // Input and Output layer + hidden layers
+            final int[] layers = new int[2 + this.hiddenNeurons.size()];
+            // Inputs
+            layers[0] = Objects.requireNonNull(this.inputNeurons, "Tried to create Graph without input neurons.");
+
+            // Hidden layers
+            if (!this.hiddenNeurons.isEmpty())
+            {
+                // Copy all layers.
+                System.arraycopy(this.hiddenNeurons.toArray(new Integer[0]), 0, layers, 1, this.hiddenNeurons.size());
+            }
+
+            if (this.outputs.isEmpty())
+            {
+                throw new NeuralNetworkException("Tried to create Graph without output neurons.");
+            }
+
+            // Output layers.
+            layers[layers.length - 1] = this.outputs.size();
+
+            return new Graph(
+                    Objects.requireNonNull(this.epoch, "Tried to create Graph without epoch."),
+                    Objects.requireNonNull(this.trainParameter, "Tried to create Graph without train parameter."),
+                    this.momentum,
+                    Objects.requireNonNull(this.activationFunction, "Tried to create Graph without activation function."),
+                    layers,
+                    this.outputs.toArray(new Output[0]),
+                    Arrays.stream(layers).sum());
+        }
     }
 }

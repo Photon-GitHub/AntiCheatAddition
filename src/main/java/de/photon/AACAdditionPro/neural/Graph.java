@@ -211,6 +211,7 @@ public class Graph
      *
      * @return the value of all output neurons.
      */
+    //TODO: THE INPUTS HERE ARE NOT CONNECTED TO THE PREVIOUS / NEXT INPUTS. JUST ONE INPUT IS DELIVERED.
     private double[] calculate(final double[] inputs)
     {
         // Set the inputs

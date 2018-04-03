@@ -75,7 +75,7 @@ public abstract class Pattern
     public abstract Output[] evaluate();
 
     /**
-     * Additional weight multiplicand to make sure a close-to-zero {@link de.photon.AACAdditionPro.oldheuristics.Pattern} has more impact than another.
+     * Additional weight multiplicand to make sure a close-to-zero {@link Pattern} has more impact than another.
      */
     public abstract double getWeight();
 }

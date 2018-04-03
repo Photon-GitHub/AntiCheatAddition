@@ -206,7 +206,7 @@ public class Graph
     }
 
     /**
-     * Calculate the current {@link de.photon.AACAdditionPro.oldheuristics.Graph}.
+     * Calculate the current {@link Graph}.
      * Prior to this method call the input neurons should be set.
      *
      * @return the value of all output neurons.

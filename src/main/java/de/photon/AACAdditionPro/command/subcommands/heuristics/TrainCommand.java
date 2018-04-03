@@ -4,9 +4,9 @@ import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
-import de.photon.AACAdditionPro.oldheuristics.NeuralPattern;
-import de.photon.AACAdditionPro.oldheuristics.Pattern;
-import de.photon.AACAdditionPro.oldheuristics.TrainingData;
+import de.photon.AACAdditionPro.heuristics.NeuralPattern;
+import de.photon.AACAdditionPro.heuristics.Pattern;
+import de.photon.AACAdditionPro.neural.Output;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
@@ -15,6 +15,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.Queue;
 
 public class TrainCommand extends InternalCommand
@@ -50,68 +51,37 @@ public class TrainCommand extends InternalCommand
                 final NeuralPattern neuralPattern = (NeuralPattern) pattern;
 
                 // Next argument
-                final String playerOrFinishArgument = arguments.remove();
+                final Player trainingPlayer = Bukkit.getServer().getPlayer(arguments.remove());
 
-                if (playerOrFinishArgument.equalsIgnoreCase("finish"))
+                if (trainingPlayer == null)
                 {
-                    neuralPattern.train();
-                    sender.sendMessage(ChatColor.GOLD + "Pattern " + ChatColor.RED + neuralPattern.getName() + ChatColor.GOLD + " is now training.");
-                    sender.sendMessage(ChatColor.GOLD + "Please watch the verbose - messages to see the end of training.");
+                    sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
+                    return;
                 }
-                else
+
+                final User user = UserManager.getUser(trainingPlayer.getUniqueId());
+
+                // Not bypassed
+                if (user == null)
                 {
-                    final Player trainingPlayer = Bukkit.getServer().getPlayer(playerOrFinishArgument);
+                    sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
+                    return;
+                }
 
-                    if (trainingPlayer == null)
-                    {
-                        sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
-                        return;
-                    }
+                final String label = arguments.remove();
 
-                    final User user = UserManager.getUser(trainingPlayer.getUniqueId());
-
-                    // Not bypassed
-                    if (user == null)
-                    {
-                        sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
-                        return;
-                    }
-
-                    final String output = arguments.remove().toUpperCase();
-
-                    for (String outputDataName : NeuralPattern.VALID_OUTPUTS)
-                    {
-                        if (outputDataName.equals(output))
-                        {
-                            user.getInventoryData().inventoryClicks.clear();
-
-                            final TrainingData trainingData = new TrainingData(trainingPlayer.getUniqueId(), outputDataName);
-
-                            // Override previous choices.
-                            neuralPattern.getTrainingDataSet().remove(trainingData);
-                            neuralPattern.getTrainingDataSet().add(trainingData);
-
-                            final String messageString = ChatColor.GOLD + "[HEURISTICS] Training " + ChatColor.RED + patternName +
-                                                         ChatColor.GOLD + " | Player: " + ChatColor.RED + trainingPlayer.getName() +
-                                                         ChatColor.GOLD + " | Output: " + ChatColor.RED + output;
-
-                            sender.sendMessage(messageString);
-                            // .substring(13) to remove the [HEURISTICS] label.
-                            VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString).substring(13));
-                            return;
-                        }
-                    }
-
-                    sender.sendMessage(ChatColor.GOLD + "Output \"" + ChatColor.RED + output + ChatColor.GOLD + "\"" + " is not allowed.");
+                if (Arrays.stream(Pattern.LEGIT_OUTPUT).noneMatch(possibleOutput -> possibleOutput.getLabel().equals(label)))
+                {
+                    sender.sendMessage(ChatColor.GOLD + "Output \"" + ChatColor.RED + label + ChatColor.GOLD + "\"" + " is not allowed.");
 
                     final StringBuilder sb = new StringBuilder();
                     sb.append(ChatColor.GOLD);
                     sb.append("Allowed outputs: ");
 
-                    for (String outputDataName : NeuralPattern.VALID_OUTPUTS)
+                    for (Output output : NeuralPattern.LEGIT_OUTPUT)
                     {
                         sb.append(ChatColor.RED);
-                        sb.append(outputDataName);
+                        sb.append(output.getLabel());
                         sb.append(ChatColor.GOLD);
                         sb.append(" | ");
                     }
@@ -119,7 +89,19 @@ public class TrainCommand extends InternalCommand
                     // Delete the last " | ".
                     sb.delete(sb.length() - 2, sb.length());
                     sender.sendMessage(sb.toString());
+                    return;
                 }
+
+                user.getInventoryHeuristicsData().trainedPattern = neuralPattern;
+                user.getInventoryHeuristicsData().trainingLabel = label;
+
+                final String messageString = ChatColor.GOLD + "[HEURISTICS] Training " + ChatColor.RED + patternName +
+                                             ChatColor.GOLD + " | Player: " + ChatColor.RED + trainingPlayer.getName() +
+                                             ChatColor.GOLD + " | Output: " + ChatColor.RED + label;
+
+                sender.sendMessage(messageString);
+                // .substring(13) to remove the [HEURISTICS] label.
+                VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString).substring(13));
             }
         }
         else

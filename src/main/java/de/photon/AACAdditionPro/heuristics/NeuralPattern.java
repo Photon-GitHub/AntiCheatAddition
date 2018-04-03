@@ -10,6 +10,7 @@ import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.serialization.CompressedDataSerializer;
 import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataInputStream;
 import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataOutputStream;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class NeuralPattern extends Pattern
 {
     private static final File HEURISTICS_FOLDER = new File(AACAdditionPro.getInstance().getDataFolder(), "heuristics");
 
+    @Getter
     private final Graph graph;
     private Thread trainingThread = null;
 

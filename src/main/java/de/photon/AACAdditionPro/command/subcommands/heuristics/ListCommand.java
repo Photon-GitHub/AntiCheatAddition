@@ -5,13 +5,12 @@ import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
-import de.photon.AACAdditionPro.oldheuristics.InputData;
-import de.photon.AACAdditionPro.oldheuristics.NeuralPattern;
-import de.photon.AACAdditionPro.oldheuristics.Pattern;
+import de.photon.AACAdditionPro.heuristics.NeuralPattern;
+import de.photon.AACAdditionPro.heuristics.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Map;
+import java.util.Iterator;
 import java.util.Queue;
 
 public class ListCommand extends InternalCommand
@@ -37,8 +36,17 @@ public class ListCommand extends InternalCommand
                 messageBuilder.append("Active heuristics: ");
                 messageBuilder.append(ChatColor.RED);
 
-                for (Pattern pattern : InventoryHeuristics.getPATTERNS())
+                final Iterator<Pattern> iterator = InventoryHeuristics.getPATTERNS().iterator();
+                Pattern pattern = null;
+                while (iterator.hasNext())
                 {
+                    // Prevent adding a comma at the very beginning of the enumeration.
+                    if (pattern != null)
+                    {
+                        messageBuilder.append(", ");
+                    }
+
+                    pattern = iterator.next();
                     // New line
                     messageBuilder.append("\n");
 
@@ -56,7 +64,7 @@ public class ListCommand extends InternalCommand
 
                         // Subtract the input neurons and the output neuron
                         final int[] neuronsInLayers = neuralPattern.getGraph().getNeuronsInLayers();
-                        messageBuilder.append(neuralPattern.getGraph().getNeurons().length - (neuronsInLayers[0] + neuronsInLayers[neuronsInLayers.length - 1]));
+                        messageBuilder.append(neuralPattern.getGraph().getMatrix().length - (neuronsInLayers[0] + neuronsInLayers[neuronsInLayers.length - 1]));
                         messageBuilder.append(" hidden Neurons");
 
                         messageBuilder.append(" | ");
@@ -68,29 +76,6 @@ public class ListCommand extends InternalCommand
 
                         messageBuilder.append(" | ");
                     }
-
-                    // Inputs
-                    for (InputData inputData : pattern.getInputs())
-                    {
-                        // Find the character in the map.
-                        for (Map.Entry<Character, InputData> characterInputDataEntry : InputData.VALID_INPUTS.entrySet())
-                        {
-                            if (characterInputDataEntry.getValue().getName().equals(inputData.getName()))
-                            {
-                                // Write correct char
-                                messageBuilder.append(characterInputDataEntry.getKey());
-                                break;
-                            }
-                        }
-                    }
-
-                    messageBuilder.append(", ");
-                }
-
-                // Delete the last comma and space
-                for (int i = 0; i < 2; i++)
-                {
-                    messageBuilder.deleteCharAt(messageBuilder.length() - 1);
                 }
 
                 sender.sendMessage(messageBuilder.toString());

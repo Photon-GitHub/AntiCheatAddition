@@ -4,7 +4,7 @@ import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
-import de.photon.AACAdditionPro.oldheuristics.Pattern;
+import de.photon.AACAdditionPro.heuristics.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 

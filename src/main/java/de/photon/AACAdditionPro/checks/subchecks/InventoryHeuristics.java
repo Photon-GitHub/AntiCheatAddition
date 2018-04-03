@@ -140,6 +140,8 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     user.getInventoryHeuristicsData().trainedPattern.getName().equals(pattern.getName()))
                 {
                     ((NeuralPattern) pattern).train(user.getInventoryHeuristicsData().trainingLabel);
+                    user.getInventoryHeuristicsData().trainingLabel = null;
+                    user.getInventoryHeuristicsData().trainedPattern = null;
                 }
                 // Evaluation only
                 else

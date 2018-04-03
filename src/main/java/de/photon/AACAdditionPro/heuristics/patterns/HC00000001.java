@@ -30,7 +30,7 @@ public class HC00000001 extends Pattern
     @Override
     public Output[] evaluate()
     {
-        final DataSet dataSet = this.createDataSetFromInputs();
+        final DataSet dataSet = this.createDataSetFromInputs(null);
 
         // Use a offset sum to detect too consistent clicking.
         // orElse(0) is ok as the steam (and thus the array) must be empty to reach this part of code.

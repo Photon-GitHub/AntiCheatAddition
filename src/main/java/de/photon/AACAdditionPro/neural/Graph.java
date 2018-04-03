@@ -28,14 +28,96 @@ public class Graph
     private final double[] neurons;
     private final double[] activatedNeurons;
 
-    private Output[] evaluate(final DataSet dataSet)
+    private void setInputs(final double[] inputs)
     {
-        return null;
+        // Check lenght of data.
+        if (inputs.length != this.neuronsInLayers[0])
+        {
+            throw new IllegalArgumentException("Wrong input length for Graph. Expected: " + this.neuronsInLayers[0] + " | Real: " + inputs.length);
+        }
+
+        // Clear old data
+        this.resetCalculationArrays();
+
+        // Copy all inputs into neurons.
+        System.arraycopy(inputs, 0, this.neurons, 0, inputs.length);
     }
 
-    private void train(final DataSet dataSet)
+    /**
+     * Evaluates a certain {@link DataSet}.
+     * If the {@link DataSet} has multiple samples the {@link Graph} will calculate all of them and take the average.
+     */
+    public Output[] evaluate(final DataSet dataSet)
     {
+        if (dataSet.hasLabel())
+        {
+            throw new NeuralNetworkException("Tried to evaluate DataSet with label.");
+        }
 
+        final double[] confidences = new double[outputs.length];
+
+        for (double[] sample : dataSet)
+        {
+            this.setInputs(sample);
+            double[] sampleConfidences = calculate();
+
+            // Add the sampleConfidences.
+            for (int i = 0; i < confidences.length; i++)
+            {
+                confidences[i] += sampleConfidences[i];
+            }
+        }
+
+        final Output[] currentOutputs = new Output[this.outputs.length];
+
+        // Divide the confidences by sample count
+        for (int i = 0; i < confidences.length; i++)
+        {
+            confidences[i] /= dataSet.sampleCount();
+            currentOutputs[i] = this.outputs[i].newConfidenceOutput(confidences[i]);
+        }
+
+        return currentOutputs;
+    }
+
+    /**
+     * Trains the neural network.
+     */
+    public void train(final DataSet dataSet)
+    {
+        
+    }
+
+    /**
+     * Calculate the current {@link de.photon.AACAdditionPro.heuristics.Graph}.
+     * Prior to this method call the input neurons should be set.
+     *
+     * @return the value of all output neurons.
+     */
+    private double[] calculate()
+    {
+        // Perform all the adding
+        for (int currentNeuron = 0; currentNeuron < this.matrix.length; currentNeuron++)
+        {
+            // Activation function
+            this.activatedNeurons[currentNeuron] = activationFunction.applyActivationFunction(this.neurons[currentNeuron]);
+
+            // Forward - pass of the values
+            // "to" will never be smaller or equal to "currentNeuron" as of the layer principle.
+            for (int to = currentNeuron; to < this.matrix.length; to++)
+            {
+                // Forbid a connection in null - values
+                if (matrix[currentNeuron][to] != null)
+                {
+                    this.neurons[to] += (this.activatedNeurons[currentNeuron] * this.matrix[currentNeuron][to]);
+                }
+            }
+        }
+
+        // return all
+        final double[] confidences = new double[this.outputs.length];
+        System.arraycopy(this.activatedNeurons, this.activatedNeurons.length - this.outputs.length, confidences, 0, this.outputs.length);
+        return confidences;
     }
 
     public Graph(int epoch, double trainParameter, double momentum, ActivationFunction activationFunction, int[] neuronsInLayers, Output[] outputs, int totalNeurons)
@@ -49,6 +131,106 @@ public class Graph
         this.matrix = new Double[totalNeurons][totalNeurons];
         this.neurons = new double[totalNeurons];
         this.activatedNeurons = new double[totalNeurons];
+
+        // Invalidate every connection
+        for (int i = 0; i < this.matrix.length; i++)
+        {
+            for (int j = 0; j < matrix.length; j++)
+            {
+                this.matrix[i][j] = null;
+            }
+        }
+
+        int currentNeuron = 0;
+        int nextLayerFirstNeuron;
+        int nextNextLayerFirstNeuron = this.neuronsInLayers[0];
+
+        // Do not iterate over the last layer as output neurons do not need any additional connections.
+        for (int layer = 1; layer < this.neuronsInLayers.length; layer++)
+        {
+            nextLayerFirstNeuron = nextNextLayerFirstNeuron;
+            nextNextLayerFirstNeuron += this.neuronsInLayers[layer];
+
+            while (currentNeuron < nextLayerFirstNeuron)
+            {
+                for (int to = nextLayerFirstNeuron; to < nextNextLayerFirstNeuron; to++)
+                {
+                    // Validate allowed connections.
+                    this.matrix[currentNeuron][to] = 0D;
+                }
+
+                // Increment the neuron here as the matrix otherwise sets the connections of the next neuron.
+                currentNeuron++;
+            }
+        }
+    }
+
+    /**
+     * Resets all values in neurons and activatedNeurons.
+     */
+    private void resetCalculationArrays()
+    {
+        for (int i = 0; i < neurons.length; i++)
+        {
+            neurons[i] = 0;
+            activatedNeurons[i] = 0;
+        }
+    }
+
+    /**
+     * @return an array of integers. <br>
+     * [0] -> the start index of the next layer <br>
+     * [1] -> the end index of the next layer
+     */
+    private int[] nextLayerIndexBoundaries(int index)
+    {
+        // 0 is the correct start here as the first layer starts at 0.
+        int startingIndex = 0;
+
+        // The OutputNeurons should not be used / throw an exception, which is guaranteed via < length.
+        for (int i = 0; i < neuronsInLayers.length; i++)
+        {
+            startingIndex += neuronsInLayers[i];
+
+            if (startingIndex > index)
+            {
+                // - 1 as the algorithm first of all calculates the starting index of the next layer and the ending
+                // index is that starting index - 1
+                return new int[]{startingIndex, startingIndex + (neuronsInLayers[i + 1] - 1)};
+            }
+        }
+        throw new NeuralNetworkException("Cannot identify the next layer of neuron " + index + " out of " + matrix.length);
+    }
+
+    /**
+     * Determines whether a neuron is an input neuron, a hidden neuron or an output neuron
+     *
+     * @param indexOfNeuron the index of the neuron which should be classified (index of the matrix).
+     */
+    private NeuronType classifyNeuron(int indexOfNeuron)
+    {
+        if (indexOfNeuron < neuronsInLayers[0])
+        {
+            return NeuronType.INPUT;
+        }
+
+        // Only the last neuron is output.
+        if (indexOfNeuron == neurons.length - 1)
+        {
+            return NeuronType.OUTPUT;
+        }
+
+        return NeuronType.HIDDEN;
+    }
+
+    /**
+     * Classifier of a neuron
+     */
+    private enum NeuronType
+    {
+        INPUT,
+        HIDDEN,
+        OUTPUT
     }
 
     /**

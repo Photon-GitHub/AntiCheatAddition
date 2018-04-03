@@ -34,6 +34,14 @@ public class DataSet implements Iterable<double[]>
         return this.label != null;
     }
 
+    /**
+     * @return how many samples this {@link DataSet} contains.
+     */
+    public int sampleCount()
+    {
+        return this.data.length;
+    }
+
     @Override
     public Iterator<double[]> iterator()
     {

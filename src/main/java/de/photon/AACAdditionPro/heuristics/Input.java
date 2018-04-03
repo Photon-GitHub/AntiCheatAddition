@@ -41,7 +41,7 @@ public class Input
          *
          * @param argument the {@link String} containing all the key-{@link String}s of {@link InputType}s.
          */
-        public InputType[] parseInputTypesFromArgument(final String argument)
+        public static InputType[] parseInputTypesFromArgument(final String argument)
         {
             final List<InputType> inputTypes = new ArrayList<>();
             for (InputType inputType : InputType.values())

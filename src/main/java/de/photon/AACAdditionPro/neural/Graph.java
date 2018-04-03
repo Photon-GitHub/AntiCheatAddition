@@ -349,18 +349,20 @@ public class Graph
          * Sets how often a certain {@link DataSet} is trained during training.
          * High epoch {@link Graph}s will learn faster, but might be more focused on one {@link DataSet}.
          */
-        public void setEpoch(int epoch)
+        public GraphBuilder setEpoch(int epoch)
         {
             this.epoch = epoch;
+            return this;
         }
 
         /**
          * Determines how much a single training will effect a connection.
          * High train parameter networks will learn fast, but might miss the optimal solution.
          */
-        public void setTrainParameter(double trainParameter)
+        public GraphBuilder setTrainParameter(double trainParameter)
         {
             this.trainParameter = trainParameter;
+            return this;
         }
 
         /**
@@ -368,25 +370,28 @@ public class Graph
          * Too low momentum means that the {@link Graph} may only find a local minimum, too high momentum will prevent
          * all learning.
          */
-        public void setMomentum(double momentum)
+        public GraphBuilder setMomentum(double momentum)
         {
             this.momentum = momentum;
+            return this;
         }
 
         /**
          * The activation function of the {@link Graph}.
          */
-        public void setActivationFunction(ActivationFunction activationFunction)
+        public GraphBuilder setActivationFunction(ActivationFunction activationFunction)
         {
             this.activationFunction = activationFunction;
+            return this;
         }
 
         /**
          * How many inputs will the {@link Graph} have?
          */
-        public void setInputNeurons(int inputNeurons)
+        public GraphBuilder setInputNeurons(int inputNeurons)
         {
             this.inputNeurons = inputNeurons;
+            return this;
         }
 
         /**
@@ -394,33 +399,31 @@ public class Graph
          *
          * @param neurons The neuron count of the hidden layer.
          */
-        public void addHiddenLayer(int neurons)
+        public GraphBuilder addHiddenLayer(int neurons)
         {
             this.hiddenNeurons.add(neurons);
+            return this;
         }
 
         /**
          * Adds multiple hidden layers to the {@link Graph}.
          */
-        public void addHiddenLayers(Integer... neurons)
+        public GraphBuilder addHiddenLayers(int... neurons)
         {
-            this.addHiddenLayers(Arrays.asList(neurons));
-        }
-
-        /**
-         * Adds multiple hidden layers to the {@link Graph}.
-         */
-        public void addHiddenLayers(List<Integer> neurons)
-        {
-            this.hiddenNeurons.addAll(neurons);
+            for (int neuron : neurons)
+            {
+                this.addHiddenLayer(neuron);
+            }
+            return this;
         }
 
         /**
          * Adds a new {@link Output} to the {@link Graph}.
          */
-        public void addOutput(String label)
+        public GraphBuilder addOutput(String label)
         {
             this.outputs.add(new Output(label, 0));
+            return this;
         }
 
         /**

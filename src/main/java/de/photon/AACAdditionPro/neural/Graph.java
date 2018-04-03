@@ -138,56 +138,59 @@ public class Graph
             throw new NeuralNetworkException("Tried to train DataSet without label.");
         }
 
-        for (double[] sample : dataSet)
+        for (int i = 0; i < epoch; i++)
         {
-            this.setInputs(sample);
-            calculate();
-            // The delta values are only important in this training cycle.
-            final double[] deltas = new double[neurons.length];
-
-            for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
+            for (double[] sample : dataSet)
             {
-                // Wikipedia's alternative solution: deltas[currentNeuron] = activatedNeurons[currentNeuron] * (1 - activatedNeurons[currentNeuron]);
-                deltas[currentNeuron] = activationFunction.applyDerivedActivationFunction(neurons[currentNeuron]);
+                this.setInputs(sample);
+                calculate();
+                // The delta values are only important in this training cycle.
+                final double[] deltas = new double[neurons.length];
 
-                // Deltas depend on the neuron class.
-                switch (this.classifyNeuron(currentNeuron))
+                for (int currentNeuron = matrix.length - 1; currentNeuron >= 0; currentNeuron--)
                 {
-                    case INPUT:
-                        break;
-                    case HIDDEN:
-                        double sum = 0;
-                        final int[] indices = nextLayerIndexBoundaries(currentNeuron);
+                    // Wikipedia's alternative solution: deltas[currentNeuron] = activatedNeurons[currentNeuron] * (1 - activatedNeurons[currentNeuron]);
+                    deltas[currentNeuron] = activationFunction.applyDerivedActivationFunction(neurons[currentNeuron]);
 
-                        // f'(netinput) * Sum(delta_(toHigherLayer) * matrix[thisNeuron][toHigherLayer])
-                        for (int higherLayerNeuron = indices[0]; higherLayerNeuron <= indices[1]; higherLayerNeuron++)
-                        {
-                            // matrix[currentNeuron][higherLayerNeuron] is never 0 as the higher-layer neuron's matrix
-                            // entries are updated prior to this neuron's matrix entries in the algorithm.
-                            sum += (deltas[higherLayerNeuron] * matrix[currentNeuron][higherLayerNeuron]);
-                        }
-
-                        deltas[currentNeuron] *= sum;
-                        break;
-                    case OUTPUT:
-                        // f'(netInput) * (a_wanted - a_real)
-                        deltas[currentNeuron] *= (this.outputs[this.neurons.length - currentNeuron].getLabel().equals(dataSet.getLabel()) ?
-                                                  activationFunction.max() :
-                                                  activationFunction.min()) - activatedNeurons[currentNeuron];
-                        break;
-                }
-
-                // "from" will never be bigger than "currentNeuron" as of the layer principle.
-                for (int from = 0; from < currentNeuron; from++)
-                {
-                    if (matrix[from][currentNeuron] != null)
+                    // Deltas depend on the neuron class.
+                    switch (this.classifyNeuron(currentNeuron))
                     {
-                        // Calculate the new weightChange.
-                        // The old weight change is in here as a part of the momentum.
-                        weightChangeMatrix[from][currentNeuron] = (1 - momentum) * trainParameter * activatedNeurons[from] * deltas[currentNeuron] +
-                                                                  (momentum * weightChangeMatrix[from][currentNeuron]);
+                        case INPUT:
+                            break;
+                        case HIDDEN:
+                            double sum = 0;
+                            final int[] indices = nextLayerIndexBoundaries(currentNeuron);
 
-                        matrix[from][currentNeuron] += weightChangeMatrix[from][currentNeuron];
+                            // f'(netinput) * Sum(delta_(toHigherLayer) * matrix[thisNeuron][toHigherLayer])
+                            for (int higherLayerNeuron = indices[0]; higherLayerNeuron <= indices[1]; higherLayerNeuron++)
+                            {
+                                // matrix[currentNeuron][higherLayerNeuron] is never 0 as the higher-layer neuron's matrix
+                                // entries are updated prior to this neuron's matrix entries in the algorithm.
+                                sum += (deltas[higherLayerNeuron] * matrix[currentNeuron][higherLayerNeuron]);
+                            }
+
+                            deltas[currentNeuron] *= sum;
+                            break;
+                        case OUTPUT:
+                            // f'(netInput) * (a_wanted - a_real)
+                            deltas[currentNeuron] *= (this.outputs[this.neurons.length - currentNeuron].getLabel().equals(dataSet.getLabel()) ?
+                                                      activationFunction.max() :
+                                                      activationFunction.min()) - activatedNeurons[currentNeuron];
+                            break;
+                    }
+
+                    // "from" will never be bigger than "currentNeuron" as of the layer principle.
+                    for (int from = 0; from < currentNeuron; from++)
+                    {
+                        if (matrix[from][currentNeuron] != null)
+                        {
+                            // Calculate the new weightChange.
+                            // The old weight change is in here as a part of the momentum.
+                            weightChangeMatrix[from][currentNeuron] = (1 - momentum) * trainParameter * activatedNeurons[from] * deltas[currentNeuron] +
+                                                                      (momentum * weightChangeMatrix[from][currentNeuron]);
+
+                            matrix[from][currentNeuron] += weightChangeMatrix[from][currentNeuron];
+                        }
                     }
                 }
             }

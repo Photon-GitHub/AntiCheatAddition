@@ -18,6 +18,7 @@ public abstract class Pattern
     @Getter
     @Setter
     private String name;
+    @Getter
     private Input[] inputs;
 
     /**

@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.neural;
 
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,26 +11,51 @@ import java.util.Objects;
 public class Graph
 {
     // Constants
+    @Getter
     private final int epoch;
+    @Getter
     private final double trainParameter;
+    @Getter
     private final double momentum;
 
     // Activation function
+    @Getter
     private final ActivationFunction activationFunction;
 
     // Neurons
+    @Getter
     private final int[] neuronsInLayers;
     private final Output[] outputs;
 
     // Matrix
+    @Getter
     private final Double[][] matrix;
+    @Getter
     private final double[][] weightChangeMatrix;
 
     // Calculation
     private final double[] neurons;
     private final double[] activatedNeurons;
 
-    public Graph(int epoch, double trainParameter, double momentum, ActivationFunction activationFunction, int[] neuronsInLayers, Output[] outputs, int totalNeurons)
+    /**
+     * This constructor should only be used for deserialization.
+     */
+    public Graph(int epoch, double trainParameter, double momentum, ActivationFunction activationFunction, int[] neuronsInLayers, Output[] outputs, Double[][] matrix, double[][] weightChangeMatrix)
+    {
+        this.epoch = epoch;
+        this.trainParameter = trainParameter;
+        this.momentum = momentum;
+        this.activationFunction = activationFunction;
+        this.neuronsInLayers = neuronsInLayers;
+        this.outputs = outputs;
+        this.matrix = matrix;
+        this.weightChangeMatrix = weightChangeMatrix;
+
+        this.neurons = new double[matrix.length];
+        this.activatedNeurons = new double[matrix.length];
+    }
+
+    private Graph(int epoch, double trainParameter, double momentum, ActivationFunction activationFunction, int[] neuronsInLayers, Output[] outputs, int totalNeurons)
     {
         this.epoch = epoch;
         this.trainParameter = trainParameter;
@@ -304,7 +330,7 @@ public class Graph
     /**
      * Builds a {@link Graph}.
      */
-    private static class GraphBuilder
+    public static class GraphBuilder
     {
         // Constants
         private Integer epoch = null;

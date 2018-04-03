@@ -440,7 +440,10 @@ public class Graph
             if (!this.hiddenNeurons.isEmpty())
             {
                 // Copy all layers.
-                System.arraycopy(this.hiddenNeurons.toArray(new Integer[0]), 0, layers, 1, this.hiddenNeurons.size());
+                for (int i = 1; i <= this.hiddenNeurons.size(); i++)
+                {
+                    layers[i] = this.hiddenNeurons.get(i - 1);
+                }
             }
 
             if (this.outputs.isEmpty())

@@ -64,10 +64,18 @@ public class DataSet implements Iterable<double[]>
     }
 
     /**
+     * Creates a new {@link DataSetBuilder} to create a {@link DataSet}
+     */
+    public static DataSetBuilder builder()
+    {
+        return new DataSetBuilder();
+    }
+
+    /**
      * Builder for {@link DataSet}s.
      * This Builder properly formats the inputs to easily iterate over it.
      */
-    private class DataSetBuilder
+    public static class DataSetBuilder
     {
         private String label = null;
         private final List<double[]> inputList = new ArrayList<>();

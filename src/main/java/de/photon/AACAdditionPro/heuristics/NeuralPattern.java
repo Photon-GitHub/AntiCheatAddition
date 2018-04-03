@@ -3,9 +3,9 @@ package de.photon.AACAdditionPro.heuristics;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.neural.ActivationFunction;
 import de.photon.AACAdditionPro.neural.ActivationFunctions;
-import de.photon.AACAdditionPro.neural.DataSet;
 import de.photon.AACAdditionPro.neural.Graph;
 import de.photon.AACAdditionPro.neural.Output;
+import de.photon.AACAdditionPro.oldheuristics.PatternDeserializer;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.serialization.CompressedDataSerializer;
 import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataInputStream;
@@ -13,8 +13,15 @@ import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataOutputStrea
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class NeuralPattern extends Pattern
 {
@@ -23,19 +30,19 @@ public class NeuralPattern extends Pattern
     private final Graph graph;
     private Thread trainingThread = null;
 
-    public NeuralPattern(String name, Input[] inputs, Graph graph)
+    public NeuralPattern(String name, Input.InputType[] inputTypes, Graph graph)
     {
-        super(name, inputs);
+        super(name, inputTypes);
         this.graph = graph;
     }
 
     @Override
-    public Output[] analyse(final DataSet dataSet)
+    public Output[] evaluate()
     {
-        return this.graph.evaluate(dataSet);
+        return this.graph.evaluate(this.createDataSetFromInputs(null));
     }
 
-    public synchronized void train(final DataSet dataSet)
+    public synchronized void train(final String label)
     {
         if (this.trainingThread != null)
         {
@@ -43,7 +50,7 @@ public class NeuralPattern extends Pattern
         }
 
         this.trainingThread = new Thread(() -> {
-            this.graph.train(dataSet);
+            this.graph.train(this.createDataSetFromInputs(label));
 
             try
             {
@@ -151,7 +158,7 @@ public class NeuralPattern extends Pattern
         writer.close();
     }
 
-    public static NeuralPattern loadFromFile(final String name) throws IOException
+    public static NeuralPattern load(final String name) throws IOException
     {
         try (EnhancedDataInputStream input = CompressedDataSerializer.createInputStream(name))
         {
@@ -181,13 +188,13 @@ public class NeuralPattern extends Pattern
 
             // Inputs
             final int[] inputTypeIndices = input.readIntegerArray();
-            final List<Input> inputList = new ArrayList<>();
+            final List<Input.InputType> inputList = new ArrayList<>();
             final Input.InputType[] inputTypes = Input.InputType.values();
             for (int inputTypeIndex : inputTypeIndices)
             {
-                inputList.add(new Input(inputTypes[inputTypeIndex], new double[0]));
+                inputList.add(inputTypes[inputTypeIndex]);
             }
-            final Input[] inputs = inputList.toArray(new Input[0]);
+            final Input.InputType[] inputs = inputList.toArray(new Input.InputType[0]);
 
             // Graph data
             final ActivationFunction activationFunction = (input.readBoolean()) ?
@@ -216,5 +223,42 @@ public class NeuralPattern extends Pattern
             final Graph graph = new Graph(epoch, trainParameter, momentum, activationFunction, neuronsInLayers, LEGIT_OUTPUT, matrix, weightMatrix);
             return new NeuralPattern(patternName, inputs, graph);
         }
+    }
+
+    /**
+     * Loads all patterns that can be found as a resource into a {@link Collection} of {@link NeuralPattern}s.
+     */
+    public static Set<NeuralPattern> loadPatterns()
+    {
+        final Set<NeuralPattern> neuralPatterns = new HashSet<>();
+        try
+        {
+            final File jarFile = new File(PatternDeserializer.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            try (JarFile pluginFile = new JarFile(jarFile))
+            {
+                final Enumeration<JarEntry> entries = pluginFile.entries();
+                while (entries.hasMoreElements())
+                {
+                    final JarEntry entry = entries.nextElement();
+                    if (entry.getName().endsWith(".ptrn"))
+                    {
+                        try
+                        {
+                            neuralPatterns.add(load(entry.getName()));
+                        } catch (IOException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        } catch (URISyntaxException e)
+        {
+            e.printStackTrace();
+        }
+        return neuralPatterns;
     }
 }

@@ -9,7 +9,7 @@ import org.bukkit.event.inventory.InventoryType;
 public class InventoryClick
 {
     /**
-     * How many {@link de.photon.AACAdditionPro.util.datawrappers.InventoryClick}s should {@link de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics} analyse in one run
+     * How many {@link de.photon.AACAdditionPro.util.datawrappers.InventoryClick}s should {@link de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics} evaluate in one run
      */
     public static final byte SAMPLES = 20;
 

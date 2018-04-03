@@ -1,11 +1,12 @@
-package de.photon.AACAdditionPro.oldheuristics.patterns;
+package de.photon.AACAdditionPro.heuristics.patterns;
 
-import de.photon.AACAdditionPro.oldheuristics.InputData;
-import de.photon.AACAdditionPro.oldheuristics.Pattern;
+import de.photon.AACAdditionPro.heuristics.Input;
+import de.photon.AACAdditionPro.heuristics.Pattern;
+import de.photon.AACAdditionPro.neural.DataSet;
+import de.photon.AACAdditionPro.neural.Output;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 
 import java.util.Arrays;
-import java.util.Map;
 
 /**
  * Checks for a plausible distance/time ratio to detect purposefully randomized inventory interactions
@@ -19,30 +20,29 @@ public class HC00000001 extends Pattern
 
     public HC00000001()
     {
-        super("HC000000001", new InputData[]{
-                InputData.VALID_INPUTS.get('T'),
-                InputData.VALID_INPUTS.get('X'),
-                InputData.VALID_INPUTS.get('Y')
+        super("HC00000001", new Input.InputType[]{
+                Input.InputType.TIMEDELTAS,
+                Input.InputType.XDISTANCE,
+                Input.InputType.YDISTANCE
         });
     }
 
     @Override
-    public double analyse(Map<Character, InputData> inputData)
+    public Output[] evaluate()
     {
-        // See the constructor for the indices
-        double[][] inputArray = this.provideInputData(inputData);
+        final DataSet dataSet = this.createDataSetFromInputs();
 
         // Use a offset sum to detect too consistent clicking.
         // orElse(0) is ok as the steam (and thus the array) must be empty to reach this part of code.
-        final double average = Arrays.stream(inputArray[0]).average().orElse(0);
-        final double offsetSum = MathUtils.offsetSum(inputArray[0], average, offset -> offset <= IDLE_THRESHOLD);
+        final double average = Arrays.stream(dataSet.getData()[0]).average().orElse(0);
+        final double offsetSum = MathUtils.offsetSum(dataSet.getData()[0], average, offset -> offset <= IDLE_THRESHOLD);
 
         // Calculate min and max distance
         double minDistance = Double.MAX_VALUE;
         double maxDistance = Double.MIN_VALUE;
-        for (int i = 0; i < inputArray[1].length; i++)
+        for (int i = 0; i < dataSet.getData()[1].length; i++)
         {
-            final double distance = Math.hypot(inputArray[1][i], inputArray[2][i]);
+            final double distance = Math.hypot(dataSet.getData()[1][i], dataSet.getData()[2][i]);
 
             if (distance < minDistance)
             {
@@ -55,7 +55,7 @@ public class HC00000001 extends Pattern
             }
         }
 
-        return Math.tanh(((offsetSum / 150) * (maxDistance - minDistance)) / 4);
+        return this.createBinaryOutputFromConfidence(Math.tanh(((offsetSum / 150) * (maxDistance - minDistance)) / 4));
     }
 
     @Override

@@ -10,6 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class InventoryHeuristicsData
 {
+    public String trainingLabel = null;
+    public NeuralPattern trainedPattern = null;
+
     private Map<String, Double> patternMap = new ConcurrentHashMap<>();
 
     /**

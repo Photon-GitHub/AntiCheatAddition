@@ -99,7 +99,7 @@ public abstract class Pattern
     }
 
     /**
-     * Make the pattern analyse the current input data.
+     * Make the pattern evaluate the current input data.
      *
      * @return the confidence for cheating or null if invalid data was provided.
      */

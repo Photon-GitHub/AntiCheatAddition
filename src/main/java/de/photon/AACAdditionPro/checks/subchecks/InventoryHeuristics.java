@@ -4,13 +4,12 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.events.InventoryHeuristicsEvent;
-import de.photon.AACAdditionPro.oldheuristics.InputData;
-import de.photon.AACAdditionPro.oldheuristics.NeuralPattern;
-import de.photon.AACAdditionPro.oldheuristics.Pattern;
-import de.photon.AACAdditionPro.oldheuristics.PatternDeserializer;
-import de.photon.AACAdditionPro.oldheuristics.TrainingData;
-import de.photon.AACAdditionPro.oldheuristics.patterns.HC00000001;
-import de.photon.AACAdditionPro.oldheuristics.patterns.HC00000002;
+import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
+import de.photon.AACAdditionPro.heuristics.Input;
+import de.photon.AACAdditionPro.heuristics.NeuralPattern;
+import de.photon.AACAdditionPro.heuristics.Pattern;
+import de.photon.AACAdditionPro.heuristics.patterns.HC00000001;
+import de.photon.AACAdditionPro.neural.Output;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
@@ -25,7 +24,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,11 +45,10 @@ public class InventoryHeuristics implements Listener, ViolationModule
     static
     {
         PATTERNS = ConcurrentHashMap.newKeySet();
-        PatternDeserializer.loadPatterns(PATTERNS);
+        PATTERNS.addAll(NeuralPattern.loadPatterns());
 
         // Hardcoded patterns
         PATTERNS.add(new HC00000001());
-        PATTERNS.add(new HC00000002());
 
         if (PATTERNS.isEmpty())
         {
@@ -76,109 +77,105 @@ public class InventoryHeuristics implements Listener, ViolationModule
         if (user.getInventoryData().inventoryClicks.bufferObject(new InventoryClick(
                 // The current item might be null and causes NPEs when .getType() is invoked.
                 event.getCurrentItem() == null ? Material.AIR : event.getCurrentItem().getType(),
-
                 event.getRawSlot(),
-
                 event.getWhoClicked().getOpenInventory().getTopInventory().getType(),
-
                 event.getSlotType(),
-
                 event.getClick())))
         {
-            // Create the new map and add the standard inputs
-            final Map<Character, InputData> inputData = new HashMap<>(InputData.VALID_INPUTS);
-            // Set the data array length
-            inputData.values().forEach(anInputData -> anInputData.setData(new double[user.getInventoryData().inventoryClicks.size()]));
+            // Create input map
+            final EnumMap<Input.InputType, List<Double>> inputMap = new EnumMap<>(Input.InputType.class);
+            for (Input.InputType inputType : Input.InputType.values())
+            {
+                inputMap.put(inputType, new ArrayList<>());
+            }
 
-            final int[] i = {0};
+            // Fill the input map.
             user.getInventoryData().inventoryClicks.clearLastTwoObjectsIteration((youngerClick, olderClick) -> {
                 // Slot distance
                 // Must be done first as of the continue!
                 double[] locationOfYoungerClick = InventoryUtils.locateSlot(youngerClick.clickedRawSlot, youngerClick.inventoryType);
                 double[] locationOfOlderClick = InventoryUtils.locateSlot(olderClick.clickedRawSlot, olderClick.inventoryType);
 
-                if (locationOfOlderClick == null || locationOfYoungerClick == null)
+                // Make sure you only add valid data.
+                if (locationOfOlderClick != null && locationOfYoungerClick != null)
                 {
-                    inputData.get('X').getData()[i[0]] = Double.MIN_VALUE;
-                    inputData.get('Y').getData()[i[0]] = Double.MIN_VALUE;
+                    inputMap.get(Input.InputType.XDISTANCE).add(locationOfYoungerClick[0] - locationOfOlderClick[0]);
+                    inputMap.get(Input.InputType.YDISTANCE).add(locationOfYoungerClick[1] - locationOfOlderClick[1]);
+
+                    // Timestamps
+                    // Decrease by approximately the factor 1 million to have more exact millis again.
+                    inputMap.get(Input.InputType.TIMEDELTAS).add(0.1 * (youngerClick.timeStamp - olderClick.timeStamp));
+
+                    // Materials
+                    inputMap.get(Input.InputType.MATERIALS).add((double) youngerClick.type.ordinal());
+
+                    // ClickTypes
+                    inputMap.get(Input.InputType.CLICKTYPES).add((double) youngerClick.clickType.ordinal());
                 }
-                else
-                {
-                    inputData.get('X').getData()[i[0]] = locationOfYoungerClick[0] - locationOfOlderClick[0];
-                    inputData.get('Y').getData()[i[0]] = locationOfYoungerClick[1] - locationOfOlderClick[1];
-                }
-
-                // Timestamps
-                // Decrease by approximately the factor 1 million to have more exact millis again.
-                inputData.get('T').getData()[i[0]] = 60 / Math.max(1E-10, (youngerClick.timeStamp - olderClick.timeStamp));
-
-                // Materials
-                inputData.get('M').getData()[i[0]] = youngerClick.type.ordinal();
-
-                inputData.get('I').getData()[i[0]] = youngerClick.inventoryType.ordinal();
-
-                // SlotTypes
-                inputData.get('S').getData()[i[0]] = youngerClick.slotType.ordinal();
-
-                // ClickTypes
-                inputData.get('C').getData()[i[0]++] = youngerClick.clickType.ordinal();
             });
 
-            final Map<Pattern, Double> outputDataMap = new HashMap<>(PATTERNS.size(), 1);
+            // Deploy the inputs in the patterns.
+            inputMap.forEach(((inputType, doubles) ->
+            {
+                // No toArray() call is possible here as of the primitive type.
+                final double[] primitiveValues = new double[doubles.size()];
+                for (int i = 0; i < primitiveValues.length; i++)
+                {
+                    primitiveValues[i] = doubles.get(i);
+                }
+
+                for (Pattern pattern : PATTERNS)
+                {
+                    pattern.setInputData(new Input(inputType, primitiveValues));
+                }
+            }));
+
+            final Map<Pattern, Output[]> outputDataMap = new HashMap<>(PATTERNS.size(), 1);
 
             // Training
             for (Pattern pattern : PATTERNS)
             {
-                boolean training = false;
-                if (pattern instanceof NeuralPattern)
+                // Training
+                if (pattern instanceof NeuralPattern &&
+                    user.getInventoryHeuristicsData().trainedPattern.getName().equals(pattern.getName()))
                 {
-                    final NeuralPattern neuralPattern = (NeuralPattern) pattern;
-
-                    for (TrainingData trainingData : neuralPattern.getTrainingDataSet())
-                    {
-                        if (trainingData.getUuid().equals(user.getPlayer().getUniqueId()))
-                        {
-                            training = true;
-                            neuralPattern.pushInputData(trainingData.getOutputDataName(), inputData);
-                            break;
-                        }
-                    }
+                    ((NeuralPattern) pattern).train(user.getInventoryHeuristicsData().trainingLabel);
                 }
-
-                // No analysis when training.
-                if (!training)
+                // Evaluation only
+                else
                 {
-                    outputDataMap.put(pattern, pattern.analyse(inputData));
+                    outputDataMap.put(pattern, pattern.evaluate());
                 }
             }
 
-            user.getInventoryHeuristicsData().decayCycle();
-            for (Map.Entry<Pattern, Double> entry : outputDataMap.entrySet())
-            {
-                // Pattern testing
-                double value = entry.getValue();
-                //TODO: THIS IS ONLY A WORKAROUND FOR THE 0.5 PROBLEM!!!
-                if (entry.getKey() instanceof NeuralPattern)
+            outputDataMap.forEach((pattern, outputs) -> {
+                Output cheatingOutput = null;
+                for (Output output : outputs)
                 {
-                    if (value >= 0.5)
+                    if (output.getLabel().equals("cheating"))
                     {
-                        value -= 0.5;
+                        cheatingOutput = output;
+                        break;
                     }
-                    value *= 2;
                 }
 
-                if (value > detection_confidence)
+                if (cheatingOutput == null)
                 {
-                    final InventoryHeuristicsEvent inventoryHeuristicsEvent = new InventoryHeuristicsEvent(user.getPlayer(), entry.getKey().getName(), entry.getValue());
+                    throw new NeuralNetworkException("Could not find cheating output for pattern " + pattern.getName());
+                }
+
+                if (cheatingOutput.getConfidence() > detection_confidence)
+                {
+                    final InventoryHeuristicsEvent inventoryHeuristicsEvent = new InventoryHeuristicsEvent(user.getPlayer(), pattern.getName(), cheatingOutput.getConfidence());
                     Bukkit.getPluginManager().callEvent(inventoryHeuristicsEvent);
 
                     if (!inventoryHeuristicsEvent.isCancelled())
                     {
-                        user.getInventoryHeuristicsData().setPatternConfidence(entry.getKey().getName(), value);
-                        VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + entry.getKey().getName() + " with a confidence of " + value + " (Original: " + entry.getValue() + ")");
+                        user.getInventoryHeuristicsData().setPatternConfidence(pattern.getName(), cheatingOutput.getConfidence());
+                        VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + pattern.getName() + " with a confidence of " + cheatingOutput.getConfidence());
                     }
                 }
-            }
+            });
 
             final double globalConfidence = user.getInventoryHeuristicsData().calculateGlobalConfidence();
             if (globalConfidence != 0)

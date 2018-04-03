@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.neural;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 import de.photon.AACAdditionPro.heuristics.ActivationFunction;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -297,10 +298,30 @@ public class Graph
         OUTPUT
     }
 
+    public static void serialize(final File file)
+    {
+
+        //TODO: DESERIALIZATION / SERIALIZATION.
+    }
+
+    public static Graph deserialize(final File file)
+    {
+        //TODO: DESERIALIZATION / SERIALIZATION.
+        return null;
+    }
+
+    /**
+     * Creates a new {@link GraphBuilder} to create a {@link Graph}.
+     */
+    public static GraphBuilder builder()
+    {
+        return new GraphBuilder();
+    }
+
     /**
      * Builds a {@link Graph}.
      */
-    private class GraphBuilder
+    private static class GraphBuilder
     {
         // Constants
         private Integer epoch = null;

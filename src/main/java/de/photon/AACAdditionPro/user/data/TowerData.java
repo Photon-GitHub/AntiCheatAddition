@@ -55,13 +55,9 @@ public class TowerData extends TimeData
         // fraction[0] is the enumerator
         // fraction[1] is the divider
         final double[] fraction = new double[2];
-
-        this.blockPlaces.clearLastTwoObjectsIteration(
-                (last, current) ->
-                {
-                    fraction[0] += (last.getTime() - current.getTime());
-                    fraction[1]++;
-                });
+        // -1 because there is one pop to fill the "last" variable in the beginning.
+        fraction[1] = this.blockPlaces.size() - 1;
+        this.blockPlaces.clearLastTwoObjectsIteration((last, current) -> fraction[0] += (last.getTime() - current.getTime()));
         return fraction[0] / fraction[1];
     }
 }

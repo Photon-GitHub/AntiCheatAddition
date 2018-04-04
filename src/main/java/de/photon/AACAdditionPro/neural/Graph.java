@@ -114,52 +114,16 @@ public class Graph
 
         final double[] confidences = new double[outputs.length];
 
-        if (this.neuronsInLayers[0] % dataSet.getData()[0].length != 0)
+        for (double[] sample : this.assembleSamples(dataSet))
         {
-            throw new NeuralNetworkException("Tried to evaluate DataSet without fitting input configuration.");
-        }
+            double[] sampleConfidences = calculate(sample);
 
-        final int samplesPerCalculation = this.neuronsInLayers[0] / dataSet.getData()[0].length;
-
-        if (samplesPerCalculation == 1)
-        {
-            for (double[] sample : dataSet)
+            // Add the sampleConfidences.
+            for (int i = 0; i < confidences.length; i++)
             {
-                double[] sampleConfidences = calculate(sample);
-
-                // Add the sampleConfidences.
-                for (int i = 0; i < confidences.length; i++)
-                {
-                    confidences[i] += sampleConfidences[i];
-                }
+                confidences[i] += sampleConfidences[i];
             }
         }
-        else
-        {
-            final double[] assembledSample = new double[this.neuronsInLayers[0]];
-            int sampleIndex = 0;
-            int samples = 0;
-
-            for (double[] sample : dataSet)
-            {
-                if (++samples <= samplesPerCalculation)
-                {
-                    double[] sampleConfidences = calculate(assembledSample);
-
-                    // Add the sampleConfidences.
-                    for (int i = 0; i < confidences.length; i++)
-                    {
-                        confidences[i] += sampleConfidences[i];
-                    }
-                    sampleIndex = 0;
-                    samples = 0;
-                }
-
-                System.arraycopy(sample, 0, assembledSample, sampleIndex, sample.length);
-                sampleIndex += sample.length;
-            }
-        }
-
 
         final Output[] currentOutputs = new Output[this.outputs.length];
 
@@ -185,7 +149,7 @@ public class Graph
 
         for (int i = 0; i < epoch; i++)
         {
-            for (double[] sample : dataSet)
+            for (double[] sample : this.assembleSamples(dataSet))
             {
                 calculate(sample);
                 // The delta values are only important in this training cycle.
@@ -286,6 +250,45 @@ public class Graph
         final double[] confidences = new double[this.outputs.length];
         System.arraycopy(this.activatedNeurons, this.activatedNeurons.length - this.outputs.length, confidences, 0, this.outputs.length);
         return confidences;
+    }
+
+    /**
+     * Tries to make a {@link DataSet} fit the current {@link Graph} by chaining up samples.
+     */
+    private double[][] assembleSamples(DataSet dataSet)
+    {
+        if (this.neuronsInLayers[0] % dataSet.getData()[0].length != 0)
+        {
+            throw new NeuralNetworkException("Tried to evaluate DataSet without fitting input configuration.");
+        }
+
+        final int samplesPerCalculation = this.neuronsInLayers[0] / dataSet.getData()[0].length;
+
+        if (samplesPerCalculation == 1)
+        {
+            return dataSet.getData();
+        }
+        else
+        {
+            final List<double[]> assembledSamples = new ArrayList<>();
+            double[] assembledSample = new double[this.neuronsInLayers[0]];
+            int sampleIndex = 0;
+            int samples = 0;
+
+            for (double[] sample : dataSet)
+            {
+                if (samples++ >= samplesPerCalculation)
+                {
+                    assembledSamples.add(assembledSample);
+                    sampleIndex = 0;
+                    samples = 0;
+                }
+
+                System.arraycopy(sample, 0, assembledSample, sampleIndex, sample.length);
+                sampleIndex += sample.length;
+            }
+            return assembledSamples.toArray(new double[0][]);
+        }
     }
 
     /**

@@ -114,16 +114,52 @@ public class Graph
 
         final double[] confidences = new double[outputs.length];
 
-        for (double[] sample : dataSet)
+        if (this.neuronsInLayers[0] % dataSet.getData()[0].length != 0)
         {
-            double[] sampleConfidences = calculate(sample);
+            throw new NeuralNetworkException("Tried to evaluate DataSet without fitting input configuration.");
+        }
 
-            // Add the sampleConfidences.
-            for (int i = 0; i < confidences.length; i++)
+        final int samplesPerCalculation = this.neuronsInLayers[0] / dataSet.getData()[0].length;
+
+        if (samplesPerCalculation == 1)
+        {
+            for (double[] sample : dataSet)
             {
-                confidences[i] += sampleConfidences[i];
+                double[] sampleConfidences = calculate(sample);
+
+                // Add the sampleConfidences.
+                for (int i = 0; i < confidences.length; i++)
+                {
+                    confidences[i] += sampleConfidences[i];
+                }
             }
         }
+        else
+        {
+            final double[] assembledSample = new double[this.neuronsInLayers[0]];
+            int sampleIndex = 0;
+            int samples = 0;
+
+            for (double[] sample : dataSet)
+            {
+                if (++samples <= samplesPerCalculation)
+                {
+                    double[] sampleConfidences = calculate(assembledSample);
+
+                    // Add the sampleConfidences.
+                    for (int i = 0; i < confidences.length; i++)
+                    {
+                        confidences[i] += sampleConfidences[i];
+                    }
+                    sampleIndex = 0;
+                    samples = 0;
+                }
+
+                System.arraycopy(sample, 0, assembledSample, sampleIndex, sample.length);
+                sampleIndex += sample.length;
+            }
+        }
+
 
         final Output[] currentOutputs = new Output[this.outputs.length];
 

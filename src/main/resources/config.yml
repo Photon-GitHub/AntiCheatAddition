@@ -444,8 +444,6 @@ Scaffold:
             sneaking_slow_addition: 40
             # This delay applies to diagonal building
             diagonal: 148
-         # Over how many values should AACAdditionPro take the average for the check
-         buffer_size: 6
       # This part detects suspicious placement positions.
       # The position check always adds 5 vl.
       position:
@@ -536,9 +534,6 @@ Tower:
    # Violation before AACAdditionPro starts to cancel the block-places.
    # Set this to 0 to never cancel block-places.
    cancel_vl: 6
-   # Over how much values should AACAdditionPro take the average used for the check
-   # Lower values increase the detection speed but can cause more false positives.
-   buffer_size: 6
    # If you have false positives decrease this SLIGHTLY.
    # The new Tower check has its own leniency-curve which makes it very effective.
    # Therefore please only touch this if you have false positives

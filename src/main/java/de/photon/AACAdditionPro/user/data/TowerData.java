@@ -1,7 +1,5 @@
 package de.photon.AACAdditionPro.user.data;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.util.datastructures.ConditionalBuffer;
@@ -15,7 +13,8 @@ import lombok.Getter;
  */
 public class TowerData extends TimeData
 {
-    private static int BUFFER_SIZE = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.TOWER.getConfigString() + ".buffer_size");
+    // Default buffer size is 6, being well tested.
+    private static int BUFFER_SIZE = 6;
 
     @Getter
     protected final ConditionalBuffer<TowerBlockPlace> blockPlaces = new ConditionalBuffer<TowerBlockPlace>(BUFFER_SIZE)

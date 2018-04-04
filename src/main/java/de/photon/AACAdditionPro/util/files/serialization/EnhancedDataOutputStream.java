@@ -137,7 +137,7 @@ public class EnhancedDataOutputStream extends DataOutputStream
 
         for (Integer integer : integerArray)
         {
-            this.writeInt(integer);
+            this.writeInt(integer == null ? 0 : integer);
         }
     }
 
@@ -158,7 +158,7 @@ public class EnhancedDataOutputStream extends DataOutputStream
 
         for (Double aDouble : doubleArray)
         {
-            this.writeDouble(aDouble);
+            this.writeDouble(aDouble == null ? 0 : aDouble);
         }
     }
 

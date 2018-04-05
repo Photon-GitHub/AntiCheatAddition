@@ -22,6 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -105,20 +106,10 @@ public class InventoryHeuristics implements Listener, ViolationModule
             for (Pattern pattern : PATTERNS)
             {
                 final Output[] outputs = pattern.evaluateOrTrain(pattern.generateDataset(inputMatrix, label));
-                Output cheatingOutput = null;
-                for (Output output : outputs)
-                {
-                    if (output.getLabel().equals("cheating"))
-                    {
-                        cheatingOutput = output;
-                        break;
-                    }
-                }
-
-                if (cheatingOutput == null)
-                {
-                    throw new NeuralNetworkException("Could not find cheating output for pattern " + pattern.getName());
-                }
+                Output cheatingOutput = Arrays.stream(outputs)
+                                              .filter(output -> output.getLabel().equals("cheating"))
+                                              .findAny()
+                                              .orElseThrow(() -> new NeuralNetworkException("Could not find cheating output for pattern " + pattern.getName()));
 
                 if (cheatingOutput.getConfidence() > detection_confidence)
                 {

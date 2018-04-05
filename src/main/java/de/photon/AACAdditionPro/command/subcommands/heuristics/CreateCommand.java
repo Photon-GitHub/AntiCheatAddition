@@ -90,7 +90,7 @@ public class CreateCommand extends InternalCommand
                 "Creates a new pattern with a clear graph. Training is required if you want the pattern to be permanent.",
                 "Format: /aacadditionpro heuristics create <name of pattern> <epoch> <train parameter> <momentum> <inputs> <neuron count of layer 1> <neuron count of layer 2> ...",
                 "You may use any combination of the following letters as a valid input specification:",
-                "T = TimeDeltas | M = Materials | X = X-Distances | Y = Y-Distances | C = ClickTypes",
+                "T = TimeDeltas | X = X-Distances | Y = Y-Distances | C = ClickTypes",
                 "Examples: TXY, T, CT, TYXC"
         };
     }

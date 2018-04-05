@@ -19,7 +19,6 @@ import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -75,11 +74,8 @@ public class InventoryHeuristics implements Listener, ViolationModule
         }
 
         if (user.getInventoryData().inventoryClicks.bufferObject(new InventoryClick(
-                // The current item might be null and causes NPEs when .getType() is invoked.
-                event.getCurrentItem() == null ? Material.AIR : event.getCurrentItem().getType(),
                 event.getRawSlot(),
                 event.getWhoClicked().getOpenInventory().getTopInventory().getType(),
-                event.getSlotType(),
                 event.getClick())))
         {
             // Create input map

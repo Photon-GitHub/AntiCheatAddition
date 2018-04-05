@@ -103,12 +103,10 @@ public class InventoryHeuristics implements Listener, ViolationModule
                 index--;
             }
 
-            final String label = user.getInventoryHeuristicsData().trainingLabel;
-
             // Training
             for (Pattern pattern : PATTERNS)
             {
-                final Output cheatingOutput = Arrays.stream(pattern.evaluateOrTrain(pattern.generateDataset(inputMatrix, label)))
+                final Output cheatingOutput = Arrays.stream(pattern.evaluateOrTrain(pattern.generateDataset(inputMatrix, user.getInventoryHeuristicsData().trainingLabel)))
                                                     .filter(output -> output.getLabel().equals("cheating"))
                                                     .findAny()
                                                     .orElseThrow(() -> new NeuralNetworkException("Could not find cheating output for pattern " + pattern.getName()));

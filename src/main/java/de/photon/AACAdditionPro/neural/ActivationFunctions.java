@@ -31,7 +31,7 @@ public enum ActivationFunctions implements ActivationFunction
                 @Override
                 public double max()
                 {
-                    return Double.MAX_VALUE;
+                    return 1;
                 }
             }
 }

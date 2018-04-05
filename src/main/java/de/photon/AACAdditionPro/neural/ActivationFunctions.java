@@ -2,20 +2,24 @@ package de.photon.AACAdditionPro.neural;
 
 public enum ActivationFunctions implements ActivationFunction
 {
-    LOGISTIC
+    LEAKY_RECTIFIED_LINEAR_UNIT
             {
+                private static final double MODIFER = 0.01D;
+
                 @Override
                 public double applyActivationFunction(double input)
                 {
-                    return 1 / (1 + Math.pow(Math.E, (-input)));
+                    if (input < 0)
+                    {
+                        input *= MODIFER;
+                    }
+                    return input;
                 }
 
                 @Override
                 public double applyDerivedActivationFunction(double input)
                 {
-                    final double epowx = Math.pow(Math.E, input);
-
-                    return epowx / (epowx * epowx + 2 * epowx + 1);
+                    return input < 0 ? MODIFER : 1;
                 }
 
                 @Override
@@ -23,26 +27,11 @@ public enum ActivationFunctions implements ActivationFunction
                 {
                     return 0;
                 }
-            },
-    HYPERBOLIC_TANGENT
-            {
-                @Override
-                public double applyActivationFunction(double input)
-                {
-                    return Math.tanh(input - this.getBias());
-                }
 
                 @Override
-                public double applyDerivedActivationFunction(double input)
+                public double max()
                 {
-                    double cosh = Math.cosh(this.getBias() - input);
-                    return 1 / (cosh * cosh);
-                }
-
-                @Override
-                public double getBias()
-                {
-                    return 0.01;
+                    return Double.MAX_VALUE;
                 }
             }
 }

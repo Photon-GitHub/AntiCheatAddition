@@ -69,7 +69,7 @@ public class CreateCommand extends InternalCommand
                                                                                                           .addHiddenLayers(hiddenLayerConfig)
                                                                                                           .addOutput("vanilla")
                                                                                                           .addOutput("cheating")
-                                                                                                          .setActivationFunction(ActivationFunctions.HYPERBOLIC_TANGENT)
+                                                                                                          .setActivationFunction(ActivationFunctions.LEAKY_RECTIFIED_LINEAR_UNIT)
                                                                                                           .build()));
                 }
             } catch (NumberFormatException exception)

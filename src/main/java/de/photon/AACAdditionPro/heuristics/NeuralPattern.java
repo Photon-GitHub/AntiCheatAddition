@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.neural.ActivationFunction;
 import de.photon.AACAdditionPro.neural.ActivationFunctions;
 import de.photon.AACAdditionPro.neural.Graph;
 import de.photon.AACAdditionPro.neural.Output;
@@ -140,8 +139,6 @@ public class NeuralPattern extends Pattern
         }
 
         // ------------------------- GRAPH
-        writer.writeBoolean(this.graph.getActivationFunction() != ActivationFunctions.LOGISTIC);
-
         writer.writeInt(this.graph.getMatrix().length);
         for (Double[] layer : this.graph.getMatrix())
         {
@@ -197,11 +194,6 @@ public class NeuralPattern extends Pattern
             }
             final Input.InputType[] inputs = inputList.toArray(new Input.InputType[0]);
 
-            // Graph data
-            final ActivationFunction activationFunction = (input.readBoolean()) ?
-                                                          ActivationFunctions.HYPERBOLIC_TANGENT :
-                                                          ActivationFunctions.LOGISTIC;
-
             // The length of the matrix
             final int matrixLength = input.readInt();
 
@@ -221,7 +213,7 @@ public class NeuralPattern extends Pattern
 
             final int[] neuronsInLayers = input.readIntegerArray();
 
-            final Graph graph = new Graph(epoch, trainParameter, momentum, activationFunction, neuronsInLayers, LEGIT_OUTPUT, matrix, weightMatrix);
+            final Graph graph = new Graph(epoch, trainParameter, momentum, ActivationFunctions.LEAKY_RECTIFIED_LINEAR_UNIT, neuronsInLayers, LEGIT_OUTPUT, matrix, weightMatrix);
             return new NeuralPattern(patternName, inputs, graph);
         }
     }

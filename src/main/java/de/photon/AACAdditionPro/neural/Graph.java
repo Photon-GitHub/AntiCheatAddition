@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.neural;
 
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -203,6 +204,8 @@ public class Graph
                 }
             }
         }
+
+        debug();
     }
 
     /**
@@ -245,6 +248,8 @@ public class Graph
                 }
             }
         }
+
+        debug();
 
         // return all
         final double[] confidences = new double[this.outputs.length];
@@ -357,6 +362,15 @@ public class Graph
         INPUT,
         HIDDEN,
         OUTPUT
+    }
+
+    public void debug()
+    {
+        VerboseSender.sendVerboseMessage("Neurons: ");
+        VerboseSender.sendVerboseMessage(Arrays.toString(this.activatedNeurons));
+
+        VerboseSender.sendVerboseMessage("Matrix: ");
+        VerboseSender.sendVerboseMessage(Arrays.deepToString(this.matrix));
     }
 
     /**

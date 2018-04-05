@@ -91,7 +91,7 @@ public class CreateCommand extends InternalCommand
                 "Format: /aacadditionpro heuristics create <name of pattern> <epoch> <train parameter> <momentum> <inputs> <neuron count of layer 1> <neuron count of layer 2> ...",
                 "You may use any combination of the following letters as a valid input specification:",
                 "T = TimeDeltas | M = Materials | X = X-Distances | Y = Y-Distances | C = ClickTypes",
-                "Examples: TXYM, TM, CT, TMYXC"
+                "Examples: TXY, T, CT, TYXC"
         };
     }
 

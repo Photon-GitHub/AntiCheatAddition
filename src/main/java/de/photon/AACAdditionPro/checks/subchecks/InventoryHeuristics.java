@@ -106,9 +106,6 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     // Decrease by approximately the factor 1 million to have more exact millis again.
                     inputMap.get(Input.InputType.TIMEDELTAS).add(0.1 * (youngerClick.timeStamp - olderClick.timeStamp));
 
-                    // Materials
-                    inputMap.get(Input.InputType.MATERIALS).add((double) youngerClick.type.ordinal());
-
                     // ClickTypes
                     inputMap.get(Input.InputType.CLICKTYPES).add((double) youngerClick.clickType.ordinal());
                 }

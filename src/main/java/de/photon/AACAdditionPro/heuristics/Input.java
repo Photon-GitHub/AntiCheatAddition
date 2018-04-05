@@ -28,7 +28,6 @@ public class Input
     public enum InputType
     {
         CLICKTYPES("C"),
-        MATERIALS("M"),
         TIMEDELTAS("T"),
         XDISTANCE("X"),
         YDISTANCE("Y");

@@ -86,19 +86,22 @@ public class InventoryHeuristics implements Listener, ViolationModule
             // [3] = ClickTypes
             final double[][] inputMatrix = new double[4][user.getInventoryHeuristicsData().inventoryClicks.size() - 1];
 
-            for (int index = 0; index < user.getInventoryHeuristicsData().inventoryClicks.size(); index++)
+            int index = user.getInventoryHeuristicsData().inventoryClicks.size() - 1;
+            InventoryClick.BetweenClickInformation current;
+            while (!user.getInventoryHeuristicsData().inventoryClicks.isEmpty())
             {
-                inputMatrix[0][index] = user.getInventoryHeuristicsData().inventoryClicks.get(index).xDistance;
-                inputMatrix[1][index] = user.getInventoryHeuristicsData().inventoryClicks.get(index).yDistance;
+                current = user.getInventoryHeuristicsData().inventoryClicks.pop();
+                inputMatrix[0][index] = current.xDistance;
+                inputMatrix[1][index] = current.yDistance;
 
                 // Timestamps
                 // Decrease by approximately the factor 1 million to have more exact millis again.
-                inputMatrix[2][index] = user.getInventoryHeuristicsData().inventoryClicks.get(index).timeDelta;
+                inputMatrix[2][index] = current.timeDelta;
 
                 // ClickTypes
-                inputMatrix[3][index] = user.getInventoryHeuristicsData().inventoryClicks.get(index).clickType.ordinal();
+                inputMatrix[3][index] = current.clickType.ordinal();
+                index--;
             }
-            user.getInventoryHeuristicsData().inventoryClicks.clear();
 
             final String label = user.getInventoryHeuristicsData().trainingLabel;
 

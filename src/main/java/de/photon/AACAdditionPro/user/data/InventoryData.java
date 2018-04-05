@@ -25,7 +25,7 @@ public class InventoryData extends TimeData implements Listener
     /**
      * Used to record inventory interactions for training the neural net.
      */
-    public final Buffer<InventoryClick> inventoryClicks = new Buffer<>(InventoryClick.SAMPLES);
+    public final Buffer<InventoryClick> inventoryClicks = new Buffer<>(20);
 
     /**
      * The last slot a person clicked.<br>

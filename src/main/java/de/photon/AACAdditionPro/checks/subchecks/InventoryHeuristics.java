@@ -23,10 +23,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,53 +71,51 @@ public class InventoryHeuristics implements Listener, ViolationModule
             return;
         }
 
-        if (user.getInventoryData().inventoryClicks.bufferObject(new InventoryClick(
-                event.getRawSlot(),
-                event.getWhoClicked().getOpenInventory().getTopInventory().getType(),
-                event.getClick())))
+        final double[] slotLocation = InventoryUtils.locateSlot(event.getRawSlot(), event.getWhoClicked().getOpenInventory().getTopInventory().getType());
+
+        // Guarantees that there are no gaps in the Buffer.
+        if (slotLocation == null)
+        {
+            return;
+        }
+
+        if (user.getInventoryData().inventoryClicks.bufferObject(new InventoryClick(slotLocation, event.getClick())))
         {
             // Create input map
-            final EnumMap<Input.InputType, List<Double>> inputMap = new EnumMap<>(Input.InputType.class);
+            final EnumMap<Input.InputType, double[]> inputMap = new EnumMap<>(Input.InputType.class);
             for (Input.InputType inputType : Input.InputType.values())
             {
-                inputMap.put(inputType, new ArrayList<>());
+                inputMap.put(inputType, new double[user.getInventoryData().inventoryClicks.size() - 1]);
             }
 
-            // Fill the input map.
-            user.getInventoryData().inventoryClicks.clearLastTwoObjectsIteration((youngerClick, olderClick) -> {
-                // Slot distance
-                // Must be done first as of the continue!
-                double[] locationOfYoungerClick = InventoryUtils.locateSlot(youngerClick.clickedRawSlot, youngerClick.inventoryType);
-                double[] locationOfOlderClick = InventoryUtils.locateSlot(olderClick.clickedRawSlot, olderClick.inventoryType);
+            assert !user.getInventoryData().inventoryClicks.isEmpty();
 
-                // Make sure you only add valid data.
-                if (locationOfOlderClick != null && locationOfYoungerClick != null)
-                {
-                    inputMap.get(Input.InputType.XDISTANCE).add(locationOfYoungerClick[0] - locationOfOlderClick[0]);
-                    inputMap.get(Input.InputType.YDISTANCE).add(locationOfYoungerClick[1] - locationOfOlderClick[1]);
+            // Start at one so the
+            InventoryClick olderClick = user.getInventoryData().inventoryClicks.get(0);
+            InventoryClick youngerClick;
+            for (int index = 1; index < user.getInventoryData().inventoryClicks.size(); index++)
+            {
+                youngerClick = user.getInventoryData().inventoryClicks.get(index);
 
-                    // Timestamps
-                    // Decrease by approximately the factor 1 million to have more exact millis again.
-                    inputMap.get(Input.InputType.TIMEDELTAS).add(0.1 * (youngerClick.timeStamp - olderClick.timeStamp));
+                inputMap.get(Input.InputType.XDISTANCE)[index] = youngerClick.slotLocation[0] - olderClick.slotLocation[0];
+                inputMap.get(Input.InputType.YDISTANCE)[index] = youngerClick.slotLocation[1] - olderClick.slotLocation[1];
 
-                    // ClickTypes
-                    inputMap.get(Input.InputType.CLICKTYPES).add((double) youngerClick.clickType.ordinal());
-                }
-            });
+                // Timestamps
+                // Decrease by approximately the factor 1 million to have more exact millis again.
+                inputMap.get(Input.InputType.TIMEDELTAS)[index] = 0.1 * (youngerClick.timeStamp - olderClick.timeStamp);
+
+                // ClickTypes
+                inputMap.get(Input.InputType.CLICKTYPES)[index] = (double) youngerClick.clickType.ordinal();
+
+                olderClick = youngerClick;
+            }
 
             // Deploy the inputs in the patterns.
             inputMap.forEach(((inputType, doubles) ->
             {
-                // No toArray() call is possible here as of the primitive type.
-                final double[] primitiveValues = new double[doubles.size()];
-                for (int i = 0; i < primitiveValues.length; i++)
-                {
-                    primitiveValues[i] = doubles.get(i);
-                }
-
                 for (Pattern pattern : PATTERNS)
                 {
-                    pattern.setInputData(new Input(inputType, primitiveValues));
+                    pattern.setInputData(new Input(inputType, doubles));
                 }
             }));
 

@@ -22,8 +22,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -103,16 +101,10 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
             final String label = user.getInventoryHeuristicsData().trainingLabel;
 
-            // Deploy the inputs in the patterns.
-            final Map<Pattern, Output[]> outputDataMap = new HashMap<>(PATTERNS.size(), 1);
-
             // Training
             for (Pattern pattern : PATTERNS)
             {
-                outputDataMap.put(pattern, pattern.evaluateOrTrain(pattern.generateDataset(inputMatrix, label)));
-            }
-
-            outputDataMap.forEach((pattern, outputs) -> {
+                final Output[] outputs = pattern.evaluateOrTrain(pattern.generateDataset(inputMatrix, label));
                 Output cheatingOutput = null;
                 for (Output output : outputs)
                 {
@@ -139,7 +131,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                         VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + pattern.getName() + " with a confidence of " + cheatingOutput.getConfidence());
                     }
                 }
-            });
+            }
 
             final double globalConfidence = user.getInventoryHeuristicsData().calculateGlobalConfidence();
             if (globalConfidence != 0)

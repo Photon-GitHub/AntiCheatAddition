@@ -5,7 +5,6 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.events.InventoryHeuristicsEvent;
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
-import de.photon.AACAdditionPro.heuristics.Input;
 import de.photon.AACAdditionPro.heuristics.NeuralPattern;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.heuristics.patterns.HC00000001;
@@ -23,7 +22,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -79,65 +77,39 @@ public class InventoryHeuristics implements Listener, ViolationModule
             return;
         }
 
-        if (user.getInventoryData().inventoryClicks.bufferObject(new InventoryClick(slotLocation, event.getClick())))
+        if (user.getInventoryHeuristicsData().bufferClick(new InventoryClick(slotLocation, event.getClick())))
         {
-            // Create input map
-            final EnumMap<Input.InputType, double[]> inputMap = new EnumMap<>(Input.InputType.class);
-            for (Input.InputType inputType : Input.InputType.values())
+            // -1 because the first entry in the buffer doesn't create data.
+            //
+            // [0] = xDistance
+            // [1] = yDistance
+            // [2] = Time deltas
+            // [3] = ClickTypes
+            final double[][] inputMatrix = new double[4][user.getInventoryHeuristicsData().inventoryClicks.size() - 1];
+
+            for (int index = 0; index < user.getInventoryHeuristicsData().inventoryClicks.size(); index++)
             {
-                inputMap.put(inputType, new double[user.getInventoryData().inventoryClicks.size() - 1]);
-            }
-
-            assert !user.getInventoryData().inventoryClicks.isEmpty();
-
-            // Start at one so the
-            InventoryClick olderClick = user.getInventoryData().inventoryClicks.get(0);
-            InventoryClick youngerClick;
-            for (int index = 1; index < user.getInventoryData().inventoryClicks.size(); index++)
-            {
-                youngerClick = user.getInventoryData().inventoryClicks.get(index);
-
-                inputMap.get(Input.InputType.XDISTANCE)[index] = youngerClick.slotLocation[0] - olderClick.slotLocation[0];
-                inputMap.get(Input.InputType.YDISTANCE)[index] = youngerClick.slotLocation[1] - olderClick.slotLocation[1];
+                inputMatrix[0][index] = user.getInventoryHeuristicsData().inventoryClicks.get(index).xDistance;
+                inputMatrix[1][index] = user.getInventoryHeuristicsData().inventoryClicks.get(index).yDistance;
 
                 // Timestamps
                 // Decrease by approximately the factor 1 million to have more exact millis again.
-                inputMap.get(Input.InputType.TIMEDELTAS)[index] = 0.1 * (youngerClick.timeStamp - olderClick.timeStamp);
+                inputMatrix[2][index] = user.getInventoryHeuristicsData().inventoryClicks.get(index).timeDelta;
 
                 // ClickTypes
-                inputMap.get(Input.InputType.CLICKTYPES)[index] = (double) youngerClick.clickType.ordinal();
-
-                olderClick = youngerClick;
+                inputMatrix[3][index] = user.getInventoryHeuristicsData().inventoryClicks.get(index).clickType.ordinal();
             }
+            user.getInventoryHeuristicsData().inventoryClicks.clear();
+
+            final String label = user.getInventoryHeuristicsData().trainingLabel;
 
             // Deploy the inputs in the patterns.
-            inputMap.forEach(((inputType, doubles) ->
-            {
-                for (Pattern pattern : PATTERNS)
-                {
-                    pattern.setInputData(new Input(inputType, doubles));
-                }
-            }));
-
             final Map<Pattern, Output[]> outputDataMap = new HashMap<>(PATTERNS.size(), 1);
 
             // Training
             for (Pattern pattern : PATTERNS)
             {
-                // Training
-                if (pattern instanceof NeuralPattern &&
-                    user.getInventoryHeuristicsData().trainedPattern != null &&
-                    user.getInventoryHeuristicsData().trainedPattern.getName().equals(pattern.getName()))
-                {
-                    ((NeuralPattern) pattern).train(user.getInventoryHeuristicsData().trainingLabel);
-                    user.getInventoryHeuristicsData().trainingLabel = null;
-                    user.getInventoryHeuristicsData().trainedPattern = null;
-                }
-                // Evaluation only
-                else
-                {
-                    outputDataMap.put(pattern, pattern.evaluate());
-                }
+                outputDataMap.put(pattern, pattern.evaluateOrTrain(pattern.generateDataset(inputMatrix, label)));
             }
 
             outputDataMap.forEach((pattern, outputs) -> {

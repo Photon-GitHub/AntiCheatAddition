@@ -3,8 +3,6 @@ package de.photon.AACAdditionPro.user.data;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.util.datastructures.Buffer;
-import de.photon.AACAdditionPro.util.datawrappers.InventoryClick;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -22,11 +20,6 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class InventoryData extends TimeData implements Listener
 {
-    /**
-     * Used to record inventory interactions for training the neural net.
-     */
-    public final Buffer<InventoryClick> inventoryClicks = new Buffer<>(20);
-
     /**
      * The last slot a person clicked.<br>
      * This variable is used to prevent false positives based on spam-clicking one slot.

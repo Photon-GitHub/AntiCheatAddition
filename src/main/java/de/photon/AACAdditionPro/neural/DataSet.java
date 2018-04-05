@@ -82,7 +82,6 @@ public class DataSet implements Iterable<double[]>
 
         /**
          * This adds a new input to the {@link DataSet}.
-         * Remember to properly
          */
         public DataSetBuilder addInput(double... data)
         {
@@ -92,6 +91,18 @@ public class DataSet implements Iterable<double[]>
             }
 
             this.inputList.add(Objects.requireNonNull(data, "The data added to a DataSet must not be null."));
+            return this;
+        }
+
+        /**
+         * This adds several new inputs to the {@link DataSet}.
+         */
+        public DataSetBuilder addInputs(double[]... inputs)
+        {
+            for (double[] input : inputs)
+            {
+                this.addInput(input);
+            }
             return this;
         }
 

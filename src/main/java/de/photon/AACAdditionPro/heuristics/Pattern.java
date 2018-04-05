@@ -2,9 +2,11 @@ package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.neural.DataSet;
 import de.photon.AACAdditionPro.neural.Output;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+@AllArgsConstructor(suppressConstructorProperties = true)
 public abstract class Pattern
 {
     static final byte PATTERN_VERSION = 2;
@@ -17,17 +19,7 @@ public abstract class Pattern
     @Setter
     private String name;
     @Getter
-    private Input[] inputs;
-
-    public Pattern(String name, Input.InputType[] inputTypes)
-    {
-        this.name = name;
-        this.inputs = new Input[inputTypes.length];
-        for (int i = 0; i < inputTypes.length; i++)
-        {
-            this.inputs[i] = new Input(inputTypes[i], new double[0]);
-        }
-    }
+    private final int[] inputTypes;
 
     protected Output[] createBinaryOutputFromConfidence(double confidence)
     {
@@ -37,42 +29,23 @@ public abstract class Pattern
         return results;
     }
 
-    /**
-     * This updates a certain {@link Input}.
-     * If the desired {@link Input} is not present in this {@link Pattern} it will just be ignored.
-     *
-     * @param input the {@link Input} with the new data.
-     */
-    public void setInputData(final Input input)
-    {
-        for (Input internalInput : this.inputs)
-        {
-            if (internalInput.sameType(input))
-            {
-                internalInput.data = input.data;
-            }
-        }
-    }
-
-    /**
-     * Creates a new {@link DataSet} from the data of inputs.
-     */
-    protected DataSet createDataSetFromInputs(final String label)
+    public DataSet generateDataset(double[][] inputMatrix, String label)
     {
         final DataSet.DataSetBuilder dataSetBuilder = DataSet.builder();
-        for (Input input : this.inputs)
-        {
-            dataSetBuilder.addInput(input.data);
-        }
+        // Will automatically be null if not needed.
         dataSetBuilder.setLabel(label);
-        return dataSetBuilder.build();
+        for (int inputType : this.inputTypes)
+        {
+            dataSetBuilder.addInput(inputMatrix[inputType]);
+        }
+        return DataSet.builder().build();
     }
 
     /**
      * The actual analysis of the {@link Pattern} happens here.
-     * The {@link DataSet} inputs are sorted alphabetically, so that it correlates with the {@link de.photon.AACAdditionPro.heuristics.Input.InputType} enum.
+     * The {@link DataSet} inputs are sorted alphabetically, so that it correlates with the enum.
      */
-    public abstract Output[] evaluate();
+    public abstract Output[] evaluateOrTrain(DataSet dataSet);
 
     /**
      * Additional weight multiplicand to make sure a close-to-zero {@link Pattern} has more impact than another.

@@ -37,7 +37,7 @@ public class NeuralPattern extends Pattern
     }
 
     @Override
-    public Output[] evaluate()
+    public Output[] evaluateOrTrain()
     {
         return this.graph.evaluate(this.createDataSetFromInputs(null));
     }

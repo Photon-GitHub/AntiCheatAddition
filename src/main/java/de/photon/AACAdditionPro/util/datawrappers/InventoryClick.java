@@ -21,4 +21,20 @@ public class InventoryClick
                ", clickType=" + clickType +
                '}';
     }
+
+    public static class BetweenClickInformation
+    {
+        public final long timeDelta;
+        public final double xDistance;
+        public final double yDistance;
+        public final ClickType clickType;
+
+        public BetweenClickInformation(final InventoryClick older, final InventoryClick younger)
+        {
+            this.timeDelta = younger.timeStamp - older.timeStamp;
+            this.xDistance = younger.slotLocation[0] - older.slotLocation[0];
+            this.yDistance = younger.slotLocation[1] - older.slotLocation[1];
+            this.clickType = younger.clickType;
+        }
+    }
 }

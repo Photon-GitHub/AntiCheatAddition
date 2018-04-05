@@ -28,7 +28,7 @@ public class HC00000001 extends Pattern
     }
 
     @Override
-    public Output[] evaluate()
+    public Output[] evaluateOrTrain()
     {
         final DataSet dataSet = this.createDataSetFromInputs(null);
 

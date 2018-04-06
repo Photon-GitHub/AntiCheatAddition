@@ -17,7 +17,7 @@ public class InventoryHeuristicsData
     /**
      * Used to record inventory interactions for training the neural net.
      */
-    public final Buffer<InventoryClick.BetweenClickInformation> inventoryClicks = new Buffer<>(20);
+    public final Buffer<InventoryClick.BetweenClickInformation> inventoryClicks = new Buffer<>(InventoryHeuristics.SAMPLES);
 
     public String trainingLabel = null;
     public NeuralPattern trainedPattern = null;
@@ -79,7 +79,7 @@ public class InventoryHeuristicsData
         patternMap.forEach((patternName, value) -> {
             // Make sure too many low-confidence violations won't flag high global confidence
             // -> use cubic function.
-            summaryStatistics.accept((value * value * value) * 1.2D * Objects.requireNonNull(InventoryHeuristics.getPatternByName(patternName), "Invalid pattern name: " + patternName).getWeight());
+            summaryStatistics.accept((value * value * value) * 1.2D * Objects.requireNonNull(InventoryHeuristics.PATTERNS.get(patternName), "Invalid pattern name: " + patternName).getWeight());
         });
 
         // Make sure that the result is greater or equal than 0.

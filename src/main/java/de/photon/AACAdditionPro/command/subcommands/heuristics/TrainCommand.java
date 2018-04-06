@@ -31,7 +31,7 @@ public class TrainCommand extends InternalCommand
         if (HeuristicsCommand.heuristicsUnlocked())
         {
             final String patternName = arguments.remove();
-            final Pattern pattern = InventoryHeuristics.getPatternByName(patternName);
+            final Pattern pattern = InventoryHeuristics.PATTERNS.get(patternName);
 
             // The Heuristics Header will always be sent.
             sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
@@ -116,15 +116,15 @@ public class TrainCommand extends InternalCommand
         return new String[]{
                 "Train a pattern with an example.",
                 "Train syntax  : /aacadditionpro train <name of pattern> <player to learn from> <output>",
-        };
+                };
     }
 
     @Override
     protected String[] getTabPossibilities()
     {
         return new String[]{
-                "VANILLA",
-                "CHEATING"
+                "vanilla",
+                "cheating"
         };
     }
 }

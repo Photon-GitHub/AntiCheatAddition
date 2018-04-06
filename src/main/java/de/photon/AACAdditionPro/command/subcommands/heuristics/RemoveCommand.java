@@ -9,7 +9,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Queue;
-import java.util.Set;
 
 public class RemoveCommand extends InternalCommand
 {
@@ -24,19 +23,17 @@ public class RemoveCommand extends InternalCommand
         if (HeuristicsCommand.heuristicsUnlocked())
         {
             final String patternName = arguments.remove();
-            final Pattern patternToDelete = InventoryHeuristics.getPatternByName(patternName);
 
             // The Heuristics Header will always be sent.
             sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
 
-            if (patternToDelete != null)
+            if (InventoryHeuristics.PATTERNS.remove(patternName) == null)
             {
-                InventoryHeuristics.getPATTERNS().remove(patternToDelete);
-                sender.sendMessage(ChatColor.GOLD + "Deleted pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\".");
+                sender.sendMessage(HeuristicsCommand.createPatternNotFoundMessage(patternName));
             }
             else
             {
-                sender.sendMessage(HeuristicsCommand.createPatternNotFoundMessage(patternName));
+                sender.sendMessage(ChatColor.GOLD + "Deleted pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\".");
             }
         }
         else
@@ -54,15 +51,6 @@ public class RemoveCommand extends InternalCommand
     @Override
     protected String[] getTabPossibilities()
     {
-        final Set<Pattern> currentNeuralPatterns = InventoryHeuristics.getPATTERNS();
-        String[] patternNames = new String[currentNeuralPatterns.size()];
-
-        int index = 0;
-        for (Pattern currentPattern : currentNeuralPatterns)
-        {
-            patternNames[index++] = currentPattern.getName();
-        }
-
-        return patternNames;
+        return InventoryHeuristics.PATTERNS.values().stream().map(Pattern::getName).toArray(String[]::new);
     }
 }

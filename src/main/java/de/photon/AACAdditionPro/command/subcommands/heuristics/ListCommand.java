@@ -27,7 +27,7 @@ public class ListCommand extends InternalCommand
         {
             sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
 
-            if (!InventoryHeuristics.getPATTERNS().isEmpty())
+            if (!InventoryHeuristics.PATTERNS.isEmpty())
             {
                 // High initial capacity to cover all the patterns easily
                 final StringBuilder messageBuilder = new StringBuilder(256);
@@ -36,7 +36,7 @@ public class ListCommand extends InternalCommand
                 messageBuilder.append("Active heuristics: ");
                 messageBuilder.append(ChatColor.RED);
 
-                final Iterator<Pattern> iterator = InventoryHeuristics.getPATTERNS().iterator();
+                final Iterator<Pattern> iterator = InventoryHeuristics.PATTERNS.values().iterator();
                 Pattern pattern = null;
                 while (iterator.hasNext())
                 {

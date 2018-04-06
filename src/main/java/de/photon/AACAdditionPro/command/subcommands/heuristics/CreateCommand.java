@@ -4,11 +4,9 @@ import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
-import de.photon.AACAdditionPro.heuristics.Input;
 import de.photon.AACAdditionPro.heuristics.NeuralPattern;
 import de.photon.AACAdditionPro.neural.ActivationFunctions;
 import de.photon.AACAdditionPro.neural.Graph;
-import de.photon.AACAdditionPro.util.datawrappers.InventoryClick;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -37,9 +35,9 @@ public class CreateCommand extends InternalCommand
                 final double trainParameter = Double.valueOf(arguments.remove());
                 final double momentum = Double.valueOf(arguments.remove());
 
-                final Input.InputType[] inputTypes = Input.InputType.parseInputTypesFromArgument(arguments.remove());
+                final int[] inputs = InventoryHeuristics.parseInputs(arguments.remove());
 
-                if (InventoryHeuristics.getPATTERNS().stream().anyMatch(pattern -> pattern.getName().equals(patternName)))
+                if (InventoryHeuristics.PATTERNS.containsKey(patternName))
                 {
                     sender.sendMessage(ChatColor.GOLD + "Pattern name \"" + patternName + "\"" + " is already in use.");
                 }
@@ -59,18 +57,18 @@ public class CreateCommand extends InternalCommand
                         }
                     }
 
-                    sender.sendMessage(ChatColor.GOLD + "Created new pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " with " + hiddenLayerConfig.length + " hidden layers and " + inputTypes.length + " inputs.");
+                    sender.sendMessage(ChatColor.GOLD + "Created new pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\"" + " with " + hiddenLayerConfig.length + " hidden layers and " + inputs.length + " inputs.");
 
-                    InventoryHeuristics.getPATTERNS().add(new NeuralPattern(patternName, inputTypes, Graph.builder()
-                                                                                                          .setEpoch(epoch)
-                                                                                                          .setTrainParameter(trainParameter)
-                                                                                                          .setMomentum(momentum)
-                                                                                                          .setInputNeurons(InventoryClick.SAMPLES * inputTypes.length)
-                                                                                                          .addHiddenLayers(hiddenLayerConfig)
-                                                                                                          .addOutput("vanilla")
-                                                                                                          .addOutput("cheating")
-                                                                                                          .setActivationFunction(ActivationFunctions.LEAKY_RECTIFIED_LINEAR_UNIT)
-                                                                                                          .build()));
+                    InventoryHeuristics.PATTERNS.put(patternName, new NeuralPattern(patternName, inputs, Graph.builder()
+                                                                                                              .setEpoch(epoch)
+                                                                                                              .setTrainParameter(trainParameter)
+                                                                                                              .setMomentum(momentum)
+                                                                                                              .setInputNeurons(InventoryHeuristics.SAMPLES * inputs.length)
+                                                                                                              .addHiddenLayers(hiddenLayerConfig)
+                                                                                                              .addOutput("vanilla")
+                                                                                                              .addOutput("cheating")
+                                                                                                              .setActivationFunction(ActivationFunctions.LEAKY_RECTIFIED_LINEAR_UNIT)
+                                                                                                              .build()));
                 }
             } catch (NumberFormatException exception)
             {

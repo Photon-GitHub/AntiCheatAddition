@@ -15,42 +15,60 @@ import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.datawrappers.InventoryClick;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class InventoryHeuristics implements Listener, ViolationModule
 {
+    // Concurrency as heuristics are potentially added concurrently.
+    public static final ConcurrentMap<String, Pattern> PATTERNS;
+    public static final Map<String, Integer> INPUT_MAPPING;
+    public static final int SAMPLES = 20;
+
     final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), -1);
 
     private double detection_confidence = AACAdditionPro.getInstance().getConfig().getDouble(this.getConfigString() + ".detection_confidence") / 100;
 
-    // Concurrency as heuristics are potentially added concurrently.
-    @Getter
-    private static final Set<Pattern> PATTERNS;
-
     static
     {
-        PATTERNS = ConcurrentHashMap.newKeySet();
-        PATTERNS.addAll(NeuralPattern.loadPatterns());
+        // Input handling
+        INPUT_MAPPING = new HashMap<>();
+        INPUT_MAPPING.put("X", 0);
+        INPUT_MAPPING.put("Y", 1);
+        INPUT_MAPPING.put("T", 2);
+        INPUT_MAPPING.put("C", 3);
 
+        PATTERNS = new ConcurrentHashMap<>();
+        // Directly load NeuralPatterns
+        final Set<Pattern> patternsToAdd = new HashSet<>(NeuralPattern.loadPatterns());
         // Hardcoded patterns
-        PATTERNS.add(new HC00000001());
+        patternsToAdd.add(new HC00000001());
 
-        if (PATTERNS.isEmpty())
+        if (patternsToAdd.isEmpty())
         {
             VerboseSender.sendVerboseMessage("InventoryHeuristics: No pattern has been loaded.", true, true);
         }
         else
         {
-            PATTERNS.forEach(pattern -> VerboseSender.sendVerboseMessage("InventoryHeuristics: Loaded pattern " + pattern.getName() + "."));
+            patternsToAdd.forEach(
+                    pattern ->
+                    {
+                        PATTERNS.put(pattern.getName(), pattern);
+                        VerboseSender.sendVerboseMessage("InventoryHeuristics: Loaded pattern " + pattern.getName() + ".");
+                    });
         }
     }
 
@@ -104,7 +122,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
             }
 
             // Training
-            for (Pattern pattern : PATTERNS)
+            for (Pattern pattern : PATTERNS.values())
             {
                 final Output cheatingOutput = Arrays.stream(pattern.evaluateOrTrain(pattern.generateDataset(inputMatrix, user.getInventoryHeuristicsData().trainingLabel)))
                                                     .filter(output -> output.getLabel().equals("cheating"))
@@ -133,23 +151,6 @@ public class InventoryHeuristics implements Listener, ViolationModule
         }
     }
 
-    /**
-     * Gets a {@link NeuralPattern} by its name.
-     *
-     * @return the {@link NeuralPattern} which has the name equal to the provided {@link String} or null if no pattern was found.
-     */
-    public static Pattern getPatternByName(final String patternName)
-    {
-        for (Pattern pattern : PATTERNS)
-        {
-            if (pattern.getName().equals(patternName))
-            {
-                return pattern;
-            }
-        }
-        return null;
-    }
-
     @Override
     public ViolationLevelManagement getViolationLevelManagement()
     {
@@ -160,5 +161,23 @@ public class InventoryHeuristics implements Listener, ViolationModule
     public ModuleType getModuleType()
     {
         return ModuleType.INVENTORY_HEURISTICS;
+    }
+
+    public static int[] parseInputs(final String inputString)
+    {
+        final List<Integer> inputs = new ArrayList<>();
+        INPUT_MAPPING.forEach((keyString, inputIndex) -> {
+            if (inputString.contains(keyString))
+            {
+                inputs.add(inputIndex);
+            }
+        });
+
+        int[] resultingInputs = new int[inputs.size()];
+        for (int i = 0; i < inputs.size(); i++)
+        {
+            resultingInputs[i] = inputs.get(i);
+        }
+        return resultingInputs;
     }
 }

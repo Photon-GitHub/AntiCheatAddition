@@ -2,11 +2,9 @@ package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.neural.DataSet;
 import de.photon.AACAdditionPro.neural.Output;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@AllArgsConstructor(suppressConstructorProperties = true)
 public abstract class Pattern
 {
     static final byte PATTERN_VERSION = 2;
@@ -18,8 +16,15 @@ public abstract class Pattern
     @Getter
     @Setter
     private String name;
+
     @Getter
     private final int[] inputTypes;
+
+    public Pattern(String name, int... inputTypes)
+    {
+        this.name = name;
+        this.inputTypes = inputTypes;
+    }
 
     protected Output[] createBinaryOutputFromConfidence(double confidence)
     {

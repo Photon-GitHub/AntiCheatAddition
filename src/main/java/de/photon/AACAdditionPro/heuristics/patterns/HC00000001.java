@@ -1,6 +1,5 @@
 package de.photon.AACAdditionPro.heuristics.patterns;
 
-import de.photon.AACAdditionPro.heuristics.Input;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.neural.DataSet;
 import de.photon.AACAdditionPro.neural.Output;
@@ -20,29 +19,23 @@ public class HC00000001 extends Pattern
 
     public HC00000001()
     {
-        super("HC00000001", new Input.InputType[]{
-                Input.InputType.TIMEDELTAS,
-                Input.InputType.XDISTANCE,
-                Input.InputType.YDISTANCE
-        });
+        super("HC00000001", 0, 1, 2);
     }
 
     @Override
-    public Output[] evaluateOrTrain()
+    public Output[] evaluateOrTrain(DataSet dataSet)
     {
-        final DataSet dataSet = this.createDataSetFromInputs(null);
-
         // Use a offset sum to detect too consistent clicking.
         // orElse(0) is ok as the steam (and thus the array) must be empty to reach this part of code.
-        final double average = Arrays.stream(dataSet.getData()[0]).average().orElse(0);
-        final double offsetSum = MathUtils.offsetSum(dataSet.getData()[0], average, offset -> offset <= IDLE_THRESHOLD);
+        final double average = Arrays.stream(dataSet.getData()[2]).average().orElse(0);
+        final double offsetSum = MathUtils.offsetSum(dataSet.getData()[2], average, offset -> offset <= IDLE_THRESHOLD);
 
         // Calculate min and max distance
         double minDistance = Double.MAX_VALUE;
         double maxDistance = Double.MIN_VALUE;
-        for (int i = 0; i < dataSet.getData()[1].length; i++)
+        for (int i = 0; i < dataSet.getData()[0].length; i++)
         {
-            final double distance = Math.hypot(dataSet.getData()[1][i], dataSet.getData()[2][i]);
+            final double distance = Math.hypot(dataSet.getData()[0][i], dataSet.getData()[1][i]);
 
             if (distance < minDistance)
             {

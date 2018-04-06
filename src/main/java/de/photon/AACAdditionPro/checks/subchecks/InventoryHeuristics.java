@@ -96,13 +96,11 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
         if (user.getInventoryHeuristicsData().bufferClick(new InventoryClick(slotLocation, event.getClick())))
         {
-            // -1 because the first entry in the buffer doesn't create data.
-            //
             // [0] = xDistance
             // [1] = yDistance
             // [2] = Time deltas
             // [3] = ClickTypes
-            final double[][] inputMatrix = new double[4][user.getInventoryHeuristicsData().inventoryClicks.size() - 1];
+            final double[][] inputMatrix = new double[4][user.getInventoryHeuristicsData().inventoryClicks.size()];
 
             int index = user.getInventoryHeuristicsData().inventoryClicks.size() - 1;
             InventoryClick.BetweenClickInformation current;

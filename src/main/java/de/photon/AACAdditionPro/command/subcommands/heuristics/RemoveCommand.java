@@ -26,15 +26,9 @@ public class RemoveCommand extends InternalCommand
 
             // The Heuristics Header will always be sent.
             sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
-
-            if (InventoryHeuristics.PATTERNS.remove(patternName) == null)
-            {
-                sender.sendMessage(HeuristicsCommand.createPatternNotFoundMessage(patternName));
-            }
-            else
-            {
-                sender.sendMessage(ChatColor.GOLD + "Deleted pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\".");
-            }
+            sender.sendMessage(InventoryHeuristics.PATTERNS.remove(patternName) == null ?
+                               HeuristicsCommand.createPatternNotFoundMessage(patternName) :
+                               ChatColor.GOLD + "Deleted pattern \"" + ChatColor.RED + patternName + ChatColor.GOLD + "\".");
         }
         else
         {

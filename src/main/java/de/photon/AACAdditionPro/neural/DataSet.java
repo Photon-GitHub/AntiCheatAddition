@@ -121,14 +121,6 @@ public class DataSet implements Iterable<double[]>
          */
         public DataSet build()
         {
-            return this.build(1);
-        }
-
-        /**
-         * Builds a {@link DataSet} based on the information of this {@link DataSetBuilder}
-         */
-        public DataSet build(final int samplesPerEntry)
-        {
             // This asserts that this.inputList.get(0) does not return 0.
             if (this.inputList.isEmpty())
             {
@@ -136,7 +128,7 @@ public class DataSet implements Iterable<double[]>
             }
 
             // Swap the data indices to make it possible to iterate over different events, rather than different inputs.
-            final double[][] swappedData = new double[this.inputList.get(0).length][this.inputList.size() / samplesPerEntry];
+            final double[][] swappedData = new double[this.inputList.get(0).length][this.inputList.size()];
 
             for (int inputIndex = 0; inputIndex < this.inputList.get(0).length; inputIndex++)
             {

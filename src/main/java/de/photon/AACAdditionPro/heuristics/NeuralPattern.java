@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.neural.ActivationFunctions;
+import de.photon.AACAdditionPro.neural.DataSet;
 import de.photon.AACAdditionPro.neural.Graph;
 import de.photon.AACAdditionPro.neural.Output;
 import de.photon.AACAdditionPro.util.VerboseSender;
@@ -13,11 +14,9 @@ import lombok.Getter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -30,19 +29,24 @@ public class NeuralPattern extends Pattern
     private final Graph graph;
     private Thread trainingThread = null;
 
-    public NeuralPattern(String name, Input.InputType[] inputTypes, Graph graph)
+    public NeuralPattern(String name, int[] inputTypes, Graph graph)
     {
         super(name, inputTypes);
         this.graph = graph;
     }
 
     @Override
-    public Output[] evaluateOrTrain()
+    public Output[] evaluateOrTrain(DataSet dataSet)
     {
-        return this.graph.evaluate(this.createDataSetFromInputs(null));
+        if (dataSet.hasLabel())
+        {
+            this.train(dataSet);
+            return LEGIT_OUTPUT;
+        }
+        return this.graph.evaluate(dataSet);
     }
 
-    public synchronized void train(final String label)
+    private synchronized void train(DataSet dataSet)
     {
         if (this.trainingThread != null)
         {
@@ -50,7 +54,7 @@ public class NeuralPattern extends Pattern
         }
 
         this.trainingThread = new Thread(() -> {
-            this.graph.train(this.createDataSetFromInputs(label));
+            this.graph.train(dataSet);
 
             try
             {
@@ -132,11 +136,7 @@ public class NeuralPattern extends Pattern
         writer.writeDouble(this.graph.getMomentum());
 
         // Inputs
-        writer.writeByte(this.getInputs().length);
-        for (Input input : this.getInputs())
-        {
-            writer.writeInt(input.getInputType().ordinal());
-        }
+        writer.writeIntegerArray(this.getInputTypes(), true);
 
         // ------------------------- GRAPH
         writer.writeInt(this.graph.getMatrix().length);
@@ -185,14 +185,7 @@ public class NeuralPattern extends Pattern
             final double momentum = input.readDouble();
 
             // Inputs
-            final int[] inputTypeIndices = input.readIntegerArray();
-            final List<Input.InputType> inputList = new ArrayList<>();
-            final Input.InputType[] inputTypes = Input.InputType.values();
-            for (int inputTypeIndex : inputTypeIndices)
-            {
-                inputList.add(inputTypes[inputTypeIndex]);
-            }
-            final Input.InputType[] inputs = inputList.toArray(new Input.InputType[0]);
+            final int[] inputs = input.readIntegerArray();
 
             // The length of the matrix
             final int matrixLength = input.readInt();

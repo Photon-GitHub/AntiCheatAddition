@@ -35,7 +35,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
 {
     // Concurrency as heuristics are potentially added concurrently.
     public static final ConcurrentMap<String, Pattern> PATTERNS;
-    public static final Map<String, Integer> INPUT_MAPPING;
+    private static final Map<String, Integer> INPUT_MAPPING;
     public static final int SAMPLES = 20;
 
     final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), -1);

@@ -35,12 +35,8 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        if (command.getName().equalsIgnoreCase(this.name))
-        {
-            this.invokeCommand(sender, new LinkedList<>(Arrays.asList(args)));
-            return true;
-        }
-        return false;
+        this.invokeCommand(sender, new LinkedList<>(Arrays.asList(args)));
+        return true;
     }
 
     @Override

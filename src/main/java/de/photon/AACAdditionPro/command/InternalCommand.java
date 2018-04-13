@@ -6,14 +6,13 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public abstract class InternalCommand
 {
@@ -123,7 +122,12 @@ public abstract class InternalCommand
      */
     protected List<String> getChildTabs()
     {
-        return this.childCommands.stream().map(internalCommand -> internalCommand.name).collect(Collectors.toList());
+        final List<String> childTabs = new ArrayList<>(this.childCommands.size());
+        for (InternalCommand internalCommand : this.childCommands)
+        {
+            childTabs.add(internalCommand.name);
+        }
+        return childTabs;
     }
 
     /**
@@ -131,6 +135,11 @@ public abstract class InternalCommand
      */
     protected List<String> getPlayerNameTabs()
     {
-        return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList());
+        final List<String> playerNameList = new ArrayList<>();
+        for (Player player : Bukkit.getOnlinePlayers())
+        {
+            playerNameList.add(player.getName());
+        }
+        return playerNameList;
     }
 }

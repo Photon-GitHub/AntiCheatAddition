@@ -120,6 +120,7 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
             {
                 vlManager.flag(user.getPlayer(), cancel_vl, () ->
                 {
+                    //TODO: TEST THIS; THIS MIGHT SEND EMPTY PACKETS ?
                     event.setCancelled(true);
                     //event.getPacket().getDoubles().writeSafely(0, knownPosition.getX());
                     //event.getPacket().getDoubles().writeSafely(2, knownPosition.getZ());

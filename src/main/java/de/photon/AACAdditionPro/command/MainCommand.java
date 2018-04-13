@@ -24,7 +24,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
 
     private MainCommand()
     {
-        super("aacadditionpro", (byte) 0,
+        super("aacadditionpro", null, (byte) 0,
               new EntityCheckCommand(),
               new HeuristicsCommand(),
               new InfoCommand(),

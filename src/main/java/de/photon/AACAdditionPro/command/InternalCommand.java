@@ -28,11 +28,6 @@ public abstract class InternalCommand
     @Getter
     private final Set<InternalCommand> childCommands;
 
-    public InternalCommand(String name, byte minArguments, InternalCommand... childCommands)
-    {
-        this(name, null, minArguments, childCommands);
-    }
-
     public InternalCommand(String name, InternalPermission permission, byte minArguments, InternalCommand... childCommands)
     {
         this(name, permission, false, minArguments, childCommands);

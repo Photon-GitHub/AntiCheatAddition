@@ -10,6 +10,7 @@ import de.photon.AACAdditionPro.neural.Graph;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
 import java.util.Queue;
 
 public class CreateCommand extends InternalCommand
@@ -94,7 +95,7 @@ public class CreateCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
         return getChildTabs();
     }

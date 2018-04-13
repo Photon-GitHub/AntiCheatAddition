@@ -8,7 +8,9 @@ import de.photon.AACAdditionPro.heuristics.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 public class RenameCommand extends InternalCommand
 {
@@ -60,8 +62,8 @@ public class RenameCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
-        return getChildTabs();
+        return InventoryHeuristics.PATTERNS.values().stream().map(Pattern::getName).collect(Collectors.toList());
     }
 }

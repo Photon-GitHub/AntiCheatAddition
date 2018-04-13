@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.command.subcommands;
 
+import com.google.common.collect.ImmutableList;
 import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.user.User;
@@ -8,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Queue;
 
 public class VerboseCommand extends InternalCommand
@@ -41,7 +43,7 @@ public class VerboseCommand extends InternalCommand
             return;
         }
 
-        if (arguments.size() == 1)
+        if (arguments.peek() != null)
         {
             switch (arguments.peek().toLowerCase())
             {
@@ -72,11 +74,8 @@ public class VerboseCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
-        return new String[]{
-                "on",
-                "off"
-        };
+        return ImmutableList.of("on", "off");
     }
 }

@@ -11,6 +11,7 @@ import de.photon.AACAdditionPro.command.subcommands.heuristics.TrainCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
 import java.util.Queue;
 
 public class HeuristicsCommand extends InternalCommand
@@ -49,25 +50,7 @@ public class HeuristicsCommand extends InternalCommand
         {
             sender.sendMessage(HEURISTICS_HEADER);
             sender.sendMessage(ChatColor.GOLD + "Welcome to the heuristics framework.");
-
-            final StringBuilder welcomeBuilder = new StringBuilder(32);
-            welcomeBuilder.append(ChatColor.RED);
-            welcomeBuilder.append("Possible commands: ");
-            welcomeBuilder.append(ChatColor.GOLD);
-
-            for (String s : this.getChildTabs())
-            {
-                welcomeBuilder.append(s);
-                welcomeBuilder.append(", ");
-            }
-
-            // Delete the last comma and space
-            for (int i = 0; i < 2; i++)
-            {
-                welcomeBuilder.deleteCharAt(welcomeBuilder.length() - 1);
-            }
-
-            sender.sendMessage(welcomeBuilder.toString());
+            sender.sendMessage(String.valueOf(ChatColor.RED) + "Possible commands: " + ChatColor.GOLD + String.join(", ", this.getChildTabs()));
         }
     }
 
@@ -93,7 +76,7 @@ public class HeuristicsCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
         return getChildTabs();
     }

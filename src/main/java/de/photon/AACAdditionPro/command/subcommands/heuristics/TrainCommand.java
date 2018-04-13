@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.command.subcommands.heuristics;
 
+import com.google.common.collect.ImmutableList;
 import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.command.InternalCommand;
@@ -16,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Queue;
 
 public class TrainCommand extends InternalCommand
@@ -120,11 +122,8 @@ public class TrainCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
-        return new String[]{
-                "vanilla",
-                "cheating"
-        };
+        return ImmutableList.of("vanilla", "cheating");
     }
 }

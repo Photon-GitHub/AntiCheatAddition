@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Queue;
 
 public class ListCommand extends InternalCommand
@@ -98,7 +99,7 @@ public class ListCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
         return getChildTabs();
     }

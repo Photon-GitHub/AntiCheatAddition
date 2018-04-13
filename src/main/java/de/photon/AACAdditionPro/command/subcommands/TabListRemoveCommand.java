@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Queue;
 
 public class TabListRemoveCommand extends InternalCommand
@@ -83,8 +84,8 @@ public class TabListRemoveCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
-        return new String[0];
+        return this.getPlayerNameTabs();
     }
 }

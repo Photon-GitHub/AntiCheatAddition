@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Queue;
 
 public class EntityCheckCommand extends InternalCommand
@@ -138,7 +139,7 @@ public class EntityCheckCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
         return this.getPlayerNameTabs();
     }

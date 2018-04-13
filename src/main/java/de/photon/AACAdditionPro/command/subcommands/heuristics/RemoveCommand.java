@@ -8,7 +8,9 @@ import de.photon.AACAdditionPro.heuristics.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 public class RemoveCommand extends InternalCommand
 {
@@ -43,8 +45,8 @@ public class RemoveCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
-        return InventoryHeuristics.PATTERNS.values().stream().map(Pattern::getName).toArray(String[]::new);
+        return InventoryHeuristics.PATTERNS.values().stream().map(Pattern::getName).collect(Collectors.toList());
     }
 }

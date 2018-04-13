@@ -6,11 +6,14 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class InternalCommand
 {
@@ -49,7 +52,7 @@ public abstract class InternalCommand
         this.minArguments = minArguments;
         this.maxArguments = maxArguments;
 
-        this.childCommands = childCommands.length != 0 ? ImmutableSet.copyOf(childCommands) : null;
+        this.childCommands = childCommands.length != 0 ? ImmutableSet.copyOf(childCommands) : Collections.EMPTY_SET;
     }
 
     void invokeCommand(CommandSender sender, Queue<String> arguments)
@@ -68,18 +71,15 @@ public abstract class InternalCommand
                     return;
                 }
 
-                if (this.childCommands != null)
+                // Delegate to SubCommands
+                for (final InternalCommand internalCommand : this.childCommands)
                 {
-                    // Delegate to SubCommands
-                    for (final InternalCommand internalCommand : this.childCommands)
+                    if (arguments.peek().equalsIgnoreCase(internalCommand.name))
                     {
-                        if (arguments.peek().equalsIgnoreCase(internalCommand.name))
-                        {
-                            // Remove the current command arg
-                            arguments.remove();
-                            internalCommand.invokeCommand(sender, arguments);
-                            return;
-                        }
+                        // Remove the current command arg
+                        arguments.remove();
+                        internalCommand.invokeCommand(sender, arguments);
+                        return;
                     }
                 }
             }
@@ -116,32 +116,21 @@ public abstract class InternalCommand
 
     protected abstract String[] getCommandHelp();
 
-    protected abstract String[] getTabPossibilities();
+    protected abstract List<String> getTabPossibilities();
 
-    protected String[] getChildTabs()
+    /**
+     * Returns an array of {@link String}s containing the names of all child commands.
+     */
+    protected List<String> getChildTabs()
     {
-        final Collection<InternalCommand> children = this.getChildCommands();
-        final String[] tabs = new String[children.size()];
-
-        int index = 0;
-        for (InternalCommand child : children)
-        {
-            tabs[index++] = child.name;
-        }
-
-        return tabs;
+        return this.childCommands.stream().map(internalCommand -> internalCommand.name).collect(Collectors.toList());
     }
 
-    protected String[] getPlayerNameTabs()
+    /**
+     * Returns an array of {@link String}s containing the names of all currently online players.
+     */
+    protected List<String> getPlayerNameTabs()
     {
-        final Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-        final String[] tab = new String[onlinePlayers.size()];
-
-        int index = 0;
-        for (Player player : onlinePlayers)
-        {
-            tab[index++] = player.getName();
-        }
-        return tab;
+        return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList());
     }
 }

@@ -32,7 +32,7 @@ public class InventoryRotation implements Listener, ViolationModule
             !user.getTeleportData().recentlyUpdated(0, 1000) &&
             // Player is in an inventory
             user.getInventoryData().hasOpenInventory() &&
-            // Was already in inventory
+            // The player has opened his inventory for at least one second.
             user.getInventoryData().notRecentlyOpened(1000))
         {
             vlManager.flag(event.getPlayer(), -1, () -> {}, () -> {});

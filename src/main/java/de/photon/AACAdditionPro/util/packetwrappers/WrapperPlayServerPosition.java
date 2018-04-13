@@ -167,7 +167,15 @@ public class WrapperPlayServerPosition extends AbstractPacket
     }
 
     /**
-     * Sets all flags of this packet, i.e.:
+     * Sets no relative movement flags.
+     */
+    public void setNoFlags()
+    {
+        this.setFlags(new HashSet<>());
+    }
+
+    /**
+     * Sets all relative movement flags of this packet, i.e.:
      * {@link PlayerTeleportFlag#X}, <br>
      * {@link PlayerTeleportFlag#Y}, <br>
      * {@link PlayerTeleportFlag#Z}, <br>

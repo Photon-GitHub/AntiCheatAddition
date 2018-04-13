@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.command;
 
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.InternalPermission;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -7,9 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 
@@ -50,14 +49,7 @@ public abstract class InternalCommand
         this.minArguments = minArguments;
         this.maxArguments = maxArguments;
 
-        if (childCommands.length > 1)
-        {
-            this.childCommands = new HashSet<>(Arrays.asList(childCommands));
-        }
-        else
-        {
-            this.childCommands = null;
-        }
+        this.childCommands = childCommands.length != 0 ? ImmutableSet.copyOf(childCommands) : null;
     }
 
     void invokeCommand(CommandSender sender, Queue<String> arguments)
@@ -65,7 +57,7 @@ public abstract class InternalCommand
         // No permission is set or the sender has the permission
         if (InternalPermission.hasPermission(sender, this.permission))
         {
-            if (arguments.size() > 0)
+            if (arguments.peek() != null)
             {
                 if (arguments.peek().equals("?"))
                 {
@@ -76,12 +68,10 @@ public abstract class InternalCommand
                     return;
                 }
 
-                final Set<InternalCommand> childCommands = this.getChildCommands();
-
-                if (childCommands != null)
+                if (this.childCommands != null)
                 {
                     // Delegate to SubCommands
-                    for (final InternalCommand internalCommand : childCommands)
+                    for (final InternalCommand internalCommand : this.childCommands)
                     {
                         if (arguments.peek().equalsIgnoreCase(internalCommand.name))
                         {

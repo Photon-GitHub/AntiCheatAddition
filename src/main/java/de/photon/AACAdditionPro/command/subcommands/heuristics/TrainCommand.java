@@ -117,8 +117,8 @@ public class TrainCommand extends InternalCommand
     {
         return new String[]{
                 "Train a pattern with an example.",
-                "Train syntax  : /aacadditionpro train <name of pattern> <player to learn from> <output>",
-                };
+                "Train syntax  : /aacadditionpro train <name of pattern> <player to learn from> <output>"
+        };
     }
 
     @Override

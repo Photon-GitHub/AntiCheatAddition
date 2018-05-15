@@ -61,7 +61,7 @@ public class LookPacketData extends TimeData
     /**
      * Adds or merges a new {@link RotationChange}
      */
-    public void bufferRotationChange(final RotationChange rotationChange)
+    public synchronized void bufferRotationChange(final RotationChange rotationChange)
     {
         // Same tick -> merge
         if (rotationChange.getTime() - this.rotationChangeQueue.getLast().getTime() < 55)
@@ -86,15 +86,14 @@ public class LookPacketData extends TimeData
      * [0] is the sum of the angle changes <br>
      * [1] is the sum of the angle offsets
      */
-    public float[] getAngleInformation()
+    public synchronized float[] getAngleInformation()
     {
         final float[] result = new float[2];
-
-        final Collection<Float> rotationCache = new ArrayList<>(this.rotationChangeQueue.size());
 
         // Ticks that must be added to fill up the gaps in the queue.
         short gapFillers = 0;
 
+        final Collection<Float> rotationCache = new ArrayList<>(this.rotationChangeQueue.size());
         final RotationChange[] elementArray = this.rotationChangeQueue.toArray(new RotationChange[0]);
 
         // Start at 1 as of the 0 element being the first "last element".

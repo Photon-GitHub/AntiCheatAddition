@@ -58,12 +58,10 @@ public class VerboseCommand extends InternalCommand
                     break;
             }
         }
-        else
-        {
-            //Toggle mode
-            user.verbose = toggleTo;
-            sendToggleMessage(sender, user.verbose);
-        }
+        
+        //Toggle mode
+        user.verbose = toggleTo;
+        sendToggleMessage(sender, user.verbose);
     }
 
     @Override

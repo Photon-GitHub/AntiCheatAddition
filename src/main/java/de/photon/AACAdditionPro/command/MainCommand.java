@@ -12,8 +12,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.stream.Collectors;
@@ -35,7 +35,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        this.invokeCommand(sender, new LinkedList<>(Arrays.asList(args)));
+        this.invokeCommand(sender, new ArrayDeque<>(Arrays.asList(args)));
         return true;
     }
 

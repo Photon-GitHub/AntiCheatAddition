@@ -50,15 +50,15 @@ public class VerboseCommand extends InternalCommand
             {
                 case "on":
                     toggleTo = true;
-                    return;
+                    break;
                 case "off":
                     toggleTo = false;
-                    return;
+                    break;
                 default:
                     break;
             }
         }
-        
+
         //Toggle mode
         user.verbose = toggleTo;
         sendToggleMessage(sender, user.verbose);

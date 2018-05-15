@@ -43,17 +43,16 @@ public class VerboseCommand extends InternalCommand
             return;
         }
 
+        boolean toggleTo = !user.verbose;
         if (arguments.peek() != null)
         {
             switch (arguments.peek().toLowerCase())
             {
                 case "on":
-                    user.verbose = true;
-                    sendToggleMessage(sender, true);
+                    toggleTo = true;
                     return;
                 case "off":
-                    user.verbose = false;
-                    sendToggleMessage(sender, false);
+                    toggleTo = false;
                     return;
                 default:
                     break;
@@ -62,7 +61,7 @@ public class VerboseCommand extends InternalCommand
         else
         {
             //Toggle mode
-            user.verbose = !user.verbose;
+            user.verbose = toggleTo;
             sendToggleMessage(sender, user.verbose);
         }
     }

@@ -29,17 +29,19 @@ public class SkinBlinker extends PacketAdapter implements ViolationModule
          * -> As of the render-debug-cycle which can be done in the game (F3 + F) I need to check for the change of the skin.
          */
 
-        // Sprinting or sneaking (detection)
-        if (event.getPlayer().isSprinting() || event.getPlayer().isSneaking())
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        // Not bypassed
+        if (User.isUserInvalid(user))
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            return;
+        }
 
-            // Not bypassed
-            if (User.isUserInvalid(user))
-            {
-                return;
-            }
-
+        // Has not recently logged in to prevent problems with ProtocolLib's temporary players.
+        if (!user.getLoginData().recentlyUpdated(0, 1000) &&
+            // Sprinting or sneaking (detection)
+            (event.getPlayer().isSprinting() || event.getPlayer().isSneaking()))
+        {
             final int newSkinComponents = event.getPacket().getIntegers().readSafely(1);
 
             // In the beginning oldSkinComponents is 0.

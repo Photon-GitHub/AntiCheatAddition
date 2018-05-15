@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.command;
 
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.InternalPermission;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -7,16 +8,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
 public abstract class InternalCommand
 {
     protected static final String PREFIX = ChatColor.DARK_RED + "[AACAdditionPro] ";
-    protected static final String PLAYER_NOT_FOUND_MESSAGE = PREFIX + ChatColor.RED + "Player could not be found.";
 
     public final String name;
     private final InternalPermission permission;
@@ -26,11 +26,6 @@ public abstract class InternalCommand
 
     @Getter
     private final Set<InternalCommand> childCommands;
-
-    public InternalCommand(String name, byte minArguments, InternalCommand... childCommands)
-    {
-        this(name, null, minArguments, childCommands);
-    }
 
     public InternalCommand(String name, InternalPermission permission, byte minArguments, InternalCommand... childCommands)
     {
@@ -50,14 +45,7 @@ public abstract class InternalCommand
         this.minArguments = minArguments;
         this.maxArguments = maxArguments;
 
-        if (childCommands.length > 1)
-        {
-            this.childCommands = new HashSet<>(Arrays.asList(childCommands));
-        }
-        else
-        {
-            this.childCommands = null;
-        }
+        this.childCommands = childCommands.length != 0 ? ImmutableSet.copyOf(childCommands) : Collections.EMPTY_SET;
     }
 
     void invokeCommand(CommandSender sender, Queue<String> arguments)
@@ -65,7 +53,7 @@ public abstract class InternalCommand
         // No permission is set or the sender has the permission
         if (InternalPermission.hasPermission(sender, this.permission))
         {
-            if (arguments.size() > 0)
+            if (arguments.peek() != null)
             {
                 if (arguments.peek().equals("?"))
                 {
@@ -76,20 +64,15 @@ public abstract class InternalCommand
                     return;
                 }
 
-                final Set<InternalCommand> childCommands = this.getChildCommands();
-
-                if (childCommands != null)
+                // Delegate to SubCommands
+                for (final InternalCommand internalCommand : this.childCommands)
                 {
-                    // Delegate to SubCommands
-                    for (final InternalCommand internalCommand : childCommands)
+                    if (arguments.peek().equalsIgnoreCase(internalCommand.name))
                     {
-                        if (arguments.peek().equalsIgnoreCase(internalCommand.name))
-                        {
-                            // Remove the current command arg
-                            arguments.remove();
-                            internalCommand.invokeCommand(sender, arguments);
-                            return;
-                        }
+                        // Remove the current command arg
+                        arguments.remove();
+                        internalCommand.invokeCommand(sender, arguments);
+                        return;
                     }
                 }
             }
@@ -126,32 +109,76 @@ public abstract class InternalCommand
 
     protected abstract String[] getCommandHelp();
 
-    protected abstract String[] getTabPossibilities();
+    protected abstract List<String> getTabPossibilities();
 
-    protected String[] getChildTabs()
+    /**
+     * Returns an array of {@link String}s containing the names of all child commands.
+     */
+    protected List<String> getChildTabs()
     {
-        final Collection<InternalCommand> children = this.getChildCommands();
-        final String[] tabs = new String[children.size()];
-
-        int index = 0;
-        for (InternalCommand child : children)
+        final List<String> childTabs = new ArrayList<>(this.childCommands.size());
+        for (InternalCommand internalCommand : this.childCommands)
         {
-            tabs[index++] = child.name;
+            childTabs.add(internalCommand.name);
         }
-
-        return tabs;
+        return childTabs;
     }
 
-    protected String[] getPlayerNameTabs()
+    /**
+     * Returns an array of {@link String}s containing the names of all currently online players.
+     */
+    protected List<String> getPlayerNameTabs()
     {
-        final Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
-        final String[] tab = new String[onlinePlayers.size()];
-
-        int index = 0;
-        for (Player player : onlinePlayers)
+        final List<String> playerNameList = new ArrayList<>();
+        for (Player player : Bukkit.getOnlinePlayers())
         {
-            tab[index++] = player.getName();
+            playerNameList.add(player.getName());
         }
-        return tab;
+        return playerNameList;
+    }
+
+    /**
+     * Checks a numeric argument for correctness.
+     *
+     * @param sender   the sender of the command (necessary for error messsages)
+     * @param argument the {@link String} which should be the desired number
+     * @param min      the lower boundary of the number
+     * @param max      the upper boundary of the number
+     *
+     * @return null if the argument is not a number, too big or too small and the number if everything is fine.
+     */
+    public static Double validateNumberArgument(CommandSender sender, String argument, double min, double max)
+    {
+        final double number;
+        try
+        {
+            number = Double.valueOf(argument);
+        } catch (NumberFormatException exception)
+        {
+            sender.sendMessage(PREFIX + ChatColor.RED + "Please enter a valid number.");
+            return null;
+        }
+
+        if (number > max)
+        {
+            sender.sendMessage(PREFIX + ChatColor.RED + "The number must at most be " + max);
+            return null;
+        }
+
+        if (number < min)
+        {
+            sender.sendMessage(PREFIX + ChatColor.RED + "The number must at least be " + min);
+            return null;
+        }
+
+        return number;
+    }
+
+    /**
+     * Sends a message showing that a "Player could not be found."
+     */
+    public static void sendPlayerNotFoundMessage(CommandSender sender)
+    {
+        sender.sendMessage(PREFIX + ChatColor.RED + "Player could not be found.");
     }
 }

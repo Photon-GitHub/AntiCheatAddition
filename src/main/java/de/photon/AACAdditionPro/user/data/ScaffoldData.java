@@ -11,8 +11,9 @@ import lombok.Getter;
 
 public class ScaffoldData extends TimeData
 {
+    // Default buffer size is 6, being well tested.
+    private static int BUFFER_SIZE = 6;
     // Use static here as Datas are often created.
-    private static int BUFFER_SIZE = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.buffer_size");
     private static double DELAY_NORMAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.normal");
     private static double SNEAKING_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_addition");
     private static double SNEAKING_SLOW_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_slow_addition");

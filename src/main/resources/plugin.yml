@@ -9,6 +9,7 @@ main: de.photon.AACAdditionPro.AACAdditionPro
 
 commands:
   aacadditionpro:
+    aliases: aacadp
     description: The main command of AACAdditionPro.
     usage: /aacadditionpro
 permissions:

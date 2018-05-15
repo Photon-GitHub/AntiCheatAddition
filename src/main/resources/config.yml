@@ -212,14 +212,6 @@ InventoryHeuristics:
    # THIS IS A VERY POWERFUL TOOL AND CAN CRIPPLE YOUR SERVER IF USED IN THE WRONG WAY.
    # I WILL _NOT_ PROVIDE SUPPORT FOR THIS FUNCTION: USE AT YOUR OWN RISK!
    unlock_full_framework: false
-   # Options in this section will only have effects after enabling unlock_full_framework.
-   framework:
-      # The epoch when training a neural net.
-      epoch: 15000
-      # The train parameter of all neural nets
-      train_parameter: 0.6931
-      # The momentum parameter of all neural nets
-      momentum_parameter: 0.4055
    # Map of confidence levels to command
    # Confidences will not add up.
    # 100 is the maximum confidence possible to reach.
@@ -251,6 +243,10 @@ InventoryMove:
    # Violation before AACAdditionPro starts to cancel the movements.
    # Set this to 0 to never cancel movement.
    cancel_vl: 10
+   # This allows to add more lenience on servers with very high-ping players by stretching the no-punish time after
+   # opening an inventory.
+   # Normal connections are already covered by the default values.
+   lenience_millis: 0
    # Map of violation levels to command
    # The sprint/sneak module will generate 4 vl when failed.
    # The packet module will generate 1 vl when failed.
@@ -452,8 +448,6 @@ Scaffold:
             sneaking_slow_addition: 40
             # This delay applies to diagonal building
             diagonal: 148
-         # Over how many values should AACAdditionPro take the average for the check
-         buffer_size: 6
       # This part detects suspicious placement positions.
       # The position check always adds 5 vl.
       position:
@@ -544,9 +538,6 @@ Tower:
    # Violation before AACAdditionPro starts to cancel the block-places.
    # Set this to 0 to never cancel block-places.
    cancel_vl: 6
-   # Over how much values should AACAdditionPro take the average used for the check
-   # Lower values increase the detection speed but can cause more false positives.
-   buffer_size: 6
    # If you have false positives decrease this SLIGHTLY.
    # The new Tower check has its own leniency-curve which makes it very effective.
    # Therefore please only touch this if you have false positives

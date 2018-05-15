@@ -1,34 +1,40 @@
 package de.photon.AACAdditionPro.util.datawrappers;
 
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryType;
+
+import java.util.Arrays;
 
 @RequiredArgsConstructor(suppressConstructorProperties = true)
 public class InventoryClick
 {
-    /**
-     * How many {@link de.photon.AACAdditionPro.util.datawrappers.InventoryClick}s should {@link de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics} analyse in one run
-     */
-    public static final byte SAMPLES = 20;
-
-    public final Material type;
     public final long timeStamp = System.currentTimeMillis();
-    public final int clickedRawSlot;
-    public final InventoryType inventoryType;
-    public final InventoryType.SlotType slotType;
+    public final double[] slotLocation;
     public final ClickType clickType;
 
     @Override
     public String toString()
     {
         return "InventoryClick{" +
-               "type=" + type +
-               ", timeStamp=" + timeStamp +
-               ", clickedRawSlot=" + clickedRawSlot +
-               ", inventoryType=" + inventoryType +
-               ", slotType=" + slotType +
-               ", clickType=" + clickType + '}';
+               "timeStamp=" + timeStamp +
+               ", slotLocation=" + Arrays.toString(slotLocation) +
+               ", clickType=" + clickType +
+               '}';
+    }
+
+    public static class BetweenClickInformation
+    {
+        public final long timeDelta;
+        public final double xDistance;
+        public final double yDistance;
+        public final ClickType clickType;
+
+        public BetweenClickInformation(final InventoryClick older, final InventoryClick younger)
+        {
+            this.timeDelta = younger.timeStamp - older.timeStamp;
+            this.xDistance = younger.slotLocation[0] - older.slotLocation[0];
+            this.yDistance = younger.slotLocation[1] - older.slotLocation[1];
+            this.clickType = younger.clickType;
+        }
     }
 }

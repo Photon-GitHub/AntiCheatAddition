@@ -58,20 +58,10 @@ public enum ServerVersion
      */
     public static ServerVersion getClientServerVersion(final Player player)
     {
-        if (player == null)
-        {
-            return activeServerVersion;
-        }
-
         final ViaAPI<Player> viaAPI = AACAdditionPro.getInstance().getViaAPI();
 
-        if (viaAPI == null)
-        {
-            return activeServerVersion;
-        }
-        else
-        {
-            return VersionControl.getServerVersionFromProtocolVersion(viaAPI.getPlayerVersion(player));
-        }
+        return viaAPI == null || player == null ?
+               activeServerVersion :
+               VersionControl.getServerVersionFromProtocolVersion(viaAPI.getPlayerVersion(player));
     }
 }

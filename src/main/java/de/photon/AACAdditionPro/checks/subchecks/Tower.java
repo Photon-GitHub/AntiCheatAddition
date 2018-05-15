@@ -11,6 +11,7 @@ import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.block.Block;
@@ -27,6 +28,11 @@ import java.util.DoubleSummaryStatistics;
 public class Tower implements Listener, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
+
+    private static double[] amplifierChache = {
+            // 478.4 * 0.925
+            442.52D
+    };
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -56,7 +62,7 @@ public class Tower implements Listener, ViolationModule
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void on(final BlockPlaceEvent event)
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
@@ -67,8 +73,25 @@ public class Tower implements Listener, ViolationModule
             return;
         }
 
+        boolean levitation;
+        switch (ServerVersion.getActiveServerVersion())
+        {
+            case MC188:
+                levitation = false;
+                break;
+            case MC110:
+            case MC111:
+            case MC112:
+                levitation = user.getPlayer().hasPotionEffect(PotionEffectType.LEVITATION);
+                break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
+
         // Not flying
-        if (!user.getPlayer().isFlying())
+        if (!user.getPlayer().isFlying() &&
+            // Not levitating
+            !levitation)
         {
             final Block blockPlaced = event.getBlockPlaced();
             // User must stand above the block (placed from above)1
@@ -129,10 +152,10 @@ public class Tower implements Listener, ViolationModule
     private double calculateDelay(final Integer amplifier)
     {
         // No JUMP_BOOST
+
         if (amplifier == null)
         {
-            // 478.4 * 0.925
-            return 442.52;
+            return amplifierChache[0];
         }
 
         // Player has JUMP_BOOST
@@ -140,6 +163,11 @@ public class Tower implements Listener, ViolationModule
         {
             // Negative JUMP_BOOST -> Not allowed to place blocks -> Very high delay
             return 1500;
+        }
+
+        if (amplifier + 1 < amplifierChache.length)
+        {
+            return amplifierChache[amplifier + 1];
         }
 
         // How many blocks can potentially be placed during one jump cycle

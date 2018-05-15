@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.command.subcommands;
 
+import com.google.common.collect.ImmutableList;
 import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.user.User;
@@ -8,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Queue;
 
 public class VerboseCommand extends InternalCommand
@@ -41,28 +43,25 @@ public class VerboseCommand extends InternalCommand
             return;
         }
 
-        if (arguments.size() == 1)
+        boolean toggleTo = !user.verbose;
+        if (arguments.peek() != null)
         {
             switch (arguments.peek().toLowerCase())
             {
                 case "on":
-                    user.verbose = true;
-                    sendToggleMessage(sender, true);
-                    return;
+                    toggleTo = true;
+                    break;
                 case "off":
-                    user.verbose = false;
-                    sendToggleMessage(sender, false);
-                    return;
+                    toggleTo = false;
+                    break;
                 default:
                     break;
             }
         }
-        else
-        {
-            //Toggle mode
-            user.verbose = !user.verbose;
-            sendToggleMessage(sender, user.verbose);
-        }
+
+        //Toggle mode
+        user.verbose = toggleTo;
+        sendToggleMessage(sender, user.verbose);
     }
 
     @Override
@@ -72,11 +71,8 @@ public class VerboseCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
-        return new String[]{
-                "on",
-                "off"
-        };
+        return ImmutableList.of("on", "off");
     }
 }

@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Queue;
 
 public class EntityCheckCommand extends InternalCommand
@@ -41,90 +42,89 @@ public class EntityCheckCommand extends InternalCommand
 
             if (player == null)
             {
-                sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
+                InternalCommand.sendPlayerNotFoundMessage(sender);
             }
             else
             {
-                final short checkDuration;
-                try
+                final Double tempCheckDuration = InternalCommand.validateNumberArgument(sender, arguments.remove(), 0, 10000);
+                if (tempCheckDuration != null)
                 {
-                    checkDuration = Short.valueOf(arguments.remove());
-                } catch (NumberFormatException exception)
-                {
-                    sender.sendMessage(PREFIX + ChatColor.RED + "Please enter a valid duration");
-                    return;
-                }
+                    final short checkDuration = tempCheckDuration.shortValue();
 
-                if (checkDuration > 10000)
-                {
-                    sender.sendMessage(PREFIX + ChatColor.RED + "The duration must at most be 10000 ticks.");
-                    return;
-                }
-
-                final User user = UserManager.getUser(player.getUniqueId());
-
-                if (user == null)
-                {
-                    sender.sendMessage(PREFIX + ChatColor.RED + "Invalid user parsing. Has the player logged recently?");
-                    return;
-                }
-
-                if (user.isBypassed())
-                {
-                    sender.sendMessage(PREFIX + ChatColor.RED + "The target user has bypass permissions.");
-                    return;
-                }
-
-                if (user.getClientSideEntityData().clientSidePlayerEntity == null)
-                {
-                    try
+                    final User user = UserManager.getUser(player.getUniqueId());
+                    if (user == null)
                     {
-                        final Module module = AACAdditionPro.getInstance().getModuleManager().getModule(ModuleType.KILLAURA_ENTITY);
-
-                        final Method respawnEntityMethod = KillauraEntity.class.getDeclaredMethod("respawnEntity", Player.class);
-                        respawnEntityMethod.setAccessible(true);
-                        respawnEntityMethod.invoke(module, user.getPlayer());
-
-                        arguments.add(player.getName());
-                        arguments.add(String.valueOf(checkDuration));
-
-                        if (user.getClientSideEntityData().respawnTries++ > MAX_ITERATIONS)
-                        {
-                            throw new IllegalStateException("Too many respawn iterations.");
-                        }
-
-                        Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> this.execute(sender, arguments), 5L);
-                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | IllegalStateException e)
-                    {
-                        sender.sendMessage(PREFIX + ChatColor.RED + "Critical error whilst trying to respawn the entity.");
-                        VerboseSender.sendVerboseMessage("Critical error whilst trying to respawn the entity.", true, true);
-                        e.printStackTrace();
+                        sender.sendMessage(PREFIX + ChatColor.RED + "Invalid user parsing. Has the player logged recently?");
+                        return;
                     }
-                }
-                else
-                {
-                    user.getClientSideEntityData().respawnTries = 0;
-                    if (user.getClientSideEntityData().clientSidePlayerEntity.isVisible())
+
+                    if (user.isBypassed())
                     {
-                        sender.sendMessage(PREFIX + ChatColor.RED + "A check of the player is already in progress.");
+                        sender.sendMessage(PREFIX + ChatColor.RED + "The target user has bypass permissions.");
+                        return;
+                    }
+
+                    if (user.getClientSideEntityData().clientSidePlayerEntity == null)
+                    {
+                        try
+                        {
+                            final Module module = AACAdditionPro.getInstance().getModuleManager().getModule(ModuleType.KILLAURA_ENTITY);
+
+                            final Method respawnEntityMethod = KillauraEntity.class.getDeclaredMethod("respawnEntity", Player.class);
+                            respawnEntityMethod.setAccessible(true);
+                            respawnEntityMethod.invoke(module, user.getPlayer());
+
+                            arguments.add(player.getName());
+                            arguments.add(String.valueOf(checkDuration));
+
+                            if (user.getClientSideEntityData().respawnTries++ > MAX_ITERATIONS)
+                            {
+                                throw new IllegalStateException("Too many respawn iterations.");
+                            }
+
+                            Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> this.execute(sender, arguments), 5L);
+                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | IllegalStateException e)
+                        {
+                            sender.sendMessage(PREFIX + ChatColor.RED + "Critical error whilst trying to respawn the entity.");
+                            VerboseSender.sendVerboseMessage("Critical error whilst trying to respawn the entity.", true, true);
+                            e.printStackTrace();
+                        }
                     }
                     else
                     {
-                        sender.sendMessage(PREFIX + ChatColor.GOLD + "Now checking player " + user.getPlayer().getName() + " for " + checkDuration + " ticks.");
-                        VerboseSender.sendVerboseMessage("Manual entity check issued by " + sender.getName() + ": Player: " + user.getPlayer().getName() + " | Time: " + checkDuration + " ticks.");
-                        user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(true);
+                        user.getClientSideEntityData().respawnTries = 0;
+                        if (user.getClientSideEntityData().clientSidePlayerEntity.isVisible())
+                        {
+                            sender.sendMessage(PREFIX + ChatColor.RED + "A check of the player is already in progress.");
+                        }
+                        else
+                        {
+                            sender.sendMessage(PREFIX + ChatColor.GOLD + "Now checking player " + user.getPlayer().getName() + " for " + checkDuration + " ticks.");
+                            VerboseSender.sendVerboseMessage("Manual entity check issued by " + sender.getName() + ": Player: " + user.getPlayer().getName() + " | Time: " + checkDuration + " ticks.");
+                            user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(true);
 
-                        Bukkit.getScheduler().runTaskLater(
-                                AACAdditionPro.getInstance(),
-                                () -> user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(false), checkDuration);
+                            Bukkit.getScheduler().runTaskLater(
+                                    AACAdditionPro.getInstance(),
+                                    () -> {
+                                        try
+                                        {
+                                            user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(false);
+                                            // User might be null at this time -> already logged out, no action required.
+                                        } catch (NullPointerException ignore)
+                                        {
+                                        }
+                                    }, checkDuration);
+                        }
                     }
                 }
             }
         }
         else
+
         {
             sender.sendMessage(PREFIX + ChatColor.RED + "KillauraEntity is disabled or not in on_command mode.");
         }
+
     }
 
     @Override
@@ -138,7 +138,7 @@ public class EntityCheckCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
         return this.getPlayerNameTabs();
     }

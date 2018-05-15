@@ -1,92 +1,74 @@
 package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.ModuleType;
-import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
+import de.photon.AACAdditionPro.neural.ActivationFunctions;
+import de.photon.AACAdditionPro.neural.DataSet;
+import de.photon.AACAdditionPro.neural.Graph;
+import de.photon.AACAdditionPro.neural.Output;
 import de.photon.AACAdditionPro.util.VerboseSender;
+import de.photon.AACAdditionPro.util.files.serialization.CompressedDataSerializer;
+import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataInputStream;
+import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataOutputStream;
 import lombok.Getter;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
+import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class NeuralPattern extends Pattern
 {
-    /**
-     * The epoch count.
-     */
-    private static final int EPOCH = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.INVENTORY_HEURISTICS.getConfigString() + ".framework.epoch");
+    private static final File HEURISTICS_FOLDER = new File(AACAdditionPro.getInstance().getDataFolder(), "heuristics");
 
-    // SERIALIZATION: CONTENT
     @Getter
-    private Graph graph;
+    private final Graph graph;
+    private Thread trainingThread = null;
 
-    // SERIALIZATION: NON-null, CONTENT NOT IMPORTANT
-    @Getter
-    private Set<TrainingData> trainingDataSet;
-
-    // SERIALIZATION: NON-null, CONTENT NOT IMPORTANT
-    private final ConcurrentMap<String, Stack<Map<Character, InputData>>> trainingInputs;
-
-    // SERIALIZATION: CONTENT NOT IMPORTANT, MUST BE NULL
-    private transient Thread trainingThread = null;
-
-    // ONLY USE FOR DESERIALIZER !!!!!!!
-    public NeuralPattern(String name, InputData[] inputs, Graph graph)
+    public NeuralPattern(String name, int[] inputTypes, Graph graph)
     {
-        super(name, inputs);
+        super(name, inputTypes);
         this.graph = graph;
-
-        // The default initial capacity of 16 is not used in most cases.
-        this.trainingDataSet = new HashSet<>(8);
-
-        // Training input map.
-        this.trainingInputs = new ConcurrentHashMap<>(2, 1);
-        for (String validOutput : VALID_OUTPUTS)
-        {
-            this.trainingInputs.put(validOutput, new Stack<>());
-        }
-    }
-
-    public NeuralPattern(String name, InputData[] inputs, int samples, int[] hiddenNeuronsPerLayer)
-    {
-        super(name, inputs);
-
-        // The input and output neurons need to be added prior to building the graph.
-        int[] completeNeurons = new int[hiddenNeuronsPerLayer.length + 2];
-
-        // Inputs
-        completeNeurons[0] = (inputs.length * samples);
-
-        // Hidden
-        System.arraycopy(hiddenNeuronsPerLayer, 0, completeNeurons, 1, hiddenNeuronsPerLayer.length);
-
-        // One output neuron.
-        completeNeurons[completeNeurons.length - 1] = 1;
-
-        this.graph = new Graph(completeNeurons);
-
-        // The default initial capacity of 16 is not used in most cases.
-        this.trainingDataSet = new HashSet<>(8);
-
-        // Training input map.
-        this.trainingInputs = new ConcurrentHashMap<>(2, 1);
-        for (String validOutput : VALID_OUTPUTS)
-        {
-            this.trainingInputs.put(validOutput, new Stack<>());
-        }
     }
 
     @Override
-    public double analyse(final Map<Character, InputData> inputData)
+    public Output[] evaluateOrTrain(DataSet dataSet)
     {
-        return this.graph.analyse(this.provideInputData(inputData));
+        if (dataSet.hasLabel())
+        {
+            this.train(dataSet);
+            return LEGIT_OUTPUT;
+        }
+        return this.graph.evaluate(dataSet);
+    }
+
+    private synchronized void train(DataSet dataSet)
+    {
+        if (this.trainingThread != null)
+        {
+            throw new IllegalStateException("Pattern " + this.getName() + " is already training.");
+        }
+
+        this.trainingThread = new Thread(() -> {
+            this.graph.train(dataSet);
+
+            try
+            {
+                saveToFile();
+            } catch (IOException e)
+            {
+                VerboseSender.sendVerboseMessage("Failed to save pattern " + this.getName() + ".", true, true);
+                e.printStackTrace();
+            }
+
+            this.trainingThread = null;
+            VerboseSender.sendVerboseMessage("Training of pattern " + this.getName() + " finished.");
+        });
+        this.trainingThread.start();
     }
 
     @Override
@@ -95,85 +77,174 @@ public class NeuralPattern extends Pattern
         return 1D;
     }
 
-    /**
-     * This clears the trainingInputs - stacks and learns from them.
-     *
-     * @throws IllegalStateException if a training is already taking place.
-     */
-    public synchronized void train() throws IllegalStateException
+    private void saveToFile() throws IOException
     {
-        if (this.trainingThread != null)
+        /*
+         * A pattern file is structured like this:
+         *
+         * -------- PATTERN DATA
+         * 1 byte: version number of the data
+         * 2+n bytes: length and content of the name string
+         * 4 bytes: epoch of the graph
+         * 8 bytes: train parameter of the graph
+         * 8 bytes: momentum of the graph
+         * 1 byte: length of the input data
+         * :length of input data
+         *   4 bytes: ordinal of the InputTypes
+         *
+         * -------- GRAPH DATA
+         * 1 byte: 0 for LOGISTIC, 1 for HYPERBOLIC_TANGENT
+         * 4 bytes: length of matrix
+         * :length of layers
+         *   :length of layer (no byte as of quadratic matrix)
+         *     1 byte: 0 for data is not set, 1 for data is set
+         *     ?data is set
+         *       8 bytes: data point
+         * 4 bytes: length of weight layers
+         * :length of weight layers
+         *   4 bytes: length of data in layer
+         *   :length of data in layer
+         *     8 bytes: data point
+         * 4 bytes: length of neuronsInLayers
+         * :length of neuronsInLayers
+         *   4 bytes: data point
+         */
+
+        if (!HEURISTICS_FOLDER.exists())
         {
-            throw new IllegalStateException("Pattern " + this.getName() + " is already training.");
+            if (!HEURISTICS_FOLDER.mkdirs())
+            {
+                throw new IOException("Could not create heuristics folder.");
+            }
         }
 
-        this.trainingThread = new Thread(() -> {
-            for (int epoch = 0; epoch < EPOCH; epoch++)
+        // Create the writer.
+        final EnhancedDataOutputStream writer = CompressedDataSerializer.createOutputStream(new File(HEURISTICS_FOLDER, this.getName() + ".ptrn"));
+
+        // ------------------------- PATTERN
+        // Version first
+        writer.writeByte(PATTERN_VERSION);
+
+        // Name
+        writer.writeUTF(this.getName());
+
+        // Epoch
+        writer.writeInt(this.graph.getEpoch());
+        // Train parameter
+        writer.writeDouble(this.graph.getTrainParameter());
+        // Momentum
+        writer.writeDouble(this.graph.getMomentum());
+
+        // Inputs
+        writer.writeIntegerArray(this.getInputTypes(), true);
+
+        // ------------------------- GRAPH
+        writer.writeInt(this.graph.getMatrix().length);
+        for (Double[] layer : this.graph.getMatrix())
+        {
+            writer.writeWrappedDoubleArray(layer, false);
+        }
+
+        for (double[] layer : this.graph.getWeightChangeMatrix())
+        {
+            writer.writeDoubleArray(layer, false);
+        }
+
+        writer.writeIntegerArray(this.graph.getNeuronsInLayers(), true);
+
+        writer.flush();
+        writer.close();
+    }
+
+    public static NeuralPattern load(final String name) throws IOException
+    {
+        try (EnhancedDataInputStream input = CompressedDataSerializer.createInputStream(name))
+        {
+            // Documentation of the data is in PatternSerializer#save()
+            byte version = input.readByte();
+            if (version != PATTERN_VERSION)
             {
-                for (int validOutputIndex = 0; validOutputIndex < VALID_OUTPUTS.length; validOutputIndex++)
+                if (version < PATTERN_VERSION)
                 {
-                    Stack<Map<Character, InputData>> possibleTrainingInputs = this.trainingInputs.get(VALID_OUTPUTS[validOutputIndex]);
-
-                    final int minSize = this.trainingInputs.values().stream().min(Comparator.comparingInt(Vector::size)).orElseThrow(() -> new NeuralNetworkException("The training inputs of pattern " + this.getName() + " do not have a max size.")).size();
-                    for (int i = 0; i < minSize; i++)
-                    {
-                        final double[][] inputArray = this.provideInputData(possibleTrainingInputs.get(i));
-
-                        if (inputArray == null)
-                        {
-                            continue;
-                        }
-
-                        // There are only 2 outputs and adding more outputs would require lots of changes, thus the index check for cheating here is ok.
-                        this.graph.train(inputArray, (validOutputIndex == 1));
-                    }
+                    throw new IOException("Tríed to load old pattern layout: " + name);
+                }
+                else
+                {
+                    throw new IOException("Tríed to load wrong pattern layout: " + name);
                 }
             }
 
-            VerboseSender.sendVerboseMessage("Training of pattern " + this.getName() + " finished.");
-            clearTrainingData();
-            saveToFile();
-            this.trainingThread = null;
-        });
-        this.trainingThread.start();
-    }
+            // Name
+            final String patternName = input.readUTF();
 
-    /**
-     * This pushes a new {@link InputData} - Array to the trainingInputs if there is no training in progress.
-     */
-    public void pushInputData(final String outputNeuronName, final Map<Character, InputData> inputData)
-    {
-        // Only push when not training.
-        if (this.trainingThread == null)
-        {
-            this.trainingInputs.get(outputNeuronName).push(inputData);
+            // Epoch
+            final int epoch = input.readInt();
+            // Train parameter
+            final double trainParameter = input.readDouble();
+            // Momentum
+            final double momentum = input.readDouble();
+
+            // Inputs
+            final int[] inputs = input.readIntegerArray();
+
+            // The length of the matrix
+            final int matrixLength = input.readInt();
+
+            // The matrix is quadratic
+            final Double[][] matrix = new Double[matrixLength][];
+            for (int i = 0; i < matrixLength; i++)
+            {
+                matrix[i] = input.readWrappedDoubleArrayWithLength(matrixLength);
+            }
+
+            // The matrix is quadratic
+            final double[][] weightMatrix = new double[matrixLength][];
+            for (int i = 0; i < matrixLength; i++)
+            {
+                weightMatrix[i] = input.readDoubleArrayWithLength(matrixLength);
+            }
+
+            final int[] neuronsInLayers = input.readIntegerArray();
+
+            final Graph graph = new Graph(epoch, trainParameter, momentum, ActivationFunctions.LEAKY_RECTIFIED_LINEAR_UNIT, neuronsInLayers, LEGIT_OUTPUT, matrix, weightMatrix);
+            return new NeuralPattern(patternName, inputs, graph);
         }
     }
 
     /**
-     * Saves this pattern as a file.
+     * Loads all patterns that can be found as a resource into a {@link Collection} of {@link NeuralPattern}s.
      */
-    private void saveToFile()
+    public static Set<NeuralPattern> loadPatterns()
     {
-        clearTrainingData();
-
+        final Set<NeuralPattern> neuralPatterns = new HashSet<>();
         try
         {
-            PatternSerializer.save(this);
-        } catch (IOException e)
+            final File jarFile = new File(NeuralPattern.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            try (JarFile pluginFile = new JarFile(jarFile))
+            {
+                final Enumeration<JarEntry> entries = pluginFile.entries();
+                while (entries.hasMoreElements())
+                {
+                    final JarEntry entry = entries.nextElement();
+                    if (entry.getName().endsWith(".ptrn"))
+                    {
+                        try
+                        {
+                            neuralPatterns.add(load(entry.getName()));
+                        } catch (IOException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        } catch (URISyntaxException e)
         {
-            VerboseSender.sendVerboseMessage("Could not save pattern " + this.getName() + ". See the logs for further information.", true, true);
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Clears the training data to reduce the serialized file size or prepare a new training cycle.
-     */
-    private void clearTrainingData()
-    {
-        // Clear the data.
-        this.trainingDataSet.clear();
-        this.trainingInputs.values().forEach(Vector::clear);
+        return neuralPatterns;
     }
 }

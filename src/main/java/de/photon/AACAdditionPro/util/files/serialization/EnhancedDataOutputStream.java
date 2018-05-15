@@ -128,11 +128,16 @@ public class EnhancedDataOutputStream extends DataOutputStream
      */
     public void writeWrappedIntegerArray(final Integer[] integerArray, final boolean writeLength) throws IOException
     {
+        if (writeLength)
+        {
+            this.writeInt(integerArray.length);
+        }
+
         this.sendNonNullInformation(integerArray);
 
         for (Integer integer : integerArray)
         {
-            this.writeInt(integer);
+            this.writeInt(integer == null ? 0 : integer);
         }
     }
 
@@ -144,11 +149,16 @@ public class EnhancedDataOutputStream extends DataOutputStream
      */
     public void writeWrappedDoubleArray(final Double[] doubleArray, final boolean writeLength) throws IOException
     {
+        if (writeLength)
+        {
+            this.writeInt(doubleArray.length);
+        }
+
         this.sendNonNullInformation(doubleArray);
 
-        for (Double integer : doubleArray)
+        for (Double aDouble : doubleArray)
         {
-            this.writeDouble(integer);
+            this.writeDouble(aDouble == null ? 0 : aDouble);
         }
     }
 

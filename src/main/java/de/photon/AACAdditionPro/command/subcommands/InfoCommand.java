@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -27,7 +28,7 @@ public class InfoCommand extends InternalCommand
 
         if (p == null)
         {
-            sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
+            InternalCommand.sendPlayerNotFoundMessage(sender);
         }
         else
         {
@@ -81,7 +82,7 @@ public class InfoCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
         return getPlayerNameTabs();
     }

@@ -1,6 +1,5 @@
 package de.photon.AACAdditionPro.util.files.serialization;
 
-import de.photon.AACAdditionPro.heuristics.PatternDeserializer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +19,7 @@ public class CompressedDataSerializer
      */
     public static EnhancedDataInputStream createInputStream(final String resourceName) throws IOException
     {
-        return new EnhancedDataInputStream(new GZIPInputStream(PatternDeserializer.class.getClassLoader().getResourceAsStream(resourceName)));
+        return new EnhancedDataInputStream(new GZIPInputStream(CompressedDataSerializer.class.getClassLoader().getResourceAsStream(resourceName)));
     }
 
     /**

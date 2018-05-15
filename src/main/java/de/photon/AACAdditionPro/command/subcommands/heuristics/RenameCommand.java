@@ -8,7 +8,9 @@ import de.photon.AACAdditionPro.heuristics.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 public class RenameCommand extends InternalCommand
 {
@@ -23,7 +25,7 @@ public class RenameCommand extends InternalCommand
         if (HeuristicsCommand.heuristicsUnlocked())
         {
             final String patternName = arguments.remove();
-            final Pattern patternToRename = InventoryHeuristics.getPatternByName(patternName);
+            final Pattern patternToRename = InventoryHeuristics.PATTERNS.get(patternName);
 
             // The Heuristics Header will always be sent.
             sender.sendMessage(HeuristicsCommand.HEURISTICS_HEADER);
@@ -36,7 +38,7 @@ public class RenameCommand extends InternalCommand
             {
                 final String newName = arguments.remove();
 
-                if (InventoryHeuristics.getPATTERNS().stream().anyMatch(pattern -> pattern.getName().equals(newName)))
+                if (InventoryHeuristics.PATTERNS.containsKey(newName))
                 {
                     sender.sendMessage(ChatColor.GOLD + "Cannot rename the pattern to \"" + ChatColor.RED + newName + ChatColor.GOLD + "\" as another pattern with the same name exists.");
                 }
@@ -60,8 +62,8 @@ public class RenameCommand extends InternalCommand
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
-        return getChildTabs();
+        return InventoryHeuristics.PATTERNS.values().stream().map(Pattern::getName).collect(Collectors.toList());
     }
 }

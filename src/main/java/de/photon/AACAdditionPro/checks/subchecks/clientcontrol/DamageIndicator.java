@@ -18,6 +18,7 @@ import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wither;
 
 import java.util.List;
@@ -67,6 +68,7 @@ public class DamageIndicator extends PacketAdapter implements Module
             final int index;
 
             // Passenger problems
+            //TODO: REALLY .getClientServerVersion AND NOT getServerVersion HERE?
             switch (ServerVersion.getClientServerVersion(event.getPlayer()))
             {
                 case MC188:
@@ -107,7 +109,7 @@ public class DamageIndicator extends PacketAdapter implements Module
                     {
                         if ((watch.getIndex() == index) && ((Float) watch.getValue() > 0.0F))
                         {
-                            watch.setValue(Float.NaN);
+                            watch.setValue(entity instanceof Villager ? 20 : Float.NaN);
                         }
                     }
                 }

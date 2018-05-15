@@ -12,11 +12,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 public class MainCommand extends InternalCommand implements CommandExecutor, TabCompleter
 {
@@ -24,7 +24,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
 
     private MainCommand()
     {
-        super("aacadditionpro", (byte) 0,
+        super("aacadditionpro", null, (byte) 0,
               new EntityCheckCommand(),
               new HeuristicsCommand(),
               new InfoCommand(),
@@ -35,64 +35,38 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        if (command.getName().equalsIgnoreCase(this.name))
-        {
-            this.invokeCommand(sender, new LinkedList<>(Arrays.asList(args)));
-            return true;
-        }
-        return false;
+        this.invokeCommand(sender, new ArrayDeque<>(Arrays.asList(args)));
+        return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args)
     {
+        // Search for the deepest child command
         InternalCommand currentCommand = this;
-        final Queue<String> allArguments = new LinkedList<>(Arrays.asList(args));
-
-        String currentArgument;
-        while (!allArguments.isEmpty() && currentCommand.getChildCommands() != null)
+        int currentArgumentIndex = 0;
+        boolean childFound = true;
+        while (currentArgumentIndex < args.length && childFound)
         {
-            currentArgument = allArguments.remove();
-
-            InternalCommand lastCommand = currentCommand;
-            for (final InternalCommand childCommand : currentCommand.getChildCommands())
+            childFound = false;
+            for (InternalCommand childCommand : currentCommand.getChildCommands())
             {
-                if (childCommand.name.equalsIgnoreCase(currentArgument))
+                if (childCommand.name.equalsIgnoreCase(args[currentArgumentIndex]))
                 {
                     currentCommand = childCommand;
+                    currentArgumentIndex++;
+                    childFound = true;
                     break;
                 }
             }
-
-            // Stop the loop if you cannot go on.
-            if (lastCommand.equals(currentCommand))
-            {
-                break;
-            }
         }
 
-        // The final result
-        List<String> tab;
-
-        // The args are only child commands so far
-        if (allArguments.isEmpty())
-        {
-            tab = Arrays.asList(currentCommand.getTabPossibilities());
-        }
-        // Probably began some typing of an argument
-        else
-        {
-            tab = new ArrayList<>(currentCommand.getTabPossibilities().length);
-            for (final String tabPossibility : currentCommand.getTabPossibilities())
-            {
-                if (tabPossibility.startsWith(allArguments.peek()))
-                {
-                    tab.add(tabPossibility);
-                }
-            }
-        }
-
-        return tab;
+        final int resultingArgumentIndex = currentArgumentIndex;
+        return currentArgumentIndex < args.length ?
+               // No tab filtering as the player has not started typing
+               currentCommand.getTabPossibilities() :
+               // If arguments are still left try to chose the correct tab possibilities from them.
+               currentCommand.getTabPossibilities().stream().filter(tabPossibility -> tabPossibility.startsWith(args[resultingArgumentIndex])).collect(Collectors.toList());
     }
 
     @Override
@@ -108,7 +82,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     }
 
     @Override
-    protected String[] getTabPossibilities()
+    protected List<String> getTabPossibilities()
     {
         return getChildTabs();
     }

@@ -20,15 +20,12 @@ import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import de.photon.AACAdditionPro.util.world.EntityUtils;
 import me.konsolas.aac.api.AACAPIProvider;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.util.Vector;
-
-import java.util.HashSet;
-import java.util.List;
 
 public class InventoryMove extends PacketAdapter implements Listener, ViolationModule
 {
@@ -38,6 +35,8 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
     private int cancel_vl;
     @LoadFromConfiguration(configPath = ".min_tps")
     private double min_tps;
+    @LoadFromConfiguration(configPath = ".lenience_millis")
+    private int lenience_millis;
 
     public InventoryMove()
     {
@@ -67,10 +66,12 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
                                         event.getPacket().getDoubles().readSafely(2)
         );
 
-        final Vector knownPosition = user.getPlayer().getLocation().toVector();
+        final Location knownPosition = user.getPlayer().getLocation();
 
-        // Check if this is a client side movement
-        if (input.distanceSquared(knownPosition) > 0.0D &&
+        // Check if this is a clientside movement:
+        // Position Vectors are not the same
+        if (!input.equals(knownPosition.toVector()) &&
+            // or movement is not 0
             motX != 0 &&
             motZ != 0 &&
             // Not inside a vehicle
@@ -78,9 +79,9 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
             // Not flying (may trigger some fps)
             !user.getPlayer().isFlying() &&
             // The player is currently not in a liquid (liquids push)
-            !BlockUtils.isHitboxInLiquids(user.getPlayer().getLocation(), user.getPlayer().isSneaking() ?
-                                                                          Hitbox.SNEAKING_PLAYER :
-                                                                          Hitbox.PLAYER) &&
+            !BlockUtils.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
+                                                         Hitbox.SNEAKING_PLAYER :
+                                                         Hitbox.PLAYER) &&
             // Not using an Elytra
             !ElytraUtil.isFlyingWithElytra(user.getPlayer()) &&
             // Player is in an inventory
@@ -102,46 +103,44 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
 
             // If the player is jumping and is allowed to jump the max. time is 500 (478.5 is the legit jump time regarding the Tower check).
             // Otherwise it is 100 (little compensation for the "breaking" when sprinting previously
-            final int allowedRecentlyOpenedTime = currentlyNotJumping ?
-                                                  100 :
-                                                  user.getPositionData().allowedToJump ?
-                                                  500 :
-                                                  100;
+            final int allowedRecentlyOpenedTime = (currentlyNotJumping ?
+                                                   100 :
+                                                   user.getPositionData().allowedToJump ?
+                                                   500 :
+                                                   100) + lenience_millis;
 
             // Was already in inventory or no air - movement (fall distance + velocity)
-            if (user.getInventoryData().notRecentlyOpened(allowedRecentlyOpenedTime))
-            {
+            if (user.getInventoryData().notRecentlyOpened(allowedRecentlyOpenedTime) &&
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
-                final List<LivingEntity> nearbyPlayers = EntityUtils.getLivingEntitiesAroundPlayer(
+                EntityUtils.getLivingEntitiesAroundPlayer(
                         user.getPlayer(),
                         // No division by 2 here as the hitbox of the other player is also important (-> 2 players)
                         Hitbox.PLAYER.getOffsetX() + 0.1,
                         Hitbox.PLAYER.getHeight() + 0.1,
-                        Hitbox.PLAYER.getOffsetZ() + 0.1);
-
-                if (nearbyPlayers.isEmpty())
+                        Hitbox.PLAYER.getOffsetZ() + 0.1).isEmpty())
+            {
+                vlManager.flag(user.getPlayer(), cancel_vl, () ->
                 {
-                    vlManager.flag(user.getPlayer(), cancel_vl, () ->
-                    {
-                        event.getPacket().getDoubles().writeSafely(0, knownPosition.getX());
-                        event.getPacket().getDoubles().writeSafely(2, knownPosition.getZ());
+                    //TODO: TEST THIS; THIS MIGHT SEND EMPTY PACKETS ?
+                    event.setCancelled(true);
+                    //event.getPacket().getDoubles().writeSafely(0, knownPosition.getX());
+                    //event.getPacket().getDoubles().writeSafely(2, knownPosition.getZ());
 
-                        // Update client
-                        final WrapperPlayServerPosition packet = new WrapperPlayServerPosition();
+                    // Update client
+                    final WrapperPlayServerPosition packet = new WrapperPlayServerPosition();
 
-                        //Init with the known values
-                        packet.setX(knownPosition.getX());
-                        packet.setY(knownPosition.getY());
-                        packet.setZ(knownPosition.getZ());
-                        packet.setYaw(user.getPlayer().getLocation().getYaw());
-                        packet.setPitch(user.getPlayer().getLocation().getPitch());
+                    //Init with the known values
+                    packet.setX(knownPosition.getX());
+                    packet.setY(knownPosition.getY());
+                    packet.setZ(knownPosition.getZ());
+                    packet.setYaw(knownPosition.getYaw());
+                    packet.setPitch(knownPosition.getPitch());
 
-                        //Set the flags and send the packet
-                        packet.setFlags(new HashSet<>());
-                        packet.sendPacket(event.getPlayer());
-                    }, () -> {});
-                }
+                    //Set the flags and send the packet
+                    packet.setNoFlags();
+                    packet.sendPacket(event.getPlayer());
+                }, () -> {});
             }
         }
         else

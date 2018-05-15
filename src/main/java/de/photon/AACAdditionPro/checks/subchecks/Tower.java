@@ -11,6 +11,7 @@ import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.block.Block;
@@ -72,9 +73,25 @@ public class Tower implements Listener, ViolationModule
             return;
         }
 
-        // TODO: LEVITATION
+        boolean levitation;
+        switch (ServerVersion.getActiveServerVersion())
+        {
+            case MC188:
+                levitation = false;
+                break;
+            case MC110:
+            case MC111:
+            case MC112:
+                levitation = user.getPlayer().hasPotionEffect(PotionEffectType.LEVITATION);
+                break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
+
         // Not flying
-        if (!user.getPlayer().isFlying())
+        if (!user.getPlayer().isFlying() &&
+            // Not levitating
+            !levitation)
         {
             final Block blockPlaced = event.getBlockPlaced();
             // User must stand above the block (placed from above)1

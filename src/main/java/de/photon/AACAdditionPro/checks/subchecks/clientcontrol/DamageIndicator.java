@@ -68,8 +68,7 @@ public class DamageIndicator extends PacketAdapter implements Module
             final int index;
 
             // Passenger problems
-            //TODO: REALLY .getClientServerVersion AND NOT getServerVersion HERE?
-            switch (ServerVersion.getClientServerVersion(event.getPlayer()))
+            switch (ServerVersion.getActiveServerVersion())
             {
                 case MC188:
                     // index 6 in 1.8

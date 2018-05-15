@@ -28,7 +28,7 @@ public class InfoCommand extends InternalCommand
 
         if (p == null)
         {
-            sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
+            InternalCommand.sendPlayerNotFoundMessage(sender);
         }
         else
         {

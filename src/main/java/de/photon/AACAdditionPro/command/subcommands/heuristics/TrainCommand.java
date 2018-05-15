@@ -55,9 +55,10 @@ public class TrainCommand extends InternalCommand
                 // Next argument
                 final Player trainingPlayer = Bukkit.getServer().getPlayer(arguments.remove());
 
+                // Check player == null first, otherwise the user query might throw a NPE
                 if (trainingPlayer == null)
                 {
-                    sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
+                    InternalCommand.sendPlayerNotFoundMessage(sender);
                     return;
                 }
 
@@ -66,7 +67,7 @@ public class TrainCommand extends InternalCommand
                 // Not bypassed
                 if (user == null)
                 {
-                    sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
+                    InternalCommand.sendPlayerNotFoundMessage(sender);
                     return;
                 }
 

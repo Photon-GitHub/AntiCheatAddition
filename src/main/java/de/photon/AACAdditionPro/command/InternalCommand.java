@@ -17,7 +17,6 @@ import java.util.Set;
 public abstract class InternalCommand
 {
     protected static final String PREFIX = ChatColor.DARK_RED + "[AACAdditionPro] ";
-    protected static final String PLAYER_NOT_FOUND_MESSAGE = PREFIX + ChatColor.RED + "Player could not be found.";
 
     public final String name;
     private final InternalPermission permission;
@@ -136,5 +135,50 @@ public abstract class InternalCommand
             playerNameList.add(player.getName());
         }
         return playerNameList;
+    }
+
+    /**
+     * Checks a numeric argument for correctness.
+     *
+     * @param sender   the sender of the command (necessary for error messsages)
+     * @param argument the {@link String} which should be the desired number
+     * @param min      the lower boundary of the number
+     * @param max      the upper boundary of the number
+     *
+     * @return null if the argument is not a number, too big or too small and the number if everything is fine.
+     */
+    public static Double validateNumberArgument(CommandSender sender, String argument, double min, double max)
+    {
+        final double number;
+        try
+        {
+            number = Double.valueOf(argument);
+        } catch (NumberFormatException exception)
+        {
+            sender.sendMessage(PREFIX + ChatColor.RED + "Please enter a valid number.");
+            return null;
+        }
+
+        if (number > max)
+        {
+            sender.sendMessage(PREFIX + ChatColor.RED + "The number must at most be " + max);
+            return null;
+        }
+
+        if (number < min)
+        {
+            sender.sendMessage(PREFIX + ChatColor.RED + "The number must at least be " + min);
+            return null;
+        }
+
+        return number;
+    }
+
+    /**
+     * Sends a message showing that a "Player could not be found."
+     */
+    public static void sendPlayerNotFoundMessage(CommandSender sender)
+    {
+        sender.sendMessage(PREFIX + ChatColor.RED + "Player could not be found.");
     }
 }

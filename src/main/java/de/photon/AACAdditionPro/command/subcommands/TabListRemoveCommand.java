@@ -37,7 +37,7 @@ public class TabListRemoveCommand extends InternalCommand
 
             if (players[i] == null)
             {
-                sender.sendMessage(PLAYER_NOT_FOUND_MESSAGE);
+                InternalCommand.sendPlayerNotFoundMessage(sender);
                 return;
             }
         }

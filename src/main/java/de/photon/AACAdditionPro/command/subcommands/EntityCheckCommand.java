@@ -105,16 +105,26 @@ public class EntityCheckCommand extends InternalCommand
 
                             Bukkit.getScheduler().runTaskLater(
                                     AACAdditionPro.getInstance(),
-                                    () -> user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(false), checkDuration);
+                                    () -> {
+                                        try
+                                        {
+                                            user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(false);
+                                            // User might be null at this time -> already logged out, no action required.
+                                        } catch (NullPointerException ignore)
+                                        {
+                                        }
+                                    }, checkDuration);
                         }
                     }
                 }
             }
         }
         else
+
         {
             sender.sendMessage(PREFIX + ChatColor.RED + "KillauraEntity is disabled or not in on_command mode.");
         }
+
     }
 
     @Override

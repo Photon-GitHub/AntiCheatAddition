@@ -35,8 +35,8 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
     private int cancel_vl;
     @LoadFromConfiguration(configPath = ".min_tps")
     private double min_tps;
-    @LoadFromConfiguration(configPath = ".lenience_ticks")
-    private int lenience_ticks;
+    @LoadFromConfiguration(configPath = ".lenience_millis")
+    private int lenience_millis;
 
     public InventoryMove()
     {
@@ -107,7 +107,7 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
                                                    100 :
                                                    user.getPositionData().allowedToJump ?
                                                    500 :
-                                                   100) + lenience_ticks;
+                                                   100) + lenience_millis;
 
             // Was already in inventory or no air - movement (fall distance + velocity)
             if (user.getInventoryData().notRecentlyOpened(allowedRecentlyOpenedTime) &&

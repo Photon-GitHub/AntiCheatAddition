@@ -28,6 +28,11 @@ public class Tower implements Listener, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
 
+    private static double[] amplifierChache = {
+            // 478.4 * 0.925
+            442.52D
+    };
+
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
 
@@ -56,7 +61,7 @@ public class Tower implements Listener, ViolationModule
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void on(final BlockPlaceEvent event)
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
@@ -67,6 +72,7 @@ public class Tower implements Listener, ViolationModule
             return;
         }
 
+        // TODO: LEVITATION
         // Not flying
         if (!user.getPlayer().isFlying())
         {
@@ -129,10 +135,10 @@ public class Tower implements Listener, ViolationModule
     private double calculateDelay(final Integer amplifier)
     {
         // No JUMP_BOOST
+
         if (amplifier == null)
         {
-            // 478.4 * 0.925
-            return 442.52;
+            return amplifierChache[0];
         }
 
         // Player has JUMP_BOOST
@@ -140,6 +146,11 @@ public class Tower implements Listener, ViolationModule
         {
             // Negative JUMP_BOOST -> Not allowed to place blocks -> Very high delay
             return 1500;
+        }
+
+        if (amplifier + 1 < amplifierChache.length)
+        {
+            return amplifierChache[amplifier + 1];
         }
 
         // How many blocks can potentially be placed during one jump cycle

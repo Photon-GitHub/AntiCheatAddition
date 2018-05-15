@@ -43,7 +43,7 @@ public abstract class Pattern
         {
             dataSetBuilder.addInput(inputMatrix[inputType]);
         }
-        return DataSet.builder().build();
+        return dataSetBuilder.build();
     }
 
     /**

@@ -35,6 +35,8 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
     private int cancel_vl;
     @LoadFromConfiguration(configPath = ".min_tps")
     private double min_tps;
+    @LoadFromConfiguration(configPath = ".lenience_ticks")
+    private int lenience_ticks;
 
     public InventoryMove()
     {
@@ -101,11 +103,11 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
 
             // If the player is jumping and is allowed to jump the max. time is 500 (478.5 is the legit jump time regarding the Tower check).
             // Otherwise it is 100 (little compensation for the "breaking" when sprinting previously
-            final int allowedRecentlyOpenedTime = currentlyNotJumping ?
-                                                  100 :
-                                                  user.getPositionData().allowedToJump ?
-                                                  500 :
-                                                  100;
+            final int allowedRecentlyOpenedTime = (currentlyNotJumping ?
+                                                   100 :
+                                                   user.getPositionData().allowedToJump ?
+                                                   500 :
+                                                   100) + lenience_ticks;
 
             // Was already in inventory or no air - movement (fall distance + velocity)
             if (user.getInventoryData().notRecentlyOpened(allowedRecentlyOpenedTime) &&

@@ -243,6 +243,9 @@ InventoryMove:
    # Violation before AACAdditionPro starts to cancel the movements.
    # Set this to 0 to never cancel movement.
    cancel_vl: 10
+   # This allows to add more lenience on servers with very high-ping players.
+   # Normal connections are already covered by the default values.
+   lenience_ticks: 0
    # Map of violation levels to command
    # The sprint/sneak module will generate 4 vl when failed.
    # The packet module will generate 1 vl when failed.

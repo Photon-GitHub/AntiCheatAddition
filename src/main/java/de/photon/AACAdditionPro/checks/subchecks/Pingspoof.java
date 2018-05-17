@@ -115,7 +115,7 @@ public class Pingspoof extends PacketAdapter implements Listener, ViolationModul
                                 // Player is onGround
                                 user.getPlayer().isOnGround() &&
                                 // Player moving (Freecam compatibility)
-                                user.getPositionData().hasPlayerMovedRecently(Freecam.getIdle_time(), PositionData.MovementType.NONHEAD) &&
+                                user.getPositionData().hasPlayerMovedRecently(Freecam.IDLE_TIME, PositionData.MovementType.NONHEAD) &&
                                 // The Player has a high ping or the check is scheduled
                                 (user.getPingData().forceUpdatePing || AACAPIProvider.getAPI().getPing(user.getPlayer()) > max_real_ping * ping_offset) &&
                                 // Safe-Time upon login as of fluctuating ping

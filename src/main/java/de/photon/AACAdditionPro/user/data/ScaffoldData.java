@@ -102,7 +102,6 @@ public class ScaffoldData extends TimeData
                     }
 
                     double delay;
-
                     if (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace())
                     {
                         delay = DELAY_NORMAL;

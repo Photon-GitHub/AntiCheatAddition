@@ -7,6 +7,7 @@ import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -171,7 +172,7 @@ public class WrapperPlayServerPosition extends AbstractPacket
      */
     public void setNoFlags()
     {
-        this.setFlags(new HashSet<>());
+        this.setFlags(Collections.emptySet());
     }
 
     /**

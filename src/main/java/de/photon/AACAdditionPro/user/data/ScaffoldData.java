@@ -48,16 +48,19 @@ public class ScaffoldData extends TimeData
     }
 
     /**
-     * This calculates the maximum expected and real time of this {@link ConditionalBuffer}'s {@link ScaffoldBlockPlace}s.
+     * Used to calculate the average and expected time span between the {@link ScaffoldBlockPlace}s in the buffer.
+     * Also clears the buffer.
      *
-     * @return the real time in index 0 and the maximum expected time in index 1.
+     * @return an array with the following contents:<br>
+     * [0] = Expected time <br>
+     * [1] = Real time <br>
      */
     public double[] calculateTimes()
     {
         final double[] result = new double[2];
-        // fraction[0] is the enumerator
-        // fraction[1] is the divider
-        final double[] fraction = new double[2];
+
+        // -1 because there is one pop to fill the "last" variable in the beginning.
+        final int divisor = this.scaffoldBlockPlaces.size() - 1;
 
         boolean moonwalk = this.scaffoldBlockPlaces.stream().filter((blockPlace) -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
 
@@ -114,15 +117,14 @@ public class ScaffoldData extends TimeData
                         delay = DELAY_DIAGONAL;
                     }
 
-                    result[1] += delay;
+                    result[0] += delay;
 
                     // last - current to calculate the delta as the more recent time is always in last.
-                    fraction[0] += (last.getTime() - current.getTime()) * speed_modifier;
-                    fraction[1]++;
+                    result[1] += (last.getTime() - current.getTime()) * speed_modifier;
                 });
 
-        result[0] = fraction[0] / fraction[1];
-        result[1] /= fraction[1];
+        result[0] /= divisor;
+        result[1] /= divisor;
         return result;
     }
 }

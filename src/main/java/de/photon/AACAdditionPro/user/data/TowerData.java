@@ -54,8 +54,6 @@ public class TowerData extends TimeData
      */
     public double[] calculateTimes()
     {
-        // fraction[0] is the enumerator
-        // fraction[1] is the divider
         final double[] result = new double[2];
         // -1 because there is one pop to fill the "last" variable in the beginning.
         final int divisor = this.blockPlaces.size() - 1;

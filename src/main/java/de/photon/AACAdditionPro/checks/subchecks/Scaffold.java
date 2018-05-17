@@ -274,13 +274,11 @@ public class Scaffold implements Listener, ViolationModule
             }
 
 
-            // -------------------------------------------- Consistency --------------------------------------------- //
+            // ---------------------------------------------- Average ----------------------------------------------- //
 
             // Should check average?
             if (user.getScaffoldData().getScaffoldBlockPlaces().hasReachedBufferSize())
             {
-                // ------------------------------------- Consistency - Average -------------------------------------- //
-
                 /*
                 Indices:
                 [0] -> Real average

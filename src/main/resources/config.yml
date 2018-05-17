@@ -476,7 +476,7 @@ Scaffold:
          # Type3 will add 1 vl
          type3: true
          # How many suspicious rotations should Scaffold count as legit
-         # The value must be positive.
+         # The value must be greater or equal to 0.
          rotation_threshold: 6
       # This checks for behaviour associated with safe-walk
       safewalk:
@@ -492,7 +492,7 @@ Scaffold:
          # Should this part of the check be enabled
          enabled: true
          # How many suspicious sprinting periods should Scaffold count as legit
-         # Set this to a negative value to deactivate sprint checking.
+         # The value must be greater or equal to 0.
          sprinting_threshold: 3
    # Map of violation levels to command
    thresholds:

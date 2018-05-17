@@ -62,7 +62,7 @@ public class ScaffoldData extends TimeData
         // -1 because there is one pop to fill the "last" variable in the beginning.
         final int divisor = this.scaffoldBlockPlaces.size() - 1;
 
-        boolean moonwalk = this.scaffoldBlockPlaces.stream().filter((blockPlace) -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
+        final boolean moonwalk = this.scaffoldBlockPlaces.stream().filter((blockPlace) -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
 
         this.scaffoldBlockPlaces.clearLastTwoObjectsIteration(
                 (last, current) ->

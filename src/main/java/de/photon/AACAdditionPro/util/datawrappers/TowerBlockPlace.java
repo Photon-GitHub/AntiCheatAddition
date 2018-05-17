@@ -9,8 +9,8 @@ import org.bukkit.util.Vector;
 
 public class TowerBlockPlace extends BlockPlace
 {
-    private static final double TOWER_LENIENCY = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.TOWER + ".tower_leniency");
-    private static final double LEVITATION_LENIENCY = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.TOWER + ".levitation_leniency");
+    private static final double TOWER_LENIENCY = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.TOWER.getConfigString() + ".tower_leniency");
+    private static final double LEVITATION_LENIENCY = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.TOWER.getConfigString() + ".levitation_leniency");
     private static final double[] AMPLIFIER_CHACHE = {
             // 478.4 * 0.925
             442.52D,

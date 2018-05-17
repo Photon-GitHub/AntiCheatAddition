@@ -30,8 +30,8 @@ public class Tower implements Listener, ViolationModule
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPre(final BlockPlaceEvent event)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void on(final BlockPlaceEvent event)
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
@@ -46,17 +46,6 @@ public class Tower implements Listener, ViolationModule
         {
             event.setCancelled(true);
             InventoryUtils.syncUpdateInventory(user.getPlayer());
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void on(final BlockPlaceEvent event)
-    {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        // Not bypassed
-        if (User.isUserInvalid(user))
-        {
             return;
         }
 
@@ -65,6 +54,7 @@ public class Tower implements Listener, ViolationModule
         {
             final Block blockPlaced = event.getBlockPlaced();
 
+            // Levitation effect
             final Integer levitation;
             switch (ServerVersion.getActiveServerVersion())
             {

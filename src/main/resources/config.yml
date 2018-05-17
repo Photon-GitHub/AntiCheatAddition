@@ -155,9 +155,8 @@ Fastswitch:
       8: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
       12: "aackick {player} Fastswitch"
 
-# This check will block most Freecam cheats
-# Your Players will recognize small jumps when they are standing completely still and are not moving their mouse.
-# This behaviour will teleport freecam-users on every jump back to their original position.
+# The Freecam check will try to detect and block freecam clients.
+# Please notice that a well coded freecam modification is purely clientside and thus undetectable.
 Freecam:
    # Do you want to enable the Anti-Freecam
    enabled: true

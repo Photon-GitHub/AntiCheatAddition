@@ -542,6 +542,8 @@ Tower:
    # The new Tower check has its own leniency-curve which makes it very effective.
    # Therefore please only touch this if you have false positives
    tower_leniency: 1
+   # Special leniency which is only applied if the player has the levitation effect
+   levitation_leniency: 0.9
    # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
    # to prevent further towering (measured in ms)
    timeout: 5500

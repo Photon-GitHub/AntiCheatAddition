@@ -45,19 +45,26 @@ public class TowerData extends TimeData
     }
 
     /**
-     * Used to calculate the average time span between the {@link TowerBlockPlace}s in the buffer
+     * Used to calculate the average and expected time span between the {@link TowerBlockPlace}s in the buffer.
      * Also clears the buffer.
      *
-     * @return the average time between {@link TowerBlockPlace}s.
+     * @return an array with the following contents:<br>
+     * [0] = Expected time <br>
+     * [1] = Real time <br>
      */
-    public double calculateAverageTime()
+    public double[] calculateTimes()
     {
         // fraction[0] is the enumerator
         // fraction[1] is the divider
-        final double[] fraction = new double[2];
+        final double[] result = new double[2];
         // -1 because there is one pop to fill the "last" variable in the beginning.
-        fraction[1] = this.blockPlaces.size() - 1;
-        this.blockPlaces.clearLastTwoObjectsIteration((last, current) -> fraction[0] += (last.getTime() - current.getTime()));
-        return fraction[0] / fraction[1];
+        final int divisor = this.blockPlaces.size() - 1;
+        this.blockPlaces.clearLastTwoObjectsIteration((last, current) -> {
+            result[0] += current.calculateDelay();
+            result[1] += (last.getTime() - current.getTime());
+        });
+        result[0] /= divisor;
+        result[1] /= divisor;
+        return result;
     }
 }

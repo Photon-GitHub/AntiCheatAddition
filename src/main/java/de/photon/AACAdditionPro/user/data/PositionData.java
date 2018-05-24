@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.user.data;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -44,52 +45,58 @@ public class PositionData extends TimeData implements Listener
     }
 
     @EventHandler
-    public void on(final PlayerToggleSprintEvent event)
+    public static void on(final PlayerToggleSprintEvent event)
     {
-        if (this.getUser().refersToUUID(event.getPlayer().getUniqueId()))
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        if (user != null)
         {
-            this.currentlySprinting = event.isSprinting();
-            if (!this.currentlySprinting)
+            user.getPositionData().currentlySprinting = event.isSprinting();
+            if (!user.getPositionData().currentlySprinting)
             {
-                this.lastSprintTime = this.passedTime(3);
+                user.getPositionData().lastSprintTime = user.getPositionData().passedTime(3);
             }
-            this.updateTimeStamp(3);
+            user.getPositionData().updateTimeStamp(3);
         }
     }
 
     @EventHandler
-    public void on(final PlayerToggleSneakEvent event)
+    public static void on(final PlayerToggleSneakEvent event)
     {
-        if (this.getUser().refersToUUID(event.getPlayer().getUniqueId()))
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        if (user != null)
         {
-            this.currentlySneaking = event.isSneaking();
-            if (!this.currentlySneaking)
+            user.getPositionData().currentlySneaking = event.isSneaking();
+            if (!user.getPositionData().currentlySneaking)
             {
-                this.lastSneakTime = this.passedTime(4);
+                user.getPositionData().lastSneakTime = user.getPositionData().passedTime(4);
             }
-            this.updateTimeStamp(4);
+            user.getPositionData().updateTimeStamp(4);
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void on(final PlayerMoveEvent event)
+    public static void on(final PlayerMoveEvent event)
     {
-        if (this.getUser().refersToUUID(event.getPlayer().getUniqueId()))
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        if (user != null)
         {
             // Head + normal movement
-            this.updateTimeStamp(0);
+            user.getPositionData().updateTimeStamp(0);
 
             // xz movement only
             if (event.getFrom().getX() != event.getTo().getX() ||
                 event.getFrom().getZ() != event.getTo().getZ())
             {
-                this.updateTimeStamp(1);
-                this.updateTimeStamp(2);
+                user.getPositionData().updateTimeStamp(1);
+                user.getPositionData().updateTimeStamp(2);
             }
             // Any non-head movement.
             else if (event.getFrom().getY() != event.getTo().getY())
             {
-                updateTimeStamp(1);
+                user.getPositionData().updateTimeStamp(1);
             }
         }
     }

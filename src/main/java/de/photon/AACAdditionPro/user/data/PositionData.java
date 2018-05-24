@@ -47,8 +47,6 @@ public class PositionData extends TimeData implements Listener
         super(user, System.currentTimeMillis(), System.currentTimeMillis(), System.currentTimeMillis(), 0, 0);
     }
 
-    //TODO: ARE STATIC EVENTHANDLERS POSSIBLE?
-
     /**
      * This checks if a player moved recently.
      *

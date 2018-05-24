@@ -54,8 +54,11 @@ public abstract class PlayerInformationModifier
                 @EventHandler
                 public void on(final ChunkUnloadEvent event)
                 {
+                    // Cache entities for performance reasons so the server doesn't need to load them again when the
+                    // task is executed.
+                    final Entity[] entities = event.getChunk().getEntities();
                     Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
-                        for (final Entity entity : event.getChunk().getEntities())
+                        for (final Entity entity : entities)
                         {
                             removeEntity(entity);
                         }

@@ -32,7 +32,7 @@ public class User
     private final TimeData fastSwitchData = new TimeData(this);
     private final FishingData fishingData = new FishingData(this);
     private final InventoryData inventoryData = new InventoryData(this);
-    private final InventoryHeuristicsData inventoryHeuristicsData = new InventoryHeuristicsData();
+    private final InventoryHeuristicsData inventoryHeuristicsData = new InventoryHeuristicsData(this);
     private final TimeData loginData;
     private final LookPacketData lookPacketData = new LookPacketData(this);
     private final PingData pingData = new PingData(this);
@@ -90,11 +90,7 @@ public class User
         fastSwitchData.unregister();
         fishingData.unregister();
         inventoryData.unregister();
-        clientSideEntityData.unregister();
-        espInformationData.unregister();
-        fastSwitchData.unregister();
-        fishingData.unregister();
-        inventoryData.unregister();
+        inventoryHeuristicsData.unregister();
         loginData.unregister();
         lookPacketData.unregister();
         pingData.unregister();

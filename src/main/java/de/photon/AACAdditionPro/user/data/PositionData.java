@@ -7,7 +7,6 @@ import de.photon.AACAdditionPro.user.UserManager;
 import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
@@ -18,7 +17,7 @@ import org.bukkit.event.player.PlayerToggleSprintEvent;
  * The first index of this {@link TimeData} represents the last time a player moved,
  * the second index represents the last time a player moved when ignoring head movement
  */
-public class PositionData extends TimeData implements Listener
+public class PositionData extends TimeData
 {
     static
     {
@@ -68,14 +67,7 @@ public class PositionData extends TimeData implements Listener
     {
         return this.currentlySneaking || this.recentlyUpdated(4, milliseconds);
     }
-
-    @Override
-    public void unregister()
-    {
-        HandlerList.unregisterAll(this);
-        super.unregister();
-    }
-
+    
     /**
      * Determines what index should be checkd in the {@link PositionData}.
      */

@@ -74,7 +74,7 @@ public class TowerBlockPlace extends BlockPlace
         {
             currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER);
 
-            // Break as there won't be any more possibly placed blocks.
+            // Break as the player has already reached the max height (no more blocks to place below).
             if (currentVelocity.getY() <= 0)
             {
                 // If the result is lower here, the detection is more lenient.

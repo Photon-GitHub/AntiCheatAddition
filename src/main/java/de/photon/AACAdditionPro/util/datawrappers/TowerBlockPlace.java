@@ -90,28 +90,10 @@ public class TowerBlockPlace extends BlockPlace
                 // Location must be lower than maximumPlacedBlocks and there is negative velocity (in the beginning there is no negative velocity, but maximumPlacedBlocks > flooredBlocks!)
                 if (maximumPlacedBlocks > flooredBlocks && currentVelocity.getY() < 0)
                 {
-                    // Leniency:
-                    double leniency;
-                    switch (jumpBoostLevel)
-                    {
-                        case 0:
-                            leniency = 1;
-                            break;
-                        case 1:
-                        case 3:
-                            leniency = 0.9;
-                            break;
-                        case 2:
-                            leniency = 0.87;
-                            break;
-                        default:
-                            leniency = 0.982;
-                            break;
-                    }
-
                     // If the result is lower here, the detection is more lenient.
                     // Convert ticks to milliseconds
-                    return ((ticks * 50) / maximumPlacedBlocks) * leniency * TOWER_LENIENCY;
+                    // 0.925 is additional leniency.
+                    return ((ticks * 50) / maximumPlacedBlocks) * 0.925 * TOWER_LENIENCY;
                 }
             }
         }

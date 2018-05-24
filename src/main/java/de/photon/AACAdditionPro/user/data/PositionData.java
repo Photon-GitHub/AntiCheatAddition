@@ -67,7 +67,7 @@ public class PositionData extends TimeData
     {
         return this.currentlySneaking || this.recentlyUpdated(4, milliseconds);
     }
-    
+
     /**
      * Determines what index should be checkd in the {@link PositionData}.
      */

@@ -79,7 +79,8 @@ public class TowerBlockPlace extends BlockPlace
             {
                 // If the result is lower here, the detection is more lenient.
                 // * 50 : Convert ticks to milliseconds
-                // 0.925 is additional leniency.
+                // 0.925 is additional leniency
+                // Deliberately ignore the "falling" phase above the last block to increase leniency and code simplicity
                 return ((ticks * 50) / Math.floor(currentBlockValue)) * 0.925 * TOWER_LENIENCY;
             }
 

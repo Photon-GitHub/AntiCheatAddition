@@ -43,7 +43,18 @@ public class PerHeuristicCommands implements Module, Listener
         thresholds = ConfigUtils.loadThresholds(this.getConfigString() + ".confidences");
         // Set AAC's min_confidence
         thresholds.keySet().stream().min(Integer::compareTo).ifPresent(
-                minConfidence -> Configs.AAC.getConfigurationRepresentation().requestValueChange("heuristics.min_confidence", minConfidence));
+                minConfidence -> {
+                    if (minConfidence < 50)
+                    {
+                        VerboseSender.sendVerboseMessage("AAC's heuristics check does not support confidences below 50.", true, true);
+                        VerboseSender.sendVerboseMessage("Therefore AACAdditionPro cannot register the min_confidence of " + minConfidence + " which would be required on your setup.", true, true);
+                        VerboseSender.sendVerboseMessage("Please only try to create actions for confidences greater or equal to 50.", true, true);
+                    }
+                    else
+                    {
+                        Configs.AAC.getConfigurationRepresentation().requestValueChange("heuristics.min_confidence", minConfidence);
+                    }
+                });
         Configs.AAC.getConfigurationRepresentation().requestValueChange("heuristics.thresholds", ConfigurationRepresentation.ConfigActions.DELETE_KEYS);
     }
 

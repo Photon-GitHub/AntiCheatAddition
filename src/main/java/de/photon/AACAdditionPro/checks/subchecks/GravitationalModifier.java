@@ -51,7 +51,7 @@ public class GravitationalModifier implements ViolationModule, Listener
             user.getPlayer().getEyeLocation().getBlock().isEmpty() &&
             BlockUtils.countBlocksAround(user.getPlayer().getEyeLocation().getBlock(), false) == 0)
         {
-            boolean positveVelocity = event.getFrom().getY() < event.getTo().getY();
+            final boolean positveVelocity = event.getFrom().getY() < event.getTo().getY();
 
             if (positveVelocity != user.getVelocityChangeData().positiveVelocity)
             {

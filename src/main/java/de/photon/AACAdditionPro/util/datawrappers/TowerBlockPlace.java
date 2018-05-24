@@ -63,9 +63,6 @@ public class TowerBlockPlace extends BlockPlace
             return AMPLIFIER_CHACHE[jumpBoostLevel + 1];
         }
 
-        // How many blocks can potentially be placed during one jump cycle
-        short maximumPlacedBlocks = 1;
-
         // The velocity in the beginning
         Vector currentVelocity = new Vector(0, Jumping.getJumpYMotion(jumpBoostLevel), 0);
 
@@ -77,25 +74,16 @@ public class TowerBlockPlace extends BlockPlace
         {
             currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER);
 
-            currentBlockValue += currentVelocity.getY();
+            // Break as there won't be any more possibly placed blocks.
+            if (currentVelocity.getY() <= 0)
+            {
+                // If the result is lower here, the detection is more lenient.
+                // * 50 : Convert ticks to milliseconds
+                // 0.925 is additional leniency.
+                return ((ticks * 50) / Math.floor(currentBlockValue)) * 0.925 * TOWER_LENIENCY;
+            }
 
-            // The maximum placed blocks are the next lower integer of the maximum y-Position of the player
-            final short flooredBlocks = (short) Math.floor(currentBlockValue);
-            if (maximumPlacedBlocks < flooredBlocks)
-            {
-                maximumPlacedBlocks = flooredBlocks;
-            }
-            else
-            {
-                // Location must be lower than maximumPlacedBlocks and there is negative velocity (in the beginning there is no negative velocity, but maximumPlacedBlocks > flooredBlocks!)
-                if (maximumPlacedBlocks > flooredBlocks && currentVelocity.getY() < 0)
-                {
-                    // If the result is lower here, the detection is more lenient.
-                    // Convert ticks to milliseconds
-                    // 0.925 is additional leniency.
-                    return ((ticks * 50) / maximumPlacedBlocks) * 0.925 * TOWER_LENIENCY;
-                }
-            }
+            currentBlockValue += currentVelocity.getY();
         }
 
         // Too high movement; no checking

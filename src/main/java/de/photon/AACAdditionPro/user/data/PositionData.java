@@ -20,6 +20,11 @@ import org.bukkit.event.player.PlayerToggleSprintEvent;
  */
 public class PositionData extends TimeData implements Listener
 {
+    static
+    {
+        AACAdditionPro.getInstance().registerListener(new PositionDataUpdater());
+    }
+
     public boolean allowedToJump = true;
     private boolean currentlySneaking = false;
     private boolean currentlySprinting = false;
@@ -28,7 +33,6 @@ public class PositionData extends TimeData implements Listener
     private long lastSprintTime = Long.MAX_VALUE;
     @Getter
     private long lastSneakTime = Long.MAX_VALUE;
-
 
     public PositionData(final User user)
     {
@@ -41,66 +45,9 @@ public class PositionData extends TimeData implements Listener
          * 5 -> last sneaking
          */
         super(user, System.currentTimeMillis(), System.currentTimeMillis(), System.currentTimeMillis(), 0, 0);
-        AACAdditionPro.getInstance().registerListener(this);
     }
 
     //TODO: ARE STATIC EVENTHANDLERS POSSIBLE?
-    @EventHandler
-    public static void on(final PlayerToggleSprintEvent event)
-    {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        if (user != null)
-        {
-            user.getPositionData().currentlySprinting = event.isSprinting();
-            if (!user.getPositionData().currentlySprinting)
-            {
-                user.getPositionData().lastSprintTime = user.getPositionData().passedTime(3);
-            }
-            user.getPositionData().updateTimeStamp(3);
-        }
-    }
-
-    @EventHandler
-    public static void on(final PlayerToggleSneakEvent event)
-    {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        if (user != null)
-        {
-            user.getPositionData().currentlySneaking = event.isSneaking();
-            if (!user.getPositionData().currentlySneaking)
-            {
-                user.getPositionData().lastSneakTime = user.getPositionData().passedTime(4);
-            }
-            user.getPositionData().updateTimeStamp(4);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public static void on(final PlayerMoveEvent event)
-    {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        if (user != null)
-        {
-            // Head + normal movement
-            user.getPositionData().updateTimeStamp(0);
-
-            // xz movement only
-            if (event.getFrom().getX() != event.getTo().getX() ||
-                event.getFrom().getZ() != event.getTo().getZ())
-            {
-                user.getPositionData().updateTimeStamp(1);
-                user.getPositionData().updateTimeStamp(2);
-            }
-            // Any non-head movement.
-            else if (event.getFrom().getY() != event.getTo().getY())
-            {
-                user.getPositionData().updateTimeStamp(1);
-            }
-        }
-    }
 
     /**
      * This checks if a player moved recently.
@@ -140,5 +87,68 @@ public class PositionData extends TimeData implements Listener
         ANY,
         NONHEAD,
         XZONLY
+    }
+
+    /**
+     * A singleton class to reduce the reqired {@link Listener}s to a minimum.
+     */
+    private static class PositionDataUpdater implements Listener
+    {
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+        public void on(final PlayerToggleSprintEvent event)
+        {
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user != null)
+            {
+                user.getPositionData().currentlySprinting = event.isSprinting();
+                if (!user.getPositionData().currentlySprinting)
+                {
+                    user.getPositionData().lastSprintTime = user.getPositionData().passedTime(3);
+                }
+                user.getPositionData().updateTimeStamp(3);
+            }
+        }
+
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+        public void on(final PlayerToggleSneakEvent event)
+        {
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user != null)
+            {
+                user.getPositionData().currentlySneaking = event.isSneaking();
+                if (!user.getPositionData().currentlySneaking)
+                {
+                    user.getPositionData().lastSneakTime = user.getPositionData().passedTime(4);
+                }
+                user.getPositionData().updateTimeStamp(4);
+            }
+        }
+
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+        public void on(final PlayerMoveEvent event)
+        {
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user != null)
+            {
+                // Head + normal movement
+                user.getPositionData().updateTimeStamp(0);
+
+                // xz movement only
+                if (event.getFrom().getX() != event.getTo().getX() ||
+                    event.getFrom().getZ() != event.getTo().getZ())
+                {
+                    user.getPositionData().updateTimeStamp(1);
+                    user.getPositionData().updateTimeStamp(2);
+                }
+                // Any non-head movement.
+                else if (event.getFrom().getY() != event.getTo().getY())
+                {
+                    user.getPositionData().updateTimeStamp(1);
+                }
+            }
+        }
     }
 }

@@ -39,7 +39,6 @@ public abstract class PlayerInformationModifier
         // Only start if the ServerVersion is supported
         if (ServerVersion.supportsActiveServerVersion(this.getSupportedVersions()))
         {
-
             // Register events and packet listener
             AACAdditionPro.getInstance().registerListener(new Listener()
             {

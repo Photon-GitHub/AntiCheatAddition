@@ -65,4 +65,11 @@ public class TowerData extends TimeData
         result[1] /= divisor;
         return result;
     }
+
+    @Override
+    public void unregister()
+    {
+        this.blockPlaces.clear();
+        super.unregister();
+    }
 }

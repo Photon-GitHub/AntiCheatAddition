@@ -24,25 +24,25 @@ import java.util.UUID;
 @Getter
 public class User
 {
-    private final Player player;
+    private Player player;
 
-    private final AutoPotionData autoPotionData = new AutoPotionData(this);
-    private final ClientSideEntityData clientSideEntityData = new ClientSideEntityData(this);
-    private final EspInformationData espInformationData = new EspInformationData(this);
-    private final TimeData fastSwitchData = new TimeData(this);
-    private final FishingData fishingData = new FishingData(this);
-    private final InventoryData inventoryData = new InventoryData(this);
-    private final InventoryHeuristicsData inventoryHeuristicsData = new InventoryHeuristicsData(this);
-    private final TimeData loginData;
-    private final LookPacketData lookPacketData = new LookPacketData(this);
-    private final PingData pingData = new PingData(this);
-    private final PositionData positionData = new PositionData(this);
-    private final ScaffoldData scaffoldData = new ScaffoldData(this);
-    private final SkinData skinData = new SkinData();
-    private final TeamingData teamingData = new TeamingData(this);
-    private final TeleportData teleportData = new TeleportData(this);
-    private final TowerData towerData = new TowerData(this);
-    private final VelocityChangeData velocityChangeData = new VelocityChangeData(this);
+    private AutoPotionData autoPotionData = new AutoPotionData(this);
+    private ClientSideEntityData clientSideEntityData = new ClientSideEntityData(this);
+    private EspInformationData espInformationData = new EspInformationData(this);
+    private TimeData fastSwitchData = new TimeData(this);
+    private FishingData fishingData = new FishingData(this);
+    private InventoryData inventoryData = new InventoryData(this);
+    private InventoryHeuristicsData inventoryHeuristicsData = new InventoryHeuristicsData(this);
+    private TimeData loginData;
+    private LookPacketData lookPacketData = new LookPacketData(this);
+    private PingData pingData = new PingData(this);
+    private PositionData positionData = new PositionData(this);
+    private ScaffoldData scaffoldData = new ScaffoldData(this);
+    private SkinData skinData = new SkinData();
+    private TeamingData teamingData = new TeamingData(this);
+    private TeleportData teleportData = new TeleportData(this);
+    private TowerData towerData = new TowerData(this);
+    private VelocityChangeData velocityChangeData = new VelocityChangeData(this);
 
     /**
      * Should the player receive verbose-messages?
@@ -84,21 +84,56 @@ public class User
 
     void unregister()
     {
+        this.player = null;
+
         autoPotionData.unregister();
+        autoPotionData = null;
+
         clientSideEntityData.unregister();
+        clientSideEntityData = null;
+
         espInformationData.unregister();
+        espInformationData = null;
+
         fastSwitchData.unregister();
+        fastSwitchData = null;
+
         fishingData.unregister();
+        fishingData = null;
+
         inventoryData.unregister();
+        inventoryData = null;
+
         inventoryHeuristicsData.unregister();
+        inventoryHeuristicsData = null;
+
         loginData.unregister();
+        loginData = null;
+
         lookPacketData.unregister();
+        lookPacketData = null;
+
         pingData.unregister();
+        pingData = null;
+
         positionData.unregister();
+        positionData = null;
+
         scaffoldData.unregister();
+        scaffoldData = null;
+
+        skinData = null;
+
         teamingData.unregister();
+        teamingData = null;
+
         teleportData.unregister();
+        teleportData = null;
+
         towerData.unregister();
+        towerData = null;
+
         velocityChangeData.unregister();
+        velocityChangeData = null;
     }
 }

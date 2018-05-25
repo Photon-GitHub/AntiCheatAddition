@@ -98,17 +98,6 @@ AutoPotion:
       2: "aacstaffnotify {player} in {world} is highly suspected for AutoPotion"
       4: "aackick {player} AutoPotion"
 
-# EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
-# This will catch several scaffold, tower, killaura and aimbot mods
-EqualRotation:
-   # Do you want to enable the EqualRotation check
-   enabled: true
-   # Map of violation levels to command
-   thresholds:
-      9: "aacstaffnotify {player} in {world} is suspected for EqualRotation"
-      16: "aacstaffnotify {player} in {world} is highly suspected for EqualRotation"
-      25: "aackick {player} Invalid rotations"
-
 # This module uses advanced mathematics to determine if players can see each other.
 # It also thinks of the 3rd person camera modes and uses accurate hitbox-models.
 # If the players cannot see each other several actions will be taken to hide information on packet-level.
@@ -414,6 +403,27 @@ MultiInteraction:
       36: "aacstaffnotify {player} in {world} is suspected for MultiInteraction"
       66: "aacstaffnotify {player} in {world} is highly suspected for MultiInteraction"
       100: "aackick {player} MultiInteraction"
+
+# PacketAnalysis is a general check which aims to detect modifications that are closely linked to interfering with the
+# protocol directly, such as pingspoof or freecam, but also various killauras, aimbots and other rotation-based modules.
+PacketAnalysis:
+   # Do you want to enable the PacketAnalysis check
+   enabled: true
+   parts:
+      # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
+      # This will catch several scaffold, tower, killaura and aimbot mods
+      EqualRotation:
+         enabled: true
+      # This part analyses KeepAlive packets.
+      KeepAlive:
+         type1: true
+         type2: true
+   # Map of violation levels to command
+   thresholds:
+      9: "aacstaffnotify {player} in {world} is suspected by PacketAnalysis"
+      16: "aacstaffnotify {player} in {world} is highly suspected by PacketAnalysis"
+      25: "aackick {player} Suspicious protocol"
+
 
 # The Pingspoof check tries to identify cheaters who try to intentionally increase their ping to bypass
 # AntiCheat-setups. It is a longtime check and will detect cheaters very slowly.

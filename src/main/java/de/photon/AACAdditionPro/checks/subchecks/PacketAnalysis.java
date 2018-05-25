@@ -85,6 +85,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.EQUAL_ROTATION;
+        return ModuleType.PACKET_ANALYSIS;
     }
 }

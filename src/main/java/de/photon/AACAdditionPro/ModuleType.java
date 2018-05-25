@@ -10,13 +10,10 @@ public enum ModuleType
     PER_HEURISTIC_COMMANDS("Heuristic-Addition"),
 
     // Normal checks
-    AUTO_EAT("AutoEat"),
     AUTO_FISH("AutoFish"),
     AUTO_POTION("AutoPotion"),
-    EQUAL_ROTATION("EqualRotation"),
     ESP("Esp"),
     FASTSWITCH("Fastswitch"),
-    FLYPATCH("FlyPatch"),
     FREECAM("Freecam"),
     GRAVITATIONAL_MODIFIER("GravitationalModifier"),
     INVENTORY_CHAT("InventoryChat", "sent chat message while in Inventory (InventoryChat)"),
@@ -26,6 +23,7 @@ public enum ModuleType
     INVENTORY_ROTATION("InventoryRotation", "failed InventoryMove/Autoarmor (InventoryRotation)"),
     KILLAURA_ENTITY("KillauraEntity", "failed KillauraEntity (hit the Killaura-Bot)"),
     MULTI_INTERACTION("MultiInteraction"),
+    PACKETANALYSIS("PacketAnalysis"),
     PINGSPOOF("Pingspoof"),
     SCAFFOLD("Scaffold"),
     SKINBLINKER("Skinblinker"),

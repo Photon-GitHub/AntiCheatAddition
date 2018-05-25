@@ -16,11 +16,11 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLook;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 
-public class EqualRotation extends PacketAdapter implements ViolationModule
+public class PacketAnalysis extends PacketAdapter implements ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100);
 
-    public EqualRotation()
+    public PacketAnalysis()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.LOW, PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK);
     }
@@ -51,7 +51,7 @@ public class EqualRotation extends PacketAdapter implements ViolationModule
         }
         else
         {
-            VerboseSender.sendVerboseMessage("EqualRotation: received invalid packet: " + event.getPacketType().toString(), true, true);
+            VerboseSender.sendVerboseMessage("PacketAnalysis: received invalid packet: " + event.getPacketType().toString(), true, true);
             return;
         }
 

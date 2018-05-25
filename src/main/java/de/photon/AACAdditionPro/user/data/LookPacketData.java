@@ -16,7 +16,7 @@ public class LookPacketData extends TimeData
 {
     private static final byte QUEUE_CAPACITY = 20;
 
-    // EqualRotation
+    // PacketAnalysis
     @Getter
     private float realLastYaw;
     @Getter

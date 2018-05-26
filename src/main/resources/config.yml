@@ -171,6 +171,7 @@ GravitationalModifier:
 # situations.
 ImpossibleChat:
    # Do you want to enable the ImpossibleChat check
+   # Disabled by default as some servers might allow auto-chat modifications.
    enabled: false
    # Violation before AACAdditionPro starts to cancel the messages.
    # Set this to 0 to never cancel messages.

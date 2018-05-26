@@ -144,26 +144,18 @@ Fastswitch:
       8: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
       12: "aackick {player} Fastswitch"
 
-# The Freecam check will try to detect and block freecam clients.
+# The Freecam check will try to block freecam clients.
 # Please notice that a well coded freecam modification is purely clientside and thus undetectable.
 Freecam:
-   # Do you want to enable the Anti-Freecam
+   # Do you want to enable anti-freecam
    enabled: true
-   # This tries to port players back to their original location when idling and can prevent bad clients.
-   # WARNING: Idling players will experience small screen movements.
-   teleport:
-      # Do you want to enable back-porting
-      enabled: false
-      # The time in ms before AACAdditionPro starts to initiate teleports for an idling player
-      idle_time: 1000
-      # How often should players be checked and possibly teleported
-      # Too low values can cause visual bugs (very frequent wobbles and disappearing chunks in extreme cases)
-      # High values reduce the effectiveness of the check. I do not recommend setting this higher than 80 ticks.
-      # Measured in ticks (please do not use floating points).
-      frequency: 30
-   # A collection of exploits to detect freecam.
-   detection:
-      type1: true
+   # The time in ms before AACAdditionPro starts to initiate teleports for an idling player
+   idle_time: 1000
+   # How often should players be checked and possibly teleported
+   # Too low values can cause visual bugs (very frequent wobbles and disappearing chunks in extreme cases)
+   # High values reduce the effectiveness of the check. I do not recommend setting this higher than 80 ticks.
+   # Measured in ticks (please do not use floating points).
+   frequency: 30
    # Map of violation levels to command
    thresholds:
       1: "aacstaffnotify {player} in {world} is suspected for freecam"

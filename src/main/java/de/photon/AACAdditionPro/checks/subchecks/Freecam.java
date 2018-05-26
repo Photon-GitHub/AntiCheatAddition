@@ -12,7 +12,7 @@ import org.bukkit.event.inventory.InventoryType;
 
 public class Freecam implements ViolationModule
 {
-    static final int IDLE_TIME = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.FREECAM.getConfigString() + ".teleport.idle_time");
+    static final int IDLE_TIME = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.FREECAM.getConfigString() + ".idle_time");
     private int task_number;
 
     @Override

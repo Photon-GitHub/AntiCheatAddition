@@ -156,11 +156,6 @@ Freecam:
    # High values reduce the effectiveness of the check. I do not recommend setting this higher than 80 ticks.
    # Measured in ticks (please do not use floating points).
    frequency: 30
-   # Map of violation levels to command
-   thresholds:
-      1: "aacstaffnotify {player} in {world} is suspected for freecam"
-      2: "aacstaffnotify {player} in {world} is highly suspected for freecam"
-      3: "aackick {player} Freecam"
 
 # GravitationalModifier improves the detection speed of various movement-cheats
 GravitationalModifier:

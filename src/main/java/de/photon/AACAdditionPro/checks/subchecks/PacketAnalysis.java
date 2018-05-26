@@ -64,7 +64,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         user.getKeepAliveData().getKeepAlives().addLast(new KeepAliveData.KeepAlivePacketData(serverKeepAliveWrapper.getKeepAliveId()));
 
         // Check on sending to force the client to respond in a certain time-frame.
-        if (keepAliveIgnored &&
+        if (keepAlive &&
+            keepAliveIgnored &&
             user.getKeepAliveData().getKeepAlives().size() > KEEPALIVE_QUEUE_SIZE &&
             !user.getKeepAliveData().getKeepAlives().removeFirst().hasRegisteredResponse())
         {

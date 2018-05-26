@@ -37,7 +37,7 @@ public final class BlockUtils
                                              Material.DISPENSER,
                                              Material.DROPPER);
                 break;
-                
+
             case MC111:
             case MC112:
                 CONTAINERS = ImmutableSet.of(Material.CHEST,

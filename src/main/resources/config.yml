@@ -398,13 +398,13 @@ PacketAnalysis:
    enabled: true
    parts:
       # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
-      # This will catch several scaffold, tower, killaura and aimbot mods
+      # This will catch several scaffold, tower, killaura and aimbot modifications.
       EqualRotation:
          enabled: true
       # This part analyses KeepAlive packets.
       KeepAlive:
          # Unregistered checks for illegal packets that are not possible within the minecraft protocol
-         # DO NOT DISABLE THIS PART WHILE KEEPING THE OFFSET PART ENABLED.
+         # DO NOT DISABLE THIS SUBPART WHILE KEEPING OTHER SUBPARTS ENABLED!
          # This check will add 20 vl
          unregistered:
             # Do you want to enable the unregistered KeepAlive packet checking

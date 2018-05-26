@@ -220,7 +220,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                     if (offset > 0)
                     {
                         VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
-                        vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 50)), 10), -1, () -> {}, () -> {});
+                        vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 50)), 8), -1, () -> {}, () -> {});
                     }
                 }
 

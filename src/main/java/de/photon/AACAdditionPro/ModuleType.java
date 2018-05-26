@@ -16,7 +16,7 @@ public enum ModuleType
     FASTSWITCH("Fastswitch"),
     FREECAM("Freecam"),
     GRAVITATIONAL_MODIFIER("GravitationalModifier"),
-    INVENTORY_CHAT("InventoryChat", "sent chat message while in Inventory (InventoryChat)"),
+    IMPOSSIBLE_CHAT("ImpossibleChat", "sent illegal chat message (ImpossibleChat)"),
     INVENTORY_HEURISTICS("InventoryHeuristics"),
     INVENTORY_HIT("InventoryHit", "failed Killaura/Triggerbot (InventoryHit)"),
     INVENTORY_MOVE("InventoryMove"),

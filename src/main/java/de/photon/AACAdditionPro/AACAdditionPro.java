@@ -10,7 +10,7 @@ import de.photon.AACAdditionPro.checks.subchecks.AutoPotion;
 import de.photon.AACAdditionPro.checks.subchecks.Esp;
 import de.photon.AACAdditionPro.checks.subchecks.Fastswitch;
 import de.photon.AACAdditionPro.checks.subchecks.GravitationalModifier;
-import de.photon.AACAdditionPro.checks.subchecks.InventoryChat;
+import de.photon.AACAdditionPro.checks.subchecks.ImpossibleChat;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHit;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryMove;
@@ -237,7 +237,7 @@ public class AACAdditionPro extends JavaPlugin
                     new Esp(),
                     new Fastswitch(),
                     new GravitationalModifier(),
-                    new InventoryChat(),
+                    new ImpossibleChat(),
                     new InventoryHeuristics(),
                     new InventoryHit(),
                     new InventoryMove(),

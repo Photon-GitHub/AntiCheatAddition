@@ -167,19 +167,19 @@ GravitationalModifier:
       15: "aacstaffnotify {player} in {world} is highly suspected for movement cheats (GravitationalModifier)"
       20: "aackick {player} Illegal movement modification"
 
-# The InventoryChat check detects sending chat messages while being in an inventory
-InventoryChat:
-   # Do you want to enable the InventoryChat check
-   # Few people will use this, thus it is deactivated in the default config but it is perfectly safe to use
+# ImpossibleChat check detects sending chat messages while being in an inventory, blocking, sprinting and other illegal
+# situations.
+ImpossibleChat:
+   # Do you want to enable the ImpossibleChat check
    enabled: false
    # Violation before AACAdditionPro starts to cancel the messages.
    # Set this to 0 to never cancel messages.
    cancel_vl: 2
    # Map of violation levels to command
    thresholds:
-      2: "aacstaffnotify {player} in {world} is suspected for InventoryChat"
-      5: "aacstaffnotify {player} in {world} is highly suspected for InventoryChat"
-      8: "aackick {player} InventoryChat"
+      2: "aacstaffnotify {player} in {world} is suspected for ImpossibleChat"
+      5: "aacstaffnotify {player} in {world} is highly suspected for ImpossibleChat"
+      8: "aackick {player} ImpossibleChat"
 
 # The inventory heuristics provide a neural network framework to detect advanced inventory cheats.
 InventoryHeuristics:

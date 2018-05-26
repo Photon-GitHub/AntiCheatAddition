@@ -10,7 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class InventoryChat implements Listener, ViolationModule
+public class ImpossibleChat implements Listener, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 600);
 
@@ -29,9 +29,13 @@ public class InventoryChat implements Listener, ViolationModule
         }
 
         // Is in Inventory (Detection)
-        if (user.getInventoryData().hasOpenInventory() &&
-            // Have the inventory opened for some time
-            user.getInventoryData().notRecentlyOpened(1000))
+        if (user.getPlayer().isSprinting() ||
+            user.getPlayer().isSneaking() ||
+            user.getPlayer().isBlocking() ||
+            user.getPlayer().isDead() ||
+            (user.getInventoryData().hasOpenInventory() &&
+             // Have the inventory opened for some time
+             user.getInventoryData().notRecentlyOpened(1000)))
         {
             vlManager.flag(user.getPlayer(), cancel_vl, () -> event.setCancelled(true), () -> {});
         }
@@ -46,6 +50,6 @@ public class InventoryChat implements Listener, ViolationModule
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.INVENTORY_CHAT;
+        return ModuleType.IMPOSSIBLE_CHAT;
     }
 }

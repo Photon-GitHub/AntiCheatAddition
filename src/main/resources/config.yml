@@ -416,8 +416,24 @@ PacketAnalysis:
          enabled: true
       # This part analyses KeepAlive packets.
       KeepAlive:
-         type1: true
-         type2: true
+         # Unregistered checks for illegal packets that are not possible within the minecraft protocol
+         # DO NOT DISABLE THIS PART WHILE KEEPING THE OFFSET PART ENABLED.
+         # This check will add 20 vl
+         unregistered:
+            # Do you want to enable the unregistered KeepAlive packet checking
+            enabled: true
+         # Ignored checks for KeepAlive packets the client has not responded to, which is illegal in the minecraft
+         # protocol.
+         # This check will add 10 vl.
+         ignored:
+            # Do you want to enable the ignored KeepAlive packet checking
+            enabled: true
+         # Offset analyses the packet order.
+         # This check also catches various pingspoof modifications.
+         # This check will add up to 10 vl, depending on the severity of the violation.
+         offset:
+            # Do you want to enable the packet offset checking
+            enabled: true
    # Map of violation levels to command
    thresholds:
       9: "aacstaffnotify {player} in {world} is suspected by PacketAnalysis"

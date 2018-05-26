@@ -182,11 +182,11 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         keepAlive = keepAliveUnregistered || keepAliveIgnored || keepAliveOffset;
 
         // Unregistered must be enabled to use offset analysis.
-        if (!keepAliveUnregistered && keepAliveOffset)
+        if (keepAlive && !keepAliveUnregistered)
         {
             keepAlive = false;
             VerboseSender.sendVerboseMessage("PacketAnalysis | Failed to enable KeepAlive part", true, true);
-            VerboseSender.sendVerboseMessage("PacketAnalysis | In order to use the KeepAlive offset analysis you need to enable the unregistered anaysis!", true, true);
+            VerboseSender.sendVerboseMessage("PacketAnalysis | In order to use the KeepAlive you need to enable the unregistered anaysis!", true, true);
         }
     }
 

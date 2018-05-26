@@ -180,7 +180,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                     if (offset > 0)
                     {
                         VerboseSender.sendVerboseMessage("PacketAnalysis-Verbose | Player: " + user.getPlayer().getName() + " sent packets out of order with an offset of: " + offset);
-                        vlManager.flag(user.getPlayer(), Math.min(KeepAliveData.KEEPALIVE_QUEUE_SIZE - index, 10), -1, () -> {}, () -> {});
+                        vlManager.flag(user.getPlayer(), Math.min((KeepAliveData.KEEPALIVE_QUEUE_SIZE - index) * 2, 10), -1, () -> {}, () -> {});
                     }
                 }
             }

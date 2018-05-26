@@ -421,7 +421,7 @@ PacketAnalysis:
             enabled: true
          # Offset analyses the packet order.
          # This check also catches various pingspoof modifications.
-         # This check will add up to 10 vl, depending on the severity of the violation.
+         # This check will add 2 to 10 vl, depending on the severity of the violation.
          offset:
             # Do you want to enable the packet offset checking
             enabled: true

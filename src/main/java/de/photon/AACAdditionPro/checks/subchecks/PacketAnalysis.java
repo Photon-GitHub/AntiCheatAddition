@@ -140,10 +140,10 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             KeepAliveData.KeepAlivePacketData keepAlivePacketData = null;
 
             int index = user.getKeepAliveData().getKeepAlives().size() - 1;
-            while (index > 0)
+            while (index >= 0)
             {
                 KeepAliveData.KeepAlivePacketData alivePacketData = user.getKeepAliveData().getKeepAlives().get(index);
-                if (alivePacketData.getTimeHash() == clientKeepAliveWrapper.getKeepAliveId())
+                if (alivePacketData.getKeepAliveID() == clientKeepAliveWrapper.getKeepAliveId())
                 {
                     keepAlivePacketData = alivePacketData;
                     break;
@@ -161,9 +161,11 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             {
                 keepAlivePacketData.registerResponse();
 
-                if (keepAliveOffset)
+                if (keepAliveOffset &&
+                    user.getKeepAliveData().getKeepAlives().size() == KEEPALIVE_QUEUE_SIZE)
                 {
-                    final int offset = KEEPALIVE_QUEUE_SIZE - index;
+                    // -1 because of size -> index conversion
+                    final int offset = (KEEPALIVE_QUEUE_SIZE - 1) - index;
                     if (offset > 0)
                     {
                         VerboseSender.sendVerboseMessage("PacketAnalysis-Verbose | Player: " + user.getPlayer().getName() + " sent packets out of order with an offset of: " + offset);

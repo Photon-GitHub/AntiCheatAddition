@@ -27,11 +27,11 @@ public class KeepAliveData extends Data
     {
         private final long timestamp = System.currentTimeMillis();
         @Getter
-        private final int timeHash;
+        private final int keepAliveID;
         @Getter
         private long timeDifference = -1;
 
-        public KeepAlivePacketData(int timeHash) {this.timeHash = timeHash;}
+        public KeepAlivePacketData(int keepAliveID) {this.keepAliveID = keepAliveID;}
 
         public void registerResponse()
         {
@@ -49,13 +49,13 @@ public class KeepAliveData extends Data
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             KeepAlivePacketData that = (KeepAlivePacketData) o;
-            return timeHash == that.timeHash;
+            return keepAliveID == that.keepAliveID;
         }
 
         @Override
         public int hashCode()
         {
-            return Objects.hash(timeHash);
+            return Objects.hash(keepAliveID);
         }
     }
 }

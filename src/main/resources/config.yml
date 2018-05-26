@@ -396,6 +396,7 @@ MultiInteraction:
 PacketAnalysis:
    # Do you want to enable the PacketAnalysisData check
    enabled: true
+   # Control the different parts of PacketAnalysis
    parts:
       # This parts compares interactions of the client with different packet types to gain insight whether or not
       # the client purposefully delays some packets (pingspoof and freecam).

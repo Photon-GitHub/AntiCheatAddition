@@ -427,7 +427,6 @@ PacketAnalysis:
       16: "aacstaffnotify {player} in {world} is highly suspected by PacketAnalysis"
       25: "aackick {player} Suspicious protocol"
 
-
 # The Pingspoof check tries to identify cheaters who try to intentionally increase their ping to bypass
 # AntiCheat-setups. It is a longtime check and will detect cheaters very slowly.
 Pingspoof:

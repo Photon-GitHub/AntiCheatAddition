@@ -397,6 +397,10 @@ PacketAnalysis:
    # Do you want to enable the PacketAnalysis check
    enabled: true
    parts:
+      # This parts compares interactions of the client with different packet types to gain insight whether or not
+      # the client purposefully delays some packets (pingspoof and freecam).
+      Compare:
+         enabled: true
       # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
       # This will catch several scaffold, tower, killaura and aimbot modifications.
       EqualRotation:
@@ -420,6 +424,11 @@ PacketAnalysis:
          # This check will add up to 10 vl, depending on the severity of the violation.
          offset:
             # Do you want to enable the packet offset checking
+            enabled: true
+         # This injects additional KeepAlive packets in order to improve detection of some modules.
+         # Legit players won't notice this.
+         inject:
+            # Do you want to enable KeepAlive packet injection.
             enabled: true
    # Map of violation levels to command
    thresholds:

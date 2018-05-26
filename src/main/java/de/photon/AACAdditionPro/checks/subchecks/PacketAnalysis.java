@@ -13,16 +13,21 @@ import de.photon.AACAdditionPro.user.data.KeepAliveData;
 import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientKeepAlive;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerKeepAlive;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
 
 public class PacketAnalysis extends PacketAdapter implements ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100);
+
+    private BukkitTask injectTask;
 
     @LoadFromConfiguration(configPath = ".parts.EqualRotatíon.enabled")
     private boolean equalRotation;
@@ -34,8 +39,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
     private boolean keepAliveIgnored;
     @LoadFromConfiguration(configPath = ".parts.KeepAlive.offset.enabled")
     private boolean keepAliveOffset;
-
-    private static final byte KEEPALIVE_QUEUE_SIZE = 20;
+    @LoadFromConfiguration(configPath = ".parts.KeepAlive.inject.enabled")
+    private boolean keepAliveInject;
 
     public PacketAnalysis()
     {
@@ -49,7 +54,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
     }
 
     @Override
-    // Must be Play.Server.KEEP_ALIVE as it is the only outgoing packet registered above.
     public void onPacketSending(PacketEvent event)
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
@@ -60,17 +64,22 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             return;
         }
 
-        final WrapperPlayServerKeepAlive serverKeepAliveWrapper = new WrapperPlayServerKeepAlive(event.getPacket());
-        user.getKeepAliveData().getKeepAlives().addLast(new KeepAliveData.KeepAlivePacketData(serverKeepAliveWrapper.getKeepAliveId()));
-
-        // Check on sending to force the client to respond in a certain time-frame.
-        if (keepAlive &&
-            keepAliveIgnored &&
-            user.getKeepAliveData().getKeepAlives().size() > KEEPALIVE_QUEUE_SIZE &&
-            !user.getKeepAliveData().getKeepAlives().removeFirst().hasRegisteredResponse())
+        if (event.getPacketType() == PacketType.Play.Server.KEEP_ALIVE)
         {
-            VerboseSender.sendVerboseMessage("PacketAnalysis-Verbose | Player: " + user.getPlayer().getName() + " ignored KeepAlive packet.");
-            vlManager.flag(user.getPlayer(), 10, () -> {}, () -> {});
+            final WrapperPlayServerKeepAlive serverKeepAliveWrapper = new WrapperPlayServerKeepAlive(event.getPacket());
+            user.getKeepAliveData().getKeepAlives().add(new KeepAliveData.KeepAlivePacketData(serverKeepAliveWrapper.getKeepAliveId()));
+
+            System.out.println("Out: " + serverKeepAliveWrapper.getKeepAliveId());
+
+            // Check on sending to force the client to respond in a certain time-frame.
+            if (keepAlive &&
+                keepAliveIgnored &&
+                user.getKeepAliveData().getKeepAlives().size() > KeepAliveData.KEEPALIVE_QUEUE_SIZE &&
+                !user.getKeepAliveData().getKeepAlives().remove(0).hasRegisteredResponse())
+            {
+                VerboseSender.sendVerboseMessage("PacketAnalysis-Verbose | Player: " + user.getPlayer().getName() + " ignored KeepAlive packet.");
+                vlManager.flag(user.getPlayer(), 10, () -> {}, () -> {});
+            }
         }
     }
 
@@ -139,6 +148,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             final WrapperPlayClientKeepAlive clientKeepAliveWrapper = new WrapperPlayClientKeepAlive(event.getPacket());
             KeepAliveData.KeepAlivePacketData keepAlivePacketData = null;
 
+            System.out.println("In: " + clientKeepAliveWrapper.getKeepAliveId());
+
             int index = user.getKeepAliveData().getKeepAlives().size() - 1;
             while (index >= 0)
             {
@@ -162,24 +173,47 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 keepAlivePacketData.registerResponse();
 
                 if (keepAliveOffset &&
-                    user.getKeepAliveData().getKeepAlives().size() == KEEPALIVE_QUEUE_SIZE)
+                    user.getKeepAliveData().getKeepAlives().size() == KeepAliveData.KEEPALIVE_QUEUE_SIZE)
                 {
                     // -1 because of size -> index conversion
-                    final int offset = (KEEPALIVE_QUEUE_SIZE - 1) - index;
+                    final int offset = (KeepAliveData.KEEPALIVE_QUEUE_SIZE - 1) - index;
                     if (offset > 0)
                     {
                         VerboseSender.sendVerboseMessage("PacketAnalysis-Verbose | Player: " + user.getPlayer().getName() + " sent packets out of order with an offset of: " + offset);
-                        vlManager.flag(user.getPlayer(), Math.min(KEEPALIVE_QUEUE_SIZE - index, 10), -1, () -> {}, () -> {});
+                        vlManager.flag(user.getPlayer(), Math.min(KeepAliveData.KEEPALIVE_QUEUE_SIZE - index, 10), -1, () -> {}, () -> {});
                     }
                 }
             }
         }
     }
 
+    private void recursiveKeepAliveInjection()
+    {
+        injectTask = Bukkit.getScheduler().runTaskLaterAsynchronously(
+                AACAdditionPro.getInstance(),
+                () ->
+                {
+                    System.out.println("Time: " + System.currentTimeMillis());
+                    int time = (int) System.currentTimeMillis();
+                    for (final User user : UserManager.getUsersUnwrapped())
+                    {
+                        // Not bypassed
+                        if (!user.isBypassed())
+                        {
+                            final WrapperPlayServerKeepAlive wrapperPlayServerKeepAlive = new WrapperPlayServerKeepAlive();
+                            System.out.println("Inject: " + time);
+                            wrapperPlayServerKeepAlive.setKeepAliveId(time);
+                            wrapperPlayServerKeepAlive.sendPacket(user.getPlayer());
+                        }
+                    }
+                    recursiveKeepAliveInjection();
+                }, MathUtils.randomBoundaryInt(80, 35));
+    }
+
     @Override
     public void subEnable()
     {
-        keepAlive = keepAliveUnregistered || keepAliveIgnored || keepAliveOffset;
+        keepAlive = keepAliveUnregistered || keepAliveIgnored || keepAliveOffset || keepAliveInject;
 
         // Unregistered must be enabled to use offset analysis.
         if (keepAlive && !keepAliveUnregistered)
@@ -188,6 +222,18 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             VerboseSender.sendVerboseMessage("PacketAnalysis | Failed to enable KeepAlive part", true, true);
             VerboseSender.sendVerboseMessage("PacketAnalysis | In order to use the KeepAlive you need to enable the unregistered anaysis!", true, true);
         }
+
+        if (keepAlive && keepAliveInject)
+        {
+            recursiveKeepAliveInjection();
+        }
+    }
+
+
+    @Override
+    public void subDisable()
+    {
+        injectTask.cancel();
     }
 
     @Override

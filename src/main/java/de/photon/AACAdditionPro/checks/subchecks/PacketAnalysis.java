@@ -94,7 +94,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             return;
         }
 
-        // EqualRotation part
+        // --------------------------------------------- EqualRotation ---------------------------------------------- //
         if (equalRotation &&
             // Correct packets
             (event.getPacketType() == PacketType.Play.Client.POSITION_LOOK || event.getPacketType() == PacketType.Play.Client.LOOK))
@@ -140,7 +140,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             }
         }
 
-        // KeepAlive part
+        // ----------------------------------------------- KeepAlive ----------------------------------------------- //
         if (keepAlive &&
             // Correct packet
             event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE)
@@ -185,6 +185,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 }
             }
         }
+
+        // ------------------------------------------------- Compare ------------------------------------------------ //
     }
 
     private void recursiveKeepAliveInjection()

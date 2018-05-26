@@ -6,6 +6,8 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import org.bukkit.Location;
+import org.bukkit.World;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -134,6 +136,14 @@ public class WrapperPlayServerPosition extends AbstractPacket
     public void setPitch(final float value)
     {
         handle.getFloat().write(1, value);
+    }
+
+    /**
+     * Constructs a new {@link Location} with the information of this packet.
+     */
+    public Location getLocation(final World world)
+    {
+        return new Location(world, this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
     }
 
     private static final Class<?> FLAGS_CLASS = MinecraftReflection

@@ -391,19 +391,24 @@ MultiInteraction:
       66: "aacstaffnotify {player} in {world} is highly suspected for MultiInteraction"
       100: "aackick {player} MultiInteraction"
 
-# PacketAnalysis is a general check which aims to detect modifications that are closely linked to interfering with the
+# PacketAnalysisData is a general check which aims to detect modifications that are closely linked to interfering with the
 # protocol directly, such as pingspoof or freecam, but also various killauras, aimbots and other rotation-based modules.
 PacketAnalysis:
-   # Do you want to enable the PacketAnalysis check
+   # Do you want to enable the PacketAnalysisData check
    enabled: true
    parts:
       # This parts compares interactions of the client with different packet types to gain insight whether or not
       # the client purposefully delays some packets (pingspoof and freecam).
+      # This check will add 1 to 10 vl, depending on the severity of the violation.
       Compare:
+         # Do you want to enable packet time comparison
          enabled: true
+         # How many offset milliseconds are classified as part of naturally fluctuating connections
+         allowed_offset: 110
       # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
       # This will catch several scaffold, tower, killaura and aimbot modifications.
       EqualRotation:
+         # Do you want to enable EqualRotation
          enabled: true
       # This part analyses KeepAlive packets.
       KeepAlive:
@@ -430,10 +435,16 @@ PacketAnalysis:
          inject:
             # Do you want to enable KeepAlive packet injection.
             enabled: true
+      # This handled illegal position packets which could otherwise be used to bypass parts of the check.
+      # Disabling this will SEVERELY weaken other parts of the check.
+      # This check will add 10 vl.
+      PositionSpoof:
+         # Do you want to enable the position spoof checking
+         enabled: true
    # Map of violation levels to command
    thresholds:
-      9: "aacstaffnotify {player} in {world} is suspected by PacketAnalysis"
-      16: "aacstaffnotify {player} in {world} is highly suspected by PacketAnalysis"
+      9: "aacstaffnotify {player} in {world} is suspected by PacketAnalysisData"
+      16: "aacstaffnotify {player} in {world} is highly suspected by PacketAnalysisData"
       25: "aackick {player} Suspicious packets"
 
 # The Pingspoof check tries to identify cheaters who try to intentionally increase their ping to bypass

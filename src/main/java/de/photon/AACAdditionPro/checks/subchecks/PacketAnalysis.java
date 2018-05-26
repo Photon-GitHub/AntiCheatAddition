@@ -9,7 +9,7 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
-import de.photon.AACAdditionPro.user.data.KeepAliveData;
+import de.photon.AACAdditionPro.user.data.PacketAnalysisData;
 import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
@@ -19,6 +19,7 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientKeepAlive;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerKeepAlive;
+import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
@@ -28,6 +29,11 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100);
 
     private BukkitTask injectTask;
+
+    @LoadFromConfiguration(configPath = ".parts.Compare.enabled")
+    private boolean compare;
+    @LoadFromConfiguration(configPath = ".parts.Compare.allowed_offset")
+    private int allowedOffset;
 
     @LoadFromConfiguration(configPath = ".parts.EqualRotatíon.enabled")
     private boolean equalRotation;
@@ -42,14 +48,20 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
     @LoadFromConfiguration(configPath = ".parts.KeepAlive.inject.enabled")
     private boolean keepAliveInject;
 
+    @LoadFromConfiguration(configPath = ".parts.PositionSpoof.enabled")
+    private boolean positionSpoof;
+
     public PacketAnalysis()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.LOW,
+              // Compare
+              PacketType.Play.Server.POSITION,
               // KeepAlive analysis
               PacketType.Play.Server.KEEP_ALIVE,
               PacketType.Play.Client.KEEP_ALIVE,
-              // EqualRotation
+              // EqualRotation + Compare
               PacketType.Play.Client.POSITION_LOOK,
+              // EqualRotation
               PacketType.Play.Client.LOOK);
     }
 
@@ -67,19 +79,24 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         if (event.getPacketType() == PacketType.Play.Server.KEEP_ALIVE)
         {
             final WrapperPlayServerKeepAlive serverKeepAliveWrapper = new WrapperPlayServerKeepAlive(event.getPacket());
-            user.getKeepAliveData().getKeepAlives().add(new KeepAliveData.KeepAlivePacketData(serverKeepAliveWrapper.getKeepAliveId()));
+            user.getPacketAnalysisData().getKeepAlives().add(new PacketAnalysisData.KeepAlivePacketData(serverKeepAliveWrapper.getKeepAliveId()));
 
             System.out.println("Out: " + serverKeepAliveWrapper.getKeepAliveId());
 
             // Check on sending to force the client to respond in a certain time-frame.
             if (keepAlive &&
                 keepAliveIgnored &&
-                user.getKeepAliveData().getKeepAlives().size() > KeepAliveData.KEEPALIVE_QUEUE_SIZE &&
-                !user.getKeepAliveData().getKeepAlives().remove(0).hasRegisteredResponse())
+                user.getPacketAnalysisData().getKeepAlives().size() > PacketAnalysisData.KEEPALIVE_QUEUE_SIZE &&
+                !user.getPacketAnalysisData().getKeepAlives().remove(0).hasRegisteredResponse())
             {
-                VerboseSender.sendVerboseMessage("PacketAnalysis-Verbose | Player: " + user.getPlayer().getName() + " ignored KeepAlive packet.");
+                VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " ignored KeepAlive packet.");
                 vlManager.flag(user.getPlayer(), 10, () -> {}, () -> {});
             }
+        }
+        else if (event.getPacketType() == PacketType.Play.Server.POSITION)
+        {
+            final WrapperPlayServerPosition serverPositionWrapper = new WrapperPlayServerPosition(event.getPacket());
+            user.getPacketAnalysisData().lastPositionForceData = new PacketAnalysisData.PositionForceData(serverPositionWrapper.getLocation(user.getPlayer().getWorld()));
         }
     }
 
@@ -114,7 +131,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             }
             else
             {
-                VerboseSender.sendVerboseMessage("PacketAnalysis: received invalid packet: " + event.getPacketType().toString(), true, true);
+                VerboseSender.sendVerboseMessage("PacketAnalysisData: received invalid packet: " + event.getPacketType().toString(), true, true);
                 return;
             }
 
@@ -131,7 +148,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 // Labymod fp when standing still / hit in corner fp
                 user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
             {
-                VerboseSender.sendVerboseMessage("PacketAnalysis-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.");
+                VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.");
                 vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
             }
             else
@@ -146,14 +163,14 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE)
         {
             final WrapperPlayClientKeepAlive clientKeepAliveWrapper = new WrapperPlayClientKeepAlive(event.getPacket());
-            KeepAliveData.KeepAlivePacketData keepAlivePacketData = null;
+            PacketAnalysisData.KeepAlivePacketData keepAlivePacketData = null;
 
             System.out.println("In: " + clientKeepAliveWrapper.getKeepAliveId());
 
-            int index = user.getKeepAliveData().getKeepAlives().size() - 1;
+            int index = user.getPacketAnalysisData().getKeepAlives().size() - 1;
             while (index >= 0)
             {
-                KeepAliveData.KeepAlivePacketData alivePacketData = user.getKeepAliveData().getKeepAlives().get(index);
+                PacketAnalysisData.KeepAlivePacketData alivePacketData = user.getPacketAnalysisData().getKeepAlives().get(index);
                 if (alivePacketData.getKeepAliveID() == clientKeepAliveWrapper.getKeepAliveId())
                 {
                     keepAlivePacketData = alivePacketData;
@@ -165,7 +182,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             // A packet with the same data must have been sent before.
             if (keepAlivePacketData == null)
             {
-                VerboseSender.sendVerboseMessage("PacketAnalysis-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
+                VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
                 vlManager.flag(user.getPlayer(), 20, -1, () -> {}, () -> {});
             }
             else
@@ -173,20 +190,53 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 keepAlivePacketData.registerResponse();
 
                 if (keepAliveOffset &&
-                    user.getKeepAliveData().getKeepAlives().size() == KeepAliveData.KEEPALIVE_QUEUE_SIZE)
+                    user.getPacketAnalysisData().getKeepAlives().size() == PacketAnalysisData.KEEPALIVE_QUEUE_SIZE)
                 {
                     // -1 because of size -> index conversion
-                    final int offset = (KeepAliveData.KEEPALIVE_QUEUE_SIZE - 1) - index;
+                    final int offset = (PacketAnalysisData.KEEPALIVE_QUEUE_SIZE - 1) - index;
                     if (offset > 0)
                     {
-                        VerboseSender.sendVerboseMessage("PacketAnalysis-Verbose | Player: " + user.getPlayer().getName() + " sent packets out of order with an offset of: " + offset);
-                        vlManager.flag(user.getPlayer(), Math.min((KeepAliveData.KEEPALIVE_QUEUE_SIZE - index) * 2, 10), -1, () -> {}, () -> {});
+                        VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent packets out of order with an offset of: " + offset);
+                        vlManager.flag(user.getPlayer(), Math.min((PacketAnalysisData.KEEPALIVE_QUEUE_SIZE - index) * 2, 10), -1, () -> {}, () -> {});
                     }
                 }
             }
         }
 
-        // ------------------------------------------------- Compare ------------------------------------------------ //
+        // ----------------------------------------- Compare + PositionSpoof ---------------------------------------- //
+        // Response to Play.Server.POSITION
+        if (event.getPacketType() == PacketType.Play.Client.POSITION_LOOK)
+        {
+            final WrapperPlayClientPositionLook clientPositionLookWrapper = new WrapperPlayClientPositionLook(event.getPacket());
+
+            if (user.getPacketAnalysisData().lastPositionForceData != null)
+            {
+                if (compare)
+                {
+                    final double offset = MathUtils.offset(
+                            user.getPacketAnalysisData().recentKeepAliveResponseTime(),
+                            user.getPacketAnalysisData().lastPositionForceData.timeDifference()) - allowedOffset;
+
+                    if (offset > 0)
+                    {
+                        VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
+                        vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 50)), 10), -1, () -> {}, () -> {});
+                    }
+                }
+
+                if (positionSpoof)
+                {
+                    if (!user.getPacketAnalysisData().lastPositionForceData.sameLocation(clientPositionLookWrapper.getLocation(user.getPlayer().getWorld())))
+                    {
+                        VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " tried to spoof position packets.");
+                        vlManager.flag(user.getPlayer(), 10, -1, () -> {}, () -> {});
+
+                        // No continuous flagging.
+                        user.getPacketAnalysisData().lastPositionForceData = null;
+                    }
+                }
+            }
+        }
     }
 
     private void recursiveKeepAliveInjection()
@@ -221,8 +271,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         if (keepAlive && !keepAliveUnregistered)
         {
             keepAlive = false;
-            VerboseSender.sendVerboseMessage("PacketAnalysis | Failed to enable KeepAlive part", true, true);
-            VerboseSender.sendVerboseMessage("PacketAnalysis | In order to use the KeepAlive you need to enable the unregistered analysis!", true, true);
+            VerboseSender.sendVerboseMessage("PacketAnalysisData | Failed to enable KeepAlive part", true, true);
+            VerboseSender.sendVerboseMessage("PacketAnalysisData | In order to use the KeepAlive you need to enable the unregistered analysis!", true, true);
         }
 
         if (keepAlive && keepAliveInject)

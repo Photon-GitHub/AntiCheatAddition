@@ -23,7 +23,7 @@ public enum ModuleType
     INVENTORY_ROTATION("InventoryRotation", "failed InventoryMove/Autoarmor (InventoryRotation)"),
     KILLAURA_ENTITY("KillauraEntity", "failed KillauraEntity (hit the Killaura-Bot)"),
     MULTI_INTERACTION("MultiInteraction"),
-    PACKET_ANALYSIS("PacketAnalysis"),
+    PACKET_ANALYSIS("PacketAnalysisData"),
     PINGSPOOF("Pingspoof"),
     SCAFFOLD("Scaffold"),
     SKINBLINKER("Skinblinker"),

@@ -3,52 +3,35 @@ package de.photon.AACAdditionPro.user.data;
 import de.photon.AACAdditionPro.user.Data;
 import de.photon.AACAdditionPro.user.User;
 import lombok.Getter;
+import org.bukkit.Location;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class KeepAliveData extends Data
+public class PacketAnalysisData extends Data
 {
+    // This needs to be so high to prevent flagging during TimeOuts.
     public static final byte KEEPALIVE_QUEUE_SIZE = 20;
+    public static final byte POSITION_QUEUE_SIZE = 3;
 
+    public PositionForceData lastPositionForceData = null;
+
+    // Synchronized lists as the Protocol is async.
     @Getter
     private final List<KeepAlivePacketData> keepAlives = Collections.synchronizedList(new LinkedList<>());
 
-    public KeepAliveData(User user)
+    public PacketAnalysisData(User user)
     {
         super(user);
     }
 
     /**
      * Calculates how long the client needs to answer a KeepAlive packet on average.
-     * Uses the whole List for the calculation.
-     */
-    public long averageResponseTime()
-    {
-        long sum = 0;
-        int size = keepAlives.size();
-
-        for (final KeepAlivePacketData keepAlive : keepAlives)
-        {
-            // Leave out ignored packets.
-            if (keepAlive.timeDifference < 0)
-            {
-                size--;
-                continue;
-            }
-
-            sum += keepAlive.timeDifference;
-        }
-        return sum / size;
-    }
-
-    /**
-     * Calculates how long the client needs to answer a KeepAlive packet on average.
      * Only uses the last 3 values for the calculation.
      */
-    public long recentResponseTime()
+    public long recentKeepAliveResponseTime()
     {
         long sum = 0;
         int datapoints = 0;
@@ -71,6 +54,24 @@ public class KeepAliveData extends Data
     public void unregister()
     {
         keepAlives.clear();
+    }
+
+    public static class PositionForceData
+    {
+        private final long timestamp = System.currentTimeMillis();
+        private final Location location;
+
+        public PositionForceData(Location location) {this.location = location;}
+
+        public boolean sameLocation(Location other)
+        {
+            return this.location.equals(other);
+        }
+
+        public long timeDifference()
+        {
+            return System.currentTimeMillis() - timestamp;
+        }
     }
 
     public static class KeepAlivePacketData

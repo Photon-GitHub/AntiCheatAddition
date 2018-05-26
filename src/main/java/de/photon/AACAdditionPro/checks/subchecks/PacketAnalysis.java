@@ -220,7 +220,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         {
             keepAlive = false;
             VerboseSender.sendVerboseMessage("PacketAnalysis | Failed to enable KeepAlive part", true, true);
-            VerboseSender.sendVerboseMessage("PacketAnalysis | In order to use the KeepAlive you need to enable the unregistered anaysis!", true, true);
+            VerboseSender.sendVerboseMessage("PacketAnalysis | In order to use the KeepAlive you need to enable the unregistered analysis!", true, true);
         }
 
         if (keepAlive && keepAliveInject)

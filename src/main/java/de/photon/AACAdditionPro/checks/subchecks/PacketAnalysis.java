@@ -131,7 +131,10 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             }
         }
 
-        if (keepAlive)
+        // KeepAlive part
+        if (keepAlive &&
+            // Correct packet
+            event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE)
         {
             final WrapperPlayClientKeepAlive clientKeepAliveWrapper = new WrapperPlayClientKeepAlive(event.getPacket());
             KeepAliveData.KeepAlivePacketData keepAlivePacketData = null;

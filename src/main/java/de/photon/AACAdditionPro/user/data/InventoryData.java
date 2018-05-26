@@ -32,6 +32,8 @@ public class InventoryData extends TimeData implements Listener
 
     public InventoryData(final User user)
     {
+        // [0] = Time of opening the inventory (or first click)
+        // [1] = Latest click
         super(user, 0, 0);
         AACAdditionPro.getInstance().registerListener(this);
     }

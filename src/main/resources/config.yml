@@ -452,7 +452,8 @@ PacketAnalysis:
 # AntiCheat-setups. It is a longtime check and will detect cheaters very slowly.
 Pingspoof:
    # Do you want to enable the Pingspoof check
-   enabled: true
+   # Disabled by default as this is a legacy check that will be replaced by PacketAnalysis.
+   enabled: false
    # This is the ping-offset. Increase if you have false pos.
    ping_offset: 3.0
    # If the measured real-ping of a player is higher than this, he will be ignored

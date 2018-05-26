@@ -28,6 +28,7 @@ public final class BlockUtils
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
+            case MC110:
                 CONTAINERS = ImmutableSet.of(Material.CHEST,
                                              Material.TRAPPED_CHEST,
                                              Material.ENDER_CHEST,
@@ -36,8 +37,7 @@ public final class BlockUtils
                                              Material.DISPENSER,
                                              Material.DROPPER);
                 break;
-
-            case MC110:
+                
             case MC111:
             case MC112:
                 CONTAINERS = ImmutableSet.of(Material.CHEST,

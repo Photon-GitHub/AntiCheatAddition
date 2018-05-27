@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.user.data;
 
-import de.photon.AACAdditionPro.user.Data;
+import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import lombok.Getter;
 import org.bukkit.Location;
@@ -10,11 +10,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class PacketAnalysisData extends Data
+public class PacketAnalysisData extends TimeData
 {
     // This needs to be so high to prevent flagging during TimeOuts.
     public static final byte KEEPALIVE_QUEUE_SIZE = 20;
-    public static final byte POSITION_QUEUE_SIZE = 3;
 
     public PositionForceData lastPositionForceData = null;
 
@@ -24,7 +23,8 @@ public class PacketAnalysisData extends Data
 
     public PacketAnalysisData(User user)
     {
-        super(user);
+        // [0] = The time the last Flying packet was received.
+        super(user, 0);
     }
 
     /**

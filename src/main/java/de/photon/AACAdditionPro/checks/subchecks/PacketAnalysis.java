@@ -51,6 +51,11 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
     @LoadFromConfiguration(configPath = ".parts.PositionSpoof.enabled")
     private boolean positionSpoof;
 
+    @LoadFromConfiguration(configPath = ".parts.TimeManipulation.enabled")
+    private boolean timeManipulation;
+    @LoadFromConfiguration(configPath = ".parts.TimeManipulation.detection_millis")
+    private int detectionMillis;
+
     public PacketAnalysis()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.LOW,
@@ -62,7 +67,9 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
               // EqualRotation + Compare
               PacketType.Play.Client.POSITION_LOOK,
               // EqualRotation
-              PacketType.Play.Client.LOOK);
+              PacketType.Play.Client.LOOK,
+              // Time manipulation
+              PacketType.Play.Client.FLYING);
     }
 
     @Override
@@ -157,48 +164,59 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             }
         }
 
-        // ----------------------------------------------- KeepAlive ----------------------------------------------- //
-        if (keepAlive &&
-            // Correct packet
-            event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE)
+        if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE)
         {
-            final WrapperPlayClientKeepAlive clientKeepAliveWrapper = new WrapperPlayClientKeepAlive(event.getPacket());
-            PacketAnalysisData.KeepAlivePacketData keepAlivePacketData = null;
-
-            //System.out.println("In: " + clientKeepAliveWrapper.getKeepAliveId());
-
-            int index = user.getPacketAnalysisData().getKeepAlives().size() - 1;
-            while (index >= 0)
+            // --------------------------------------------- KeepAlive ---------------------------------------------- //
+            if (keepAlive)
             {
-                PacketAnalysisData.KeepAlivePacketData alivePacketData = user.getPacketAnalysisData().getKeepAlives().get(index);
-                if (alivePacketData.getKeepAliveID() == clientKeepAliveWrapper.getKeepAliveId())
+                final WrapperPlayClientKeepAlive clientKeepAliveWrapper = new WrapperPlayClientKeepAlive(event.getPacket());
+                PacketAnalysisData.KeepAlivePacketData keepAlivePacketData = null;
+
+                //System.out.println("In: " + clientKeepAliveWrapper.getKeepAliveId());
+
+                int index = user.getPacketAnalysisData().getKeepAlives().size() - 1;
+                while (index >= 0)
                 {
-                    keepAlivePacketData = alivePacketData;
-                    break;
-                }
-                index--;
-            }
-
-            // A packet with the same data must have been sent before.
-            if (keepAlivePacketData == null)
-            {
-                VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
-                vlManager.flag(user.getPlayer(), 20, -1, () -> {}, () -> {});
-            }
-            else
-            {
-                keepAlivePacketData.registerResponse();
-
-                if (keepAliveOffset &&
-                    user.getPacketAnalysisData().getKeepAlives().size() == PacketAnalysisData.KEEPALIVE_QUEUE_SIZE)
-                {
-                    // -1 because of size -> index conversion
-                    final int offset = (PacketAnalysisData.KEEPALIVE_QUEUE_SIZE - 1) - index;
-                    if (offset > 0)
+                    PacketAnalysisData.KeepAlivePacketData alivePacketData = user.getPacketAnalysisData().getKeepAlives().get(index);
+                    if (alivePacketData.getKeepAliveID() == clientKeepAliveWrapper.getKeepAliveId())
                     {
-                        VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent packets out of order with an offset of: " + offset);
-                        vlManager.flag(user.getPlayer(), Math.min((PacketAnalysisData.KEEPALIVE_QUEUE_SIZE - index) * 2, 10), -1, () -> {}, () -> {});
+                        keepAlivePacketData = alivePacketData;
+                        break;
                     }
+                    index--;
+                }
+
+                // A packet with the same data must have been sent before.
+                if (keepAlivePacketData == null)
+                {
+                    VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
+                    vlManager.flag(user.getPlayer(), 20, -1, () -> {}, () -> {});
+                }
+                else
+                {
+                    keepAlivePacketData.registerResponse();
+
+                    if (keepAliveOffset &&
+                        user.getPacketAnalysisData().getKeepAlives().size() == PacketAnalysisData.KEEPALIVE_QUEUE_SIZE)
+                    {
+                        // -1 because of size -> index conversion
+                        final int offset = (PacketAnalysisData.KEEPALIVE_QUEUE_SIZE - 1) - index;
+                        if (offset > 0)
+                        {
+                            VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent packets out of order with an offset of: " + offset);
+                            vlManager.flag(user.getPlayer(), Math.min((PacketAnalysisData.KEEPALIVE_QUEUE_SIZE - index) * 2, 10), -1, () -> {}, () -> {});
+                        }
+                    }
+                }
+            }
+
+            // ------------------------------------------ TimeManipulation ------------------------------------------ //
+            if (timeManipulation)
+            {
+                if (!user.getPacketAnalysisData().recentlyUpdated(0, detectionMillis))
+                {
+                    VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " may be manipulating time on a protocol level.");
+                    vlManager.flag(user.getPlayer(), 2, -1, () -> {}, () -> {});
                 }
             }
         }
@@ -236,6 +254,12 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                     }
                 }
             }
+        }
+
+        // -------------------------------------------- TimeManipulation -------------------------------------------- //
+        if (event.getPacketType() == PacketType.Play.Client.FLYING)
+        {
+            user.getPacketAnalysisData().updateTimeStamp(0);
         }
     }
 

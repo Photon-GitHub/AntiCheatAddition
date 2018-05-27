@@ -435,7 +435,7 @@ PacketAnalysis:
          # This injects additional KeepAlive packets in order to improve detection of some modules.
          # Legit players won't notice this.
          inject:
-            # Do you want to enable KeepAlive packet injection.
+            # Do you want to enable KeepAlive packet injection
             enabled: true
       # This handled illegal position packets which could otherwise be used to bypass parts of the check.
       # Disabling this will SEVERELY weaken other parts of the check.
@@ -443,6 +443,18 @@ PacketAnalysis:
       PositionSpoof:
          # Do you want to enable the position spoof checking
          enabled: true
+      # This check tries to spot manipulations of the client's time to spoof false lag (Freecam / Blink)
+      # This check will add 2 vl
+      TimeManipulation:
+         # Do you want to enable time manipulation spotting
+         enabled: true
+         # How long may the client delay packets
+         # High values will decrease the chance of false positives in conjunction with bad connections but please note
+         # that during this time any modification will not be detected. Thus please think of how long the average
+         # cheater activates Freecam or Blink on your server when changing this.
+         # Low values make the detection faster and more effective, but may cause problems with fluctuating connections.
+         # Measured in milliseconds
+         detection_millis: 3000
    # Map of violation levels to command
    thresholds:
       9: "aacstaffnotify {player} in {world} is suspected by PacketAnalysisData"

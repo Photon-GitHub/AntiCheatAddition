@@ -277,6 +277,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         }
 
         // -------------------------------------------- TimeManipulation -------------------------------------------- //
+        // Only a 1.8.8 client sends FLYING when idling. 1.10+ clients will only send it on respawn or when using the
+        // statistics.
         if (event.getPacketType() == PacketType.Play.Client.FLYING)
         {
             user.getPacketAnalysisData().updateTimeStamp(0);

@@ -148,7 +148,7 @@ Fastswitch:
 # Please notice that a well coded freecam modification is purely clientside and thus undetectable.
 Freecam:
    # Do you want to enable anti-freecam
-   enabled: true
+   enabled: false
    # The time in ms before AACAdditionPro starts to initiate teleports for an idling player
    idle_time: 1000
    # How often should players be checked and possibly teleported

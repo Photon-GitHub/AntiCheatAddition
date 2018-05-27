@@ -75,11 +75,11 @@ public class PacketAnalysisData extends TimeData
     {
         private final long timestamp = System.currentTimeMillis();
         @Getter
-        private final int keepAliveID;
+        private final long keepAliveID;
         @Getter
         private long timeDifference = -1;
 
-        public KeepAlivePacketData(int keepAliveID) {this.keepAliveID = keepAliveID;}
+        public KeepAlivePacketData(long keepAliveID) {this.keepAliveID = keepAliveID;}
 
         public void registerResponse()
         {

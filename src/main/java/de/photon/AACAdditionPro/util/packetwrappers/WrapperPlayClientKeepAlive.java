@@ -50,10 +50,12 @@ public class WrapperPlayClientKeepAlive extends AbstractPacket
         {
             case MC188:
                 handle.getIntegers().write(0, (int) value);
+                break;
             case MC110:
             case MC111:
             case MC112:
                 handle.getLongs().write(0, value);
+                break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }

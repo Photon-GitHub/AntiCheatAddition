@@ -279,7 +279,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         // -------------------------------------------- TimeManipulation -------------------------------------------- //
         if (event.getPacketType() == PacketType.Play.Client.FLYING)
         {
-            System.out.println("FLYING");
             user.getPacketAnalysisData().updateTimeStamp(0);
         }
     }

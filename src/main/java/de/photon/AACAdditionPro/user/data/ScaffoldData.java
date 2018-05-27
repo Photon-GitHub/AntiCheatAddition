@@ -23,13 +23,13 @@ public class ScaffoldData extends TimeData
      * This is used to determine fast rotations prior to scaffolding.
      * One fast rotation might be legit, but more instances are a clear hint.
      */
-    public int rotationFails = 0;
+    public long rotationFails = 0;
 
     /**
      * This is used to determine sprinting during scaffolding.
      * Some sprinting might be legit.
      */
-    public int sprintingFails = 0;
+    public long sprintingFails = 0;
 
     @Getter
     private final ConditionalBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces = new ConditionalBuffer<ScaffoldBlockPlace>(BUFFER_SIZE)

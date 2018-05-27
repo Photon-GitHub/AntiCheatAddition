@@ -16,6 +16,7 @@ public class PacketAnalysisData extends TimeData
     public static final byte KEEPALIVE_QUEUE_SIZE = 20;
 
     public PositionForceData lastPositionForceData = null;
+    public long compareFails = 0;
 
     // Synchronized lists as the Protocol is async.
     @Getter
@@ -59,14 +60,10 @@ public class PacketAnalysisData extends TimeData
     public static class PositionForceData
     {
         private final long timestamp = System.currentTimeMillis();
+        @Getter
         private final Location location;
 
         public PositionForceData(Location location) {this.location = location;}
-
-        public boolean sameLocation(Location other)
-        {
-            return this.location.equals(other);
-        }
 
         public long timeDifference()
         {

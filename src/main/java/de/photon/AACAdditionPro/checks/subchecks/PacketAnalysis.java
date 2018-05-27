@@ -34,6 +34,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
     private boolean compare;
     @LoadFromConfiguration(configPath = ".parts.Compare.allowed_offset")
     private int allowedOffset;
+    @LoadFromConfiguration(configPath = ".parts.Compare.compare_threshold")
+    private int compareThreshold;
 
     @LoadFromConfiguration(configPath = ".parts.EqualRotatíon.enabled")
     private boolean equalRotation;
@@ -213,7 +215,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             // ------------------------------------------ TimeManipulation ------------------------------------------ //
             if (timeManipulation)
             {
-                // FLYING is only sent if the player does not move.
+                // FLYING is only sent if the player does not move (both body and head).
                 if (!user.getPositionData().hasPlayerMovedRecently(detectionMillis, PositionData.MovementType.ANY) &&
                     !user.getPacketAnalysisData().recentlyUpdated(0, detectionMillis))
                 {
@@ -241,22 +243,37 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
 
                     if (offset > 0)
                     {
-                        VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
-                        vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 50)), 8), -1, () -> {}, () -> {});
+                        if (++user.getPacketAnalysisData().compareFails > this.compareThreshold)
+                        {
+                            VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
+                            vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 100)), 5), -1, () -> {}, () -> {});
+                        }
+                    }
+                    else if (user.getPacketAnalysisData().compareFails > 0)
+                    {
+                        user.getPacketAnalysisData().compareFails--;
                     }
                 }
 
-                if (positionSpoof)
+                if (positionSpoof &&
+                    // Only check if the player has been teleported recently
+                    user.getTeleportData().recentlyUpdated(0, 1000))
                 {
-                    if (!user.getPacketAnalysisData().lastPositionForceData.sameLocation(clientPositionLookWrapper.getLocation(user.getPlayer().getWorld())))
+                    // The position packet might not be exactly the same position.
+                    // Squared values of 10, 5 and 3
+                    final double allowedDistance = user.getPlayer().isFlying() ?
+                                                   100 :
+                                                   (user.getPlayer().isSprinting() ? 25 : 9);
+
+                    if (user.getPacketAnalysisData().lastPositionForceData.getLocation().distanceSquared(clientPositionLookWrapper.getLocation(user.getPlayer().getWorld())) > allowedDistance)
                     {
                         VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " tried to spoof position packets.");
                         vlManager.flag(user.getPlayer(), 10, -1, () -> {}, () -> {});
-
-                        // No continuous flagging.
-                        user.getPacketAnalysisData().lastPositionForceData = null;
                     }
                 }
+
+                // No continuous flagging.
+                user.getPacketAnalysisData().lastPositionForceData = null;
             }
         }
 

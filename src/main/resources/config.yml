@@ -392,10 +392,10 @@ MultiInteraction:
       66: "aacstaffnotify {player} in {world} is highly suspected for MultiInteraction"
       100: "aackick {player} MultiInteraction"
 
-# PacketAnalysisData is a general check which aims to detect modifications that are closely linked to interfering with the
+# PacketAnalysis is a general check which aims to detect modifications that are closely linked to interfering with the
 # protocol directly, such as pingspoof or freecam, but also various killauras, aimbots and other rotation-based modules.
 PacketAnalysis:
-   # Do you want to enable the PacketAnalysisData check
+   # Do you want to enable the PacketAnalysis check
    enabled: true
    # Control the different parts of PacketAnalysis
    parts:

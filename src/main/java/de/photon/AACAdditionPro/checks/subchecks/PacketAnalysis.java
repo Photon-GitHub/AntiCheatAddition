@@ -27,7 +27,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class PacketAnalysis extends PacketAdapter implements ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 140);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 200);
 
     private BukkitTask injectTask;
 

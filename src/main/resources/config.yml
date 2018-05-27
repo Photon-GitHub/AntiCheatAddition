@@ -461,9 +461,9 @@ PacketAnalysis:
          detection_millis: 1500
    # Map of violation levels to command
    thresholds:
-      9: "aacstaffnotify {player} in {world} is suspected by PacketAnalysis"
-      16: "aacstaffnotify {player} in {world} is highly suspected by PacketAnalysis"
-      25: "aackick {player} Suspicious packets"
+      11: "aacstaffnotify {player} in {world} is suspected by PacketAnalysis"
+      18: "aacstaffnotify {player} in {world} is highly suspected by PacketAnalysis"
+      28: "aackick {player} Suspicious packets"
 
 # The Pingspoof check tries to identify cheaters who try to intentionally increase their ping to bypass
 # AntiCheat-setups. It is a longtime check and will detect cheaters very slowly.

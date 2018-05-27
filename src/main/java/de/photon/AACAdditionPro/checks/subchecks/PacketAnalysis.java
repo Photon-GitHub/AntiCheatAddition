@@ -213,7 +213,9 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             // ------------------------------------------ TimeManipulation ------------------------------------------ //
             if (timeManipulation)
             {
-                if (!user.getPacketAnalysisData().recentlyUpdated(0, detectionMillis))
+                // FLYING is only sent if the player does not move.
+                if (!user.getPositionData().hasPlayerMovedRecently(detectionMillis, PositionData.MovementType.ANY) &&
+                    !user.getPacketAnalysisData().recentlyUpdated(0, detectionMillis))
                 {
                     VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " may be manipulating time on a protocol level.");
                     vlManager.flag(user.getPlayer(), 2, -1, () -> {}, () -> {});

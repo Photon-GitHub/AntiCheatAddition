@@ -401,7 +401,7 @@ PacketAnalysis:
    parts:
       # This parts compares interactions of the client with different packet types to gain insight whether or not
       # the client purposefully delays some packets (pingspoof and freecam).
-      # This check will add 1 to 5 vl, depending on the severity of the violation.
+      # This check will add 1 to 12 vl, depending on the severity of the violation.
       Compare:
          # Do you want to enable packet time comparison
          enabled: true

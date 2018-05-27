@@ -436,6 +436,7 @@ PacketAnalysis:
             enabled: true
          # This injects additional KeepAlive packets in order to improve detection of some modules.
          # Legit players won't notice this.
+         # This subpart is not compatible with versions higher than 1.8.8 and will autodisable accordingly.
          inject:
             # Do you want to enable KeepAlive packet injection
             enabled: true
@@ -456,7 +457,7 @@ PacketAnalysis:
          # cheater activates Freecam or Blink on your server when changing this.
          # Low values make the detection faster and more effective, but may cause problems with fluctuating connections.
          # Measured in milliseconds
-         detection_millis: 1500
+         detection_millis: 2500
    # Map of violation levels to command
    thresholds:
       9: "aacstaffnotify {player} in {world} is suspected by PacketAnalysis"

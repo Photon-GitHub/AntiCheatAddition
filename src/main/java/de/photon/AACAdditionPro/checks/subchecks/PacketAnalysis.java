@@ -14,6 +14,7 @@ import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientKeepAlive;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientLook;
@@ -89,8 +90,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         {
             final WrapperPlayServerKeepAlive serverKeepAliveWrapper = new WrapperPlayServerKeepAlive(event.getPacket());
             user.getPacketAnalysisData().getKeepAlives().add(new PacketAnalysisData.KeepAlivePacketData(serverKeepAliveWrapper.getKeepAliveId()));
-
-            System.out.println("Out: " + serverKeepAliveWrapper.getKeepAliveId());
 
             // Check on sending to force the client to respond in a certain time-frame.
             if (keepAlive &&
@@ -173,8 +172,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             {
                 final WrapperPlayClientKeepAlive clientKeepAliveWrapper = new WrapperPlayClientKeepAlive(event.getPacket());
                 PacketAnalysisData.KeepAlivePacketData keepAlivePacketData = null;
-
-                System.out.println("In: " + clientKeepAliveWrapper.getKeepAliveId());
 
                 int index = user.getPacketAnalysisData().getKeepAlives().size() - 1;
                 while (index >= 0)
@@ -290,16 +287,13 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 AACAdditionPro.getInstance(),
                 () ->
                 {
-                    // TODO: Correct time calculation (like the server does)!!!
-                    //System.out.println("Time: " + System.currentTimeMillis());
-                    int time = (int) System.currentTimeMillis();
+                    long time = System.nanoTime() / 1000000L;
                     for (final User user : UserManager.getUsersUnwrapped())
                     {
                         // Not bypassed
                         if (!user.isBypassed())
                         {
                             final WrapperPlayServerKeepAlive wrapperPlayServerKeepAlive = new WrapperPlayServerKeepAlive();
-                            System.out.println("Inject: " + time);
                             wrapperPlayServerKeepAlive.setKeepAliveId(time);
                             wrapperPlayServerKeepAlive.sendPacket(user.getPlayer());
                         }
@@ -311,6 +305,18 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
     @Override
     public void subEnable()
     {
+        switch (ServerVersion.getActiveServerVersion())
+        {
+            case MC188:
+                break;
+            case MC110:
+            case MC111:
+            case MC112:
+                keepAliveInject = false;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
+
         keepAlive = keepAliveUnregistered || keepAliveIgnored || keepAliveOffset || keepAliveInject;
 
         // Unregistered must be enabled to use offset analysis.

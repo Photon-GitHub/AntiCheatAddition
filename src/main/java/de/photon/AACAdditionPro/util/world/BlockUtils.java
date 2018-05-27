@@ -35,7 +35,8 @@ public final class BlockUtils
                                              Material.ANVIL,
                                              Material.FURNACE,
                                              Material.DISPENSER,
-                                             Material.DROPPER);
+                                             Material.DROPPER,
+                                             Material.BREWING_STAND);
                 break;
 
             case MC111:
@@ -47,6 +48,7 @@ public final class BlockUtils
                                              Material.FURNACE,
                                              Material.DISPENSER,
                                              Material.DROPPER,
+                                             Material.BREWING_STAND,
                                              Material.BLACK_SHULKER_BOX,
                                              Material.BROWN_SHULKER_BOX,
                                              Material.BLUE_SHULKER_BOX,

@@ -165,7 +165,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             final WrapperPlayClientKeepAlive clientKeepAliveWrapper = new WrapperPlayClientKeepAlive(event.getPacket());
             PacketAnalysisData.KeepAlivePacketData keepAlivePacketData = null;
 
-            System.out.println("In: " + clientKeepAliveWrapper.getKeepAliveId());
+            //System.out.println("In: " + clientKeepAliveWrapper.getKeepAliveId());
 
             int index = user.getPacketAnalysisData().getKeepAlives().size() - 1;
             while (index >= 0)
@@ -245,7 +245,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 AACAdditionPro.getInstance(),
                 () ->
                 {
-                    System.out.println("Time: " + System.currentTimeMillis());
+                    // TODO: Correct time calculation (like the server does)!!!
+                    //System.out.println("Time: " + System.currentTimeMillis());
                     int time = (int) System.currentTimeMillis();
                     for (final User user : UserManager.getUsersUnwrapped())
                     {
@@ -253,7 +254,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                         if (!user.isBypassed())
                         {
                             final WrapperPlayServerKeepAlive wrapperPlayServerKeepAlive = new WrapperPlayServerKeepAlive();
-                            System.out.println("Inject: " + time);
+                            //System.out.println("Inject: " + time);
                             wrapperPlayServerKeepAlive.setKeepAliveId(time);
                             wrapperPlayServerKeepAlive.sendPacket(user.getPlayer());
                         }

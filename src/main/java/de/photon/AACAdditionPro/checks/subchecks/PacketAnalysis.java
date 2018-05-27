@@ -254,7 +254,9 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
 
                 if (positionSpoof &&
                     // Only check if the player has been teleported recently
-                    user.getTeleportData().recentlyUpdated(0, 1000))
+                    user.getTeleportData().recentlyUpdated(0, 1000) &&
+                    // Lag occurrences after login.
+                    !user.getLoginData().recentlyUpdated(0, 10000))
                 {
                     // The position packet might not be exactly the same position.
                     // Squared values of 10, 5 and 3
@@ -277,6 +279,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         // -------------------------------------------- TimeManipulation -------------------------------------------- //
         if (event.getPacketType() == PacketType.Play.Client.FLYING)
         {
+            System.out.println("FLYING");
             user.getPacketAnalysisData().updateTimeStamp(0);
         }
     }
@@ -313,6 +316,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             case MC111:
             case MC112:
                 keepAliveInject = false;
+                timeManipulation = false;
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");

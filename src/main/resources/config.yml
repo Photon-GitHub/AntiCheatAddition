@@ -448,6 +448,7 @@ PacketAnalysis:
          enabled: true
       # This check tries to spot manipulations of the client's time to spoof false lag (Freecam / Blink)
       # This check will add 2 vl
+      # This part is not compatible with versions higher than 1.8.8 and will autodisable accordingly.
       TimeManipulation:
          # Do you want to enable time manipulation spotting
          enabled: true
@@ -457,7 +458,7 @@ PacketAnalysis:
          # cheater activates Freecam or Blink on your server when changing this.
          # Low values make the detection faster and more effective, but may cause problems with fluctuating connections.
          # Measured in milliseconds
-         detection_millis: 2500
+         detection_millis: 1500
    # Map of violation levels to command
    thresholds:
       9: "aacstaffnotify {player} in {world} is suspected by PacketAnalysis"

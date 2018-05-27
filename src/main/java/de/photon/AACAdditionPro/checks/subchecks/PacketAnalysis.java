@@ -88,7 +88,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             final WrapperPlayServerKeepAlive serverKeepAliveWrapper = new WrapperPlayServerKeepAlive(event.getPacket());
             user.getPacketAnalysisData().getKeepAlives().add(new PacketAnalysisData.KeepAlivePacketData(serverKeepAliveWrapper.getKeepAliveId()));
 
-            System.out.println("Out: " + serverKeepAliveWrapper.getKeepAliveId());
+            //System.out.println("Out: " + serverKeepAliveWrapper.getKeepAliveId());
 
             // Check on sending to force the client to respond in a certain time-frame.
             if (keepAlive &&
@@ -229,7 +229,9 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
 
             if (user.getPacketAnalysisData().lastPositionForceData != null)
             {
-                if (compare)
+                if (compare &&
+                    // Make sure enough datapoints exist for checking.
+                    user.getPacketAnalysisData().getKeepAlives().size() > 10)
                 {
                     final double offset = MathUtils.offset(
                             user.getPacketAnalysisData().recentKeepAliveResponseTime(),

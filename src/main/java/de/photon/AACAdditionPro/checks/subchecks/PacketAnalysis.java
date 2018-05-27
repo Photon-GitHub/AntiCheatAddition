@@ -313,6 +313,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             case MC111:
             case MC112:
                 keepAliveInject = false;
+                break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }

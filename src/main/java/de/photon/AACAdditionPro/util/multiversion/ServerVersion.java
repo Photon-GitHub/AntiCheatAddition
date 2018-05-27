@@ -11,15 +11,17 @@ import us.myles.ViaVersion.api.ViaAPI;
 import java.util.Set;
 
 @RequiredArgsConstructor(suppressConstructorProperties = true)
+@Getter
 public enum ServerVersion
 {
-    MC188("1.8.8"),
-    MC110("1.10"),
-    MC111("1.11"),
-    MC112("1.12");
+    MC188("1.8.8", true),
+    MC19("1.9", false),
+    MC110("1.10", true),
+    MC111("1.11", true),
+    MC112("1.12", true);
 
-    @Getter
     private final String versionOutputString;
+    private final boolean supported;
 
     /**
      * The server version of the currently running {@link Bukkit} instance.

@@ -90,7 +90,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             final WrapperPlayServerKeepAlive serverKeepAliveWrapper = new WrapperPlayServerKeepAlive(event.getPacket());
             user.getPacketAnalysisData().getKeepAlives().add(new PacketAnalysisData.KeepAlivePacketData(serverKeepAliveWrapper.getKeepAliveId()));
 
-            //System.out.println("Out: " + serverKeepAliveWrapper.getKeepAliveId());
+            System.out.println("Out: " + serverKeepAliveWrapper.getKeepAliveId());
 
             // Check on sending to force the client to respond in a certain time-frame.
             if (keepAlive &&
@@ -99,7 +99,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 !user.getPacketAnalysisData().getKeepAlives().remove(0).hasRegisteredResponse())
             {
                 VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " ignored KeepAlive packet.");
-                vlManager.flag(user.getPlayer(), 10, () -> {}, () -> {});
+                vlManager.flag(user.getPlayer(), 10, -1, () -> {}, () -> {});
             }
         }
         else if (event.getPacketType() == PacketType.Play.Server.POSITION)
@@ -174,7 +174,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 final WrapperPlayClientKeepAlive clientKeepAliveWrapper = new WrapperPlayClientKeepAlive(event.getPacket());
                 PacketAnalysisData.KeepAlivePacketData keepAlivePacketData = null;
 
-                //System.out.println("In: " + clientKeepAliveWrapper.getKeepAliveId());
+                System.out.println("In: " + clientKeepAliveWrapper.getKeepAliveId());
 
                 int index = user.getPacketAnalysisData().getKeepAlives().size() - 1;
                 while (index >= 0)
@@ -299,7 +299,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                         if (!user.isBypassed())
                         {
                             final WrapperPlayServerKeepAlive wrapperPlayServerKeepAlive = new WrapperPlayServerKeepAlive();
-                            //System.out.println("Inject: " + time);
+                            System.out.println("Inject: " + time);
                             wrapperPlayServerKeepAlive.setKeepAliveId(time);
                             wrapperPlayServerKeepAlive.sendPacket(user.getPlayer());
                         }

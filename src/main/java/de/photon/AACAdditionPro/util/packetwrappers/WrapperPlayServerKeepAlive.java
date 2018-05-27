@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 
 public class WrapperPlayServerKeepAlive extends AbstractPacket
 {
@@ -23,9 +24,19 @@ public class WrapperPlayServerKeepAlive extends AbstractPacket
      *
      * @return The current Keep Alive ID
      */
-    public int getKeepAliveId()
+    public long getKeepAliveId()
     {
-        return handle.getIntegers().read(0);
+        switch (ServerVersion.getActiveServerVersion())
+        {
+            case MC188:
+                return handle.getIntegers().read(0);
+            case MC110:
+            case MC111:
+            case MC112:
+                return handle.getLongs().read(0);
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
     }
 
     /**
@@ -33,8 +44,18 @@ public class WrapperPlayServerKeepAlive extends AbstractPacket
      *
      * @param value - new value.
      */
-    public void setKeepAliveId(int value)
+    public void setKeepAliveId(long value)
     {
-        handle.getIntegers().write(0, value);
+        switch (ServerVersion.getActiveServerVersion())
+        {
+            case MC188:
+                handle.getIntegers().write(0, (int) value);
+            case MC110:
+            case MC111:
+            case MC112:
+                handle.getLongs().write(0, value);
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
     }
 }

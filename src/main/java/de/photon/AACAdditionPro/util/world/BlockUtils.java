@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
+import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -20,6 +21,57 @@ import java.util.Set;
 public final class BlockUtils
 {
     public static final Set<Material> LIQUIDS = ImmutableSet.of(Material.WATER, Material.LAVA, Material.STATIONARY_WATER, Material.STATIONARY_LAVA);
+    public static final Set<Material> CONTAINERS;
+
+    static
+    {
+        switch (ServerVersion.getActiveServerVersion())
+        {
+            case MC188:
+            case MC110:
+                CONTAINERS = ImmutableSet.of(Material.CHEST,
+                                             Material.TRAPPED_CHEST,
+                                             Material.ENDER_CHEST,
+                                             Material.ANVIL,
+                                             Material.FURNACE,
+                                             Material.DISPENSER,
+                                             Material.DROPPER,
+                                             Material.BREWING_STAND);
+                break;
+
+            case MC111:
+            case MC112:
+                CONTAINERS = ImmutableSet.of(Material.CHEST,
+                                             Material.TRAPPED_CHEST,
+                                             Material.ENDER_CHEST,
+                                             Material.ANVIL,
+                                             Material.FURNACE,
+                                             Material.DISPENSER,
+                                             Material.DROPPER,
+                                             Material.BREWING_STAND,
+                                             Material.BLACK_SHULKER_BOX,
+                                             Material.BROWN_SHULKER_BOX,
+                                             Material.BLUE_SHULKER_BOX,
+                                             Material.CYAN_SHULKER_BOX,
+                                             Material.GRAY_SHULKER_BOX,
+                                             Material.GREEN_SHULKER_BOX,
+                                             Material.LIGHT_BLUE_SHULKER_BOX,
+                                             Material.LIME_SHULKER_BOX,
+                                             Material.MAGENTA_SHULKER_BOX,
+                                             Material.ORANGE_SHULKER_BOX,
+                                             Material.PINK_SHULKER_BOX,
+                                             Material.PURPLE_SHULKER_BOX,
+                                             Material.RED_SHULKER_BOX,
+                                             Material.SILVER_SHULKER_BOX,
+                                             Material.WHITE_SHULKER_BOX,
+                                             Material.YELLOW_SHULKER_BOX);
+                break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
+
+
+    }
 
     public static final List<BlockFace> HORIZONTAL_FACES = ImmutableList.of(
             BlockFace.NORTH,

@@ -6,7 +6,10 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import org.bukkit.Location;
+import org.bukkit.World;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -135,6 +138,14 @@ public class WrapperPlayServerPosition extends AbstractPacket
         handle.getFloat().write(1, value);
     }
 
+    /**
+     * Constructs a new {@link Location} with the information of this packet.
+     */
+    public Location getLocation(final World world)
+    {
+        return new Location(world, this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
+    }
+
     private static final Class<?> FLAGS_CLASS = MinecraftReflection
             .getMinecraftClass("EnumPlayerTeleportFlags",
                                "PacketPlayOutPosition$EnumPlayerTeleportFlags");
@@ -171,7 +182,7 @@ public class WrapperPlayServerPosition extends AbstractPacket
      */
     public void setNoFlags()
     {
-        this.setFlags(new HashSet<>());
+        this.setFlags(Collections.emptySet());
     }
 
     /**

@@ -98,17 +98,6 @@ AutoPotion:
       2: "aacstaffnotify {player} in {world} is highly suspected for AutoPotion"
       4: "aackick {player} AutoPotion"
 
-# EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
-# This will catch several scaffold, tower, killaura and aimbot mods
-EqualRotation:
-   # Do you want to enable the EqualRotation check
-   enabled: true
-   # Map of violation levels to command
-   thresholds:
-      9: "aacstaffnotify {player} in {world} is suspected for EqualRotation"
-      16: "aacstaffnotify {player} in {world} is highly suspected for EqualRotation"
-      25: "aackick {player} Invalid rotations"
-
 # This module uses advanced mathematics to determine if players can see each other.
 # It also thinks of the 3rd person camera modes and uses accurate hitbox-models.
 # If the players cannot see each other several actions will be taken to hide information on packet-level.
@@ -155,12 +144,11 @@ Fastswitch:
       8: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
       12: "aackick {player} Fastswitch"
 
-# This check will block most Freecam cheats
-# Your Players will recognize small jumps when they are standing completely still and are not moving their mouse.
-# This behaviour will teleport freecam-users on every jump back to their original position.
+# The Freecam check will try to block freecam clients.
+# Please notice that a well coded freecam modification is purely clientside and thus undetectable.
 Freecam:
-   # Do you want to enable the Anti-Freecam
-   enabled: true
+   # Do you want to enable anti-freecam
+   enabled: false
    # The time in ms before AACAdditionPro starts to initiate teleports for an idling player
    idle_time: 1000
    # How often should players be checked and possibly teleported
@@ -179,19 +167,20 @@ GravitationalModifier:
       15: "aacstaffnotify {player} in {world} is highly suspected for movement cheats (GravitationalModifier)"
       20: "aackick {player} Illegal movement modification"
 
-# The InventoryChat check detects sending chat messages while being in an inventory
-InventoryChat:
-   # Do you want to enable the InventoryChat check
-   # Few people will use this, thus it is deactivated in the default config but it is perfectly safe to use
+# ImpossibleChat check detects sending chat messages while being in an inventory, blocking, sprinting and other illegal
+# situations.
+ImpossibleChat:
+   # Do you want to enable the ImpossibleChat check
+   # Disabled by default as some servers might allow auto-chat modifications.
    enabled: false
    # Violation before AACAdditionPro starts to cancel the messages.
    # Set this to 0 to never cancel messages.
    cancel_vl: 2
    # Map of violation levels to command
    thresholds:
-      2: "aacstaffnotify {player} in {world} is suspected for InventoryChat"
-      5: "aacstaffnotify {player} in {world} is highly suspected for InventoryChat"
-      8: "aackick {player} InventoryChat"
+      2: "aacstaffnotify {player} in {world} is suspected for ImpossibleChat"
+      5: "aacstaffnotify {player} in {world} is highly suspected for ImpossibleChat"
+      8: "aackick {player} ImpossibleChat"
 
 # The inventory heuristics provide a neural network framework to detect advanced inventory cheats.
 InventoryHeuristics:
@@ -403,11 +392,85 @@ MultiInteraction:
       66: "aacstaffnotify {player} in {world} is highly suspected for MultiInteraction"
       100: "aackick {player} MultiInteraction"
 
+# PacketAnalysis is a general check which aims to detect modifications that are closely linked to interfering with the
+# protocol directly, such as pingspoof or freecam, but also various killauras, aimbots and other rotation-based modules.
+PacketAnalysis:
+   # Do you want to enable the PacketAnalysis check
+   enabled: true
+   # Control the different parts of PacketAnalysis
+   parts:
+      # This parts compares interactions of the client with different packet types to gain insight whether or not
+      # the client purposefully delays some packets (pingspoof and freecam).
+      # This check will add 1 to 12 vl, depending on the severity of the violation.
+      Compare:
+         # Do you want to enable packet time comparison
+         enabled: true
+         # How many offset milliseconds are classified as part of naturally fluctuating connections
+         allowed_offset: 120
+         # How many violations Compare will ignore before starting to flag
+         compare_threshold: 2
+      # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
+      # This will catch several scaffold, tower, killaura and aimbot modifications.
+      EqualRotation:
+         # Do you want to enable EqualRotation
+         enabled: true
+      # This part analyses KeepAlive packets.
+      KeepAlive:
+         # Unregistered checks for illegal packets that are not possible within the minecraft protocol
+         # DO NOT DISABLE THIS SUBPART WHILE KEEPING OTHER SUBPARTS ENABLED!
+         # This check will add 20 vl
+         unregistered:
+            # Do you want to enable the unregistered KeepAlive packet checking
+            enabled: true
+         # Ignored checks for KeepAlive packets the client has not responded to, which is illegal in the minecraft
+         # protocol.
+         # This check will add 10 vl.
+         ignored:
+            # Do you want to enable the ignored KeepAlive packet checking
+            enabled: true
+         # Offset analyses the packet order.
+         # This check also catches various pingspoof modifications.
+         # This check will add 2 to 10 vl, depending on the severity of the violation.
+         offset:
+            # Do you want to enable the packet offset checking
+            enabled: true
+         # This injects additional KeepAlive packets in order to improve detection of some modules.
+         # Legit players won't notice this.
+         # This subpart is not compatible with versions higher than 1.8.8 and will autodisable accordingly.
+         inject:
+            # Do you want to enable KeepAlive packet injection
+            enabled: true
+      # This handled illegal position packets which could otherwise be used to bypass parts of the check.
+      # Disabling this will SEVERELY weaken other parts of the check.
+      # This check will add 10 vl.
+      PositionSpoof:
+         # Do you want to enable the position spoof checking
+         enabled: true
+      # This check tries to spot manipulations of the client's time to spoof false lag (Freecam / Blink)
+      # This check will add 2 vl
+      # This part is not compatible with versions higher than 1.8.8 and will autodisable accordingly.
+      TimeManipulation:
+         # Do you want to enable time manipulation spotting
+         enabled: true
+         # How long may the client delay packets
+         # High values will decrease the chance of false positives in conjunction with bad connections but please note
+         # that during this time any modification will not be detected. Thus please think of how long the average
+         # cheater activates Freecam or Blink on your server when changing this.
+         # Low values make the detection faster and more effective, but may cause problems with fluctuating connections.
+         # Measured in milliseconds
+         detection_millis: 1500
+   # Map of violation levels to command
+   thresholds:
+      11: "aacstaffnotify {player} in {world} is suspected by PacketAnalysis"
+      18: "aacstaffnotify {player} in {world} is highly suspected by PacketAnalysis"
+      28: "aackick {player} Suspicious packets"
+
 # The Pingspoof check tries to identify cheaters who try to intentionally increase their ping to bypass
 # AntiCheat-setups. It is a longtime check and will detect cheaters very slowly.
 Pingspoof:
    # Do you want to enable the Pingspoof check
-   enabled: true
+   # Disabled by default as this is a legacy check that will be replaced by PacketAnalysis.
+   enabled: false
    # This is the ping-offset. Increase if you have false pos.
    ping_offset: 3.0
    # If the measured real-ping of a player is higher than this, he will be ignored
@@ -464,7 +527,7 @@ Scaffold:
          # Type3 will add 1 vl
          type3: true
          # How many suspicious rotations should Scaffold count as legit
-         # The value must be positive.
+         # The value must be greater or equal to 0.
          rotation_threshold: 6
       # This checks for behaviour associated with safe-walk
       safewalk:
@@ -480,7 +543,7 @@ Scaffold:
          # Should this part of the check be enabled
          enabled: true
          # How many suspicious sprinting periods should Scaffold count as legit
-         # Set this to a negative value to deactivate sprint checking.
+         # The value must be greater or equal to 0.
          sprinting_threshold: 3
    # Map of violation levels to command
    thresholds:
@@ -542,6 +605,8 @@ Tower:
    # The new Tower check has its own leniency-curve which makes it very effective.
    # Therefore please only touch this if you have false positives
    tower_leniency: 1
+   # Special leniency which is only applied if the player has the levitation effect
+   levitation_leniency: 0.9
    # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
    # to prevent further towering (measured in ms)
    timeout: 5500

@@ -2,6 +2,8 @@ package de.photon.AACAdditionPro.user.data;
 
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.heuristics.NeuralPattern;
+import de.photon.AACAdditionPro.user.Data;
+import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.util.datastructures.Buffer;
 import de.photon.AACAdditionPro.util.datawrappers.InventoryClick;
 
@@ -10,19 +12,23 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InventoryHeuristicsData
+public class InventoryHeuristicsData extends Data
 {
-    public InventoryClick lastClick = null;
-
     /**
      * Used to record inventory interactions for training the neural net.
      */
     public final Buffer<InventoryClick.BetweenClickInformation> inventoryClicks = new Buffer<>(InventoryHeuristics.SAMPLES);
+    private InventoryClick lastClick = null;
 
     public String trainingLabel = null;
     public NeuralPattern trainedPattern = null;
 
     private Map<String, Double> patternMap = new ConcurrentHashMap<>();
+
+    public InventoryHeuristicsData(User user)
+    {
+        super(user);
+    }
 
     public boolean bufferClick(final InventoryClick inventoryClick)
     {
@@ -34,6 +40,8 @@ public class InventoryHeuristicsData
 
         return false;
     }
+
+    //TODO: UNUSED?
 
     /**
      * This should be called prior to {@link #setPatternConfidence(String, double)} to make the confidences decay with legit actions.
@@ -84,5 +92,16 @@ public class InventoryHeuristicsData
 
         // Make sure that the result is greater or equal than 0.
         return Math.max(0D, Math.tanh(summaryStatistics.getSum() - 0.42));
+    }
+
+    @Override
+    public void unregister()
+    {
+        this.inventoryClicks.clear();
+        this.lastClick = null;
+        this.trainingLabel = null;
+        this.trainedPattern = null;
+        this.patternMap.clear();
+        super.unregister();
     }
 }

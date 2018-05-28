@@ -23,13 +23,13 @@ public class ScaffoldData extends TimeData
      * This is used to determine fast rotations prior to scaffolding.
      * One fast rotation might be legit, but more instances are a clear hint.
      */
-    public int rotationFails = 0;
+    public long rotationFails = 0;
 
     /**
      * This is used to determine sprinting during scaffolding.
      * Some sprinting might be legit.
      */
-    public int sprintingFails = 0;
+    public long sprintingFails = 0;
 
     @Getter
     private final ConditionalBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces = new ConditionalBuffer<ScaffoldBlockPlace>(BUFFER_SIZE)
@@ -48,58 +48,26 @@ public class ScaffoldData extends TimeData
     }
 
     /**
-     * This calculates the maximum expected and real time of this {@link ConditionalBuffer}'s {@link ScaffoldBlockPlace}s.
+     * Used to calculate the average and expected time span between the {@link ScaffoldBlockPlace}s in the buffer.
+     * Also clears the buffer.
      *
-     * @return the real time in index 0 and the maximum expected time in index 1.
+     * @return an array with the following contents:<br>
+     * [0] = Expected time <br>
+     * [1] = Real time <br>
      */
     public double[] calculateTimes()
     {
         final double[] result = new double[2];
-        // fraction[0] is the enumerator
-        // fraction[1] is the divider
-        final double[] fraction = new double[2];
 
-        boolean moonwalk = this.scaffoldBlockPlaces.stream().filter((blockPlace) -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
+        // -1 because there is one pop to fill the "last" variable in the beginning.
+        final int divisor = this.scaffoldBlockPlaces.size() - 1;
+
+        final boolean moonwalk = this.scaffoldBlockPlaces.stream().filter((blockPlace) -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
 
         this.scaffoldBlockPlaces.clearLastTwoObjectsIteration(
                 (last, current) ->
                 {
-                    final double speed_modifier;
-                    if (current.getSpeedLevel() == null ||
-                        current.getSpeedLevel() < 0)
-                    {
-                        speed_modifier = 1.0D;
-                    }
-                    else
-                    {
-                        //If the speedLevel is <= 0, the speed_modifier is 1
-                        switch (current.getSpeedLevel())
-                        {
-                            case 0:
-                                speed_modifier = 1.01D;
-                                break;
-                            case 1:
-                            case 2:
-                            case 3:
-                            case 4:
-                            case 5:
-                                speed_modifier = 1.5D;
-                                break;
-                            case 6:
-                                speed_modifier = 1.55D;
-                                break;
-                            case 7:
-                                speed_modifier = 2.3D;
-                                break;
-                            default:
-                                // Everything above 8 should have a speed_modifier of 3
-                                speed_modifier = 3.0D;
-                                break;
-                        }
-                    }
-
                     double delay;
-
                     if (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace())
                     {
                         delay = DELAY_NORMAL;
@@ -114,15 +82,14 @@ public class ScaffoldData extends TimeData
                         delay = DELAY_DIAGONAL;
                     }
 
-                    result[1] += delay;
+                    result[0] += delay;
 
                     // last - current to calculate the delta as the more recent time is always in last.
-                    fraction[0] += (last.getTime() - current.getTime()) * speed_modifier;
-                    fraction[1]++;
+                    result[1] += (last.getTime() - current.getTime()) * current.getSpeedModifier();
                 });
 
-        result[0] = fraction[0] / fraction[1];
-        result[1] /= fraction[1];
+        result[0] /= divisor;
+        result[1] /= divisor;
         return result;
     }
 }

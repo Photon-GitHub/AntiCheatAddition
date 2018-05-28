@@ -28,7 +28,7 @@ public class VersionControl implements Listener, ClientControlModule
     {
         PROTOCOL_VERSIONS = Sets.newLinkedHashSetWithExpectedSize(5);
         PROTOCOL_VERSIONS.add(new ProtocolVersion("1.8", ServerVersion.MC188, 47));
-        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.9", null, 107, 108, 109, 110));
+        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.9", ServerVersion.MC19, 107, 108, 109, 110));
         PROTOCOL_VERSIONS.add(new ProtocolVersion("1.10", ServerVersion.MC110, 210));
         PROTOCOL_VERSIONS.add(new ProtocolVersion("1.11", ServerVersion.MC111, 315, 316));
         PROTOCOL_VERSIONS.add(new ProtocolVersion("1.12", ServerVersion.MC112, 335, 338, 340));

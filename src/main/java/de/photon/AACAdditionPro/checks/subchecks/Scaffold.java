@@ -78,7 +78,7 @@ public class Scaffold implements Listener, ViolationModule
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void on(final BlockPlaceEvent event)
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
@@ -274,27 +274,25 @@ public class Scaffold implements Listener, ViolationModule
             }
 
 
-            // -------------------------------------------- Consistency --------------------------------------------- //
+            // ---------------------------------------------- Average ----------------------------------------------- //
 
             // Should check average?
             if (user.getScaffoldData().getScaffoldBlockPlaces().hasReachedBufferSize())
             {
-                // ------------------------------------- Consistency - Average -------------------------------------- //
-
                 /*
                 Indices:
-                [0] -> Real average
-                [1] -> Maximum allowed average
+                [0] -> Expected time
+                [1] -> Real time
                  */
                 final double[] results = user.getScaffoldData().calculateTimes();
 
                 // delta-times are too low -> flag
-                if (results[0] < results[1])
+                if (results[1] < results[0])
                 {
                     // Flag the player
-                    int vlIncrease = (int) (4 * Math.min(Math.ceil((results[1] - results[0]) / 15D), 6));
+                    final int vlIncrease = (int) (4 * Math.min(Math.ceil((results[0] - results[1]) / 15D), 6));
 
-                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[1] + " | real: " + results[0] + " | vl increase: " + vlIncrease);
+                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[0] + " | real: " + results[1] + " | vl increase: " + vlIncrease);
 
                     vl += vlIncrease;
                 }

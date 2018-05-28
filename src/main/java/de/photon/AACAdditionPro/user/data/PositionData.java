@@ -3,10 +3,10 @@ package de.photon.AACAdditionPro.user.data;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
 import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
@@ -17,8 +17,13 @@ import org.bukkit.event.player.PlayerToggleSprintEvent;
  * The first index of this {@link TimeData} represents the last time a player moved,
  * the second index represents the last time a player moved when ignoring head movement
  */
-public class PositionData extends TimeData implements Listener
+public class PositionData extends TimeData
 {
+    static
+    {
+        AACAdditionPro.getInstance().registerListener(new PositionDataUpdater());
+    }
+
     public boolean allowedToJump = true;
     private boolean currentlySneaking = false;
     private boolean currentlySprinting = false;
@@ -27,7 +32,6 @@ public class PositionData extends TimeData implements Listener
     private long lastSprintTime = Long.MAX_VALUE;
     @Getter
     private long lastSneakTime = Long.MAX_VALUE;
-
 
     public PositionData(final User user)
     {
@@ -40,58 +44,6 @@ public class PositionData extends TimeData implements Listener
          * 5 -> last sneaking
          */
         super(user, System.currentTimeMillis(), System.currentTimeMillis(), System.currentTimeMillis(), 0, 0);
-        AACAdditionPro.getInstance().registerListener(this);
-    }
-
-    @EventHandler
-    public void on(final PlayerToggleSprintEvent event)
-    {
-        if (this.getUser().refersToUUID(event.getPlayer().getUniqueId()))
-        {
-            this.currentlySprinting = event.isSprinting();
-            if (!this.currentlySprinting)
-            {
-                this.lastSprintTime = this.passedTime(3);
-            }
-            this.updateTimeStamp(3);
-        }
-    }
-
-    @EventHandler
-    public void on(final PlayerToggleSneakEvent event)
-    {
-        if (this.getUser().refersToUUID(event.getPlayer().getUniqueId()))
-        {
-            this.currentlySneaking = event.isSneaking();
-            if (!this.currentlySneaking)
-            {
-                this.lastSneakTime = this.passedTime(4);
-            }
-            this.updateTimeStamp(4);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void on(final PlayerMoveEvent event)
-    {
-        if (this.getUser().refersToUUID(event.getPlayer().getUniqueId()))
-        {
-            // Head + normal movement
-            this.updateTimeStamp(0);
-
-            // xz movement only
-            if (event.getFrom().getX() != event.getTo().getX() ||
-                event.getFrom().getZ() != event.getTo().getZ())
-            {
-                this.updateTimeStamp(1);
-                this.updateTimeStamp(2);
-            }
-            // Any non-head movement.
-            else if (event.getFrom().getY() != event.getTo().getY())
-            {
-                updateTimeStamp(1);
-            }
-        }
     }
 
     /**
@@ -116,13 +68,6 @@ public class PositionData extends TimeData implements Listener
         return this.currentlySneaking || this.recentlyUpdated(4, milliseconds);
     }
 
-    @Override
-    public void unregister()
-    {
-        HandlerList.unregisterAll(this);
-        super.unregister();
-    }
-
     /**
      * Determines what index should be checkd in the {@link PositionData}.
      */
@@ -132,5 +77,68 @@ public class PositionData extends TimeData implements Listener
         ANY,
         NONHEAD,
         XZONLY
+    }
+
+    /**
+     * A singleton class to reduce the reqired {@link Listener}s to a minimum.
+     */
+    private static class PositionDataUpdater implements Listener
+    {
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+        public void on(final PlayerToggleSprintEvent event)
+        {
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user != null)
+            {
+                user.getPositionData().currentlySprinting = event.isSprinting();
+                if (!user.getPositionData().currentlySprinting)
+                {
+                    user.getPositionData().lastSprintTime = user.getPositionData().passedTime(3);
+                }
+                user.getPositionData().updateTimeStamp(3);
+            }
+        }
+
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+        public void on(final PlayerToggleSneakEvent event)
+        {
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user != null)
+            {
+                user.getPositionData().currentlySneaking = event.isSneaking();
+                if (!user.getPositionData().currentlySneaking)
+                {
+                    user.getPositionData().lastSneakTime = user.getPositionData().passedTime(4);
+                }
+                user.getPositionData().updateTimeStamp(4);
+            }
+        }
+
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+        public void on(final PlayerMoveEvent event)
+        {
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user != null)
+            {
+                // Head + normal movement
+                user.getPositionData().updateTimeStamp(0);
+
+                // xz movement only
+                if (event.getFrom().getX() != event.getTo().getX() ||
+                    event.getFrom().getZ() != event.getTo().getZ())
+                {
+                    user.getPositionData().updateTimeStamp(1);
+                    user.getPositionData().updateTimeStamp(2);
+                }
+                // Any non-head movement.
+                else if (event.getFrom().getY() != event.getTo().getY())
+                {
+                    user.getPositionData().updateTimeStamp(1);
+                }
+            }
+        }
     }
 }

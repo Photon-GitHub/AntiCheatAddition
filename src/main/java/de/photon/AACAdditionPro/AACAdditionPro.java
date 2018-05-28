@@ -7,17 +7,17 @@ import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
 import de.photon.AACAdditionPro.checks.subchecks.AutoFish;
 import de.photon.AACAdditionPro.checks.subchecks.AutoPotion;
-import de.photon.AACAdditionPro.checks.subchecks.EqualRotation;
 import de.photon.AACAdditionPro.checks.subchecks.Esp;
 import de.photon.AACAdditionPro.checks.subchecks.Fastswitch;
 import de.photon.AACAdditionPro.checks.subchecks.GravitationalModifier;
-import de.photon.AACAdditionPro.checks.subchecks.InventoryChat;
+import de.photon.AACAdditionPro.checks.subchecks.ImpossibleChat;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryHit;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryMove;
 import de.photon.AACAdditionPro.checks.subchecks.InventoryRotation;
 import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
 import de.photon.AACAdditionPro.checks.subchecks.MultiInteraction;
+import de.photon.AACAdditionPro.checks.subchecks.PacketAnalysis;
 import de.photon.AACAdditionPro.checks.subchecks.Pingspoof;
 import de.photon.AACAdditionPro.checks.subchecks.Scaffold;
 import de.photon.AACAdditionPro.checks.subchecks.SkinBlinker;
@@ -71,7 +71,7 @@ public class AACAdditionPro extends JavaPlugin
      * If the version of AAC is older than this version the plugin will disable itself in order to assure that bugs
      * cannot be caused by an incompatible AAC version.
      */
-    private static final transient String minimumAACVersion = "3.3.7";
+    private static final transient String minimumAACVersion = "3.3.11";
 
     private static final Field killauraEntityControllerField;
     private static final Field delegatingKillauraEntityControllerField;
@@ -165,7 +165,9 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
-            if (ServerVersion.getActiveServerVersion() == null)
+            if (ServerVersion.getActiveServerVersion() == null ||
+                // Unsupported
+                !ServerVersion.getActiveServerVersion().isSupported())
             {
                 VerboseSender.sendVerboseMessage("Server version is not supported.", true, true);
 
@@ -234,17 +236,17 @@ public class AACAdditionPro extends JavaPlugin
                     // Normal checks
                     new AutoFish(),
                     new AutoPotion(),
-                    new EqualRotation(),
                     new Esp(),
                     new Fastswitch(),
                     new GravitationalModifier(),
-                    new InventoryChat(),
+                    new ImpossibleChat(),
                     new InventoryHeuristics(),
                     new InventoryHit(),
                     new InventoryMove(),
                     new InventoryRotation(),
                     new KillauraEntity(),
                     new MultiInteraction(),
+                    new PacketAnalysis(),
                     new Pingspoof(),
                     new Scaffold(),
                     new SkinBlinker(),

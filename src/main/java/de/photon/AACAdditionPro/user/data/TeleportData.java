@@ -22,7 +22,7 @@ public class TeleportData extends TimeData implements Listener
         // [0] = Teleport
         // [1] = World change
         // [2] = Respawn
-        super(user, 0, 0);
+        super(user, 0, 0, 0);
         AACAdditionPro.getInstance().registerListener(this);
     }
 

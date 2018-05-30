@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 /**
@@ -18,20 +19,31 @@ public class TeleportData extends TimeData implements Listener
 {
     public TeleportData(final User user)
     {
-        super(user, 0);
+        // [0] = Teleport
+        // [1] = World change
+        // [2] = Respawn
+        super(user, 0, 0);
         AACAdditionPro.getInstance().registerListener(this);
     }
 
     @EventHandler
-    public void on(final PlayerChangedWorldEvent event)
+    public void onWorldChange(final PlayerChangedWorldEvent event)
+    {
+        this.updateIfRefersToUser(event.getPlayer().getUniqueId(), 0);
+        this.updateIfRefersToUser(event.getPlayer().getUniqueId(), 1);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onTeleport(final PlayerTeleportEvent event)
     {
         this.updateIfRefersToUser(event.getPlayer().getUniqueId(), 0);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void on(final PlayerTeleportEvent event)
+    @EventHandler
+    public void onRespawn(final PlayerRespawnEvent event)
     {
         this.updateIfRefersToUser(event.getPlayer().getUniqueId(), 0);
+        this.updateIfRefersToUser(event.getPlayer().getUniqueId(), 2);
     }
 
     @Override

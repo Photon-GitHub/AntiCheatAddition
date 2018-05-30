@@ -256,8 +256,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                     // Only check if the player has been teleported recently
                     user.getTeleportData().recentlyUpdated(0, 1000) &&
                     // World changes and respawns are exempted
-                    !user.getTeleportData().recentlyUpdated(1, 1000) &&
-                    !user.getTeleportData().recentlyUpdated(2, 1000) &&
+                    !user.getTeleportData().recentlyUpdated(1, 2500) &&
+                    !user.getTeleportData().recentlyUpdated(2, 2500) &&
                     // Lag occurrences after login.
                     !user.getLoginData().recentlyUpdated(0, 10000))
                 {

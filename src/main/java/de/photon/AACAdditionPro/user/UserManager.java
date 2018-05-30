@@ -57,6 +57,7 @@ public class UserManager implements Listener
     @EventHandler
     public void onQuit(final PlayerQuitEvent event)
     {
-        users.remove(event.getPlayer().getUniqueId()).unregister();
+        final User removedUser = users.remove(event.getPlayer().getUniqueId());
+        removedUser.unregister();
     }
 }

@@ -69,7 +69,7 @@ public class Equipment extends EnumMap<EnumWrappers.ItemSlot, Material>
         }
     }
 
-    public void replaceSlot(final EnumWrappers.ItemSlot itemSlot)
+    private void replaceSlot(final EnumWrappers.ItemSlot itemSlot)
     {
         this.put(itemSlot, EquipmentDatabase.instance.getRandomEquipment(this.entity.getObservedPlayer(), itemSlot));
     }

@@ -520,8 +520,7 @@ public abstract class ClientsideEntity
         final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata();
         entityMetadataWrapper.setEntityID(this.getEntityID());
 
-        // TODO: REALLY CLIENTSERVERVERSION AND NOT SERVERVERSION?
-        switch (ServerVersion.getClientServerVersion(this.observedPlayer))
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 final List<WrappedWatchableObject> wrappedWatchableObjectsOldMC = Arrays.asList(

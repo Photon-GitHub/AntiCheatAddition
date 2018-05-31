@@ -75,7 +75,7 @@ public class Equipment extends EnumMap<EnumWrappers.ItemSlot, Material>
     }
 
     /**
-     * Equips the {@link ClientsideEntity} with this {@link de.photon.AACAdditionPro.util.fakeentity.oldequipment.Equipment}.
+     * Equips the {@link ClientsideEntity} with this {@link Equipment}.
      */
     public void updateEquipment()
     {

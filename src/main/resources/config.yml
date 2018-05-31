@@ -320,45 +320,44 @@ KillauraEntity:
          chainmail: true
          iron: true
          diamond: true
-      # Normal equipment will be used upon spawning the entity and if behaviour.swap is enabled
+      # Other materials that the entity might use
       normal:
-         # Use food
+         # Food
+         raw: true
          cooked: true
-         # Materials of wielded tools
-         wood: true
-         stone: true
-         gold: true
-         iron: true
-         diamond: true
-         # Flint and Steel
-         flint_and_steel: true
+         # Other combat equipment
          bow: true
          fishing_rod: true
+         flint_and_steel: true
          # Building blocks
          sandstone: true
+         red_sandstone: true
          # PvP stuff
-         golden_apple: true
          bowl: true
-         potion: true
-         glass_bottle: true
          exp_bottle: true
+         glass_bottle: true
+         golden_apple: true
+         potion: true
          # Normal Minecraft blocks
-         dirt: true
-         grass: true
-         stone: true
+         cobblestone: true
          coal: true
+         dirt: true
          gold_ore: true
          iron_ore: true
+         wood: true
          # Working materials
          # All kinds of ingots are included here
-         ingot: true
-         wood: true
          diamond: true
-      # The weapons the entities will use in a fake fight
-      weapons:
+         emerald: true
+         ingot: true
+      # Tools the entity may use
+      tools:
          # Types
-         sword: true
          axe: true
+         hoe: true
+         pickaxe: true
+         spade: true
+         sword: true
          # Materials
          wood: true
          gold: true

@@ -495,7 +495,7 @@ public abstract class ClientsideEntity
      */
     public void swing()
     {
-        fakeAnimation(0);
+        this.fakeAnimation(0);
     }
 
     /**

@@ -7,7 +7,6 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.util.fakeentity.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.fakeentity.equipment.Equipment;
-import de.photon.AACAdditionPro.util.fakeentity.equipment.category.WeaponsEquipmentCategory;
 import de.photon.AACAdditionPro.util.fakeentity.movement.submovements.BasicFollowMovement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
@@ -19,9 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -44,10 +41,10 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private Team currentTeam;
 
     // Main ticker for the entity
-    private byte lastSwing = 0;
-    private byte lastSwap = 0;
-
     private short lastJump = 0;
+    private short lastSwing = 0;
+    private short lastHandSwap = 0;
+    private short lastArmorSwap = 0;
 
     private Equipment equipment;
 
@@ -109,28 +106,34 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // Swap items if needed
         if (shouldSwap)
         {
-            if (lastSwap++ > MathUtils.randomBoundaryInt(40, 65))
+            if (lastHandSwap++ > MathUtils.randomBoundaryInt(40, 65))
             {
-                lastSwap = 0;
-                equipment.equipInHand();
-                equipment.equipPlayerEntity(this.observedPlayer);
+                lastHandSwap = 0;
+                // Automatic offhand handling
+                equipment.replaceMainHand();
+                equipment.replaceOffhand();
+                // Send the updated Equipment
+                equipment.updateEquipment();
+            }
+
+            if (lastArmorSwap++ > MathUtils.randomBoundaryInt(200, 200))
+            {
+                lastHandSwap = 0;
+                // Automatic offhand handling
+                equipment.replaceMainHand();
+                equipment.replaceOffhand();
+                // Send the updated Equipment
+                equipment.updateEquipment();
             }
         }
 
         // Swing items if enabled
         if (shouldSwing)
         {
-            if (lastSwing++ > MathUtils.randomBoundaryInt(15, 35))
+            if (lastSwing++ > MathUtils.randomBoundaryInt(15, 55))
             {
                 lastSwing = 0;
-
-                final ItemStack mainHandStack = equipment.getMainHand();
-
-                if (mainHandStack != null &&
-                    this.isSwingable(mainHandStack.getType()))
-                {
-                    swing();
-                }
+                swing();
             }
         }
     }
@@ -150,11 +153,6 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             input -= Math.signum(input) * minMax;
         }
         return input;
-    }
-
-    private boolean isSwingable(Material material)
-    {
-        return new WeaponsEquipmentCategory().getMaterials().contains(material);
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //
@@ -300,9 +298,11 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         }
 
         // Entity equipment + armor
-        this.equipment.equipArmor();
-        this.equipment.equipInHand();
-        this.equipment.equipPlayerEntity(this.observedPlayer);
+        this.equipment.replaceArmor();
+        this.equipment.replaceMainHand();
+        // Automatic offhand handling
+        this.equipment.replaceOffhand();
+        this.equipment.updateEquipment();
     }
 
     // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //

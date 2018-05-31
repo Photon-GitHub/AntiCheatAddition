@@ -1,6 +1,8 @@
 package de.photon.AACAdditionPro.events;
 
-import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityEquipmentCategory;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -9,45 +11,27 @@ import org.bukkit.event.player.PlayerEvent;
 import java.util.List;
 
 /**
- * This event is called once a {@link de.photon.AACAdditionPro.util.fakeentity.ClientsidePlayerEntity} modifies an item in
- * its {@link org.bukkit.inventory.Inventory}. The replacing {@link Material} will be chosen from the provided {@link List}
- * of {@link Material}s. The {@link KillauraEntityEquipmentCategory} enables you to see the usage of the {@link org.bukkit.entity.Item}.
- * <p>
- * E.g. After intercepting an Event with the {@link KillauraEntityEquipmentCategory} ARMOR you can modify the {@link List}
- * of armor materials you can influence the result by removing or adding {@link Material}s to the {@link List}, or even
- * force a {@link Material} by removing all other entries.
+ * This event is called every time a {@link de.photon.AACAdditionPro.util.fakeentity.ClientsidePlayerEntity} modifies
+ * an item in its {@link org.bukkit.inventory.Inventory}.<br>
+ * The {@link Material} of the new item will be chosen from the
+ * provided {@link List} of {@link Material}s. The {@link com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot}
+ * allows to know the replaced item slot. <br>
+ * If you remove all but one {@link Material} from the {@link List} of {@link Material}, you force that {@link Material}
  */
 public class KillauraEntityEquipmentPrepareEvent extends PlayerEvent
 {
     private static final HandlerList handlers = new HandlerList();
-    private final KillauraEntityEquipmentCategory category;
-    private final List<Material> materials;
+    @Getter
+    private final EnumWrappers.ItemSlot itemSlot;
+    @Getter
+    @Setter
+    private List<Material> materials;
 
-    public KillauraEntityEquipmentPrepareEvent(Player who, KillauraEntityEquipmentCategory category, List<Material> materials)
+    public KillauraEntityEquipmentPrepareEvent(Player who, EnumWrappers.ItemSlot itemSlot, List<Material> materials)
     {
         super(who);
-        this.category = category;
+        this.itemSlot = itemSlot;
         this.materials = materials;
-    }
-
-    /**
-     * Returns the category of the materials
-     *
-     * @return category of the materials
-     */
-    public KillauraEntityEquipmentCategory getCategory()
-    {
-        return this.category;
-    }
-
-    /**
-     * List of {@link Material}s the resulting {@link Material} will be chosen from.
-     *
-     * @return the list is fully mutable, you may add or remove materials
-     */
-    public List<Material> getMaterials()
-    {
-        return this.materials;
     }
 
     // Needed for 1.8.8

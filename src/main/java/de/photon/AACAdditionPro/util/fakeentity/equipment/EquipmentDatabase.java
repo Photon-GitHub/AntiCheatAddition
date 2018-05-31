@@ -1,95 +1,181 @@
 package de.photon.AACAdditionPro.util.fakeentity.equipment;
 
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
-import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityEquipmentCategory;
 import de.photon.AACAdditionPro.events.KillauraEntityEquipmentPrepareEvent;
-import de.photon.AACAdditionPro.util.fakeentity.ClientsideEntity;
-import de.photon.AACAdditionPro.util.fakeentity.equipment.category.EquipmentCategory;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Random;
+import java.util.stream.Collectors;
 
-final class EquipmentDatabase
+public class EquipmentDatabase extends EnumMap<EnumWrappers.ItemSlot, List<Material>>
 {
-    // We ensure that getCategory can only we called from the main thread. so we are sure only one write at a time can happen
-    private final Map<Class<? extends EquipmentCategory>, Constructor<? extends EquipmentCategory>> constructorCache = new HashMap<>();
+    public static final EquipmentDatabase instance = new EquipmentDatabase();
 
-    /**
-     * Get a new category instance. A instance holds materials which should be used to randomize a material out of. This
-     * also removes materials revoked by the config and lets the user decide what materials to finally use via the
-     * {@link KillauraEntityEquipmentPrepareEvent}.
-     *
-     * @param categoryClass The class of the category
-     * @param entity        For which entity this category is
-     * @param <T>           Type of Category Object
-     *
-     * @return a already filtered category with materials ready to choose from
-     */
-    <T extends EquipmentCategory> T getCategory(Class<T> categoryClass, ClientsideEntity entity)
+    private static final List<Material> AIR_LIST = Collections.singletonList(Material.AIR);
+    private final Random random = new Random();
+
+    private EquipmentDatabase()
     {
-        // Since we use a HashMap and a sync event we need to ensure that we are in the Bukkit MainThread
-        Validate.isTrue(Bukkit.isPrimaryThread(), "getCategory call outside of the main thread");
+        super(EnumWrappers.ItemSlot.class);
 
-        // This is somewhat expensive, we construct each category for each iteration.
-        // This is done to keep the API as clean as possible to enable the customer to decide
-        // which materials are in for a selection
+        // -------------------------------------------------- Armor ------------------------------------------------- //
+        this.put(EnumWrappers.ItemSlot.HEAD, Arrays.asList(
+                Material.LEATHER_HELMET,
+                Material.GOLD_HELMET,
+                Material.CHAINMAIL_HELMET,
+                Material.IRON_HELMET,
+                Material.DIAMOND_HELMET));
 
-        // Get the constructor from the cache, if its not there reflect it
-        Constructor<? extends EquipmentCategory> constructor = constructorCache.computeIfAbsent(categoryClass, aClass -> {
-            Constructor<? extends EquipmentCategory> reflectedConstructor = null;
+        this.put(EnumWrappers.ItemSlot.CHEST, Arrays.asList(
+                Material.LEATHER_CHESTPLATE,
+                Material.GOLD_CHESTPLATE,
+                Material.CHAINMAIL_CHESTPLATE,
+                Material.IRON_CHESTPLATE,
+                Material.DIAMOND_CHESTPLATE));
 
-            try {
-                reflectedConstructor = aClass.getConstructor();
-                reflectedConstructor.setAccessible(true); // Even if the constructor is public this disables
-                // the security manager for performance reasons
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+        this.put(EnumWrappers.ItemSlot.LEGS, Arrays.asList(
+                Material.LEATHER_LEGGINGS,
+                Material.GOLD_LEGGINGS,
+                Material.CHAINMAIL_LEGGINGS,
+                Material.IRON_LEGGINGS,
+                Material.DIAMOND_LEGGINGS));
+
+        this.put(EnumWrappers.ItemSlot.FEET, Arrays.asList(
+                Material.LEATHER_BOOTS,
+                Material.GOLD_BOOTS,
+                Material.CHAINMAIL_BOOTS,
+                Material.IRON_BOOTS,
+                Material.DIAMOND_BOOTS));
+
+        for (final String armorKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.armor"))
+        {
+            // Disabled category
+            if (!this.isMaterialAllowed("armor." + armorKey))
+            {
+                final String upCaseArmorKey = armorKey.toUpperCase();
+                this.values().forEach(materialList -> materialList.removeIf(material -> material.name().contains(upCaseArmorKey)));
             }
-
-            return reflectedConstructor;
-        });
-
-        // Ok now we got the constructor, get a new instance and make the api handle the materials
-        try {
-            EquipmentCategory category = constructor.newInstance();
-            category.load();
-
-            // Override potential config settings and filter out affected materials
-            final List<Material> materials = category.getMaterials();
-            final String categoryName = categoryClass.getSimpleName().replace(EquipmentCategory.class.getSimpleName(), "").toLowerCase();
-            final Set<String> optionKeys = ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment." + categoryName);
-
-            for (final String optionKey : optionKeys) {
-                if (!AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment." + categoryName + "." + optionKey)) {
-                    // Filter out the affected materials
-                    materials.removeIf((material -> material.name().contains(optionKey.toUpperCase())));
-                }
-            }
-
-            // Fire a event which should always be sync
-            Bukkit.getPluginManager().callEvent(
-                    new KillauraEntityEquipmentPrepareEvent(
-                            entity.getObservedPlayer(),
-                            // Get the category of the config-section name
-                            KillauraEntityEquipmentCategory.getEquipmentByConfigSection(categoryName),
-                            materials)
-                                               );
-
-            return (T) category;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
         }
 
-        // This should never happen because the no arg constructors never have code in them
-        return null;
+        // ------------------------------------------------- Normal ------------------------------------------------- //
+        final List<Material> handMaterials = new ArrayList<>();
+
+        if (this.isMaterialAllowed("normal.raw"))
+        {
+            handMaterials.add(Material.RAW_BEEF);
+            handMaterials.add(Material.RAW_CHICKEN);
+            handMaterials.add(Material.RAW_FISH);
+        }
+
+        if (this.isMaterialAllowed("normal.cooked"))
+        {
+            handMaterials.add(Material.COOKED_BEEF);
+            handMaterials.add(Material.COOKED_CHICKEN);
+            handMaterials.add(Material.COOKED_FISH);
+            handMaterials.add(Material.COOKED_MUTTON);
+            handMaterials.add(Material.COOKED_RABBIT);
+        }
+
+        // All other materials where the exact name is in the config.
+        for (final String normalKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.normal"))
+        {
+            // Disabled category
+            if (this.isMaterialAllowed("normal." + normalKey))
+            {
+                handMaterials.addAll(Arrays.stream(Material.values()).filter(material -> material.name().equalsIgnoreCase(normalKey)).collect(Collectors.toList()));
+            }
+        }
+
+        if (this.isMaterialAllowed("normal.ingot"))
+        {
+            handMaterials.add(Material.GOLD_INGOT);
+            handMaterials.add(Material.IRON_INGOT);
+        }
+
+
+        // ------------------------------------------------- Tools -------------------------------------------------- //
+
+        final List<Material> toolMaterials = Arrays.asList(
+                // Wood
+                Material.WOOD_AXE,
+                Material.WOOD_HOE,
+                Material.WOOD_PICKAXE,
+                Material.WOOD_SPADE,
+                Material.WOOD_SWORD,
+
+                // Gold
+                Material.GOLD_AXE,
+                Material.GOLD_HOE,
+                Material.GOLD_PICKAXE,
+                Material.GOLD_SPADE,
+                Material.GOLD_SWORD,
+
+                // Stone
+                Material.STONE_AXE,
+                Material.STONE_HOE,
+                Material.STONE_PICKAXE,
+                Material.STONE_SPADE,
+                Material.STONE_SWORD,
+
+                // Iron
+                Material.IRON_AXE,
+                Material.IRON_HOE,
+                Material.IRON_PICKAXE,
+                Material.IRON_SPADE,
+                Material.IRON_SWORD,
+
+                //Diamond
+                Material.DIAMOND_AXE,
+                Material.DIAMOND_HOE,
+                Material.DIAMOND_PICKAXE,
+                Material.DIAMOND_SPADE,
+                Material.DIAMOND_SWORD);
+
+        for (final String toolKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.tools"))
+        {
+            // Disabled category
+            if (!this.isMaterialAllowed("tools." + toolKey))
+            {
+                final String upCaseArmorKey = toolKey.toUpperCase();
+                this.values().forEach(materialList -> materialList.removeIf(material -> material.name().contains(upCaseArmorKey)));
+            }
+        }
+
+        handMaterials.addAll(toolMaterials);
+
+        // Set the hands.
+        this.put(EnumWrappers.ItemSlot.MAINHAND, handMaterials);
+        this.put(EnumWrappers.ItemSlot.OFFHAND, handMaterials);
+    }
+
+    private boolean isMaterialAllowed(final String configName)
+    {
+        return AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment." + configName);
+    }
+
+    /**
+     * Get an allowed {@link Material} for a certain {@link com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot}
+     */
+    public Material getRandomEquipment(final Player player, final EnumWrappers.ItemSlot itemSlot)
+    {
+        List<Material> possibleMaterials = this.getOrDefault(itemSlot, AIR_LIST);
+
+        final KillauraEntityEquipmentPrepareEvent event = new KillauraEntityEquipmentPrepareEvent(player, itemSlot, possibleMaterials);
+        Bukkit.getPluginManager().callEvent(event);
+
+        possibleMaterials = event.getMaterials();
+
+        // The boundary parameter of nextInt is exclusive, thus no -1
+        return possibleMaterials.get(random.nextInt(possibleMaterials.size()));
     }
 }

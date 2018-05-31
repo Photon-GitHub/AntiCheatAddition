@@ -5,127 +5,90 @@ import de.photon.AACAdditionPro.util.fakeentity.ClientsideEntity;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class Equipment implements Cloneable
+public class Equipment extends EnumMap<EnumWrappers.ItemSlot, Material>
 {
-    /**
-     * The selector is designed to be a singleton. So he can feed multiple inventories at once
-     */
-    private static final EquipmentSelector selector = new EquipmentSelector(new EquipmentDatabase());
-
-    /**
-     * The {@link HashMap} with all {@link ItemStack}s.
-     * All equipmentMap is mapped to the slot it should be applied to.
-     */
-    private final Map<EnumWrappers.ItemSlot, ItemStack> equipmentMap = new EnumMap<>(EnumWrappers.ItemSlot.class);
-
     private final ClientsideEntity entity;
-
 
     public Equipment(ClientsideEntity entity)
     {
+        super(EnumWrappers.ItemSlot.class);
         this.entity = entity;
-    }
 
-    /**
-     * Equip the entity with new armor
-     */
-    public void equipArmor()
-    {
-        // Let the selector get the armor
-        Material[] armor = Equipment.selector.selectArmor(this.entity);
-        if (armor != null)
+        // Init
+        replaceArmor();
+        replaceMainHand();
+
+        if (ServerVersion.getActiveServerVersion() != ServerVersion.MC188)
         {
-            for (int i = 0; i < armor.length; i++)
-            {
-                Material armorPiece = armor[i];
-
-                // Security fallback to prevent NPEs
-                if (armorPiece == null) armorPiece = Material.AIR;
-
-                EnumWrappers.ItemSlot itemSlot = EquipmentMapping.values()[i].getSlotOfItem();
-                ItemStack itemStack = new ItemStack(armorPiece);
-                equipItem(itemSlot, itemStack);
-            }
+            replaceOffhand();
         }
     }
 
-    /**
-     * Equip the entity with a in hand item (like a sword, blocks etc.)
-     */
-    public void equipInHand()
+    public void replaceMainHand()
     {
-        Material mainHand = Equipment.selector.selectMainHand(this.entity);
-
-        // Security fallback to prevent NPEs
-        if (mainHand == null) mainHand = Material.AIR;
-
-        ItemStack itemStack = new ItemStack(mainHand);
-        equipItem(EnumWrappers.ItemSlot.MAINHAND, itemStack);
+        replaceSlot(EnumWrappers.ItemSlot.MAINHAND);
     }
 
-    private void equipItem(EnumWrappers.ItemSlot itemSlot, ItemStack itemStack)
+    public void replaceOffhand()
     {
-        // TODO: Fire a event so the user can change things like durability or custom NBT tags
-        this.equipmentMap.put(itemSlot, itemStack);
-    }
-
-    /**
-     * This method automatically filters out the equipmentMap that will cause errors on this {@link de.photon.AACAdditionPro.util.multiversion.ServerVersion}.
-     *
-     * @return all the equipmentMap for the current {@link de.photon.AACAdditionPro.util.multiversion.ServerVersion}.
-     */
-    private Map<EnumWrappers.ItemSlot, ItemStack> getEquipmentForServerVersion(final Player targetPlayer)
-    {
-        switch (ServerVersion.getClientServerVersion(targetPlayer))
+        if (ServerVersion.getActiveServerVersion() != ServerVersion.MC188)
         {
-            case MC188:
-                this.equipmentMap.remove(EnumWrappers.ItemSlot.OFFHAND);
-                break;
-            case MC110:
-            case MC111:
-            case MC112:
-                break;
-            default:
-                throw new IllegalStateException("Unknown minecraft version");
+            replaceSlot(EnumWrappers.ItemSlot.OFFHAND);
         }
+    }
 
-        return this.equipmentMap;
+    public void replaceArmor()
+    {
+        replaceSlot(EnumWrappers.ItemSlot.HEAD);
+        replaceSlot(EnumWrappers.ItemSlot.CHEST);
+        replaceSlot(EnumWrappers.ItemSlot.LEGS);
+        replaceSlot(EnumWrappers.ItemSlot.FEET);
+    }
+
+    public void replaceRandomArmorPiece()
+    {
+        switch (ThreadLocalRandom.current().nextInt(4))
+        {
+            case 0:
+                replaceSlot(EnumWrappers.ItemSlot.HEAD);
+                break;
+            case 1:
+                replaceSlot(EnumWrappers.ItemSlot.CHEST);
+                break;
+            case 2:
+                replaceSlot(EnumWrappers.ItemSlot.LEGS);
+                break;
+            case 3:
+                replaceSlot(EnumWrappers.ItemSlot.FEET);
+                break;
+        }
+    }
+
+    public void replaceSlot(final EnumWrappers.ItemSlot itemSlot)
+    {
+        this.put(itemSlot, EquipmentDatabase.instance.getRandomEquipment(this.entity.getObservedPlayer(), itemSlot));
     }
 
     /**
-     * Equips the {@link ClientsideEntity} with this {@link Equipment}.
+     * Equips the {@link ClientsideEntity} with this {@link de.photon.AACAdditionPro.util.fakeentity.oldequipment.Equipment}.
      */
-    public void equipPlayerEntity(Player targetPlayer)
+    public void updateEquipment()
     {
-        this.getEquipmentForServerVersion(targetPlayer).forEach(
-                (slot, itemStack) ->
+        this.forEach(
+                (slot, material) ->
                 {
                     final WrapperPlayServerEntityEquipment entityEquipmentWrapper = new WrapperPlayServerEntityEquipment();
 
                     entityEquipmentWrapper.setEntityID(entity.getEntityID());
                     entityEquipmentWrapper.setSlot(slot);
-                    entityEquipmentWrapper.setItem(itemStack);
+                    entityEquipmentWrapper.setItem(new ItemStack(material));
 
                     entityEquipmentWrapper.sendPacket(entity.getObservedPlayer());
                 });
     }
-
-    @Override
-    public Equipment clone() throws CloneNotSupportedException
-    {
-        return (Equipment) super.clone();
-    }
-
-    public ItemStack getMainHand()
-    {
-        return this.equipmentMap.get(EnumWrappers.ItemSlot.MAINHAND);
-    }
-
 }

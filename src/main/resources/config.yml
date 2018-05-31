@@ -265,8 +265,11 @@ KillauraEntity:
    # In order to use the command you are required to set this to true.
    # The entity will remain invisible until the command is issued.
    #
-   # Please be aware that this will allow for
+   # Please be aware that this will allow some bypasses.
    on_command: false
+   # If enabled AACAdditionPro will try to create entities of already online players.
+   # If you enable this and only one player is online he will not see his entity in the tablist.
+   prefer_online_profiles: true
    # This will ensure that entities will change their identities after a certain period of time
    # This option is the minimum time before an entity can change its identity, the real time is randomized.
    #

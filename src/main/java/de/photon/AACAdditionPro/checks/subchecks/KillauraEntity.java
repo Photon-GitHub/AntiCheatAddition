@@ -5,7 +5,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.google.common.collect.Lists;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
@@ -35,13 +34,18 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.StringUtil;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class KillauraEntity implements ViolationModule, Listener
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 55);
+
+    private final Random random = new Random();
 
     @LoadFromConfiguration(configPath = ".position.entityOffset")
     private double entityOffset;
@@ -55,6 +59,9 @@ public class KillauraEntity implements ViolationModule, Listener
     @LoadFromConfiguration(configPath = ".on_command")
     private boolean onCommand;
 
+    @LoadFromConfiguration(configPath = ".prefer_online_profiles")
+    private boolean preferOnlineProfiles;
+
     private final int respawnTimer = 20 * AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".respawn_timer");
 
     private BukkitTask respawnTask;
@@ -65,6 +72,8 @@ public class KillauraEntity implements ViolationModule, Listener
         final ClientsidePlayerEntity playerEntity = this.getClientSidePlayerEntity(event.getPlayer().getUniqueId());
 
         if (playerEntity != null &&
+            // Online players already have a tab completion
+            !preferOnlineProfiles &&
             StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken()))
         {
             event.getTabCompletions().add(playerEntity.getName());
@@ -141,28 +150,21 @@ public class KillauraEntity implements ViolationModule, Listener
             // No profile was set by the API
             if (gameProfile == null)
             {
-                // Use the offline players as a replacement
-                // Encapsulate the Arrays.asList in an ArrayList to make sure removal of elements is supported.
-                final List<OfflinePlayer> offlinePlayers = Lists.newArrayList(Bukkit.getOfflinePlayers());
+                gameProfile = this.getGameProfile(player, preferOnlineProfiles);
+                user.getClientSideEntityData().onlineProfile = preferOnlineProfiles;
 
-                OfflinePlayer chosenOfflinePlayer;
-                do
+                if (gameProfile == null)
                 {
-                    // Check if we can serve OfflinePlayer profiles.
-                    if (offlinePlayers.isEmpty())
+                    gameProfile = this.getGameProfile(player, false);
+                    user.getClientSideEntityData().onlineProfile = false;
+
+                    if (gameProfile == null)
                     {
                         VerboseSender.sendVerboseMessage("KillauraEntity: Could not spawn entity as of too few game profiles for player " + player.getName(), true, true);
                         // No WrappedGameProfile can be set as there are no valid offline players.
                         return;
                     }
-
-                    // Choose a random OfflinePlayer
-                    chosenOfflinePlayer = offlinePlayers.remove(ThreadLocalRandom.current().nextInt(offlinePlayers.size()));
-                    // and make sure it is not the player himself
-                } while (chosenOfflinePlayer.getName().equals(player.getName()));
-
-                // Get the GameProfile
-                gameProfile = new WrappedGameProfile(chosenOfflinePlayer.getUniqueId(), chosenOfflinePlayer.getName());
+                }
             }
 
             // Make it final for the use in a lambda
@@ -188,6 +190,31 @@ public class KillauraEntity implements ViolationModule, Listener
                 }
             });
         }, 2L);
+    }
+
+    private WrappedGameProfile getGameProfile(Player observedPlayer, boolean onlinePlayers)
+    {
+        // Use ArrayList as removal actions are unlikely.
+        final List<OfflinePlayer> players = onlinePlayers ?
+                                            (new ArrayList<>(Bukkit.getOnlinePlayers())) :
+                                            (Arrays.asList(Bukkit.getOfflinePlayers()));
+
+        OfflinePlayer chosenPlayer;
+        do
+        {
+            // Check if we can serve OfflinePlayer profiles.
+            if (players.isEmpty())
+            {
+                return null;
+            }
+
+            // Choose a random player
+            chosenPlayer = players.remove(this.random.nextInt(players.size()));
+            // and make sure it is not the observed player
+        } while (chosenPlayer.getName().equals(observedPlayer.getName()));
+
+        // Generate the GameProfile
+        return new WrappedGameProfile(chosenPlayer.getUniqueId(), chosenPlayer.getName());
     }
 
     @EventHandler

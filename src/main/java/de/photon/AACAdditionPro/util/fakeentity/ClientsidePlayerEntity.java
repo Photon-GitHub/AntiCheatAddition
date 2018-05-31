@@ -120,8 +120,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             {
                 lastHandSwap = 0;
                 // Automatic offhand handling
-                equipment.replaceMainHand();
-                equipment.replaceOffhand();
+                equipment.replaceRandomArmorPiece();
                 // Send the updated Equipment
                 equipment.updateEquipment();
             }

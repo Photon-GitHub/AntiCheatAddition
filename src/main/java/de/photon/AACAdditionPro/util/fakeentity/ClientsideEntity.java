@@ -153,15 +153,9 @@ public abstract class ClientsideEntity
     {
         final User user = UserManager.getUser(observedPlayer.getUniqueId());
 
-        if (!User.isUserInvalid(user))
-        {
-            final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-            if (clientSidePlayerEntity != null)
-            {
-                return clientSidePlayerEntity.getEntityID() == this.entityID;
-            }
-        }
-        return false;
+        return !User.isUserInvalid(user) &&
+               user.getClientSideEntityData().clientSidePlayerEntity != null &&
+               user.getClientSideEntityData().clientSidePlayerEntity.getEntityID() == this.entityID;
     }
 
     /**
@@ -249,7 +243,7 @@ public abstract class ClientsideEntity
         double yDiff = this.location.getY() - this.lastLocation.getY();
         double zDiff = this.location.getZ() - this.lastLocation.getZ();
 
-        final boolean onGround = this.onGround;
+        final boolean savedOnGround = this.onGround;
 
         // Teleport needed ?
         int teleportThreshold;
@@ -278,7 +272,7 @@ public abstract class ClientsideEntity
             teleportWrapper.setYaw(this.location.getYaw());
             teleportWrapper.setPitch(this.location.getPitch());
             // OnGround
-            teleportWrapper.setOnGround(onGround);
+            teleportWrapper.setOnGround(savedOnGround);
             // Send the packet
             teleportWrapper.sendPacket(this.observedPlayer);
             this.needsTeleport = false;
@@ -313,7 +307,7 @@ public abstract class ClientsideEntity
                     // System.out.println("Sending move");
                 }
 
-                movePacketWrapper.setOnGround(onGround);
+                movePacketWrapper.setOnGround(savedOnGround);
                 movePacketWrapper.setDiffs(xDiff, yDiff, zDiff);
                 packetWrapper = movePacketWrapper;
             }
@@ -325,7 +319,7 @@ public abstract class ClientsideEntity
                 lookPacketWrapper.setYaw(this.location.getYaw());
                 lookPacketWrapper.setPitch(this.location.getPitch());
                 // OnGround
-                lookPacketWrapper.setOnGround(onGround);
+                lookPacketWrapper.setOnGround(savedOnGround);
 
                 packetWrapper = lookPacketWrapper;
                 // System.out.println("Sending look");

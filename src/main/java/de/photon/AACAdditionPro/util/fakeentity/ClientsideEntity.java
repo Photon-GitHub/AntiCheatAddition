@@ -520,15 +520,13 @@ public abstract class ClientsideEntity
         final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata();
         entityMetadataWrapper.setEntityID(this.getEntityID());
 
+        final byte visibleByte = (byte) (visible ? 0 : 0x20);
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 final List<WrappedWatchableObject> wrappedWatchableObjectsOldMC = Arrays.asList(
                         // Invisibility itself
-                        new WrappedWatchableObject(0, (byte) (
-                                visible ?
-                                0 :
-                                0x20)),
+                        new WrappedWatchableObject(0, visibleByte),
                         // Arrows in entity.
                         // IN 1.8.8 THIS IS A BYTE, NOT AN INTEGER!
                         new WrappedWatchableObject(10, (byte) 0));
@@ -541,13 +539,9 @@ public abstract class ClientsideEntity
                 final WrappedDataWatcher.WrappedDataWatcherObject visibilityWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class));
                 final WrappedDataWatcher.WrappedDataWatcherObject arrowInEntityWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(Integer.class));
 
-                entityMetadataWrapper.setEntityID(this.getEntityID());
                 final List<WrappedWatchableObject> wrappedWatchableObjectsNewMC = Arrays.asList(
                         // Invisibility itself
-                        new WrappedWatchableObject(visibilityWatcher, (byte) (
-                                visible ?
-                                0 :
-                                0x20)),
+                        new WrappedWatchableObject(visibilityWatcher, visibleByte),
                         // Arrows in entity.
                         // IN 1.12.2 THIS IS AN INTEGER!
                         new WrappedWatchableObject(arrowInEntityWatcher, 0));

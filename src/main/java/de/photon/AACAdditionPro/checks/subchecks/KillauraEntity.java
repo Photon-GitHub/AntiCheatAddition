@@ -424,7 +424,7 @@ public class KillauraEntity implements ViolationModule, Listener
             }
         }
 
-        respawnTask = Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), this::respawnScheduler, ThreadLocalRandom.current().nextLong(300, 800));
+        respawnTask = Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), this::respawnScheduler, ThreadLocalRandom.current().nextLong(respawnTimer, 800));
     }
 
     /**

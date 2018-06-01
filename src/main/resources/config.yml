@@ -419,6 +419,9 @@ PacketAnalysis:
          allowed_offset: 120
          # How many violations Compare will ignore before starting to flag
          compare_threshold: 2
+         # The minimum time between two violations to prevent excessive flagging in lag spikes
+         # Measured in milliseconds
+         violation_time: 10000
       # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
       # This will catch several scaffold, tower, killaura and aimbot modifications.
       EqualRotation:

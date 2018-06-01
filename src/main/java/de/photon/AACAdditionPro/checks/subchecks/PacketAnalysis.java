@@ -37,6 +37,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
     private int allowedOffset;
     @LoadFromConfiguration(configPath = ".parts.Compare.compare_threshold")
     private int compareThreshold;
+    @LoadFromConfiguration(configPath = ".parts.Compare.violation_time")
+    private int violationTime;
 
     @LoadFromConfiguration(configPath = ".parts.EqualRotatíon.enabled")
     private boolean equalRotation;
@@ -238,12 +240,18 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                             user.getPacketAnalysisData().recentKeepAliveResponseTime(),
                             user.getPacketAnalysisData().lastPositionForceData.timeDifference()) - allowedOffset;
 
+                    // Should flag
                     if (offset > 0)
                     {
-                        if (++user.getPacketAnalysisData().compareFails > this.compareThreshold)
+                        // Minimum time between flags to decrease lag spike effects.
+                        if (!user.getPacketAnalysisData().recentlyUpdated(1, violationTime) &&
+                            // Minimum fails to mitigate some fluctuations
+                            ++user.getPacketAnalysisData().compareFails > this.compareThreshold)
                         {
                             VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
-                            vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 50)), 12), -1, () -> {}, () -> {});
+                            vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 50)), 12), -1, () -> {}, () -> {
+                                user.getPacketAnalysisData().updateTimeStamp(1);
+                            });
                         }
                     }
                     else if (user.getPacketAnalysisData().compareFails > 0)

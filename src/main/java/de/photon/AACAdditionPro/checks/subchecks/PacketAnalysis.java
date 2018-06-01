@@ -249,9 +249,9 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                             ++user.getPacketAnalysisData().compareFails > this.compareThreshold)
                         {
                             VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
-                            vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 50)), 12), -1, () -> {}, () -> {
-                                user.getPacketAnalysisData().updateTimeStamp(1);
-                            });
+                            vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 50)), 12), -1, () -> {},
+                                           // Only update the time stamp if flagged.
+                                           () -> user.getPacketAnalysisData().updateTimeStamp(1));
                         }
                     }
                     else if (user.getPacketAnalysisData().compareFails > 0)

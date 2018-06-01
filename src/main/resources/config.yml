@@ -287,14 +287,22 @@ KillauraEntity:
       # WARNING: Disabling this setting will make the entity VERY easy to bypass.
       #          ANY BYPASSES REPORTED WITH THIS SET TO 'FALSE' WILL BE CLOSED!
       visible_in_tablist: true
-      # Should the entity join a team
       team:
+         # Should the entity join a team
          enabled: true
-      # Should the entity swap the items it is wearing and using
+         # This will allow you to set certain preferred teams.
+         # Example:
+         #
+         # preferred_teams:
+         #    - "Player"
+         #    - "VIP"
+         #    - "MVP"
+         preferred_teams: {}
       swap:
+         # Should the entity swap the items it is wearing and using
          enabled: true
-      # Should the entity swing items to simulate an attack
       swing:
+         # Should the entity swing items to simulate an attack
          enabled: true
    # Here you can find all options regarding the positioning of the entity
    position:

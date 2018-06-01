@@ -4,18 +4,22 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.util.fakeentity.ClientsidePlayerEntity;
+import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public final class DisplayInformation
 {
+    private static List<String> preferredTeamNames = ConfigUtils.loadStringOrStringList(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.team.preferred_teams");
+
     /**
      * This updates the {@link Team} of a {@link ClientsidePlayerEntity} to avoid bypasses as of no {@link Team} or
      * the same {@link Team} as the observed {@link Player}.
@@ -37,7 +41,15 @@ public final class DisplayInformation
             !possibleTeams.contains(clientsidePlayerEntity.getCurrentTeam()))
         {
             // Start with the team with the most players.
-            final Iterator<Team> priorityIterator = possibleTeams.stream().sorted(Comparator.comparingInt(o -> o.getEntries().size())).iterator();
+            final Iterator<Team> priorityIterator = possibleTeams.stream().sorted((o1, o2) -> {
+                // Preferred team handling
+                if (preferredTeamNames.contains(o1.getName()))
+                {
+                    return 1;
+                }
+                // Otherwise choose the biggest team.
+                return Integer.compare(o1.getSize(), o2.getSize());
+            }).iterator();
 
             Team current;
             while (priorityIterator.hasNext())
@@ -61,7 +73,6 @@ public final class DisplayInformation
             }
         }
     }
-
 
     /**
      * This method updates the player information, and thus the tablist of a player.

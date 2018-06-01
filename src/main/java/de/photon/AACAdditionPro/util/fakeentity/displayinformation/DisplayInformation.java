@@ -10,7 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Set;
 
 public final class DisplayInformation
@@ -23,46 +24,38 @@ public final class DisplayInformation
      */
     public static void applyTeams(final ClientsidePlayerEntity clientsidePlayerEntity)
     {
-        final Set<Team> teamsWithPlayers = new HashSet<>();
-        for (final Team team1 : clientsidePlayerEntity.getObservedPlayer().getScoreboard().getTeams())
-        {
-            if ((team1.getEntries().size() > 1 || !team1.getEntries().contains(clientsidePlayerEntity.getGameProfile().getName())) && team1.getSuffix().isEmpty())
-            {
-                teamsWithPlayers.add(team1);
-            }
-        }
+        // Try to search for teams with players inside to make sure the entity is placed in a real enemy team if
+        // possible.
+        final Set<Team> possibleTeams = clientsidePlayerEntity.getObservedPlayer().getScoreboard().getTeams();
 
-        if (teamsWithPlayers.isEmpty())
-        {
-            for (final Team team1 : clientsidePlayerEntity.getObservedPlayer().getScoreboard().getTeams())
-            {
-                if (team1.getSuffix().isEmpty())
-                {
-                    teamsWithPlayers.add(team1);
-                }
-            }
-        }
+        // Remove teams with suffix and the team of the observed player.
+        possibleTeams.removeIf(team -> !team.getSuffix().isEmpty() || team.getEntries().contains(clientsidePlayerEntity.getGameProfile().getName()));
 
-        if (clientsidePlayerEntity.getCurrentTeam() == null || !teamsWithPlayers.contains(clientsidePlayerEntity.getCurrentTeam()))
+        // Currently in no team
+        if (clientsidePlayerEntity.getCurrentTeam() == null ||
+            // The observed player has joined the team of the entity.
+            !possibleTeams.contains(clientsidePlayerEntity.getCurrentTeam()))
         {
-            for (Team team : teamsWithPlayers)
+            final Iterator<Team> priorityIterator = possibleTeams.stream().sorted(Comparator.comparingInt(o -> o.getEntries().size())).iterator();
+
+            Team current;
+            while (priorityIterator.hasNext())
             {
-                if (!team.getEntries().contains(clientsidePlayerEntity.getObservedPlayer().getName()))
+                current = priorityIterator.next();
+
+                try
                 {
-                    try
-                    {
-                        // The Entity will automatically leave its current team, no extra method call required.
-                        clientsidePlayerEntity.joinTeam(team);
-                        // No further team joining.
-                        return;
-                    } catch (IllegalArgumentException entityIsNull)
-                    {
-                        // Here the entity is null and thus additional measures are not required.
-                        return;
-                    } catch (IllegalStateException ignore)
-                    {
-                        // Here the team is no longer present -> loop through the other teams.
-                    }
+                    // The Entity will automatically leave its current team, no extra method call required.
+                    clientsidePlayerEntity.joinTeam(current);
+                    // No further team joining.
+                    return;
+                } catch (IllegalArgumentException entityIsNull)
+                {
+                    // Here the entity is null and thus additional measures are not required.
+                    return;
+                } catch (IllegalStateException ignore)
+                {
+                    // Here the team is no longer present -> loop through the other teams.
                 }
             }
         }

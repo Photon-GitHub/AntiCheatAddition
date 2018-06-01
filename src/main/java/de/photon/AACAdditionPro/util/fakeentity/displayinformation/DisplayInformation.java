@@ -43,7 +43,9 @@ public final class DisplayInformation
             // Start with the team with the most players.
             final Iterator<Team> priorityIterator = possibleTeams.stream().sorted((o1, o2) -> {
                 // Preferred team handling
-                if (preferredTeamNames.contains(o1.getName()))
+                if (preferredTeamNames.contains(o1.getName()) &&
+                    // Not both teams are preferred
+                    !preferredTeamNames.contains(o2.getName()))
                 {
                     return 1;
                 }

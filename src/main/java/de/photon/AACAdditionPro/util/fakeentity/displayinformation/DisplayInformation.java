@@ -36,6 +36,7 @@ public final class DisplayInformation
             // The observed player has joined the team of the entity.
             !possibleTeams.contains(clientsidePlayerEntity.getCurrentTeam()))
         {
+            // Start with the team with the most players.
             final Iterator<Team> priorityIterator = possibleTeams.stream().sorted(Comparator.comparingInt(o -> o.getEntries().size())).iterator();
 
             Team current;

@@ -158,6 +158,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //
 
+    /**
+     * Gets the name of the entity from its game profile.
+     */
     public String getName()
     {
         return this.gameProfile.getName();
@@ -174,23 +177,15 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         pingTask = Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> {
             if (this.isValid())
             {
-                fakePingForObservedPlayer(MathUtils.randomBoundaryInt(21, 4));
+                // Fake the ping if the entity is already spawned
+                if (this.isSpawned())
+                {
+                    this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY, MathUtils.randomBoundaryInt(21, 4));
+                }
+
                 recursiveUpdatePing();
             }
-        }, (long) MathUtils.randomBoundaryInt(10, 35));
-    }
-
-    /**
-     * The real {@link java.lang.reflect.Method} that handles the ping-changing once the given {@link ClientsidePlayerEntity} is confirmed as valid.
-     *
-     * @param ping the new ping of the {@link ClientsidePlayerEntity}
-     */
-    private void fakePingForObservedPlayer(final int ping)
-    {
-        if (this.isSpawned())
-        {
-            this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY, ping);
-        }
+        }, (long) MathUtils.randomBoundaryInt(15, 40));
     }
 
     @Override
@@ -202,7 +197,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         if (!visible)
         {
-            WrapperPlayServerEntityEquipment.clearAllSlots(this.getEntityID(), this.observedPlayer);
+            WrapperPlayServerEntityEquipment.clearAllSlots(this.entityID, this.observedPlayer);
         }
     }
 

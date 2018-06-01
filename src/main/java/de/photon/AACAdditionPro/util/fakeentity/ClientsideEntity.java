@@ -247,7 +247,8 @@ public abstract class ClientsideEntity
 
         // Teleport needed ?
         int teleportThreshold;
-        switch (ServerVersion.getClientServerVersion(this.observedPlayer))
+        // Do not use the client version here.
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 teleportThreshold = 4;

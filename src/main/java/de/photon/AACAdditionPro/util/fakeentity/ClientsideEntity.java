@@ -249,7 +249,7 @@ public abstract class ClientsideEntity
         double yDiff = this.location.getY() - this.lastLocation.getY();
         double zDiff = this.location.getZ() - this.lastLocation.getZ();
 
-        final boolean onGround = isOnGround();
+        final boolean onGround = this.onGround;
 
         // Teleport needed ?
         int teleportThreshold;
@@ -344,18 +344,13 @@ public abstract class ClientsideEntity
         this.lastLocation = this.location.clone();
     }
 
-    private boolean isOnGround()
-    {
-        return this.onGround;
-    }
-
     public void jump()
     {
-        if (this.isOnGround())
+        if (this.onGround)
         {
             velocity.setY(Jumping.getJumpYMotion(null));
 
-            if (sprinting)
+            if (this.sprinting)
             {
                 velocity.add(location.getDirection().setY(0).normalize().multiply(.2F));
             }

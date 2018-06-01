@@ -43,7 +43,7 @@ import java.util.Set;
 
 public abstract class ClientsideEntity
 {
-    private static Field entityCountField;
+    private static final Field entityCountField;
 
     static
     {
@@ -502,7 +502,7 @@ public abstract class ClientsideEntity
         }
 
         final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata();
-        entityMetadataWrapper.setEntityID(this.getEntityID());
+        entityMetadataWrapper.setEntityID(this.entityID);
 
         final byte visibleByte = (byte) (visible ? 0 : 0x20);
         switch (ServerVersion.getActiveServerVersion())

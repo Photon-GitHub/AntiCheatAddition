@@ -451,14 +451,9 @@ public abstract class ClientsideEntity
             observedLoc.setPitch(0);
 
             // Calculate knockback strength
-            int knockbackStrength = 0;
-            if (observedPlayer.isSprinting())
-            {
-                knockbackStrength = 1;
-            }
+            int knockbackStrength = observedPlayer.isSprinting() ? 1 : 0;
 
             final ItemStack itemInHand;
-
             switch (ServerVersion.getActiveServerVersion())
             {
                 case MC188:

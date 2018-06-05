@@ -81,7 +81,7 @@ public class User
      */
     public static boolean isUserInvalid(final User user)
     {
-        return user == null || user.isBypassed();
+        return user == null || user.isBypassed() || user.getPlayer() == null;
     }
 
     void unregister()

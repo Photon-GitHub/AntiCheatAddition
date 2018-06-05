@@ -115,16 +115,17 @@ public class KillauraEntity implements ViolationModule, Listener
                 throw new IllegalStateException("Unknown Gamemode: " + event.getPlayer().getGameMode().name());
         }
 
-        // Add velocity to the bot so the bot does never stand inside or in front of the player
-        final User user = UserManager.getUser(player.getUniqueId());
-
-        // Not bypassed
-        if (User.isUserInvalid(user))
-        {
-            return;
-        }
-
+        // ONLY USE THE USER -> PLAYER REFERENCE HERE TO MAKE SURE THE PLAYER IS NOT A NULLPOINTER.
         Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), () -> {
+            // The UserManager uses a ConcurrentHashMap -> get the user async.
+            final User user = UserManager.getUser(player.getUniqueId());
+
+            // Not bypassed
+            if (User.isUserInvalid(user))
+            {
+                return;
+            }
+
             WrappedGameProfile gameProfile = null;
             MovementType movementType = MovementType.BASIC_FOLLOW;
 
@@ -134,7 +135,7 @@ public class KillauraEntity implements ViolationModule, Listener
             {
                 try
                 {
-                    gameProfile = killauraEntityAddon.getKillauraEntityGameProfile(player);
+                    gameProfile = killauraEntityAddon.getKillauraEntityGameProfile(user.getPlayer());
                     final MovementType potentialMovementType = killauraEntityAddon.getController().getMovementType();
 
                     if (potentialMovementType != null)
@@ -143,24 +144,24 @@ public class KillauraEntity implements ViolationModule, Listener
                     }
                 } catch (Throwable t)
                 {
-                    new RuntimeException("Error in plugin " + killauraEntityAddon.getPlugin().getName() + " while trying to get a killaura-entity gameprofile for " + player.getName(), t).printStackTrace();
+                    new RuntimeException("Error in plugin " + killauraEntityAddon.getPlugin().getName() + " while trying to get a killaura-entity gameprofile for " + user.getPlayer().getName(), t).printStackTrace();
                 }
             }
 
             // No profile was set by the API
             if (gameProfile == null)
             {
-                gameProfile = this.getGameProfile(player, preferOnlineProfiles);
+                gameProfile = this.getGameProfile(user.getPlayer(), preferOnlineProfiles);
                 user.getClientSideEntityData().onlineProfile = preferOnlineProfiles;
 
                 if (gameProfile == null)
                 {
-                    gameProfile = this.getGameProfile(player, false);
+                    gameProfile = this.getGameProfile(user.getPlayer(), false);
                     user.getClientSideEntityData().onlineProfile = false;
 
                     if (gameProfile == null)
                     {
-                        VerboseSender.sendVerboseMessage("KillauraEntity: Could not spawn entity as of too few game profiles for player " + player.getName(), true, true);
+                        VerboseSender.sendVerboseMessage("KillauraEntity: Could not spawn entity as of too few game profiles for player " + user.getPlayer().getName(), true, true);
                         // No WrappedGameProfile can be set as there are no valid offline players.
                         return;
                     }
@@ -172,8 +173,14 @@ public class KillauraEntity implements ViolationModule, Listener
             final MovementType finalMovementType = movementType;
 
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
+                // Make sure no NPE is thrown because the player logged out.
+                if (User.isUserInvalid(user))
+                {
+                    return;
+                }
+
                 // Create the new Entity with the resultingGameProfile
-                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(player, resultingGameProfile, entityOffset, offsetRandomizationRange, minXZDifference);
+                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(user.getPlayer(), resultingGameProfile, entityOffset, offsetRandomizationRange, minXZDifference);
 
                 // Set the MovementType
                 playerEntity.setMovement(finalMovementType);

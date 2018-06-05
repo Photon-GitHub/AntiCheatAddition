@@ -37,13 +37,14 @@ public class ModuleManager extends ArrayList<Module>
         {
             // Save what should be written in the current path (no error) in this variable.
             final String pathOutput;
-            // Enabled in the config
+
             // Supports the current server version
             if (ServerVersion.supportsActiveServerVersion(object.getSupportedVersions()))
             {
                 // Add this to the list of checks (toggleable in the API)
                 this.add(object);
 
+                // Enabled in the config
                 if (AACAdditionPro.getInstance().getConfig().getBoolean(object.getConfigString() + ".enabled"))
                 {
                     if (object.getDependencies().stream().allMatch(dependency -> Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)))

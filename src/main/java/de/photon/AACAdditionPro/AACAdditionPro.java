@@ -57,7 +57,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class AACAdditionPro extends JavaPlugin
 {
@@ -178,7 +177,7 @@ public class AACAdditionPro extends JavaPlugin
                                 // Versions should be divided by commas.
                                 ", ",
                                 // Create a List of all the possible server versions
-                                Arrays.stream(ServerVersion.values()).map(ServerVersion::getVersionOutputString).collect(Collectors.toList())),
+                                Arrays.stream(ServerVersion.values()).filter(ServerVersion::isSupported).map(ServerVersion::getVersionOutputString).toArray(String[]::new)),
                         true, true);
                 return;
             }

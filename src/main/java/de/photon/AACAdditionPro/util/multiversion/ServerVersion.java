@@ -18,7 +18,8 @@ public enum ServerVersion
     MC19("1.9", false),
     MC110("1.10", false),
     MC111("1.11", true),
-    MC112("1.12", true);
+    MC112("1.12", true),
+    MC113("1.13", true);
 
     private final String versionOutputString;
     private final boolean supported;

@@ -54,10 +54,6 @@ public abstract class ClientsideEntity
     @Getter
     protected final int entityID;
 
-    @Getter
-    @Setter
-    private boolean sprinting;
-
     /**
      * Determines whether this {@link ClientsideEntity} is already spawned.
      */
@@ -74,6 +70,7 @@ public abstract class ClientsideEntity
      * Stores the last timestamp this {@link ClientsideEntity} was hit.
      */
     public long lastHurtMillis;
+    private BukkitTask hurtTask = null;
 
     /**
      * The current velocity of this {@link ClientsideEntity}.
@@ -88,6 +85,10 @@ public abstract class ClientsideEntity
     protected float lastHeadYaw;
     @Getter
     protected float headYaw;
+    
+    @Getter
+    @Setter
+    private boolean sprinting;
 
     @Getter
     protected final Player observedPlayer;
@@ -100,9 +101,7 @@ public abstract class ClientsideEntity
 
     @Getter
     private long ticksExisted = 0;
-
     private int tickTask = -1;
-    private BukkitTask hurtTask = null;
 
     // Movement state machine
     private Set<Movement> movementStates = new HashSet<>();

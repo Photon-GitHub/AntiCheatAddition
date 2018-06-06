@@ -20,8 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class VerboseSender implements Listener
 {
@@ -37,9 +35,6 @@ public final class VerboseSender implements Listener
 
     @Setter
     private boolean allowedToRegisterTasks;
-
-    // Queue for async logging in the file
-    private Queue<String> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
     // The File the verbose messages are written to.
     private File logFile = null;

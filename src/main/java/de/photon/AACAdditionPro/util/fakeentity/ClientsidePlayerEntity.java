@@ -81,17 +81,17 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         double diffZ = target.getZ() - this.location.getZ();
         double dist = Math.hypot(diffX, diffZ);
 
+        // Yaw
         float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0F;
-        float pitch = (float) Math.toDegrees(Math.asin(diffY / dist));
-
-        pitch += ThreadLocalRandom.current().nextInt(5);
-
-        pitch = RotationUtil.reduceAngle(pitch, 90);
-
         this.headYaw = RotationUtil.wrapToAllowedYaw((float) MathUtils.randomBoundaryDouble(yaw - 10, 20));
-
         this.location.setYaw(yaw);
+
+        // Pitch
+        float pitch = (float) Math.toDegrees(Math.asin(diffY / dist));
+        pitch += ThreadLocalRandom.current().nextInt(5);
+        pitch = RotationUtil.reduceAngle(pitch, 90);
         this.location.setPitch(pitch);
+
         this.move(this.location);
 
         // Maybe we should switch movement states?

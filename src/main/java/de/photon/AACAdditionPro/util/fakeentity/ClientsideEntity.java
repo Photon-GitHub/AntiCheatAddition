@@ -167,7 +167,16 @@ public abstract class ClientsideEntity
         ticksExisted++;
 
         // Calculate velocity
-        this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
+        if (this.onGround)
+        {
+            // After a certain period the entity might reach a velocity so high that it appears to be "glitching"
+            // through the ground. This can be prevented by resetting the velocity if the entity is onGround.
+            this.velocity.setY(0);
+        }
+        else
+        {
+            this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
+        }
 
         final Vector tempJumpVelocity = velocity.clone();
         tempJumpVelocity.setX(Math.signum(tempJumpVelocity.getX()));

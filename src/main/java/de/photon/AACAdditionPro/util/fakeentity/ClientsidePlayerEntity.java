@@ -30,10 +30,8 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     @Getter
     private final WrappedGameProfile gameProfile;
 
-    @Getter
-    @Setter
+    // Ping handling
     private int ping;
-
     private int pingTask;
 
     @Getter
@@ -179,7 +177,8 @@ public class ClientsidePlayerEntity extends ClientsideEntity
                 // Fake the ping if the entity is already spawned
                 if (this.isSpawned())
                 {
-                    this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY, MathUtils.randomBoundaryInt(21, 4));
+                    this.ping = MathUtils.randomBoundaryInt(21, 4);
+                    this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY, this.ping);
                 }
 
                 recursiveUpdatePing();
@@ -211,7 +210,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     public void joinTeam(Team team) throws IllegalStateException
     {
         this.leaveTeam();
-        team.addEntry(this.getGameProfile().getName());
+        team.addEntry(this.gameProfile.getName());
         this.setCurrentTeam(team);
     }
 
@@ -223,7 +222,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         if (this.getCurrentTeam() != null)
         {
-            this.getCurrentTeam().removeEntry(this.getGameProfile().getName());
+            this.getCurrentTeam().removeEntry(this.gameProfile.getName());
             this.setCurrentTeam(null);
         }
     }

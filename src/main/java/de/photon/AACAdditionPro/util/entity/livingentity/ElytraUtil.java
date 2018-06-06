@@ -14,7 +14,6 @@ public final class ElytraUtil
         {
             case MC188:
                 return false;
-            case MC110:
             case MC111:
             case MC112:
                 return livingEntity.isGliding();

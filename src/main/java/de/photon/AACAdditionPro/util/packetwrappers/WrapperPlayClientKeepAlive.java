@@ -30,7 +30,6 @@ public class WrapperPlayClientKeepAlive extends AbstractPacket
         {
             case MC188:
                 return handle.getIntegers().read(0);
-            case MC110:
             case MC111:
             case MC112:
                 return handle.getLongs().read(0);
@@ -51,7 +50,6 @@ public class WrapperPlayClientKeepAlive extends AbstractPacket
             case MC188:
                 handle.getIntegers().write(0, (int) value);
                 break;
-            case MC110:
             case MC111:
             case MC112:
                 handle.getLongs().write(0, value);

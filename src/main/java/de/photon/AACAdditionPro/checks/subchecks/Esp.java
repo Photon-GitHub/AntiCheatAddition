@@ -165,7 +165,6 @@ public class Esp implements ViolationModule
                                     case MC188:
                                         canSee = false;
                                         break;
-                                    case MC110:
                                     case MC111:
                                     case MC112:
                                         canSee = watched.hasPotionEffect(PotionEffectType.GLOWING);

@@ -33,7 +33,6 @@ public final class PotionUtil
                     }
                 }
                 return null;
-            case MC110:
             case MC111:
             case MC112:
                 return livingEntity.getPotionEffect(type);

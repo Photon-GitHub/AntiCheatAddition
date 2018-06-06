@@ -1,14 +1,13 @@
 package de.photon.AACAdditionPro.util.visibility.informationmodifiers;
 
 import com.comphenix.protocol.PacketType;
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.visibility.PlayerInformationModifier;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 public class InformationObfuscator extends PlayerInformationModifier
@@ -31,6 +30,6 @@ public class InformationObfuscator extends PlayerInformationModifier
     @Override
     protected Set<ServerVersion> getSupportedVersions()
     {
-        return new HashSet<>(Arrays.asList(ServerVersion.MC110, ServerVersion.MC111, ServerVersion.MC112));
+        return ImmutableSet.of(ServerVersion.MC111, ServerVersion.MC112);
     }
 }

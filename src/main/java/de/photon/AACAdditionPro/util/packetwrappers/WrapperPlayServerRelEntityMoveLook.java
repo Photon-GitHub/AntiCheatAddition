@@ -27,7 +27,6 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
         {
             case MC188:
                 return 3;
-            case MC110:
             case MC111:
             case MC112:
                 return 0;

@@ -324,7 +324,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         {
             case MC188:
                 break;
-            case MC110:
             case MC111:
             case MC112:
                 keepAliveInject = false;

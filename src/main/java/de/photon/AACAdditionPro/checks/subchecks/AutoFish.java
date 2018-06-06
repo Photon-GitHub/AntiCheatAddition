@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
@@ -15,9 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 
-import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
-import java.util.HashSet;
 import java.util.Set;
 
 public class AutoFish implements Listener, ViolationModule
@@ -178,6 +177,6 @@ public class AutoFish implements Listener, ViolationModule
     @Override
     public Set<ServerVersion> getSupportedVersions()
     {
-        return new HashSet<>(Arrays.asList(ServerVersion.MC110, ServerVersion.MC111, ServerVersion.MC112));
+        return ImmutableSet.of(ServerVersion.MC111, ServerVersion.MC112, ServerVersion.MC113);
     }
 }

@@ -13,9 +13,7 @@ import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -35,7 +33,6 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private int pingTask;
 
     @Getter
-    @Setter(value = AccessLevel.PROTECTED)
     private Team currentTeam;
 
     // Main ticker for the entity
@@ -88,9 +85,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         pitch += ThreadLocalRandom.current().nextInt(5);
 
-        pitch = reduceAngle(pitch, 90);
+        pitch = reduceAngleNew(pitch, 90);
 
-        this.headYaw = reduceAngle((float) MathUtils.randomBoundaryDouble(yaw - 10, 20), 180);
+        this.headYaw = reduceAngleNew((float) MathUtils.randomBoundaryDouble(yaw - 10, 20), 180);
 
         this.location.setYaw(yaw);
         this.location.setPitch(pitch);
@@ -144,6 +141,29 @@ public class ClientsidePlayerEntity extends ClientsideEntity
      * @param input  the initial angle
      * @param minMax the boundary in the positive and negative spectrum. The parameter itself must be > 0.
      */
+    private float reduceAngleNew(float input, float minMax)
+    {
+        final float absInput = Math.abs(input);
+
+        if (absInput > minMax)
+        {
+            // Correct direction (positive / negative)
+            input -= Math.signum(input)
+                     // In steps of minMax
+                     * minMax
+                     // Calculate the necessary steps
+                     * Math.ceil((absInput - minMax) / minMax);
+        }
+        return input;
+    }
+
+    /**
+     * Reduces the angle to make it fit the spectrum of -minMax til +minMax in steps of minMax
+     *
+     * @param input  the initial angle
+     * @param minMax the boundary in the positive and negative spectrum. The parameter itself must be > 0.
+     */
+    @Deprecated
     private float reduceAngle(float input, float minMax)
     {
         while (Math.abs(input) > minMax)
@@ -211,7 +231,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         this.leaveTeam();
         team.addEntry(this.gameProfile.getName());
-        this.setCurrentTeam(team);
+        this.currentTeam = team;
     }
 
     /**
@@ -220,10 +240,10 @@ public class ClientsidePlayerEntity extends ClientsideEntity
      */
     private void leaveTeam() throws IllegalStateException
     {
-        if (this.getCurrentTeam() != null)
+        if (this.currentTeam != null)
         {
-            this.getCurrentTeam().removeEntry(this.gameProfile.getName());
-            this.setCurrentTeam(null);
+            this.currentTeam.removeEntry(this.gameProfile.getName());
+            this.currentTeam = null;
         }
     }
 

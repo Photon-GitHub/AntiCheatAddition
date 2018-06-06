@@ -253,7 +253,6 @@ public abstract class ClientsideEntity
             case MC188:
                 teleportThreshold = 4;
                 break;
-            case MC110:
             case MC111:
             case MC112:
                 teleportThreshold = 8;
@@ -449,7 +448,6 @@ public abstract class ClientsideEntity
                 case MC188:
                     itemInHand = observedPlayer.getItemInHand();
                     break;
-                case MC110:
                 case MC111:
                 case MC112:
                     itemInHand = observedPlayer.getInventory().getItemInMainHand();
@@ -518,7 +516,6 @@ public abstract class ClientsideEntity
                 entityMetadataWrapper.setMetadata(wrappedWatchableObjectsOldMC);
                 break;
 
-            case MC110:
             case MC111:
             case MC112:
                 final WrappedDataWatcher.WrappedDataWatcherObject visibilityWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class));

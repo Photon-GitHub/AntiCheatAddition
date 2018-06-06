@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -213,7 +214,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
      */
     public float getYaw()
     {
-        return handle.getBytes().read(0) * 360.F / 256.0F;
+        return RotationUtil.convertFixedRotation(handle.getBytes().read(0));
     }
 
     /**
@@ -223,7 +224,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
      */
     public void setYaw(float value)
     {
-        handle.getBytes().write(0, (byte) (value * 256.0F / 360.0F));
+        handle.getBytes().write(0, RotationUtil.getFixRotation(value));
     }
 
     /**
@@ -233,7 +234,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
      */
     public float getPitch()
     {
-        return handle.getBytes().read(1) * 360.F / 256.0F;
+        return RotationUtil.convertFixedRotation(handle.getBytes().read(1));
     }
 
     /**
@@ -243,7 +244,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
      */
     public void setPitch(float value)
     {
-        handle.getBytes().write(1, (byte) (value * 256.0F / 360.0F));
+        handle.getBytes().write(1, RotationUtil.getFixRotation(value));
     }
 
     /**

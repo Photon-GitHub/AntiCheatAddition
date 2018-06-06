@@ -10,6 +10,7 @@ import de.photon.AACAdditionPro.util.fakeentity.equipment.Equipment;
 import de.photon.AACAdditionPro.util.fakeentity.movement.submovements.BasicFollowMovement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
+import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
@@ -85,9 +86,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         pitch += ThreadLocalRandom.current().nextInt(5);
 
-        pitch = reduceAngleNew(pitch, 90);
+        pitch = RotationUtil.reduceAngle(pitch, 90);
 
-        this.headYaw = reduceAngleNew((float) MathUtils.randomBoundaryDouble(yaw - 10, 20), 180);
+        this.headYaw = RotationUtil.reduceAngle((float) MathUtils.randomBoundaryDouble(yaw - 10, 20), 180);
 
         this.location.setYaw(yaw);
         this.location.setPitch(pitch);
@@ -131,46 +132,6 @@ public class ClientsidePlayerEntity extends ClientsideEntity
                 swing();
             }
         }
-    }
-
-    // -------------------------------------------------------------- Yaw/Pitch ------------------------------------------------------------- //
-
-    /**
-     * Reduces the angle to make it fit the spectrum of -minMax til +minMax in steps of minMax
-     *
-     * @param input  the initial angle
-     * @param minMax the boundary in the positive and negative spectrum. The parameter itself must be > 0.
-     */
-    private float reduceAngleNew(float input, float minMax)
-    {
-        final float absInput = Math.abs(input);
-
-        if (absInput > minMax)
-        {
-            // Correct direction (positive / negative)
-            input -= Math.signum(input)
-                     // In steps of minMax
-                     * minMax
-                     // Calculate the necessary steps
-                     * Math.ceil((absInput - minMax) / minMax);
-        }
-        return input;
-    }
-
-    /**
-     * Reduces the angle to make it fit the spectrum of -minMax til +minMax in steps of minMax
-     *
-     * @param input  the initial angle
-     * @param minMax the boundary in the positive and negative spectrum. The parameter itself must be > 0.
-     */
-    @Deprecated
-    private float reduceAngle(float input, float minMax)
-    {
-        while (Math.abs(input) > minMax)
-        {
-            input -= Math.signum(input) * minMax;
-        }
-        return input;
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //

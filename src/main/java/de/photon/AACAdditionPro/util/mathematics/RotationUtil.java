@@ -6,6 +6,32 @@ import org.bukkit.util.Vector;
 public final class RotationUtil
 {
     /**
+     * Reduces the angle to make it fit the spectrum of -minMax til +minMax in steps of minMax
+     *
+     * @param input  the initial angle
+     * @param minMax the boundary in the positive and negative spectrum. The parameter itself must be > 0.
+     */
+    //TODO: CHECK IF THE ANGLE REDUCING SHOULD REALLY WORK THIS WAY.
+    public static float reduceAngle(float input, float minMax)
+    {
+        final float doubleMinMax = 2 * minMax;
+
+        input = input % doubleMinMax;
+
+        if (input >= minMax)
+        {
+            input -= minMax;
+        }
+
+        if (input < -minMax)
+        {
+            input += minMax;
+        }
+
+        return input;
+    }
+
+    /**
      * Fixes the rotation for the {@link de.photon.AACAdditionPro.util.fakeentity.ClientsideEntity}s
      */
     public static byte getFixRotation(final float yawpitch)

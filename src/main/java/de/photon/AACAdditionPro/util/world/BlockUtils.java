@@ -1,6 +1,5 @@
 package de.photon.AACAdditionPro.util.world;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
@@ -72,13 +71,13 @@ public final class BlockUtils
 
     }
 
-    public static final List<BlockFace> HORIZONTAL_FACES = ImmutableList.of(
+    public static final Set<BlockFace> HORIZONTAL_FACES = ImmutableSet.of(
             BlockFace.NORTH,
             BlockFace.SOUTH,
             BlockFace.WEST,
             BlockFace.EAST);
 
-    public static final List<BlockFace> ALL_FACES = ImmutableList.of(
+    public static final Set<BlockFace> ALL_FACES = ImmutableSet.of(
             BlockFace.UP,
             BlockFace.DOWN,
             BlockFace.NORTH,

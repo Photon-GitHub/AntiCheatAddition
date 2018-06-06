@@ -167,7 +167,7 @@ public class EquipmentDatabase extends EnumMap<EnumWrappers.ItemSlot, List<Mater
     /**
      * Get an allowed {@link Material} for a certain {@link com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot}
      */
-    public Material getRandomEquipment(final Player player, final EnumWrappers.ItemSlot itemSlot)
+    Material getRandomEquipment(final Player player, final EnumWrappers.ItemSlot itemSlot)
     {
         List<Material> possibleMaterials = this.getOrDefault(itemSlot, AIR_LIST);
 

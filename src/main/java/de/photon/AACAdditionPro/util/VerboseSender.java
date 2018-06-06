@@ -35,6 +35,8 @@ public final class VerboseSender implements Listener
     @SuppressWarnings("unused")
     private static final VerboseSender instance = new VerboseSender();
 
+    private static File logFile = null;
+
     private VerboseSender()
     {
         allowedToRegisterTasks = true;
@@ -117,7 +119,12 @@ public final class VerboseSender implements Listener
         {
             // Get the logfile that is in use currently or create a new one if needed.
             final LocalDateTime now = LocalDateTime.now();
-            final File logFile = FileUtilities.saveFileInFolder("logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
+            final String currentDate = now.format(DateTimeFormatter.ISO_LOCAL_DATE);
+
+            if (logFile == null || !logFile.getName().contains(currentDate))
+            {
+                logFile = FileUtilities.saveFileInFolder("logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
+            }
 
             // Reserve the required builder size.
             // Time length is always 12, together with 2 brackets and one space this will result in 15.

@@ -118,8 +118,9 @@ public final class VerboseSender implements Listener
             // Get the logfile that is in use currently or create a new one if needed.
             final File log_File = FileUtilities.saveFileInFolder("logs/" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
 
+            // Reserve the required builder size.
+            final StringBuilder time = new StringBuilder(15 + message.length());
             // Add the beginning of the PREFIX
-            final StringBuilder time = new StringBuilder(125);
             time.append('[');
             // Get the current time
             time.append(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));

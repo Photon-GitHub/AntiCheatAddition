@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.google.common.collect.Lists;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
@@ -35,7 +36,6 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -204,7 +204,7 @@ public class KillauraEntity implements ViolationModule, Listener
         // Use ArrayList as removal actions are unlikely.
         final List<OfflinePlayer> players = onlinePlayers ?
                                             (new ArrayList<>(Bukkit.getOnlinePlayers())) :
-                                            (Arrays.asList(Bukkit.getOfflinePlayers()));
+                                            (Lists.newArrayList(Bukkit.getOfflinePlayers()));
 
         OfflinePlayer chosenPlayer;
         do

@@ -120,26 +120,26 @@ public final class VerboseSender implements Listener
 
             // Reserve the required builder size.
             // Time length is always 12, together with 2 brackets and one space this will result in 15.
-            final StringBuilder time = new StringBuilder(15 + message.length());
+            final StringBuilder verboseMessage = new StringBuilder(15 + message.length());
             // Add the beginning of the PREFIX
-            time.append('[');
+            verboseMessage.append('[');
             // Get the current time
-            time.append(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));
+            verboseMessage.append(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));
 
             // Add a 0 if it is too short
             // Technically only 12, but we already appended the "[", thus one more.
-            while (time.length() < 13)
+            while (verboseMessage.length() < 13)
             {
-                time.append('0');
+                verboseMessage.append('0');
             }
 
             // Add the rest of the PREFIX and the message
-            time.append("] ");
-            time.append(message);
-            time.append('\n');
+            verboseMessage.append("] ");
+            verboseMessage.append(message);
+            verboseMessage.append('\n');
 
             // Log the message
-            Files.write(log_File.toPath(), time.toString().getBytes(), StandardOpenOption.APPEND);
+            Files.write(log_File.toPath(), verboseMessage.toString().getBytes(), StandardOpenOption.APPEND);
         } catch (final IOException e)
         {
             e.printStackTrace();

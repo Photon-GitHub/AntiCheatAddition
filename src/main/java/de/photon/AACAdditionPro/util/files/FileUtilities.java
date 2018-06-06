@@ -36,11 +36,11 @@ public final class FileUtilities
 
         resourcePath = resourcePath.replace('\\', '/');
 
-        File outFile = new File(AACAdditionPro.getInstance().getDataFolder(), resourcePath);
-        int lastIndex = resourcePath.lastIndexOf('/');
-        File outDir = new File(AACAdditionPro.getInstance().getDataFolder(), resourcePath.substring(0, lastIndex >= 0 ?
-                                                                                                       lastIndex :
-                                                                                                       0));
+        final File outFile = new File(AACAdditionPro.getInstance().getDataFolder(), resourcePath);
+        final int lastIndex = resourcePath.lastIndexOf('/');
+        final File outDir = new File(AACAdditionPro.getInstance().getDataFolder(), resourcePath.substring(0, lastIndex >= 0 ?
+                                                                                                             lastIndex :
+                                                                                                             0));
 
         if (!outDir.exists())
         {

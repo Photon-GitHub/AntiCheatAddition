@@ -116,7 +116,8 @@ public final class VerboseSender implements Listener
         try
         {
             // Get the logfile that is in use currently or create a new one if needed.
-            final File log_File = FileUtilities.saveFileInFolder("logs/" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
+            final LocalDateTime now = LocalDateTime.now();
+            final File logFile = FileUtilities.saveFileInFolder("logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
 
             // Reserve the required builder size.
             // Time length is always 12, together with 2 brackets and one space this will result in 15.
@@ -124,7 +125,7 @@ public final class VerboseSender implements Listener
             // Add the beginning of the PREFIX
             verboseMessage.append('[');
             // Get the current time
-            verboseMessage.append(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));
+            verboseMessage.append(now.format(DateTimeFormatter.ISO_LOCAL_TIME));
 
             // Add a 0 if it is too short
             // Technically only 12, but we already appended the "[", thus one more.
@@ -139,7 +140,7 @@ public final class VerboseSender implements Listener
             verboseMessage.append('\n');
 
             // Log the message
-            Files.write(log_File.toPath(), verboseMessage.toString().getBytes(), StandardOpenOption.APPEND);
+            Files.write(logFile.toPath(), verboseMessage.toString().getBytes(), StandardOpenOption.APPEND);
         } catch (final IOException e)
         {
             e.printStackTrace();

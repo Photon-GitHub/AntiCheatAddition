@@ -56,7 +56,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         this.gameProfile = gameProfile;
 
         // EquipmentData
-        this.equipment = new Equipment(this);
+        this.equipment = new Equipment(this, ServerVersion.getClientServerVersion(observedPlayer) != ServerVersion.MC188);
 
         // Init additional behaviour configs
         visible_in_tablist = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.visible_in_tablist") &&
@@ -112,8 +112,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             {
                 lastHandSwap = 0;
                 // Automatic offhand handling
-                equipment.replaceMainHand();
-                equipment.replaceOffhand();
+                equipment.replaceHands();
                 // Send the updated Equipment
                 equipment.updateEquipment();
             }
@@ -295,9 +294,8 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         // Entity equipment + armor
         this.equipment.replaceArmor();
-        this.equipment.replaceMainHand();
         // Automatic offhand handling
-        this.equipment.replaceOffhand();
+        this.equipment.replaceHands();
         this.equipment.updateEquipment();
     }
 

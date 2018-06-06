@@ -36,7 +36,8 @@ public final class VerboseSender implements Listener
      * The {@link File} the verbose messages are written to.
      */
     private static File logFile = null;
-    private static int currentDate = 0;
+    // Set to an impossible day of the year to make sure the logFile will be initialized.
+    private static int currentDayOfYear = -1;
 
     @SuppressWarnings("unused")
     private static final VerboseSender instance = new VerboseSender();
@@ -125,9 +126,10 @@ public final class VerboseSender implements Listener
             // Get the logfile that is in use currently or create a new one if needed.
             final LocalDateTime now = LocalDateTime.now();
 
-            if (logFile == null || currentDate != now.getDayOfYear())
+            // Doesn't need to check for logFile == null as the currentDayOfYear will be -1 in the beginning.
+            if (currentDayOfYear != now.getDayOfYear() || !logFile.exists())
             {
-                currentDate = now.getDayOfYear();
+                currentDayOfYear = now.getDayOfYear();
                 logFile = FileUtilities.saveFileInFolder("logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
             }
 

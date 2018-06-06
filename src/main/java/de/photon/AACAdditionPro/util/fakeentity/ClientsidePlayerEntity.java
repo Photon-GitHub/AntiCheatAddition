@@ -88,7 +88,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         pitch = RotationUtil.reduceAngle(pitch, 90);
 
-        this.headYaw = RotationUtil.reduceAngle((float) MathUtils.randomBoundaryDouble(yaw - 10, 20), 180);
+        this.headYaw = RotationUtil.wrapToAllowedYaw((float) MathUtils.randomBoundaryDouble(yaw - 10, 20));
 
         this.location.setYaw(yaw);
         this.location.setPitch(pitch);

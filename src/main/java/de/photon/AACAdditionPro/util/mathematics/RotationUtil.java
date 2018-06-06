@@ -6,26 +6,57 @@ import org.bukkit.util.Vector;
 public final class RotationUtil
 {
     /**
+     * This wraps a yaw of any value to a allowed yaw that might be sent in a packet.
+     */
+    public static float wrapToAllowedYaw(float input)
+    {
+        return reduceAngleDoubleStep(input, 180);
+    }
+
+    /**
+     * Reduces the angle to make it fit the spectrum of -minMax til +minMax in steps of two times minMax.
+     * Used for certain yaw calculations.
+     *
+     * @param input  the initial angle
+     * @param minMax the boundary in the positive and negative spectrum. The parameter itself must be > 0.
+     */
+    public static float reduceAngleDoubleStep(float input, float minMax)
+    {
+        final float doubleMinMax = 2 * minMax;
+
+        input = input % doubleMinMax;
+
+        return reduceAngle(input, minMax, doubleMinMax);
+    }
+
+    /**
      * Reduces the angle to make it fit the spectrum of -minMax til +minMax in steps of minMax
      *
      * @param input  the initial angle
      * @param minMax the boundary in the positive and negative spectrum. The parameter itself must be > 0.
      */
-    //TODO: CHECK IF THE ANGLE REDUCING SHOULD REALLY WORK THIS WAY.
     public static float reduceAngle(float input, float minMax)
     {
         final float doubleMinMax = 2 * minMax;
 
         input = input % doubleMinMax;
 
+        return reduceAngle(input, minMax, minMax);
+    }
+
+    /**
+     * Util method to prevent code duplicates.
+     * This adds or subtracts step if input is not in range of -minMax <= input <= minMax
+     */
+    private static float reduceAngle(float input, float minMax, float step)
+    {
         if (input >= minMax)
         {
-            input -= minMax;
+            input -= step;
         }
-
-        if (input < -minMax)
+        else if (input < -minMax)
         {
-            input += minMax;
+            input += step;
         }
 
         return input;

@@ -59,7 +59,6 @@ public final class VerboseSender implements Listener
         sendVerboseMessage(s, false, false);
     }
 
-
     /**
      * This sets off a verbose message.
      *

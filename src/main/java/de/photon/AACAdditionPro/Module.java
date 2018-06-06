@@ -22,6 +22,8 @@ import java.util.Set;
 
 public interface Module
 {
+    Set<ServerVersion> ALL_SUPPORTED_VERSIONS = ImmutableSet.of(ServerVersion.MC188, ServerVersion.MC111, ServerVersion.MC112, ServerVersion.MC113);
+
     /**
      * This enables the check by registering it in all Managers.
      * <p>
@@ -252,6 +254,6 @@ public interface Module
      */
     default Set<ServerVersion> getSupportedVersions()
     {
-        return ImmutableSet.of(ServerVersion.MC188, ServerVersion.MC111, ServerVersion.MC112, ServerVersion.MC113);
+        return ALL_SUPPORTED_VERSIONS;
     }
 }

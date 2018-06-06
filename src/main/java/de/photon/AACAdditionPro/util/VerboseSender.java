@@ -119,7 +119,8 @@ public final class VerboseSender implements Listener
             final File log_File = FileUtilities.saveFileInFolder("logs/" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
 
             // Add the beginning of the PREFIX
-            final StringBuilder time = new StringBuilder("[");
+            final StringBuilder time = new StringBuilder(125);
+            time.append('[');
             // Get the current time
             time.append(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));
 
@@ -127,13 +128,13 @@ public final class VerboseSender implements Listener
             // Technically only 12, but we already appended the "[", thus one more.
             while (time.length() < 13)
             {
-                time.append("0");
+                time.append('0');
             }
 
             // Add the rest of the PREFIX and the message
             time.append("] ");
             time.append(message);
-            time.append("\n");
+            time.append('\n');
 
             // Log the message
             Files.write(log_File.toPath(), time.toString().getBytes(), StandardOpenOption.APPEND);

@@ -30,7 +30,7 @@ public final class VerboseSender implements Listener
     private static final String PRE_STRING = ChatColor.DARK_RED + NON_COLORED_PRE_STRING + ChatColor.GRAY;
 
     // Used for the Events-Verbose
-    private static final String eventPreString = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
+    private static final String EVENT_PRE_STRING = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
 
     @SuppressWarnings("unused")
     private static final VerboseSender instance = new VerboseSender();
@@ -146,12 +146,12 @@ public final class VerboseSender implements Listener
     @EventHandler
     public void on(final PlayerAdditionViolationEvent event)
     {
-        sendVerboseMessage(Placeholders.applyPlaceholders(eventPreString + event.getMessage() + " | Vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer(), null));
+        sendVerboseMessage(Placeholders.applyPlaceholders(EVENT_PRE_STRING + event.getMessage() + " | Vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer(), null));
     }
 
     @EventHandler
     public void on(final ClientControlEvent event)
     {
-        sendVerboseMessage(Placeholders.applyPlaceholders(eventPreString + event.getMessage(), event.getPlayer(), null));
+        sendVerboseMessage(Placeholders.applyPlaceholders(EVENT_PRE_STRING + event.getMessage(), event.getPlayer(), null));
     }
 }

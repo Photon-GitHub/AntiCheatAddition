@@ -119,6 +119,7 @@ public final class VerboseSender implements Listener
             final File log_File = FileUtilities.saveFileInFolder("logs/" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
 
             // Reserve the required builder size.
+            // Time length is always 12, together with 2 brackets and one space this will result in 15.
             final StringBuilder time = new StringBuilder(15 + message.length());
             // Add the beginning of the PREFIX
             time.append('[');

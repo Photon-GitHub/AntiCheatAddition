@@ -26,11 +26,9 @@ public final class VerboseSender implements Listener
     @Getter
     private static final VerboseSender instance = new VerboseSender();
 
-    // Used for sendVerboseMessage
+    // Message constants
     private static final String NON_COLORED_PRE_STRING = "[AACAdditionPro] ";
     private static final String PRE_STRING = ChatColor.DARK_RED + NON_COLORED_PRE_STRING + ChatColor.GRAY;
-
-    // Used for the Events-Verbose
     private static final String EVENT_PRE_STRING = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
 
     @Setter
@@ -41,27 +39,15 @@ public final class VerboseSender implements Listener
     // Set to an impossible day of the year to make sure the logFile will be initialized.
     private int currentDayOfYear = -1;
 
+    private boolean writeToFile = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.file");
+    private boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console");
+    private boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players");
+
     private VerboseSender()
     {
         allowedToRegisterTasks = true;
         AACAdditionPro.getInstance().registerListener(this);
     }
-
-    /**
-     * This stores the options of how to log verbose messages
-     * <p>
-     * [0] stores whether AACAdditionPro should print verbose output in the console ({@link org.bukkit.command.ConsoleCommandSender} - Verbose)
-     * <p>
-     * [1] stores whether AACAdditionPro should saveToFile verbose output in a log file ({@link File} - Verbose)
-     * <p>
-     * [2] stores whether AACAdditionPro should print verbose output in the chat ({@link org.bukkit.entity.Player} - Verbose)
-     */
-    private final boolean[] verboseOptions = {
-            AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.file"),
-            AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console"),
-            AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players")
-    };
-
 
     /**
      * Sets off a standard verbose message (no console forcing and not flagged as an error).
@@ -86,13 +72,13 @@ public final class VerboseSender implements Listener
         // Prevent errors on disable as of scheduling
         final String logMessage = ChatColor.stripColor(s);
 
-        if (verboseOptions[0])
+        if (writeToFile)
         {
             // Remove color codes
             this.log(logMessage);
         }
 
-        if (verboseOptions[1] || force_console)
+        if (writeToConsole || force_console)
         {
             if (error)
             {
@@ -105,7 +91,7 @@ public final class VerboseSender implements Listener
         }
 
         // Prevent error on disable
-        if (allowedToRegisterTasks && verboseOptions[2])
+        if (allowedToRegisterTasks && writeToPlayers)
         {
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
                 for (User user : UserManager.getVerboseUsers())

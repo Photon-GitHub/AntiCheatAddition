@@ -85,9 +85,7 @@ public abstract class ClientsideEntity
     protected float lastHeadYaw;
     @Getter
     protected float headYaw;
-    
-    @Getter
-    @Setter
+
     private boolean sprinting;
 
     @Getter
@@ -176,6 +174,8 @@ public abstract class ClientsideEntity
         {
             this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
         }
+
+        this.sprinting = this.currentMovementCalculator.shouldSprint();
 
         final Vector tempJumpVelocity = velocity.clone();
         tempJumpVelocity.setX(Math.signum(tempJumpVelocity.getX()));

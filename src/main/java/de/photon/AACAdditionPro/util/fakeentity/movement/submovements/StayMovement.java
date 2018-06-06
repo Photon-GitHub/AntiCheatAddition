@@ -20,6 +20,12 @@ public class StayMovement implements Movement
     }
 
     @Override
+    public boolean shouldSprint()
+    {
+        return false;
+    }
+
+    @Override
     public boolean jumpIfCollidedHorizontally()
     {
         return false;

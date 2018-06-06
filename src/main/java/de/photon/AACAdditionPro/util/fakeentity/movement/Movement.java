@@ -15,6 +15,8 @@ public interface Movement
 
     MovementType getMovementType();
 
+    boolean shouldSprint();
+
     boolean jumpIfCollidedHorizontally();
 
     boolean isTPNeeded();

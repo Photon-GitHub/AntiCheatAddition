@@ -14,6 +14,7 @@ public class BasicFollowMovement implements Movement
     private double offsetRandomizationRange;
     private double minXZDifference;
     private boolean isTPNeeded;
+    private boolean shouldSprint;
 
     public BasicFollowMovement(Player player, double entityOffset, double offsetRandomizationRange, double minXZDifference)
     {
@@ -37,7 +38,8 @@ public class BasicFollowMovement implements Movement
 
         final double currentXZDifference = Math.hypot(moveLocation.getX() - origX, moveLocation.getZ() - origZ);
 
-        if (currentXZDifference < minXZDifference) {
+        if (currentXZDifference < minXZDifference)
+        {
             final double radiansYaw = Math.toRadians(moveLocation.getYaw());
 
             final Vector moveAddVector = new Vector(-Math.sin(radiansYaw), 0, Math.cos(radiansYaw));
@@ -45,7 +47,9 @@ public class BasicFollowMovement implements Movement
         }
 
         final Vector movementVector = new Vector(moveLocation.getX() - old.getX(), 0, moveLocation.getZ() - old.getZ());
+
         isTPNeeded = movementVector.lengthSquared() > 49;
+        shouldSprint = !isTPNeeded && movementVector.lengthSquared() > 16;
 
         return movementVector;
     }
@@ -54,6 +58,12 @@ public class BasicFollowMovement implements Movement
     public MovementType getMovementType()
     {
         return MovementType.BASIC_FOLLOW;
+    }
+
+    @Override
+    public boolean shouldSprint()
+    {
+        return shouldSprint;
     }
 
     @Override

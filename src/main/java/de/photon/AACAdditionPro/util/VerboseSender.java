@@ -7,6 +7,7 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.commands.Placeholders;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
+import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,11 +20,13 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class VerboseSender implements Listener
 {
-    @Setter
-    private static boolean allowedToRegisterTasks;
+    @Getter
+    private static final VerboseSender instance = new VerboseSender();
 
     // Used for sendVerboseMessage
     private static final String NON_COLORED_PRE_STRING = "[AACAdditionPro] ";
@@ -32,16 +35,16 @@ public final class VerboseSender implements Listener
     // Used for the Events-Verbose
     private static final String EVENT_PRE_STRING = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
 
-    /**
-     * The {@link File} the verbose messages are written to.
-     */
-    private static File logFile = null;
+    @Setter
+    private boolean allowedToRegisterTasks;
+
+    // Queue for async logging in the file
+    private Queue<String> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+
+    // The File the verbose messages are written to.
+    private File logFile = null;
     // Set to an impossible day of the year to make sure the logFile will be initialized.
-    private static int currentDayOfYear = -1;
-
-    @SuppressWarnings("unused")
-    private static final VerboseSender instance = new VerboseSender();
-
+    private int currentDayOfYear = -1;
 
     private VerboseSender()
     {
@@ -58,7 +61,7 @@ public final class VerboseSender implements Listener
      * <p>
      * [2] stores whether AACAdditionPro should print verbose output in the chat ({@link org.bukkit.entity.Player} - Verbose)
      */
-    private static final boolean[] verboseOptions = {
+    private final boolean[] verboseOptions = {
             AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.file"),
             AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console"),
             AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players")
@@ -70,7 +73,7 @@ public final class VerboseSender implements Listener
      *
      * @param s the message that will be sent
      */
-    public static void sendVerboseMessage(final String s)
+    public void sendVerboseMessage(final String s)
     {
         sendVerboseMessage(s, false, false);
     }
@@ -83,7 +86,7 @@ public final class VerboseSender implements Listener
      * @param force_console whether the verbose message should appear in the console even when verbose for console is deactivated.
      * @param error         whether the message should be marked as an error
      */
-    public static void sendVerboseMessage(final String s, final boolean force_console, final boolean error)
+    public void sendVerboseMessage(final String s, final boolean force_console, final boolean error)
     {
         // Prevent errors on disable as of scheduling
         final String logMessage = ChatColor.stripColor(s);
@@ -91,7 +94,7 @@ public final class VerboseSender implements Listener
         if (verboseOptions[0])
         {
             // Remove color codes
-            log(logMessage);
+            this.log(logMessage);
         }
 
         if (verboseOptions[1] || force_console)
@@ -109,17 +112,16 @@ public final class VerboseSender implements Listener
         // Prevent error on disable
         if (allowedToRegisterTasks && verboseOptions[2])
         {
-            for (final User user : UserManager.getUsersUnwrapped())
-            {
-                if (user.verbose)
+            Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
+                for (User user : UserManager.getVerboseUsers())
                 {
-                    Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> user.getPlayer().sendMessage(PRE_STRING + s));
+                    user.getPlayer().sendMessage(PRE_STRING + s);
                 }
-            }
+            });
         }
     }
 
-    private static void log(final String message)
+    private void log(final String message)
     {
         try
         {
@@ -164,12 +166,12 @@ public final class VerboseSender implements Listener
     @EventHandler
     public void on(final PlayerAdditionViolationEvent event)
     {
-        sendVerboseMessage(Placeholders.applyPlaceholders(EVENT_PRE_STRING + event.getMessage() + " | Vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer(), null));
+        this.sendVerboseMessage(Placeholders.applyPlaceholders(EVENT_PRE_STRING + event.getMessage() + " | Vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer(), null));
     }
 
     @EventHandler
     public void on(final ClientControlEvent event)
     {
-        sendVerboseMessage(Placeholders.applyPlaceholders(EVENT_PRE_STRING + event.getMessage(), event.getPlayer(), null));
+        this.sendVerboseMessage(Placeholders.applyPlaceholders(EVENT_PRE_STRING + event.getMessage(), event.getPlayer(), null));
     }
 }

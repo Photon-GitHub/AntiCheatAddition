@@ -7,8 +7,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -46,6 +48,22 @@ public class UserManager implements Listener
     public static Collection<User> getUsersUnwrapped()
     {
         return users.values();
+    }
+
+    /**
+     * Gets all {@link User}s that have activated verbose.
+     */
+    public static Collection<User> getVerboseUsers()
+    {
+        final List<User> verboseUsers = new ArrayList<>();
+        for (User user : getUsersUnwrapped())
+        {
+            if (user.verbose)
+            {
+                verboseUsers.add(user);
+            }
+        }
+        return verboseUsers;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

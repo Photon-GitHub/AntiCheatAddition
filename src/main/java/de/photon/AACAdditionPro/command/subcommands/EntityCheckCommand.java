@@ -86,7 +86,7 @@ public class EntityCheckCommand extends InternalCommand
                         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | IllegalStateException e)
                         {
                             sender.sendMessage(PREFIX + ChatColor.RED + "Critical error whilst trying to respawn the entity.");
-                            VerboseSender.sendVerboseMessage("Critical error whilst trying to respawn the entity.", true, true);
+                            VerboseSender.getInstance().sendVerboseMessage("Critical error whilst trying to respawn the entity.", true, true);
                             e.printStackTrace();
                         }
                     }
@@ -100,7 +100,7 @@ public class EntityCheckCommand extends InternalCommand
                         else
                         {
                             sender.sendMessage(PREFIX + ChatColor.GOLD + "Now checking player " + user.getPlayer().getName() + " for " + checkDuration + " ticks.");
-                            VerboseSender.sendVerboseMessage("Manual entity check issued by " + sender.getName() + ": Player: " + user.getPlayer().getName() + " | Time: " + checkDuration + " ticks.");
+                            VerboseSender.getInstance().sendVerboseMessage("Manual entity check issued by " + sender.getName() + ": Player: " + user.getPlayer().getName() + " | Time: " + checkDuration + " ticks.");
                             user.getClientSideEntityData().clientSidePlayerEntity.setVisibility(true);
 
                             Bukkit.getScheduler().runTaskLater(

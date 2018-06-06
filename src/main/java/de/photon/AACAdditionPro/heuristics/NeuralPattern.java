@@ -61,12 +61,12 @@ public class NeuralPattern extends Pattern
                 saveToFile();
             } catch (IOException e)
             {
-                VerboseSender.sendVerboseMessage("Failed to save pattern " + this.getName() + ".", true, true);
+                VerboseSender.getInstance().sendVerboseMessage("Failed to save pattern " + this.getName() + ".", true, true);
                 e.printStackTrace();
             }
 
             this.trainingThread = null;
-            VerboseSender.sendVerboseMessage("Training of pattern " + this.getName() + " finished.");
+            VerboseSender.getInstance().sendVerboseMessage("Training of pattern " + this.getName() + " finished.");
         });
         this.trainingThread.start();
     }

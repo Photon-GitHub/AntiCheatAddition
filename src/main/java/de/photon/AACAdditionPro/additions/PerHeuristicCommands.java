@@ -46,9 +46,9 @@ public class PerHeuristicCommands implements Module, Listener
                 minConfidence -> {
                     if (minConfidence < 50)
                     {
-                        VerboseSender.sendVerboseMessage("AAC's heuristics check does not support confidences below 50.", true, true);
-                        VerboseSender.sendVerboseMessage("Therefore AACAdditionPro cannot register the min_confidence of " + minConfidence + " which would be required on your setup.", true, true);
-                        VerboseSender.sendVerboseMessage("Please only try to create actions for confidences greater or equal to 50.", true, true);
+                        VerboseSender.getInstance().sendVerboseMessage("AAC's heuristics check does not support confidences below 50.", true, true);
+                        VerboseSender.getInstance().sendVerboseMessage("Therefore AACAdditionPro cannot register the min_confidence of " + minConfidence + " which would be required on your setup.", true, true);
+                        VerboseSender.getInstance().sendVerboseMessage("Please only try to create actions for confidences greater or equal to 50.", true, true);
                     }
                     else
                     {
@@ -81,7 +81,7 @@ public class PerHeuristicCommands implements Module, Listener
                 if (!additionEvent.isCancelled())
                 {
                     // Full verbose
-                    VerboseSender.sendVerboseMessage("Heuristics-Addon-Report | Player: " + event.getPlayer().getName() + " | Pattern: " + pattern + " | Confidence: " + confidence);
+                    VerboseSender.getInstance().sendVerboseMessage("Heuristics-Addon-Report | Player: " + event.getPlayer().getName() + " | Pattern: " + pattern + " | Confidence: " + confidence);
 
                     // Commands
                     executeHeuristicsCommands(confidence, event.getPlayer());
@@ -114,7 +114,7 @@ public class PerHeuristicCommands implements Module, Listener
                     });
         } catch (final RuntimeException e)
         {
-            VerboseSender.sendVerboseMessage("AACAdditionPro failed to execute the Heuristics-Addition commands. Are they formatted correctly?", true, true);
+            VerboseSender.getInstance().sendVerboseMessage("AACAdditionPro failed to execute the Heuristics-Addition commands. Are they formatted correctly?", true, true);
             e.printStackTrace();
         }
     }

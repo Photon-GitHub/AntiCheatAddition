@@ -50,10 +50,10 @@ public final class CommandUtils
                     try
                     {
                         Bukkit.dispatchCommand(AACAdditionPro.getInstance().getServer().getConsoleSender(), command);
-                        VerboseSender.sendVerboseMessage(ChatColor.GOLD + "Executed command: " + command);
+                        VerboseSender.getInstance().sendVerboseMessage(ChatColor.GOLD + "Executed command: " + command);
                     } catch (final Exception e)
                     {
-                        VerboseSender.sendVerboseMessage("Could not execute command /" + command, true, true);
+                        VerboseSender.getInstance().sendVerboseMessage("Could not execute command /" + command, true, true);
                     }
                 });
     }

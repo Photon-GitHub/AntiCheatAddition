@@ -59,7 +59,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
         if (patternsToAdd.isEmpty())
         {
-            VerboseSender.sendVerboseMessage("InventoryHeuristics: No pattern has been loaded.", true, true);
+            VerboseSender.getInstance().sendVerboseMessage("InventoryHeuristics: No pattern has been loaded.", true, true);
         }
         else
         {
@@ -67,7 +67,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     pattern ->
                     {
                         PATTERNS.put(pattern.getName(), pattern);
-                        VerboseSender.sendVerboseMessage("InventoryHeuristics: Loaded pattern " + pattern.getName() + ".");
+                        VerboseSender.getInstance().sendVerboseMessage("InventoryHeuristics: Loaded pattern " + pattern.getName() + ".");
                     });
         }
     }
@@ -135,7 +135,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
                     if (!inventoryHeuristicsEvent.isCancelled())
                     {
                         user.getInventoryHeuristicsData().setPatternConfidence(pattern.getName(), cheatingOutput.getConfidence());
-                        VerboseSender.sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + pattern.getName() + " with a confidence of " + cheatingOutput.getConfidence());
+                        VerboseSender.getInstance().sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + pattern.getName() + " with a confidence of " + cheatingOutput.getConfidence());
                     }
                 }
             }

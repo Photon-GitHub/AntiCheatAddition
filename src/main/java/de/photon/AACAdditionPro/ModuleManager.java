@@ -69,11 +69,11 @@ public class ModuleManager extends ArrayList<Module>
                 pathOutput = " is not compatible with your server version.";
             }
 
-            VerboseSender.sendVerboseMessage(object.getName() + pathOutput, true, false);
+            VerboseSender.getInstance().sendVerboseMessage(object.getName() + pathOutput, true, false);
         } catch (final Exception e)
         {
             // Error handling
-            VerboseSender.sendVerboseMessage(object.getName() + " could not be registered.", true, true);
+            VerboseSender.getInstance().sendVerboseMessage(object.getName() + " could not be registered.", true, true);
             e.printStackTrace();
         }
     }
@@ -151,6 +151,6 @@ public class ModuleManager extends ArrayList<Module>
         }
 
         // Send / log the message
-        VerboseSender.sendVerboseMessage(stringBuilder.toString());
+        VerboseSender.getInstance().sendVerboseMessage(stringBuilder.toString());
     }
 }

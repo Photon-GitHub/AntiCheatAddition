@@ -32,10 +32,15 @@ public final class VerboseSender implements Listener
     // Used for the Events-Verbose
     private static final String EVENT_PRE_STRING = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
 
+    /**
+     * The {@link File} the verbose messages are written to.
+     */
+    private static File logFile = null;
+    private static int currentDate = 0;
+
     @SuppressWarnings("unused")
     private static final VerboseSender instance = new VerboseSender();
 
-    private static File logFile = null;
 
     private VerboseSender()
     {
@@ -119,10 +124,10 @@ public final class VerboseSender implements Listener
         {
             // Get the logfile that is in use currently or create a new one if needed.
             final LocalDateTime now = LocalDateTime.now();
-            final String currentDate = now.format(DateTimeFormatter.ISO_LOCAL_DATE);
 
-            if (logFile == null || !logFile.getName().contains(currentDate))
+            if (logFile == null || currentDate != now.getDayOfYear())
             {
+                currentDate = now.getDayOfYear();
                 logFile = FileUtilities.saveFileInFolder("logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
             }
 

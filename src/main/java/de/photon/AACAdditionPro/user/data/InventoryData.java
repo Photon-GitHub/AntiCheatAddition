@@ -90,8 +90,8 @@ public class InventoryData extends TimeData
                 final User user = UserManager.getUser(event.getPlayer().getUniqueId());
                 if (user != null)
                 {
-                    // User has made a beacon action/transaction so the inventory must internally be closed this way as no
-                    // InventoryCloseEvent is fired.
+                    // User has made a beacon action/transaction so the inventory must internally be closed this way as
+                    // no InventoryCloseEvent is fired.
                     user.getInventoryData().nullifyTimeStamp(0);
                 }
             }

@@ -109,17 +109,6 @@ public class InventoryData extends TimeData
             }
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onRespawn(final PlayerRespawnEvent event)
-        {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-            if (user != null)
-            {
-                user.getInventoryData().nullifyTimeStamp(0);
-            }
-        }
-
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
         public void onInteract(final PlayerInteractEvent event)
         {
@@ -132,18 +121,6 @@ public class InventoryData extends TimeData
                 {
                     user.getInventoryData().updateTimeStamp(0);
                 }
-            }
-        }
-
-        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-        public void onInventoryOpen(final InventoryOpenEvent event)
-        {
-            // Removed theUser.getPlayer().getOpenInventory().getType() != InventoryType.CRAFTING.
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-            if (user != null)
-            {
-                user.getInventoryData().updateTimeStamp(0);
             }
         }
 
@@ -169,6 +146,7 @@ public class InventoryData extends TimeData
                                                            event.getCurrentItem().getType();
                 }
             }
+
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
@@ -183,7 +161,30 @@ public class InventoryData extends TimeData
         }
 
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-        public void onPlayerTeleport(final PlayerTeleportEvent event)
+        public void onInventoryOpen(final InventoryOpenEvent event)
+        {
+            // Removed theUser.getPlayer().getOpenInventory().getType() != InventoryType.CRAFTING.
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user != null)
+            {
+                user.getInventoryData().updateTimeStamp(0);
+            }
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onRespawn(final PlayerRespawnEvent event)
+        {
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user != null)
+            {
+                user.getInventoryData().nullifyTimeStamp(0);
+            }
+        }
+
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+        public void onTeleport(final PlayerTeleportEvent event)
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 

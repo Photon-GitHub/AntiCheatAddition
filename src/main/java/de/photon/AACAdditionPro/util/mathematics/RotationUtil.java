@@ -5,8 +5,8 @@ import org.bukkit.util.Vector;
 
 public final class RotationUtil
 {
-    private static final float CONVERT_FACTOR = 256.0F / 360.0F;
-    private static final float INVERSE_CONVERT_FACTOR = 360.0F / 256.0F;
+    private static final float FIX_CONVERT_FACTOR = 256.0F / 360.0F;
+    private static final float FIX_INVERSE_CONVERT_FACTOR = 360.0F / 256.0F;
 
     /**
      * This wraps a yaw of any value to a allowed yaw that might be sent in a packet.
@@ -70,7 +70,7 @@ public final class RotationUtil
      */
     public static byte getFixRotation(final float yawpitch)
     {
-        return (byte) (yawpitch * CONVERT_FACTOR);
+        return (byte) (yawpitch * FIX_CONVERT_FACTOR);
     }
 
     /**
@@ -78,7 +78,7 @@ public final class RotationUtil
      */
     public static float convertFixedRotation(final byte fixedRotation)
     {
-        return fixedRotation * INVERSE_CONVERT_FACTOR;
+        return fixedRotation * FIX_INVERSE_CONVERT_FACTOR;
     }
 
     /**

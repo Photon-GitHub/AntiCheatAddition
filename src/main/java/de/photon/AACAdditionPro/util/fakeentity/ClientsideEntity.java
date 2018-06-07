@@ -219,7 +219,7 @@ public abstract class ClientsideEntity
                         // Due to gravity a player always have a negative velocity if walking/running on the ground.
                         velocity.getY() <= 0 &&
                         // Make sure the entity only jumps on real blocks, not e.g. grass.
-                        this.location.clone().add(0, -0.05, 0).getBlock().getType().isSolid();
+                        this.location.clone().subtract(0, 0.05, 0).getBlock().getType().isSolid();
 
         sendMove();
         sendHeadYaw();

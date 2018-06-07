@@ -35,7 +35,7 @@ public class TeleportData extends TimeData
      */
     private static class TeleportDataUpdater implements Listener
     {
-        @EventHandler
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onRespawn(final PlayerRespawnEvent event)
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());

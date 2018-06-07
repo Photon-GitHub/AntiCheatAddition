@@ -1,5 +1,10 @@
 package de.photon.AACAdditionPro.user.data;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
@@ -25,7 +30,9 @@ public class InventoryData extends TimeData
 {
     static
     {
-        AACAdditionPro.getInstance().registerListener(new InventoryDataUpdater());
+        InventoryDataUpdater dataUpdater = new InventoryDataUpdater();
+        AACAdditionPro.getInstance().registerListener(dataUpdater);
+        ProtocolLibrary.getProtocolManager().addPacketListener(dataUpdater);
     }
 
     /**
@@ -66,8 +73,31 @@ public class InventoryData extends TimeData
     /**
      * A singleton class to reduce the reqired {@link Listener}s to a minimum.
      */
-    private static class InventoryDataUpdater implements Listener
+    private static class InventoryDataUpdater extends PacketAdapter implements Listener
     {
+        // Beacon handling
+        public InventoryDataUpdater()
+        {
+            super(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.CUSTOM_PAYLOAD);
+        }
+
+        @Override
+        public void onPacketReceiving(final PacketEvent event)
+        {
+            if (!event.isCancelled() &&
+                event.getPacket().getStrings().readSafely(0).equalsIgnoreCase("MC|Beacon"))
+            {
+                final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+                if (user != null)
+                {
+                    // User has made a beacon action/transaction so the inventory must internally be closed this way as no
+                    // InventoryCloseEvent is fired.
+                    user.getInventoryData().nullifyTimeStamp(0);
+                }
+            }
+        }
+
+        // Event handling
         @EventHandler(priority = EventPriority.MONITOR)
         public void onDeath(final PlayerDeathEvent event)
         {

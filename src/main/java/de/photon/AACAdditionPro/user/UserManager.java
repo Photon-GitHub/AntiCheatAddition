@@ -1,6 +1,5 @@
 package de.photon.AACAdditionPro.user;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -19,11 +18,6 @@ public class UserManager implements Listener
 {
     // Concurrency to tackle some ConcurrentModificationExceptions
     private static final ConcurrentMap<UUID, User> users = new ConcurrentHashMap<>();
-
-    public UserManager()
-    {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new BeaconListener());
-    }
 
     public static User getUser(final UUID uuid)
     {

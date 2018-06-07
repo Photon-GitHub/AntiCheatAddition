@@ -75,20 +75,6 @@ public class TimeData extends Data
         timeStamps[index] = 0;
     }
 
-    /**
-     * Sets a timestamp to 0 if the provided {@link UUID} matches this {@link User}'s {@link User}'s {@link UUID}.
-     *
-     * @param uuid  the {@link UUID} which the {@link User} should refer to to cause nullifying.
-     * @param index the index of the timestamp.
-     */
-    public void nullifyIfRefersToUser(final UUID uuid, final int index)
-    {
-        if (this.getUser().refersToUUID(uuid))
-        {
-            this.nullifyTimeStamp(index);
-        }
-    }
-
     public long getTimeStamp(final int index)
     {
         return timeStamps[index];

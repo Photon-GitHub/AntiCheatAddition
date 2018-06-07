@@ -1,7 +1,5 @@
 package de.photon.AACAdditionPro.user;
 
-import java.util.UUID;
-
 public class TimeData extends Data
 {
     private final long[] timeStamps;
@@ -47,20 +45,6 @@ public class TimeData extends Data
     public void updateTimeStamp(final int index)
     {
         timeStamps[index] = System.currentTimeMillis();
-    }
-
-    /**
-     * Sets a timestamp to {@link System#currentTimeMillis()} if the provided {@link UUID} matches this {@link User}'s {@link User}'s {@link UUID}.
-     *
-     * @param uuid  the {@link UUID} which the {@link User} should refer to to cause nullifying.
-     * @param index the index of the timestamp.
-     */
-    public void updateIfRefersToUser(final UUID uuid, final int index)
-    {
-        if (this.getUser().refersToUUID(uuid))
-        {
-            this.updateTimeStamp(index);
-        }
     }
 
     // ------------------------------------------------- Nullifying ------------------------------------------------- //

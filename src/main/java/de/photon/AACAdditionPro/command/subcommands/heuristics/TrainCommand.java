@@ -104,7 +104,7 @@ public class TrainCommand extends InternalCommand
 
                 sender.sendMessage(messageString);
                 // .substring(13) to remove the [HEURISTICS] label.
-                VerboseSender.sendVerboseMessage(ChatColor.stripColor(messageString).substring(13));
+                VerboseSender.getInstance().sendVerboseMessage(ChatColor.stripColor(messageString).substring(13));
             }
         }
         else

@@ -102,7 +102,7 @@ public class Tower implements Listener, ViolationModule
                         user.getTowerData().updateTimeStamp(0);
                         InventoryUtils.syncUpdateInventory(user.getPlayer());
                         // If not cancelled run the verbose message with additional data
-                    }, () -> VerboseSender.sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + results[0] + " | real: " + results[1]));
+                    }, () -> VerboseSender.getInstance().sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + results[0] + " | real: " + results[1]));
                 }
             }
         }

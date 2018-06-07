@@ -83,7 +83,7 @@ public class AutoFish implements Listener, ViolationModule
                     // Ceil in order to make sure that the result is at least 1
                     final double flagOffset = Math.ceil((violation_offset - maxOffset) * 0.5D);
 
-                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " +
+                    VerboseSender.getInstance().sendVerboseMessage("AutoFish-Verbose | Player: " +
                                                      user.getPlayer().getName() +
                                                      " average time: " +
                                                      StringUtils.limitStringLength(String.valueOf(consistencyStatistics.getAverage()), 7) +
@@ -165,7 +165,7 @@ public class AutoFish implements Listener, ViolationModule
         this.parts[0] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".parts.inhuman_reaction.enabled");
         this.parts[1] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".parts.consistency.enabled");
 
-        VerboseSender.sendVerboseMessage("AutoFish-Parts: inhuman reaction: " + parts[0] + " | consistency: " + parts[1]);
+        VerboseSender.getInstance().sendVerboseMessage("AutoFish-Parts: inhuman reaction: " + parts[0] + " | consistency: " + parts[1]);
     }
 
     @Override

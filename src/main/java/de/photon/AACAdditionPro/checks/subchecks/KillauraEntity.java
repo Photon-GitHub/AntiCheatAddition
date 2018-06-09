@@ -222,18 +222,6 @@ public class KillauraEntity implements ViolationModule, Listener
         return new WrappedGameProfile(chosenPlayer.getUniqueId(), chosenPlayer.getName());
     }
 
-    @EventHandler
-    public void onRespawn(PlayerRespawnEvent event)
-    {
-        respawnEntity(event.getPlayer());
-    }
-
-    @EventHandler
-    public void onWorldChange(PlayerChangedWorldEvent event)
-    {
-        respawnEntity(event.getPlayer());
-    }
-
     /**
      * This method respawns the entity as if the player had left the server and would have joined again.
      * This can also lead to despawning instead of respawning, e.g. if the player just got bypass permissions.
@@ -252,6 +240,18 @@ public class KillauraEntity implements ViolationModule, Listener
                     // Spawn another entity after the world was changed
                     this.onJoin(new PlayerJoinEvent(player, null));
                 });
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event)
+    {
+        respawnEntity(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onWorldChange(PlayerChangedWorldEvent event)
+    {
+        respawnEntity(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -447,7 +447,10 @@ public class KillauraEntity implements ViolationModule, Listener
 
         if (user.isBypassed())
         {
-            respawnEntity(user.getPlayer());
+            if (user.getClientSideEntityData().clientSidePlayerEntity != null)
+            {
+                user.getClientSideEntityData().despawnClientSidePlayerEntity();
+            }
             return null;
         }
 

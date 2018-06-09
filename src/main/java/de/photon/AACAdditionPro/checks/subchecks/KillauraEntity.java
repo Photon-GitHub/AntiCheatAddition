@@ -47,15 +47,6 @@ public class KillauraEntity implements ViolationModule, Listener
 
     private final Random random = new Random();
 
-    @LoadFromConfiguration(configPath = ".position.entityOffset")
-    private double entityOffset;
-
-    @LoadFromConfiguration(configPath = ".position.offsetRandomizationRange")
-    private double offsetRandomizationRange;
-
-    @LoadFromConfiguration(configPath = ".position.minXZDifference")
-    private double minXZDifference;
-
     @LoadFromConfiguration(configPath = ".on_command")
     private boolean onCommand;
 
@@ -180,7 +171,7 @@ public class KillauraEntity implements ViolationModule, Listener
                 }
 
                 // Create the new Entity with the resultingGameProfile
-                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(user.getPlayer(), resultingGameProfile, entityOffset, offsetRandomizationRange, minXZDifference);
+                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(user.getPlayer(), resultingGameProfile);
 
                 // Set the MovementType
                 playerEntity.setMovement(finalMovementType);

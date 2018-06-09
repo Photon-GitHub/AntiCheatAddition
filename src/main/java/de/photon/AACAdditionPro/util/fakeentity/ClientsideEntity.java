@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -163,6 +164,42 @@ public abstract class ClientsideEntity
         // TicksExisted
         ticksExisted++;
 
+        // ------------------------------------------ Movement system -----------------------------------------------//
+        // Get the next position and move
+        Vector moveVector = this.currentMovementCalculator.calculate(this.location.clone());
+
+        // Backup-Movement
+        if (moveVector == null)
+        {
+            this.setMovement(MovementType.STAY);
+            moveVector = this.currentMovementCalculator.calculate(this.location.clone());
+        }
+
+        if (this.currentMovementCalculator.isTPNeeded() || this.needsTeleport)
+        {
+            this.location.add(moveVector);
+        }
+        else
+        {
+            // Only set the x- and the z- axis (y should be handled by autojumping).
+            this.velocity.setX(moveVector.getX()).setZ(moveVector.getZ());
+        }
+
+        // ------------------------------------------ Velocity system -----------------------------------------------//
+
+        final Vector collidedVelocity = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);
+        this.location = this.location.add(collidedVelocity);
+
+        // Already added the velocity to location and collided it
+        // ClientCopy
+        this.onGround = (collidedVelocity.getY() != this.velocity.getY()) &&
+                        // Due to gravity a player always have a negative velocity if walking/running on the ground.
+                        velocity.getY() <= 0 &&
+                        // Make sure the entity only jumps on real blocks, not e.g. grass.
+                        this.location.clone().subtract(0, 0.05, 0).getBlock().getType().isSolid();
+
+        this.sprinting = this.currentMovementCalculator.shouldSprint();
+
         // Calculate velocity
         if (this.onGround)
         {
@@ -175,51 +212,18 @@ public abstract class ClientsideEntity
             this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
         }
 
-        this.sprinting = this.currentMovementCalculator.shouldSprint();
-
-        final Vector tempJumpVelocity = velocity.clone();
+        final Vector tempJumpVelocity = this.velocity.clone();
         tempJumpVelocity.setX(Math.signum(tempJumpVelocity.getX()));
+        tempJumpVelocity.setY(Jumping.getJumpYMotion(null));
         tempJumpVelocity.setZ(Math.signum(tempJumpVelocity.getZ()));
 
         // Whether the entity should jump if horizontally collided
         if (this.currentMovementCalculator.jumpIfCollidedHorizontally() &&
-            this.location.clone().add(tempJumpVelocity).getBlock().isEmpty())
+            // Check whether the entity can really jump to that location.
+            BlockUtils.getMaterialsInHitbox(this.location.clone().add(tempJumpVelocity), this.hitbox).stream().noneMatch(material -> material != Material.AIR))
         {
             this.jump();
         }
-
-        // ------------------------------------------ Movement system -----------------------------------------------//
-        // Get the next position and move
-        Vector xzVelocity = this.currentMovementCalculator.calculate(this.location.clone());
-
-        // Backup-Movement
-        if (xzVelocity == null)
-        {
-            this.setMovement(MovementType.STAY);
-            xzVelocity = this.currentMovementCalculator.calculate(this.location.clone());
-        }
-
-        if (this.currentMovementCalculator.isTPNeeded() || this.needsTeleport)
-        {
-            this.location = this.calculateTeleportLocation();
-        }
-        else
-        {
-            // Only set the x- and the z- axis (y should be handled by autojumping).
-            this.velocity.setX(xzVelocity.getX()).setZ(xzVelocity.getZ());
-        }
-
-        // ------------------------------------------ Velocity system -----------------------------------------------//
-        final Vector collidedVelocity = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);
-        this.location = this.location.add(collidedVelocity);
-
-        // Already added the velocity to location and collided it
-        // ClientCopy
-        this.onGround = (collidedVelocity.getY() != this.velocity.getY()) &&
-                        // Due to gravity a player always have a negative velocity if walking/running on the ground.
-                        velocity.getY() <= 0 &&
-                        // Make sure the entity only jumps on real blocks, not e.g. grass.
-                        this.location.clone().subtract(0, 0.05, 0).getBlock().getType().isSolid();
 
         sendMove();
         sendHeadYaw();

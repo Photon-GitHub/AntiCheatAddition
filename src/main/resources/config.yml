@@ -311,9 +311,6 @@ KillauraEntity:
       # How much randomized offset should at most be added to entityOffset (measured in blocks)
       # This must be greater than 0
       offsetRandomizationRange: 0.2
-      # This prevents the entity from floating directly over / under a player, therefore preventing distraction and
-      # willingly caused false positives (measured in blocks)
-      minXZDifference: 1.55
    # Here you can choose the equipment of your entity.
    # For the best setup only choose equipment a normal player can obtain.
    # If the API is used it will override the decisions you made here.

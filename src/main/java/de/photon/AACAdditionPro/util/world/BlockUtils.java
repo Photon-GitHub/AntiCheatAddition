@@ -152,6 +152,30 @@ public final class BlockUtils
     }
 
     /**
+     * Gets all the {@link Material}s inside a {@link Hitbox} at a certain {@link Location} and adds them to a
+     * {@link List}.
+     */
+    public static List<Material> getMaterialsInHitbox(final Location location, final Hitbox hitbox)
+    {
+        final List<Material> materials = new ArrayList<>();
+
+        final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
+
+        // Cast the first value as that will only make it smaller, the second one has to be ceiled as it could be the same value once again.
+        for (int x = (int) axisAlignedBB.getMinX(); x <= (int) Math.ceil(axisAlignedBB.getMaxX()); x++)
+        {
+            for (int y = (int) axisAlignedBB.getMinY(); y <= (int) Math.ceil(axisAlignedBB.getMaxY()); y++)
+            {
+                for (int z = (int) axisAlignedBB.getMinZ(); z <= (int) Math.ceil(axisAlignedBB.getMaxZ()); z++)
+                {
+                    materials.add(location.getWorld().getBlockAt(x, y, z).getType());
+                }
+            }
+        }
+        return materials;
+    }
+
+    /**
      * Checks if a {@link Hitbox} at a certain {@link Location} is inside liquids.
      *
      * @param location the {@link Location} to base the {@link Hitbox} on.

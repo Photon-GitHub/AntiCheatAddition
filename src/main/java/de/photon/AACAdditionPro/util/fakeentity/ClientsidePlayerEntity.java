@@ -7,7 +7,7 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.util.fakeentity.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.fakeentity.equipment.Equipment;
-import de.photon.AACAdditionPro.util.fakeentity.movement.submovements.BasicFollowMovement;
+import de.photon.AACAdditionPro.util.fakeentity.movement.submovements.AdvancedFollowMovement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
@@ -44,9 +44,9 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     private Equipment equipment;
 
-    public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange, double minXZDifference)
+    public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile)
     {
-        super(observedPlayer, Hitbox.PLAYER, new BasicFollowMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
+        super(observedPlayer, Hitbox.PLAYER, new AdvancedFollowMovement(observedPlayer));
 
         // Get skin data and name
         this.gameProfile = gameProfile;

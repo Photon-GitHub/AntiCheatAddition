@@ -14,6 +14,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -153,11 +154,11 @@ public final class BlockUtils
 
     /**
      * Gets all the {@link Material}s inside a {@link Hitbox} at a certain {@link Location} and adds them to a
-     * {@link List}.
+     * {@link Set}.
      */
-    public static List<Material> getMaterialsInHitbox(final Location location, final Hitbox hitbox)
+    public static Set<Material> getMaterialsInHitbox(final Location location, final Hitbox hitbox)
     {
-        final List<Material> materials = new ArrayList<>();
+        final Set<Material> materials = new HashSet<>();
 
         final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
 

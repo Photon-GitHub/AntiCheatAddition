@@ -190,6 +190,13 @@ public class KillauraEntity implements ViolationModule, Listener
         }, 2L);
     }
 
+    /**
+     * This method tries to get a new {@link WrappedGameProfile} from the server.
+     *
+     * @param observedPlayer the observed player is excluded from this search as seeing himself with cause great
+     *                       problems.
+     * @param onlinePlayers  whether or not gameprofiles of online players should be preferred.
+     */
     private WrappedGameProfile getGameProfile(Player observedPlayer, boolean onlinePlayers)
     {
         // Use ArrayList as removal actions are unlikely.

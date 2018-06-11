@@ -7,7 +7,6 @@ import de.photon.AACAdditionPro.util.fakeentity.movement.Movement;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 public class AdvancedFollowMovement implements Movement
 {
@@ -25,7 +24,7 @@ public class AdvancedFollowMovement implements Movement
     }
 
     @Override
-    public Vector calculate(Location old)
+    public Location calculate(Location old)
     {
         // Spawning-Location
         // player.getLocation already returns a cloned location.
@@ -56,12 +55,11 @@ public class AdvancedFollowMovement implements Movement
             observedPlayerLocation.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
         }*/
 
-        final Vector movementVector = playerWorkLocation.subtract(old).toVector();
+        final double lenghtSquared = old.distanceSquared(playerWorkLocation);
+        isTPNeeded = lenghtSquared > 49;
+        shouldSprint = !isTPNeeded && lenghtSquared > 16;
 
-        isTPNeeded = movementVector.lengthSquared() > 49;
-        shouldSprint = !isTPNeeded && movementVector.lengthSquared() > 16;
-
-        return movementVector;
+        return playerWorkLocation;
     }
 
     @Override

@@ -166,23 +166,24 @@ public abstract class ClientsideEntity
 
         // ------------------------------------------ Movement system -----------------------------------------------//
         // Get the next position and move
-        Vector moveVector = this.currentMovementCalculator.calculate(this.location.clone());
+        Location moveToLocation = this.currentMovementCalculator.calculate(this.location.clone());
 
         // Backup-Movement
-        if (moveVector == null)
+        if (moveToLocation == null)
         {
             this.setMovement(MovementType.STAY);
-            moveVector = this.currentMovementCalculator.calculate(this.location.clone());
+            moveToLocation = this.currentMovementCalculator.calculate(this.location.clone());
         }
 
         if (this.currentMovementCalculator.isTPNeeded() || this.needsTeleport)
         {
-            this.location.add(moveVector);
+            this.move(moveToLocation);
         }
         else
         {
             // Only set the x- and the z- axis (y should be handled by autojumping).
-            this.velocity.setX(moveVector.getX()).setZ(moveVector.getZ());
+            final Location moveVelocity = moveToLocation.subtract(this.location);
+            this.velocity.setX(moveVelocity.getX()).setZ(moveVelocity.getZ());
         }
 
         // ------------------------------------------ Velocity system -----------------------------------------------//

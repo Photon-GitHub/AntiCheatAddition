@@ -46,7 +46,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile)
     {
-        super(observedPlayer, Hitbox.PLAYER, new AdvancedFollowMovement(observedPlayer));
+        super(observedPlayer, Hitbox.PLAYER, new AdvancedFollowMovement());
 
         // Get skin data and name
         this.gameProfile = gameProfile;

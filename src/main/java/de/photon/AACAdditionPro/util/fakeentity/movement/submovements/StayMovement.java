@@ -7,7 +7,7 @@ import org.bukkit.Location;
 public class StayMovement implements Movement
 {
     @Override
-    public Location calculate(Location old)
+    public Location calculate(Location playerLocation, Location old)
     {
         return old.clone();
     }

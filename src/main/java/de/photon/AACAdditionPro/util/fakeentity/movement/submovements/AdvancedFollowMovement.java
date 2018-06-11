@@ -6,32 +6,20 @@ import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Movement;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 public class AdvancedFollowMovement implements Movement
 {
-    private final Player player;
-
     private double entityOffset = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.KILLAURA_ENTITY.getConfigString() + ".position.entityOffset");
     private double offsetRandomizationRange = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.KILLAURA_ENTITY.getConfigString() + ".position.offsetRandomizationRange");
 
     private boolean isTPNeeded;
     private boolean shouldSprint;
 
-    public AdvancedFollowMovement(Player player)
-    {
-        this.player = player;
-    }
-
     @Override
-    public Location calculate(Location old)
+    public Location calculate(Location playerLocation, Location old)
     {
-        // Spawning-Location
-        // player.getLocation already returns a cloned location.
-        final Location observedPlayerLocation = player.getLocation();
-
         // Create copy of the location to work with.
-        final Location playerWorkLocation = observedPlayerLocation.clone();
+        final Location playerWorkLocation = playerLocation.clone();
 
         // Forward facing to make sure the movement calculation works.
         playerWorkLocation.setPitch(0);
@@ -45,19 +33,9 @@ public class AdvancedFollowMovement implements Movement
                                                          -(MathUtils.randomBoundaryDouble(entityOffset, offsetRandomizationRange))
                                                           ));
 
-       /* final double currentXZDifference = Math.hypot(observedPlayerLocation.getX() - origX, observedPlayerLocation.getZ() - origZ);
-
-        if (currentXZDifference < minXZDifference)
-        {
-            final double radiansYaw = Math.toRadians(observedPlayerLocation.getYaw());
-
-            final Vector moveAddVector = new Vector(-Math.sin(radiansYaw), 0, Math.cos(radiansYaw));
-            observedPlayerLocation.add(moveAddVector.normalize().multiply(-(minXZDifference - currentXZDifference)));
-        }*/
-
-        final double lenghtSquared = old.distanceSquared(playerWorkLocation);
-        isTPNeeded = lenghtSquared > 49;
-        shouldSprint = !isTPNeeded && lenghtSquared > 16;
+        final double lengthSquared = Math.max(old.distanceSquared(playerWorkLocation), playerLocation.distanceSquared(playerWorkLocation));
+        isTPNeeded = lengthSquared > 64;
+        shouldSprint = !isTPNeeded && lengthSquared > 25;
 
         return playerWorkLocation;
     }

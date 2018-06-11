@@ -44,6 +44,7 @@ import java.util.Set;
 
 public abstract class ClientsideEntity
 {
+    // xz-Distance after which a teleport is forced.
     private static final Field entityCountField;
 
     static
@@ -166,7 +167,7 @@ public abstract class ClientsideEntity
 
         // ------------------------------------------ Movement system -----------------------------------------------//
         // Get the next position and move
-        Location moveToLocation = this.currentMovementCalculator.calculate(this.location.clone());
+        Location moveToLocation = this.currentMovementCalculator.calculate(this.observedPlayer.getLocation(), this.location.clone());
 
         // Backup-Movement
         if (moveToLocation == null)
@@ -175,7 +176,9 @@ public abstract class ClientsideEntity
             moveToLocation = this.calculateTeleportLocation();
         }
 
-        if (this.currentMovementCalculator.isTPNeeded() || this.needsTeleport)
+        final boolean teleport = this.currentMovementCalculator.isTPNeeded() || this.needsTeleport;
+
+        if (teleport)
         {
             this.move(Collision.getClosestFreeSpaceYAxis(moveToLocation, this.hitbox));
         }
@@ -188,42 +191,50 @@ public abstract class ClientsideEntity
 
         // ------------------------------------------ Velocity system -----------------------------------------------//
 
-        final Vector collidedVelocity = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);
-        this.location = this.location.add(collidedVelocity);
-
-        // Already added the velocity to location and collided it
-        // ClientCopy
-        this.onGround = (collidedVelocity.getY() != this.velocity.getY()) &&
-                        // Due to gravity a player always have a negative velocity if walking/running on the ground.
-                        velocity.getY() <= 0 &&
-                        // Make sure the entity only jumps on real blocks, not e.g. grass.
-                        this.location.clone().subtract(0, 0.05, 0).getBlock().getType().isSolid();
-
-        this.sprinting = this.currentMovementCalculator.shouldSprint();
-
-        // Calculate velocity
-        if (this.onGround)
+        if (teleport)
         {
-            // After a certain period the entity might reach a velocity so high that it appears to be "glitching"
-            // through the ground. This can be prevented by resetting the velocity if the entity is onGround.
-            this.velocity.setY(0);
+            // Velocity reset on teleport.
+            this.velocity.zero();
         }
         else
         {
-            this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
-        }
+            final Vector collidedVelocity = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);
+            this.location = this.location.add(collidedVelocity);
 
-        final Vector tempJumpVelocity = this.velocity.clone();
-        tempJumpVelocity.setX(Math.signum(tempJumpVelocity.getX()));
-        tempJumpVelocity.setY(Jumping.getJumpYMotion(null));
-        tempJumpVelocity.setZ(Math.signum(tempJumpVelocity.getZ()));
+            // Already added the velocity to location and collided it
+            // ClientCopy
+            this.onGround = (collidedVelocity.getY() != this.velocity.getY()) &&
+                            // Due to gravity a player always have a negative velocity if walking/running on the ground.
+                            velocity.getY() <= 0 &&
+                            // Make sure the entity only jumps on real blocks, not e.g. grass.
+                            this.location.clone().subtract(0, 0.05, 0).getBlock().getType().isSolid();
 
-        // Whether the entity should jump if horizontally collided
-        if (this.currentMovementCalculator.jumpIfCollidedHorizontally() &&
-            // Check whether the entity can really jump to that location.
-            BlockUtils.getMaterialsInHitbox(this.location.clone().add(tempJumpVelocity), this.hitbox).stream().noneMatch(material -> material != Material.AIR))
-        {
-            this.jump();
+            this.sprinting = this.currentMovementCalculator.shouldSprint();
+
+            // Calculate velocity
+            if (this.onGround)
+            {
+                // After a certain period the entity might reach a velocity so high that it appears to be "glitching"
+                // through the ground. This can be prevented by resetting the velocity if the entity is onGround.
+                this.velocity.setY(0);
+            }
+            else
+            {
+                this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
+            }
+
+            final Vector tempJumpVelocity = this.velocity.clone();
+            tempJumpVelocity.setX(Math.signum(tempJumpVelocity.getX()));
+            tempJumpVelocity.setY(Jumping.getJumpYMotion(null));
+            tempJumpVelocity.setZ(Math.signum(tempJumpVelocity.getZ()));
+
+            // Whether the entity should jump if horizontally collided
+            if (this.currentMovementCalculator.jumpIfCollidedHorizontally() &&
+                // Check whether the entity can really jump to that location.
+                BlockUtils.getMaterialsInHitbox(this.location.clone().add(tempJumpVelocity), this.hitbox).stream().noneMatch(material -> material != Material.AIR))
+            {
+                this.jump();
+            }
         }
 
         sendMove();
@@ -434,7 +445,7 @@ public abstract class ClientsideEntity
      */
     public Location calculateTeleportLocation()
     {
-        return Collision.getClosestFreeSpaceYAxis(this.currentMovementCalculator.calculate(observedPlayer.getLocation()), this.getHitbox());
+        return Collision.getClosestFreeSpaceYAxis(this.currentMovementCalculator.calculate(observedPlayer.getLocation(), observedPlayer.getLocation()), this.getHitbox());
     }
 
     // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //

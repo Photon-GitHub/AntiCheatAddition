@@ -434,7 +434,7 @@ public abstract class ClientsideEntity
      */
     public Location calculateTeleportLocation()
     {
-        final Location spawnLocation = observedPlayer.getLocation().clone().add(this.currentMovementCalculator.calculate(observedPlayer.getLocation()));
+        final Location spawnLocation = this.currentMovementCalculator.calculate(observedPlayer.getLocation());
         return BlockUtils.getClosestFreeSpaceYAxis(spawnLocation, this.getHitbox());
     }
 

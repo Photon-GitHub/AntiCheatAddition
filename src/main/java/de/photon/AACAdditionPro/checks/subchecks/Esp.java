@@ -119,7 +119,7 @@ public class Esp implements ViolationModule
                                 // The watched player is also not in Spectator mode
                                 if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR)
                                 {
-                                    playerConnections.push(new Pair(observingUser, watched));
+                                    playerConnections.addLast(new Pair(observingUser, watched));
                                 }
                             }
                         }

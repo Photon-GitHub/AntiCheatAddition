@@ -3,14 +3,11 @@ package de.photon.AACAdditionPro.util.world;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
-import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -85,72 +82,6 @@ public final class BlockUtils
             BlockFace.SOUTH,
             BlockFace.WEST,
             BlockFace.EAST);
-
-    /**
-     * This method finds the next free space to a {@link Location} if only searching on the y - Axis.
-     *
-     * @return the {@link Location} of the closest free space found or a {@link Location} of y = 260 if no free space was found.
-     */
-    public static Location getClosestFreeSpaceYAxis(final Location location, final Hitbox hitbox)
-    {
-        // Short as no hitbox is larger than 32k blocks.
-        // Represents the needed empty blocks, slabs (or other non-full blocks) are not included
-        final short neededHeight = (short) Math.ceil(hitbox.getHeight());
-
-        // The offset of the next free space to the location.
-        double minDeltaY = Double.MAX_VALUE;
-
-        // Set to 260 as that is the default value if nothing else is found.
-        double currentY = 260;
-
-        final BlockIterator blockIterator = new BlockIterator(location.getWorld(),
-                                                              location.toVector(),
-                                                              // From the sky to the void to have less needed calculations
-                                                              new Vector(0, -1, 0),
-                                                              // Add 20 to check both over and below the starting location.
-                                                              20,
-                                                              (int) Math.min(
-                                                                      // Make sure the BlockIterator will not iterate into the void.
-                                                                      location.getY() + 20,
-                                                                      // 40 as default length.
-                                                                      40));
-
-        short currentHeight = 0;
-        Block currentBlock;
-
-        while (blockIterator.hasNext())
-        {
-            currentBlock = blockIterator.next();
-
-            final double originOffset = MathUtils.offset(location.getY(), currentBlock.getY());
-
-            // >= To prefer "higher" positions and improve performance.
-            if (originOffset >= minDeltaY)
-            {
-                // Now we can only get worse results.
-                break;
-            }
-
-            // Check if the block is empty
-            if (currentBlock.isEmpty())
-            {
-                // If the empty space is big enough
-                if (++currentHeight >= neededHeight)
-                {
-                    minDeltaY = originOffset;
-                    currentY = currentBlock.getY();
-                }
-            }
-            else
-            {
-                currentHeight = 0;
-            }
-        }
-
-        final Location spawnLocation = location.clone();
-        spawnLocation.setY(currentY);
-        return spawnLocation;
-    }
 
     /**
      * Gets all the {@link Material}s inside a {@link Hitbox} at a certain {@link Location} and adds them to a

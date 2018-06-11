@@ -115,7 +115,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
             if (lastArmorSwap++ > MathUtils.randomBoundaryInt(200, 200))
             {
-                lastHandSwap = 0;
+                lastArmorSwap = 0;
                 // Automatic offhand handling
                 equipment.replaceRandomArmorPiece();
                 // Send the updated Equipment

@@ -172,12 +172,12 @@ public abstract class ClientsideEntity
         if (moveToLocation == null)
         {
             this.setMovement(MovementType.STAY);
-            moveToLocation = this.currentMovementCalculator.calculate(this.location.clone());
+            moveToLocation = this.calculateTeleportLocation();
         }
 
         if (this.currentMovementCalculator.isTPNeeded() || this.needsTeleport)
         {
-            this.move(moveToLocation);
+            this.move(Collision.getClosestFreeSpaceYAxis(moveToLocation, this.hitbox));
         }
         else
         {
@@ -434,8 +434,7 @@ public abstract class ClientsideEntity
      */
     public Location calculateTeleportLocation()
     {
-        final Location spawnLocation = this.currentMovementCalculator.calculate(observedPlayer.getLocation());
-        return BlockUtils.getClosestFreeSpaceYAxis(spawnLocation, this.getHitbox());
+        return Collision.getClosestFreeSpaceYAxis(this.currentMovementCalculator.calculate(observedPlayer.getLocation()), this.getHitbox());
     }
 
     // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //

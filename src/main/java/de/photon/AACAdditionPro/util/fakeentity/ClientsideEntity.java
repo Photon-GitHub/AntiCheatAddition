@@ -38,6 +38,7 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -138,7 +139,7 @@ public abstract class ClientsideEntity
     public ClientsideEntity(final Player observedPlayer, Hitbox hitbox, Movement... possibleMovements)
     {
         this(observedPlayer, hitbox);
-        this.movementStates.addAll(Arrays.asList(possibleMovements));
+        Collections.addAll(this.movementStates, possibleMovements);
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //

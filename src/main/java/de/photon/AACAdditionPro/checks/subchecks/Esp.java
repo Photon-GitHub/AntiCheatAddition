@@ -169,6 +169,7 @@ public class Esp implements ViolationModule
                                     break;
                                 case MC111:
                                 case MC112:
+                                case MC113:
                                     canSee = watched.hasPotionEffect(PotionEffectType.GLOWING);
                                     break;
                                 default:
@@ -263,7 +264,6 @@ public class Esp implements ViolationModule
                         }
                         // No special HideMode here as of the players being in 2 different worlds to decrease CPU load.
                     }
-
 
                     // Update_Ticks: the refresh-rate of the check.
                 }, 0L, update_ticks);

@@ -117,7 +117,9 @@ public class Esp implements ViolationModule
                             for (final User watched : users)
                             {
                                 // The watched player is also not in Spectator mode
-                                if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR)
+                                if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR &&
+                                    // The players are in the same world
+                                    observingUser.getPlayer().getWorld().getUID().equals(watched.getPlayer().getWorld().getUID()))
                                 {
                                     playerConnections.addLast(new Pair(observingUser, watched));
                                 }
@@ -132,134 +134,131 @@ public class Esp implements ViolationModule
                         // Remove last entry for performance
                         pair = playerConnections.removeLast();
 
-                        // The Users are in the same world
-                        if (pair.usersOfPair[0].getPlayer().getWorld().equals(pair.usersOfPair[1].getPlayer().getWorld()))
+                        // The users are always in the same world (see abovel)
+                        final double pairDistanceSquared = pair.usersOfPair[0].getPlayer().getLocation().distanceSquared(pair.usersOfPair[1].getPlayer().getLocation());
+
+                        // Less than 1 block distance
+                        // Everything (smaller than 1)^2 will result in something smaller than 1
+                        if (pairDistanceSquared < 1)
                         {
-                            final double pairDistanceSquared = pair.usersOfPair[0].getPlayer().getLocation().distanceSquared(pair.usersOfPair[1].getPlayer().getLocation());
+                            updatePairHideMode(pair, HideMode.NONE);
+                            return;
+                        }
 
-                            // Less than 1 block distance
-                            // Everything (smaller than 1)^2 will result in something smaller than 1
-                            if (pairDistanceSquared < 1)
+                        if (pairDistanceSquared > renderDistanceSquared)
+                        {
+                            updatePairHideMode(pair, hideAfterRenderDistance ?
+                                                     HideMode.FULL :
+                                                     HideMode.NONE);
+                            return;
+                        }
+
+                        for (byte b = 0; b <= 1; b++)
+                        {
+                            final Player observer = pair.usersOfPair[b].getPlayer();
+                            final Player watched = pair.usersOfPair[1 - b].getPlayer();
+
+                            // ------------------------- Can one Player see the other ? ------------------------- //
+                            boolean canSee;
+
+                            // ------------------------------------- Glowing ------------------------------------ //
+                            switch (ServerVersion.getActiveServerVersion())
                             {
-                                updatePairHideMode(pair, HideMode.NONE);
-                                return;
+                                case MC188:
+                                    canSee = false;
+                                    break;
+                                case MC111:
+                                case MC112:
+                                    canSee = watched.hasPotionEffect(PotionEffectType.GLOWING);
+                                    break;
+                                default:
+                                    throw new IllegalStateException("Unknown minecraft version");
                             }
 
-                            if (pairDistanceSquared > renderDistanceSquared)
+                            // Not already able to see (due to e.g. glowing)
+                            if (!canSee &&
+                                // Not bypassed
+                                !pair.usersOfPair[b].isBypassed() &&
+                                // Has not logged in recently to prevent bugs
+                                !pair.usersOfPair[b].getLoginData().recentlyUpdated(0, 3000))
                             {
-                                updatePairHideMode(pair, hideAfterRenderDistance ?
-                                                         HideMode.FULL :
-                                                         HideMode.NONE);
-                                return;
-                            }
+                                //canSee = observer.hasLineOfSight(watched);
+                                final Vector[] cameraVectors = getCameraVectors(observer);
 
-                            for (byte b = 0; b <= 1; b++)
-                            {
-                                final Player observer = pair.usersOfPair[b].getPlayer();
-                                final Player watched = pair.usersOfPair[1 - b].getPlayer();
+                                final Hitbox hitboxOfWatched = watched.isSneaking() ?
+                                                               Hitbox.SNEAKING_PLAYER :
+                                                               Hitbox.PLAYER;
 
-                                // ------------------------- Can one Player see the other ? ------------------------- //
-                                boolean canSee;
+                                final Iterable<Vector> watchedHitboxVectors = hitboxOfWatched.getCalculationVectors(watched.getLocation(), true);
 
-                                // ------------------------------------- Glowing ------------------------------------ //
-                                switch (ServerVersion.getActiveServerVersion())
+                                double lastIntersectionCache = 1;
+
+                                for (int i = 0; i < cameraVectors.length; i++)
                                 {
-                                    case MC188:
-                                        canSee = false;
-                                        break;
-                                    case MC111:
-                                    case MC112:
-                                        canSee = watched.hasPotionEffect(PotionEffectType.GLOWING);
-                                        break;
-                                    default:
-                                        throw new IllegalStateException("Unknown minecraft version");
-                                }
+                                    final Vector perspective = cameraVectors[i];
 
-                                // Not already able to see (due to e.g. glowing)
-                                if (!canSee &&
-                                    // Not bypassed
-                                    !pair.usersOfPair[b].isBypassed() &&
-                                    // Has not logged in recently to prevent bugs
-                                    !pair.usersOfPair[b].getLoginData().recentlyUpdated(0, 3000))
-                                {
-                                    //canSee = observer.hasLineOfSight(watched);
-                                    final Vector[] cameraVectors = getCameraVectors(observer);
-
-                                    final Hitbox hitboxOfWatched = watched.isSneaking() ?
-                                                                   Hitbox.SNEAKING_PLAYER :
-                                                                   Hitbox.PLAYER;
-
-                                    final Iterable<Vector> watchedHitboxVectors = hitboxOfWatched.getCalculationVectors(watched.getLocation(), true);
-
-                                    double lastIntersectionCache = 1;
-
-                                    for (int i = 0; i < cameraVectors.length; i++)
+                                    for (final Vector calculationVector : watchedHitboxVectors)
                                     {
-                                        final Vector perspective = cameraVectors[i];
+                                        //System.out.println("OwnVec: " + watcher.getEyeLocation().toVector() + " |Vector: " + vector);
 
-                                        for (final Vector calculationVector : watchedHitboxVectors)
+                                        final Location start = perspective.toLocation(observer.getWorld());
+                                        // The resulting Vector
+                                        // The camera is not blocked by non-solid blocks
+                                        // Vector is intersecting with some blocks
+                                        final Vector between = calculationVector.clone().subtract(perspective);
+
+                                        // ---------------------------------------------- FOV ----------------------------------------------- //
+                                        Vector cameraRotation = observer.getLocation().getDirection();
+
+                                        // Exactly the opposite rotation for the front-view
+                                        if (i == 1)
                                         {
-                                            //System.out.println("OwnVec: " + watcher.getEyeLocation().toVector() + " |Vector: " + vector);
-
-                                            final Location start = perspective.toLocation(observer.getWorld());
-                                            // The resulting Vector
-                                            // The camera is not blocked by non-solid blocks
-                                            // Vector is intersecting with some blocks
-                                            final Vector between = calculationVector.clone().subtract(perspective);
-
-                                            // ---------------------------------------------- FOV ----------------------------------------------- //
-                                            Vector cameraRotation = observer.getLocation().getDirection();
-
-                                            // Exactly the opposite rotation for the front-view
-                                            if (i == 1)
-                                            {
-                                                cameraRotation.multiply(-1);
-                                            }
-
-                                            if (cameraRotation.angle(between) > MAX_FOV)
-                                            {
-                                                continue;
-                                            }
-
-                                            // --------------------------------------- Normal Calculation --------------------------------------- //
-
-                                            if (VectorUtils.vectorIntersectsWithBlockAt(start, between, lastIntersectionCache))
-                                            {
-                                                continue;
-                                            }
-
-                                            final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
-
-                                            // No intersection found
-                                            if (intersect == 0)
-                                            {
-                                                canSee = true;
-                                                break;
-                                            }
-
-                                            lastIntersectionCache = intersect;
+                                            cameraRotation.multiply(-1);
                                         }
+
+                                        if (cameraRotation.angle(between) > MAX_FOV)
+                                        {
+                                            continue;
+                                        }
+
+                                        // --------------------------------------- Normal Calculation --------------------------------------- //
+
+                                        if (VectorUtils.vectorIntersectsWithBlockAt(start, between, lastIntersectionCache))
+                                        {
+                                            continue;
+                                        }
+
+                                        final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
+
+                                        // No intersection found
+                                        if (intersect == 0)
+                                        {
+                                            canSee = true;
+                                            break;
+                                        }
+
+                                        lastIntersectionCache = intersect;
                                     }
                                 }
-                                else
-                                {
-                                    canSee = true;
-                                }
+                            }
+                            else
+                            {
+                                canSee = true;
+                            }
 
-                                if (canSee)
-                                {
-                                    // Can see the other player
-                                    updateHideMode(pair.usersOfPair[b], pair.usersOfPair[1 - b].getPlayer(), HideMode.NONE);
-                                }
-                                else
-                                {
-                                    // Cannot see the other player
-                                    updateHideMode(pair.usersOfPair[b], pair.usersOfPair[1 - b].getPlayer(),
-                                                   // If the observed player is sneaking hide him fully
-                                                   pair.usersOfPair[1 - b].getPlayer().isSneaking() ?
-                                                   HideMode.FULL :
-                                                   HideMode.INFORMATION_ONLY);
-                                }
+                            if (canSee)
+                            {
+                                // Can see the other player
+                                updateHideMode(pair.usersOfPair[b], pair.usersOfPair[1 - b].getPlayer(), HideMode.NONE);
+                            }
+                            else
+                            {
+                                // Cannot see the other player
+                                updateHideMode(pair.usersOfPair[b], pair.usersOfPair[1 - b].getPlayer(),
+                                               // If the observed player is sneaking hide him fully
+                                               pair.usersOfPair[1 - b].getPlayer().isSneaking() ?
+                                               HideMode.FULL :
+                                               HideMode.INFORMATION_ONLY);
                             }
                         }
                         // No special HideMode here as of the players being in 2 different worlds to decrease CPU load.

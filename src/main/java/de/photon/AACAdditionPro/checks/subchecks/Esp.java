@@ -25,7 +25,9 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 public class Esp implements ViolationModule
@@ -45,7 +47,7 @@ public class Esp implements ViolationModule
     private static final double MAX_FOV = Math.toRadians(165D);
 
     // Use a LinkedList design for optimal storage usage as the amount of bypassed / spectator players cannot be estimated.
-    private final List<Pair> playerConnections = new ArrayList<>();
+    private final Deque<Pair> playerConnections = new ArrayDeque<>();
 
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
@@ -117,7 +119,7 @@ public class Esp implements ViolationModule
                                 // The watched player is also not in Spectator mode
                                 if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR)
                                 {
-                                    playerConnections.add(new Pair(observingUser, watched));
+                                    playerConnections.push(new Pair(observingUser, watched));
                                 }
                             }
                         }
@@ -128,7 +130,7 @@ public class Esp implements ViolationModule
                     {
                         // Automatically empty the playerConnections
                         // Remove last entry for performance
-                        pair = playerConnections.remove(playerConnections.size() - 1);
+                        pair = playerConnections.removeLast();
 
                         // The Users are in the same world
                         if (pair.usersOfPair[0].getPlayer().getWorld().equals(pair.usersOfPair[1].getPlayer().getWorld()))

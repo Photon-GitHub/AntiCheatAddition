@@ -14,7 +14,7 @@ import lombok.Getter;
 public class TowerData extends TimeData
 {
     // Default buffer size is 6, being well tested.
-    private static int BUFFER_SIZE = 6;
+    private static final int BUFFER_SIZE = 6;
 
     @Getter
     protected final ConditionalBuffer<TowerBlockPlace> blockPlaces = new ConditionalBuffer<TowerBlockPlace>(BUFFER_SIZE)

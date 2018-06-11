@@ -105,7 +105,7 @@ public abstract class ClientsideEntity
     private int tickTask = -1;
 
     // Movement state machine
-    private Set<Movement> movementStates = new HashSet<>();
+    private final Set<Movement> movementStates = new HashSet<>();
     private Movement currentMovementCalculator;
 
     public ClientsideEntity(final Player observedPlayer, Hitbox hitbox)

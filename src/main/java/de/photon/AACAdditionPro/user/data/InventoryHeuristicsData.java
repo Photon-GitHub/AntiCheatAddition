@@ -23,7 +23,7 @@ public class InventoryHeuristicsData extends Data
     public String trainingLabel = null;
     public NeuralPattern trainedPattern = null;
 
-    private Map<String, Double> patternMap = new ConcurrentHashMap<>();
+    private final Map<String, Double> patternMap = new ConcurrentHashMap<>();
 
     public InventoryHeuristicsData(User user)
     {

@@ -9,7 +9,6 @@ public class ClientSideEntityData extends TimeData
     public ClientsidePlayerEntity clientSidePlayerEntity;
 
     public byte respawnTries = 0;
-    public boolean onlineProfile = true;
 
     public ClientSideEntityData(final User user)
     {

@@ -39,9 +39,9 @@ public final class VerboseSender implements Listener
     // Set to an impossible day of the year to make sure the logFile will be initialized.
     private int currentDayOfYear = -1;
 
-    private boolean writeToFile = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.file");
-    private boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console");
-    private boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players");
+    private final boolean writeToFile = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.file");
+    private final boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console");
+    private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players");
 
     private VerboseSender()
     {

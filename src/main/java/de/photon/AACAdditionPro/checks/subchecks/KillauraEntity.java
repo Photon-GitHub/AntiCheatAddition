@@ -143,12 +143,10 @@ public class KillauraEntity implements ViolationModule, Listener
             if (gameProfile == null)
             {
                 gameProfile = this.getGameProfile(user.getPlayer(), preferOnlineProfiles);
-                user.getClientSideEntityData().onlineProfile = preferOnlineProfiles;
 
                 if (gameProfile == null)
                 {
                     gameProfile = this.getGameProfile(user.getPlayer(), false);
-                    user.getClientSideEntityData().onlineProfile = false;
 
                     if (gameProfile == null)
                     {

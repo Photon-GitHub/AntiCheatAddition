@@ -8,7 +8,7 @@ import lombok.Setter;
 public abstract class Pattern
 {
     static final byte PATTERN_VERSION = 2;
-    public static Output[] LEGIT_OUTPUT = new Output[]{
+    public static final Output[] LEGIT_OUTPUT = new Output[]{
             new Output("cheating", 0),
             new Output("vanilla", 1)
     };

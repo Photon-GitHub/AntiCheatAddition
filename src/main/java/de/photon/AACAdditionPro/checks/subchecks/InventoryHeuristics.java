@@ -40,7 +40,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
 
     final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), -1);
 
-    private double detection_confidence = AACAdditionPro.getInstance().getConfig().getDouble(this.getConfigString() + ".detection_confidence") / 100;
+    private final double detection_confidence = AACAdditionPro.getInstance().getConfig().getDouble(this.getConfigString() + ".detection_confidence") / 100;
 
     static
     {

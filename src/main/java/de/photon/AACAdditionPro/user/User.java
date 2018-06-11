@@ -20,8 +20,6 @@ import de.photon.AACAdditionPro.user.data.VelocityChangeData;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
-
 @Getter
 public class User
 {
@@ -62,18 +60,6 @@ public class User
     public boolean isBypassed()
     {
         return InternalPermission.hasPermission(this.player, InternalPermission.BYPASS);
-    }
-
-    /**
-     * Used to see if a {@link UUID} refers to this {@link User}
-     *
-     * @param uuid the uuid of the given {@link Player}
-     *
-     * @return true if the uuid refers to this {@link User}
-     */
-    public boolean refersToUUID(final UUID uuid)
-    {
-        return uuid.equals(this.player.getUniqueId());
     }
 
     /**

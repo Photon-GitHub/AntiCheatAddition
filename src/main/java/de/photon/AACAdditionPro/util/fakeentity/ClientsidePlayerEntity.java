@@ -24,7 +24,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ClientsidePlayerEntity extends ClientsideEntity
 {
-    private boolean visible_in_tablist, shouldAssignTeam, shouldSwing, shouldSwap;
+    private final boolean visible_in_tablist;
+    private final boolean shouldAssignTeam;
+    private final boolean shouldSwing;
+    private boolean shouldSwap;
 
     @Getter
     private final WrappedGameProfile gameProfile;
@@ -42,7 +45,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private short lastHandSwap = 0;
     private short lastArmorSwap = 0;
 
-    private Equipment equipment;
+    private final Equipment equipment;
 
     public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile)
     {

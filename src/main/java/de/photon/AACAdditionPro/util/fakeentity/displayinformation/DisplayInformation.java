@@ -18,7 +18,7 @@ import java.util.Set;
 
 public final class DisplayInformation
 {
-    private static List<String> preferredTeamNames = ConfigUtils.loadStringOrStringList(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.team.preferred_teams");
+    private static final List<String> preferredTeamNames = ConfigUtils.loadStringOrStringList(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.team.preferred_teams");
 
     /**
      * This updates the {@link Team} of a {@link ClientsidePlayerEntity} to avoid bypasses as of no {@link Team} or

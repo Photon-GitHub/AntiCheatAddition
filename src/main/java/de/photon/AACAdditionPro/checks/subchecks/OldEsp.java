@@ -7,20 +7,16 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.configs.Configs;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
-import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
-import de.photon.AACAdditionPro.util.mathematics.ParallelBasePyramidRectangle;
 import de.photon.AACAdditionPro.util.mathematics.VectorUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.visibility.HideMode;
 import de.photon.AACAdditionPro.util.visibility.PlayerInformationModifier;
 import de.photon.AACAdditionPro.util.visibility.informationmodifiers.InformationObfuscator;
 import de.photon.AACAdditionPro.util.visibility.informationmodifiers.PlayerHider;
-import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -34,7 +30,8 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class Esp implements ViolationModule
+@Deprecated
+public class OldEsp implements ViolationModule
 {
     // The auto-config-data
     private double renderDistanceSquared = 0;
@@ -191,97 +188,58 @@ public class Esp implements ViolationModule
                                 final Vector[] cameraVectors = getCameraVectors(observer);
 
                                 final Hitbox hitboxOfWatched = watched.isSneaking() ?
-                                                               Hitbox.ESP_SNEAKING_PLAYER :
-                                                               Hitbox.ESP_PLAYER;
+                                                               Hitbox.SNEAKING_PLAYER :
+                                                               Hitbox.PLAYER;
 
-                                final AxisAlignedBB axisAlignedBB = hitboxOfWatched.constructBoundingBox(watched.getLocation());
+                                final Iterable<Vector> watchedHitboxVectors = hitboxOfWatched.getCalculationVectors(watched.getLocation(), true);
 
-                                // Try to see all camera vectors
-                                for (Vector cameraVector : cameraVectors)
+                                double lastIntersectionCache = 1;
+
+                                for (int i = 0; i < cameraVectors.length; i++)
                                 {
-                                    // Every camera position will at most use 3 pyramids.
-                                    final ParallelBasePyramidRectangle[] pyramids = new ParallelBasePyramidRectangle[3];
+                                    final Vector perspective = cameraVectors[i];
 
-                                    // Get the correct sides:
-                                    // X
-                                    if (cameraVector.getX() < axisAlignedBB.getMinX())
+                                    for (final Vector calculationVector : watchedHitboxVectors)
                                     {
-                                        pyramids[0] = new ParallelBasePyramidRectangle(
-                                                cameraVector,
-                                                new Vector(axisAlignedBB.getMinX(), axisAlignedBB.getMinY(), axisAlignedBB.getMinZ()),
-                                                new Vector(axisAlignedBB.getMinX(), axisAlignedBB.getMinY(), axisAlignedBB.getMaxZ()),
-                                                new Vector(axisAlignedBB.getMinX(), axisAlignedBB.getMaxY(), axisAlignedBB.getMinZ()),
-                                                new Vector(axisAlignedBB.getMinX(), axisAlignedBB.getMaxY(), axisAlignedBB.getMaxZ())
-                                        );
-                                    }
-                                    else if (cameraVector.getX() > axisAlignedBB.getMaxX())
-                                    {
-                                        pyramids[0] = new ParallelBasePyramidRectangle(
-                                                cameraVector,
-                                                new Vector(axisAlignedBB.getMaxX(), axisAlignedBB.getMinY(), axisAlignedBB.getMinZ()),
-                                                new Vector(axisAlignedBB.getMaxX(), axisAlignedBB.getMinY(), axisAlignedBB.getMaxZ()),
-                                                new Vector(axisAlignedBB.getMaxX(), axisAlignedBB.getMaxY(), axisAlignedBB.getMinZ()),
-                                                new Vector(axisAlignedBB.getMaxX(), axisAlignedBB.getMaxY(), axisAlignedBB.getMaxZ())
-                                        );
-                                    }
-                                    // If in between: No pyramid needed.
+                                        //System.out.println("OwnVec: " + watcher.getEyeLocation().toVector() + " |Vector: " + vector);
 
-                                    // Y
-                                    if (cameraVector.getY() < axisAlignedBB.getMinY())
-                                    {
-                                        pyramids[1] = new ParallelBasePyramidRectangle(
-                                                cameraVector,
-                                                new Vector(axisAlignedBB.getMinX(), axisAlignedBB.getMinY(), axisAlignedBB.getMinZ()),
-                                                new Vector(axisAlignedBB.getMinX(), axisAlignedBB.getMinY(), axisAlignedBB.getMaxZ()),
-                                                new Vector(axisAlignedBB.getMaxX(), axisAlignedBB.getMinY(), axisAlignedBB.getMinZ()),
-                                                new Vector(axisAlignedBB.getMaxX(), axisAlignedBB.getMinY(), axisAlignedBB.getMaxZ())
-                                        );
-                                    }
-                                    else if (cameraVector.getY() > axisAlignedBB.getMaxY())
-                                    {
-                                        pyramids[1] = new ParallelBasePyramidRectangle(
-                                                cameraVector,
-                                                new Vector(axisAlignedBB.getMinX(), axisAlignedBB.getMaxY(), axisAlignedBB.getMinZ()),
-                                                new Vector(axisAlignedBB.getMinX(), axisAlignedBB.getMaxY(), axisAlignedBB.getMaxZ()),
-                                                new Vector(axisAlignedBB.getMaxX(), axisAlignedBB.getMaxY(), axisAlignedBB.getMinZ()),
-                                                new Vector(axisAlignedBB.getMaxX(), axisAlignedBB.getMaxY(), axisAlignedBB.getMaxZ())
-                                        );
-                                    }
-                                    // If in between: No pyramid needed.
+                                        final Location start = perspective.toLocation(observer.getWorld());
+                                        // The resulting Vector
+                                        // The camera is not blocked by non-solid blocks
+                                        // Vector is intersecting with some blocks
+                                        final Vector between = calculationVector.clone().subtract(perspective);
 
-                                    // Z
-                                    if (cameraVector.getZ() < axisAlignedBB.getMinZ())
-                                    {
-                                        pyramids[2] = new ParallelBasePyramidRectangle(
-                                                cameraVector,
-                                                new Vector(axisAlignedBB.getMinX(), axisAlignedBB.getMinY(), axisAlignedBB.getMinZ()),
-                                                new Vector(axisAlignedBB.getMinX(), axisAlignedBB.getMaxY(), axisAlignedBB.getMinZ()),
-                                                new Vector(axisAlignedBB.getMaxX(), axisAlignedBB.getMinY(), axisAlignedBB.getMinZ()),
-                                                new Vector(axisAlignedBB.getMaxX(), axisAlignedBB.getMaxY(), axisAlignedBB.getMinZ())
-                                        );
-                                    }
-                                    else if (cameraVector.getZ() > axisAlignedBB.getMaxZ())
-                                    {
-                                        pyramids[2] = new ParallelBasePyramidRectangle(
-                                                cameraVector,
-                                                new Vector(axisAlignedBB.getMinX(), axisAlignedBB.getMinY(), axisAlignedBB.getMaxZ()),
-                                                new Vector(axisAlignedBB.getMinX(), axisAlignedBB.getMaxY(), axisAlignedBB.getMaxZ()),
-                                                new Vector(axisAlignedBB.getMaxX(), axisAlignedBB.getMinY(), axisAlignedBB.getMaxZ()),
-                                                new Vector(axisAlignedBB.getMaxX(), axisAlignedBB.getMaxY(), axisAlignedBB.getMaxZ())
-                                        );
-                                    }
-                                    // If in between: No pyramid needed.
+                                        // ---------------------------------------------- FOV ----------------------------------------------- //
+                                        Vector cameraRotation = observer.getLocation().getDirection();
 
-                                    // Now check all pyramids
-                                    for (ParallelBasePyramidRectangle pyramid : pyramids)
-                                    {
-                                        for (Block block : pyramid.getBlocksInside(watched.getWorld()))
+                                        // Exactly the opposite rotation for the front-view
+                                        if (i == 1)
                                         {
-                                            if (BlockUtils.isReallyOccluding(block.getType()))
-                                            {
-
-                                            }
+                                            cameraRotation.multiply(-1);
                                         }
+
+                                        if (cameraRotation.angle(between) > MAX_FOV)
+                                        {
+                                            continue;
+                                        }
+
+                                        // --------------------------------------- Normal Calculation --------------------------------------- //
+
+                                        if (VectorUtils.vectorIntersectsWithBlockAt(start, between, lastIntersectionCache))
+                                        {
+                                            continue;
+                                        }
+
+                                        final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
+
+                                        // No intersection found
+                                        if (intersect == 0)
+                                        {
+                                            canSee = true;
+                                            break;
+                                        }
+
+                                        lastIntersectionCache = intersect;
                                     }
                                 }
                             }

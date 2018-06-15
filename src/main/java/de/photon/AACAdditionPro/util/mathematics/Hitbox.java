@@ -12,8 +12,22 @@ import java.util.List;
 @Getter
 public enum Hitbox
 {
+    /**
+     * The normal hitbox of a player
+     */
     PLAYER(0.3D, 0.3D, 1.8D),
-    SNEAKING_PLAYER(0.3D, 0.3D, 1.65D);
+    /**
+     * The hitbox of a sneaking player
+     */
+    SNEAKING_PLAYER(0.3D, 0.3D, 1.65D),
+    /**
+     * A hitbox that covers the whole body (which is partially outside the normal hitbox)
+     */
+    ESP_PLAYER(0.5, 0.5, 1.8D),
+    /**
+     * A hitbox that covers the whole body (which is partially outside the normal hitbox)while the player is sneaking
+     */
+    ESP_SNEAKING_PLAYER(0.5, 0.5, 1.65D);
 
     private final double offsetX;
     private final double offsetZ;

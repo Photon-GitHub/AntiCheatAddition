@@ -279,7 +279,7 @@ public class Esp implements ViolationModule
                                         {
                                             if (BlockUtils.isReallyOccluding(block.getType()))
                                             {
-
+                                                // TODO: PROJECTION ?
                                             }
                                         }
                                     }

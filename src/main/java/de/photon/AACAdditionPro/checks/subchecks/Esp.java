@@ -281,7 +281,13 @@ public class Esp implements ViolationModule
                 return;
             }
 
-            user.getEspInformationData().hiddenPlayers.keySet().forEach(hiddenPlayer -> updateHideMode(user, hiddenPlayer, HideMode.NONE));
+            // Manually clear the EspInformationData for better performance.
+            for (Player hiddenPlayer : user.getEspInformationData().hiddenPlayers.keySet())
+            {
+                informationOnlyHider.unModifyInformation(user.getPlayer(), hiddenPlayer);
+                fullHider.unModifyInformation(user.getPlayer(), hiddenPlayer);
+            }
+            user.getEspInformationData().hiddenPlayers.clear();
         }
     }
 
@@ -310,6 +316,7 @@ public class Esp implements ViolationModule
 
         // Do the Cameras intersect with Blocks
         // Get the length of the first intersection or 0 if there is none
+        // TODO: THAT IS NOT REALLY THE ACCURATE POSITION!
         final double frontIntersection = VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[1]);
         final double behindIntersection = VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[2]);
 

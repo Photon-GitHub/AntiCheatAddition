@@ -252,6 +252,10 @@ public class Esp implements ViolationModule
                                         lastIntersectionsCache.add(intersect);
                                     }
 
+                                    // No need to further calculate anything as the player can already be seen.
+                                    if (canSee)
+                                        break;
+
                                     // Low probability to help after the camera view was changed. -> clearing
                                     lastIntersectionsCache.clear();
                                 }

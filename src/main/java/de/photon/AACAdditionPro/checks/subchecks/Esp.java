@@ -299,7 +299,10 @@ public class Esp implements ViolationModule
         }
     }
 
-
+    /**
+     * @return an array of {@link Vector}s which represent the 3 different camera modes in minecraft, 1st person and the two
+     * 3rd person views.
+     */
     private static Vector[] getCameraVectors(final Player player)
     {
         /*

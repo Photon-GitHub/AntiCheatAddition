@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -42,33 +41,36 @@ public enum Hitbox
      *
      * @return a {@link List} of all the constructed {@link Vector}s.
      */
-    public List<Vector> getCalculationVectors(final Location location, final boolean addCenterVectors)
+    public Vector[] getCalculationVectors(final Location location, final boolean addCenterVectors)
     {
-        final List<Vector> vectors = new ArrayList<>(addCenterVectors ?
-                                                     11 :
-                                                     8);
+        final Vector[] vectors = new Vector[addCenterVectors ? (int) (8 + (this.height / 0.47)) : 8];
+        byte currentIndex = 0;
+
         final Vector start = location.toVector();
+        final double lowerY = start.getY();
+        final double upperY = lowerY + this.height;
 
         //Lower corners
-        vectors.add(new Vector(start.getX() + this.offsetX, start.getY(), start.getZ() + this.offsetZ));
-        vectors.add(new Vector(start.getX() - this.offsetX, start.getY(), start.getZ() + this.offsetZ));
-        vectors.add(new Vector(start.getX() + this.offsetX, start.getY(), start.getZ() - this.offsetZ));
-        vectors.add(new Vector(start.getX() - this.offsetX, start.getY(), start.getZ() - this.offsetZ));
+        vectors[currentIndex++] = new Vector(start.getX() + this.offsetX, lowerY, start.getZ() + this.offsetZ);
+        vectors[currentIndex++] = new Vector(start.getX() - this.offsetX, lowerY, start.getZ() + this.offsetZ);
+        vectors[currentIndex++] = new Vector(start.getX() + this.offsetX, lowerY, start.getZ() - this.offsetZ);
+        vectors[currentIndex++] = new Vector(start.getX() - this.offsetX, lowerY, start.getZ() - this.offsetZ);
 
         //Upper corners
-        vectors.add(new Vector(start.getX() + this.offsetX, start.getY() + this.height, start.getZ() + this.offsetZ));
-        vectors.add(new Vector(start.getX() - this.offsetX, start.getY() + this.height, start.getZ() + this.offsetZ));
-        vectors.add(new Vector(start.getX() + this.offsetX, start.getY() + this.height, start.getZ() - this.offsetZ));
-        vectors.add(new Vector(start.getX() - this.offsetX, start.getY() + this.height, start.getZ() - this.offsetZ));
+        vectors[currentIndex++] = new Vector(start.getX() + this.offsetX, upperY, start.getZ() + this.offsetZ);
+        vectors[currentIndex++] = new Vector(start.getX() - this.offsetX, upperY, start.getZ() + this.offsetZ);
+        vectors[currentIndex++] = new Vector(start.getX() + this.offsetX, upperY, start.getZ() - this.offsetZ);
+        vectors[currentIndex++] = new Vector(start.getX() - this.offsetX, upperY, start.getZ() - this.offsetZ);
 
         if (addCenterVectors)
         {
-            // Steps and other blocks with irregular hitboxes need more steps (below 0.5 blocks)
-            final double step_size = (location.getY() - location.getBlockX() > 0.1) ? 0.47D : 1D;
+            start.setX(start.getX() + this.offsetX / 2);
+            start.setX(start.getZ() + this.offsetZ / 2);
 
-            for (double d = 1.47; d < this.height - 1; d += step_size)
+            // 0.47 as a factor as of slabs and other irregular block models.
+            for (double d = 0; d < this.height; d += 0.47)
             {
-                vectors.add(new Vector(start.getX(), start.getY() + d, start.getZ()));
+                vectors[currentIndex++] = start.clone().setY(lowerY + d);
             }
         }
         return vectors;

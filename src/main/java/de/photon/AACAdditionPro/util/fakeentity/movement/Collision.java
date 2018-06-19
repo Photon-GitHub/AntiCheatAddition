@@ -11,8 +11,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import java.util.List;
-
 public final class Collision
 {
     /**
@@ -34,7 +32,7 @@ public final class Collision
         final AxisAlignedBB bb = hitbox.constructBoundingBox(input);
 
         // Get the collisions
-        final List<AxisAlignedBB> collisions = ReflectionUtils.getCollisionBoxes(dependantEntity, bb
+        final AxisAlignedBB[] collisions = ReflectionUtils.getCollisionBoxes(dependantEntity, bb
                 // Add the scheduled movement. This DOES NOT MODIFY INTERNAL VALUES, only call this for the Reflection!!!
                 .addCoordinatesToNewBox(velocity.getX(), velocity.getY(), velocity.getZ()));
 

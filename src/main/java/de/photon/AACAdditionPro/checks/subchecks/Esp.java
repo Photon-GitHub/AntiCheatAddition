@@ -186,11 +186,10 @@ public class Esp implements ViolationModule
                                 //canSee = observer.hasLineOfSight(watched);
                                 final Vector[] cameraVectors = getCameraVectors(observer);
 
-                                final Hitbox hitboxOfWatched = watched.isSneaking() ?
-                                                               Hitbox.ESP_SNEAKING_PLAYER :
-                                                               Hitbox.ESP_PLAYER;
-
-                                final Iterable<Vector> watchedHitboxVectors = hitboxOfWatched.getCalculationVectors(watched.getLocation(), true);
+                                // Get the Vectors of the hitbox to check.
+                                final Iterable<Vector> watchedHitboxVectors = (watched.isSneaking() ?
+                                                                               Hitbox.ESP_SNEAKING_PLAYER :
+                                                                               Hitbox.ESP_PLAYER).getCalculationVectors(watched.getLocation(), true);
 
                                 double lastIntersectionCache = 1;
 

@@ -28,7 +28,9 @@ import org.bukkit.util.Vector;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Esp implements ViolationModule
 {
@@ -191,20 +193,20 @@ public class Esp implements ViolationModule
                                                                        Hitbox.ESP_SNEAKING_PLAYER :
                                                                        Hitbox.ESP_PLAYER).getCalculationVectors(watched.getLocation(), true);
 
+
+                                // The distance of the intersections in the same block is equal as of the
+                                // BlockIterator mechanics.
+                                final Set<Double> lastIntersectionsCache = new HashSet<>();
+
                                 for (int i = 0; i < cameraVectors.length; i++)
                                 {
-                                    final Vector perspective = cameraVectors[i];
-
-                                    final double[] lastIntersectionsCache = new double[watchedHitboxVectors.length];
-                                    int currentIndex = lastIntersectionsCache.length - 1;
-
                                     for (final Vector calculationVector : watchedHitboxVectors)
                                     {
-                                        final Location start = perspective.toLocation(observer.getWorld());
+                                        final Location start = cameraVectors[i].toLocation(observer.getWorld());
                                         // The resulting Vector
                                         // The camera is not blocked by non-solid blocks
                                         // Vector is intersecting with some blocks
-                                        final Vector between = calculationVector.clone().subtract(perspective);
+                                        final Vector between = calculationVector.clone().subtract(cameraVectors[i]);
 
                                         // ---------------------------------------------- FOV ----------------------------------------------- //
                                         final Vector cameraRotation = observer.getLocation().getDirection();
@@ -245,8 +247,11 @@ public class Esp implements ViolationModule
                                             break;
                                         }
 
-                                        lastIntersectionsCache[currentIndex--] = intersect;
+                                        lastIntersectionsCache.add(intersect);
                                     }
+
+                                    // Low probability to help after the camera view was changed. -> clearing
+                                    lastIntersectionsCache.clear();
                                 }
                             }
                             else
@@ -254,20 +259,14 @@ public class Esp implements ViolationModule
                                 canSee = true;
                             }
 
-                            if (canSee)
-                            {
-                                // Can see the other player
-                                updateHideMode(pair.usersOfPair[b], pair.usersOfPair[1 - b].getPlayer(), HideMode.NONE);
-                            }
-                            else
-                            {
-                                // Cannot see the other player
-                                updateHideMode(pair.usersOfPair[b], pair.usersOfPair[1 - b].getPlayer(),
-                                               // If the observed player is sneaking hide him fully
-                                               pair.usersOfPair[1 - b].getPlayer().isSneaking() ?
-                                               HideMode.FULL :
-                                               HideMode.INFORMATION_ONLY);
-                            }
+                            updateHideMode(pair.usersOfPair[b], pair.usersOfPair[1 - b].getPlayer(),
+                                           // Is the user visible
+                                           canSee ?
+                                           HideMode.NONE :
+                                           // If the observed player is sneaking hide him fully
+                                           (pair.usersOfPair[1 - b].getPlayer().isSneaking() ?
+                                            HideMode.FULL :
+                                            HideMode.INFORMATION_ONLY));
                         }
                         // No special HideMode here as of the players being in 2 different worlds to decrease CPU load.
                     }

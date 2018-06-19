@@ -191,16 +191,15 @@ public class Esp implements ViolationModule
                                                                        Hitbox.ESP_SNEAKING_PLAYER :
                                                                        Hitbox.ESP_PLAYER).getCalculationVectors(watched.getLocation(), true);
 
-                                double lastIntersectionCache = 1;
-
                                 for (int i = 0; i < cameraVectors.length; i++)
                                 {
                                     final Vector perspective = cameraVectors[i];
 
+                                    final double[] lastIntersectionsCache = new double[watchedHitboxVectors.length];
+                                    int currentIndex = 0;
+
                                     for (final Vector calculationVector : watchedHitboxVectors)
                                     {
-                                        //System.out.println("OwnVec: " + watcher.getEyeLocation().toVector() + " |Vector: " + vector);
-
                                         final Location start = perspective.toLocation(observer.getWorld());
                                         // The resulting Vector
                                         // The camera is not blocked by non-solid blocks
@@ -208,7 +207,7 @@ public class Esp implements ViolationModule
                                         final Vector between = calculationVector.clone().subtract(perspective);
 
                                         // ---------------------------------------------- FOV ----------------------------------------------- //
-                                        Vector cameraRotation = observer.getLocation().getDirection();
+                                        final Vector cameraRotation = observer.getLocation().getDirection();
 
                                         // Exactly the opposite rotation for the front-view
                                         if (i == 1)
@@ -223,10 +222,21 @@ public class Esp implements ViolationModule
 
                                         // --------------------------------------- Normal Calculation --------------------------------------- //
 
-                                        if (VectorUtils.vectorIntersectsWithBlockAt(start, between, lastIntersectionCache))
+                                        boolean foundBlockInCache = false;
+                                        for (Double length : lastIntersectionsCache)
+                                        {
+                                            if (VectorUtils.vectorIntersectsWithBlockAt(start, between, length))
+                                            {
+                                                foundBlockInCache = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (foundBlockInCache)
                                         {
                                             continue;
                                         }
+
 
                                         final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
 
@@ -237,7 +247,7 @@ public class Esp implements ViolationModule
                                             break;
                                         }
 
-                                        lastIntersectionCache = intersect;
+                                        lastIntersectionsCache[currentIndex++] = intersect;
                                     }
                                 }
                             }

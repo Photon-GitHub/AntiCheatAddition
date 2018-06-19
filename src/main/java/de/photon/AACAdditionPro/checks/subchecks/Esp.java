@@ -196,7 +196,7 @@ public class Esp implements ViolationModule
                                     final Vector perspective = cameraVectors[i];
 
                                     final double[] lastIntersectionsCache = new double[watchedHitboxVectors.length];
-                                    int currentIndex = 0;
+                                    int currentIndex = lastIntersectionsCache.length - 1;
 
                                     for (final Vector calculationVector : watchedHitboxVectors)
                                     {
@@ -211,20 +211,20 @@ public class Esp implements ViolationModule
 
                                         // Exactly the opposite rotation for the front-view
                                         if (i == 1)
-                                        {
                                             cameraRotation.multiply(-1);
-                                        }
 
                                         if (cameraRotation.angle(between) > MAX_FOV)
-                                        {
                                             continue;
-                                        }
 
                                         // --------------------------------------- Normal Calculation --------------------------------------- //
 
                                         boolean foundBlockInCache = false;
                                         for (Double length : lastIntersectionsCache)
                                         {
+                                            // Not yet cached.
+                                            if (length == 0)
+                                                continue;
+
                                             if (VectorUtils.vectorIntersectsWithBlockAt(start, between, length))
                                             {
                                                 foundBlockInCache = true;
@@ -233,9 +233,7 @@ public class Esp implements ViolationModule
                                         }
 
                                         if (foundBlockInCache)
-                                        {
                                             continue;
-                                        }
 
 
                                         final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
@@ -247,7 +245,7 @@ public class Esp implements ViolationModule
                                             break;
                                         }
 
-                                        lastIntersectionsCache[currentIndex++] = intersect;
+                                        lastIntersectionsCache[currentIndex--] = intersect;
                                     }
                                 }
                             }
@@ -326,20 +324,25 @@ public class Esp implements ViolationModule
 
         // Do the Cameras intersect with Blocks
         // Get the length of the first intersection or 0 if there is none
-        // TODO: THAT IS NOT REALLY THE ACCURATE POSITION!
-        final double frontIntersection = VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[1]);
-        final double behindIntersection = VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[2]);
 
-        // There is an intersection in the front-vector
-        if (frontIntersection != 0)
-        {
-            vectors[1].normalize().multiply(frontIntersection);
-        }
+        // [0] = frontIntersection
+        // [1] = behindIntersection
+        final double[] intersections = new double[]{
+                VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[1]),
+                VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[2])
+        };
 
-        // There is an intersection in the behind-vector
-        if (behindIntersection != 0)
+        for (int i = 0; i < intersections.length; i++)
         {
-            vectors[2].normalize().multiply(behindIntersection);
+            // There is an intersection
+            if (intersections[i] != 0)
+            {
+                // Now we need to make sure the vectors are not inside of blocks as the method above returns.
+                // The 0.05 factor makes sure that we are outside of the block and not on the edge.
+                intersections[i] -= 0.05 + (0.5 / Math.sin(vectors[i + 1].angle(vectors[i + 1].clone().setY(0))));
+                // Add the correct position.
+                vectors[i + 1].normalize().multiply(intersections[i]);
+            }
         }
 
         return vectors;

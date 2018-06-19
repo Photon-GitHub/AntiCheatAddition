@@ -32,11 +32,13 @@ public final class VectorUtils
                     // Account for a Spigot bug: BARRIER and MOB_SPAWNER are not occluding blocks
                     if (BlockUtils.isReallyOccluding(block.getType()))
                     {
-                        return block.getLocation().distance(start);
+                        // Use the middle location of the Block instead of the simple location.
+                        return block.getLocation().clone().add(0.5, 0.5, 0.5).distance(start);
                     }
                 }
             } catch (final IllegalStateException ignored)
             {
+                // Just in case the start block could not be found for some reason.
             }
         }
         return 0;

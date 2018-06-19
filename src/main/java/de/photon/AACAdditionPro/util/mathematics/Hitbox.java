@@ -33,13 +33,14 @@ public enum Hitbox
     private final double height;
 
     /**
-     * This gets a {@link List} of Vectors, which is especially helpful for raytracing
+     * Creates an array of {@link Vector}s that indicates essential positions of the hitbox which are helpful for
+     * raytracing.
      *
      * @param location         the initial {@link Location} of the {@link org.bukkit.entity.Entity}, thus the basis of the {@link Hitbox}.
      * @param addCenterVectors whether only the {@link Vector}s of the corners should be returned in the {@link List} or additional {@link Vector}s
      *                         in the center of the {@link org.bukkit.entity.Entity} (alongside the y-axis) should be added
      *
-     * @return a {@link List} of all the constructed {@link Vector}s.
+     * @return an array of all the constructed {@link Vector}s.
      */
     public Vector[] getCalculationVectors(final Location location, final boolean addCenterVectors)
     {

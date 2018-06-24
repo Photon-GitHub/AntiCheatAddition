@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.Configs;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
@@ -28,9 +29,14 @@ import org.bukkit.util.Vector;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class Esp implements ViolationModule
 {
@@ -196,69 +202,95 @@ public class Esp implements ViolationModule
 
                                 // The distance of the intersections in the same block is equal as of the
                                 // BlockIterator mechanics.
-                                final Set<Double> lastIntersectionsCache = new HashSet<>();
+                                final Set<Double> lastIntersectionsCache = ConcurrentHashMap.newKeySet();
+                                final ExecutorService executor = Executors.newWorkStealingPool();
 
                                 for (int i = 0; i < cameraVectors.length; i++)
                                 {
                                     for (final Vector calculationVector : watchedHitboxVectors)
                                     {
-                                        final Location start = cameraVectors[i].toLocation(observer.getWorld());
-                                        // The resulting Vector
-                                        // The camera is not blocked by non-solid blocks
-                                        // Vector is intersecting with some blocks
-                                        //
-                                        // No cloning is needed here as the calculationVector is only used once.
-                                        final Vector between = calculationVector.subtract(cameraVectors[i]);
-
-                                        // ---------------------------------------------- FOV ----------------------------------------------- //
-                                        final Vector cameraRotation = observer.getLocation().getDirection();
-
-                                        // Exactly the opposite rotation for the front-view
-                                        if (i == 1)
-                                            cameraRotation.multiply(-1);
-
-                                        if (cameraRotation.angle(between) > MAX_FOV)
-                                            continue;
-
-                                        // --------------------------------------- Normal Calculation --------------------------------------- //
-
-                                        boolean foundBlockInCache = false;
-                                        for (Double length : lastIntersectionsCache)
+                                        final int cameraIndex = i;
+                                        if (!canSee)
                                         {
-                                            // Not yet cached.
-                                            if (length == 0)
-                                                continue;
-
-                                            if (VectorUtils.vectorIntersectsWithBlockAt(start, between, length))
+                                            try
                                             {
-                                                foundBlockInCache = true;
-                                                break;
+                                                boolean result = executor.submit(() -> {
+                                                    final Location start = cameraVectors[cameraIndex].toLocation(observer.getWorld());
+                                                    // The resulting Vector
+                                                    // The camera is not blocked by non-solid blocks
+                                                    // Vector is intersecting with some blocks
+                                                    //
+                                                    // No cloning is needed here as the calculationVector is only used once.
+                                                    final Vector between = calculationVector.subtract(cameraVectors[cameraIndex]);
+
+                                                    // ---------------------------------------------- FOV ----------------------------------------------- //
+                                                    final Vector cameraRotation = observer.getLocation().getDirection();
+
+                                                    // Exactly the opposite rotation for the front-view
+                                                    if (cameraIndex == 1)
+                                                        cameraRotation.multiply(-1);
+
+                                                    if (cameraRotation.angle(between) > MAX_FOV)
+                                                        return false;
+
+                                                    // --------------------------------------- Normal Calculation --------------------------------------- //
+
+                                                    for (Double length : lastIntersectionsCache)
+                                                    {
+                                                        // Not yet cached.
+                                                        if (length == 0)
+                                                            continue;
+
+                                                        if (VectorUtils.vectorIntersectsWithBlockAt(start, between, length))
+                                                        {
+                                                            return false;
+                                                        }
+                                                    }
+
+                                                    final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
+
+                                                    // No intersection found
+                                                    if (intersect == 0)
+                                                    {
+                                                        return true;
+                                                    }
+
+                                                    lastIntersectionsCache.add(intersect);
+                                                    return false;
+                                                }).get(update_ticks * 50, TimeUnit.MILLISECONDS);
+
+                                                // Only set to true to make sure we do not modify in the wrong way.
+                                                if (result)
+                                                {
+                                                    canSee = true;
+
+                                                    // We don't need to process all the other tasks now.
+                                                    executor.shutdownNow();
+                                                }
+                                            } catch (InterruptedException | ExecutionException e)
+                                            {
+                                                e.printStackTrace();
+                                            } catch (TimeoutException exception)
+                                            {
+                                                // TimeOut
+                                                VerboseSender.getInstance().sendVerboseMessage("Failed to complete ESP cycle due to insufficient performance. Please consider upgrading your hardware or decreasing the update:_ticks if this message appears too often.", true, true);
+                                                canSee = true;
+
+                                                // We don't need to process all the other tasks now.
+                                                executor.shutdownNow();
                                             }
                                         }
-
-                                        if (foundBlockInCache)
-                                            continue;
-
-
-                                        final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
-
-                                        // No intersection found
-                                        if (intersect == 0)
-                                        {
-                                            canSee = true;
-                                            break;
-                                        }
-
-                                        lastIntersectionsCache.add(intersect);
                                     }
-
-                                    // No need to further calculate anything as the player can already be seen.
-                                    if (canSee)
-                                        break;
-
-                                    // Low probability to help after the camera view was changed. -> clearing
-                                    lastIntersectionsCache.clear();
                                 }
+
+                                executor.shutdown();
+
+                                // No need to further calculate anything as the player can already be seen.
+                                if (canSee)
+                                    break;
+
+                                // Low probability to help after the camera view was changed. -> clearing
+                                lastIntersectionsCache.clear();
                             }
                             else
                             {

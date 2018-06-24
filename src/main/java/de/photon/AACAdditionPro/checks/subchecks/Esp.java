@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.Configs;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.VectorUtils;
@@ -287,7 +288,10 @@ public class Esp implements ViolationModule
 
                     try
                     {
-                        pairExecutor.awaitTermination(updateMillis, TimeUnit.MILLISECONDS);
+                        if (!pairExecutor.awaitTermination(updateMillis, TimeUnit.MILLISECONDS))
+                        {
+                            VerboseSender.getInstance().sendVerboseMessage("Could not finish ESP cycle. Please consider upgrading your hardware or increasing the update_ticks option in the config if this message appears in large quantities.", false, true);
+                        }
                     } catch (InterruptedException e)
                     {
                         e.printStackTrace();

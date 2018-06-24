@@ -380,32 +380,35 @@ public class Esp implements ViolationModule
 
     private synchronized void updateHideMode(final User observer, final Player object, final HideMode hideMode)
     {
-        if (observer.getEspInformationData().hiddenPlayers.get(object) != hideMode)
-        {
-            switch (hideMode)
+        // unModifyInformation and modifyInformation are not thread-safe.
+        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
+            if (observer.getEspInformationData().hiddenPlayers.get(object) != hideMode)
             {
-                case FULL:
-                    observer.getEspInformationData().hiddenPlayers.put(object, HideMode.FULL);
-                    // FULL: fullHider active, informationOnlyHider inactive
-                    informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
-                    fullHider.modifyInformation(observer.getPlayer(), object);
-                    break;
-                case INFORMATION_ONLY:
-                    observer.getEspInformationData().hiddenPlayers.put(object, HideMode.INFORMATION_ONLY);
+                switch (hideMode)
+                {
+                    case FULL:
+                        observer.getEspInformationData().hiddenPlayers.put(object, HideMode.FULL);
+                        // FULL: fullHider active, informationOnlyHider inactive
+                        informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
+                        fullHider.modifyInformation(observer.getPlayer(), object);
+                        break;
+                    case INFORMATION_ONLY:
+                        observer.getEspInformationData().hiddenPlayers.put(object, HideMode.INFORMATION_ONLY);
 
-                    // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
-                    informationOnlyHider.modifyInformation(observer.getPlayer(), object);
-                    fullHider.unModifyInformation(observer.getPlayer(), object);
-                    break;
-                case NONE:
-                    observer.getEspInformationData().hiddenPlayers.remove(object);
+                        // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
+                        informationOnlyHider.modifyInformation(observer.getPlayer(), object);
+                        fullHider.unModifyInformation(observer.getPlayer(), object);
+                        break;
+                    case NONE:
+                        observer.getEspInformationData().hiddenPlayers.remove(object);
 
-                    // NONE: fullHider inactive, informationOnlyHider inactive
-                    informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
-                    fullHider.unModifyInformation(observer.getPlayer(), object);
-                    break;
+                        // NONE: fullHider inactive, informationOnlyHider inactive
+                        informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
+                        fullHider.unModifyInformation(observer.getPlayer(), object);
+                        break;
+                }
             }
-        }
+        });
     }
 
     @Override

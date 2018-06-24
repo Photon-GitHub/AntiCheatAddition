@@ -6,7 +6,6 @@ import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.configs.Configs;
-import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.VectorUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
@@ -41,8 +40,7 @@ public class Esp implements ViolationModule
     private double renderDistanceSquared = 0;
     private boolean hideAfterRenderDistance = true;
 
-    @LoadFromConfiguration(configPath = ".update_ticks")
-    private int update_ticks;
+    private int updateMillis;
 
     // The camera offset for 3rd person
     private static final double THIRD_PERSON_OFFSET = 5D;
@@ -71,6 +69,8 @@ public class Esp implements ViolationModule
     public void subEnable()
     {
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
+        final int updateTicks = AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".update_ticks");
+        updateMillis = 50 * updateTicks;
 
         final YamlConfiguration spigot = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration();
         final ConfigurationSection worlds = spigot.getConfigurationSection("world-settings");
@@ -287,14 +287,14 @@ public class Esp implements ViolationModule
 
                     try
                     {
-                        pairExecutor.awaitTermination(update_ticks * 50, TimeUnit.MILLISECONDS);
+                        pairExecutor.awaitTermination(updateMillis, TimeUnit.MILLISECONDS);
                     } catch (InterruptedException e)
                     {
                         e.printStackTrace();
                     }
                     pairExecutor.shutdown();
                     // Update_Ticks: the refresh-rate of the check.
-                }, 0L, update_ticks);
+                }, 0L, updateTicks);
     }
 
     @EventHandler

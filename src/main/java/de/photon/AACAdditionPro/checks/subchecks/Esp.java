@@ -378,7 +378,7 @@ public class Esp implements ViolationModule
         updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), hideMode);
     }
 
-    private void updateHideMode(final User observer, final Player object, final HideMode hideMode)
+    private synchronized void updateHideMode(final User observer, final Player object, final HideMode hideMode)
     {
         if (observer.getEspInformationData().hiddenPlayers.get(object) != hideMode)
         {

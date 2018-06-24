@@ -346,11 +346,11 @@ public class Esp implements ViolationModule
         // Normal
         vectors[0] = eyeLocation.toVector();
 
-// Do the Cameras intersect with Blocks
-// Get the length of the first intersection or 0 if there is none
+        // Do the Cameras intersect with Blocks
+        // Get the length of the first intersection or 0 if there is none
 
-// [0] = frontIntersection
-// [1] = behindIntersection
+        // [0] = frontIntersection
+        // [1] = behindIntersection
         final double[] intersections = new double[]{
                 VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[1]),
                 VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[2])

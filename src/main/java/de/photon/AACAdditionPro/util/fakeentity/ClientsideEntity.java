@@ -177,9 +177,12 @@ public abstract class ClientsideEntity
             moveToLocation = this.calculateTeleportLocation();
         }
 
-        final boolean teleport = this.currentMovementCalculator.isTPNeeded() || this.needsTeleport;
+        if (this.currentMovementCalculator.isTPNeeded())
+        {
+            this.needsTeleport = true;
+        }
 
-        if (teleport)
+        if (this.needsTeleport)
         {
             this.move(Collision.getClosestFreeSpaceYAxis(moveToLocation, this.hitbox));
         }
@@ -192,7 +195,7 @@ public abstract class ClientsideEntity
 
         // ------------------------------------------ Velocity system -----------------------------------------------//
 
-        if (teleport)
+        if (this.needsTeleport)
         {
             // Velocity reset on teleport.
             this.velocity.zero();

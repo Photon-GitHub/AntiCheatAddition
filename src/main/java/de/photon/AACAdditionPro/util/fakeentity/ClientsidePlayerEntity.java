@@ -28,6 +28,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private final boolean shouldAssignTeam;
     private final boolean shouldSwing;
     private boolean shouldSwap;
+    private final boolean onlineProfile;
 
     @Getter
     private final WrappedGameProfile gameProfile;
@@ -47,12 +48,13 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     private final Equipment equipment;
 
-    public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile)
+    public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, boolean onlineProfile)
     {
         super(observedPlayer, Hitbox.PLAYER, new BasicFollowMovement());
 
         // Get skin data and name
         this.gameProfile = gameProfile;
+        this.onlineProfile = onlineProfile;
 
         // EquipmentData
         this.equipment = new Equipment(this, ServerVersion.getClientServerVersion(observedPlayer) != ServerVersion.MC188);
@@ -270,7 +272,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         {
             this.recursiveUpdatePing();
         }
-        else
+        else if (!this.onlineProfile)
         {
             this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, this.ping);
         }
@@ -289,7 +291,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         if (isSpawned())
         {
-            if (this.visible_in_tablist)
+            if (this.visible_in_tablist && !this.onlineProfile)
             {
                 this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, 0);
             }

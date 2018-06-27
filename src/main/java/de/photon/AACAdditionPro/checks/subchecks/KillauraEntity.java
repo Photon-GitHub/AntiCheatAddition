@@ -140,6 +140,7 @@ public class KillauraEntity implements ViolationModule, Listener
             }
 
             // No profile was set by the API
+            boolean onlineProfile = preferOnlineProfiles;
             if (gameProfile == null)
             {
                 gameProfile = this.getGameProfile(user.getPlayer(), preferOnlineProfiles);
@@ -147,6 +148,7 @@ public class KillauraEntity implements ViolationModule, Listener
                 if (gameProfile == null)
                 {
                     gameProfile = this.getGameProfile(user.getPlayer(), false);
+                    onlineProfile = false;
 
                     if (gameProfile == null)
                     {
@@ -161,6 +163,7 @@ public class KillauraEntity implements ViolationModule, Listener
             final WrappedGameProfile resultingGameProfile = gameProfile;
             final MovementType finalMovementType = movementType;
 
+            final boolean resultingOnline = onlineProfile;
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
                 // Make sure no NPE is thrown because the player logged out.
                 if (User.isUserInvalid(user))
@@ -169,7 +172,7 @@ public class KillauraEntity implements ViolationModule, Listener
                 }
 
                 // Create the new Entity with the resultingGameProfile
-                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(user.getPlayer(), resultingGameProfile);
+                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(user.getPlayer(), resultingGameProfile, resultingOnline);
 
                 // Set the MovementType
                 playerEntity.setMovement(finalMovementType);

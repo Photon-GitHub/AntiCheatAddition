@@ -464,7 +464,7 @@ PacketAnalysis:
          # cheater activates Freecam or Blink on your server when changing this.
          # Low values make the detection faster and more effective, but may cause problems with fluctuating connections.
          # Measured in milliseconds
-         detection_millis: 1500
+         detection_millis: 2500
    # Map of violation levels to command
    thresholds:
       11: "aacstaffnotify {player} in {world} is suspected by PacketAnalysis"

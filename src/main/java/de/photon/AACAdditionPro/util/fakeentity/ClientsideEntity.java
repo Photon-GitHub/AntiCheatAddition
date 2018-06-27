@@ -182,26 +182,22 @@ public abstract class ClientsideEntity
             this.needsTeleport = true;
         }
 
+        // ------------------------------------------ Velocity system -----------------------------------------------//
+
         if (this.needsTeleport)
         {
             this.move(Collision.getClosestFreeSpaceYAxis(moveToLocation, this.hitbox));
+
+            // Velocity reset on teleport.
+            this.velocity.zero();
+            this.needsTeleport = false;
         }
         else
         {
             // Only set the x- and the z- axis (y should be handled by autojumping).
             final Location moveVelocity = moveToLocation.subtract(this.location);
             this.velocity.setX(moveVelocity.getX()).setZ(moveVelocity.getZ());
-        }
 
-        // ------------------------------------------ Velocity system -----------------------------------------------//
-
-        if (this.needsTeleport)
-        {
-            // Velocity reset on teleport.
-            this.velocity.zero();
-        }
-        else
-        {
             final Vector collidedVelocity = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);
             this.location = this.location.add(collidedVelocity);
 

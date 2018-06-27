@@ -6,9 +6,9 @@ import org.bukkit.Location;
 public class StayMovement implements Movement
 {
     @Override
-    public Location calculate(Location playerLocation, Location old)
+    public Location calculate(Location playerLocation, Location oldEntityLocation)
     {
-        return old.clone();
+        return oldEntityLocation.clone();
     }
 
     @Override

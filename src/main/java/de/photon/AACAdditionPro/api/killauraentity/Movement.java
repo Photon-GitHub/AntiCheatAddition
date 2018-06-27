@@ -12,16 +12,22 @@ public interface Movement
     /**
      * Calculate the next position where the entity should be
      *
-     * @param playerLocation the current position of the observed player.
-     * @param old            the last location of the entity.
+     * @param playerLocation    the current position of the observed player.
+     * @param oldEntityLocation the last location of the entity.
      *
      * @return the new position of the entity or null when this state has no more movements to offer
      */
-    Location calculate(Location playerLocation, Location old);
+    Location calculate(Location playerLocation, Location oldEntityLocation);
 
+    /**
+     * Whether or not the entity should sprint in the next tick
+     */
     boolean shouldSprint();
 
     boolean jumpIfCollidedHorizontally();
 
+    /**
+     * Whether or not the entity should tp in the next tick
+     */
     boolean isTPNeeded();
 }

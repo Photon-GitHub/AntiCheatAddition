@@ -15,7 +15,7 @@ public class BasicFollowMovement implements Movement
     private boolean shouldSprint;
 
     @Override
-    public Location calculate(Location playerLocation, Location old)
+    public Location calculate(Location playerLocation, Location oldEntityLocation)
     {
         // Create copy of the location to work with.
         final Location playerWorkLocation = playerLocation.clone();
@@ -32,7 +32,7 @@ public class BasicFollowMovement implements Movement
                                                          -(MathUtils.randomBoundaryDouble(entityOffset, offsetRandomizationRange))
                                                           ));
 
-        final double lengthSquared = Math.max(old.distanceSquared(playerWorkLocation), playerLocation.distanceSquared(playerWorkLocation));
+        final double lengthSquared = Math.max(oldEntityLocation.distanceSquared(playerWorkLocation), playerLocation.distanceSquared(playerWorkLocation));
         isTPNeeded = lengthSquared > 64;
         shouldSprint = !isTPNeeded && lengthSquared > 25;
 

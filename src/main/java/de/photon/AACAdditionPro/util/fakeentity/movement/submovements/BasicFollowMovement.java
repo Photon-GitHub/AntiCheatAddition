@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.util.fakeentity.movement.submovements;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.api.killauraentity.Movement;
-import de.photon.AACAdditionPro.api.killauraentity.MovementType;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.Location;
 
@@ -38,12 +37,6 @@ public class BasicFollowMovement implements Movement
         shouldSprint = !isTPNeeded && lengthSquared > 25;
 
         return playerWorkLocation;
-    }
-
-    @Override
-    public MovementType getMovementType()
-    {
-        return MovementType.BASIC_FOLLOW;
     }
 
     @Override

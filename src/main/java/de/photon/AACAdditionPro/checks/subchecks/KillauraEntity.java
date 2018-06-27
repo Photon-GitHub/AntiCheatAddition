@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
-import de.photon.AACAdditionPro.api.killauraentity.MovementType;
+import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
@@ -118,7 +118,7 @@ public class KillauraEntity implements ViolationModule, Listener
             }
 
             WrappedGameProfile gameProfile = null;
-            MovementType movementType = MovementType.BASIC_FOLLOW;
+            Movement movement = Movement.BASIC_FOLLOW_MOVEMENT;
 
             // Ask API endpoint for valid profiles
             KillauraEntityAddon killauraEntityAddon = AACAdditionPro.getInstance().getKillauraEntityAddon();
@@ -127,11 +127,11 @@ public class KillauraEntity implements ViolationModule, Listener
                 try
                 {
                     gameProfile = killauraEntityAddon.getKillauraEntityGameProfile(user.getPlayer());
-                    final MovementType potentialMovementType = killauraEntityAddon.getController().getMovementType();
+                    final Movement potentialMovement = killauraEntityAddon.getController().getMovement();
 
-                    if (potentialMovementType != null)
+                    if (potentialMovement != null)
                     {
-                        movementType = potentialMovementType;
+                        movement = potentialMovement;
                     }
                 } catch (Throwable t)
                 {
@@ -161,7 +161,7 @@ public class KillauraEntity implements ViolationModule, Listener
 
             // Make it final for the use in a lambda
             final WrappedGameProfile resultingGameProfile = gameProfile;
-            final MovementType finalMovementType = movementType;
+            final Movement finalMovement = movement;
 
             final boolean resultingOnline = onlineProfile;
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
@@ -175,7 +175,7 @@ public class KillauraEntity implements ViolationModule, Listener
                 final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(user.getPlayer(), resultingGameProfile, resultingOnline);
 
                 // Set the MovementType
-                playerEntity.setMovement(finalMovementType);
+                playerEntity.setCurrentMovementCalculator(finalMovement);
 
                 // Set it as the user's active entity
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
@@ -348,9 +348,9 @@ public class KillauraEntity implements ViolationModule, Listener
             }
 
             @Override
-            public MovementType getMovementType()
+            public Movement getMovement()
             {
-                return MovementType.BASIC_FOLLOW;
+                return Movement.BASIC_FOLLOW_MOVEMENT;
             }
         });
 

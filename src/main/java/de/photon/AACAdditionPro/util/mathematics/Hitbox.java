@@ -44,7 +44,8 @@ public enum Hitbox
      */
     public Vector[] getCalculationVectors(final Location location, final boolean addCenterVectors)
     {
-        final Vector[] vectors = new Vector[addCenterVectors ? (int) (8 + (this.height / 0.47)) : 8];
+        // 9 because the +0 y - vector in the beginning is not calculated by the division.
+        final Vector[] vectors = new Vector[addCenterVectors ? (int) (9 + (this.height / 0.47)) : 8];
         byte currentIndex = 0;
 
         final Vector start = location.toVector();

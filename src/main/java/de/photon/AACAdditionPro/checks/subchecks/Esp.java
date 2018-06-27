@@ -146,7 +146,7 @@ public class Esp implements ViolationModule
                         final double pairDistanceSquared = pair.usersOfPair[0].getPlayer().getLocation().distanceSquared(pair.usersOfPair[1].getPlayer().getLocation());
 
                         final Pair currentPair = pair;
-                        pairExecutor.submit(() -> {
+                        pairExecutor.execute(() -> {
                             // Less than 1 block distance
                             // Everything (smaller than 1)^2 will result in something smaller than 1
                             if (pairDistanceSquared < 1)
@@ -286,6 +286,8 @@ public class Esp implements ViolationModule
                         });
                     }
 
+                    pairExecutor.shutdown();
+
                     try
                     {
                         if (!pairExecutor.awaitTermination(updateMillis, TimeUnit.MILLISECONDS))
@@ -296,7 +298,6 @@ public class Esp implements ViolationModule
                     {
                         e.printStackTrace();
                     }
-                    pairExecutor.shutdown();
                     // Update_Ticks: the refresh-rate of the check.
                 }, 0L, updateTicks);
     }

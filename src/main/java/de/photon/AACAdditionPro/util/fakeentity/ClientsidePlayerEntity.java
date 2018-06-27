@@ -5,9 +5,9 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.util.fakeentity.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.fakeentity.equipment.Equipment;
-import de.photon.AACAdditionPro.util.fakeentity.movement.submovements.BasicFollowMovement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
@@ -50,7 +50,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
     public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, boolean onlineProfile)
     {
-        super(observedPlayer, Hitbox.PLAYER, new BasicFollowMovement());
+        super(observedPlayer, Hitbox.PLAYER, Movement.BASIC_FOLLOW_MOVEMENT);
 
         // Get skin data and name
         this.gameProfile = gameProfile;

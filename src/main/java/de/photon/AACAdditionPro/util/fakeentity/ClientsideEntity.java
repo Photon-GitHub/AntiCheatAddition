@@ -3,14 +3,12 @@ package de.photon.AACAdditionPro.util.fakeentity;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.api.killauraentity.MovementType;
+import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Collision;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
-import de.photon.AACAdditionPro.util.fakeentity.movement.Movement;
-import de.photon.AACAdditionPro.util.fakeentity.movement.submovements.StayMovement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
@@ -38,10 +36,8 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 
 public abstract class ClientsideEntity
 {
@@ -105,19 +101,23 @@ public abstract class ClientsideEntity
     private int tickTask = -1;
 
     // Movement state machine
-    private final Set<Movement> movementStates = new HashSet<>();
+    @Setter
     private Movement currentMovementCalculator;
 
-    public ClientsideEntity(final Player observedPlayer, Hitbox hitbox)
+    /**
+     * Constructs a new {@link ClientsideEntity}.
+     *
+     * @param observedPlayer the player that should see this {@link ClientsideEntity}
+     * @param hitbox         the {@link Hitbox} of this {@link ClientsideEntity}
+     * @param movement       the {@link Movement} of this {@link ClientsideEntity}.
+     */
+    public ClientsideEntity(final Player observedPlayer, final Hitbox hitbox, final Movement movement)
     {
         this.observedPlayer = observedPlayer;
         this.hitbox = hitbox;
 
-        // Add all movements to the list
-        this.movementStates.add(new StayMovement());
-
         // Set default movement state
-        this.setMovement(MovementType.STAY);
+        this.currentMovementCalculator = movement;
 
         tickTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::tick, 1L, 1L);
 
@@ -129,17 +129,6 @@ public abstract class ClientsideEntity
         {
             throw new RuntimeException("Could not create ClientsideEntity for player " + observedPlayer.getName(), ex);
         }
-    }
-
-    /**
-     * Constructs a {@link ClientsideEntity} with additional possible {@link Movement}s.
-     *
-     * @param possibleMovements the additional {@link Movement}s the entity should be capable of. The {@link StayMovement} is added by default and should not be provided in the
-     */
-    public ClientsideEntity(final Player observedPlayer, Hitbox hitbox, Movement... possibleMovements)
-    {
-        this(observedPlayer, hitbox);
-        Collections.addAll(this.movementStates, possibleMovements);
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //
@@ -168,14 +157,7 @@ public abstract class ClientsideEntity
 
         // ------------------------------------------ Movement system -----------------------------------------------//
         // Get the next position and move
-        Location moveToLocation = this.currentMovementCalculator.calculate(this.observedPlayer.getLocation(), this.location.clone());
-
-        // Backup-Movement
-        if (moveToLocation == null)
-        {
-            this.setMovement(MovementType.STAY);
-            moveToLocation = this.calculateTeleportLocation();
-        }
+        final Location moveToLocation = Objects.requireNonNull(this.currentMovementCalculator.calculate(this.observedPlayer.getLocation(), this.location.clone()), "Movement did not calculate a valid location.");
 
         if (this.currentMovementCalculator.isTPNeeded())
         {
@@ -415,24 +397,6 @@ public abstract class ClientsideEntity
     public void setVelocity(Vector velocity)
     {
         this.velocity = velocity.clone();
-    }
-
-    /**
-     * Sets the {@link Movement} of this entity by the {@link MovementType}.
-     *
-     * @throws IllegalArgumentException if the Entity is not supporting the requested {@link Movement}.
-     */
-    public void setMovement(MovementType movementType)
-    {
-        for (Movement movement : movementStates)
-        {
-            if (movement.getMovementType() == movementType)
-            {
-                this.currentMovementCalculator = movement;
-                return;
-            }
-        }
-        throw new IllegalArgumentException("The Entity does not support the MovementType " + movementType.name());
     }
 
     public Movement getMovement()

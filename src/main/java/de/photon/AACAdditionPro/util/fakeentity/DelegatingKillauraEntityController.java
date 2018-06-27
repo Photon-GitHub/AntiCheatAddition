@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.util.fakeentity;
 
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
-import de.photon.AACAdditionPro.api.killauraentity.MovementType;
+import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -37,9 +37,9 @@ public class DelegatingKillauraEntityController implements KillauraEntityControl
     }
 
     @Override
-    public MovementType getMovementType()
+    public Movement getMovement()
     {
-        return MovementType.STAY;
+        return Movement.STAY_MOVEMENT;
     }
 
     @Override

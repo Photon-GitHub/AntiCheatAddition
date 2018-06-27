@@ -216,7 +216,9 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             {
                 // FLYING is only sent if the player does not move (both body and head).
                 if (!user.getPositionData().hasPlayerMovedRecently(detectionMillis, PositionData.MovementType.ANY) &&
-                    !user.getPacketAnalysisData().recentlyUpdated(0, detectionMillis))
+                    !user.getPacketAnalysisData().recentlyUpdated(0, detectionMillis) &&
+                    // False positives e.g. in the void or in the air.
+                    !user.getPlayer().isDead())
                 {
                     VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " may be manipulating time on a protocol level.");
                     vlManager.flag(user.getPlayer(), 2, -1, () -> {}, () -> {});

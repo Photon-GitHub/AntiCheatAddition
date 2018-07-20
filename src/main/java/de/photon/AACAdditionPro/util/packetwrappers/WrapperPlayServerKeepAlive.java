@@ -29,8 +29,8 @@ public class WrapperPlayServerKeepAlive extends AbstractPacket
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
-                return handle.getIntegers().read(0);
             case MC111:
+                return handle.getIntegers().read(0);
             case MC112:
                 return handle.getLongs().read(0);
             default:
@@ -48,9 +48,9 @@ public class WrapperPlayServerKeepAlive extends AbstractPacket
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
+            case MC111:
                 handle.getIntegers().write(0, (int) value);
                 break;
-            case MC111:
             case MC112:
                 handle.getLongs().write(0, value);
                 break;

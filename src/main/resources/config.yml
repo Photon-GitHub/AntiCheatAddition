@@ -179,9 +179,11 @@ ImpossibleChat:
       8: "aackick {player} ImpossibleChat"
 
 # The inventory heuristics provide a neural network framework to detect advanced inventory cheats.
+# This check is currently rewritten and therefore EXPERIMENTAL
 InventoryHeuristics:
    # Do you want to enable the InventoryHeuristics
-   enabled: true
+   # Disabled as the check is currently experimental
+   enabled: false
    # The min confidence a single pattern must have to count as detection
    detection_confidence: 55.0
    # This will allow you to access all of the framework, including the creation of your own heuristics and training them.
@@ -254,9 +256,12 @@ InventoryRotation:
 #
 # This check can cause performance problems as it needs to calculate movement, select equipment and take many more
 # actions to make the entities mostly bypass-proof. If you encounter TPS drops try to disable this check first.
+#
+# This check currently undergoes an overall rewrite, thus it is currently IN BETA
 KillauraEntity:
    # Do you want to enable the KillauraEntity check
-   enabled: true
+   # Disabled by default as this check is currently rewritten.
+   enabled: false
    # Enable this to only spawn an entity if requested by a command.
    # In order to use the command you are required to set this to true.
    # The entity will remain invisible until the command is issued.

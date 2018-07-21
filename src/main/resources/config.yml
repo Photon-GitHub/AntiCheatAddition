@@ -114,8 +114,8 @@ AutoPotion:
 Esp:
    # Do you want to enable the ESP check
    #
-   # If your server has more than 45 players in one world within its render distance the ESP check will create a
-   # medium - high CPU load
+   # If your server has more than 40 (single core CPU) to 250 (32 core CPU) players in one world within its render
+   # distance the ESP check will create a medium - high CPU load
    enabled: true
    # After this amount of ticks the positions will be updated again
    update_ticks: 3

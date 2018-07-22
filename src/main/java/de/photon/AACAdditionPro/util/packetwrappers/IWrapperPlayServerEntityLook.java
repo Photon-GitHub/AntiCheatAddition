@@ -1,6 +1,8 @@
 package de.photon.AACAdditionPro.util.packetwrappers;
 
 
+import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
+
 public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOnGround
 {
     default int getByteOffset()
@@ -15,7 +17,7 @@ public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOn
      */
     default float getYaw()
     {
-        return getHandle().getBytes().read(getByteOffset()) * 360.0F / 256.0F;
+        return RotationUtil.convertFixedRotation(getHandle().getBytes().read(getByteOffset()));
     }
 
     /**
@@ -25,7 +27,7 @@ public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOn
      */
     default void setYaw(float value)
     {
-        getHandle().getBytes().write(getByteOffset(), (byte) (value * 256.0F / 360.0F));
+        getHandle().getBytes().write(getByteOffset(), RotationUtil.getFixRotation(value));
     }
 
     /**
@@ -35,7 +37,7 @@ public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOn
      */
     default float getPitch()
     {
-        return (getHandle().getBytes().read(1 + getByteOffset()) * 360.F) / 256.0F;
+        return RotationUtil.convertFixedRotation(getHandle().getBytes().read(1 + getByteOffset()));
     }
 
     /**
@@ -45,6 +47,6 @@ public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOn
      */
     default void setPitch(float value)
     {
-        getHandle().getBytes().write(1 + getByteOffset(), (byte) (value * 256.0F / 360.0F));
+        getHandle().getBytes().write(1 + getByteOffset(), RotationUtil.getFixRotation(value));
     }
 }

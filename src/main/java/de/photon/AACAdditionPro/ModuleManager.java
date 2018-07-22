@@ -37,17 +37,18 @@ public class ModuleManager extends ArrayList<Module>
         {
             // Save what should be written in the current path (no error) in this variable.
             final String pathOutput;
-            // Enabled in the config
-            if (AACAdditionPro.getInstance().getConfig().getBoolean(object.getConfigString() + ".enabled"))
+
+            // Supports the current server version
+            if (ServerVersion.supportsActiveServerVersion(object.getSupportedVersions()))
             {
-                // Supports the current server version
-                if (ServerVersion.supportsActiveServerVersion(object.getSupportedVersions()))
+                // Add this to the list of checks (toggleable in the API)
+                this.add(object);
+
+                // Enabled in the config
+                if (AACAdditionPro.getInstance().getConfig().getBoolean(object.getConfigString() + ".enabled"))
                 {
                     if (object.getDependencies().stream().allMatch(dependency -> Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)))
                     {
-                        // Enable
-                        this.add(object);
-
                         object.enable();
                         pathOutput = " has been enabled.";
                     }
@@ -58,21 +59,21 @@ public class ModuleManager extends ArrayList<Module>
                 }
                 else
                 {
-                    pathOutput = " is not compatible with your server version.";
+                    // Disable as it was chosen so in the config
+                    // Do not remove here as one might want to enable the check via the API
+                    pathOutput = " was chosen not to be enabled.";
                 }
             }
             else
             {
-                // Disable as it was chosen so in the config
-                // Do not remove here as one might want to enable the check via the API
-                pathOutput = " was chosen not to be enabled.";
+                pathOutput = " is not compatible with your server version.";
             }
 
-            VerboseSender.sendVerboseMessage(object.getName() + pathOutput, true, false);
+            VerboseSender.getInstance().sendVerboseMessage(object.getName() + pathOutput, true, false);
         } catch (final Exception e)
         {
             // Error handling
-            VerboseSender.sendVerboseMessage(object.getName() + " could not be registered.", true, true);
+            VerboseSender.getInstance().sendVerboseMessage(object.getName() + " could not be registered.", true, true);
             e.printStackTrace();
         }
     }
@@ -150,6 +151,6 @@ public class ModuleManager extends ArrayList<Module>
         }
 
         // Send / log the message
-        VerboseSender.sendVerboseMessage(stringBuilder.toString());
+        VerboseSender.getInstance().sendVerboseMessage(stringBuilder.toString());
     }
 }

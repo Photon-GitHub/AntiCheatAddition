@@ -43,11 +43,11 @@ public class LogBot implements Module, Runnable
                                 {
                                     if (file.delete())
                                     {
-                                        VerboseSender.sendVerboseMessage("Deleted " + nameOfFile);
+                                        VerboseSender.getInstance().sendVerboseMessage("Deleted " + nameOfFile);
                                     }
                                     else
                                     {
-                                        VerboseSender.sendVerboseMessage("Could not delete old file " + nameOfFile, true, true);
+                                        VerboseSender.getInstance().sendVerboseMessage("Could not delete old file " + nameOfFile, true, true);
                                     }
                                 }
                             }
@@ -55,7 +55,7 @@ public class LogBot implements Module, Runnable
                     }
                     else
                     {
-                        VerboseSender.sendVerboseMessage("Could not find log folder " + logFolder.getName(), true, true);
+                        VerboseSender.getInstance().sendVerboseMessage("Could not find log folder " + logFolder.getName(), true, true);
                     }
                 });
     }

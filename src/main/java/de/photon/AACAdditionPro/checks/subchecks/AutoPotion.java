@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
@@ -15,8 +16,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 public class AutoPotion implements Listener, ViolationModule
@@ -148,6 +147,6 @@ public class AutoPotion implements Listener, ViolationModule
     @Override
     public Set<ServerVersion> getSupportedVersions()
     {
-        return new HashSet<>(Arrays.asList(ServerVersion.MC110, ServerVersion.MC111, ServerVersion.MC112));
+        return ImmutableSet.of(ServerVersion.MC111, ServerVersion.MC112, ServerVersion.MC113);
     }
 }

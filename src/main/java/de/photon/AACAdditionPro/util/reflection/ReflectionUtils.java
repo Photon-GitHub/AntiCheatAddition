@@ -4,7 +4,6 @@ import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public final class ReflectionUtils
@@ -21,41 +20,43 @@ public final class ReflectionUtils
         return versionNumber;
     }
 
-    public static List<AxisAlignedBB> getCollisionBoxes(Entity entity, AxisAlignedBB boundingBox)
+    public static AxisAlignedBB[] getCollisionBoxes(Entity entity, AxisAlignedBB boundingBox)
     {
         // First we need a NMS bounding box
-        Object nmsAxisAlignedBB = Reflect
+        final Object nmsAxisAlignedBB = Reflect
                 .fromNMS("AxisAlignedBB")
                 .constructor(double.class, double.class, double.class, double.class, double.class, double.class)
                 .instance(boundingBox.getMaxX(), boundingBox.getMaxY(), boundingBox.getMaxZ(),
                           boundingBox.getMinX(), boundingBox.getMinY(), boundingBox.getMinZ());
 
         // Now we need the NMS entity of the player (since the bot has none)
-        Object nmsHandle = Reflect
+        final Object nmsHandle = Reflect
                 .from(entity.getClass())
                 .method("getHandle")
                 .invoke(entity);
 
         // Now we need to call getCubes(Entity, AxisAlignedBB) on the world
-        Object nmsWorld = Reflect
+        final Object nmsWorld = Reflect
                 .fromOBC("CraftWorld")
                 .field("world")
                 .from(entity.getWorld())
                 .as(Object.class);
 
-        Object returnVal = Reflect
+        // Get all the cubes
+        final List boxList = (List) Reflect
                 .fromNMS("World")
                 .method("getCubes")
                 .invoke(nmsWorld, nmsHandle, nmsAxisAlignedBB);
 
-        // Now lets see what we got
-        List<AxisAlignedBB> boxes = new ArrayList<>();
-        List list = (List) returnVal;
-        for (Object nmsAABB : list) {
-            // nmsAABB is a NMS AxisAlignedBB
-            boxes.add(AxisAlignedBB.fromNms(nmsAABB));
-        }
+        // Transfer them to an AxisAlignedBBs array.
+        final AxisAlignedBB[] boxes = new AxisAlignedBB[boxList.size()];
+        int index = 0;
 
+        for (Object nmsAABB : boxList)
+        {
+            // nmsAABB is a NMS AxisAlignedBB
+            boxes[index++] = (AxisAlignedBB.fromNms(nmsAABB));
+        }
         return boxes;
     }
 

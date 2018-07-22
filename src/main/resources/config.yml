@@ -110,17 +110,22 @@ AutoPotion:
 # - Equipment-Hider: If a player cannot be directly seen by another player his equipment (hand, armour) will be hidden
 #                    from the observer. (This will make the life of cheaters harder as they cannot properly estimate
 #                    the combat strength of a player)
-#                    This part will automatically disable itself on servers with MC versions below 1.10.
+#                    This part will automatically disable itself on servers with MC versions below 1.11.
 Esp:
    # Do you want to enable the ESP check
    #
-   # If your server has more than 45 players in one world within its render distance the ESP check will create a
-   # medium - high CPU load
+   # If your server has more a lot of players in one world within its render distance the ESP check will create a
+   # medium - high CPU load.
    #
-   # Chaotic situations with lots of randomly placed blocks floating in midair might cause internal spigot
-   # BlockIterators to return undesired results, thus hiding otherwise visible players.
-   # I will recode this check once I have more time again.
-   enabled: false
+   # Approximate maximum player table for a certain amount of cores to not lag the server:
+   # 1 Core   | 40 Players
+   # 2 Cores  | 60 Players
+   # 4 Cores  | 90 Players
+   # 8 Cores  | 120 Players
+   # 16 Cores | 170 Players
+   # 32 Cores | 250 Players
+   # 64 Cores | 350 Players
+   enabled: true
    # After this amount of ticks the positions will be updated again
    update_ticks: 3
 
@@ -183,9 +188,11 @@ ImpossibleChat:
       8: "aackick {player} ImpossibleChat"
 
 # The inventory heuristics provide a neural network framework to detect advanced inventory cheats.
+# This check is currently rewritten and therefore EXPERIMENTAL
 InventoryHeuristics:
    # Do you want to enable the InventoryHeuristics
-   enabled: true
+   # Disabled as the check is currently experimental
+   enabled: false
    # The min confidence a single pattern must have to count as detection
    detection_confidence: 55.0
    # This will allow you to access all of the framework, including the creation of your own heuristics and training them.
@@ -258,15 +265,21 @@ InventoryRotation:
 #
 # This check can cause performance problems as it needs to calculate movement, select equipment and take many more
 # actions to make the entities mostly bypass-proof. If you encounter TPS drops try to disable this check first.
+#
+# This check currently undergoes an overall rewrite, thus it is currently IN BETA
 KillauraEntity:
    # Do you want to enable the KillauraEntity check
-   enabled: true
+   # Disabled by default as this check is currently rewritten.
+   enabled: false
    # Enable this to only spawn an entity if requested by a command.
    # In order to use the command you are required to set this to true.
    # The entity will remain invisible until the command is issued.
    #
-   # Please be aware that this will allow for
+   # Please be aware that this will allow some bypasses.
    on_command: false
+   # If enabled AACAdditionPro will try to create entities of already online players.
+   # If you enable this and only one player is online he will not see his entity in the tablist.
+   prefer_online_profiles: true
    # This will ensure that entities will change their identities after a certain period of time
    # This option is the minimum time before an entity can change its identity, the real time is randomized.
    #
@@ -284,14 +297,22 @@ KillauraEntity:
       # WARNING: Disabling this setting will make the entity VERY easy to bypass.
       #          ANY BYPASSES REPORTED WITH THIS SET TO 'FALSE' WILL BE CLOSED!
       visible_in_tablist: true
-      # Should the entity join a team
       team:
+         # Should the entity join a team
          enabled: true
-      # Should the entity swap the items it is wearing and using
+         # This will allow you to set certain preferred teams.
+         # Example:
+         #
+         # preferred_teams:
+         #    - "Player"
+         #    - "VIP"
+         #    - "MVP"
+         preferred_teams: {}
       swap:
+         # Should the entity swap the items it is wearing and using
          enabled: true
-      # Should the entity swing items to simulate an attack
       swing:
+         # Should the entity swing items to simulate an attack
          enabled: true
    # Here you can find all options regarding the positioning of the entity
    position:
@@ -300,9 +321,6 @@ KillauraEntity:
       # How much randomized offset should at most be added to entityOffset (measured in blocks)
       # This must be greater than 0
       offsetRandomizationRange: 0.2
-      # This prevents the entity from floating directly over / under a player, therefore preventing distraction and
-      # willingly caused false positives (measured in blocks)
-      minXZDifference: 1.55
    # Here you can choose the equipment of your entity.
    # For the best setup only choose equipment a normal player can obtain.
    # If the API is used it will override the decisions you made here.
@@ -408,6 +426,9 @@ PacketAnalysis:
          allowed_offset: 120
          # How many violations Compare will ignore before starting to flag
          compare_threshold: 2
+         # The minimum time between two violations to prevent excessive flagging in lag spikes
+         # Measured in milliseconds
+         violation_time: 10000
       # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
       # This will catch several scaffold, tower, killaura and aimbot modifications.
       EqualRotation:
@@ -457,7 +478,7 @@ PacketAnalysis:
          # cheater activates Freecam or Blink on your server when changing this.
          # Low values make the detection faster and more effective, but may cause problems with fluctuating connections.
          # Measured in milliseconds
-         detection_millis: 1500
+         detection_millis: 2500
    # Map of violation levels to command
    thresholds:
       11: "aacstaffnotify {player} in {world} is suspected by PacketAnalysis"

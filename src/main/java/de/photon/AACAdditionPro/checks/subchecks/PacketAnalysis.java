@@ -37,6 +37,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
     private int allowedOffset;
     @LoadFromConfiguration(configPath = ".parts.Compare.compare_threshold")
     private int compareThreshold;
+    @LoadFromConfiguration(configPath = ".parts.Compare.violation_time")
+    private int violationTime;
 
     @LoadFromConfiguration(configPath = ".parts.EqualRotatíon.enabled")
     private boolean equalRotation;
@@ -97,7 +99,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 user.getPacketAnalysisData().getKeepAlives().size() > PacketAnalysisData.KEEPALIVE_QUEUE_SIZE &&
                 !user.getPacketAnalysisData().getKeepAlives().remove(0).hasRegisteredResponse())
             {
-                VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " ignored KeepAlive packet.");
+                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " ignored KeepAlive packet.");
                 vlManager.flag(user.getPlayer(), 10, -1, () -> {}, () -> {});
             }
         }
@@ -139,7 +141,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             }
             else
             {
-                VerboseSender.sendVerboseMessage("PacketAnalysisData: received invalid packet: " + event.getPacketType().toString(), true, true);
+                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData: received invalid packet: " + event.getPacketType().toString(), true, true);
                 return;
             }
 
@@ -156,7 +158,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 // Labymod fp when standing still / hit in corner fp
                 user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
             {
-                VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.");
+                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.");
                 vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
             }
             else
@@ -188,7 +190,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 // A packet with the same data must have been sent before.
                 if (keepAlivePacketData == null)
                 {
-                    VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
+                    VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
                     vlManager.flag(user.getPlayer(), 20, -1, () -> {}, () -> {});
                 }
                 else
@@ -202,7 +204,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                         final int offset = (PacketAnalysisData.KEEPALIVE_QUEUE_SIZE - 1) - index;
                         if (offset > 0)
                         {
-                            VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent packets out of order with an offset of: " + offset);
+                            VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent packets out of order with an offset of: " + offset);
                             vlManager.flag(user.getPlayer(), Math.min((PacketAnalysisData.KEEPALIVE_QUEUE_SIZE - index) * 2, 10), -1, () -> {}, () -> {});
                         }
                     }
@@ -214,9 +216,13 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             {
                 // FLYING is only sent if the player does not move (both body and head).
                 if (!user.getPositionData().hasPlayerMovedRecently(detectionMillis, PositionData.MovementType.ANY) &&
-                    !user.getPacketAnalysisData().recentlyUpdated(0, detectionMillis))
+                    !user.getPacketAnalysisData().recentlyUpdated(0, detectionMillis) &&
+                    // False positives e.g. in the void or in the air.
+                    !user.getPlayer().isDead() &&
+                    // This check will cause false positives with client versions higher than 1.8.8
+                    ServerVersion.getClientServerVersion(user.getPlayer()) == ServerVersion.MC188)
                 {
-                    VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " may be manipulating time on a protocol level.");
+                    VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " may be manipulating time on a protocol level.");
                     vlManager.flag(user.getPlayer(), 2, -1, () -> {}, () -> {});
                 }
             }
@@ -238,12 +244,18 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                             user.getPacketAnalysisData().recentKeepAliveResponseTime(),
                             user.getPacketAnalysisData().lastPositionForceData.timeDifference()) - allowedOffset;
 
+                    // Should flag
                     if (offset > 0)
                     {
-                        if (++user.getPacketAnalysisData().compareFails > this.compareThreshold)
+                        // Minimum time between flags to decrease lag spike effects.
+                        if (!user.getPacketAnalysisData().recentlyUpdated(1, violationTime) &&
+                            // Minimum fails to mitigate some fluctuations
+                            ++user.getPacketAnalysisData().compareFails > this.compareThreshold)
                         {
-                            VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
-                            vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 50)), 12), -1, () -> {}, () -> {});
+                            VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
+                            vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 50)), 12), -1, () -> {},
+                                           // Only update the time stamp if flagged.
+                                           () -> user.getPacketAnalysisData().updateTimeStamp(1));
                         }
                     }
                     else if (user.getPacketAnalysisData().compareFails > 0)
@@ -269,7 +281,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
 
                     if (user.getPacketAnalysisData().lastPositionForceData.getLocation().distanceSquared(clientPositionLookWrapper.getLocation(user.getPlayer().getWorld())) > allowedDistance)
                     {
-                        VerboseSender.sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " tried to spoof position packets.");
+                        VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " tried to spoof position packets.");
                         vlManager.flag(user.getPlayer(), 10, -1, () -> {}, () -> {});
                     }
                 }
@@ -316,7 +328,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         {
             case MC188:
                 break;
-            case MC110:
             case MC111:
             case MC112:
                 keepAliveInject = false;
@@ -332,8 +343,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         if (keepAlive && !keepAliveUnregistered)
         {
             keepAlive = false;
-            VerboseSender.sendVerboseMessage("PacketAnalysisData | Failed to enable KeepAlive part", true, true);
-            VerboseSender.sendVerboseMessage("PacketAnalysisData | In order to use the KeepAlive you need to enable the unregistered analysis!", true, true);
+            VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData | Failed to enable KeepAlive part", true, true);
+            VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData | In order to use the KeepAlive you need to enable the unregistered analysis!", true, true);
         }
 
         if (keepAlive && keepAliveInject)

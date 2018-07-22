@@ -1,22 +1,20 @@
 package de.photon.AACAdditionPro.util.fakeentity.movement.submovements;
 
-import de.photon.AACAdditionPro.api.killauraentity.MovementType;
-import de.photon.AACAdditionPro.util.fakeentity.movement.Movement;
+import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import org.bukkit.Location;
-import org.bukkit.util.Vector;
 
 public class StayMovement implements Movement
 {
     @Override
-    public Vector calculate(Location old)
+    public Location calculate(Location playerLocation, Location oldEntityLocation)
     {
-        return new Vector();
+        return oldEntityLocation.clone();
     }
 
     @Override
-    public MovementType getMovementType()
+    public boolean shouldSprint()
     {
-        return MovementType.STAY;
+        return false;
     }
 
     @Override

@@ -94,7 +94,6 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
 
                 handle.getIntegers().write(1, index);
                 break;
-            case MC110:
             case MC111:
             case MC112:
                 handle.getItemSlots().write(0, value);

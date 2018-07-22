@@ -5,17 +5,16 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.util.fakeentity.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.fakeentity.equipment.Equipment;
-import de.photon.AACAdditionPro.util.fakeentity.movement.submovements.BasicFollowMovement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
+import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -25,19 +24,20 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ClientsidePlayerEntity extends ClientsideEntity
 {
-    private boolean visible_in_tablist, shouldAssignTeam, shouldSwing, shouldSwap;
+    private final boolean visible_in_tablist;
+    private final boolean shouldAssignTeam;
+    private final boolean shouldSwing;
+    private boolean shouldSwap;
+    private final boolean onlineProfile;
 
     @Getter
     private final WrappedGameProfile gameProfile;
 
-    @Getter
-    @Setter
+    // Ping handling
     private int ping;
-
     private int pingTask;
 
     @Getter
-    @Setter(value = AccessLevel.PROTECTED)
     private Team currentTeam;
 
     // Main ticker for the entity
@@ -46,20 +46,23 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private short lastHandSwap = 0;
     private short lastArmorSwap = 0;
 
-    private Equipment equipment;
+    private final Equipment equipment;
 
-    public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, final double entityOffset, final double offsetRandomizationRange, double minXZDifference)
+    public ClientsidePlayerEntity(final Player observedPlayer, final WrappedGameProfile gameProfile, boolean onlineProfile)
     {
-        super(observedPlayer, Hitbox.PLAYER, new BasicFollowMovement(observedPlayer, entityOffset, offsetRandomizationRange, minXZDifference));
+        super(observedPlayer, Hitbox.PLAYER, Movement.BASIC_FOLLOW_MOVEMENT);
 
         // Get skin data and name
         this.gameProfile = gameProfile;
+        this.onlineProfile = onlineProfile;
 
         // EquipmentData
-        this.equipment = new Equipment(this);
+        this.equipment = new Equipment(this, ServerVersion.getClientServerVersion(observedPlayer) != ServerVersion.MC188);
 
         // Init additional behaviour configs
-        visible_in_tablist = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.visible_in_tablist");
+        visible_in_tablist = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.visible_in_tablist") &&
+                             // Online profiles do not need scoreboard manipulations.
+                             !AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".prefer_online_profiles");
         shouldAssignTeam = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.team.enabled");
         shouldSwing = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swing.enabled");
         shouldSwap = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.KILLAURA_ENTITY.getConfigString() + ".behaviour.swap.enabled");
@@ -83,17 +86,17 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         double diffZ = target.getZ() - this.location.getZ();
         double dist = Math.hypot(diffX, diffZ);
 
+        // Yaw
         float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0F;
-        float pitch = (float) Math.toDegrees(Math.asin(diffY / dist));
-
-        pitch += ThreadLocalRandom.current().nextInt(5);
-
-        pitch = reduceAngle(pitch, 90);
-
-        this.headYaw = reduceAngle((float) MathUtils.randomBoundaryDouble(yaw - 10, 20), 180);
-
+        this.headYaw = RotationUtil.wrapToAllowedYaw((float) MathUtils.randomBoundaryDouble(yaw - 10, 20));
         this.location.setYaw(yaw);
+
+        // Pitch
+        float pitch = (float) Math.toDegrees(Math.asin(diffY / dist));
+        pitch += ThreadLocalRandom.current().nextInt(5);
+        pitch = RotationUtil.reduceAngle(pitch, 90);
         this.location.setPitch(pitch);
+
         this.move(this.location);
 
         // Maybe we should switch movement states?
@@ -110,18 +113,16 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             {
                 lastHandSwap = 0;
                 // Automatic offhand handling
-                equipment.replaceMainHand();
-                equipment.replaceOffhand();
+                equipment.replaceHands();
                 // Send the updated Equipment
                 equipment.updateEquipment();
             }
 
             if (lastArmorSwap++ > MathUtils.randomBoundaryInt(200, 200))
             {
-                lastHandSwap = 0;
+                lastArmorSwap = 0;
                 // Automatic offhand handling
-                equipment.replaceMainHand();
-                equipment.replaceOffhand();
+                equipment.replaceRandomArmorPiece();
                 // Send the updated Equipment
                 equipment.updateEquipment();
             }
@@ -138,25 +139,11 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         }
     }
 
-    // -------------------------------------------------------------- Yaw/Pitch ------------------------------------------------------------- //
-
-    /**
-     * Reduces the angle to make it fit the spectrum of -minMax til +minMax in steps of minMax
-     *
-     * @param input  the initial angle
-     * @param minMax the boundary in the positive and negative spectrum. The parameter itself must be > 0.
-     */
-    private float reduceAngle(float input, float minMax)
-    {
-        while (Math.abs(input) > minMax)
-        {
-            input -= Math.signum(input) * minMax;
-        }
-        return input;
-    }
-
     // --------------------------------------------------------------- General -------------------------------------------------------------- //
 
+    /**
+     * Gets the name of the entity from its game profile.
+     */
     public String getName()
     {
         return this.gameProfile.getName();
@@ -173,23 +160,16 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         pingTask = Bukkit.getScheduler().scheduleSyncDelayedTask(AACAdditionPro.getInstance(), () -> {
             if (this.isValid())
             {
-                fakePingForObservedPlayer(MathUtils.randomBoundaryInt(21, 4));
+                // Fake the ping if the entity is already spawned
+                if (this.isSpawned())
+                {
+                    this.ping = MathUtils.randomBoundaryInt(21, 4);
+                    this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY, this.ping);
+                }
+
                 recursiveUpdatePing();
             }
-        }, (long) MathUtils.randomBoundaryInt(10, 35));
-    }
-
-    /**
-     * The real {@link java.lang.reflect.Method} that handles the ping-changing once the given {@link ClientsidePlayerEntity} is confirmed as valid.
-     *
-     * @param ping the new ping of the {@link ClientsidePlayerEntity}
-     */
-    private void fakePingForObservedPlayer(final int ping)
-    {
-        if (this.isSpawned())
-        {
-            this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY, ping);
-        }
+        }, (long) MathUtils.randomBoundaryInt(15, 40));
     }
 
     @Override
@@ -201,7 +181,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
 
         if (!visible)
         {
-            WrapperPlayServerEntityEquipment.clearAllSlots(this.getEntityID(), this.observedPlayer);
+            WrapperPlayServerEntityEquipment.clearAllSlots(this.entityID, this.observedPlayer);
         }
     }
 
@@ -216,8 +196,8 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     public void joinTeam(Team team) throws IllegalStateException
     {
         this.leaveTeam();
-        team.addEntry(this.getGameProfile().getName());
-        this.setCurrentTeam(team);
+        team.addEntry(this.gameProfile.getName());
+        this.currentTeam = team;
     }
 
     /**
@@ -226,10 +206,10 @@ public class ClientsidePlayerEntity extends ClientsideEntity
      */
     private void leaveTeam() throws IllegalStateException
     {
-        if (this.getCurrentTeam() != null)
+        if (this.currentTeam != null)
         {
-            this.getCurrentTeam().removeEntry(this.getGameProfile().getName());
-            this.setCurrentTeam(null);
+            this.currentTeam.removeEntry(this.gameProfile.getName());
+            this.currentTeam = null;
         }
     }
 
@@ -292,16 +272,15 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         {
             this.recursiveUpdatePing();
         }
-        else
+        else if (!this.onlineProfile)
         {
             this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, this.ping);
         }
 
         // Entity equipment + armor
         this.equipment.replaceArmor();
-        this.equipment.replaceMainHand();
         // Automatic offhand handling
-        this.equipment.replaceOffhand();
+        this.equipment.replaceHands();
         this.equipment.updateEquipment();
     }
 
@@ -312,7 +291,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         if (isSpawned())
         {
-            if (this.visible_in_tablist)
+            if (this.visible_in_tablist && !this.onlineProfile)
             {
                 this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, 0);
             }

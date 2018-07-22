@@ -366,11 +366,11 @@ public class Graph
 
     public void debug()
     {
-        VerboseSender.sendVerboseMessage("Neurons: ");
-        VerboseSender.sendVerboseMessage(Arrays.toString(this.activatedNeurons));
+        VerboseSender.getInstance().sendVerboseMessage("Neurons: ");
+        VerboseSender.getInstance().sendVerboseMessage(Arrays.toString(this.activatedNeurons));
 
-        VerboseSender.sendVerboseMessage("Matrix: ");
-        VerboseSender.sendVerboseMessage(Arrays.deepToString(this.matrix));
+        VerboseSender.getInstance().sendVerboseMessage("Matrix: ");
+        VerboseSender.getInstance().sendVerboseMessage(Arrays.deepToString(this.matrix));
     }
 
     /**

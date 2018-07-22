@@ -85,39 +85,7 @@ public class PositionData extends TimeData
     private static class PositionDataUpdater implements Listener
     {
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-        public void on(final PlayerToggleSprintEvent event)
-        {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-            if (user != null)
-            {
-                user.getPositionData().currentlySprinting = event.isSprinting();
-                if (!user.getPositionData().currentlySprinting)
-                {
-                    user.getPositionData().lastSprintTime = user.getPositionData().passedTime(3);
-                }
-                user.getPositionData().updateTimeStamp(3);
-            }
-        }
-
-        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-        public void on(final PlayerToggleSneakEvent event)
-        {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-            if (user != null)
-            {
-                user.getPositionData().currentlySneaking = event.isSneaking();
-                if (!user.getPositionData().currentlySneaking)
-                {
-                    user.getPositionData().lastSneakTime = user.getPositionData().passedTime(4);
-                }
-                user.getPositionData().updateTimeStamp(4);
-            }
-        }
-
-        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-        public void on(final PlayerMoveEvent event)
+        public void onMove(final PlayerMoveEvent event)
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
@@ -138,6 +106,38 @@ public class PositionData extends TimeData
                 {
                     user.getPositionData().updateTimeStamp(1);
                 }
+            }
+        }
+
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+        public void onToggleSneak(final PlayerToggleSneakEvent event)
+        {
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user != null)
+            {
+                user.getPositionData().currentlySneaking = event.isSneaking();
+                if (!user.getPositionData().currentlySneaking)
+                {
+                    user.getPositionData().lastSneakTime = user.getPositionData().passedTime(4);
+                }
+                user.getPositionData().updateTimeStamp(4);
+            }
+        }
+
+        @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+        public void onToggleSpring(final PlayerToggleSprintEvent event)
+        {
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user != null)
+            {
+                user.getPositionData().currentlySprinting = event.isSprinting();
+                if (!user.getPositionData().currentlySprinting)
+                {
+                    user.getPositionData().lastSprintTime = user.getPositionData().passedTime(3);
+                }
+                user.getPositionData().updateTimeStamp(3);
             }
         }
     }

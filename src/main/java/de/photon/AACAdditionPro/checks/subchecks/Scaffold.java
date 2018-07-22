@@ -147,7 +147,7 @@ public class Scaffold implements Listener, ViolationModule
 
                 if (flag)
                 {
-                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " placed from a suspicious location.");
+                    VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " placed from a suspicious location.");
                     // Flag the player
                     vl += 5;
                 }
@@ -168,7 +168,7 @@ public class Scaffold implements Listener, ViolationModule
                     user.getLookPacketData().recentlyUpdated(0, 125))
                 {
                     rotationVl += 3;
-                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1");
+                    VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1");
                 }
 
                 // Generally high rotations
@@ -176,7 +176,7 @@ public class Scaffold implements Listener, ViolationModule
                     angleInformation[0] > ANGLE_CHANGE_SUM_THRESHOLD)
                 {
                     rotationVl += 2;
-                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2");
+                    VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2");
                 }
 
                 // Very random rotations
@@ -184,7 +184,7 @@ public class Scaffold implements Listener, ViolationModule
                     angleInformation[1] > ANGLE_OFFSET_SUM_THRESHOLD)
                 {
                     rotationVl += 1;
-                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
+                    VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
                 }
 
                 if (rotationVl > 0)
@@ -212,7 +212,7 @@ public class Scaffold implements Listener, ViolationModule
                 {
                     if (++user.getScaffoldData().sprintingFails > this.sprintingThreshold)
                     {
-                        VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
+                        VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
                         // Flag the player
                         vl += 8;
                     }
@@ -256,7 +256,7 @@ public class Scaffold implements Listener, ViolationModule
 
                 if (sneakBorder)
                 {
-                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
+                    VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
                     vl += 1;
                 }
             }
@@ -269,7 +269,7 @@ public class Scaffold implements Listener, ViolationModule
                 // Has not sneaked recently
                 !(user.getPositionData().hasPlayerSneakedRecently(175) && user.getPositionData().getLastSneakTime() > 148))
             {
-                VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
+                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
                 vl += 2;
             }
 
@@ -292,7 +292,7 @@ public class Scaffold implements Listener, ViolationModule
                     // Flag the player
                     final int vlIncrease = (int) (4 * Math.min(Math.ceil((results[0] - results[1]) / 15D), 6));
 
-                    VerboseSender.sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[0] + " | real: " + results[1] + " | vl increase: " + vlIncrease);
+                    VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[0] + " | real: " + results[1] + " | vl increase: " + vlIncrease);
 
                     vl += vlIncrease;
                 }

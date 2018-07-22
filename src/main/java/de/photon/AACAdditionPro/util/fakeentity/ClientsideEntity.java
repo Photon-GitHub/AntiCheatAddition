@@ -3,14 +3,12 @@ package de.photon.AACAdditionPro.util.fakeentity;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.api.killauraentity.MovementType;
+import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Collision;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
-import de.photon.AACAdditionPro.util.fakeentity.movement.Movement;
-import de.photon.AACAdditionPro.util.fakeentity.movement.submovements.StayMovement;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
@@ -29,6 +27,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -37,13 +36,13 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 
 public abstract class ClientsideEntity
 {
-    private static Field entityCountField;
+    // xz-Distance after which a teleport is forced.
+    private static final Field entityCountField;
 
     static
     {
@@ -53,10 +52,6 @@ public abstract class ClientsideEntity
 
     @Getter
     protected final int entityID;
-
-    @Getter
-    @Setter
-    private boolean sprinting;
 
     /**
      * Determines whether this {@link ClientsideEntity} is already spawned.
@@ -74,6 +69,7 @@ public abstract class ClientsideEntity
      * Stores the last timestamp this {@link ClientsideEntity} was hit.
      */
     public long lastHurtMillis;
+    private BukkitTask hurtTask = null;
 
     /**
      * The current velocity of this {@link ClientsideEntity}.
@@ -89,6 +85,8 @@ public abstract class ClientsideEntity
     @Getter
     protected float headYaw;
 
+    private boolean sprinting;
+
     @Getter
     protected final Player observedPlayer;
 
@@ -100,24 +98,26 @@ public abstract class ClientsideEntity
 
     @Getter
     private long ticksExisted = 0;
-
     private int tickTask = -1;
-    private BukkitTask hurtTask = null;
 
     // Movement state machine
-    private Set<Movement> movementStates = new HashSet<>();
+    @Setter
     private Movement currentMovementCalculator;
 
-    public ClientsideEntity(final Player observedPlayer, Hitbox hitbox)
+    /**
+     * Constructs a new {@link ClientsideEntity}.
+     *
+     * @param observedPlayer the player that should see this {@link ClientsideEntity}
+     * @param hitbox         the {@link Hitbox} of this {@link ClientsideEntity}
+     * @param movement       the {@link Movement} of this {@link ClientsideEntity}.
+     */
+    public ClientsideEntity(final Player observedPlayer, final Hitbox hitbox, final Movement movement)
     {
         this.observedPlayer = observedPlayer;
         this.hitbox = hitbox;
 
-        // Add all movements to the list
-        this.movementStates.add(new StayMovement());
-
         // Set default movement state
-        this.setMovement(MovementType.STAY);
+        this.currentMovementCalculator = movement;
 
         tickTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::tick, 1L, 1L);
 
@@ -131,17 +131,6 @@ public abstract class ClientsideEntity
         }
     }
 
-    /**
-     * Constructs a {@link ClientsideEntity} with additional possible {@link Movement}s.
-     *
-     * @param possibleMovements the additional {@link Movement}s the entity should be capable of. The {@link StayMovement} is added by default and should not be provided in the
-     */
-    public ClientsideEntity(final Player observedPlayer, Hitbox hitbox, Movement... possibleMovements)
-    {
-        this(observedPlayer, hitbox);
-        this.movementStates.addAll(Arrays.asList(possibleMovements));
-    }
-
     // --------------------------------------------------------------- General -------------------------------------------------------------- //
 
     /**
@@ -153,15 +142,9 @@ public abstract class ClientsideEntity
     {
         final User user = UserManager.getUser(observedPlayer.getUniqueId());
 
-        if (!User.isUserInvalid(user))
-        {
-            final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-            if (clientSidePlayerEntity != null)
-            {
-                return clientSidePlayerEntity.getEntityID() == this.entityID;
-            }
-        }
-        return false;
+        return !User.isUserInvalid(user) &&
+               user.getClientSideEntityData().clientSidePlayerEntity != null &&
+               user.getClientSideEntityData().clientSidePlayerEntity.getEntityID() == this.entityID;
     }
 
     /**
@@ -172,52 +155,69 @@ public abstract class ClientsideEntity
         // TicksExisted
         ticksExisted++;
 
-        // Calculate velocity
-        this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
-
-        final Vector tempJumpVelocity = velocity.clone();
-        tempJumpVelocity.setX(Math.signum(tempJumpVelocity.getX()));
-        tempJumpVelocity.setZ(Math.signum(tempJumpVelocity.getZ()));
-
-        // Whether the entity should jump if horizontally collided
-        if (this.currentMovementCalculator.jumpIfCollidedHorizontally() &&
-            this.location.clone().add(tempJumpVelocity).getBlock().isEmpty())
-        {
-            this.jump();
-        }
-
         // ------------------------------------------ Movement system -----------------------------------------------//
         // Get the next position and move
-        Vector xzVelocity = this.currentMovementCalculator.calculate(this.location.clone());
+        final Location moveToLocation = Objects.requireNonNull(this.currentMovementCalculator.calculate(this.observedPlayer.getLocation(), this.location.clone()), "Movement did not calculate a valid location.");
 
-        // Backup-Movement
-        if (xzVelocity == null)
+        if (this.currentMovementCalculator.isTPNeeded())
         {
-            this.setMovement(MovementType.STAY);
-            xzVelocity = this.currentMovementCalculator.calculate(this.location.clone());
+            this.needsTeleport = true;
         }
 
-        if (this.currentMovementCalculator.isTPNeeded() || this.needsTeleport)
+        // ------------------------------------------ Velocity system -----------------------------------------------//
+
+        if (this.needsTeleport)
         {
-            this.location = this.calculateTeleportLocation();
+            this.move(Collision.getClosestFreeSpaceYAxis(moveToLocation, this.hitbox));
+
+            // Velocity reset on teleport.
+            this.velocity.zero();
+            this.needsTeleport = false;
         }
         else
         {
             // Only set the x- and the z- axis (y should be handled by autojumping).
-            this.velocity.setX(xzVelocity.getX()).setZ(xzVelocity.getZ());
+            final Location moveVelocity = moveToLocation.subtract(this.location);
+            this.velocity.setX(moveVelocity.getX()).setZ(moveVelocity.getZ());
+
+            final Vector collidedVelocity = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);
+            this.location = this.location.add(collidedVelocity);
+
+            // Already added the velocity to location and collided it
+            // ClientCopy
+            this.onGround = (collidedVelocity.getY() != this.velocity.getY()) &&
+                            // Due to gravity a player always have a negative velocity if walking/running on the ground.
+                            velocity.getY() <= 0 &&
+                            // Make sure the entity only jumps on real blocks, not e.g. grass.
+                            this.location.clone().subtract(0, 0.05, 0).getBlock().getType().isSolid();
+
+            this.sprinting = this.currentMovementCalculator.shouldSprint();
+
+            // Calculate velocity
+            if (this.onGround)
+            {
+                // After a certain period the entity might reach a velocity so high that it appears to be "glitching"
+                // through the ground. This can be prevented by resetting the velocity if the entity is onGround.
+                this.velocity.setY(0);
+            }
+            else
+            {
+                this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
+            }
+
+            final Vector tempJumpVelocity = this.velocity.clone();
+            tempJumpVelocity.setX(Math.signum(tempJumpVelocity.getX()));
+            tempJumpVelocity.setY(Jumping.getJumpYMotion(null));
+            tempJumpVelocity.setZ(Math.signum(tempJumpVelocity.getZ()));
+
+            // Whether the entity should jump if horizontally collided
+            if (this.currentMovementCalculator.jumpIfCollidedHorizontally() &&
+                // Check whether the entity can really jump to that location.
+                BlockUtils.getMaterialsInHitbox(this.location.clone().add(tempJumpVelocity), this.hitbox).stream().noneMatch(material -> material != Material.AIR))
+            {
+                this.jump();
+            }
         }
-
-        // ------------------------------------------ Velocity system -----------------------------------------------//
-        final Vector collidedVelocity = Collision.getNearestUncollidedLocation(this.observedPlayer, this.location, this.hitbox, this.velocity);
-        this.location = this.location.add(collidedVelocity);
-
-        // Already added the velocity to location and collided it
-        // ClientCopy
-        this.onGround = (collidedVelocity.getY() != this.velocity.getY()) &&
-                        // Due to gravity a player always have a negative velocity if walking/running on the ground.
-                        velocity.getY() <= 0 &&
-                        // Make sure the entity only jumps on real blocks, not e.g. grass.
-                        this.location.clone().add(0, -0.05, 0).getBlock().getType().isSolid();
 
         sendMove();
         sendHeadYaw();
@@ -249,16 +249,16 @@ public abstract class ClientsideEntity
         double yDiff = this.location.getY() - this.lastLocation.getY();
         double zDiff = this.location.getZ() - this.lastLocation.getZ();
 
-        final boolean onGround = isOnGround();
+        final boolean savedOnGround = this.onGround;
 
         // Teleport needed ?
         int teleportThreshold;
-        switch (ServerVersion.getClientServerVersion(this.observedPlayer))
+        // Do not use the client version here.
+        switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 teleportThreshold = 4;
                 break;
-            case MC110:
             case MC111:
             case MC112:
                 teleportThreshold = 8;
@@ -278,7 +278,7 @@ public abstract class ClientsideEntity
             teleportWrapper.setYaw(this.location.getYaw());
             teleportWrapper.setPitch(this.location.getPitch());
             // OnGround
-            teleportWrapper.setOnGround(onGround);
+            teleportWrapper.setOnGround(savedOnGround);
             // Send the packet
             teleportWrapper.sendPacket(this.observedPlayer);
             this.needsTeleport = false;
@@ -313,7 +313,7 @@ public abstract class ClientsideEntity
                     // System.out.println("Sending move");
                 }
 
-                movePacketWrapper.setOnGround(onGround);
+                movePacketWrapper.setOnGround(savedOnGround);
                 movePacketWrapper.setDiffs(xDiff, yDiff, zDiff);
                 packetWrapper = movePacketWrapper;
             }
@@ -325,7 +325,7 @@ public abstract class ClientsideEntity
                 lookPacketWrapper.setYaw(this.location.getYaw());
                 lookPacketWrapper.setPitch(this.location.getPitch());
                 // OnGround
-                lookPacketWrapper.setOnGround(onGround);
+                lookPacketWrapper.setOnGround(savedOnGround);
 
                 packetWrapper = lookPacketWrapper;
                 // System.out.println("Sending look");
@@ -344,18 +344,13 @@ public abstract class ClientsideEntity
         this.lastLocation = this.location.clone();
     }
 
-    private boolean isOnGround()
-    {
-        return this.onGround;
-    }
-
     public void jump()
     {
-        if (this.isOnGround())
+        if (this.onGround)
         {
             velocity.setY(Jumping.getJumpYMotion(null));
 
-            if (sprinting)
+            if (this.sprinting)
             {
                 velocity.add(location.getDirection().setY(0).normalize().multiply(.2F));
             }
@@ -404,24 +399,6 @@ public abstract class ClientsideEntity
         this.velocity = velocity.clone();
     }
 
-    /**
-     * Sets the {@link Movement} of this entity by the {@link MovementType}.
-     *
-     * @throws IllegalArgumentException if the Entity is not supporting the requested {@link Movement}.
-     */
-    public void setMovement(MovementType movementType)
-    {
-        for (Movement movement : movementStates)
-        {
-            if (movement.getMovementType() == movementType)
-            {
-                this.currentMovementCalculator = movement;
-                return;
-            }
-        }
-        throw new IllegalArgumentException("The Entity does not support the MovementType " + movementType.name());
-    }
-
     public Movement getMovement()
     {
         return this.currentMovementCalculator;
@@ -432,8 +409,7 @@ public abstract class ClientsideEntity
      */
     public Location calculateTeleportLocation()
     {
-        final Location spawnLocation = observedPlayer.getLocation().clone().add(this.currentMovementCalculator.calculate(observedPlayer.getLocation()));
-        return BlockUtils.getClosestFreeSpaceYAxis(spawnLocation, this.getHitbox());
+        return Collision.getClosestFreeSpaceYAxis(this.currentMovementCalculator.calculate(observedPlayer.getLocation(), observedPlayer.getLocation()), this.getHitbox());
     }
 
     // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //
@@ -451,20 +427,14 @@ public abstract class ClientsideEntity
             observedLoc.setPitch(0);
 
             // Calculate knockback strength
-            int knockbackStrength = 0;
-            if (observedPlayer.isSprinting())
-            {
-                knockbackStrength = 1;
-            }
+            int knockbackStrength = observedPlayer.isSprinting() ? 1 : 0;
 
             final ItemStack itemInHand;
-
             switch (ServerVersion.getActiveServerVersion())
             {
                 case MC188:
                     itemInHand = observedPlayer.getItemInHand();
                     break;
-                case MC110:
                 case MC111:
                 case MC112:
                     itemInHand = observedPlayer.getInventory().getItemInMainHand();
@@ -518,36 +488,29 @@ public abstract class ClientsideEntity
         }
 
         final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata();
-        entityMetadataWrapper.setEntityID(this.getEntityID());
+        entityMetadataWrapper.setEntityID(this.entityID);
 
+        final byte visibleByte = (byte) (visible ? 0 : 0x20);
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 final List<WrappedWatchableObject> wrappedWatchableObjectsOldMC = Arrays.asList(
                         // Invisibility itself
-                        new WrappedWatchableObject(0, (byte) (
-                                visible ?
-                                0 :
-                                0x20)),
+                        new WrappedWatchableObject(0, visibleByte),
                         // Arrows in entity.
                         // IN 1.8.8 THIS IS A BYTE, NOT AN INTEGER!
                         new WrappedWatchableObject(10, (byte) 0));
                 entityMetadataWrapper.setMetadata(wrappedWatchableObjectsOldMC);
                 break;
 
-            case MC110:
             case MC111:
             case MC112:
                 final WrappedDataWatcher.WrappedDataWatcherObject visibilityWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class));
                 final WrappedDataWatcher.WrappedDataWatcherObject arrowInEntityWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(Integer.class));
 
-                entityMetadataWrapper.setEntityID(this.getEntityID());
                 final List<WrappedWatchableObject> wrappedWatchableObjectsNewMC = Arrays.asList(
                         // Invisibility itself
-                        new WrappedWatchableObject(visibilityWatcher, (byte) (
-                                visible ?
-                                0 :
-                                0x20)),
+                        new WrappedWatchableObject(visibilityWatcher, visibleByte),
                         // Arrows in entity.
                         // IN 1.12.2 THIS IS AN INTEGER!
                         new WrappedWatchableObject(arrowInEntityWatcher, 0));

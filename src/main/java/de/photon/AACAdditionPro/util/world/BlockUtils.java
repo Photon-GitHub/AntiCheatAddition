@@ -1,20 +1,17 @@
 package de.photon.AACAdditionPro.util.world;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
-import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +25,6 @@ public final class BlockUtils
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
-            case MC110:
                 CONTAINERS = ImmutableSet.of(Material.CHEST,
                                              Material.TRAPPED_CHEST,
                                              Material.ENDER_CHEST,
@@ -73,13 +69,13 @@ public final class BlockUtils
 
     }
 
-    public static final List<BlockFace> HORIZONTAL_FACES = ImmutableList.of(
+    public static final Set<BlockFace> HORIZONTAL_FACES = ImmutableSet.of(
             BlockFace.NORTH,
             BlockFace.SOUTH,
             BlockFace.WEST,
             BlockFace.EAST);
 
-    public static final List<BlockFace> ALL_FACES = ImmutableList.of(
+    public static final Set<BlockFace> ALL_FACES = ImmutableSet.of(
             BlockFace.UP,
             BlockFace.DOWN,
             BlockFace.NORTH,
@@ -88,69 +84,27 @@ public final class BlockUtils
             BlockFace.EAST);
 
     /**
-     * This method finds the next free space to a {@link Location} if only searching on the y - Axis.
-     *
-     * @return the {@link Location} of the closest free space found or a {@link Location} of y = 260 if no free space was found.
+     * Gets all the {@link Material}s inside a {@link Hitbox} at a certain {@link Location} and adds them to a
+     * {@link Set}.
      */
-    public static Location getClosestFreeSpaceYAxis(final Location location, final Hitbox hitbox)
+    public static Set<Material> getMaterialsInHitbox(final Location location, final Hitbox hitbox)
     {
-        // Short as no hitbox is larger than 32k blocks.
-        // Represents the needed empty blocks, slabs (or other non-full blocks) are not included
-        final short neededHeight = (short) Math.ceil(hitbox.getHeight());
+        final Set<Material> materials = new HashSet<>();
 
-        // The offset of the next free space to the location.
-        double minDeltaY = Double.MAX_VALUE;
+        final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
 
-        // Set to 260 as that is the default value if nothing else is found.
-        double currentY = 260;
-
-        final BlockIterator blockIterator = new BlockIterator(location.getWorld(),
-                                                              location.toVector(),
-                                                              // From the sky to the void to have less needed calculations
-                                                              new Vector(0, -1, 0),
-                                                              // Add 20 to check both over and below the starting location.
-                                                              20,
-                                                              (int) Math.min(
-                                                                      // Make sure the BlockIterator will not iterate into the void.
-                                                                      location.getY() + 20,
-                                                                      // 40 as default length.
-                                                                      40));
-
-        short currentHeight = 0;
-        Block currentBlock;
-
-        while (blockIterator.hasNext())
+        // Cast the first value as that will only make it smaller, the second one has to be ceiled as it could be the same value once again.
+        for (int x = (int) axisAlignedBB.getMinX(); x <= (int) Math.ceil(axisAlignedBB.getMaxX()); x++)
         {
-            currentBlock = blockIterator.next();
-
-            final double originOffset = MathUtils.offset(location.getY(), currentBlock.getY());
-
-            // >= To prefer "higher" positions and improve performance.
-            if (originOffset >= minDeltaY)
+            for (int y = (int) axisAlignedBB.getMinY(); y <= (int) Math.ceil(axisAlignedBB.getMaxY()); y++)
             {
-                // Now we can only get worse results.
-                break;
-            }
-
-            // Check if the block is empty
-            if (currentBlock.isEmpty())
-            {
-                // If the empty space is big enough
-                if (++currentHeight >= neededHeight)
+                for (int z = (int) axisAlignedBB.getMinZ(); z <= (int) Math.ceil(axisAlignedBB.getMaxZ()); z++)
                 {
-                    minDeltaY = originOffset;
-                    currentY = currentBlock.getY();
+                    materials.add(location.getWorld().getBlockAt(x, y, z).getType());
                 }
             }
-            else
-            {
-                currentHeight = 0;
-            }
         }
-
-        final Location spawnLocation = location.clone();
-        spawnLocation.setY(currentY);
-        return spawnLocation;
+        return materials;
     }
 
     /**

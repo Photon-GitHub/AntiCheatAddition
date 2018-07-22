@@ -30,7 +30,7 @@ public enum Configs
             this.configurationRepresentation.save();
         } catch (IOException e)
         {
-            VerboseSender.sendVerboseMessage("Unable to change and save" + this.name() + "'s config.", true, true);
+            VerboseSender.getInstance().sendVerboseMessage("Unable to change and save" + this.name() + "'s config.", true, true);
             e.printStackTrace();
         }
     }

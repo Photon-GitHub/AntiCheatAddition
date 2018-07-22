@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketListener;
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
@@ -15,14 +16,14 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public interface Module
 {
+    Set<ServerVersion> ALL_SUPPORTED_VERSIONS = ImmutableSet.of(ServerVersion.MC188, ServerVersion.MC111, ServerVersion.MC112, ServerVersion.MC113);
+
     /**
      * This enables the check by registering it in all Managers.
      * <p>
@@ -253,6 +254,6 @@ public interface Module
      */
     default Set<ServerVersion> getSupportedVersions()
     {
-        return new HashSet<>(Arrays.asList(ServerVersion.values()));
+        return ALL_SUPPORTED_VERSIONS;
     }
 }

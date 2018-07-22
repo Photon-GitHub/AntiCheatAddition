@@ -57,7 +57,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class AACAdditionPro extends JavaPlugin
 {
@@ -145,7 +144,7 @@ public class AACAdditionPro extends JavaPlugin
                 savedFile = FileUtilities.saveFileInFolder("config.yml");
             } catch (final IOException e)
             {
-                VerboseSender.sendVerboseMessage("Failed to create config folder / file", true, true);
+                VerboseSender.getInstance().sendVerboseMessage("Failed to create config folder / file", true, true);
                 e.printStackTrace();
             }
             cachedConfig = YamlConfiguration.loadConfiguration(Objects.requireNonNull(savedFile, "Config file needed to get the FileConfiguration was not found."));
@@ -160,7 +159,7 @@ public class AACAdditionPro extends JavaPlugin
         try
         {
             // Enabled message
-            VerboseSender.sendVerboseMessage("Enabling plugin...", true, false);
+            VerboseSender.getInstance().sendVerboseMessage("Enabling plugin...", true, false);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
@@ -169,16 +168,16 @@ public class AACAdditionPro extends JavaPlugin
                 // Unsupported
                 !ServerVersion.getActiveServerVersion().isSupported())
             {
-                VerboseSender.sendVerboseMessage("Server version is not supported.", true, true);
+                VerboseSender.getInstance().sendVerboseMessage("Server version is not supported.", true, true);
 
                 // Print the complete message
-                VerboseSender.sendVerboseMessage(
+                VerboseSender.getInstance().sendVerboseMessage(
                         "Supported versions:" +
                         String.join(
                                 // Versions should be divided by commas.
                                 ", ",
                                 // Create a List of all the possible server versions
-                                Arrays.stream(ServerVersion.values()).map(ServerVersion::getVersionOutputString).collect(Collectors.toList())),
+                                Arrays.stream(ServerVersion.values()).filter(ServerVersion::isSupported).map(ServerVersion::getVersionOutputString).toArray(String[]::new)),
                         true, true);
                 return;
             }
@@ -190,8 +189,8 @@ public class AACAdditionPro extends JavaPlugin
             // Is the numerical representation of the min AAC version smaller than the representation of the real version
             if (getVersionNumber(minimumAACVersion) > getVersionNumber(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion()))
             {
-                VerboseSender.sendVerboseMessage("AAC version is not supported.", true, true);
-                VerboseSender.sendVerboseMessage("This plugin needs AAC version " + minimumAACVersion + " or newer.", true, true);
+                VerboseSender.getInstance().sendVerboseMessage("AAC version is not supported.", true, true);
+                VerboseSender.getInstance().sendVerboseMessage("This plugin needs AAC version " + minimumAACVersion + " or newer.", true, true);
                 return;
             }
 
@@ -280,7 +279,7 @@ public class AACAdditionPro extends JavaPlugin
     public void onDisable()
     {
         // Plugin is already disabled -> VerboseSender is not allowed to register a task
-        VerboseSender.setAllowedToRegisterTasks(false);
+        VerboseSender.getInstance().setAllowedToRegisterTasks(false);
 
         // Disable all checks
         try
@@ -294,8 +293,8 @@ public class AACAdditionPro extends JavaPlugin
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
 
-        VerboseSender.sendVerboseMessage("AACAdditionPro disabled.", true, false);
-        VerboseSender.sendVerboseMessage(" ", true, false);
+        VerboseSender.getInstance().sendVerboseMessage("AACAdditionPro disabled.", true, false);
+        VerboseSender.getInstance().sendVerboseMessage(" ", true, false);
 
         // Task scheduling
         loaded = false;

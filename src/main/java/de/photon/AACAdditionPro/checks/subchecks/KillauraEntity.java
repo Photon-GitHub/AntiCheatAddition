@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
-import de.photon.AACAdditionPro.api.killauraentity.MovementType;
+import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
@@ -35,7 +35,9 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.StringUtil;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -43,17 +45,13 @@ public class KillauraEntity implements ViolationModule, Listener
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 55);
 
-    @LoadFromConfiguration(configPath = ".position.entityOffset")
-    private double entityOffset;
-
-    @LoadFromConfiguration(configPath = ".position.offsetRandomizationRange")
-    private double offsetRandomizationRange;
-
-    @LoadFromConfiguration(configPath = ".position.minXZDifference")
-    private double minXZDifference;
+    private final Random random = new Random();
 
     @LoadFromConfiguration(configPath = ".on_command")
     private boolean onCommand;
+
+    @LoadFromConfiguration(configPath = ".prefer_online_profiles")
+    private boolean preferOnlineProfiles;
 
     private final int respawnTimer = 20 * AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".respawn_timer");
 
@@ -65,6 +63,8 @@ public class KillauraEntity implements ViolationModule, Listener
         final ClientsidePlayerEntity playerEntity = this.getClientSidePlayerEntity(event.getPlayer().getUniqueId());
 
         if (playerEntity != null &&
+            // Online players already have a tab completion
+            !preferOnlineProfiles &&
             StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken()))
         {
             event.getTabCompletions().add(playerEntity.getName());
@@ -106,18 +106,19 @@ public class KillauraEntity implements ViolationModule, Listener
                 throw new IllegalStateException("Unknown Gamemode: " + event.getPlayer().getGameMode().name());
         }
 
-        // Add velocity to the bot so the bot does never stand inside or in front of the player
-        final User user = UserManager.getUser(player.getUniqueId());
-
-        // Not bypassed
-        if (User.isUserInvalid(user))
-        {
-            return;
-        }
-
+        // ONLY USE THE USER -> PLAYER REFERENCE HERE TO MAKE SURE THE PLAYER IS NOT A NULLPOINTER.
         Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), () -> {
+            // The UserManager uses a ConcurrentHashMap -> get the user async.
+            final User user = UserManager.getUser(player.getUniqueId());
+
+            // Not bypassed
+            if (User.isUserInvalid(user))
+            {
+                return;
+            }
+
             WrappedGameProfile gameProfile = null;
-            MovementType movementType = MovementType.BASIC_FOLLOW;
+            Movement movement = Movement.BASIC_FOLLOW_MOVEMENT;
 
             // Ask API endpoint for valid profiles
             KillauraEntityAddon killauraEntityAddon = AACAdditionPro.getInstance().getKillauraEntityAddon();
@@ -125,56 +126,56 @@ public class KillauraEntity implements ViolationModule, Listener
             {
                 try
                 {
-                    gameProfile = killauraEntityAddon.getKillauraEntityGameProfile(player);
-                    final MovementType potentialMovementType = killauraEntityAddon.getController().getMovementType();
+                    gameProfile = killauraEntityAddon.getKillauraEntityGameProfile(user.getPlayer());
+                    final Movement potentialMovement = killauraEntityAddon.getController().getMovement();
 
-                    if (potentialMovementType != null)
+                    if (potentialMovement != null)
                     {
-                        movementType = potentialMovementType;
+                        movement = potentialMovement;
                     }
                 } catch (Throwable t)
                 {
-                    new RuntimeException("Error in plugin " + killauraEntityAddon.getPlugin().getName() + " while trying to get a killaura-entity gameprofile for " + player.getName(), t).printStackTrace();
+                    new RuntimeException("Error in plugin " + killauraEntityAddon.getPlugin().getName() + " while trying to get a killaura-entity gameprofile for " + user.getPlayer().getName(), t).printStackTrace();
                 }
             }
 
             // No profile was set by the API
+            boolean onlineProfile = preferOnlineProfiles;
             if (gameProfile == null)
             {
-                // Use the offline players as a replacement
-                // Encapsulate the Arrays.asList in an ArrayList to make sure removal of elements is supported.
-                final List<OfflinePlayer> offlinePlayers = Lists.newArrayList(Bukkit.getOfflinePlayers());
+                gameProfile = this.getGameProfile(user.getPlayer(), preferOnlineProfiles);
 
-                OfflinePlayer chosenOfflinePlayer;
-                do
+                if (gameProfile == null)
                 {
-                    // Check if we can serve OfflinePlayer profiles.
-                    if (offlinePlayers.isEmpty())
+                    gameProfile = this.getGameProfile(user.getPlayer(), false);
+                    onlineProfile = false;
+
+                    if (gameProfile == null)
                     {
-                        VerboseSender.sendVerboseMessage("KillauraEntity: Could not spawn entity as of too few game profiles for player " + player.getName(), true, true);
+                        VerboseSender.getInstance().sendVerboseMessage("KillauraEntity: Could not spawn entity as of too few game profiles for player " + user.getPlayer().getName(), true, true);
                         // No WrappedGameProfile can be set as there are no valid offline players.
                         return;
                     }
-
-                    // Choose a random OfflinePlayer
-                    chosenOfflinePlayer = offlinePlayers.remove(ThreadLocalRandom.current().nextInt(offlinePlayers.size()));
-                    // and make sure it is not the player himself
-                } while (chosenOfflinePlayer.getName().equals(player.getName()));
-
-                // Get the GameProfile
-                gameProfile = new WrappedGameProfile(chosenOfflinePlayer.getUniqueId(), chosenOfflinePlayer.getName());
+                }
             }
 
             // Make it final for the use in a lambda
             final WrappedGameProfile resultingGameProfile = gameProfile;
-            final MovementType finalMovementType = movementType;
+            final Movement finalMovement = movement;
 
+            final boolean resultingOnline = onlineProfile;
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
+                // Make sure no NPE is thrown because the player logged out.
+                if (User.isUserInvalid(user))
+                {
+                    return;
+                }
+
                 // Create the new Entity with the resultingGameProfile
-                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(player, resultingGameProfile, entityOffset, offsetRandomizationRange, minXZDifference);
+                final ClientsidePlayerEntity playerEntity = new ClientsidePlayerEntity(user.getPlayer(), resultingGameProfile, resultingOnline);
 
                 // Set the MovementType
-                playerEntity.setMovement(finalMovementType);
+                playerEntity.setCurrentMovementCalculator(finalMovement);
 
                 // Set it as the user's active entity
                 user.getClientSideEntityData().clientSidePlayerEntity = playerEntity;
@@ -190,16 +191,36 @@ public class KillauraEntity implements ViolationModule, Listener
         }, 2L);
     }
 
-    @EventHandler
-    public void onRespawn(PlayerRespawnEvent event)
+    /**
+     * This method tries to get a new {@link WrappedGameProfile} from the server.
+     *
+     * @param observedPlayer the observed player is excluded from this search as seeing himself with cause great
+     *                       problems.
+     * @param onlinePlayers  whether or not gameprofiles of online players should be preferred.
+     */
+    private WrappedGameProfile getGameProfile(Player observedPlayer, boolean onlinePlayers)
     {
-        respawnEntity(event.getPlayer());
-    }
+        // Use ArrayList as removal actions are unlikely.
+        final List<OfflinePlayer> players = onlinePlayers ?
+                                            (new ArrayList<>(Bukkit.getOnlinePlayers())) :
+                                            (Lists.newArrayList(Bukkit.getOfflinePlayers()));
 
-    @EventHandler
-    public void onWorldChange(PlayerChangedWorldEvent event)
-    {
-        respawnEntity(event.getPlayer());
+        OfflinePlayer chosenPlayer;
+        do
+        {
+            // Check if we can serve OfflinePlayer profiles.
+            if (players.isEmpty())
+            {
+                return null;
+            }
+
+            // Choose a random player
+            chosenPlayer = players.remove(this.random.nextInt(players.size()));
+            // and make sure it is not the observed player
+        } while (chosenPlayer.getName().equals(observedPlayer.getName()));
+
+        // Generate the GameProfile
+        return new WrappedGameProfile(chosenPlayer.getUniqueId(), chosenPlayer.getName());
     }
 
     /**
@@ -220,6 +241,18 @@ public class KillauraEntity implements ViolationModule, Listener
                     // Spawn another entity after the world was changed
                     this.onJoin(new PlayerJoinEvent(player, null));
                 });
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event)
+    {
+        respawnEntity(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onWorldChange(PlayerChangedWorldEvent event)
+    {
+        respawnEntity(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -315,9 +348,9 @@ public class KillauraEntity implements ViolationModule, Listener
             }
 
             @Override
-            public MovementType getMovementType()
+            public Movement getMovement()
             {
-                return MovementType.BASIC_FOLLOW;
+                return Movement.BASIC_FOLLOW_MOVEMENT;
             }
         });
 
@@ -397,7 +430,7 @@ public class KillauraEntity implements ViolationModule, Listener
             }
         }
 
-        respawnTask = Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), this::respawnScheduler, ThreadLocalRandom.current().nextLong(300, 800));
+        respawnTask = Bukkit.getScheduler().runTaskLaterAsynchronously(AACAdditionPro.getInstance(), this::respawnScheduler, ThreadLocalRandom.current().nextLong(respawnTimer, respawnTimer + 800));
     }
 
     /**
@@ -415,7 +448,10 @@ public class KillauraEntity implements ViolationModule, Listener
 
         if (user.isBypassed())
         {
-            respawnEntity(user.getPlayer());
+            if (user.getClientSideEntityData().clientSidePlayerEntity != null)
+            {
+                user.getClientSideEntityData().despawnClientSidePlayerEntity();
+            }
             return null;
         }
 

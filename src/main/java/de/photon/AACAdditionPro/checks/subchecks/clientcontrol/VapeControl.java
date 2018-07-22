@@ -57,7 +57,7 @@ public class VapeControl implements Listener, PluginMessageListener, ClientContr
             clientData = "";
         }
 
-        VerboseSender.sendVerboseMessage("Player " + player.getName() + " joined with Vape | Data: " + clientData);
+        VerboseSender.getInstance().sendVerboseMessage("Player " + player.getName() + " joined with Vape | Data: " + clientData);
         executeCommands(player);
     }
 

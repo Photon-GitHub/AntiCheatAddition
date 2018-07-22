@@ -16,7 +16,7 @@ public interface KillauraEntityController
 
     boolean setSpawnedForPlayer(Player player, boolean spawned);
 
-    MovementType getMovementType();
+    Movement getMovement();
 
     /**
      * @param spawnLocation used only when the entity is not spawned currently

@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ViolationModule;
@@ -15,9 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 
-import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
-import java.util.HashSet;
 import java.util.Set;
 
 public class AutoFish implements Listener, ViolationModule
@@ -84,7 +83,7 @@ public class AutoFish implements Listener, ViolationModule
                     // Ceil in order to make sure that the result is at least 1
                     final double flagOffset = Math.ceil((violation_offset - maxOffset) * 0.5D);
 
-                    VerboseSender.sendVerboseMessage("AutoFish-Verbose | Player: " +
+                    VerboseSender.getInstance().sendVerboseMessage("AutoFish-Verbose | Player: " +
                                                      user.getPlayer().getName() +
                                                      " average time: " +
                                                      StringUtils.limitStringLength(String.valueOf(consistencyStatistics.getAverage()), 7) +
@@ -166,7 +165,7 @@ public class AutoFish implements Listener, ViolationModule
         this.parts[0] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".parts.inhuman_reaction.enabled");
         this.parts[1] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".parts.consistency.enabled");
 
-        VerboseSender.sendVerboseMessage("AutoFish-Parts: inhuman reaction: " + parts[0] + " | consistency: " + parts[1]);
+        VerboseSender.getInstance().sendVerboseMessage("AutoFish-Parts: inhuman reaction: " + parts[0] + " | consistency: " + parts[1]);
     }
 
     @Override
@@ -178,6 +177,6 @@ public class AutoFish implements Listener, ViolationModule
     @Override
     public Set<ServerVersion> getSupportedVersions()
     {
-        return new HashSet<>(Arrays.asList(ServerVersion.MC110, ServerVersion.MC111, ServerVersion.MC112));
+        return ImmutableSet.of(ServerVersion.MC111, ServerVersion.MC112, ServerVersion.MC113);
     }
 }

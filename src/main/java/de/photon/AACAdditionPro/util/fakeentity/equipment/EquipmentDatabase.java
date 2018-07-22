@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.util.fakeentity.equipment;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.google.common.collect.Lists;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.events.KillauraEntityEquipmentPrepareEvent;
@@ -29,28 +30,28 @@ public class EquipmentDatabase extends EnumMap<EnumWrappers.ItemSlot, List<Mater
         super(EnumWrappers.ItemSlot.class);
 
         // -------------------------------------------------- Armor ------------------------------------------------- //
-        this.put(EnumWrappers.ItemSlot.HEAD, Arrays.asList(
+        this.put(EnumWrappers.ItemSlot.HEAD, Lists.newArrayList(
                 Material.LEATHER_HELMET,
                 Material.GOLD_HELMET,
                 Material.CHAINMAIL_HELMET,
                 Material.IRON_HELMET,
                 Material.DIAMOND_HELMET));
 
-        this.put(EnumWrappers.ItemSlot.CHEST, Arrays.asList(
+        this.put(EnumWrappers.ItemSlot.CHEST, Lists.newArrayList(
                 Material.LEATHER_CHESTPLATE,
                 Material.GOLD_CHESTPLATE,
                 Material.CHAINMAIL_CHESTPLATE,
                 Material.IRON_CHESTPLATE,
                 Material.DIAMOND_CHESTPLATE));
 
-        this.put(EnumWrappers.ItemSlot.LEGS, Arrays.asList(
+        this.put(EnumWrappers.ItemSlot.LEGS, Lists.newArrayList(
                 Material.LEATHER_LEGGINGS,
                 Material.GOLD_LEGGINGS,
                 Material.CHAINMAIL_LEGGINGS,
                 Material.IRON_LEGGINGS,
                 Material.DIAMOND_LEGGINGS));
 
-        this.put(EnumWrappers.ItemSlot.FEET, Arrays.asList(
+        this.put(EnumWrappers.ItemSlot.FEET, Lists.newArrayList(
                 Material.LEATHER_BOOTS,
                 Material.GOLD_BOOTS,
                 Material.CHAINMAIL_BOOTS,
@@ -105,7 +106,7 @@ public class EquipmentDatabase extends EnumMap<EnumWrappers.ItemSlot, List<Mater
 
         // ------------------------------------------------- Tools -------------------------------------------------- //
 
-        final List<Material> toolMaterials = Arrays.asList(
+        final List<Material> toolMaterials = Lists.newArrayList(
                 // Wood
                 Material.WOOD_AXE,
                 Material.WOOD_HOE,
@@ -166,7 +167,7 @@ public class EquipmentDatabase extends EnumMap<EnumWrappers.ItemSlot, List<Mater
     /**
      * Get an allowed {@link Material} for a certain {@link com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot}
      */
-    public Material getRandomEquipment(final Player player, final EnumWrappers.ItemSlot itemSlot)
+    Material getRandomEquipment(final Player player, final EnumWrappers.ItemSlot itemSlot)
     {
         List<Material> possibleMaterials = this.getOrDefault(itemSlot, AIR_LIST);
 

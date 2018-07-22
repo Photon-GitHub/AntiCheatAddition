@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -122,7 +123,6 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
         {
             case MC188:
                 return handle.getIntegers().read(1) / 32.0D;
-            case MC110:
             case MC111:
             case MC112:
                 return handle.getDoubles().read(0);
@@ -138,7 +138,6 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
             case MC188:
                 handle.getIntegers().write(1, (int) (value * 32));
                 break;
-            case MC110:
             case MC111:
             case MC112:
                 handle.getDoubles().write(0, value);
@@ -154,7 +153,6 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
         {
             case MC188:
                 return handle.getIntegers().read(2) / 32.0D;
-            case MC110:
             case MC111:
             case MC112:
                 return handle.getDoubles().read(1);
@@ -170,7 +168,6 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
             case MC188:
                 handle.getIntegers().write(2, (int) (value * 32));
                 break;
-            case MC110:
             case MC111:
             case MC112:
                 handle.getDoubles().write(1, value);
@@ -186,7 +183,6 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
         {
             case MC188:
                 return handle.getIntegers().read(3) / 32.0D;
-            case MC110:
             case MC111:
             case MC112:
                 return handle.getDoubles().read(2);
@@ -202,7 +198,6 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
             case MC188:
                 handle.getIntegers().write(3, (int) (value * 32));
                 break;
-            case MC110:
             case MC111:
             case MC112:
                 handle.getDoubles().write(2, value);
@@ -219,7 +214,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
      */
     public float getYaw()
     {
-        return handle.getBytes().read(0) * 360.F / 256.0F;
+        return RotationUtil.convertFixedRotation(handle.getBytes().read(0));
     }
 
     /**
@@ -229,7 +224,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
      */
     public void setYaw(float value)
     {
-        handle.getBytes().write(0, (byte) (value * 256.0F / 360.0F));
+        handle.getBytes().write(0, RotationUtil.getFixRotation(value));
     }
 
     /**
@@ -239,7 +234,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
      */
     public float getPitch()
     {
-        return handle.getBytes().read(1) * 360.F / 256.0F;
+        return RotationUtil.convertFixedRotation(handle.getBytes().read(1));
     }
 
     /**
@@ -249,7 +244,7 @@ public class WrapperPlayServerNamedEntitySpawn extends AbstractPacket
      */
     public void setPitch(float value)
     {
-        handle.getBytes().write(1, (byte) (value * 256.0F / 360.0F));
+        handle.getBytes().write(1, RotationUtil.getFixRotation(value));
     }
 
     /**

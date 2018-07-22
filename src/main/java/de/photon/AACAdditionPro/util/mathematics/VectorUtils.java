@@ -13,30 +13,52 @@ public final class VectorUtils
      * Get to know where the {@link Vector} intersects with a {@link org.bukkit.block.Block}.
      * Non-Occluding {@link Block}s as defined in {@link BlockUtils#isReallyOccluding(Material)} are ignored.
      *
-     * @param start the starting {@link Location}
-     * @param a     the {@link Vector} which should be checked
+     * @param start     the starting {@link Location}
+     * @param direction the {@link Vector} which should be checked
      *
      * @return The length when the {@link Vector} intersects or 0 if no intersection was found
      */
-    public static double getDistanceToFirstIntersectionWithBlock(final Location start, final Vector a)
+    public static double getDistanceToFirstIntersectionWithBlock(final Location start, final Vector direction)
     {
-        final int length = (int) Math.floor(a.length());
+        final int length = (int) Math.floor(direction.length());
         if (length >= 1)
         {
             try
             {
-                final BlockIterator blockIterator = new BlockIterator(start.getWorld(), start.toVector(), a, 0, length);
+                final Location chunk = start.clone();
+                final Vector chunkdirection = direction.clone().setY(0);
+                final double chunkLength = chunkdirection.length();
+                final byte iterations = (byte) Math.ceil(chunkLength / 16D);
+                chunkdirection.normalize().multiply(iterations > 1 ? 16 : chunkLength);
+
+                for (int i = 0; i < iterations; i++)
+                {
+                    // Chunk loading problem
+                    if (!chunk.getWorld().isChunkLoaded(chunk.getBlockX() >> 4, chunk.getBlockZ() >> 4))
+                    {
+                        return 0;
+                    }
+
+                    chunk.add(chunkdirection);
+                }
+
+
+                final BlockIterator blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
+                Block block;
                 while (blockIterator.hasNext())
                 {
-                    final Block block = blockIterator.next();
+                    block = blockIterator.next();
                     // Account for a Spigot bug: BARRIER and MOB_SPAWNER are not occluding blocks
                     if (BlockUtils.isReallyOccluding(block.getType()))
                     {
-                        return block.getLocation().distance(start);
+                        // Use the middle location of the Block instead of the simple location.
+                        return block.getLocation().clone().add(0.5, 0.5, 0.5).distance(start);
                     }
                 }
-            } catch (final IllegalStateException ignored)
+            } catch (IllegalStateException exception)
             {
+                // Just in case the start block could not be found for some reason or a chunk is loaded async.
+                return 0;
             }
         }
         return 0;
@@ -51,6 +73,14 @@ public final class VectorUtils
      */
     public static boolean vectorIntersectsWithBlockAt(final Location start, final Vector vector, final double length)
     {
+        final Location loc = start.clone().add(vector.clone().normalize().multiply(length));
+
+        // If the chunk is not loaded player's view is not blocked by it.
+        if (!loc.getWorld().isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4))
+        {
+            return false;
+        }
+
         final Material type = start.clone().add(vector.clone().normalize().multiply(length)).getBlock().getType();
         return BlockUtils.isReallyOccluding(type) && type.isSolid();
     }

@@ -207,7 +207,7 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Is the numerical representation of the min AAC version smaller than the representation of the real version
-            if (isVersionValid(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion()))
+            if (!isVersionValid(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion()))
             {
                 VerboseSender.getInstance().sendVerboseMessage("AAC version is not supported.", true, true);
                 VerboseSender.getInstance().sendVerboseMessage("This plugin needs AAC version " + minimumAACVersion + " or newer.", true, true);

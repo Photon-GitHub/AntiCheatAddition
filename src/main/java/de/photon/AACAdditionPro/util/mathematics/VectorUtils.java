@@ -74,9 +74,16 @@ public final class VectorUtils
     {
         final Location loc = start.clone().add(vector.clone().normalize().multiply(length));
 
-        // If the chunk is not loaded player's view is not blocked by it.
-        if (!loc.getChunk().isLoaded())
+        try
         {
+            // If the chunk is not loaded player's view is not blocked by it.
+            if (!loc.getChunk().isLoaded())
+            {
+                return false;
+            }
+        } catch (IllegalStateException exception)
+        {
+            // Just in case a chunk is loaded async.
             return false;
         }
 

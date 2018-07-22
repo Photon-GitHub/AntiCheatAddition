@@ -25,11 +25,22 @@ public final class VectorUtils
         {
             try
             {
-                // Chunk loading problem
-                if (!start.getChunk().isLoaded())
+                final Location chunk = start.clone();
+                final Vector chunkdirection = direction.clone().setY(0);
+                final byte iterations = (byte) Math.ceil(chunkdirection.length() / 16D);
+                chunkdirection.normalize().multiply(16);
+
+                for (int i = 0; i < iterations; i++)
                 {
-                    return 0;
+                    // Chunk loading problem
+                    if (!chunk.getChunk().isLoaded())
+                    {
+                        return 0;
+                    }
+
+                    chunk.add(chunkdirection);
                 }
+
 
                 final BlockIterator blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
                 Block block;
@@ -43,9 +54,10 @@ public final class VectorUtils
                         return block.getLocation().clone().add(0.5, 0.5, 0.5).distance(start);
                     }
                 }
-            } catch (final IllegalStateException ignored)
+            } catch (IllegalStateException exception)
             {
-                // Just in case the start block could not be found for some reason.
+                // Just in case the start block could not be found for some reason or a chunk is loaded async.
+                return 0;
             }
         }
         return 0;

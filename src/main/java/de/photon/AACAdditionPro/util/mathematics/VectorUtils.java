@@ -26,10 +26,10 @@ public final class VectorUtils
             try
             {
                 final Location chunk = start.clone();
-                final Vector chunkdirection = direction.clone().setY(0);
-                final double chunkLength = chunkdirection.length();
-                final byte iterations = (byte) Math.ceil(chunkLength / 16D);
-                chunkdirection.normalize().multiply(iterations > 1 ? 16 : chunkLength);
+                final Vector chunkDirection = direction.clone().setY(0);
+                final double chunkLength = chunkDirection.length();
+                final byte iterations = (byte) Math.ceil(chunkLength / 8D);
+                chunkDirection.normalize().multiply(iterations > 1 ? 8 : chunkLength);
 
                 for (int i = 0; i < iterations; i++)
                 {
@@ -39,7 +39,7 @@ public final class VectorUtils
                         return 0;
                     }
 
-                    chunk.add(chunkdirection);
+                    chunk.add(chunkDirection);
                 }
 
 

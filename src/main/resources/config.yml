@@ -110,7 +110,7 @@ AutoPotion:
 # - Equipment-Hider: If a player cannot be directly seen by another player his equipment (hand, armour) will be hidden
 #                    from the observer. (This will make the life of cheaters harder as they cannot properly estimate
 #                    the combat strength of a player)
-#                    This part will automatically disable itself on servers with MC versions below 1.10.
+#                    This part will automatically disable itself on servers with MC versions below 1.11.
 Esp:
    # Do you want to enable the ESP check
    #

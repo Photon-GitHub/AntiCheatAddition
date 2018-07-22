@@ -33,7 +33,7 @@ public final class VectorUtils
                 for (int i = 0; i < iterations; i++)
                 {
                     // Chunk loading problem
-                    if (!chunk.getChunk().isLoaded())
+                    if (!chunk.getWorld().isChunkLoaded(chunk.getBlockX() >> 4, chunk.getBlockZ() >> 4))
                     {
                         return 0;
                     }
@@ -74,16 +74,9 @@ public final class VectorUtils
     {
         final Location loc = start.clone().add(vector.clone().normalize().multiply(length));
 
-        try
+        // If the chunk is not loaded player's view is not blocked by it.
+        if (!loc.getWorld().isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4))
         {
-            // If the chunk is not loaded player's view is not blocked by it.
-            if (!loc.getChunk().isLoaded())
-            {
-                return false;
-            }
-        } catch (IllegalStateException exception)
-        {
-            // Just in case a chunk is loaded async.
             return false;
         }
 

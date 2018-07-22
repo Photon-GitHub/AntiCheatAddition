@@ -121,11 +121,13 @@ public class AACAdditionPro extends JavaPlugin
         final String[] versionNumberParts = versionNumber.split(".");
 
         final int minLength = Math.min(minVersionParts.length, versionNumberParts.length);
+        int oneNumber;
+        int twoNumber;
 
         for (int i = 0; i < minLength; i++)
         {
-            int oneNumber = Integer.valueOf(minVersionParts[i]);
-            int twoNumber = Integer.valueOf(versionNumberParts[i]);
+            oneNumber = Integer.valueOf(minVersionParts[i]);
+            twoNumber = Integer.valueOf(versionNumberParts[i]);
 
             if (oneNumber > twoNumber)
             {

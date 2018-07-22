@@ -113,12 +113,12 @@ public class AACAdditionPro extends JavaPlugin
     }
 
     /**
-     * Checks if the version number is greater than the minimum version number.
+     * Checks if the given AAC version is too old for AACAdditionPro.
      */
-    private static boolean isVersionValid(String versionNumber)
+    private static boolean isVersionTooOld(String aacVersionNumber)
     {
         final String[] minVersionParts = AACAdditionPro.minimumAACVersion.split(".");
-        final String[] versionNumberParts = versionNumber.split(".");
+        final String[] versionNumberParts = aacVersionNumber.split(".");
 
         final int minLength = Math.min(minVersionParts.length, versionNumberParts.length);
         int oneNumber;
@@ -131,16 +131,16 @@ public class AACAdditionPro extends JavaPlugin
 
             if (oneNumber > twoNumber)
             {
-                return false;
+                return true;
             }
             else if (oneNumber < twoNumber)
             {
-                return true;
+                return false;
             }
         }
 
         // Same numbers, now check for additions
-        return minVersionParts.length <= versionNumberParts.length;
+        return minVersionParts.length > versionNumberParts.length;
     }
 
     /**
@@ -207,7 +207,7 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Is the numerical representation of the min AAC version smaller than the representation of the real version
-            if (!isVersionValid(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion()))
+            if (isVersionTooOld(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion()))
             {
                 VerboseSender.getInstance().sendVerboseMessage("AAC version is not supported.", true, true);
                 VerboseSender.getInstance().sendVerboseMessage("This plugin needs AAC version " + minimumAACVersion + " or newer.", true, true);

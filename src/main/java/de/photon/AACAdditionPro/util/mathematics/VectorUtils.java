@@ -28,8 +28,8 @@ public final class VectorUtils
                 final Location chunk = start.clone();
                 final Vector chunkDirection = direction.clone().setY(0);
                 final double chunkLength = chunkDirection.length();
-                final byte iterations = (byte) Math.ceil(chunkLength / 16D);
-                chunkDirection.normalize().multiply(iterations > 1 ? 16 : chunkLength);
+                final byte iterations = (byte) Math.ceil(chunkLength / 8D);
+                chunkDirection.normalize().multiply(iterations > 1 ? 8 : chunkLength);
 
                 for (int i = 0; i < iterations; i++)
                 {

@@ -12,9 +12,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public final class DisplayInformation
 {
@@ -30,38 +30,42 @@ public final class DisplayInformation
     {
         // Try to search for teams with players inside to make sure the entity is placed in a real enemy team if
         // possible.
-        final Set<Team> possibleTeams = clientsidePlayerEntity.getObservedPlayer().getScoreboard().getTeams();
+        final SortedSet<Team> possibleTeams = new TreeSet<>((o1, o2) -> {
+            boolean o1Preferred = preferredTeamNames.contains(o1.getName());
+            boolean o2Preferred = preferredTeamNames.contains(o2.getName());
 
-        // Remove teams with suffix and the team of the observed player.
-        possibleTeams.removeIf(team -> !team.getSuffix().isEmpty() || team.getEntries().contains(clientsidePlayerEntity.getGameProfile().getName()));
+            // Preferred team handling
+            if (o1Preferred && !o2Preferred)
+            {
+                return 1;
+            }
+            else if (!o1Preferred && o2Preferred)
+            {
+                return -1;
+            }
+            return Integer.compare(o1.getSize(), o2.getSize());
+        });
+
+        for (Team team : clientsidePlayerEntity.getObservedPlayer().getScoreboard().getTeams())
+        {
+            // Don't add teams with suffix and the team of the observed player.
+            if (team.getSuffix().isEmpty() && !team.getEntries().contains(clientsidePlayerEntity.getGameProfile().getName()))
+            {
+                possibleTeams.add(team);
+            }
+        }
 
         // Currently in no team
         if (clientsidePlayerEntity.getCurrentTeam() == null ||
             // The observed player has joined the team of the entity.
             !possibleTeams.contains(clientsidePlayerEntity.getCurrentTeam()))
         {
-            // Start with the team with the most players.
-            final Iterator<Team> priorityIterator = possibleTeams.stream().sorted((o1, o2) -> {
-                // Preferred team handling
-                if (preferredTeamNames.contains(o1.getName()) &&
-                    // Not both teams are preferred
-                    !preferredTeamNames.contains(o2.getName()))
-                {
-                    return 1;
-                }
-                // Otherwise choose the biggest team.
-                return Integer.compare(o1.getSize(), o2.getSize());
-            }).iterator();
-
-            Team current;
-            while (priorityIterator.hasNext())
+            for (Team possibleTeam : possibleTeams)
             {
-                current = priorityIterator.next();
-
                 try
                 {
                     // The Entity will automatically leave its current team, no extra method call required.
-                    clientsidePlayerEntity.joinTeam(current);
+                    clientsidePlayerEntity.joinTeam(possibleTeam);
                     // No further team joining.
                     return;
                 } catch (IllegalArgumentException entityIsNull)

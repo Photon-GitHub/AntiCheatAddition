@@ -218,7 +218,9 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 if (!user.getPositionData().hasPlayerMovedRecently(detectionMillis, PositionData.MovementType.ANY) &&
                     !user.getPacketAnalysisData().recentlyUpdated(0, detectionMillis) &&
                     // False positives e.g. in the void or in the air.
-                    !user.getPlayer().isDead())
+                    !user.getPlayer().isDead() &&
+                    // This check will cause false positives with client versions higher than 1.8.8
+                    ServerVersion.getClientServerVersion(user.getPlayer()) == ServerVersion.MC188)
                 {
                     VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " may be manipulating time on a protocol level.");
                     vlManager.flag(user.getPlayer(), 2, -1, () -> {}, () -> {});

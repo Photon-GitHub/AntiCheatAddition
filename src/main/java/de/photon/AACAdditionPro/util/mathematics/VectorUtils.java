@@ -60,6 +60,14 @@ public final class VectorUtils
      */
     public static boolean vectorIntersectsWithBlockAt(final Location start, final Vector vector, final double length)
     {
+        final Location loc = start.clone().add(vector.clone().normalize().multiply(length));
+
+        // If the chunk is not loaded player's view is not blocked by it.
+        if (!loc.getChunk().isLoaded())
+        {
+            return false;
+        }
+
         final Material type = start.clone().add(vector.clone().normalize().multiply(length)).getBlock().getType();
         return BlockUtils.isReallyOccluding(type) && type.isSolid();
     }

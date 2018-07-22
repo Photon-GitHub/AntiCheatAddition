@@ -63,6 +63,7 @@ public class AACAdditionPro extends JavaPlugin
     /**
      * Indicates if the loading process is completed.
      */
+    @Getter
     private boolean loaded = false;
 
     /**
@@ -112,15 +113,32 @@ public class AACAdditionPro extends JavaPlugin
     }
 
     /**
-     * Parses an int from a version {@link String} that has numbers and dots in it.
-     *
-     * @param versionString the {@link String} from which the version int should be parsed.
-     *
-     * @return the int representation of all numbers in the {@link String} with the dots filtered out.
+     * Checks if the version number is greater than the minimum version number.
      */
-    private static int getVersionNumber(final String versionString)
+    private static boolean isVersionValid(String versionNumber)
     {
-        return Integer.valueOf(versionString.replace(".", ""));
+        final String[] minVersionParts = AACAdditionPro.minimumAACVersion.split(".");
+        final String[] versionNumberParts = versionNumber.split(".");
+
+        final int minLength = Math.min(minVersionParts.length, versionNumberParts.length);
+
+        for (int i = 0; i < minLength; i++)
+        {
+            int oneNumber = Integer.valueOf(minVersionParts[i]);
+            int twoNumber = Integer.valueOf(versionNumberParts[i]);
+
+            if (oneNumber > twoNumber)
+            {
+                return false;
+            }
+            else if (oneNumber < twoNumber)
+            {
+                return true;
+            }
+        }
+
+        // Same numbers, now check for additions
+        return minVersionParts.length <= versionNumberParts.length;
     }
 
     /**
@@ -187,7 +205,7 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Is the numerical representation of the min AAC version smaller than the representation of the real version
-            if (getVersionNumber(minimumAACVersion) > getVersionNumber(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion()))
+            if (isVersionValid(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion()))
             {
                 VerboseSender.getInstance().sendVerboseMessage("AAC version is not supported.", true, true);
                 VerboseSender.getInstance().sendVerboseMessage("This plugin needs AAC version " + minimumAACVersion + " or newer.", true, true);
@@ -360,13 +378,5 @@ public class AACAdditionPro extends JavaPlugin
         {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * @return true if the loading process is completed and false if not.
-     */
-    public boolean isLoaded()
-    {
-        return loaded;
     }
 }

@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
@@ -11,8 +12,6 @@ import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -93,7 +92,7 @@ public class VersionControl implements Listener, ClientControlModule
     @Override
     public Set<String> getDependencies()
     {
-        return new HashSet<>(Collections.singletonList("ViaVersion"));
+        return ImmutableSet.of("ViaVersion");
     }
 
     @Override
@@ -125,7 +124,7 @@ public class VersionControl implements Listener, ClientControlModule
         private final ServerVersion equivalentServerVersion;
 
         /**
-         * An unmodifiable {@link List} of {@link Integer}s that contains all protocol version numbers associated with this {@link ProtocolVersion}
+         * An immutable {@link Set} of {@link Integer}s that contains all protocol version numbers associated with this {@link ProtocolVersion}
          */
         private final Set<Integer> versionNumbers;
 
@@ -134,7 +133,7 @@ public class VersionControl implements Listener, ClientControlModule
             this.name = name;
             this.allowed = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl.allowedVersions." + this.name);
             this.equivalentServerVersion = equivalentServerVersion;
-            this.versionNumbers = Collections.unmodifiableSet(Sets.newHashSet(versionNumbers));
+            this.versionNumbers = ImmutableSet.copyOf(versionNumbers);
         }
     }
 }

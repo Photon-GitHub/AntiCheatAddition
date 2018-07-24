@@ -858,6 +858,9 @@ ClientControl:
          '1.10': true
          '1.11': true
          '1.12': true
+         # NOTE: 1.13 support is HIGHLY EXPERIMENTAL AND UNTESTED. AACADDITIONPRO DOES NOT OFFICIALLY SUPPORT THAT
+         # VERSION RIGHT NOW!
+         '1.13': false
 
    # WorldDownloader is a popular modification to get the maps of a server
    WorldDownloader:

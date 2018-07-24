@@ -26,7 +26,8 @@ public class VersionControl implements Listener, ClientControlModule
             new ProtocolVersion("1.9", ServerVersion.MC19, 107, 108, 109, 110),
             new ProtocolVersion("1.10", ServerVersion.MC110, 210),
             new ProtocolVersion("1.11", ServerVersion.MC111, 315, 316),
-            new ProtocolVersion("1.12", ServerVersion.MC112, 335, 338, 340));
+            new ProtocolVersion("1.12", ServerVersion.MC112, 335, 338, 340),
+            new ProtocolVersion("1.13", ServerVersion.MC113, 393));
 
     /**
      * Method used to get the {@link ServerVersion} from the protocol version number.

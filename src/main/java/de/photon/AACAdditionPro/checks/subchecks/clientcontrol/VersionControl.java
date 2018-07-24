@@ -62,12 +62,15 @@ public class VersionControl implements Listener, ClientControlModule
                 blockedProtocolNumbers.addAll(protocolVersion.versionNumbers);
         }
 
-        // Get the message
-        final String message = AACAdditionPro.getInstance().getConfig().getString("ClientControl.VersionControl.message")
-                                             // Replace the special placeholder
-                                             .replace("{supportedVersions}", String.join(", ", versionStrings));
+        // Set the kick message.
+        Configs.VIAVERSION.getConfigurationRepresentation().getYamlConfiguration().set(
+                "block-disconnect-msg",
+                // Construct the message.
+                AACAdditionPro.getInstance().getConfig().getString("ClientControl.VersionControl.message")
+                              // Replace the special placeholder
+                              .replace("{supportedVersions}", String.join(", ", versionStrings)));
 
-        Configs.VIAVERSION.getConfigurationRepresentation().getYamlConfiguration().set("block-disconnect-msg", message);
+        // Block the affected protocol numbers.
         Configs.VIAVERSION.getConfigurationRepresentation().requestValueChange("block-protocols", blockedProtocolNumbers);
     }
 

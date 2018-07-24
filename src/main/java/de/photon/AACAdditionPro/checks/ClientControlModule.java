@@ -86,7 +86,7 @@ public interface ClientControlModule extends ViolationModule
                StringUtils.stringContainsFlagsIgnoreCase(brandMessage, flags);
     }
 
-    static boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String[] flags)
+    static boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String... flags)
     {
         final User user = UserManager.getUser(player.getUniqueId());
 

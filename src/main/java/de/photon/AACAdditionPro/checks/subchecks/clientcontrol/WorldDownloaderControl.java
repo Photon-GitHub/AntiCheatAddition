@@ -13,10 +13,6 @@ public class WorldDownloaderControl implements PluginMessageListener, ClientCont
     @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
     private List<String> commandsOnDetection;
 
-    private static final String[] WDLFLAGS = {
-            "worlddownloader-vanilla"
-    };
-
     @Override
     public List<String> getCommandsOnDetection()
     {
@@ -33,7 +29,7 @@ public class WorldDownloaderControl implements PluginMessageListener, ClientCont
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
     {
         // MCBrand channel with flag
-        if (ClientControlModule.shouldFlagBrandCheck(channel, player, message, WDLFLAGS) ||
+        if (ClientControlModule.shouldFlagBrandCheck(channel, player, message, "worlddownloader-vanilla") ||
             // or other channel
             !ClientControlModule.isBrandChannel(channel))
         {

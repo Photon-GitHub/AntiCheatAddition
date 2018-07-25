@@ -162,6 +162,7 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
         {
             return;
         }
+
         // Flight may trigger this
         if (!user.getPlayer().getAllowFlight() &&
             // Not using an Elytra

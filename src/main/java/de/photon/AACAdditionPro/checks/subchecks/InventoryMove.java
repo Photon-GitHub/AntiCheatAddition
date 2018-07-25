@@ -61,16 +61,16 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
         final double motX = Reflect.fromNMS("Entity").field("motX").from(nmsHandle).asDouble();
         final double motZ = Reflect.fromNMS("Entity").field("motZ").from(nmsHandle).asDouble();
 
-        final Vector input = new Vector(event.getPacket().getDoubles().readSafely(0),
-                                        event.getPacket().getDoubles().readSafely(1),
-                                        event.getPacket().getDoubles().readSafely(2)
+        final Vector moveTo = new Vector(event.getPacket().getDoubles().readSafely(0),
+                                         event.getPacket().getDoubles().readSafely(1),
+                                         event.getPacket().getDoubles().readSafely(2)
         );
 
         final Location knownPosition = user.getPlayer().getLocation();
 
         // Check if this is a clientside movement:
         // Position Vectors are not the same
-        if (!input.equals(knownPosition.toVector()) &&
+        if (!moveTo.equals(knownPosition.toVector()) &&
             // or movement is not 0
             motX != 0 &&
             motZ != 0 &&

@@ -78,6 +78,9 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
             !user.getPlayer().isInsideVehicle() &&
             // Not flying (may trigger some fps)
             !user.getPlayer().isFlying() &&
+            // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
+            // world add errors.
+            user.getPlayer().getWorld().isChunkLoaded(user.getPlayer().getLocation().getBlockX() >> 4, user.getPlayer().getLocation().getBlockZ() >> 4) &&
             // The player is currently not in a liquid (liquids push)
             !BlockUtils.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
                                                          Hitbox.SNEAKING_PLAYER :

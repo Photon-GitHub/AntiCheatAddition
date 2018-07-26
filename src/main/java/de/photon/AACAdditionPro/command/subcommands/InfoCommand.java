@@ -51,7 +51,7 @@ public class InfoCommand extends InternalCommand
                 try
                 {
                     // Casting is ok here as only AACAdditionProChecks will be in the CheckManager.
-                    Integer vl = AACAdditionPro.getInstance().getModuleManager().getViolationLevelManagement(moduleType).getVL(p.getUniqueId());
+                    final int vl = AACAdditionPro.getInstance().getModuleManager().getViolationLevelManagement(moduleType).getVL(p.getUniqueId());
                     if (vl != 0)
                     {
                         messages.put(vl, AACAdditionPro.getInstance().getModuleManager().getModule(moduleType).getName());

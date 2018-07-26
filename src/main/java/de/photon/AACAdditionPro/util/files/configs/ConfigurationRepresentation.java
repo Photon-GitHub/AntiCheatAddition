@@ -70,7 +70,7 @@ public class ConfigurationRepresentation
                 configLines.remove(initialLineIndex + 1);
             }
 
-            // Change the initalLine to remove the old value
+            // Change the initialLine to remove the old value
             String initialLine = configLines.get(initialLineIndex);
             // + 1 in order to not delete the ':' char.
             initialLine = initialLine.substring(0, initialLine.lastIndexOf(':') + 1);

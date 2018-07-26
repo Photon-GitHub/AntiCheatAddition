@@ -8,6 +8,9 @@ import org.bukkit.entity.LivingEntity;
  */
 public final class ElytraUtil
 {
+    /**
+     * Determines if a {@link LivingEntity} is gliding (i.e. flying with an elytra)
+     */
     public static boolean isFlyingWithElytra(final LivingEntity livingEntity)
     {
         switch (ServerVersion.getActiveServerVersion())

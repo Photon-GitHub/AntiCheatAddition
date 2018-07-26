@@ -1,13 +1,14 @@
 package de.photon.AACAdditionPro.util.commands;
 
+import com.google.common.base.Preconditions;
 import de.photon.AACAdditionPro.util.general.StringUtils;
 import me.konsolas.aac.api.AACAPIProvider;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public final class Placeholders
 {
@@ -20,9 +21,18 @@ public final class Placeholders
      *
      * @return the final {@link String} with the actual replacements in the place of the placeholders.
      */
-    public static String applyPlaceholders(final String input, final Player player, final String violationInformation)
+    public static String applyPlaceholders(String input, final Player player, final String violationInformation)
     {
-        return applyPlaceholders(input, Collections.singletonList(player), violationInformation);
+        Objects.requireNonNull(player, "Placeholder-parsing failed because the list of players is null or empty.");
+
+        // Player
+        input = applySinglePlaceholder(input, "{player}", player.getName(), (byte) 32);
+
+        // Ping
+        input = applySinglePlaceholder(input, "{ping}", String.valueOf(AACAPIProvider.getAPI().getPing(player)), (byte) 5);
+
+        // Global placeholders
+        return applyGlobalPlaceholders(input, player.getWorld(), violationInformation);
     }
 
     /**
@@ -36,44 +46,31 @@ public final class Placeholders
      */
     public static String applyPlaceholders(String input, final List<Player> players, final String violationInformation)
     {
-        if (AACAPIProvider.isAPILoaded())
+        Preconditions.checkArgument(players != null && players.size() > 1, "Placeholder-parsing failed because the list of players is null or too small.");
+
+        // Collect to Set to make sure no names are duplicates.
+        input = applySinglePlaceholder(input, "{team}", String.join(", ", players.stream().map(Player::getName).collect(Collectors.toSet())), Byte.MAX_VALUE);
+
+        return applyGlobalPlaceholders(input, players.get(0).getWorld(), violationInformation);
+    }
+
+    /**
+     * Apply the placeholders which are important for both team and single player violations.
+     */
+    private static String applyGlobalPlaceholders(String input, final World world, final String violationInformation)
+    {
+        Preconditions.checkState(AACAPIProvider.isAPILoaded(), "Placeholder-parsing failed because AAC's API is not loaded.");
+
+        input = applySinglePlaceholder(input, "{tps}", String.valueOf(AACAPIProvider.getAPI().getTPS()), (byte) 5);
+
+        if (violationInformation != null)
         {
-            // List is not null and contains at least one player
-            if (players != null && !players.isEmpty())
-            {
-                // Team handling
-                if (players.size() > 1)
-                {
-                    final Set<String> teamMemberNames = new HashSet<>();
-                    players.forEach(player -> teamMemberNames.add(player.getName()));
-
-                    input = applySinglePlaceholder(input, "{team}", String.join(", ", teamMemberNames), Byte.MAX_VALUE);
-                }
-                // Single-Player handling
-                else
-                {
-                    // Player
-                    input = applySinglePlaceholder(input, "{player}", players.get(0).getName(), (byte) 32);
-
-                    // Ping
-                    input = applySinglePlaceholder(input, "{ping}", String.valueOf(AACAPIProvider.getAPI().getPing(players.get(0))), (byte) 5);
-                }
-
-                // Both team and single player need the following placeholders
-                input = applySinglePlaceholder(input, "{tps}", String.valueOf(AACAPIProvider.getAPI().getTPS()), (byte) 5);
-
-                if (violationInformation != null)
-                {
-                    input = applySinglePlaceholder(input, "{vl}", violationInformation, (byte) 5);
-                }
-
-                // World
-                input = applySinglePlaceholder(input, "{world}", players.get(0).getWorld().getName(), Byte.MAX_VALUE);
-                return input;
-            }
-            throw new NullPointerException("Placeholder-parsing failed because the list of players is null or empty.");
+            input = applySinglePlaceholder(input, "{vl}", violationInformation, (byte) 5);
         }
-        throw new IllegalStateException("Placeholder-parsing failed because AAC's API is not loaded.");
+
+        // World
+        input = applySinglePlaceholder(input, "{world}", world.getName(), Byte.MAX_VALUE);
+        return input;
     }
 
     /**

@@ -10,7 +10,7 @@ import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.user.data.PositionData;
-import de.photon.AACAdditionPro.util.entity.ElytraUtil;
+import de.photon.AACAdditionPro.util.entity.EntityUtils;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
@@ -19,7 +19,6 @@ import de.photon.AACAdditionPro.util.reflection.Reflect;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import de.photon.AACAdditionPro.util.world.ChunkUtils;
-import de.photon.AACAdditionPro.util.world.EntityUtils;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -87,7 +86,7 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
                                                          Hitbox.SNEAKING_PLAYER :
                                                          Hitbox.PLAYER) &&
             // Not using an Elytra
-            !ElytraUtil.isFlyingWithElytra(user.getPlayer()) &&
+            !EntityUtils.isFlyingWithElytra(user.getPlayer()) &&
             // Player is in an inventory
             user.getInventoryData().hasOpenInventory() &&
             // Player has not been hit recently
@@ -167,7 +166,7 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
         // Flight may trigger this
         if (!user.getPlayer().getAllowFlight() &&
             // Not using an Elytra
-            !ElytraUtil.isFlyingWithElytra(user.getPlayer()) &&
+            !EntityUtils.isFlyingWithElytra(user.getPlayer()) &&
             // Sprinting and Sneaking as detection
             (user.getPlayer().isSprinting() || user.getPlayer().isSneaking()) &&
             // The player has an opened inventory

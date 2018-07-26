@@ -22,6 +22,7 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLoo
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerKeepAlive;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.world.LocationUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -279,7 +280,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                                                    100 :
                                                    (user.getPlayer().isSprinting() ? 25 : 9);
 
-                    if (!MathUtils.areLocationsInRange(user.getPacketAnalysisData().lastPositionForceData.getLocation(), clientPositionLookWrapper.getLocation(user.getPlayer().getWorld()), allowedDistance))
+                    if (!LocationUtils.areLocationsInRange(user.getPacketAnalysisData().lastPositionForceData.getLocation(), clientPositionLookWrapper.getLocation(user.getPlayer().getWorld()), allowedDistance))
                     {
                         VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " tried to spoof position packets.");
                         vlManager.flag(user.getPlayer(), 10, -1, () -> {}, () -> {});

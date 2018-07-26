@@ -279,7 +279,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                                                    100 :
                                                    (user.getPlayer().isSprinting() ? 25 : 9);
 
-                    if (user.getPacketAnalysisData().lastPositionForceData.getLocation().distanceSquared(clientPositionLookWrapper.getLocation(user.getPlayer().getWorld())) > allowedDistance)
+                    if (MathUtils.areLocationsInRange(user.getPacketAnalysisData().lastPositionForceData.getLocation(), clientPositionLookWrapper.getLocation(user.getPlayer().getWorld()), allowedDistance))
                     {
                         VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " tried to spoof position packets.");
                         vlManager.flag(user.getPlayer(), 10, -1, () -> {}, () -> {});

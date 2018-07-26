@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.util.visibility.informationmodifiers;
 
 import com.comphenix.protocol.PacketType;
 import de.photon.AACAdditionPro.Module;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.visibility.PlayerInformationModifier;
 import org.bukkit.entity.Entity;

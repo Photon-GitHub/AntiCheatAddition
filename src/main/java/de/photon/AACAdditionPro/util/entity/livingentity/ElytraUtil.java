@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.util.entity.livingentity;
 
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
+import de.photon.AACAdditionPro.ServerVersion;
 import org.bukkit.entity.LivingEntity;
 
 /**

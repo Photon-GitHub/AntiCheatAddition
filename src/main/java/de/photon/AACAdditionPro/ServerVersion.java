@@ -1,6 +1,5 @@
-package de.photon.AACAdditionPro.util.multiversion;
+package de.photon.AACAdditionPro;
 
-import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VersionControl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,7 @@ import us.myles.ViaVersion.api.ViaAPI;
 
 import java.util.Set;
 
-@RequiredArgsConstructor(suppressConstructorProperties = true)
+@RequiredArgsConstructor
 @Getter
 public enum ServerVersion
 {

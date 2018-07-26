@@ -41,7 +41,6 @@ import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.fakeentity.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;

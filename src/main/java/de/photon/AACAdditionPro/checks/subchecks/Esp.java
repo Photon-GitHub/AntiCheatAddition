@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
@@ -9,7 +10,6 @@ import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.Configs;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.VectorUtils;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.visibility.HideMode;
 import de.photon.AACAdditionPro.util.visibility.PlayerInformationModifier;
 import de.photon.AACAdditionPro.util.visibility.informationmodifiers.InformationObfuscator;

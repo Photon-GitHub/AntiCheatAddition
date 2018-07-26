@@ -25,23 +25,6 @@ public final class VectorUtils
         {
             try
             {
-                final Location chunk = start.clone();
-                final Vector chunkDirection = direction.clone().setY(0);
-                final double chunkLength = chunkDirection.length();
-                final byte iterations = (byte) Math.ceil(chunkLength / 8D);
-                chunkDirection.normalize().multiply(iterations > 1 ? 8 : chunkLength);
-
-                for (int i = 0; i < iterations; i++)
-                {
-                    // Chunk loading problem
-                    if (!chunk.getWorld().isChunkLoaded(chunk.getBlockX() >> 4, chunk.getBlockZ() >> 4))
-                    {
-                        return 0;
-                    }
-
-                    chunk.add(chunkDirection);
-                }
-
 
                 final BlockIterator blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
                 Block block;

@@ -10,7 +10,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
+import de.photon.AACAdditionPro.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;

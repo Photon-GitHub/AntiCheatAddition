@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.PacketListener;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.HandlerList;

@@ -18,6 +18,7 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.reflection.Reflect;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
+import de.photon.AACAdditionPro.util.world.ChunkUtils;
 import de.photon.AACAdditionPro.util.world.EntityUtils;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Location;
@@ -80,7 +81,7 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
             !user.getPlayer().isFlying() &&
             // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
             // world add errors.
-            user.getPlayer().getWorld().isChunkLoaded(user.getPlayer().getLocation().getBlockX() >> 4, user.getPlayer().getLocation().getBlockZ() >> 4) &&
+            ChunkUtils.isChunkLoaded(user.getPlayer().getLocation()) &&
             // The player is currently not in a liquid (liquids push)
             !BlockUtils.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
                                                          Hitbox.SNEAKING_PLAYER :

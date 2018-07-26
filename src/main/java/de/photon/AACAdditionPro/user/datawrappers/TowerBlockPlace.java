@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.datawrappers;
+package de.photon.AACAdditionPro.user.datawrappers;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;

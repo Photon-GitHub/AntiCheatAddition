@@ -2,12 +2,12 @@ package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;

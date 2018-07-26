@@ -2,9 +2,9 @@ package de.photon.AACAdditionPro.user.data;
 
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.util.datawrappers.RotationChange;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -130,5 +130,33 @@ public class LookPacketData extends TimeData
                 result[0]);
 
         return result;
+    }
+
+    @AllArgsConstructor
+    public static class RotationChange
+    {
+        @Getter
+        private float yaw;
+        @Getter
+        private float pitch;
+        @Getter
+        private final long time = System.currentTimeMillis();
+
+        /**
+         * Merges a {@link RotationChange} with this {@link RotationChange}.
+         */
+        public void merge(final RotationChange rotationChange)
+        {
+            this.yaw += rotationChange.yaw;
+            this.pitch += rotationChange.pitch;
+        }
+
+        /**
+         * Calculates the total angle between two {@link RotationChange} - directions.
+         */
+        public float angle(final RotationChange rotationChange)
+        {
+            return RotationUtil.getDirection(this.getYaw(), this.getPitch()).angle(RotationUtil.getDirection(rotationChange.getYaw(), rotationChange.getPitch()));
+        }
     }
 }

@@ -1,9 +1,9 @@
 package de.photon.AACAdditionPro.util.world;
 
 import com.google.common.collect.ImmutableSet;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

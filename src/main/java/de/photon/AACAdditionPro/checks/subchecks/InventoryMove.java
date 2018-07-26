@@ -17,7 +17,6 @@ import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.reflection.Reflect;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
-import de.photon.AACAdditionPro.util.world.BlockUtils;
 import de.photon.AACAdditionPro.util.world.ChunkUtils;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Location;
@@ -82,9 +81,9 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
             // world add errors.
             ChunkUtils.isChunkLoaded(user.getPlayer().getLocation()) &&
             // The player is currently not in a liquid (liquids push)
-            !BlockUtils.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
-                                                         Hitbox.SNEAKING_PLAYER :
-                                                         Hitbox.PLAYER) &&
+            !EntityUtils.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
+                                                          Hitbox.SNEAKING_PLAYER :
+                                                          Hitbox.PLAYER) &&
             // Not using an Elytra
             !EntityUtils.isFlyingWithElytra(user.getPlayer()) &&
             // Player is in an inventory

@@ -2,16 +2,11 @@ package de.photon.AACAdditionPro.util.world;
 
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.ServerVersion;
-import de.photon.AACAdditionPro.util.mathematics.AxisAlignedBB;
-import de.photon.AACAdditionPro.util.mathematics.Hitbox;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -82,69 +77,6 @@ public final class BlockUtils
             BlockFace.SOUTH,
             BlockFace.WEST,
             BlockFace.EAST);
-
-    /**
-     * Gets all the {@link Material}s inside a {@link Hitbox} at a certain {@link Location} and adds them to a
-     * {@link Set}.
-     */
-    public static Set<Material> getMaterialsInHitbox(final Location location, final Hitbox hitbox)
-    {
-        final Set<Material> materials = new HashSet<>();
-
-        final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
-
-        // Cast the first value as that will only make it smaller, the second one has to be ceiled as it could be the same value once again.
-        for (int x = (int) axisAlignedBB.getMinX(); x <= (int) Math.ceil(axisAlignedBB.getMaxX()); x++)
-        {
-            for (int y = (int) axisAlignedBB.getMinY(); y <= (int) Math.ceil(axisAlignedBB.getMaxY()); y++)
-            {
-                for (int z = (int) axisAlignedBB.getMinZ(); z <= (int) Math.ceil(axisAlignedBB.getMaxZ()); z++)
-                {
-                    materials.add(location.getWorld().getBlockAt(x, y, z).getType());
-                }
-            }
-        }
-        return materials;
-    }
-
-    /**
-     * Checks if a {@link Hitbox} at a certain {@link Location} is inside liquids.
-     *
-     * @param location the {@link Location} to base the {@link Hitbox} on.
-     * @param hitbox   the type of {@link Hitbox} that should be constructed.
-     */
-    public static boolean isHitboxInLiquids(final Location location, final Hitbox hitbox)
-    {
-        return isHitboxInMaterials(location, hitbox, LIQUIDS);
-    }
-
-    /**
-     * Checks if a {@link Hitbox} at a certain {@link Location} is inside of one of the provided {@link Material}s.
-     *
-     * @param location  the {@link Location} to base the {@link Hitbox} on.
-     * @param hitbox    the type of {@link Hitbox} that should be constructed.
-     * @param materials the {@link Material}s that should be checked for.
-     */
-    public static boolean isHitboxInMaterials(final Location location, final Hitbox hitbox, final Collection<Material> materials)
-    {
-        final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
-
-        // Cast the first value as that will only make it smaller, the second one has to be ceiled as it could be the same value once again.
-        for (int x = (int) axisAlignedBB.getMinX(); x <= (int) Math.ceil(axisAlignedBB.getMaxX()); x++)
-        {
-            for (int y = (int) axisAlignedBB.getMinY(); y <= (int) Math.ceil(axisAlignedBB.getMaxY()); y++)
-            {
-                for (int z = (int) axisAlignedBB.getMinZ(); z <= (int) Math.ceil(axisAlignedBB.getMaxZ()); z++)
-                {
-                    if (materials.contains(location.getWorld().getBlockAt(x, y, z).getType()))
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
 
     /**
      * This can be used to know if the {@link Block}s are next to each other.

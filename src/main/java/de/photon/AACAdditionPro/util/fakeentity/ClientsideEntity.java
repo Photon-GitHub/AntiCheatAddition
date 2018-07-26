@@ -7,6 +7,7 @@ import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.util.entity.EntityUtils;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Collision;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
@@ -22,7 +23,6 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityTelep
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMove;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMoveLook;
 import de.photon.AACAdditionPro.util.reflection.Reflect;
-import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -213,7 +213,7 @@ public abstract class ClientsideEntity
             // Whether the entity should jump if horizontally collided
             if (this.currentMovementCalculator.jumpIfCollidedHorizontally() &&
                 // Check whether the entity can really jump to that location.
-                BlockUtils.getMaterialsInHitbox(this.location.clone().add(tempJumpVelocity), this.hitbox).stream().noneMatch(material -> material != Material.AIR))
+                EntityUtils.getMaterialsInHitbox(this.location.clone().add(tempJumpVelocity), this.hitbox).stream().noneMatch(material -> material != Material.AIR))
             {
                 this.jump();
             }

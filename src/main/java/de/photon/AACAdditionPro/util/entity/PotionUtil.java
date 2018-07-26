@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.entity.livingentity;
+package de.photon.AACAdditionPro.util.entity;
 
 
 import de.photon.AACAdditionPro.ServerVersion;

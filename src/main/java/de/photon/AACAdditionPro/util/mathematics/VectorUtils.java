@@ -25,7 +25,6 @@ public final class VectorUtils
         {
             try
             {
-
                 final BlockIterator blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
                 Block block;
                 while (blockIterator.hasNext())

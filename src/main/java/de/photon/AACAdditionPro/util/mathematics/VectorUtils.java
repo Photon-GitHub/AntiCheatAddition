@@ -63,7 +63,7 @@ public final class VectorUtils
             return false;
         }
 
-        final Material type = start.clone().add(vector.clone().normalize().multiply(length)).getBlock().getType();
+        final Material type = loc.getBlock().getType();
         return BlockUtils.isReallyOccluding(type) && type.isSolid();
     }
 }

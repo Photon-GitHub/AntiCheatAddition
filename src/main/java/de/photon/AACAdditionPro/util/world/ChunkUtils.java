@@ -2,10 +2,6 @@ package de.photon.AACAdditionPro.util.world;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.util.Vector;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class ChunkUtils
 {
@@ -33,6 +29,7 @@ public final class ChunkUtils
         return world.isChunkLoaded(blockX >> 4, blockZ >> 4);
     }
 
+    //TODO: Check unnecessary calls (i.e. wrong chunks)!!!
     public static boolean areChunksLoadedBetweenLocations(Location one, Location two)
     {
         one.setY(0);
@@ -43,94 +40,62 @@ public final class ChunkUtils
             throw new IllegalArgumentException("Tried to check chunks between worlds.");
         }
 
-        List<Vector> chunkVectorList;
+        int oneChunkX = one.getBlockX() >> 4;
+        int oneChunkZ = one.getBlockZ() >> 4;
 
-        if (Math.abs(two.getBlockZ() - one.getBlockZ()) < Math.abs(two.getBlockX() - one.getBlockX()))
+        int twoChunkX = two.getBlockX() >> 4;
+        int twoChunkZ = two.getBlockZ() >> 4;
+
+        double xDiff = Math.abs(oneChunkX - twoChunkX);
+        double zDiff = Math.abs(oneChunkZ - twoChunkZ);
+
+        // Get the iteration directions.
+        final int xDir = oneChunkX > twoChunkX ? -1 : 1;
+        final int zDir = oneChunkZ > twoChunkZ ? -1 : 1;
+
+        double[] chunkCoords = new double[]{oneChunkX, oneChunkZ};
+        if (xDiff > zDiff)
         {
-            chunkVectorList = one.getBlockX() > two.getBlockX() ?
-                              getChunkCoordinatesLow(two.getBlockX(), two.getBlockZ(), one.getBlockX(), one.getBlockZ()) :
-                              getChunkCoordinatesLow(one.getBlockX(), one.getBlockZ(), two.getBlockX(), two.getBlockZ());
+            double zIncrease = (zDiff / xDiff) * zDir;
+            System.out.println("zIncrease: " + zIncrease);
+
+            for (int i = 0; i <= xDiff; i++)
+            {
+                System.out.println("Chunk: " + chunkCoords[0] + " | " + chunkCoords[1]);
+                if (!one.getWorld().isChunkLoaded((int) Math.floor(chunkCoords[0]), (int) Math.floor(chunkCoords[1])))
+                {
+                    System.out.println("Not loaded");
+                    return false;
+                }
+
+                System.out.println("Loaded");
+                chunkCoords[0] += xDir;
+                chunkCoords[1] += zIncrease;
+            }
         }
         else
         {
-            chunkVectorList = one.getBlockZ() > two.getBlockZ() ?
-                              getChunkCoordinatesHigh(two.getBlockX(), two.getBlockZ(), one.getBlockX(), one.getBlockZ()) :
-                              getChunkCoordinatesHigh(one.getBlockX(), one.getBlockZ(), two.getBlockX(), two.getBlockZ());
-        }
+            double xIncrease = (xDiff / zDiff) * xDir;
+            System.out.println("xIncrease: " + xIncrease);
 
-        // Actually check if the chunks are loaded.
-        for (Vector vector : chunkVectorList)
-        {
-            System.out.println("Chunk: " + vector.getBlockX() + " " + vector.getBlockZ());
-            if (!isChunkLoaded(one.getWorld(), vector.getBlockX(), vector.getBlockZ()))
+            for (int i = 0; i <= zDiff; i++)
             {
-                return false;
+                System.out.println("Chunk: " + chunkCoords[0] + " | " + chunkCoords[1]);
+                if (!one.getWorld().isChunkLoaded((int) Math.floor(chunkCoords[0]), (int) Math.floor(chunkCoords[1])))
+                {
+                    System.out.println("Not loaded");
+                    System.out.println("----END----");
+                    return false;
+                }
+
+                System.out.println("Loaded");
+                chunkCoords[0] += xIncrease;
+                chunkCoords[1] += zDir;
             }
         }
+
+        System.out.println("----END----");
+
         return true;
-    }
-
-    private static List<Vector> getChunkCoordinatesLow(int blockXOne, int blockZOne, int blockXTwo, int blockZTwo)
-    {
-        final List<Vector> vectors = new ArrayList<>();
-
-        int dX = blockXTwo - blockXOne;
-        int dZ = blockZTwo - blockZOne;
-
-        int zI = 1;
-
-        if (dZ < 0)
-        {
-            zI = -1;
-            dZ = -dZ;
-        }
-
-        int distance = 2 * dZ - dX;
-        int z = blockZOne;
-
-        for (int x = blockXOne; x <= blockXTwo; x++)
-        {
-            vectors.add(new Vector(x, 0, z));
-
-            if (distance > 0)
-            {
-                z += zI;
-                distance -= 2 * dX;
-            }
-            distance += 2 * dZ;
-        }
-        return vectors;
-    }
-
-    private static List<Vector> getChunkCoordinatesHigh(int blockXOne, int blockZOne, int blockXTwo, int blockZTwo)
-    {
-        final List<Vector> vectors = new ArrayList<>();
-
-        int dX = blockXTwo - blockXOne;
-        int dZ = blockZTwo - blockZOne;
-
-        int xI = 1;
-
-        if (dX < 0)
-        {
-            xI = -1;
-            dX = -dX;
-        }
-
-        int distance = 2 * dX - dZ;
-        int x = blockXOne;
-
-        for (int z = blockZOne; z <= blockZTwo; z++)
-        {
-            vectors.add(new Vector(x, 0, z));
-
-            if (distance > 0)
-            {
-                x += xI;
-                distance -= 2 * dZ;
-            }
-            distance += 2 * dX;
-        }
-        return vectors;
     }
 }

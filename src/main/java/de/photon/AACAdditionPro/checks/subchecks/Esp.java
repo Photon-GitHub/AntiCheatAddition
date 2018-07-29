@@ -14,6 +14,7 @@ import de.photon.AACAdditionPro.util.visibility.HideMode;
 import de.photon.AACAdditionPro.util.visibility.PlayerInformationModifier;
 import de.photon.AACAdditionPro.util.visibility.informationmodifiers.InformationObfuscator;
 import de.photon.AACAdditionPro.util.visibility.informationmodifiers.PlayerHider;
+import de.photon.AACAdditionPro.util.world.ChunkUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -246,16 +247,26 @@ public class Esp implements ViolationModule
                                             if (cacheHit)
                                                 continue;
 
-                                            final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
+                                            // Make sure the chunks are loaded.
+                                            if (ChunkUtils.areChunksLoadedBetweenLocations(start, start.clone().add(between)))
+                                            {
+                                                final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
 
-                                            // No intersection found
-                                            if (intersect == 0)
+                                                // No intersection found
+                                                if (intersect == 0)
+                                                {
+                                                    canSee = true;
+                                                    break;
+                                                }
+
+                                                lastIntersectionsCache.add(intersect);
+                                            }
+                                            // If the chunks are not loaded assume the players can see each other.
+                                            else
                                             {
                                                 canSee = true;
                                                 break;
                                             }
-
-                                            lastIntersectionsCache.add(intersect);
                                         }
                                     }
 

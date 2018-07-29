@@ -466,19 +466,6 @@ PacketAnalysis:
       PositionSpoof:
          # Do you want to enable the position spoof checking
          enabled: true
-      # This check tries to spot manipulations of the client's time to spoof false lag (Freecam / Blink)
-      # This check will add 2 vl
-      # This part is not compatible with versions higher than 1.8.8 and will autodisable accordingly.
-      TimeManipulation:
-         # Do you want to enable time manipulation spotting
-         enabled: true
-         # How long may the client delay packets
-         # High values will decrease the chance of false positives in conjunction with bad connections but please note
-         # that during this time any modification will not be detected. Thus please think of how long the average
-         # cheater activates Freecam or Blink on your server when changing this.
-         # Low values make the detection faster and more effective, but may cause problems with fluctuating connections.
-         # Measured in milliseconds
-         detection_millis: 2500
    # Map of violation levels to command
    thresholds:
       11: "aacstaffnotify {player} in {world} is suspected by PacketAnalysis"

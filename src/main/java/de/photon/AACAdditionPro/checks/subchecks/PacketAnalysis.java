@@ -57,11 +57,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
     @LoadFromConfiguration(configPath = ".parts.PositionSpoof.enabled")
     private boolean positionSpoof;
 
-    @LoadFromConfiguration(configPath = ".parts.TimeManipulation.enabled")
-    private boolean timeManipulation;
-    @LoadFromConfiguration(configPath = ".parts.TimeManipulation.detection_millis")
-    private int detectionMillis;
-
     public PacketAnalysis()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.LOW,
@@ -211,22 +206,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                     }
                 }
             }
-
-            // ------------------------------------------ TimeManipulation ------------------------------------------ //
-            if (timeManipulation)
-            {
-                // FLYING is only sent if the player does not move (both body and head).
-                if (!user.getPositionData().hasPlayerMovedRecently(detectionMillis, PositionData.MovementType.ANY) &&
-                    !user.getPacketAnalysisData().recentlyUpdated(0, detectionMillis) &&
-                    // False positives e.g. in the void or in the air.
-                    !user.getPlayer().isDead() &&
-                    // This check will cause false positives with client versions higher than 1.8.8
-                    ServerVersion.getClientServerVersion(user.getPlayer()) == ServerVersion.MC188)
-                {
-                    VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " may be manipulating time on a protocol level.");
-                    vlManager.flag(user.getPlayer(), 2, -1, () -> {}, () -> {});
-                }
-            }
         }
 
         // ----------------------------------------- Compare + PositionSpoof ---------------------------------------- //
@@ -332,7 +311,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             case MC111:
             case MC112:
                 keepAliveInject = false;
-                timeManipulation = false;
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");

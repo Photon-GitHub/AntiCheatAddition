@@ -83,7 +83,7 @@
             <artifactId>serverapi</artifactId>
             <version>1.1.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/LabyAPI_1.1.jar</systemPath>
+            <systemPath>${project.basedir}/lib/LabyAPI.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

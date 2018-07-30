@@ -29,7 +29,10 @@ public final class ChunkUtils
         return world.isChunkLoaded(blockX >> 4, blockZ >> 4);
     }
 
-    //TODO: Check unnecessary calls (i.e. wrong chunks)!!!
+    /**
+     * Checks if the chunks between two locations are loaded without trying to load them.
+     * This method should be used to see if a calculation is safe for async usage.
+     */
     public static boolean areChunksLoadedBetweenLocations(Location one, Location two)
     {
         one.setY(0);
@@ -40,35 +43,47 @@ public final class ChunkUtils
             throw new IllegalArgumentException("Tried to check chunks between worlds.");
         }
 
-        int oneChunkX = one.getBlockX() >> 4;
-        int oneChunkZ = one.getBlockZ() >> 4;
+        // Convert block coordinates to chunk coordinates
+        final int oneChunkX = one.getBlockX() >> 4;
+        final int oneChunkZ = one.getBlockZ() >> 4;
 
-        int twoChunkX = two.getBlockX() >> 4;
-        int twoChunkZ = two.getBlockZ() >> 4;
+        final int twoChunkX = two.getBlockX() >> 4;
+        final int twoChunkZ = two.getBlockZ() >> 4;
 
-        double xDiff = Math.abs(oneChunkX - twoChunkX);
-        double zDiff = Math.abs(oneChunkZ - twoChunkZ);
+        // Get the chunk coordinate
+        final double xDiff = Math.abs(oneChunkX - twoChunkX);
+        final double zDiff = Math.abs(oneChunkZ - twoChunkZ);
 
         // Get the iteration directions.
-        final int xDir = oneChunkX > twoChunkX ? -1 : 1;
-        final int zDir = oneChunkZ > twoChunkZ ? -1 : 1;
+        // 0.5 to ensure chunks on the boarder are still checked.
+        final double xDir = oneChunkX > twoChunkX ? -0.5 : 0.5;
+        final double zDir = oneChunkZ > twoChunkZ ? -0.5 : 0.5;
 
         double[] chunkCoords = new double[]{oneChunkX, oneChunkZ};
+
+        int lastChunkX = Integer.MIN_VALUE;
+        int lastChunkZ = Integer.MIN_VALUE;
+
         if (xDiff > zDiff)
         {
             double zIncrease = (zDiff / xDiff) * zDir;
-            System.out.println("zIncrease: " + zIncrease);
 
             for (int i = 0; i <= xDiff; i++)
             {
-                System.out.println("Chunk: " + chunkCoords[0] + " | " + chunkCoords[1]);
-                if (!one.getWorld().isChunkLoaded((int) Math.floor(chunkCoords[0]), (int) Math.floor(chunkCoords[1])))
+                final int curChunkX = (int) Math.floor(chunkCoords[0]);
+                final int curChunkZ = (int) Math.floor(chunkCoords[1]);
+
+                if (curChunkX != lastChunkX || curChunkZ != lastChunkZ)
                 {
-                    System.out.println("Not loaded");
-                    return false;
+                    if (!one.getWorld().isChunkLoaded(curChunkX, curChunkZ))
+                    {
+                        return false;
+                    }
+
+                    lastChunkX = curChunkX;
+                    lastChunkZ = curChunkZ;
                 }
 
-                System.out.println("Loaded");
                 chunkCoords[0] += xDir;
                 chunkCoords[1] += zIncrease;
             }
@@ -76,26 +91,27 @@ public final class ChunkUtils
         else
         {
             double xIncrease = (xDiff / zDiff) * xDir;
-            System.out.println("xIncrease: " + xIncrease);
 
             for (int i = 0; i <= zDiff; i++)
             {
-                System.out.println("Chunk: " + chunkCoords[0] + " | " + chunkCoords[1]);
-                if (!one.getWorld().isChunkLoaded((int) Math.floor(chunkCoords[0]), (int) Math.floor(chunkCoords[1])))
+                final int curChunkX = (int) Math.floor(chunkCoords[0]);
+                final int curChunkZ = (int) Math.floor(chunkCoords[1]);
+
+                if (curChunkX != lastChunkX || curChunkZ != lastChunkZ)
                 {
-                    System.out.println("Not loaded");
-                    System.out.println("----END----");
-                    return false;
+                    if (!one.getWorld().isChunkLoaded(curChunkX, curChunkZ))
+                    {
+                        return false;
+                    }
+
+                    lastChunkX = curChunkX;
+                    lastChunkZ = curChunkZ;
                 }
 
-                System.out.println("Loaded");
                 chunkCoords[0] += xIncrease;
                 chunkCoords[1] += zDir;
             }
         }
-
-        System.out.println("----END----");
-
         return true;
     }
 }

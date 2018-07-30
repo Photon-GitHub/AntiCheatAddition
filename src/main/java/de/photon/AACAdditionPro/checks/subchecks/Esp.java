@@ -209,7 +209,7 @@ public class Esp implements ViolationModule
 
                                     for (int i = 0; i < cameraVectors.length; i++)
                                     {
-                                        for (final Vector calculationVector : watchedHitboxVectors)
+                                        for (final Vector destinationVector : watchedHitboxVectors)
                                         {
                                             final Location start = cameraVectors[i].toLocation(observer.getWorld());
                                             // The resulting Vector
@@ -217,7 +217,7 @@ public class Esp implements ViolationModule
                                             // Vector is intersecting with some blocks
                                             //
                                             // No cloning is needed here as the calculationVector is only used once.
-                                            final Vector between = calculationVector.subtract(cameraVectors[i]);
+                                            final Vector between = destinationVector.subtract(cameraVectors[i]);
 
                                             // ---------------------------------------------- FOV ----------------------------------------------- //
                                             final Vector cameraRotation = observer.getLocation().getDirection();
@@ -352,7 +352,8 @@ public class Esp implements ViolationModule
 
         // Front vector : The 3rd person perspective in front of the player
         // Use THIRD_PERSON_OFFSET to get the maximum positions
-        vectors[1] = player.getLocation().getDirection().clone().normalize().multiply(THIRD_PERSON_OFFSET);
+        // No cloning or normalizing as a new unit-vector instance is returned.
+        vectors[1] = player.getLocation().getDirection().multiply(THIRD_PERSON_OFFSET);
 
         // Behind vector : The 3rd person perspective behind the player
         vectors[2] = vectors[1].clone().multiply(-1);
@@ -379,10 +380,16 @@ public class Esp implements ViolationModule
             {
                 // Now we need to make sure the vectors are not inside of blocks as the method above returns.
                 // The 0.05 factor makes sure that we are outside of the block and not on the edge.
-                intersections[i] -= 0.05 + (0.5 / Math.sin(vectors[i + 1].angle(vectors[i + 1].clone().setY(0))));
+                intersections[i] -= 0.05 +
+                                    // Calculate the distance to the middle of the block
+                                    (0.5 / Math.sin(vectors[i + 1].angle(vectors[i + 1].clone().setY(0))));
+
                 // Add the correct position.
                 vectors[i + 1].normalize().multiply(intersections[i]);
             }
+
+            // Add the eye location for a correct starting point.
+            vectors[i + 1].add(vectors[0]);
         }
 
         return vectors;

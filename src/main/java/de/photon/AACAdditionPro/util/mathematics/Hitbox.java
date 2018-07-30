@@ -45,7 +45,7 @@ public enum Hitbox
      */
     public Vector[] getCalculationVectors(final Location location, final boolean addCenterVectors)
     {
-        final List<Vector> vectors = new ArrayList<>(12);
+        final List<Vector> vectors = new ArrayList<>(13);
 
         final double lowerY = location.getY();
         final double upperY = lowerY + this.height;
@@ -64,15 +64,12 @@ public enum Hitbox
 
         if (addCenterVectors)
         {
-            final Vector start = location.toVector();
-
-            start.setX(start.getX() + (this.offsetX / 2));
-            start.setX(start.getZ() + (this.offsetZ / 2));
-
-            // 0.47 as a factor as of slabs and other irregular block models.
-            for (double d = 0; d < this.height; d += 0.47)
+            Vector start = location.toVector();
+            while (start.getY() < upperY)
             {
-                vectors.add(start.clone().setY(lowerY + d));
+                vectors.add(start);
+                // 0.47 as a factor as of slabs and other irregular block models.
+                start = start.clone().setY(start.getY() + 0.47);
             }
         }
         return vectors.toArray(new Vector[0]);

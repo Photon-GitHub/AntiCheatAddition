@@ -187,6 +187,7 @@ public class Esp implements ViolationModule
                                         throw new IllegalStateException("Unknown minecraft version");
                                 }
 
+                                // ----------------------------------- Calculation ---------------------------------- //
                                 // Not already able to see (due to e.g. glowing)
                                 if (!canSee &&
                                     // Not bypassed
@@ -202,29 +203,28 @@ public class Esp implements ViolationModule
                                                                            Hitbox.ESP_SNEAKING_PLAYER :
                                                                            Hitbox.ESP_PLAYER).getCalculationVectors(watched.getLocation(), true);
 
-
                                     // The distance of the intersections in the same block is equal as of the
                                     // BlockIterator mechanics.
                                     final Set<Double> lastIntersectionsCache = ConcurrentHashMap.newKeySet();
 
-                                    for (int i = 0; i < cameraVectors.length; i++)
+                                    for (Vector cameraVector : cameraVectors)
                                     {
                                         for (final Vector destinationVector : watchedHitboxVectors)
                                         {
-                                            final Location start = cameraVectors[i].toLocation(observer.getWorld());
+                                            final Location start = cameraVector.toLocation(observer.getWorld());
                                             // The resulting Vector
                                             // The camera is not blocked by non-solid blocks
                                             // Vector is intersecting with some blocks
                                             //
                                             // No cloning is needed here as the calculationVector is only used once.
-                                            final Vector between = destinationVector.subtract(cameraVectors[i]);
+                                            final Vector between = destinationVector.subtract(cameraVector);
+
+                                            System.out.println("--------------------");
+                                            System.out.println("Destination: " + destinationVector);
+                                            System.out.println("Between: " + between);
 
                                             // ---------------------------------------------- FOV ----------------------------------------------- //
-                                            final Vector cameraRotation = observer.getLocation().getDirection();
-
-                                            // Exactly the opposite rotation for the front-view
-                                            if (i == 1)
-                                                cameraRotation.multiply(-1);
+                                            final Vector cameraRotation = cameraVector.clone().subtract(observer.getLocation().toVector());
 
                                             if (cameraRotation.angle(between) > MAX_FOV)
                                                 continue;

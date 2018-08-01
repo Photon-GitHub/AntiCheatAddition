@@ -215,6 +215,8 @@ public class Esp implements ViolationModule
                                             // The resulting Vector
                                             // The camera is not blocked by non-solid blocks
                                             // Vector is intersecting with some blocks
+                                            //
+                                            // Cloning IS needed as we are in a second loop.
                                             final Vector between = destinationVector.clone().subtract(cameraVector);
 
                                             // ---------------------------------------------- FOV ----------------------------------------------- //

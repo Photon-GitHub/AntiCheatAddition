@@ -14,10 +14,12 @@ import de.photon.AACAdditionPro.util.visibility.HideMode;
 import de.photon.AACAdditionPro.util.visibility.PlayerInformationModifier;
 import de.photon.AACAdditionPro.util.visibility.informationmodifiers.InformationObfuscator;
 import de.photon.AACAdditionPro.util.visibility.informationmodifiers.PlayerHider;
+import de.photon.AACAdditionPro.util.world.BlockUtils;
 import de.photon.AACAdditionPro.util.world.ChunkUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -29,9 +31,9 @@ import org.bukkit.util.Vector;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -205,7 +207,7 @@ public class Esp implements ViolationModule
 
                                     // The distance of the intersections in the same block is equal as of the
                                     // BlockIterator mechanics.
-                                    final Set<Double> lastIntersectionsCache = ConcurrentHashMap.newKeySet();
+                                    final Set<Double> lastIntersectionsCache = new HashSet<>();
 
                                     for (Vector cameraVector : cameraVectors)
                                     {
@@ -225,27 +227,35 @@ public class Esp implements ViolationModule
                                             if (cameraRotation.angle(between) > MAX_FOV)
                                                 continue;
 
-                                            // --------------------------------------- Normal Calculation --------------------------------------- //
-
-                                            boolean cacheHit = false;
-                                            for (Double length : lastIntersectionsCache)
-                                            {
-                                                // Not yet cached.
-                                                if (length == 0)
-                                                    continue;
-
-                                                if (VectorUtils.vectorIntersectsWithBlockAt(start, between, length))
-                                                {
-                                                    cacheHit = true;
-                                                }
-                                            }
-
-                                            if (cacheHit)
-                                                continue;
+                                            // ---------------------------------------- Cache Calculation --------------------------------------- //
 
                                             // Make sure the chunks are loaded.
                                             if (ChunkUtils.areChunksLoadedBetweenLocations(start, start.clone().add(between)))
                                             {
+                                                boolean cacheHit = false;
+
+                                                Location cacheLocation;
+                                                for (Double length : lastIntersectionsCache)
+                                                {
+                                                    cacheLocation = start.clone().add(between.clone().normalize().multiply(length));
+
+                                                    // Not yet cached.
+                                                    if (length == 0)
+                                                        continue;
+                                                    
+                                                    final Material type = cacheLocation.getBlock().getType();
+
+                                                    if (BlockUtils.isReallyOccluding(type) && type.isSolid())
+                                                    {
+                                                        cacheHit = true;
+                                                    }
+                                                }
+
+                                                if (cacheHit)
+                                                    continue;
+
+                                                // --------------------------------------- Normal Calculation --------------------------------------- //
+
                                                 final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
 
                                                 // No intersection found

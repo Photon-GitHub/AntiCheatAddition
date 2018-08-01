@@ -45,25 +45,4 @@ public final class VectorUtils
         }
         return 0;
     }
-
-    /**
-     * Checks if the {@link Vector} a intersects with an occluding and solid {@link Block} after length.
-     *
-     * @param start  the {@link Location} where the {@link Vector} a is starting
-     * @param vector the {@link Vector} which should be checked
-     * @param length the {@link Block}-check takes place at the location start + a.normalize().multiply(length)
-     */
-    public static boolean vectorIntersectsWithBlockAt(final Location start, final Vector vector, final double length)
-    {
-        final Location loc = start.clone().add(vector.clone().normalize().multiply(length));
-
-        // If the chunk is not loaded player's view is not blocked by it.
-        if (!loc.getWorld().isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4))
-        {
-            return false;
-        }
-
-        final Material type = loc.getBlock().getType();
-        return BlockUtils.isReallyOccluding(type) && type.isSolid();
-    }
 }

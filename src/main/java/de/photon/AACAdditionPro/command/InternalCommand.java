@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
@@ -45,7 +44,7 @@ public abstract class InternalCommand
         this.minArguments = minArguments;
         this.maxArguments = maxArguments;
 
-        this.childCommands = childCommands.length != 0 ? ImmutableSet.copyOf(childCommands) : Collections.EMPTY_SET;
+        this.childCommands = ImmutableSet.copyOf(childCommands);
     }
 
     void invokeCommand(CommandSender sender, Queue<String> arguments)

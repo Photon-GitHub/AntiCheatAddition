@@ -29,10 +29,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -107,18 +106,15 @@ public class Esp implements ViolationModule
                 AACAdditionPro.getInstance(),
                 () -> {
                     // Put all users in a List for fast removal.
-                    final List<User> users = new ArrayList<>(UserManager.getUsersUnwrapped());
+                    final Queue<User> users = new ArrayDeque<>(UserManager.getUsersUnwrapped());
 
                     // Iterate through all player-constellations
                     User observingUser;
                     while (!users.isEmpty())
                     {
-                        /*
-                            Remove the finished player to reduce the amount of added entries.
-                            This makes sure the player won't have a connection with himself.
-                            Remove index - 1 for the best performance.
-                        */
-                        observingUser = users.remove(users.size() - 1);
+                        // Remove the finished player to reduce the amount of added entries.
+                        // This makes sure the player won't have a connection with himself.
+                        observingUser = users.remove();
 
                         if (observingUser.getPlayer().getGameMode() != GameMode.SPECTATOR)
                         {
@@ -242,7 +238,7 @@ public class Esp implements ViolationModule
                                                     // Not yet cached.
                                                     if (length == 0)
                                                         continue;
-                                                    
+
                                                     final Material type = cacheLocation.getBlock().getType();
 
                                                     if (BlockUtils.isReallyOccluding(type) && type.isSolid())

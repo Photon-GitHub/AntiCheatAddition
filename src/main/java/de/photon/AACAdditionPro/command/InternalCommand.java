@@ -139,6 +139,7 @@ public abstract class InternalCommand
         final double number;
         try
         {
+            // Use .parseDouble instead of .valueOf for better performance because of redundant boxing.
             number = Double.parseDouble(argument);
         } catch (NumberFormatException exception)
         {

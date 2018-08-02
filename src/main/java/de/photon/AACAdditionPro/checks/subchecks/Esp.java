@@ -187,102 +187,105 @@ public class Esp implements ViolationModule
 
                                 // ----------------------------------- Calculation ---------------------------------- //
                                 // Not already able to see (due to e.g. glowing)
-                                if (!canSee &&
-                                    // Not bypassed
-                                    !currentPair.usersOfPair[b].isBypassed() &&
-                                    // Has not logged in recently to prevent bugs
-                                    !currentPair.usersOfPair[b].getLoginData().recentlyUpdated(0, 3000))
+                                if (!canSee)
                                 {
-                                    //canSee = observer.hasLineOfSight(watched);
-                                    final Vector[] cameraVectors = getCameraVectors(observer);
-
-                                    // Get the Vectors of the hitbox to check.
-                                    final Vector[] watchedHitboxVectors = (watched.isSneaking() ?
-                                                                           Hitbox.ESP_SNEAKING_PLAYER :
-                                                                           Hitbox.ESP_PLAYER).getCalculationVectors(watched.getLocation(), true);
-
-                                    // The distance of the intersections in the same block is equal as of the
-                                    // BlockIterator mechanics.
-                                    final Set<Double> lastIntersectionsCache = new HashSet<>();
-
-                                    for (Vector cameraVector : cameraVectors)
+                                    // Not bypassed
+                                    if (!currentPair.usersOfPair[b].isBypassed() &&
+                                        // Has not logged in recently to prevent bugs
+                                        !currentPair.usersOfPair[b].getLoginData().recentlyUpdated(0, 3000))
                                     {
-                                        for (final Vector destinationVector : watchedHitboxVectors)
+                                        //canSee = observer.hasLineOfSight(watched);
+                                        final Vector[] cameraVectors = getCameraVectors(observer);
+
+                                        // Get the Vectors of the hitbox to check.
+                                        final Vector[] watchedHitboxVectors = (watched.isSneaking() ?
+                                                                               Hitbox.ESP_SNEAKING_PLAYER :
+                                                                               Hitbox.ESP_PLAYER).getCalculationVectors(watched.getLocation(), true);
+
+                                        // The distance of the intersections in the same block is equal as of the
+                                        // BlockIterator mechanics.
+                                        final Set<Double> lastIntersectionsCache = new HashSet<>();
+
+                                        for (Vector cameraVector : cameraVectors)
                                         {
-                                            final Location start = cameraVector.toLocation(observer.getWorld());
-                                            // The resulting Vector
-                                            // The camera is not blocked by non-solid blocks
-                                            // Vector is intersecting with some blocks
-                                            //
-                                            // Cloning IS needed as we are in a second loop.
-                                            final Vector between = destinationVector.clone().subtract(cameraVector);
-
-                                            // ---------------------------------------------- FOV ----------------------------------------------- //
-                                            final Vector cameraRotation = cameraVector.clone().subtract(observer.getLocation().toVector());
-
-                                            if (cameraRotation.angle(between) > MAX_FOV)
-                                                continue;
-
-                                            // ---------------------------------------- Cache Calculation --------------------------------------- //
-
-                                            // Make sure the chunks are loaded.
-                                            if (ChunkUtils.areChunksLoadedBetweenLocations(start, start.clone().add(between)))
+                                            for (final Vector destinationVector : watchedHitboxVectors)
                                             {
-                                                boolean cacheHit = false;
+                                                final Location start = cameraVector.toLocation(observer.getWorld());
+                                                // The resulting Vector
+                                                // The camera is not blocked by non-solid blocks
+                                                // Vector is intersecting with some blocks
+                                                //
+                                                // Cloning IS needed as we are in a second loop.
+                                                final Vector between = destinationVector.clone().subtract(cameraVector);
 
-                                                Location cacheLocation;
-                                                for (Double length : lastIntersectionsCache)
-                                                {
-                                                    cacheLocation = start.clone().add(between.clone().normalize().multiply(length));
+                                                // ---------------------------------------------- FOV ----------------------------------------------- //
+                                                final Vector cameraRotation = cameraVector.clone().subtract(observer.getLocation().toVector());
 
-                                                    // Not yet cached.
-                                                    if (length == 0)
-                                                        continue;
-
-                                                    final Material type = cacheLocation.getBlock().getType();
-
-                                                    if (BlockUtils.isReallyOccluding(type) && type.isSolid())
-                                                    {
-                                                        cacheHit = true;
-                                                    }
-                                                }
-
-                                                if (cacheHit)
+                                                if (cameraRotation.angle(between) > MAX_FOV)
                                                     continue;
 
-                                                // --------------------------------------- Normal Calculation --------------------------------------- //
+                                                // ---------------------------------------- Cache Calculation --------------------------------------- //
 
-                                                final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
+                                                // Make sure the chunks are loaded.
+                                                if (ChunkUtils.areChunksLoadedBetweenLocations(start, start.clone().add(between)))
+                                                {
+                                                    boolean cacheHit = false;
 
-                                                // No intersection found
-                                                if (intersect == 0)
+                                                    Location cacheLocation;
+                                                    for (Double length : lastIntersectionsCache)
+                                                    {
+                                                        cacheLocation = start.clone().add(between.clone().normalize().multiply(length));
+
+                                                        // Not yet cached.
+                                                        if (length == 0)
+                                                            continue;
+
+                                                        final Material type = cacheLocation.getBlock().getType();
+
+                                                        if (BlockUtils.isReallyOccluding(type) && type.isSolid())
+                                                        {
+                                                            cacheHit = true;
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    if (cacheHit)
+                                                        continue;
+
+                                                    // --------------------------------------- Normal Calculation --------------------------------------- //
+
+                                                    final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
+
+                                                    // No intersection found
+                                                    if (intersect == 0)
+                                                    {
+                                                        canSee = true;
+                                                        break;
+                                                    }
+
+                                                    lastIntersectionsCache.add(intersect);
+                                                }
+                                                // If the chunks are not loaded assume the players can see each other.
+                                                else
                                                 {
                                                     canSee = true;
                                                     break;
                                                 }
-
-                                                lastIntersectionsCache.add(intersect);
-                                            }
-                                            // If the chunks are not loaded assume the players can see each other.
-                                            else
-                                            {
-                                                canSee = true;
-                                                break;
                                             }
                                         }
+
+                                        // No need to further calculate anything as the player can already be seen.
+                                        if (canSee)
+                                            break;
+
+
+                                        // Low probability to help after the camera view was changed. -> clearing
+                                        lastIntersectionsCache.clear();
                                     }
-
-                                    // No need to further calculate anything as the player can already be seen.
-                                    if (canSee)
-                                        break;
-
-
-                                    // Low probability to help after the camera view was changed. -> clearing
-                                    lastIntersectionsCache.clear();
-                                }
-                                else
-                                {
-                                    canSee = true;
+                                    else
+                                    {
+                                        canSee = true;
+                                    }
                                 }
 
                                 updateHideMode(currentPair.usersOfPair[b], currentPair.usersOfPair[1 - b].getPlayer(),

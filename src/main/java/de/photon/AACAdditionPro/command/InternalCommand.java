@@ -139,7 +139,7 @@ public abstract class InternalCommand
         final double number;
         try
         {
-            number = Double.valueOf(argument);
+            number = Double.parseDouble(argument);
         } catch (NumberFormatException exception)
         {
             sender.sendMessage(PREFIX + ChatColor.RED + "Please enter a valid number.");

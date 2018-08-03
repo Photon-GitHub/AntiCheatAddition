@@ -7,9 +7,9 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
-import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.violationlevels.TeamViolationLevelManagement;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.world.LocationUtils;
 import de.photon.AACAdditionPro.util.world.Region;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -101,7 +101,7 @@ public class Teaming implements Listener, ViolationModule
 
                             for (final User possibleTeamUser : usersOfWorld)
                             {
-                                if (MathUtils.areLocationsInRange(currentUser.getPlayer().getLocation(), possibleTeamUser.getPlayer().getLocation(), proximity_range_squared))
+                                if (LocationUtils.areLocationsInRange(currentUser.getPlayer().getLocation(), possibleTeamUser.getPlayer().getLocation(), proximity_range_squared))
                                 {
                                     usersOfWorld.remove(possibleTeamUser);
                                     teamingList.add(possibleTeamUser);

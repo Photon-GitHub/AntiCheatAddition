@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.PacketListener;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.HandlerList;
@@ -23,6 +22,7 @@ import java.util.Set;
 public interface Module
 {
     Set<ServerVersion> ALL_SUPPORTED_VERSIONS = ImmutableSet.of(ServerVersion.MC188, ServerVersion.MC111, ServerVersion.MC112, ServerVersion.MC113);
+    Set<ServerVersion> NON_188_VERSIONS = ImmutableSet.of(ServerVersion.MC111, ServerVersion.MC112, ServerVersion.MC113);
 
     /**
      * This enables the check by registering it in all Managers.

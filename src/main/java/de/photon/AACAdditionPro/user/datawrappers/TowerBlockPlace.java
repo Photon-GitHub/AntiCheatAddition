@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.datawrappers;
+package de.photon.AACAdditionPro.user.datawrappers;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
@@ -42,7 +42,7 @@ public class TowerBlockPlace extends BlockPlace
         if (levitationLevel != null)
         {
             // 0.9 Blocks per second per levitation level.
-            return 900 / (levitationLevel + 1) * TOWER_LENIENCY * LEVITATION_LENIENCY;
+            return 900 / (levitationLevel + 1D) * TOWER_LENIENCY * LEVITATION_LENIENCY;
         }
 
         // No JUMP_BOOST

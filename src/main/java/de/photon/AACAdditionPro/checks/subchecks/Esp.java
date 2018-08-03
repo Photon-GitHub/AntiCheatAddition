@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
@@ -9,14 +10,16 @@ import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.Configs;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.VectorUtils;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.visibility.HideMode;
 import de.photon.AACAdditionPro.util.visibility.PlayerInformationModifier;
 import de.photon.AACAdditionPro.util.visibility.informationmodifiers.InformationObfuscator;
 import de.photon.AACAdditionPro.util.visibility.informationmodifiers.PlayerHider;
+import de.photon.AACAdditionPro.util.world.BlockUtils;
+import de.photon.AACAdditionPro.util.world.ChunkUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -26,11 +29,10 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -43,9 +45,6 @@ public class Esp implements ViolationModule
 
     private int updateMillis;
 
-    // The camera offset for 3rd person
-    private static final double THIRD_PERSON_OFFSET = 5D;
-
     // The real MAX_FOV is 110 (quake pro), which results in 150° according to tests.
     // 150° + 15° (compensation) = 165°
     private static final double MAX_FOV = Math.toRadians(165D);
@@ -55,7 +54,6 @@ public class Esp implements ViolationModule
 
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
-
 
     // The task number for Bukkit's internal systems
     private int taskNumber;
@@ -104,18 +102,15 @@ public class Esp implements ViolationModule
                 AACAdditionPro.getInstance(),
                 () -> {
                     // Put all users in a List for fast removal.
-                    final List<User> users = new ArrayList<>(UserManager.getUsersUnwrapped());
+                    final Queue<User> users = new ArrayDeque<>(UserManager.getUsersUnwrapped());
 
                     // Iterate through all player-constellations
                     User observingUser;
                     while (!users.isEmpty())
                     {
-                        /*
-                            Remove the finished player to reduce the amount of added entries.
-                            This makes sure the player won't have a connection with himself.
-                            Remove index - 1 for the best performance.
-                        */
-                        observingUser = users.remove(users.size() - 1);
+                        // Remove the finished player to reduce the amount of added entries.
+                        // This makes sure the player won't have a connection with himself.
+                        observingUser = users.remove();
 
                         if (observingUser.getPlayer().getGameMode() != GameMode.SPECTATOR)
                         {
@@ -165,123 +160,14 @@ public class Esp implements ViolationModule
 
                             for (byte b = 0; b <= 1; b++)
                             {
-                                final Player observer = currentPair.usersOfPair[b].getPlayer();
-                                final Player watched = currentPair.usersOfPair[1 - b].getPlayer();
-
-                                // ------------------------- Can one Player see the other ? ------------------------- //
-                                boolean canSee;
-
-                                // ------------------------------------- Glowing ------------------------------------ //
-                                switch (ServerVersion.getActiveServerVersion())
-                                {
-                                    case MC188:
-                                        canSee = false;
-                                        break;
-                                    case MC111:
-                                    case MC112:
-                                    case MC113:
-                                        canSee = watched.hasPotionEffect(PotionEffectType.GLOWING);
-                                        break;
-                                    default:
-                                        throw new IllegalStateException("Unknown minecraft version");
-                                }
-
-                                // Not already able to see (due to e.g. glowing)
-                                if (!canSee &&
-                                    // Not bypassed
-                                    !currentPair.usersOfPair[b].isBypassed() &&
-                                    // Has not logged in recently to prevent bugs
-                                    !currentPair.usersOfPair[b].getLoginData().recentlyUpdated(0, 3000))
-                                {
-                                    //canSee = observer.hasLineOfSight(watched);
-                                    final Vector[] cameraVectors = getCameraVectors(observer);
-
-                                    // Get the Vectors of the hitbox to check.
-                                    final Vector[] watchedHitboxVectors = (watched.isSneaking() ?
-                                                                           Hitbox.ESP_SNEAKING_PLAYER :
-                                                                           Hitbox.ESP_PLAYER).getCalculationVectors(watched.getLocation(), true);
-
-
-                                    // The distance of the intersections in the same block is equal as of the
-                                    // BlockIterator mechanics.
-                                    final Set<Double> lastIntersectionsCache = ConcurrentHashMap.newKeySet();
-
-                                    for (int i = 0; i < cameraVectors.length; i++)
-                                    {
-                                        for (final Vector calculationVector : watchedHitboxVectors)
-                                        {
-                                            final Location start = cameraVectors[i].toLocation(observer.getWorld());
-                                            // The resulting Vector
-                                            // The camera is not blocked by non-solid blocks
-                                            // Vector is intersecting with some blocks
-                                            //
-                                            // No cloning is needed here as the calculationVector is only used once.
-                                            final Vector between = calculationVector.subtract(cameraVectors[i]);
-
-                                            // ---------------------------------------------- FOV ----------------------------------------------- //
-                                            final Vector cameraRotation = observer.getLocation().getDirection();
-
-                                            // Exactly the opposite rotation for the front-view
-                                            if (i == 1)
-                                                cameraRotation.multiply(-1);
-
-                                            if (cameraRotation.angle(between) > MAX_FOV)
-                                                continue;
-
-                                            // --------------------------------------- Normal Calculation --------------------------------------- //
-
-                                            boolean cacheHit = false;
-                                            for (Double length : lastIntersectionsCache)
-                                            {
-                                                // Not yet cached.
-                                                if (length == 0)
-                                                    continue;
-
-                                                if (VectorUtils.vectorIntersectsWithBlockAt(start, between, length))
-                                                {
-                                                    cacheHit = true;
-                                                }
-                                            }
-
-                                            if (cacheHit)
-                                                continue;
-
-                                            final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
-
-                                            // No intersection found
-                                            if (intersect == 0)
-                                            {
-                                                canSee = true;
-                                                break;
-                                            }
-
-                                            lastIntersectionsCache.add(intersect);
-                                        }
-                                    }
-
-                                    // No need to further calculate anything as the player can already be seen.
-                                    if (canSee)
-                                        break;
-
-
-                                    // Low probability to help after the camera view was changed. -> clearing
-                                    lastIntersectionsCache.clear();
-                                }
-                                else
-                                {
-                                    canSee = true;
-                                }
-
                                 updateHideMode(currentPair.usersOfPair[b], currentPair.usersOfPair[1 - b].getPlayer(),
                                                // Is the user visible
-                                               canSee ?
+                                               canSee(currentPair.usersOfPair[b], currentPair.usersOfPair[1 - b]) ?
                                                HideMode.NONE :
                                                // If the observed player is sneaking hide him fully
                                                (currentPair.usersOfPair[1 - b].getPlayer().isSneaking() ?
                                                 HideMode.FULL :
                                                 HideMode.INFORMATION_ONLY));
-
-                                // No special HideMode here as of the players being in 2 different worlds to decrease CPU load.
                             }
                         });
                     }
@@ -300,6 +186,122 @@ public class Esp implements ViolationModule
                     }
                     // Update_Ticks: the refresh-rate of the check.
                 }, 0L, updateTicks);
+    }
+
+    /**
+     * Determines if two {@link User}s can see each other.
+     */
+    private static boolean canSee(User observerUser, User watchedUser)
+    {
+        final Player observer = observerUser.getPlayer();
+        final Player watched = watchedUser.getPlayer();
+
+        // ------------------------------------- Glowing ------------------------------------ //
+        switch (ServerVersion.getActiveServerVersion())
+        {
+            case MC188:
+                break;
+            case MC111:
+            case MC112:
+            case MC113:
+                if (watched.hasPotionEffect(PotionEffectType.GLOWING))
+                    return true;
+                break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
+
+        // ----------------------------------- Calculation ---------------------------------- //
+
+        // Not bypassed
+        if (observerUser.isBypassed() ||
+            // Has not logged in recently to prevent bugs
+            observerUser.getLoginData().recentlyUpdated(0, 3000))
+        {
+            return true;
+        }
+
+        //canSee = observer.hasLineOfSight(watched);
+        final Vector[] cameraVectors = VectorUtils.getCameraVectors(observer);
+
+        // Get the Vectors of the hitbox to check.
+        final Vector[] watchedHitboxVectors = (watched.isSneaking() ?
+                                               Hitbox.ESP_SNEAKING_PLAYER :
+                                               Hitbox.ESP_PLAYER).getCalculationVectors(watched.getLocation(), true);
+
+        // The distance of the intersections in the same block is equal as of the
+        // BlockIterator mechanics.
+        final Set<Double> lastIntersectionsCache = new HashSet<>();
+
+        for (Vector cameraVector : cameraVectors)
+        {
+            for (final Vector destinationVector : watchedHitboxVectors)
+            {
+                final Location start = cameraVector.toLocation(observer.getWorld());
+                // The resulting Vector
+                // The camera is not blocked by non-solid blocks
+                // Vector is intersecting with some blocks
+                //
+                // Cloning IS needed as we are in a second loop.
+                final Vector between = destinationVector.clone().subtract(cameraVector);
+
+                // ---------------------------------------------- FOV ----------------------------------------------- //
+                final Vector cameraRotation = cameraVector.clone().subtract(observer.getLocation().toVector());
+
+                if (cameraRotation.angle(between) > MAX_FOV)
+                {
+                    continue;
+                }
+
+                // ---------------------------------------- Cache Calculation --------------------------------------- //
+
+                // Make sure the chunks are loaded.
+                if (!ChunkUtils.areChunksLoadedBetweenLocations(start, start.clone().add(between)))
+                {
+                    // If the chunks are not loaded assume the players can see each other.
+                    return true;
+                }
+
+                boolean cacheHit = false;
+
+                Location cacheLocation;
+                for (Double length : lastIntersectionsCache)
+                {
+                    cacheLocation = start.clone().add(between.clone().normalize().multiply(length));
+
+                    // Not yet cached.
+                    if (length == 0)
+                        continue;
+
+                    final Material type = cacheLocation.getBlock().getType();
+
+                    if (BlockUtils.isReallyOccluding(type) && type.isSolid())
+                    {
+                        cacheHit = true;
+                        break;
+                    }
+                }
+
+                if (cacheHit)
+                    continue;
+
+                // --------------------------------------- Normal Calculation --------------------------------------- //
+
+                final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
+
+                // No intersection found
+                if (intersect == 0)
+                {
+                    return true;
+                }
+
+                lastIntersectionsCache.add(intersect);
+            }
+        }
+
+        // Low probability to help after the camera view was changed. -> clearing
+        lastIntersectionsCache.clear();
+        return false;
     }
 
     @EventHandler
@@ -323,58 +325,6 @@ public class Esp implements ViolationModule
             }
             user.getEspInformationData().hiddenPlayers.clear();
         }
-    }
-
-    /**
-     * @return an array of {@link Vector}s which represent the 3 different camera modes in minecraft, 1st person and the two
-     * 3rd person views.
-     */
-    private static Vector[] getCameraVectors(final Player player)
-    {
-        /*
-            All the vectors
-            [0] = normal (eyeposition vector)
-            [1] = front
-            [2] = behind
-        */
-        final Vector[] vectors = new Vector[3];
-
-        // Front vector : The 3rd person perspective in front of the player
-        // Use THIRD_PERSON_OFFSET to get the maximum positions
-        vectors[1] = player.getLocation().getDirection().clone().normalize().multiply(THIRD_PERSON_OFFSET);
-
-        // Behind vector : The 3rd person perspective behind the player
-        vectors[2] = vectors[1].clone().multiply(-1);
-
-        final Location eyeLocation = player.getEyeLocation();
-
-        // Normal
-        vectors[0] = eyeLocation.toVector();
-
-        // Do the Cameras intersect with Blocks
-        // Get the length of the first intersection or 0 if there is none
-
-        // [0] = frontIntersection
-        // [1] = behindIntersection
-        final double[] intersections = new double[]{
-                VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[1]),
-                VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[2])
-        };
-
-        for (int i = 0; i < intersections.length; i++)
-        {
-            // There is an intersection
-            if (intersections[i] != 0)
-            {
-                // Now we need to make sure the vectors are not inside of blocks as the method above returns.
-                // The 0.05 factor makes sure that we are outside of the block and not on the edge.
-                intersections[i] -= 0.05 + (0.5 / Math.sin(vectors[i + 1].angle(vectors[i + 1].clone().setY(0))));
-                // Add the correct position.
-                vectors[i + 1].normalize().multiply(intersections[i]);
-            }
-        }
-
-        return vectors;
     }
 
     private void updatePairHideMode(final Pair pair, final HideMode hideMode)

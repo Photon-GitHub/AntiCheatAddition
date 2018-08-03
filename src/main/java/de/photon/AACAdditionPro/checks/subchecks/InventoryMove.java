@@ -10,15 +10,14 @@ import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.user.data.PositionData;
-import de.photon.AACAdditionPro.util.entity.livingentity.ElytraUtil;
+import de.photon.AACAdditionPro.util.entity.EntityUtils;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.reflection.Reflect;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
-import de.photon.AACAdditionPro.util.world.BlockUtils;
-import de.photon.AACAdditionPro.util.world.EntityUtils;
+import de.photon.AACAdditionPro.util.world.ChunkUtils;
 import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -61,16 +60,16 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
         final double motX = Reflect.fromNMS("Entity").field("motX").from(nmsHandle).asDouble();
         final double motZ = Reflect.fromNMS("Entity").field("motZ").from(nmsHandle).asDouble();
 
-        final Vector input = new Vector(event.getPacket().getDoubles().readSafely(0),
-                                        event.getPacket().getDoubles().readSafely(1),
-                                        event.getPacket().getDoubles().readSafely(2)
+        final Vector moveTo = new Vector(event.getPacket().getDoubles().readSafely(0),
+                                         event.getPacket().getDoubles().readSafely(1),
+                                         event.getPacket().getDoubles().readSafely(2)
         );
 
         final Location knownPosition = user.getPlayer().getLocation();
 
         // Check if this is a clientside movement:
         // Position Vectors are not the same
-        if (!input.equals(knownPosition.toVector()) &&
+        if (!moveTo.equals(knownPosition.toVector()) &&
             // or movement is not 0
             motX != 0 &&
             motZ != 0 &&
@@ -78,12 +77,15 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
             !user.getPlayer().isInsideVehicle() &&
             // Not flying (may trigger some fps)
             !user.getPlayer().isFlying() &&
+            // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
+            // world add errors.
+            ChunkUtils.isChunkLoaded(user.getPlayer().getLocation()) &&
             // The player is currently not in a liquid (liquids push)
-            !BlockUtils.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
-                                                         Hitbox.SNEAKING_PLAYER :
-                                                         Hitbox.PLAYER) &&
+            !EntityUtils.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
+                                                          Hitbox.SNEAKING_PLAYER :
+                                                          Hitbox.PLAYER) &&
             // Not using an Elytra
-            !ElytraUtil.isFlyingWithElytra(user.getPlayer()) &&
+            !EntityUtils.isFlyingWithElytra(user.getPlayer()) &&
             // Player is in an inventory
             user.getInventoryData().hasOpenInventory() &&
             // Player has not been hit recently
@@ -159,10 +161,11 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
         {
             return;
         }
+
         // Flight may trigger this
         if (!user.getPlayer().getAllowFlight() &&
             // Not using an Elytra
-            !ElytraUtil.isFlyingWithElytra(user.getPlayer()) &&
+            !EntityUtils.isFlyingWithElytra(user.getPlayer()) &&
             // Sprinting and Sneaking as detection
             (user.getPlayer().isSprinting() || user.getPlayer().isSneaking()) &&
             // The player has an opened inventory

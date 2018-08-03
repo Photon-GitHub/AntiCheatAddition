@@ -8,7 +8,7 @@ import de.photon.AACAdditionPro.util.general.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public interface ClientControlModule extends ViolationModule
@@ -62,14 +62,7 @@ public interface ClientControlModule extends ViolationModule
     {
         if (isBrandChannel(channel))
         {
-            try
-            {
-                return new String(message, "UTF-8");
-            } catch (final UnsupportedEncodingException e)
-            {
-                System.out.println("Unable to encode channel message.");
-                e.printStackTrace();
-            }
+            return new String(message, StandardCharsets.UTF_8);
         }
         return null;
     }
@@ -86,7 +79,7 @@ public interface ClientControlModule extends ViolationModule
                StringUtils.stringContainsFlagsIgnoreCase(brandMessage, flags);
     }
 
-    static boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String[] flags)
+    static boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String... flags)
     {
         final User user = UserManager.getUser(player.getUniqueId());
 

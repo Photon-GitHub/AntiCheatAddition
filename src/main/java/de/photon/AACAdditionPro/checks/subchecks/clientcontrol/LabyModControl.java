@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
@@ -13,9 +14,7 @@ import net.labymod.serverapi.bukkit.event.PermissionsSendEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,7 +76,7 @@ public class LabyModControl implements Listener, ClientControlModule
     @Override
     public Set<String> getDependencies()
     {
-        return new HashSet<>(Collections.singletonList("LabyModAPI"));
+        return ImmutableSet.of("LabyModAPI");
     }
 
     @Override

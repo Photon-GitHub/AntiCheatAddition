@@ -83,7 +83,7 @@ public final class InventoryUtils
                 return new double[]{
                         rawSlot % 9,
                         // + 0.5D as of the partition in the middle of the inv.
-                        (Math.floor(rawSlot / 9) + extraYChest)
+                        ((rawSlot / 9) + extraYChest)
                 };
             case DISPENSER:
             case DROPPER:
@@ -110,7 +110,7 @@ public final class InventoryUtils
                 {
                     return new double[]{
                             4 + rawSlot % 3,
-                            Math.floor(rawSlot / 3)
+                            (rawSlot / 3)
                     };
                 }
 
@@ -120,7 +120,7 @@ public final class InventoryUtils
                         rawSlot % 9,
                         // 3.5D is the normal y - offset, but rawslots begin over 9 thus
                         // the Math.floor would need a subtraction by 1, thus 2.5D.
-                        extraYDispenser + Math.floor(rawSlot / 9)
+                        extraYDispenser + (rawSlot / 9)
                 };
             case FURNACE:
                 /*
@@ -163,7 +163,7 @@ public final class InventoryUtils
                                 (rawSlot - 3) % 9,
                                 // 3.5D is the normal y - offset, and rawslots begin below 9
                                 // thus it is ok to use 3.5D here.
-                                extraYFurnace + Math.floor((rawSlot - 3) / 9)
+                                extraYFurnace + ((rawSlot - 3) / 9)
                         };
                 }
             case WORKBENCH:
@@ -197,7 +197,7 @@ public final class InventoryUtils
                         if (rawSlot <= 9)
                         {
                             int xTemp = rawSlot % 3;
-                            float yTemp = rawSlot / 3;
+                            float yTemp = rawSlot / 3F;
                             return new double[]{
                                     (xTemp == 0 ? 3 : xTemp) + 0.25D,
                                     yTemp <= 1 ? 0 : (yTemp <= 2 ? 1 : 2)
@@ -210,7 +210,7 @@ public final class InventoryUtils
                                     (rawSlot - 1) % 9,
                                     // 3.5D is the normal y - offset, but rawslots begin over 9 thus
                                     // the Math.floor would need a subtraction by 1, thus 2.5D.
-                                    extraYWorkbench + Math.floor((rawSlot - 1) / 9)
+                                    extraYWorkbench + ((rawSlot - 1) / 9)
                             };
                         }
                 }
@@ -317,7 +317,7 @@ public final class InventoryUtils
                 final double extraYHopper = rawSlot < 32 ? 2.5D : 2.75D;
                 return new double[]{
                         rawSlot % 9,
-                        (extraYHopper + Math.floor(rawSlot / 9))
+                        (extraYHopper + (rawSlot / 9))
                 };
 
             case CRAFTING:
@@ -374,7 +374,7 @@ public final class InventoryUtils
                 rawSlot -= 9;
                 return new double[]{
                         rawSlot % 9,
-                        (Math.floor(rawSlot / 9) + extraYPlayer)
+                        ((rawSlot / 9) + extraYPlayer)
                 };
             case CREATIVE:
                 break;

@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
@@ -14,7 +15,6 @@ import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientKeepAlive;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientLook;
@@ -22,6 +22,7 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLoo
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerKeepAlive;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
+import de.photon.AACAdditionPro.util.world.LocationUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -55,11 +56,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
 
     @LoadFromConfiguration(configPath = ".parts.PositionSpoof.enabled")
     private boolean positionSpoof;
-
-    @LoadFromConfiguration(configPath = ".parts.TimeManipulation.enabled")
-    private boolean timeManipulation;
-    @LoadFromConfiguration(configPath = ".parts.TimeManipulation.detection_millis")
-    private int detectionMillis;
 
     public PacketAnalysis()
     {
@@ -210,22 +206,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                     }
                 }
             }
-
-            // ------------------------------------------ TimeManipulation ------------------------------------------ //
-            if (timeManipulation)
-            {
-                // FLYING is only sent if the player does not move (both body and head).
-                if (!user.getPositionData().hasPlayerMovedRecently(detectionMillis, PositionData.MovementType.ANY) &&
-                    !user.getPacketAnalysisData().recentlyUpdated(0, detectionMillis) &&
-                    // False positives e.g. in the void or in the air.
-                    !user.getPlayer().isDead() &&
-                    // This check will cause false positives with client versions higher than 1.8.8
-                    ServerVersion.getClientServerVersion(user.getPlayer()) == ServerVersion.MC188)
-                {
-                    VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " may be manipulating time on a protocol level.");
-                    vlManager.flag(user.getPlayer(), 2, -1, () -> {}, () -> {});
-                }
-            }
         }
 
         // ----------------------------------------- Compare + PositionSpoof ---------------------------------------- //
@@ -279,7 +259,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                                                    100 :
                                                    (user.getPlayer().isSprinting() ? 25 : 9);
 
-                    if (user.getPacketAnalysisData().lastPositionForceData.getLocation().distanceSquared(clientPositionLookWrapper.getLocation(user.getPlayer().getWorld())) > allowedDistance)
+                    if (!LocationUtils.areLocationsInRange(user.getPacketAnalysisData().lastPositionForceData.getLocation(), clientPositionLookWrapper.getLocation(user.getPlayer().getWorld()), allowedDistance))
                     {
                         VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " tried to spoof position packets.");
                         vlManager.flag(user.getPlayer(), 10, -1, () -> {}, () -> {});
@@ -331,7 +311,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             case MC111:
             case MC112:
                 keepAliveInject = false;
-                timeManipulation = false;
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");

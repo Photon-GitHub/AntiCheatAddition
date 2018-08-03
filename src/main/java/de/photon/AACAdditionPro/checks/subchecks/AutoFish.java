@@ -1,8 +1,9 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
-import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
@@ -10,7 +11,6 @@ import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.general.StringUtils;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -84,13 +84,13 @@ public class AutoFish implements Listener, ViolationModule
                     final double flagOffset = Math.ceil((violation_offset - maxOffset) * 0.5D);
 
                     VerboseSender.getInstance().sendVerboseMessage("AutoFish-Verbose | Player: " +
-                                                     user.getPlayer().getName() +
-                                                     " average time: " +
-                                                     StringUtils.limitStringLength(String.valueOf(consistencyStatistics.getAverage()), 7) +
-                                                     " | maximum offset: " +
-                                                     StringUtils.limitStringLength(String.valueOf(maxOffset), 7) +
-                                                     " | flag offset: " +
-                                                     StringUtils.limitStringLength(String.valueOf(flagOffset), 7));
+                                                                   user.getPlayer().getName() +
+                                                                   " average time: " +
+                                                                   StringUtils.limitStringLength(String.valueOf(consistencyStatistics.getAverage()), 7) +
+                                                                   " | maximum offset: " +
+                                                                   StringUtils.limitStringLength(String.valueOf(maxOffset), 7) +
+                                                                   " | flag offset: " +
+                                                                   StringUtils.limitStringLength(String.valueOf(flagOffset), 7));
 
                     // Has the player violated the check?
                     if (flagOffset > 0)
@@ -177,6 +177,6 @@ public class AutoFish implements Listener, ViolationModule
     @Override
     public Set<ServerVersion> getSupportedVersions()
     {
-        return ImmutableSet.of(ServerVersion.MC111, ServerVersion.MC112, ServerVersion.MC113);
+        return Module.NON_188_VERSIONS;
     }
 }

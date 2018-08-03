@@ -46,15 +46,14 @@ public enum ModuleType
     private final String configString;
     private final String violationMessage;
 
+    ModuleType(final String configString)
+    {
+        this(configString, "failed " + configString);
+    }
+
     ModuleType(final String configString, final String violationMessage)
     {
         this.configString = configString;
         this.violationMessage = violationMessage;
-    }
-
-    ModuleType(final String configString)
-    {
-        this.configString = configString;
-        this.violationMessage = "failed " + configString;
     }
 }

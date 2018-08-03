@@ -44,17 +44,11 @@ public class SkinBlinker extends PacketAdapter implements ViolationModule
         {
             final int newSkinComponents = event.getPacket().getIntegers().readSafely(1);
 
-            // In the beginning oldSkinComponents is 0.
-            if (user.getSkinData().skinComponents != 0 &&
-                // Actual detection.
-                newSkinComponents != user.getSkinData().skinComponents)
+            // updateSkinComponents returns true if the skin has changed.
+            if (user.getSkinData().updateSkinComponents(newSkinComponents))
             {
                 vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
             }
-
-            // There is no need to update the skinComponents when not sprinting / sneaking as this is only
-            // unnecessary writing and the detection doesn't need the additional info. (At max 1 false vl)
-            user.getSkinData().skinComponents = newSkinComponents;
         }
     }
 

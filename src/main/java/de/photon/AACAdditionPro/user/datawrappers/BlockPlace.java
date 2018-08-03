@@ -1,11 +1,11 @@
-package de.photon.AACAdditionPro.util.datawrappers;
+package de.photon.AACAdditionPro.user.datawrappers;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.block.Block;
 
 @Getter
-@RequiredArgsConstructor(suppressConstructorProperties = true)
+@RequiredArgsConstructor
 public class BlockPlace
 {
     private final long time = System.currentTimeMillis();

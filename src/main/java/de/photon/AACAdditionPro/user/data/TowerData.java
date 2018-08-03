@@ -2,9 +2,9 @@ package de.photon.AACAdditionPro.user.data;
 
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.datawrappers.BlockPlace;
+import de.photon.AACAdditionPro.user.datawrappers.TowerBlockPlace;
 import de.photon.AACAdditionPro.util.datastructures.ConditionalBuffer;
-import de.photon.AACAdditionPro.util.datawrappers.BlockPlace;
-import de.photon.AACAdditionPro.util.datawrappers.TowerBlockPlace;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 

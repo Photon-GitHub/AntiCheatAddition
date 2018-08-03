@@ -1,13 +1,13 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
-import com.google.common.collect.ImmutableSet;
+import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -147,6 +147,6 @@ public class AutoPotion implements Listener, ViolationModule
     @Override
     public Set<ServerVersion> getSupportedVersions()
     {
-        return ImmutableSet.of(ServerVersion.MC111, ServerVersion.MC112, ServerVersion.MC113);
+        return Module.NON_188_VERSIONS;
     }
 }

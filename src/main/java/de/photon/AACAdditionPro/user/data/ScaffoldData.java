@@ -4,8 +4,8 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.datawrappers.ScaffoldBlockPlace;
 import de.photon.AACAdditionPro.util.datastructures.ConditionalBuffer;
-import de.photon.AACAdditionPro.util.datawrappers.ScaffoldBlockPlace;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 

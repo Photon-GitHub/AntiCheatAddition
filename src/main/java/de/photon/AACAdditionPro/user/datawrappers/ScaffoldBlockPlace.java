@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.datawrappers;
+package de.photon.AACAdditionPro.user.datawrappers;
 
 import lombok.Getter;
 import org.bukkit.block.Block;

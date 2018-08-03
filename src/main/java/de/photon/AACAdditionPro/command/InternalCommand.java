@@ -8,11 +8,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class InternalCommand
 {
@@ -45,83 +44,105 @@ public abstract class InternalCommand
         this.minArguments = minArguments;
         this.maxArguments = maxArguments;
 
-        this.childCommands = childCommands.length != 0 ? ImmutableSet.copyOf(childCommands) : Collections.EMPTY_SET;
+        this.childCommands = ImmutableSet.copyOf(childCommands);
     }
 
-    void invokeCommand(CommandSender sender, Queue<String> arguments)
+    /**
+     * Handle a command with certain arguments.
+     *
+     * @param sender    the {@link CommandSender} that originally sent the command.
+     * @param arguments a {@link Queue} which contains the remaining arguments.
+     */
+    void invokeCommand(final CommandSender sender, final Queue<String> arguments)
     {
         // No permission is set or the sender has the permission
-        if (InternalPermission.hasPermission(sender, this.permission))
-        {
-            if (arguments.peek() != null)
-            {
-                if (arguments.peek().equals("?"))
-                {
-                    for (final String help : this.getCommandHelp())
-                    {
-                        sender.sendMessage(PREFIX + ChatColor.GOLD + help);
-                    }
-                    return;
-                }
-
-                // Delegate to SubCommands
-                for (final InternalCommand internalCommand : this.childCommands)
-                {
-                    if (arguments.peek().equalsIgnoreCase(internalCommand.name))
-                    {
-                        // Remove the current command arg
-                        arguments.remove();
-                        internalCommand.invokeCommand(sender, arguments);
-                        return;
-                    }
-                }
-            }
-
-            // Normal command procedure or childCommands is null or no fitting child commands were found.
-            this.executeIfAllowed(sender, arguments);
-        }
-        else
+        if (!InternalPermission.hasPermission(sender, this.permission))
         {
             sender.sendMessage(PREFIX + ChatColor.RED + "You don't have permission to do this.");
+            return;
         }
-    }
 
-    private void executeIfAllowed(CommandSender sender, Queue<String> arguments)
-    {
-        if (arguments.size() >= minArguments && arguments.size() <= maxArguments)
+        // Any additional arguments
+        if (arguments.peek() != null)
         {
-            if (!onlyPlayers || sender instanceof Player)
+            // Command help
+            if (arguments.peek().equals("?"))
             {
-                execute(sender, arguments);
+                for (final String help : this.getCommandHelp())
+                {
+                    sender.sendMessage(PREFIX + ChatColor.GOLD + help);
+                }
+                return;
             }
-            else
+
+            // Delegate to SubCommands
+            final InternalCommand childCommand = this.getChildCommandByNameIgnoreCase(arguments.peek());
+
+            if (childCommand != null)
             {
-                sender.sendMessage(PREFIX + ChatColor.RED + "Only a player can use this command.");
+                // Remove the current command arg
+                arguments.remove();
+                childCommand.invokeCommand(sender, arguments);
+                return;
             }
         }
-        else
+
+        // ------- Normal command procedure or childCommands is null or no fitting child commands were found. ------- //
+
+        // Correct amount of arguments
+        if (arguments.size() < minArguments || arguments.size() > maxArguments)
         {
             sender.sendMessage(PREFIX + ChatColor.RED + "Wrong amount of arguments: " + arguments.size() + " expected: " + minArguments + " to " + maxArguments);
+            return;
         }
+
+        // Only players
+        if (onlyPlayers && !(sender instanceof Player))
+        {
+            sender.sendMessage(PREFIX + ChatColor.RED + "Only a player can use this command.");
+            return;
+        }
+
+        execute(sender, arguments);
     }
 
+    /**
+     * This contains the code that is actually executed if everything is correct.
+     */
     protected abstract void execute(CommandSender sender, Queue<String> arguments);
 
+    /**
+     * @return an array of {@link String}s in which a single {@link String} represents a line in the shown command help.
+     */
     protected abstract String[] getCommandHelp();
 
     protected abstract List<String> getTabPossibilities();
+
+    /**
+     * Gets a child command of this command by its name.
+     *
+     * @param name the name of the supposed child command.
+     *
+     * @return the child command or <code>null</code> if no child command has that name.
+     */
+    protected InternalCommand getChildCommandByNameIgnoreCase(final String name)
+    {
+        for (InternalCommand childCommand : this.childCommands)
+        {
+            if (childCommand.name.equalsIgnoreCase(name))
+            {
+                return childCommand;
+            }
+        }
+        return null;
+    }
 
     /**
      * Returns an array of {@link String}s containing the names of all child commands.
      */
     protected List<String> getChildTabs()
     {
-        final List<String> childTabs = new ArrayList<>(this.childCommands.size());
-        for (InternalCommand internalCommand : this.childCommands)
-        {
-            childTabs.add(internalCommand.name);
-        }
-        return childTabs;
+        return this.childCommands.stream().map(internalCommand -> internalCommand.name).collect(Collectors.toList());
     }
 
     /**
@@ -129,12 +150,7 @@ public abstract class InternalCommand
      */
     protected List<String> getPlayerNameTabs()
     {
-        final List<String> playerNameList = new ArrayList<>();
-        for (Player player : Bukkit.getOnlinePlayers())
-        {
-            playerNameList.add(player.getName());
-        }
-        return playerNameList;
+        return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
     }
 
     /**
@@ -152,7 +168,8 @@ public abstract class InternalCommand
         final double number;
         try
         {
-            number = Double.valueOf(argument);
+            // Use .parseDouble instead of .valueOf for better performance because of redundant boxing.
+            number = Double.parseDouble(argument);
         } catch (NumberFormatException exception)
         {
             sender.sendMessage(PREFIX + ChatColor.RED + "Please enter a valid number.");

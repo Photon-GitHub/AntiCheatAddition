@@ -1,18 +1,17 @@
 package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
 import de.photon.AACAdditionPro.util.files.configs.Configs;
-import de.photon.AACAdditionPro.util.multiversion.ServerVersion;
 import lombok.Getter;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -22,17 +21,13 @@ public class VersionControl implements Listener, ClientControlModule
     /**
      * Unmodifiable {@link Set} containing all registered {@link ProtocolVersion}s.
      */
-    private static final Set<ProtocolVersion> PROTOCOL_VERSIONS;
-
-    static
-    {
-        PROTOCOL_VERSIONS = Sets.newLinkedHashSetWithExpectedSize(5);
-        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.8", ServerVersion.MC188, 47));
-        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.9", ServerVersion.MC19, 107, 108, 109, 110));
-        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.10", ServerVersion.MC110, 210));
-        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.11", ServerVersion.MC111, 315, 316));
-        PROTOCOL_VERSIONS.add(new ProtocolVersion("1.12", ServerVersion.MC112, 335, 338, 340));
-    }
+    private static final List<ProtocolVersion> PROTOCOL_VERSIONS = ImmutableList.of(
+            new ProtocolVersion("1.8", ServerVersion.MC188, 47),
+            new ProtocolVersion("1.9", ServerVersion.MC19, 107, 108, 109, 110),
+            new ProtocolVersion("1.10", ServerVersion.MC110, 210),
+            new ProtocolVersion("1.11", ServerVersion.MC111, 315, 316),
+            new ProtocolVersion("1.12", ServerVersion.MC112, 335, 338, 340),
+            new ProtocolVersion("1.13", ServerVersion.MC113, 393));
 
     /**
      * Method used to get the {@link ServerVersion} from the protocol version number.
@@ -57,30 +52,26 @@ public class VersionControl implements Listener, ClientControlModule
     {
         // Message:
         final Collection<String> versionStrings = new ArrayList<>();
+        final List<Integer> blockedProtocolNumbers = new ArrayList<>();
+
         for (ProtocolVersion protocolVersion : PROTOCOL_VERSIONS)
         {
             if (protocolVersion.allowed)
-            {
                 versionStrings.add(protocolVersion.name);
-            }
-        }
-
-        // Get the message
-        final String message = AACAdditionPro.getInstance().getConfig().getString("ClientControl.VersionControl.message")
-                                             // Replace the special placeholder
-                                             .replace("{supportedVersions}", String.join(", ", versionStrings));
-
-        Configs.VIAVERSION.getConfigurationRepresentation().getYamlConfiguration().set("block-disconnect-msg", message);
-
-        // Set the blocked versions
-        final List<Integer> blockedProtocolNumbers = new ArrayList<>();
-        for (ProtocolVersion protocolVersion : PROTOCOL_VERSIONS)
-        {
-            if (!protocolVersion.allowed)
-            {
+            else
+                // Set the blocked versions
                 blockedProtocolNumbers.addAll(protocolVersion.versionNumbers);
-            }
         }
+
+        // Set the kick message.
+        Configs.VIAVERSION.getConfigurationRepresentation().getYamlConfiguration().set(
+                "block-disconnect-msg",
+                // Construct the message.
+                AACAdditionPro.getInstance().getConfig().getString("ClientControl.VersionControl.message")
+                              // Replace the special placeholder
+                              .replace("{supportedVersions}", String.join(", ", versionStrings)));
+
+        // Block the affected protocol numbers.
         Configs.VIAVERSION.getConfigurationRepresentation().requestValueChange("block-protocols", blockedProtocolNumbers);
     }
 
@@ -93,7 +84,7 @@ public class VersionControl implements Listener, ClientControlModule
     @Override
     public Set<String> getDependencies()
     {
-        return new HashSet<>(Collections.singletonList("ViaVersion"));
+        return ImmutableSet.of("ViaVersion");
     }
 
     @Override
@@ -125,7 +116,7 @@ public class VersionControl implements Listener, ClientControlModule
         private final ServerVersion equivalentServerVersion;
 
         /**
-         * An unmodifiable {@link List} of {@link Integer}s that contains all protocol version numbers associated with this {@link ProtocolVersion}
+         * An immutable {@link Set} of {@link Integer}s that contains all protocol version numbers associated with this {@link ProtocolVersion}
          */
         private final Set<Integer> versionNumbers;
 
@@ -134,7 +125,7 @@ public class VersionControl implements Listener, ClientControlModule
             this.name = name;
             this.allowed = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl.allowedVersions." + this.name);
             this.equivalentServerVersion = equivalentServerVersion;
-            this.versionNumbers = Collections.unmodifiableSet(Sets.newHashSet(versionNumbers));
+            this.versionNumbers = ImmutableSet.copyOf(versionNumbers);
         }
     }
 }

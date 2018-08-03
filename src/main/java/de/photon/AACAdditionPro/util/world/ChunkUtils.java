@@ -33,11 +33,8 @@ public final class ChunkUtils
      * Checks if the chunks between two locations are loaded without trying to load them.
      * This method should be used to see if a calculation is safe for async usage.
      */
-    public static boolean areChunksLoadedBetweenLocations(Location one, Location two)
+    public static boolean areChunksLoadedBetweenLocations(final Location one, final Location two)
     {
-        one.setY(0);
-        two.setY(0);
-
         if (!one.getWorld().getUID().equals(two.getWorld().getUID()))
         {
             throw new IllegalArgumentException("Tried to check chunks between worlds.");

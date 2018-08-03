@@ -44,25 +44,26 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     {
         // Search for the deepest child command
         InternalCommand currentCommand = this;
+        InternalCommand potentialChildCommand;
         int currentArgumentIndex = 0;
-        boolean childFound = true;
-        while (currentArgumentIndex < args.length && childFound)
+        while (currentArgumentIndex < args.length)
         {
-            childFound = false;
-            for (InternalCommand childCommand : currentCommand.getChildCommands())
+            potentialChildCommand = currentCommand.getChildCommandByNameIgnoreCase(args[currentArgumentIndex]);
+
+            if (potentialChildCommand == null)
             {
-                if (childCommand.name.equalsIgnoreCase(args[currentArgumentIndex]))
-                {
-                    currentCommand = childCommand;
-                    currentArgumentIndex++;
-                    childFound = true;
-                    break;
-                }
+                // Stop looping once no child command was found.
+                break;
+            }
+            else
+            {
+                currentCommand = potentialChildCommand;
+                currentArgumentIndex++;
             }
         }
 
         final int resultingArgumentIndex = currentArgumentIndex;
-        return currentArgumentIndex < args.length ?
+        return currentArgumentIndex == args.length ?
                // No tab filtering as the player has not started typing
                currentCommand.getTabPossibilities() :
                // If arguments are still left try to chose the correct tab possibilities from them.

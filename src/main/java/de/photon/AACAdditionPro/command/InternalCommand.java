@@ -47,7 +47,13 @@ public abstract class InternalCommand
         this.childCommands = ImmutableSet.copyOf(childCommands);
     }
 
-    void invokeCommand(CommandSender sender, Queue<String> arguments)
+    /**
+     * Handle a command with certain arguments.
+     *
+     * @param sender    the {@link CommandSender} that originally sent the command.
+     * @param arguments a {@link Queue} which contains the remaining arguments.
+     */
+    void invokeCommand(final CommandSender sender, final Queue<String> arguments)
     {
         // No permission is set or the sender has the permission
         if (!InternalPermission.hasPermission(sender, this.permission))
@@ -70,15 +76,14 @@ public abstract class InternalCommand
             }
 
             // Delegate to SubCommands
-            for (final InternalCommand internalCommand : this.childCommands)
+            final InternalCommand childCommand = this.getChildCommandByNameIgnoreCase(arguments.peek());
+
+            if (childCommand != null)
             {
-                if (arguments.peek().equalsIgnoreCase(internalCommand.name))
-                {
-                    // Remove the current command arg
-                    arguments.remove();
-                    internalCommand.invokeCommand(sender, arguments);
-                    return;
-                }
+                // Remove the current command arg
+                arguments.remove();
+                childCommand.invokeCommand(sender, arguments);
+                return;
             }
         }
 
@@ -101,11 +106,36 @@ public abstract class InternalCommand
         execute(sender, arguments);
     }
 
+    /**
+     * This contains the code that is actually executed if everything is correct.
+     */
     protected abstract void execute(CommandSender sender, Queue<String> arguments);
 
+    /**
+     * @return an array of {@link String}s in which a single {@link String} represents a line in the shown command help.
+     */
     protected abstract String[] getCommandHelp();
 
     protected abstract List<String> getTabPossibilities();
+
+    /**
+     * Gets a child command of this command by its name.
+     *
+     * @param name the name of the supposed child command.
+     *
+     * @return the child command or <code>null</code> if no child command has that name.
+     */
+    protected InternalCommand getChildCommandByNameIgnoreCase(final String name)
+    {
+        for (InternalCommand childCommand : this.childCommands)
+        {
+            if (childCommand.name.equalsIgnoreCase(name))
+            {
+                return childCommand;
+            }
+        }
+        return null;
+    }
 
     /**
      * Returns an array of {@link String}s containing the names of all child commands.

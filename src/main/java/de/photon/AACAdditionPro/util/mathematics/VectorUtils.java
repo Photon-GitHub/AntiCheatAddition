@@ -38,7 +38,6 @@ public final class VectorUtils
                     if (BlockUtils.isReallyOccluding(block.getType()))
                     {
                         // Use the middle location of the Block instead of the simple location.
-                        System.out.print("Intersection-Block: " + block.getLocation().clone().add(0.5, 0.5, 0.5).toVector());
                         return block.getLocation().clone().add(0.5, 0.5, 0.5).distance(start);
                     }
                 }

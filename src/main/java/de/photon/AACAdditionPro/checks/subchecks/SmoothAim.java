@@ -50,7 +50,7 @@ public class SmoothAim extends PacketAdapter implements ViolationModule
             !user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
         {
             // If the player is standing still for a longer period of time reset his counter.
-            if (!user.getPositionData().hasPlayerMovedRecently(3000, PositionData.MovementType.XZONLY))
+            if (!user.getPositionData().hasPlayerMovedRecently(2000, PositionData.MovementType.XZONLY))
             {
                 user.getSmoothAimData().smoothAimCounter = 0;
             }

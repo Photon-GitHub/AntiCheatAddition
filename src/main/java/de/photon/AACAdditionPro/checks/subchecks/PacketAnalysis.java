@@ -68,9 +68,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
               // EqualRotation + Compare
               PacketType.Play.Client.POSITION_LOOK,
               // EqualRotation
-              PacketType.Play.Client.LOOK,
-              // Time manipulation
-              PacketType.Play.Client.FLYING);
+              PacketType.Play.Client.LOOK);
     }
 
     @Override
@@ -228,14 +226,14 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                     if (offset > 0)
                     {
                         // Minimum time between flags to decrease lag spike effects.
-                        if (!user.getPacketAnalysisData().recentlyUpdated(1, violationTime) &&
+                        if (!user.getPacketAnalysisData().recentlyUpdated(0, violationTime) &&
                             // Minimum fails to mitigate some fluctuations
                             ++user.getPacketAnalysisData().compareFails > this.compareThreshold)
                         {
                             VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
                             vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 50)), 12), -1, () -> {},
                                            // Only update the time stamp if flagged.
-                                           () -> user.getPacketAnalysisData().updateTimeStamp(1));
+                                           () -> user.getPacketAnalysisData().updateTimeStamp(0));
                         }
                     }
                     else if (user.getPacketAnalysisData().compareFails > 0)
@@ -269,14 +267,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 // No continuous flagging.
                 user.getPacketAnalysisData().lastPositionForceData = null;
             }
-        }
-
-        // -------------------------------------------- TimeManipulation -------------------------------------------- //
-        // Only a 1.8.8 client sends FLYING when idling. 1.10+ clients will only send it on respawn or when using the
-        // statistics.
-        if (event.getPacketType() == PacketType.Play.Client.FLYING)
-        {
-            user.getPacketAnalysisData().updateTimeStamp(0);
         }
     }
 

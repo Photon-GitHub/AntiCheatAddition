@@ -20,7 +20,7 @@ public class SmoothAimData extends TimeData
     }
 
     public int smoothAimCounter = 0;
-    private UUID lastUUID = this.getUser().getPlayer().getUniqueId();
+    private UUID lastUUID = UUID.randomUUID();
 
     public SmoothAimData(final User user)
     {

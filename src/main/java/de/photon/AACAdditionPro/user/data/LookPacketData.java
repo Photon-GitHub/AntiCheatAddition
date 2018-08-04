@@ -152,34 +152,32 @@ public class LookPacketData extends TimeData
                 final User user = UserManager.getUser(event.getPlayer().getUniqueId());
                 final IWrapperPlayClientLook lookWrapper = event::getPacket;
 
-                final LookPacketData lookPacketData = user.getLookPacketData();
-
                 final RotationChange rotationChange = new RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
 
                 // Same tick -> merge
-                if (rotationChange.getTime() - lookPacketData.rotationChangeQueue.getLast().getTime() < 55)
+                if (rotationChange.getTime() - user.getLookPacketData().rotationChangeQueue.getLast().getTime() < 55)
                 {
-                    lookPacketData.rotationChangeQueue.getLast().merge(rotationChange);
+                    user.getLookPacketData().rotationChangeQueue.getLast().merge(rotationChange);
                 }
                 else
                 {
-                    lookPacketData.rotationChangeQueue.addLast(rotationChange);
+                    user.getLookPacketData().rotationChangeQueue.addLast(rotationChange);
                 }
-                while (lookPacketData.rotationChangeQueue.size() > QUEUE_CAPACITY)
+                while (user.getLookPacketData().rotationChangeQueue.size() > QUEUE_CAPACITY)
                 {
-                    lookPacketData.rotationChangeQueue.removeFirst();
+                    user.getLookPacketData().rotationChangeQueue.removeFirst();
                 }
 
                 // Huge angle change
                 // Use the queue values here to because the other ones are already updated.
-                if (RotationUtil.getDirection(lookPacketData.realLastYaw, lookPacketData.realLastPitch).angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
+                if (RotationUtil.getDirection(user.getLookPacketData().realLastYaw, user.getLookPacketData().realLastPitch).angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
                 {
-                    lookPacketData.updateTimeStamp(0);
+                    user.getLookPacketData().updateTimeStamp(0);
                 }
 
                 // Update the values here so the RotationUtil calculation is functional.
-                lookPacketData.realLastYaw = lookWrapper.getYaw();
-                lookPacketData.realLastPitch = lookWrapper.getPitch();
+                user.getLookPacketData().realLastYaw = lookWrapper.getYaw();
+                user.getLookPacketData().realLastPitch = lookWrapper.getPitch();
             }
         }
     }

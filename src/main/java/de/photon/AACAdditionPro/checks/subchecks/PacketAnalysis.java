@@ -115,9 +115,11 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         }
 
         // --------------------------------------------- EqualRotation ---------------------------------------------- //
+
         if (equalRotation &&
-            // Correct packets
-            (event.getPacketType() == PacketType.Play.Client.POSITION_LOOK || event.getPacketType() == PacketType.Play.Client.LOOK))
+            // Correct packets.
+            (event.getPacketType() == PacketType.Play.Client.POSITION_LOOK ||
+             event.getPacketType() == PacketType.Play.Client.LOOK))
         {
             // Get the packet.
             final IWrapperPlayClientLook lookWrapper = event::getPacket;
@@ -130,6 +132,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 // Not recently teleported
                 !user.getTeleportData().recentlyUpdated(0, 5000) &&
                 // Same rotation values
+                // LookPacketData automatically updates its values.
                 currentYaw == user.getLookPacketData().getRealLastYaw() &&
                 currentPitch == user.getLookPacketData().getRealLastPitch() &&
                 // Labymod fp when standing still / hit in corner fp
@@ -137,10 +140,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             {
                 VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.");
                 vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
-            }
-            else
-            {
-                user.getLookPacketData().updateRotations(currentYaw, currentPitch);
             }
         }
 

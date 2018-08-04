@@ -50,16 +50,6 @@ public class LookPacketData extends TimeData
         this.rotationChangeQueue.addLast(new RotationChange(0, 0));
     }
 
-    public float getLastYaw()
-    {
-        return this.rotationChangeQueue.getLast().getYaw();
-    }
-
-    public float getLastPitch()
-    {
-        return this.rotationChangeQueue.getLast().getPitch();
-    }
-
     /**
      * Calculates the total rotation change in the last time.
      *
@@ -165,8 +155,6 @@ public class LookPacketData extends TimeData
                 final IWrapperPlayClientLook lookWrapper = event::getPacket;
 
                 final LookPacketData lookPacketData = user.getLookPacketData();
-                lookPacketData.realLastYaw = lookWrapper.getYaw();
-                lookPacketData.realLastPitch = lookWrapper.getPitch();
 
                 final RotationChange rotationChange = new RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
 
@@ -185,10 +173,15 @@ public class LookPacketData extends TimeData
                 }
 
                 // Huge angle change
-                if (RotationUtil.getDirection(lookPacketData.getLastYaw(), lookPacketData.getLastPitch()).angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
+                // Use the queue values here to because the other ones are already updated.
+                if (RotationUtil.getDirection(lookPacketData.realLastYaw, lookPacketData.realLastPitch).angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
                 {
                     lookPacketData.updateTimeStamp(0);
                 }
+
+                // Update the values here so the RotationUtil calculation is functional.
+                lookPacketData.realLastYaw = lookWrapper.getYaw();
+                lookPacketData.realLastPitch = lookWrapper.getPitch();
             }
         }
     }

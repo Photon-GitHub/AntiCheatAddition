@@ -38,7 +38,7 @@ public class SmoothAimData extends TimeData
 
             if (user != null)
             {
-                user.getInventoryData().updateTimeStamp(0);
+                user.getSmoothAimData().updateTimeStamp(0);
             }
         }
     }

@@ -575,7 +575,7 @@ SmoothAim:
   angle_range: 5
   # How many suspicious rotations should SmoothAim count as legit
   # The value must be greater or equal to 0.
-  rotation_threshold: 22
+  rotation_threshold: 25
   # Map of violation levels to command
   thresholds:
     30: "aacstaffnotify {player} in {world} is suspected for SmoothAim"

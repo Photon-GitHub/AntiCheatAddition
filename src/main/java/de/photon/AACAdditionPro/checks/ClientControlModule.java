@@ -1,10 +1,12 @@
 package de.photon.AACAdditionPro.checks;
 
 import de.photon.AACAdditionPro.events.ClientControlEvent;
+import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.general.StringUtils;
+import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -104,5 +106,11 @@ public interface ClientControlModule extends ViolationModule
     default String getName()
     {
         return this.getConfigString().replace(".", "-");
+    }
+
+    @Override
+    default ViolationLevelManagement getViolationLevelManagement()
+    {
+        throw new NoViolationLevelManagementException(this.getModuleType());
     }
 }

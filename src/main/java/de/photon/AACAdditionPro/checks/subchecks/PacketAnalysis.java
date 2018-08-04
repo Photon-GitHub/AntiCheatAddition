@@ -17,7 +17,6 @@ import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientKeepAlive;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerKeepAlive;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
@@ -120,24 +119,8 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             // Correct packets
             (event.getPacketType() == PacketType.Play.Client.POSITION_LOOK || event.getPacketType() == PacketType.Play.Client.LOOK))
         {
-            final IWrapperPlayClientLook lookWrapper;
-
-            // Differentiate the packets
-            if (event.getPacketType() == PacketType.Play.Client.POSITION_LOOK)
-            {
-                // PositionLook wrapper
-                lookWrapper = new WrapperPlayClientPositionLook(event.getPacket());
-            }
-            else if (event.getPacketType() == PacketType.Play.Client.LOOK)
-            {
-                // Look wrapper
-                lookWrapper = new WrapperPlayClientLook(event.getPacket());
-            }
-            else
-            {
-                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData: received invalid packet: " + event.getPacketType().toString(), true, true);
-                return;
-            }
+            // Get the packet.
+            final IWrapperPlayClientLook lookWrapper = event::getPacket;
 
             final float currentYaw = lookWrapper.getYaw();
             final float currentPitch = lookWrapper.getPitch();

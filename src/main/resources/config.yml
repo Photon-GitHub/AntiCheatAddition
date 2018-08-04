@@ -574,6 +574,7 @@ SmoothAim:
   # All angle changes below this threshold are potentially smoothaim.
   angle_range: 5
   # How many suspicious rotations should SmoothAim count as legit
+  # Increase this if you have false positives.
   # The value must be greater or equal to 0.
   rotation_threshold: 25
   # Map of violation levels to command

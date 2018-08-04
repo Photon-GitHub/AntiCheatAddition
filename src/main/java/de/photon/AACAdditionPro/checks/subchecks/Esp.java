@@ -1,9 +1,9 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.ServerVersion;
-import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
@@ -37,7 +37,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class Esp implements ViolationModule
+public class Esp implements Module
 {
     // The auto-config-data
     private double renderDistanceSquared = 0;

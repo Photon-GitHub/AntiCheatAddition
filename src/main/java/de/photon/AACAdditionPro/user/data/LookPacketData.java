@@ -24,8 +24,6 @@ public class LookPacketData extends TimeData
 {
     private static final byte QUEUE_CAPACITY = 20;
 
-    public int smoothAimCounter = 0;
-
     static
     {
         LookPacketData.LookPacketDataUpdater dataUpdater = new LookPacketData.LookPacketDataUpdater();

@@ -17,10 +17,13 @@ import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 
 public class SmoothAim extends PacketAdapter implements ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 600);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 20);
 
     @LoadFromConfiguration(configPath = ".rotation_threshold")
     private int rotation_threshold;
+
+    @LoadFromConfiguration(configPath = ".angle_range")
+    private int angle_range;
 
     public SmoothAim()
     {
@@ -41,6 +44,8 @@ public class SmoothAim extends PacketAdapter implements ViolationModule
             user.getPlayer().isInsideVehicle() ||
             // Not recently teleported
             user.getTeleportData().recentlyUpdated(0, 5000) ||
+            // User must be attacking something
+            !user.getSmoothAimData().recentlyUpdated(0, 3000) ||
             // The player has to be moving.
             !user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
         {
@@ -51,18 +56,18 @@ public class SmoothAim extends PacketAdapter implements ViolationModule
 
         // Both yaw and pitch are in range.
         if (lookWrapper.getYaw() != user.getLookPacketData().getRealLastYaw() &&
-            MathUtils.roughlyEquals(lookWrapper.getYaw(), user.getLookPacketData().getRealLastYaw(), 5) &&
+            MathUtils.roughlyEquals(lookWrapper.getYaw(), user.getLookPacketData().getRealLastYaw(), angle_range) &&
             lookWrapper.getPitch() != user.getLookPacketData().getRealLastPitch() &&
-            MathUtils.roughlyEquals(lookWrapper.getPitch(), user.getLookPacketData().getRealLastPitch(), 5))
+            MathUtils.roughlyEquals(lookWrapper.getPitch(), user.getLookPacketData().getRealLastPitch(), angle_range))
         {
             // Prevent false positives
-            if (++user.getLookPacketData().smoothAimCounter > rotation_threshold)
+            if (++user.getSmoothAimData().smoothAimCounter > rotation_threshold)
                 vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
         }
         else
         {
             // Reset the counter if a legit action is recorded.
-            user.getLookPacketData().smoothAimCounter = 0;
+            user.getSmoothAimData().smoothAimCounter = 0;
         }
     }
 

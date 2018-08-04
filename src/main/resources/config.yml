@@ -571,13 +571,15 @@ Skinblinker:
 SmoothAim:
   # Do you want to enable the SmoothAim check
   enabled: true
+  # All angle changes below this threshold are potentially smoothaim.
+  angle_range: 5
   # How many suspicious rotations should SmoothAim count as legit
   # The value must be greater or equal to 0.
-  rotation_threshold: 10
+  rotation_threshold: 30
   # Map of violation levels to command
   thresholds:
-    5: "aacstaffnotify {player} in {world} is suspected for SmoothAim"
-    10: "aackick {player} SmoothAim"
+    40: "aacstaffnotify {player} in {world} is suspected for SmoothAim"
+    100: "aackick {player} SmoothAim"
 
 # This check tries to alert you of teamers
 # This is safe to enable, just make sure that you configure this check for your own needs.

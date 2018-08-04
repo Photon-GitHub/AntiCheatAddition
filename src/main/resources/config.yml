@@ -23,7 +23,7 @@
 # ------------------------------------------------------------------------------------------------------------------- #
 
 # If you have modified fishing time and/or behaviour please test if this check is compatible with your setup.
-# This check does only work on minecraft versions 1.10 and beyond and auto-disables itself on other versions.
+# This check does only work on minecraft versions 1.11 and beyond and auto-disables itself on other versions.
 AutoFish:
    # Do you want to enable the AutoFish check
    enabled: true
@@ -68,7 +68,7 @@ AutoFish:
       18: "aackick {player} AutoFish"
 
 # AutoPotion detects automated bots which splash the player with potions that have positive effects
-# This check does only work on minecraft versions 1.10 and beyond and auto-disables itself on other versions.
+# This check does only work on minecraft versions 1.11 and beyond and auto-disables itself on other versions.
 AutoPotion:
    # Do you want to enable the AutoPotion check
    enabled: true

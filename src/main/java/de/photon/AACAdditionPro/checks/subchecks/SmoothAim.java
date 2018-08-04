@@ -53,10 +53,16 @@ public class SmoothAim extends PacketAdapter implements ViolationModule
         if (lookWrapper.getYaw() != user.getLookPacketData().getRealLastYaw() &&
             MathUtils.roughlyEquals(lookWrapper.getYaw(), user.getLookPacketData().getRealLastYaw(), 5) &&
             lookWrapper.getPitch() != user.getLookPacketData().getRealLastPitch() &&
-            MathUtils.roughlyEquals(lookWrapper.getPitch(), user.getLookPacketData().getRealLastPitch(), 5) &&
-            ++user.getLookPacketData().smoothAimCounter > rotation_threshold)
+            MathUtils.roughlyEquals(lookWrapper.getPitch(), user.getLookPacketData().getRealLastPitch(), 5))
         {
-            vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
+            // Prevent false positives
+            if (++user.getLookPacketData().smoothAimCounter > rotation_threshold)
+                vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
+        }
+        else
+        {
+            // Reset the counter if a legit action is recorded.
+            user.getLookPacketData().smoothAimCounter = 0;
         }
     }
 

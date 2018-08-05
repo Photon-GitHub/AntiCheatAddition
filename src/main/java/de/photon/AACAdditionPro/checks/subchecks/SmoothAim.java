@@ -44,8 +44,8 @@ public class SmoothAim extends PacketAdapter implements ViolationModule
             user.getPlayer().isInsideVehicle() ||
             // Not recently teleported
             user.getTeleportData().recentlyUpdated(0, 5000) ||
-            // User must be attacking something
-            !user.getSmoothAimData().recentlyUpdated(0, 1500))
+            // User must be attacking something (also guarantees rather close-range behaviour)
+            !user.getSmoothAimData().recentlyUpdated(0, 1000))
         {
             return;
         }

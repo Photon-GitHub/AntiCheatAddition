@@ -45,9 +45,14 @@ public class SmoothAim extends PacketAdapter implements ViolationModule
             // Not recently teleported
             user.getTeleportData().recentlyUpdated(0, 5000) ||
             // User must be attacking something
-            !user.getSmoothAimData().recentlyUpdated(0, 2500) ||
-            // The player has to be moving.
-            !user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
+            !user.getSmoothAimData().recentlyUpdated(0, 2500))
+        {
+
+            return;
+        }
+
+        // The player has to be moving.
+        if (!user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
         {
             // If the player is standing still for a longer period of time reset his counter.
             if (!user.getPositionData().hasPlayerMovedRecently(2000, PositionData.MovementType.XZONLY))

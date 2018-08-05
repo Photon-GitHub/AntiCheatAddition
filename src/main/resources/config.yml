@@ -579,9 +579,9 @@ SmoothAim:
   rotation_threshold: 25
   # Map of violation levels to command
   thresholds:
-    20: "aacstaffnotify {player} in {world} is suspected for SmoothAim/Aimbot"
-    40: "aacstaffnotify {player} in {world} is highly suspected for SmoothAim/Aimbot"
-    60: "aackick {player} SmoothAim/Aimbot"
+    18: "aacstaffnotify {player} in {world} is suspected for SmoothAim/Aimbot"
+    30: "aacstaffnotify {player} in {world} is highly suspected for SmoothAim/Aimbot"
+    50: "aackick {player} SmoothAim/Aimbot"
 
 # This check tries to alert you of teamers
 # This is safe to enable, just make sure that you configure this check for your own needs.

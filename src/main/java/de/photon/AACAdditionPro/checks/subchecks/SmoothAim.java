@@ -45,7 +45,7 @@ public class SmoothAim extends PacketAdapter implements ViolationModule
             // Not recently teleported
             user.getTeleportData().recentlyUpdated(0, 5000) ||
             // User must be attacking something
-            !user.getSmoothAimData().recentlyUpdated(0, 2500))
+            !user.getSmoothAimData().recentlyUpdated(0, 1500))
         {
 
             return;

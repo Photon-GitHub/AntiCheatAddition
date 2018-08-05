@@ -572,16 +572,16 @@ SmoothAim:
   # Do you want to enable the SmoothAim check
   enabled: true
   # All angle changes below this threshold are potentially smoothaim.
-  angle_range: 7.5
+  angle_range: 6.5
   # How many suspicious rotations should SmoothAim count as legit
   # Increase this if you have false positives.
   # The value must be greater or equal to 0.
   rotation_threshold: 25
   # Map of violation levels to command
   thresholds:
-    18: "aacstaffnotify {player} in {world} is suspected for SmoothAim/Aimbot"
-    30: "aacstaffnotify {player} in {world} is highly suspected for SmoothAim/Aimbot"
-    50: "aackick {player} SmoothAim/Aimbot"
+    15: "aacstaffnotify {player} in {world} is suspected for SmoothAim/Aimbot"
+    25: "aacstaffnotify {player} in {world} is highly suspected for SmoothAim/Aimbot"
+    40: "aackick {player} SmoothAim/Aimbot"
 
 # This check tries to alert you of teamers
 # This is safe to enable, just make sure that you configure this check for your own needs.

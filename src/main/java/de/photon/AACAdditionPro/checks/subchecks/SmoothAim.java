@@ -23,7 +23,7 @@ public class SmoothAim extends PacketAdapter implements ViolationModule
     private int rotation_threshold;
 
     @LoadFromConfiguration(configPath = ".angle_range")
-    private int angle_range;
+    private double angle_range;
 
     public SmoothAim()
     {

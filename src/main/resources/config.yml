@@ -572,7 +572,7 @@ SmoothAim:
   # Do you want to enable the SmoothAim check
   enabled: true
   # All angle changes below this threshold are potentially smoothaim.
-  angle_range: 6.5
+  angle_range: 7.5
   # How many suspicious rotations should SmoothAim count as legit
   # Increase this if you have false positives.
   # The value must be greater or equal to 0.

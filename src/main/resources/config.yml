@@ -567,7 +567,7 @@ Skinblinker:
     1: "aacstaffnotify {player} in {world} is suspected for Skinblinker"
     5: "aackick {player} Skinblinker"
 
-# The SmoothAim check detects SmoothAim cheats.
+# The SmoothAim check tries to detect SmoothAim and Aimbot cheats.
 SmoothAim:
   # Do you want to enable the SmoothAim check
   enabled: true
@@ -579,9 +579,9 @@ SmoothAim:
   rotation_threshold: 25
   # Map of violation levels to command
   thresholds:
-    30: "aacstaffnotify {player} in {world} is suspected for SmoothAim"
-    60: "aacstaffnotify {player} in {world} is highly suspected for SmoothAim"
-    90: "aackick {player} SmoothAim"
+    20: "aacstaffnotify {player} in {world} is suspected for SmoothAim/Aimbot"
+    40: "aacstaffnotify {player} in {world} is highly suspected for SmoothAim/Aimbot"
+    60: "aackick {player} SmoothAim/Aimbot"
 
 # This check tries to alert you of teamers
 # This is safe to enable, just make sure that you configure this check for your own needs.

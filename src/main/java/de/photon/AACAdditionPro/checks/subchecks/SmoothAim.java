@@ -17,7 +17,7 @@ import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 
 public class SmoothAim extends PacketAdapter implements ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 30);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 20);
 
     @LoadFromConfiguration(configPath = ".rotation_threshold")
     private int rotation_threshold;
@@ -47,7 +47,6 @@ public class SmoothAim extends PacketAdapter implements ViolationModule
             // User must be attacking something
             !user.getSmoothAimData().recentlyUpdated(0, 1500))
         {
-
             return;
         }
 

@@ -65,9 +65,7 @@ public class SmoothAim extends PacketAdapter implements ViolationModule
         final IWrapperPlayClientLook lookWrapper = event::getPacket;
 
         // Both yaw and pitch are in range.
-        if (lookWrapper.getYaw() != user.getLookPacketData().getRealLastYaw() &&
-            MathUtils.roughlyEquals(lookWrapper.getYaw(), user.getLookPacketData().getRealLastYaw(), angle_range) &&
-            lookWrapper.getPitch() != user.getLookPacketData().getRealLastPitch() &&
+        if (MathUtils.roughlyEquals(lookWrapper.getYaw(), user.getLookPacketData().getRealLastYaw(), angle_range) &&
             MathUtils.roughlyEquals(lookWrapper.getPitch(), user.getLookPacketData().getRealLastPitch(), angle_range))
         {
             // Prevent false positives

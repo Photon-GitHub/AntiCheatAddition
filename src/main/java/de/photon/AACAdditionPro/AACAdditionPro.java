@@ -69,7 +69,7 @@ public class AACAdditionPro extends JavaPlugin
      * If the version of AAC is older than this version the plugin will disable itself in order to assure that bugs
      * cannot be caused by an incompatible AAC version.
      */
-    private static final transient String minimumAACVersion = "3.3.11";
+    private static final transient String minimumAACVersion = "3.5.0";
 
     private static final Field killauraEntityControllerField;
     private static final Field delegatingKillauraEntityControllerField;

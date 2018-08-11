@@ -1,10 +1,10 @@
 package de.photon.AACAdditionPro.heuristics;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.neural.ActivationFunctions;
-import de.photon.AACAdditionPro.neural.DataSet;
-import de.photon.AACAdditionPro.neural.Graph;
-import de.photon.AACAdditionPro.neural.Output;
+import de.photon.AACAdditionPro.oldneural.ActivationFunctions;
+import de.photon.AACAdditionPro.oldneural.DataSet;
+import de.photon.AACAdditionPro.oldneural.Graph;
+import de.photon.AACAdditionPro.oldneural.Output;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.serialization.CompressedDataSerializer;
 import de.photon.AACAdditionPro.util.files.serialization.EnhancedDataInputStream;

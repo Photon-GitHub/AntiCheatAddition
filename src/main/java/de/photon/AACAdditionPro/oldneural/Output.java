@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.neural;
+package de.photon.AACAdditionPro.oldneural;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -13,7 +13,6 @@ import de.photon.AACAdditionPro.user.data.PingData;
 import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.user.data.ScaffoldData;
 import de.photon.AACAdditionPro.user.data.SkinData;
-import de.photon.AACAdditionPro.user.data.SmoothAimData;
 import de.photon.AACAdditionPro.user.data.TeamingData;
 import de.photon.AACAdditionPro.user.data.TeleportData;
 import de.photon.AACAdditionPro.user.data.TowerData;
@@ -40,7 +39,6 @@ public class User
     private PositionData positionData = new PositionData(this);
     private ScaffoldData scaffoldData = new ScaffoldData(this);
     private SkinData skinData = new SkinData();
-    private SmoothAimData smoothAimData = new SmoothAimData(this);
     private TeamingData teamingData = new TeamingData(this);
     private TeleportData teleportData = new TeleportData(this);
     private TowerData towerData = new TowerData(this);
@@ -116,9 +114,6 @@ public class User
         scaffoldData = null;
 
         skinData = null;
-
-        smoothAimData.unregister();
-        smoothAimData = null;
 
         teamingData.unregister();
         teamingData = null;

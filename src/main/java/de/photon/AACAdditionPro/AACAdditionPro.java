@@ -21,7 +21,6 @@ import de.photon.AACAdditionPro.checks.subchecks.PacketAnalysis;
 import de.photon.AACAdditionPro.checks.subchecks.Pingspoof;
 import de.photon.AACAdditionPro.checks.subchecks.Scaffold;
 import de.photon.AACAdditionPro.checks.subchecks.SkinBlinker;
-import de.photon.AACAdditionPro.checks.subchecks.SmoothAim;
 import de.photon.AACAdditionPro.checks.subchecks.Teaming;
 import de.photon.AACAdditionPro.checks.subchecks.Tower;
 import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.BetterSprintingControl;
@@ -269,7 +268,6 @@ public class AACAdditionPro extends JavaPlugin
                     new Pingspoof(),
                     new Scaffold(),
                     new SkinBlinker(),
-                    new SmoothAim(),
                     new Teaming(),
                     new Tower()
             );

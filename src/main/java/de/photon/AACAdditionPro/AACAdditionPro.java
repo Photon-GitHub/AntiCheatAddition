@@ -2,7 +2,6 @@ package de.photon.AACAdditionPro;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import de.photon.AACAdditionPro.additions.LogBot;
-import de.photon.AACAdditionPro.additions.PerHeuristicCommands;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
 import de.photon.AACAdditionPro.checks.subchecks.AutoFish;
@@ -235,7 +234,6 @@ public class AACAdditionPro extends JavaPlugin
             this.moduleManager = new ModuleManager(
                     // Additions
                     new LogBot(),
-                    new PerHeuristicCommands(),
 
                     // ClientControl
                     new BetterSprintingControl(),

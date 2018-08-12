@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.checks.subchecks;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.ModuleType;
-import de.photon.AACAdditionPro.checks.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.user.data.PositionData;
@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryType;
 
-public class Freecam implements ViolationModule
+public class Freecam implements Module
 {
     static final int IDLE_TIME = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.FREECAM.getConfigString() + ".idle_time");
     private int task_number;

@@ -1,144 +1,58 @@
 package de.photon.AACAdditionPro.neural;
 
-import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 /**
- * Contains all inputs for a {@link Graph}.
+ * This class saves {@link Data} used for training and evaluation of Graphs.
  */
-public class DataSet implements Iterable<double[]>
+public class DataSet implements Iterable<DataSet.Data>
 {
     @Getter
-    private final String label;
-    @Getter
-    private final double[][] data;
+    private final Set<String> rows;
+    private final List<Data> dataList = new ArrayList<>();
 
-    private DataSet(String label, double[][] data)
+    public DataSet(final Set<String> rows)
     {
-        this.label = label;
-        this.data = data;
+        this.rows = rows;
     }
 
     /**
-     * Determines if this {@link DataSet} has a label.
-     * Useful for categorizing the data.
+     * Validates and adds {@link Data} to this {@link DataSet}.
      */
-    public boolean hasLabel()
+    public void addData(final Data data)
     {
-        return this.label != null;
-    }
-
-    /**
-     * @return how many samples this {@link DataSet} contains.
-     */
-    public int sampleCount()
-    {
-        return this.data.length;
+        Preconditions.checkArgument(data.isDataCompatible(rows), "Data does not match rows.");
+        this.dataList.add(data);
     }
 
     @Override
-    public Iterator<double[]> iterator()
+    public Iterator<Data> iterator()
     {
-        return new Iterator<double[]>()
-        {
-            private int i = 0;
-
-            @Override
-            public boolean hasNext()
-            {
-                return i < data.length;
-            }
-
-            @Override
-            public double[] next()
-            {
-                return data[i++];
-            }
-        };
+        return dataList.iterator();
     }
 
-    /**
-     * Creates a new {@link DataSetBuilder} to create a {@link DataSet}
-     */
-    public static DataSetBuilder builder()
+    public static class Data extends HashMap<String, Double>
     {
-        return new DataSetBuilder();
-    }
+        /**
+         * The label of the data.
+         */
+        private final String label;
 
-    /**
-     * Builder for {@link DataSet}s.
-     * This Builder properly formats the inputs to easily iterate over it.
-     */
-    public static class DataSetBuilder
-    {
-        private String label = null;
-        private final List<double[]> inputList = new ArrayList<>();
+        public Data(final String label) {this.label = label;}
 
         /**
-         * This adds a new input to the {@link DataSet}.
+         * This can be used to check if {@link Data} is compatible to some other {@link Data}.
          */
-        public DataSetBuilder addInput(double... data)
+        public boolean isDataCompatible(final Set<String> rows)
         {
-            if (!this.inputList.isEmpty() && this.inputList.get(this.inputList.size() - 1).length != data.length)
-            {
-                throw new IllegalArgumentException("Data does not have equal length: " + Arrays.toString(data));
-            }
-
-            this.inputList.add(Objects.requireNonNull(data, "The data added to a DataSet must not be null."));
-            return this;
-        }
-
-        /**
-         * This adds several new inputs to the {@link DataSet}.
-         */
-        public DataSetBuilder addInputs(double[]... inputs)
-        {
-            for (double[] input : inputs)
-            {
-                this.addInput(input);
-            }
-            return this;
-        }
-
-        /**
-         * Sets the label of the data to properly categorize training data.
-         * Evaluation data should not have any label.
-         */
-        public DataSetBuilder setLabel(final String label)
-        {
-            this.label = label;
-            return this;
-        }
-
-        /**
-         * Builds a {@link DataSet} based on the information of this {@link DataSetBuilder}
-         */
-        public DataSet build()
-        {
-            // This asserts that this.inputList.get(0) does not return 0.
-            if (this.inputList.isEmpty())
-            {
-                throw new NeuralNetworkException("Tried to build dataset without inputs.");
-            }
-
-            // Swap the data indices to make it possible to iterate over different events, rather than different inputs.
-            final double[][] swappedData = new double[this.inputList.get(0).length][this.inputList.size()];
-
-            for (int inputIndex = 0; inputIndex < this.inputList.get(0).length; inputIndex++)
-            {
-                for (int inputType = 0; inputType < this.inputList.size(); inputType++)
-                {
-                    swappedData[inputIndex][inputType] = this.inputList.get(inputType)[inputIndex];
-                }
-            }
-
-            return new DataSet(this.label, swappedData);
+            return this.keySet().equals(rows);
         }
     }
 }

@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.heuristics.patterns;
 
 import de.photon.AACAdditionPro.heuristics.Pattern;
-import de.photon.AACAdditionPro.neural.DataSet;
-import de.photon.AACAdditionPro.neural.Output;
+import de.photon.AACAdditionPro.oldneural.DataSet;
+import de.photon.AACAdditionPro.oldneural.Output;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 
 import java.util.Arrays;

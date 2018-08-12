@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.neural;
+package de.photon.AACAdditionPro.oldneural;
 
 import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 import de.photon.AACAdditionPro.util.VerboseSender;

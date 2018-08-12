@@ -8,7 +8,7 @@ import de.photon.AACAdditionPro.exceptions.NeuralNetworkException;
 import de.photon.AACAdditionPro.heuristics.NeuralPattern;
 import de.photon.AACAdditionPro.heuristics.Pattern;
 import de.photon.AACAdditionPro.heuristics.patterns.HC00000001;
-import de.photon.AACAdditionPro.neural.Output;
+import de.photon.AACAdditionPro.oldneural.Output;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.user.datawrappers.InventoryClick;

@@ -24,9 +24,8 @@ public class PacketAnalysisData extends TimeData
 
     public PacketAnalysisData(User user)
     {
-        // [0] = The time the last Flying packet was received.
-        // [1] = The last compare flag
-        super(user, 0, 0);
+        // [0] = The last compare flag
+        super(user, 0);
     }
 
     /**

@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.neural;
+package de.photon.AACAdditionPro.oldneural;
 
 public enum ActivationFunctions implements ActivationFunction
 {

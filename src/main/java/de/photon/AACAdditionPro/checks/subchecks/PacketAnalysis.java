@@ -17,7 +17,6 @@ import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientKeepAlive;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLook;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerKeepAlive;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
@@ -68,9 +67,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
               // EqualRotation + Compare
               PacketType.Play.Client.POSITION_LOOK,
               // EqualRotation
-              PacketType.Play.Client.LOOK,
-              // Time manipulation
-              PacketType.Play.Client.FLYING);
+              PacketType.Play.Client.LOOK);
     }
 
     @Override
@@ -118,28 +115,14 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         }
 
         // --------------------------------------------- EqualRotation ---------------------------------------------- //
-        if (equalRotation &&
-            // Correct packets
-            (event.getPacketType() == PacketType.Play.Client.POSITION_LOOK || event.getPacketType() == PacketType.Play.Client.LOOK))
-        {
-            final IWrapperPlayClientLook lookWrapper;
 
-            // Differentiate the packets
-            if (event.getPacketType() == PacketType.Play.Client.POSITION_LOOK)
-            {
-                // PositionLook wrapper
-                lookWrapper = new WrapperPlayClientPositionLook(event.getPacket());
-            }
-            else if (event.getPacketType() == PacketType.Play.Client.LOOK)
-            {
-                // Look wrapper
-                lookWrapper = new WrapperPlayClientLook(event.getPacket());
-            }
-            else
-            {
-                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData: received invalid packet: " + event.getPacketType().toString(), true, true);
-                return;
-            }
+        if (equalRotation &&
+            // Correct packets.
+            (event.getPacketType() == PacketType.Play.Client.POSITION_LOOK ||
+             event.getPacketType() == PacketType.Play.Client.LOOK))
+        {
+            // Get the packet.
+            final IWrapperPlayClientLook lookWrapper = event::getPacket;
 
             final float currentYaw = lookWrapper.getYaw();
             final float currentPitch = lookWrapper.getPitch();
@@ -149,6 +132,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 // Not recently teleported
                 !user.getTeleportData().recentlyUpdated(0, 5000) &&
                 // Same rotation values
+                // LookPacketData automatically updates its values.
                 currentYaw == user.getLookPacketData().getRealLastYaw() &&
                 currentPitch == user.getLookPacketData().getRealLastPitch() &&
                 // Labymod fp when standing still / hit in corner fp
@@ -156,10 +140,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
             {
                 VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.");
                 vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
-            }
-            else
-            {
-                user.getLookPacketData().updateRotations(currentYaw, currentPitch);
             }
         }
 
@@ -228,14 +208,14 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                     if (offset > 0)
                     {
                         // Minimum time between flags to decrease lag spike effects.
-                        if (!user.getPacketAnalysisData().recentlyUpdated(1, violationTime) &&
+                        if (!user.getPacketAnalysisData().recentlyUpdated(0, violationTime) &&
                             // Minimum fails to mitigate some fluctuations
                             ++user.getPacketAnalysisData().compareFails > this.compareThreshold)
                         {
                             VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
                             vlManager.flag(user.getPlayer(), Math.min(Math.max(1, (int) (offset / 50)), 12), -1, () -> {},
                                            // Only update the time stamp if flagged.
-                                           () -> user.getPacketAnalysisData().updateTimeStamp(1));
+                                           () -> user.getPacketAnalysisData().updateTimeStamp(0));
                         }
                     }
                     else if (user.getPacketAnalysisData().compareFails > 0)
@@ -269,14 +249,6 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                 // No continuous flagging.
                 user.getPacketAnalysisData().lastPositionForceData = null;
             }
-        }
-
-        // -------------------------------------------- TimeManipulation -------------------------------------------- //
-        // Only a 1.8.8 client sends FLYING when idling. 1.10+ clients will only send it on respawn or when using the
-        // statistics.
-        if (event.getPacketType() == PacketType.Play.Client.FLYING)
-        {
-            user.getPacketAnalysisData().updateTimeStamp(0);
         }
     }
 

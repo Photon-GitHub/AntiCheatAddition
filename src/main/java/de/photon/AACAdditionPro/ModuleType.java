@@ -27,6 +27,7 @@ public enum ModuleType
     PINGSPOOF("Pingspoof"),
     SCAFFOLD("Scaffold"),
     SKINBLINKER("Skinblinker"),
+    SMOOTHAIM("SmoothAim"),
     TEAMING("Teaming", "could be teaming"),
     TOWER("Tower"),
 

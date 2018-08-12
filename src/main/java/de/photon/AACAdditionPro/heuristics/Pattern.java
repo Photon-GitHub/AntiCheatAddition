@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.heuristics;
 
-import de.photon.AACAdditionPro.neural.DataSet;
-import de.photon.AACAdditionPro.neural.Output;
+import de.photon.AACAdditionPro.oldneural.DataSet;
+import de.photon.AACAdditionPro.oldneural.Output;
 import lombok.Getter;
 import lombok.Setter;
 

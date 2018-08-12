@@ -1,17 +1,15 @@
 package de.photon.AACAdditionPro.checks;
 
 import de.photon.AACAdditionPro.Module;
-import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 
+/**
+ * This interface defines a {@link Module} which has a {@link ViolationLevelManagement}.
+ */
 public interface ViolationModule extends Module
 {
     /**
-     * @return the {@link ViolationLevelManagement} of the check.<br>
-     * By default the check has no {@link ViolationLevelManagement} and this {@link java.lang.reflect.Method} throws a {@link NoViolationLevelManagementException}.
+     * @return the {@link ViolationLevelManagement} of the check.
      */
-    default ViolationLevelManagement getViolationLevelManagement() throws NoViolationLevelManagementException
-    {
-        throw new NoViolationLevelManagementException(this.getModuleType());
-    }
+    ViolationLevelManagement getViolationLevelManagement();
 }

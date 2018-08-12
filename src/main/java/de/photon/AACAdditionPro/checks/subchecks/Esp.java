@@ -390,19 +390,15 @@ public class Esp implements Module
         public boolean equals(final Object o)
         {
             if (this == o)
-            {
                 return true;
-            }
+
             if (o == null || getClass() != o.getClass())
-            {
                 return false;
-            }
 
             // The other object
             final Pair pair = (Pair) o;
             return (usersOfPair[0].getPlayer().getUniqueId().equals(pair.usersOfPair[0].getPlayer().getUniqueId()) || usersOfPair[0].getPlayer().getUniqueId().equals(pair.usersOfPair[1].getPlayer().getUniqueId())) &&
-                   (usersOfPair[1].getPlayer().getUniqueId().equals(pair.usersOfPair[1].getPlayer().getUniqueId()) || usersOfPair[1].getPlayer().getUniqueId().equals(pair.usersOfPair[0].getPlayer().getUniqueId())
-                   );
+                   (usersOfPair[1].getPlayer().getUniqueId().equals(pair.usersOfPair[1].getPlayer().getUniqueId()) || usersOfPair[1].getPlayer().getUniqueId().equals(pair.usersOfPair[0].getPlayer().getUniqueId()));
         }
 
         @Override

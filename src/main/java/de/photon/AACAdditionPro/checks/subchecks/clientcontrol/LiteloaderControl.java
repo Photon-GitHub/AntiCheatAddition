@@ -20,7 +20,7 @@ public class LiteloaderControl implements PluginMessageListener, ClientControlMo
     @Override
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
     {
-        if (ClientControlModule.shouldFlagBrandCheck(channel, player, message, LITELOADERFLAGS))
+        if (this.shouldFlagBrandCheck(channel, player, message, LITELOADERFLAGS))
         {
             executeCommands(player);
         }

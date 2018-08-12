@@ -93,7 +93,6 @@ permissions:
       aacadditionpro.bypass.clientcontrol.oldlabymod: true
       aacadditionpro.bypass.clientcontrol.schematica: true
       aacadditionpro.bypass.clientcontrol.vape: true
-      aacadditionpro.bypass.clientcontrol.versioncontrol: true
       aacadditionpro.bypass.clientcontrol.worlddownloader: true
 
   aacadditionpro.bypass.clientcontrol.bettersprinting:
@@ -114,8 +113,6 @@ permissions:
     description: Allows a player to bypass the Schematica clientcontrol
   aacadditionpro.bypass.clientcontrol.vape:
     description: Allows a player to bypass the Vape clientcontrol
-  aacadditionpro.bypass.clientcontrol.versioncontrol:
-    description: Allows a player to bypass the VersionControl clientcontrol
   aacadditionpro.bypass.clientcontrol.worlddownloader:
     description: Allows a player to bypass the WorldDownloader clientcontrol
 

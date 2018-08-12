@@ -45,7 +45,7 @@ public class SchematicaControl implements Listener, ClientControlModule, PluginM
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (User.isUserInvalid(user))
+        if (User.isUserInvalid(user, this.getModuleType()))
         {
             return;
         }

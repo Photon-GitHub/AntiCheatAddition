@@ -23,9 +23,9 @@ public class ForgeControl implements PluginMessageListener, ClientControlModule
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
     {
         // MCBrand channel with flag
-        if (ClientControlModule.shouldFlagBrandCheck(channel, player, message, FORGEFLAGS) ||
+        if (this.shouldFlagBrandCheck(channel, player, message, FORGEFLAGS) ||
             // or other channel
-            !ClientControlModule.isBrandChannel(channel))
+            !this.isBrandChannel(channel))
         {
             executeCommands(player);
         }

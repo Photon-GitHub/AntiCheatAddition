@@ -333,12 +333,14 @@ public class Esp implements Module
         updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), hideMode);
     }
 
+    // No need to synchronize hiddenPlayers as it is accessed in a synchronized task.
     private void updateHideMode(final User observer, final Player watched, final HideMode hideMode)
     {
         // unModifyInformation and modifyInformation are not thread-safe.
         Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
             // Observer might have left by now.
             if (observer != null &&
+                // Doesn't need to update anything.
                 observer.getEspInformationData().hiddenPlayers.get(watched) != hideMode)
             {
                 switch (hideMode)

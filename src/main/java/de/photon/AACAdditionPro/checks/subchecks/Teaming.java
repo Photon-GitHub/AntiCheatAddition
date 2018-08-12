@@ -77,7 +77,7 @@ public class Teaming implements Listener, ViolationModule
 
                             // Only add users if they meet the preconditions
                             // User has to be online and not bypassed
-                            if (!User.isUserInvalid(user) &&
+                            if (!User.isUserInvalid(user, this.getModuleType()) &&
                                 // Correct gamemodes
                                 user.getPlayer().getGameMode() != GameMode.CREATIVE &&
                                 user.getPlayer().getGameMode() != GameMode.CREATIVE &&

@@ -191,7 +191,7 @@ public class Esp implements Module
     /**
      * Determines if two {@link User}s can see each other.
      */
-    private static boolean canSee(User observerUser, User watchedUser)
+    private boolean canSee(User observerUser, User watchedUser)
     {
         final Player observer = observerUser.getPlayer();
         final Player watched = watchedUser.getPlayer();
@@ -214,7 +214,7 @@ public class Esp implements Module
         // ----------------------------------- Calculation ---------------------------------- //
 
         // Not bypassed
-        if (observerUser.isBypassed() ||
+        if (observerUser.isBypassed(this.getModuleType()) ||
             // Has not logged in recently to prevent bugs
             observerUser.getLoginData().recentlyUpdated(0, 3000))
         {
@@ -312,7 +312,7 @@ public class Esp implements Module
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             // Not bypassed
-            if (User.isUserInvalid(user))
+            if (User.isUserInvalid(user, this.getModuleType()))
             {
                 return;
             }

@@ -38,7 +38,7 @@ public class Fastswitch extends PacketAdapter implements ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user))
+        if (User.isUserInvalid(user, this.getModuleType()))
         {
             return;
         }

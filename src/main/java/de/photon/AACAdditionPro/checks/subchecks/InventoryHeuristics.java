@@ -78,7 +78,7 @@ public class InventoryHeuristics implements Listener, ViolationModule
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user) ||
+        if (User.isUserInvalid(user, this.getModuleType()) ||
             // Gamemode bypasses
             user.getPlayer().getGameMode() == GameMode.CREATIVE ||
             user.getPlayer().getGameMode() == GameMode.SPECTATOR)

@@ -76,7 +76,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user) || !keepAlive)
+        if (User.isUserInvalid(user, this.getModuleType()) || !keepAlive)
         {
             return;
         }
@@ -109,7 +109,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user))
+        if (User.isUserInvalid(user, this.getModuleType()))
         {
             return;
         }
@@ -262,7 +262,7 @@ public class PacketAnalysis extends PacketAdapter implements ViolationModule
                     for (final User user : UserManager.getUsersUnwrapped())
                     {
                         // Not bypassed
-                        if (!user.isBypassed())
+                        if (!user.isBypassed(this.getModuleType()))
                         {
                             final WrapperPlayServerKeepAlive wrapperPlayServerKeepAlive = new WrapperPlayServerKeepAlive();
                             wrapperPlayServerKeepAlive.setKeepAliveId(time);

@@ -28,7 +28,7 @@ public class InventoryHit implements Listener, ViolationModule
             final User user = UserManager.getUser(event.getDamager().getUniqueId());
 
             // Not bypassed
-            if (User.isUserInvalid(user))
+            if (User.isUserInvalid(user, this.getModuleType()))
             {
                 return;
             }

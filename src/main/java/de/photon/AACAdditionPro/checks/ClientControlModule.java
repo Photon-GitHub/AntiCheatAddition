@@ -47,7 +47,7 @@ public interface ClientControlModule extends ViolationModule
      *
      * @param channel the channel which should be tested.
      */
-    static boolean isBrandChannel(final String channel)
+    default boolean isBrandChannel(final String channel)
     {
         return channel.equals(MC_BRAND_CHANNEL);
     }
@@ -60,7 +60,7 @@ public interface ClientControlModule extends ViolationModule
      *
      * @return the decoded message or null if either the channel was not MC|Brand or there was a problem while decoding the message.
      */
-    static String getMCBrandMessage(final String channel, final byte[] message)
+    default String getMCBrandMessage(final String channel, final byte[] message)
     {
         if (isBrandChannel(channel))
         {
@@ -72,7 +72,7 @@ public interface ClientControlModule extends ViolationModule
     /**
      * Tests if the MC|Brand message contains certain {@link String}s.
      */
-    static boolean mcBrandMessageContains(final String channel, final byte[] message, final String[] flags)
+    default boolean mcBrandMessageContains(final String channel, final byte[] message, final String[] flags)
     {
         final String brandMessage = getMCBrandMessage(channel, message);
 
@@ -81,11 +81,11 @@ public interface ClientControlModule extends ViolationModule
                StringUtils.stringContainsFlagsIgnoreCase(brandMessage, flags);
     }
 
-    static boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String... flags)
+    default boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String... flags)
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user))
+        if (User.isUserInvalid(user, this.getModuleType()))
         {
             return false;
         }
@@ -95,7 +95,7 @@ public interface ClientControlModule extends ViolationModule
 
         if (isBrandChannel(channel))
         {
-            flag = ClientControlModule.mcBrandMessageContains(channel, message, flags);
+            flag = this.mcBrandMessageContains(channel, message, flags);
         }
 
         // Should flag

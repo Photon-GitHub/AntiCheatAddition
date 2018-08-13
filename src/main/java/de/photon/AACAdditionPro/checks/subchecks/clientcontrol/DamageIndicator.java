@@ -43,7 +43,7 @@ public class DamageIndicator extends PacketAdapter implements Module
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user))
+        if (User.isUserInvalid(user, this.getModuleType()))
         {
             return;
         }

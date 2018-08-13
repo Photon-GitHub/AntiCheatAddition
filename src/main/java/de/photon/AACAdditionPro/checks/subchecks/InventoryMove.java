@@ -48,7 +48,7 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user))
+        if (User.isUserInvalid(user, this.getModuleType()))
         {
             return;
         }
@@ -157,7 +157,7 @@ public class InventoryMove extends PacketAdapter implements Listener, ViolationM
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user))
+        if (User.isUserInvalid(user, this.getModuleType()))
         {
             return;
         }

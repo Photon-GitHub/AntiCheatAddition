@@ -14,6 +14,7 @@ import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
+import de.photon.AACAdditionPro.util.world.LocationUtils;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -65,7 +66,7 @@ public class Scaffold implements Listener, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user))
+        if (User.isUserInvalid(user, this.getModuleType()))
         {
             return;
         }
@@ -84,7 +85,7 @@ public class Scaffold implements Listener, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user))
+        if (User.isUserInvalid(user, this.getModuleType()))
         {
             return;
         }
@@ -92,7 +93,7 @@ public class Scaffold implements Listener, ViolationModule
         final Block blockPlaced = event.getBlockPlaced();
 
         // Short distance between player and the block (at most 2 Blocks)
-        if (user.getPlayer().getLocation().distanceSquared(blockPlaced.getLocation()) < 4D &&
+        if (LocationUtils.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D) &&
             // Not flying
             !user.getPlayer().isFlying() &&
             // Above the block

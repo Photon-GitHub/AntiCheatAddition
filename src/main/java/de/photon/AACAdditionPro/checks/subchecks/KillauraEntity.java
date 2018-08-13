@@ -112,7 +112,7 @@ public class KillauraEntity implements ViolationModule, Listener
             final User user = UserManager.getUser(player.getUniqueId());
 
             // Not bypassed
-            if (User.isUserInvalid(user))
+            if (User.isUserInvalid(user, this.getModuleType()))
             {
                 return;
             }
@@ -166,7 +166,7 @@ public class KillauraEntity implements ViolationModule, Listener
             final boolean resultingOnline = onlineProfile;
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
                 // Make sure no NPE is thrown because the player logged out.
-                if (User.isUserInvalid(user))
+                if (User.isUserInvalid(user, this.getModuleType()))
                 {
                     return;
                 }
@@ -285,7 +285,7 @@ public class KillauraEntity implements ViolationModule, Listener
             public boolean isSpawnedFor(Player player)
             {
                 final User user = UserManager.getUser(player.getUniqueId());
-                if (User.isUserInvalid(user))
+                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY))
                 {
                     return false;
                 }
@@ -297,7 +297,7 @@ public class KillauraEntity implements ViolationModule, Listener
             public boolean setSpawnedForPlayer(Player player, boolean spawned)
             {
                 final User user = UserManager.getUser(player.getUniqueId());
-                if (User.isUserInvalid(user))
+                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY))
                 {
                     return false;
                 }
@@ -323,7 +323,7 @@ public class KillauraEntity implements ViolationModule, Listener
             public boolean setSpawnedForPlayer(Player player, boolean spawned, Location spawnLocation)
             {
                 final User user = UserManager.getUser(player.getUniqueId());
-                if (User.isUserInvalid(user))
+                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY))
                 {
                     return false;
                 }
@@ -365,7 +365,7 @@ public class KillauraEntity implements ViolationModule, Listener
                 final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
                 // Not bypassed
-                if (User.isUserInvalid(user))
+                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY))
                 {
                     return;
                 }
@@ -446,7 +446,7 @@ public class KillauraEntity implements ViolationModule, Listener
             return null;
         }
 
-        if (user.isBypassed())
+        if (user.isBypassed(this.getModuleType()))
         {
             if (user.getClientSideEntityData().clientSidePlayerEntity != null)
             {

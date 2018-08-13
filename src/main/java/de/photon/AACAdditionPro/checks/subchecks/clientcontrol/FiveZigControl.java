@@ -37,7 +37,7 @@ public class FiveZigControl implements PluginMessageListener, ClientControlModul
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user))
+        if (User.isUserInvalid(user, this.getModuleType()))
         {
             return;
         }

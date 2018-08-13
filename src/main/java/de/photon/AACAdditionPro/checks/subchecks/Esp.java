@@ -191,7 +191,7 @@ public class Esp implements Module
     /**
      * Determines if two {@link User}s can see each other.
      */
-    private static boolean canSee(User observerUser, User watchedUser)
+    private boolean canSee(User observerUser, User watchedUser)
     {
         final Player observer = observerUser.getPlayer();
         final Player watched = watchedUser.getPlayer();
@@ -214,7 +214,7 @@ public class Esp implements Module
         // ----------------------------------- Calculation ---------------------------------- //
 
         // Not bypassed
-        if (observerUser.isBypassed() ||
+        if (observerUser.isBypassed(this.getModuleType()) ||
             // Has not logged in recently to prevent bugs
             observerUser.getLoginData().recentlyUpdated(0, 3000))
         {
@@ -312,7 +312,7 @@ public class Esp implements Module
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             // Not bypassed
-            if (User.isUserInvalid(user))
+            if (User.isUserInvalid(user, this.getModuleType()))
             {
                 return;
             }
@@ -333,33 +333,37 @@ public class Esp implements Module
         updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), hideMode);
     }
 
-    private synchronized void updateHideMode(final User observer, final Player object, final HideMode hideMode)
+    // No need to synchronize hiddenPlayers as it is accessed in a synchronized task.
+    private void updateHideMode(final User observer, final Player watched, final HideMode hideMode)
     {
         // unModifyInformation and modifyInformation are not thread-safe.
         Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-            if (observer.getEspInformationData().hiddenPlayers.get(object) != hideMode)
+            // Observer might have left by now.
+            if (observer != null &&
+                // Doesn't need to update anything.
+                observer.getEspInformationData().hiddenPlayers.get(watched) != hideMode)
             {
                 switch (hideMode)
                 {
                     case FULL:
-                        observer.getEspInformationData().hiddenPlayers.put(object, HideMode.FULL);
+                        observer.getEspInformationData().hiddenPlayers.put(watched, HideMode.FULL);
                         // FULL: fullHider active, informationOnlyHider inactive
-                        informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
-                        fullHider.modifyInformation(observer.getPlayer(), object);
+                        informationOnlyHider.unModifyInformation(observer.getPlayer(), watched);
+                        fullHider.modifyInformation(observer.getPlayer(), watched);
                         break;
                     case INFORMATION_ONLY:
-                        observer.getEspInformationData().hiddenPlayers.put(object, HideMode.INFORMATION_ONLY);
+                        observer.getEspInformationData().hiddenPlayers.put(watched, HideMode.INFORMATION_ONLY);
 
                         // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
-                        informationOnlyHider.modifyInformation(observer.getPlayer(), object);
-                        fullHider.unModifyInformation(observer.getPlayer(), object);
+                        informationOnlyHider.modifyInformation(observer.getPlayer(), watched);
+                        fullHider.unModifyInformation(observer.getPlayer(), watched);
                         break;
                     case NONE:
-                        observer.getEspInformationData().hiddenPlayers.remove(object);
+                        observer.getEspInformationData().hiddenPlayers.remove(watched);
 
                         // NONE: fullHider inactive, informationOnlyHider inactive
-                        informationOnlyHider.unModifyInformation(observer.getPlayer(), object);
-                        fullHider.unModifyInformation(observer.getPlayer(), object);
+                        informationOnlyHider.unModifyInformation(observer.getPlayer(), watched);
+                        fullHider.unModifyInformation(observer.getPlayer(), watched);
                         break;
                 }
             }
@@ -388,19 +392,15 @@ public class Esp implements Module
         public boolean equals(final Object o)
         {
             if (this == o)
-            {
                 return true;
-            }
+
             if (o == null || getClass() != o.getClass())
-            {
                 return false;
-            }
 
             // The other object
             final Pair pair = (Pair) o;
             return (usersOfPair[0].getPlayer().getUniqueId().equals(pair.usersOfPair[0].getPlayer().getUniqueId()) || usersOfPair[0].getPlayer().getUniqueId().equals(pair.usersOfPair[1].getPlayer().getUniqueId())) &&
-                   (usersOfPair[1].getPlayer().getUniqueId().equals(pair.usersOfPair[1].getPlayer().getUniqueId()) || usersOfPair[1].getPlayer().getUniqueId().equals(pair.usersOfPair[0].getPlayer().getUniqueId())
-                   );
+                   (usersOfPair[1].getPlayer().getUniqueId().equals(pair.usersOfPair[1].getPlayer().getUniqueId()) || usersOfPair[1].getPlayer().getUniqueId().equals(pair.usersOfPair[0].getPlayer().getUniqueId()));
         }
 
         @Override

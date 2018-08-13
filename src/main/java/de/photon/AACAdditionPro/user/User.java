@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.user;
 
 import de.photon.AACAdditionPro.InternalPermission;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.user.data.AutoPotionData;
 import de.photon.AACAdditionPro.user.data.ClientSideEntityData;
 import de.photon.AACAdditionPro.user.data.EspInformationData;
@@ -57,17 +58,17 @@ public class User
         this.verbose = InternalPermission.hasPermission(player, InternalPermission.VERBOSE);
     }
 
-    public boolean isBypassed()
+    public boolean isBypassed(ModuleType moduleType)
     {
-        return InternalPermission.hasPermission(this.player, InternalPermission.BYPASS);
+        return InternalPermission.hasPermission(this.player, InternalPermission.BYPASS.getRealPermission() + '.' + moduleType.getConfigString().toLowerCase());
     }
 
     /**
      * @return true if the {@link User} is null or bypassed.
      */
-    public static boolean isUserInvalid(final User user)
+    public static boolean isUserInvalid(final User user, final ModuleType moduleType)
     {
-        return user == null || user.isBypassed() || user.getPlayer() == null;
+        return user == null || user.isBypassed(moduleType) || user.getPlayer() == null;
     }
 
     void unregister()

@@ -29,9 +29,9 @@ public class WorldDownloaderControl implements PluginMessageListener, ClientCont
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
     {
         // MCBrand channel with flag
-        if (ClientControlModule.shouldFlagBrandCheck(channel, player, message, "worlddownloader-vanilla") ||
+        if (this.shouldFlagBrandCheck(channel, player, message, "worlddownloader-vanilla") ||
             // or other channel
-            !ClientControlModule.isBrandChannel(channel))
+            !this.isBrandChannel(channel))
         {
             executeCommands(player);
         }

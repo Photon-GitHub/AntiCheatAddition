@@ -12,30 +12,128 @@ commands:
     aliases: [aacap, aacadp]
     description: The main command of AACAdditionPro.
     usage: /aacadditionpro
+
 permissions:
   aacadditionpro.*:
-    description: Gives access to all commands of AACAdditionPro except the verbose system
+    description: Allows to bypass all checks and clientcontrols and gives access to all commands but not the verbose system (use aac.verbose as a permission for this).
     children:
-      aacadditionpro.info: true
+      aacadditionpro.bypass.*: true
       aacadditionpro.entitycheck: true
+      aacadditionpro.info: true
       aacadditionpro.neural: true
       aacadditionpro.neural.*: true
       aacadditionpro.tablistremove: true
-  aacadditionpro.info:
-    description: Allows to request an overview about a player's violation levels
+
+  aacadditionpro.bypass.*:
+    description: Gives permission to bypass all checks and clientcontrols.
+    children:
+      aacadditionpro.bypass.clientcontrol.*: true
+      aacadditionpro.bypass.autofish: true
+      aacadditionpro.bypass.autopotion: true
+      aacadditionpro.bypass.esp: true
+      aacadditionpro.bypass.fastswitch: true
+      aacadditionpro.bypass.gravitationalmodifier: true
+      aacadditionpro.bypass.impossiblechat: true
+      aacadditionpro.bypass.inventoryhit: true
+      aacadditionpro.bypass.inventorymove: true
+      aacadditionpro.bypass.inventoryrotation: true
+      aacadditionpro.bypass.killauraentity: true
+      aacadditionpro.bypass.multiinteraction: true
+      aacadditionpro.bypass.packetanalysis: true
+      aacadditionpro.bypass.pingspoof: true
+      aacadditionpro.bypass.scaffold: true
+      aacadditionpro.bypass.skinblinker: true
+      aacadditionpro.bypass.teaming: true
+      aacadditionpro.bypass.tower: true
+
+  aacadditionpro.bypass.autofish:
+    description: Allows a player to bypass the AutoFish check
+  aacadditionpro.bypass.autopotion:
+    description: Allows a player to bypass the AutoPotion check
+  aacadditionpro.bypass.esp:
+    description: Allows a player to bypass the ESP check
+  aacadditionpro.bypass.fastswitch:
+    description: Allows a player to bypass the Fastswitch check
+  aacadditionpro.bypass.gravitationalmodifier:
+    description: Allows a player to bypass the GravitationalModifier check
+  aacadditionpro.bypass.impossiblechat:
+    description: Allows a player to bypass the ImpossibleChat check
+  aacadditionpro.bypass.inventoryhit:
+    description: Allows a player to bypass the InventoryHit check
+  aacadditionpro.bypass.inventorymove:
+    description: Allows a player to bypass the InventoryMove check
+  aacadditionpro.bypass.inventoryrotation:
+    description: Allows a player to bypass the InventoryRotation check
+  aacadditionpro.bypass.killauraentity:
+    description: Allows a player to bypass the KillauraEntity check
+  aacadditionpro.bypass.multiinteraction:
+    description: Allows a player to bypass the MultiInteraction check
+  aacadditionpro.bypass.packetanalysis:
+    description: Allows a player to bypass the PacketAnalysis check
+  aacadditionpro.bypass.pingspoof:
+    description: Allows a player to bypass the Pingspoof check
+  aacadditionpro.bypass.scaffold:
+    description: Allows a player to bypass the Scaffold check
+  aacadditionpro.bypass.skinblinker:
+    description: Allows a player to bypass the Skinblinker check
+  aacadditionpro.bypass.teaming:
+    description: Allows a player to bypass the Teaming check
+  aacadditionpro.bypass.tower:
+    description: Allows a player to bypass the Tower check
+
+  aacadditionpro.bypass.clientcontrol.*:
+    description: Gives permission to bypass all clientcontrols.
+    children:
+      aacadditionpro.bypass.clientcontrol.bettersprinting: true
+      aacadditionpro.bypass.clientcontrol.damageindicator: true
+      aacadditionpro.bypass.clientcontrol.5zig: true
+      aacadditionpro.bypass.clientcontrol.forge: true
+      aacadditionpro.bypass.clientcontrol.labymod: true
+      aacadditionpro.bypass.clientcontrol.liteloader: true
+      aacadditionpro.bypass.clientcontrol.oldlabymod: true
+      aacadditionpro.bypass.clientcontrol.schematica: true
+      aacadditionpro.bypass.clientcontrol.vape: true
+      aacadditionpro.bypass.clientcontrol.worlddownloader: true
+
+  aacadditionpro.bypass.clientcontrol.bettersprinting:
+    description: Allows a player to bypass the BetterSprinting clientcontrol
+  aacadditionpro.bypass.clientcontrol.damageindicator:
+    description: Allows a player to bypass the DamageIndicator clientcontrol
+  aacadditionpro.bypass.clientcontrol.5zig:
+    description: Allows a player to bypass the 5Zig clientcontrol
+  aacadditionpro.bypass.clientcontrol.forge:
+    description: Allows a player to bypass the Forge clientcontrol
+  aacadditionpro.bypass.clientcontrol.labymod:
+    description: Allows a player to bypass the LabyMod clientcontrol
+  aacadditionpro.bypass.clientcontrol.liteloader:
+    description: Allows a player to bypass the LiteLoader clientcontrol
+  aacadditionpro.bypass.clientcontrol.oldlabymod:
+    description: Allows a player to bypass the OldLabyMod clientcontrol
+  aacadditionpro.bypass.clientcontrol.schematica:
+    description: Allows a player to bypass the Schematica clientcontrol
+  aacadditionpro.bypass.clientcontrol.vape:
+    description: Allows a player to bypass the Vape clientcontrol
+  aacadditionpro.bypass.clientcontrol.worlddownloader:
+    description: Allows a player to bypass the WorldDownloader clientcontrol
+
   aacadditionpro.entitycheck:
     description: Allows to initiate a manual entity check
-  aacadditionpro.neural:
-    description: Grants basic access to the heuristics framework (see all active patterns and access the help)
+
+  aacadditionpro.info:
+    description: Allows to request an overview about a player's violation levels
+
   aacadditionpro.neural.*:
     description: Grants access to the full heuristics framework (config setting unlock_full_framework is still required)
     children:
       aacadditionpro.neural: true
       aacadditionpro.neural.create: true
       aacadditionpro.neural.train: true
+  aacadditionpro.neural:
+    description: Grants basic access to the heuristics framework (see all active patterns and access the help)
   aacadditionpro.neural.create:
     description: Allows the creation and removal of patterns
   aacadditionpro.neural.train:
     description: Allows the training of patterns.
+
   aacadditionpro.tablistremove:
     description: Grants access to a command to temporarily remove a player from the tablist of another player.

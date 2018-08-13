@@ -1,7 +1,5 @@
 package de.photon.AACAdditionPro.checks.subchecks.clientcontrol;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.checks.ClientControlModule;
@@ -26,7 +24,7 @@ public class BetterSprintingControl implements PluginMessageListener, ClientCont
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user))
+        if (User.isUserInvalid(user, this.getModuleType()))
         {
             return;
         }
@@ -35,11 +33,8 @@ public class BetterSprintingControl implements PluginMessageListener, ClientCont
         // The mod provides a method to disable it
         if (disable)
         {
-            final ByteArrayDataOutput out1 = ByteStreams.newDataOutput();
-            out1.writeByte(1);
-
             // The channel is always BSM, the right one.
-            user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), channel, out1.toByteArray());
+            user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), channel, new byte[]{1});
         }
 
         executeCommands(user.getPlayer());

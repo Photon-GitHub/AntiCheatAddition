@@ -7,14 +7,12 @@ public enum ModuleType
 {
     // Additions
     LOG_BOT("LogBot"),
-    PER_HEURISTIC_COMMANDS("Heuristic-Addition"),
 
     // Normal checks
     AUTO_FISH("AutoFish"),
     AUTO_POTION("AutoPotion"),
     ESP("Esp"),
     FASTSWITCH("Fastswitch"),
-    FREECAM("Freecam"),
     GRAVITATIONAL_MODIFIER("GravitationalModifier"),
     IMPOSSIBLE_CHAT("ImpossibleChat", "sent illegal chat message (ImpossibleChat)"),
     INVENTORY_HEURISTICS("InventoryHeuristics"),
@@ -27,7 +25,6 @@ public enum ModuleType
     PINGSPOOF("Pingspoof"),
     SCAFFOLD("Scaffold"),
     SKINBLINKER("Skinblinker"),
-    SMOOTHAIM("SmoothAim"),
     TEAMING("Teaming", "could be teaming"),
     TOWER("Tower"),
 

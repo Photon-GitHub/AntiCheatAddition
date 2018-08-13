@@ -145,22 +145,9 @@ Fastswitch:
   switch_milliseconds: 50
   # Map of violation levels to command
   thresholds:
-    4: "aacstaffnotify {player} in {world} is suspected for Fastswitch"
-    8: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
-    12: "aackick {player} Fastswitch"
-
-# The Freecam check will try to block freecam clients.
-# Please notice that a well coded freecam modification is purely clientside and thus undetectable.
-Freecam:
-  # Do you want to enable anti-freecam
-  enabled: false
-  # The time in ms before AACAdditionPro starts to initiate teleports for an idling player
-  idle_time: 1000
-  # How often should players be checked and possibly teleported
-  # Too low values can cause visual bugs (very frequent wobbles and disappearing chunks in extreme cases)
-  # High values reduce the effectiveness of the check. I do not recommend setting this higher than 80 ticks.
-  # Measured in ticks (please do not use floating points).
-  frequency: 30
+    3: "aacstaffnotify {player} in {world} is suspected for Fastswitch"
+    5: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
+    9: "aackick {player} Fastswitch"
 
 # GravitationalModifier improves the detection speed of various movement-cheats
 GravitationalModifier:

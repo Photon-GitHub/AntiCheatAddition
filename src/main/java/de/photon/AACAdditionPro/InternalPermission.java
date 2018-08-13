@@ -1,10 +1,11 @@
 package de.photon.AACAdditionPro;
 
+import lombok.Getter;
 import org.bukkit.permissions.Permissible;
 
 public enum InternalPermission
 {
-    BYPASS("aac.bypass"),
+    BYPASS("aacadditionpro.bypass"),
     VERBOSE("aac.verbose"),
     INFO("aacadditionpro.info"),
     ENTITYCHECK("aacadditionpro.entitycheck"),
@@ -13,6 +14,7 @@ public enum InternalPermission
     NEURAL_TRAIN("aacadditionpro.neural.train"),
     TABLISTREMOVE("aacadditionpro.tablistremove");
 
+    @Getter
     private final String realPermission;
 
     InternalPermission(final String realPermission)
@@ -30,6 +32,19 @@ public enum InternalPermission
      */
     public static boolean hasPermission(final Permissible permissible, final InternalPermission permission)
     {
-        return permission == null || permissible.isOp() || permissible.hasPermission(permission.realPermission);
+        return hasPermission(permissible, permission.realPermission);
+    }
+
+    /**
+     * This checks if a {@link Permissible} has a certain permission.
+     *
+     * @param permissible the {@link Permissible} who should be checked
+     * @param permission  the permission that he should be checked for
+     *
+     * @return true if the player has the permission or is op, otherwise false
+     */
+    public static boolean hasPermission(final Permissible permissible, final String permission)
+    {
+        return permission == null || permissible.isOp() || permissible.hasPermission(permission);
     }
 }

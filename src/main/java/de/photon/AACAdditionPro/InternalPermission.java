@@ -32,7 +32,7 @@ public enum InternalPermission
      */
     public static boolean hasPermission(final Permissible permissible, final InternalPermission permission)
     {
-        return hasPermission(permissible, permission.realPermission);
+        return permission == null || hasPermission(permissible, permission.realPermission);
     }
 
     /**

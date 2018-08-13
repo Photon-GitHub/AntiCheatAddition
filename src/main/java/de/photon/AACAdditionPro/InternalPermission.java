@@ -5,7 +5,7 @@ import org.bukkit.permissions.Permissible;
 
 public enum InternalPermission
 {
-    BYPASS("aac.bypass"),
+    BYPASS("aacadditionpro.bypass"),
     VERBOSE("aac.verbose"),
     INFO("aacadditionpro.info"),
     ENTITYCHECK("aacadditionpro.entitycheck"),

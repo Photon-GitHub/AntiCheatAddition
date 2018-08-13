@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.util.fakeentity;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.user.User;
@@ -142,7 +143,7 @@ public abstract class ClientsideEntity
     {
         final User user = UserManager.getUser(observedPlayer.getUniqueId());
 
-        return !User.isUserInvalid(user) &&
+        return !User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY) &&
                user.getClientSideEntityData().clientSidePlayerEntity != null &&
                user.getClientSideEntityData().clientSidePlayerEntity.getEntityID() == this.entityID;
     }

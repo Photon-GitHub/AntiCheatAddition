@@ -58,7 +58,7 @@ public class EntityCheckCommand extends InternalCommand
                         return;
                     }
 
-                    if (user.isBypassed())
+                    if (user.isBypassed(ModuleType.KILLAURA_ENTITY))
                     {
                         sender.sendMessage(PREFIX + ChatColor.RED + "The target user has bypass permissions.");
                         return;

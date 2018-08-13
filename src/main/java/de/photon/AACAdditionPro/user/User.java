@@ -60,7 +60,7 @@ public class User
 
     public boolean isBypassed(ModuleType moduleType)
     {
-        return InternalPermission.hasPermission(this.player, InternalPermission.BYPASS.getRealPermission() + moduleType.getConfigString().toLowerCase());
+        return InternalPermission.hasPermission(this.player, InternalPermission.BYPASS.getRealPermission() + '.' + moduleType.getConfigString().toLowerCase());
     }
 
     /**

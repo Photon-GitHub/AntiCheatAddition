@@ -145,9 +145,23 @@ Fastswitch:
   switch_milliseconds: 50
   # Map of violation levels to command
   thresholds:
-    4: "aacstaffnotify {player} in {world} is suspected for Fastswitch"
-    8: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
-    12: "aackick {player} Fastswitch"
+    3: "aacstaffnotify {player} in {world} is suspected for Fastswitch"
+    5: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
+    9: "aackick {player} Fastswitch"
+
+# The Fastthrow check detects cheats that allow for too rapid throwing of snowballs, enderpearls, etc.
+Fastthrow:
+  # Do you want to enable the Fastthrow check
+  # NOTE: This check will automatically disable itself if the server is lagging.
+  enabled: true
+  # Violation before AACAdditionPro starts to cancel the interacts.
+  # Set this to 0 to never cancel interacts.
+  cancel_vl: 10
+  # Map of violation levels to command
+  thresholds:
+    10: "aacstaffnotify {player} in {world} is suspected for Fastthrow"
+    20: "aacstaffnotify {player} in {world} is highly suspected for Fastthrow"
+    30: "aackick {player} Fastthrow"
 
 # GravitationalModifier improves the detection speed of various movement-cheats
 GravitationalModifier:

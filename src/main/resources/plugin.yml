@@ -32,6 +32,7 @@ permissions:
       aacadditionpro.bypass.autopotion: true
       aacadditionpro.bypass.esp: true
       aacadditionpro.bypass.fastswitch: true
+      aacadditionpro.bypass.fastthrow: true
       aacadditionpro.bypass.gravitationalmodifier: true
       aacadditionpro.bypass.impossiblechat: true
       aacadditionpro.bypass.inventoryhit: true
@@ -53,7 +54,9 @@ permissions:
   aacadditionpro.bypass.esp:
     description: Allows a player to bypass the ESP check
   aacadditionpro.bypass.fastswitch:
-    description: Allows a player to bypass the FastSwitch check
+    description: Allows a player to bypass the Fastswitch check
+  aacadditionpro.bypass.fastthrow:
+    description: Allows a player to bypass the Fastthrow check
   aacadditionpro.bypass.gravitationalmodifier:
     description: Allows a player to bypass the GravitationalModifier check
   aacadditionpro.bypass.impossiblechat:

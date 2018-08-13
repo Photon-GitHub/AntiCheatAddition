@@ -7,7 +7,6 @@ public enum ModuleType
 {
     // Additions
     LOG_BOT("LogBot"),
-    PER_HEURISTIC_COMMANDS("Heuristic-Addition"),
 
     // Normal checks
     AUTO_FISH("AutoFish"),

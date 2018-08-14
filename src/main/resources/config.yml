@@ -496,6 +496,8 @@ Scaffold:
     # This part is always enabled as it provides the basic framework.
     # The average check might add between 4 and 24 violation levels depending on the severity of the violation.
     average:
+      # Should this part of the check be enabled
+      enabled: true
       # The minimum delay between blockplaces that will be enforced by AACAdditionPro (measured in ms)
       delays:
         # This delay applies to all straight building techniques
@@ -515,11 +517,14 @@ Scaffold:
       # What types of this part should be enabled
       # Disabling all types will disable the part.
       # Type1 will add 3 vl
-      type1: true
+      type1:
+        enabled: true
       # Type2 will add 2 vl
-      type2: true
+      type2:
+        enabled: true
       # Type3 will add 1 vl
-      type3: true
+      type3:
+        enabled: true
       # How many suspicious rotations should Scaffold count as legit
       # The value must be greater or equal to 0.
       rotation_threshold: 6
@@ -528,9 +533,11 @@ Scaffold:
       # What types of this part should be enabled
       # Disabling all types will disable the part.
       # Type1 will add 1 vl
-      type1: true
+      type1:
+        enabled: true
       # Type2 will add 2 vl
-      type2: true
+      type2:
+        enabled: true
     # This part detects sprinting between blockplaces.
     # The sprinting check always adds 8 vl.
     sprinting:

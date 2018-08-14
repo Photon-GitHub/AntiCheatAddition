@@ -2,9 +2,10 @@ package de.photon.AACAdditionPro.modules;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import de.photon.AACAdditionPro.user.User;
 
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 /**
  * This indicates a {@link Module} which can be split up into different parts called {@link Pattern}s.
@@ -27,17 +28,36 @@ public interface PatternModule extends Module
     /**
      * Represents a single {@link Pattern} that is hold by a {@link PatternModule}
      */
-    abstract class Pattern<T> implements Function<T, Integer>, Module
+    abstract class Pattern<T, U> implements BiFunction<T, U, Integer>, Module
     {
-        /**
-         * The name of the pattern in the config.
-         */
-        abstract String getName();
+        boolean enabled = false;
 
         @Override
-        public String getConfigString()
+        public Integer apply(T t, U u)
         {
-            return this.getModuleType().getConfigString() + '.' + this.getName();
+            return this.enabled ? process(t, u) : 0;
+        }
+
+        @Override
+        public abstract String getConfigString();
+
+        /**
+         * Actually process the data.
+         *
+         * @return the vlIncrease of the {@link PatternModule}.
+         */
+        protected abstract int process(T t, U u);
+
+        @Override
+        public void enable()
+        {
+            this.enabled = true;
+        }
+
+        @Override
+        public void disable()
+        {
+            this.enabled = false;
         }
     }
 
@@ -45,7 +65,7 @@ public interface PatternModule extends Module
      * Special handling class for {@link Pattern}s that use packets.
      * This class will automatically ensure that only the correct packet is used.
      */
-    abstract class PacketPattern extends Pattern<PacketContainer>
+    abstract class PacketPattern extends Pattern<User, PacketContainer>
     {
         private final PacketType packetTypeProcessed;
 
@@ -57,14 +77,11 @@ public interface PatternModule extends Module
         protected PacketPattern(PacketType packetTypeProcessed) {this.packetTypeProcessed = packetTypeProcessed;}
 
         @Override
-        public Integer apply(PacketContainer packetContainer)
+        public Integer apply(User user, PacketContainer packetContainer)
         {
-            return packetContainer.getType() == packetTypeProcessed ? this.process(packetContainer) : 0;
+            return this.enabled ?
+                   (packetContainer.getType() == packetTypeProcessed ? this.process(user, packetContainer) : 0) :
+                   0;
         }
-
-        /**
-         * Process the preverified {@link PacketContainer}.
-         */
-        abstract int process(PacketContainer packetContainer);
     }
 }

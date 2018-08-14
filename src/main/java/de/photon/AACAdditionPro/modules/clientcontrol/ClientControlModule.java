@@ -99,10 +99,4 @@ abstract class ClientControlModule implements Module
         // Should flag
         return flag;
     }
-
-    @Override
-    public String getName()
-    {
-        return this.getConfigString().replace(".", "-");
-    }
 }

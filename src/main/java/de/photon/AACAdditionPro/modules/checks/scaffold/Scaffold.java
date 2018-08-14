@@ -105,14 +105,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
                     user.getPositionData().hasPlayerSneakedRecently(175)
             )))
         {
-            int vl = 0;
-
-            // ---------------------------------------------- Average ----------------------------------------------- //
-
-            vl += averagePattern.apply(user, event);
-
-            // --------------------------------------------- Positions ---------------------------------------------- //
-
+            int vl = averagePattern.apply(user, event);
             vl += positionPattern.apply(user, event);
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
@@ -136,13 +129,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
                 user.getScaffoldData().rotationFails--;
             }
 
-
-            // --------------------------------------------- Sprinting ---------------------------------------------- //
-
             vl += sprintingPattern.apply(user, event);
-
-            // ----------------------------------------- Suspicious stops ------------------------------------------- //
-
             vl += safewalkTypeOne.apply(user, event);
             vl += safewalkTypeTwo.apply(user, event);
 

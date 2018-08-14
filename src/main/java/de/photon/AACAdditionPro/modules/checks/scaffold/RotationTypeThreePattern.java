@@ -5,6 +5,9 @@ import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.util.VerboseSender;
 
+/**
+ * This patterns detects very random rotations that some randomized scaffold modules might use.
+ */
 class RotationTypeThreePattern extends PatternModule.Pattern<User, Float>
 {
     private final static double ANGLE_OFFSET_SUM_THRESHOLD = 5.2D;

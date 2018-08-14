@@ -32,7 +32,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
 
     private final Pattern<User, BlockPlaceEvent> rotationTypeOne = new RotationTypeOnePattern();
     private final Pattern<User, Float> rotationTypeTwo = new RotationTypeTwoPattern();
-    private final Pattern<User, Float> rotationTypeThree = new RotationTypeTwoPattern();
+    private final Pattern<User, Float> rotationTypeThree = new RotationTypeThreePattern();
 
     private final Pattern<User, BlockPlaceEvent> sprintingPattern = new SprintingPattern();
 
@@ -119,12 +119,9 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
 
             final float[] angleInformation = user.getLookPacketData().getAngleInformation();
 
-            byte rotationVl = 0;
-
-            rotationVl += rotationTypeOne.apply(user, event);
-            rotationVl += rotationTypeTwo.apply(user, angleInformation[0]);
-            // Very random rotations
-            rotationVl += rotationTypeThree.apply(user, angleInformation[1]);
+            int rotationVl = rotationTypeOne.apply(user, event) +
+                             rotationTypeTwo.apply(user, angleInformation[0]) +
+                             rotationTypeThree.apply(user, angleInformation[1]);
 
             if (rotationVl > 0)
             {

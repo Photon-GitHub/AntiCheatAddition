@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.user;
 
 import de.photon.AACAdditionPro.InternalPermission;
-import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.user.data.AutoPotionData;
 import de.photon.AACAdditionPro.user.data.ClientSideEntityData;
 import de.photon.AACAdditionPro.user.data.EspInformationData;

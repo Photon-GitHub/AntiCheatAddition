@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.util.violationlevels;
 
-import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.commands.Placeholders;
 import org.bukkit.entity.Player;

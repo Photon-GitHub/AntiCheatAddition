@@ -1,7 +1,18 @@
 package de.photon.AACAdditionPro.util.general;
 
+import java.nio.charset.StandardCharsets;
+
 public final class StringUtils
 {
+    /**
+     * Constructs a new {@link String} from a byte array according to the {@link StandardCharsets#UTF_8}.
+     * This is used in various plugin messages.
+     */
+    public static String fromUTF8Bytes(final byte[] bytes)
+    {
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+
     /**
      * Limits the length of a {@link String} to a certain value.
      * If the length of the {@link String} is already small enough the {@link String} will be returned without modification.

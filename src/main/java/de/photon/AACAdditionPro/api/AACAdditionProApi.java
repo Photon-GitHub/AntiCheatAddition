@@ -1,9 +1,9 @@
 package de.photon.AACAdditionPro.api;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
+import de.photon.AACAdditionPro.modules.ModuleType;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings({
@@ -27,7 +27,9 @@ public final class AACAdditionProApi
      *
      * @param player     the player who should be looked up
      * @param moduleType the Check that should be looked up.
+     *
      * @return The Violation-Level as an int.
+     *
      * @throws NoViolationLevelManagementException if the check of the given {@link ModuleType} does not have violation-levels
      */
     public static int getVL(final Player player, final ModuleType moduleType) throws NoViolationLevelManagementException
@@ -41,6 +43,7 @@ public final class AACAdditionProApi
      * @param player     the player whose Violation-Level should be set.
      * @param moduleType the Check in which the Violation-Level will be set.
      * @param new_vl     The new Violation-Level of the player.
+     *
      * @throws NoViolationLevelManagementException if the check of the given {@link ModuleType} does not have violation-levels
      */
     public static void setVl(final Player player, final ModuleType moduleType, final int new_vl) throws NoViolationLevelManagementException

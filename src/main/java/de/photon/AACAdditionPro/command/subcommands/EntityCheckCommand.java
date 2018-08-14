@@ -2,10 +2,10 @@ package de.photon.AACAdditionPro.command.subcommands;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.InternalPermission;
-import de.photon.AACAdditionPro.Module;
-import de.photon.AACAdditionPro.ModuleType;
-import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
 import de.photon.AACAdditionPro.command.InternalCommand;
+import de.photon.AACAdditionPro.modules.Module;
+import de.photon.AACAdditionPro.modules.ModuleType;
+import de.photon.AACAdditionPro.modules.checks.KillauraEntity;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;

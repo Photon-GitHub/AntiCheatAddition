@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.exceptions;
 
-import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.modules.ModuleType;
 
 public class NoViolationLevelManagementException extends RuntimeException
 {

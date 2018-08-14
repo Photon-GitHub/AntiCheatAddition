@@ -2,9 +2,9 @@ package de.photon.AACAdditionPro.command.subcommands;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.InternalPermission;
-import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.command.InternalCommand;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
+import de.photon.AACAdditionPro.modules.ModuleType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

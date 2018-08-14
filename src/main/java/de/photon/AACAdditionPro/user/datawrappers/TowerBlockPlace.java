@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.user.datawrappers;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
 import org.bukkit.block.Block;

@@ -4,7 +4,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.fakeentity.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;

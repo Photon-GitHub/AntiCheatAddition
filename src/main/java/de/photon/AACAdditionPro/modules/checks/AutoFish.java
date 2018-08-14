@@ -4,6 +4,7 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
+import de.photon.AACAdditionPro.modules.RestrictedServerVersionModule;
 import de.photon.AACAdditionPro.modules.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
@@ -18,7 +19,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import java.util.DoubleSummaryStatistics;
 import java.util.Set;
 
-public class AutoFish implements ListenerModule, ViolationModule
+public class AutoFish implements ListenerModule, RestrictedServerVersionModule, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 600);
 

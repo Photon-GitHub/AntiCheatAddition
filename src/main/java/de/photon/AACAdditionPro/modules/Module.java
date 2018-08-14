@@ -12,7 +12,6 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Set;
 
 public interface Module
 {
@@ -23,18 +22,22 @@ public interface Module
     {
         try
         {
-            if (ServerVersion.supportsActiveServerVersion(module.getSupportedVersions()))
+            // ServerVersion check
+            if (module instanceof RestrictedServerVersionModule &&
+                ServerVersion.supportsActiveServerVersion(((RestrictedServerVersionModule) module).getSupportedVersions()))
             {
                 VerboseSender.getInstance().sendVerboseMessage(module.getName() + " is not compatible with your server version.");
                 return;
             }
 
+            // Enabled
             if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled"))
             {
                 VerboseSender.getInstance().sendVerboseMessage(module.getName() + " was chosen not to be enabled.");
                 return;
             }
 
+            // Dependency check
             if (module instanceof DependencyModule && !DependencyModule.allowedToStart((DependencyModule) module))
             {
                 VerboseSender.getInstance().sendVerboseMessage(module.getName() + " has been not been enabled as of missing dependencies.");
@@ -205,16 +208,5 @@ public interface Module
     default String getConfigString()
     {
         return this.getModuleType().getConfigString();
-    }
-
-    /**
-     * Displays all the {@link ServerVersion}s a check supports.
-     * It will autodisable itself on the server start if the server version matches the excluded {@link ServerVersion}.
-     * <p>
-     * By default all {@link ServerVersion} are marked as supported.
-     */
-    default Set<ServerVersion> getSupportedVersions()
-    {
-        return ServerVersion.ALL_SUPPORTED_VERSIONS;
     }
 }

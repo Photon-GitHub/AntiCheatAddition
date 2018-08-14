@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.modules.checks;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
+import de.photon.AACAdditionPro.modules.RestrictedServerVersionModule;
 import de.photon.AACAdditionPro.modules.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
@@ -17,7 +18,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.Set;
 
-public class AutoPotion implements ListenerModule, ViolationModule
+public class AutoPotion implements ListenerModule, RestrictedServerVersionModule, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
 

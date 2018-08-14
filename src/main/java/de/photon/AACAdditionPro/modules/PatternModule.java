@@ -12,7 +12,7 @@ public interface PatternModule extends Module
      * @return a {@link Set} of all {@link Pattern}s managed by this {@link PatternModule}
      */
     Set<Pattern> getPatterns();
-    
+
     static void enablePatterns(final PatternModule module)
     {
         for (Pattern pattern : module.getPatterns())

@@ -27,15 +27,11 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 70L);
 
     private final Pattern<User, BlockPlaceEvent> averagePattern = new AveragePattern();
-
     private final Pattern<User, BlockPlaceEvent> positionPattern = new PositionPattern();
-
     private final Pattern<User, BlockPlaceEvent> rotationTypeOne = new RotationTypeOnePattern();
     private final Pattern<User, Float> rotationTypeTwo = new RotationTypeTwoPattern();
     private final Pattern<User, Float> rotationTypeThree = new RotationTypeThreePattern();
-
     private final Pattern<User, BlockPlaceEvent> sprintingPattern = new SprintingPattern();
-
     private final Pattern<User, BlockPlaceEvent> safewalkTypeOne = new SafewalkTypeOnePattern();
     private final Pattern<User, BlockPlaceEvent> safewalkTypeTwo = new SafewalkTypeTwoPattern();
 

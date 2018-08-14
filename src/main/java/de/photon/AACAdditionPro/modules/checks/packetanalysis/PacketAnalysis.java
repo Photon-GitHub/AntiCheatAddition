@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.modules.Module;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PacketListenerModule;
 import de.photon.AACAdditionPro.modules.PatternModule;
@@ -26,11 +27,8 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 200);
 
     private PacketPattern comparePattern = new ComparePattern();
-
     private PacketPattern equalRotationPattern = new EqualRotationPattern();
-
     private PacketPattern positionSpoofPattern = new PositionSpoofPattern();
-
     private PacketPattern keepAliveIgnoredPattern = new KeepAliveIgnoredPattern();
     private Pattern<Object, Object> keepAliveInjectPattern = new KeepAliveInjectPattern();
 
@@ -159,6 +157,10 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         if (keepAlive && !keepAliveUnregistered)
         {
             keepAlive = false;
+
+            Module.disableModule(this.keepAliveIgnoredPattern);
+            Module.disableModule(this.keepAliveInjectPattern);
+
             VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData | Failed to enable KeepAlive part", true, true);
             VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData | In order to use the KeepAlive you need to enable the unregistered analysis!", true, true);
         }

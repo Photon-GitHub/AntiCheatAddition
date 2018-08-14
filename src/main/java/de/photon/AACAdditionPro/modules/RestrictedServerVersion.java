@@ -4,14 +4,14 @@ import de.photon.AACAdditionPro.ServerVersion;
 
 import java.util.Set;
 
-public interface RestrictedServerVersionModule extends Module
+public interface RestrictedServerVersion
 {
     /**
      * Looks up all dependencies to know whether they are loaded.
      *
      * @return <code>true</code> if all dependencies are loaded, otherwise false.
      */
-    static boolean allowedToStart(final RestrictedServerVersionModule module)
+    static boolean allowedToStart(final RestrictedServerVersion module)
     {
         return ServerVersion.supportsActiveServerVersion(module.getSupportedVersions());
     }

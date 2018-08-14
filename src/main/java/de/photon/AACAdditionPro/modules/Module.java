@@ -14,7 +14,7 @@ public interface Module
         try
         {
             // ServerVersion check
-            if (module instanceof RestrictedServerVersionModule && RestrictedServerVersionModule.allowedToStart((RestrictedServerVersionModule) module))
+            if (module instanceof RestrictedServerVersion && RestrictedServerVersion.allowedToStart((RestrictedServerVersion) module))
             {
                 VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " is not compatible with your server version.");
                 return;
@@ -28,7 +28,7 @@ public interface Module
             }
 
             // Dependency check
-            if (module instanceof DependencyModule && !DependencyModule.allowedToStart((DependencyModule) module))
+            if (module instanceof Dependency && !Dependency.allowedToStart((Dependency) module))
             {
                 VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been not been enabled as of missing dependencies.");
                 return;

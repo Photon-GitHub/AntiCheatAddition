@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.modules.clientcontrol;
 
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.modules.DependencyModule;
+import de.photon.AACAdditionPro.modules.Dependency;
 import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.user.User;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class LabyModControl extends ClientControlModule implements ListenerModule, DependencyModule
+public class LabyModControl extends ClientControlModule implements ListenerModule, Dependency
 {
     private final Map<Permission, Boolean> featureMap = new HashMap<>();
 

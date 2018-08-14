@@ -3,7 +3,8 @@ package de.photon.AACAdditionPro.modules.clientcontrol;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
-import de.photon.AACAdditionPro.modules.DependencyModule;
+import de.photon.AACAdditionPro.modules.Dependency;
+import de.photon.AACAdditionPro.modules.Module;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.files.configs.Configs;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-public class VersionControl implements DependencyModule
+public class VersionControl implements Module, Dependency
 {
     /**
      * Unmodifiable {@link Set} containing all registered {@link ProtocolVersion}s.

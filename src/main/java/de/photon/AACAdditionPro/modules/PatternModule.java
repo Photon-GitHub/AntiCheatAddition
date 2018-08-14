@@ -1,5 +1,8 @@
 package de.photon.AACAdditionPro.modules;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
+
 import java.util.Set;
 import java.util.function.Function;
 
@@ -36,5 +39,32 @@ public interface PatternModule extends Module
         {
             return this.getModuleType().getConfigString() + '.' + this.getName();
         }
+    }
+
+    /**
+     * Special handling class for {@link Pattern}s that use packets.
+     * This class will automatically ensure that only the correct packet is used.
+     */
+    abstract class PacketPattern extends Pattern<PacketContainer>
+    {
+        private final PacketType packetTypeProcessed;
+
+        /**
+         * Constructs a new {@link PacketPattern}.
+         *
+         * @param packetTypeProcessed the only {@link PacketType} this {@link PacketPattern} will use.
+         */
+        protected PacketPattern(PacketType packetTypeProcessed) {this.packetTypeProcessed = packetTypeProcessed;}
+
+        @Override
+        public Integer apply(PacketContainer packetContainer)
+        {
+            return packetContainer.getType() == packetTypeProcessed ? this.process(packetContainer) : 0;
+        }
+
+        /**
+         * Process the preverified {@link PacketContainer}.
+         */
+        abstract int process(PacketContainer packetContainer);
     }
 }

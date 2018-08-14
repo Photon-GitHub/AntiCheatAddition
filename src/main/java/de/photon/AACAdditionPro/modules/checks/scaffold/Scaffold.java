@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.modules.checks.scaffold;
 
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
@@ -163,7 +164,14 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
     @Override
     public Set<Pattern> getPatterns()
     {
-        return null;
+        return ImmutableSet.of(averagePattern,
+                               positionPattern,
+                               rotationTypeOne,
+                               rotationTypeTwo,
+                               rotationTypeThree,
+                               sprintingPattern,
+                               safewalkTypeOne,
+                               safewalkTypeTwo);
     }
 
     @Override

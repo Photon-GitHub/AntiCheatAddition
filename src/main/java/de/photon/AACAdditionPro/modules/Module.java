@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.modules;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
@@ -23,8 +22,7 @@ public interface Module
         try
         {
             // ServerVersion check
-            if (module instanceof RestrictedServerVersionModule &&
-                ServerVersion.supportsActiveServerVersion(((RestrictedServerVersionModule) module).getSupportedVersions()))
+            if (module instanceof RestrictedServerVersionModule && RestrictedServerVersionModule.allowedToStart((RestrictedServerVersionModule) module))
             {
                 VerboseSender.getInstance().sendVerboseMessage(module.getName() + " is not compatible with your server version.");
                 return;

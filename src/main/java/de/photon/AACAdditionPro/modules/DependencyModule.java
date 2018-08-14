@@ -11,9 +11,9 @@ public interface DependencyModule extends Module
      *
      * @return <code>true</code> if all dependencies are loaded, otherwise false.
      */
-    static boolean allowedToStart(final DependencyModule dependencyModule)
+    static boolean allowedToStart(final DependencyModule module)
     {
-        return dependencyModule.getDependencies().stream().allMatch(dependency -> Bukkit.getServer().getPluginManager().isPluginEnabled(dependency));
+        return module.getDependencies().stream().allMatch(dependency -> Bukkit.getServer().getPluginManager().isPluginEnabled(dependency));
     }
 
     /**

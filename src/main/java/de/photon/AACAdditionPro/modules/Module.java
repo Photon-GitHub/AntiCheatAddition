@@ -66,48 +66,26 @@ public interface Module
                 {
                     // Boolean
                     if (clazz == boolean.class || clazz == Boolean.class)
-                    {
                         field.setBoolean(module, AACAdditionPro.getInstance().getConfig().getBoolean(path));
-
                         // Numbers
-                    }
                     else if (clazz == double.class || clazz == Double.class)
-                    {
                         field.setDouble(module, AACAdditionPro.getInstance().getConfig().getDouble(path));
-                    }
                     else if (clazz == int.class || clazz == Integer.class)
-                    {
                         field.setInt(module, AACAdditionPro.getInstance().getConfig().getInt(path));
-                    }
                     else if (clazz == long.class || clazz == Long.class)
-                    {
                         field.setLong(module, AACAdditionPro.getInstance().getConfig().getLong(path));
-
-                        // Strings
-                    }
                     else if (clazz == String.class)
-                    {
                         field.set(module, AACAdditionPro.getInstance().getConfig().getString(path));
-
                         // Special stuff
-                    }
                     else if (clazz == ItemStack.class)
-                    {
                         field.set(module, AACAdditionPro.getInstance().getConfig().getItemStack(path));
-                    }
                     else if (clazz == Color.class)
-                    {
                         field.set(module, AACAdditionPro.getInstance().getConfig().getColor(path));
-                    }
                     else if (clazz == OfflinePlayer.class)
-                    {
                         field.set(module, AACAdditionPro.getInstance().getConfig().getOfflinePlayer(path));
-                    }
                     else if (clazz == Vector.class)
-                    {
                         field.set(module, AACAdditionPro.getInstance().getConfig().getVector(path));
-                    }
-                    // Lists
+                        // Lists
                     else if (clazz == List.class)
                     {
                         // StringLists
@@ -122,8 +100,8 @@ public interface Module
                             field.set(module, AACAdditionPro.getInstance().getConfig().getList(path));
                         }
 
-                        // No special type found
                     }
+                    // No special type found
                     else
                     {
                         field.set(module, AACAdditionPro.getInstance().getConfig().get(path));

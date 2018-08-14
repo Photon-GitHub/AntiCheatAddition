@@ -16,21 +16,24 @@ public interface Module
             // ServerVersion check
             if (module instanceof RestrictedServerVersion && RestrictedServerVersion.allowedToStart((RestrictedServerVersion) module))
             {
-                VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " is not compatible with your server version.");
+                if (!module.isSilent())
+                    VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " is not compatible with your server version.");
                 return;
             }
 
             // Enabled
             if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled"))
             {
-                VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " was chosen not to be enabled.");
+                if (!module.isSilent())
+                    VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " was chosen not to be enabled.");
                 return;
             }
 
             // Dependency check
             if (module instanceof Dependency && !Dependency.allowedToStart((Dependency) module))
             {
-                VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been not been enabled as of missing dependencies.");
+                if (!module.isSilent())
+                    VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been not been enabled as of missing dependencies.");
                 return;
             }
 
@@ -47,7 +50,8 @@ public interface Module
                 PluginMessageListenerModule.enable((PluginMessageListenerModule) module);
 
             module.enable();
-            VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been enabled.");
+            if (!module.isSilent())
+                VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been enabled.");
         } catch (final Exception e)
         {
             VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be enabled.", true, true);
@@ -72,7 +76,8 @@ public interface Module
                 PluginMessageListenerModule.disable((PluginMessageListenerModule) module);
 
             module.disable();
-            VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been disabled.");
+            if (!module.isSilent())
+                VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been disabled.");
         } catch (final Exception e)
         {
             VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be disabled.", true, true);
@@ -89,6 +94,14 @@ public interface Module
      * All additional chores during disabling that are not handled by the {@link Module} - subinterfaces.
      */
     default void disable() {}
+
+    /**
+     * Whether or not there are messages regarding this module when enabled/disabled.
+     */
+    default boolean isSilent()
+    {
+        return false;
+    }
 
     /**
      * Gets the direct path representing this module in the config.

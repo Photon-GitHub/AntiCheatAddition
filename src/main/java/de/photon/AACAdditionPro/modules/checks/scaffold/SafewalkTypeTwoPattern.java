@@ -10,7 +10,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 /**
  * This detects safe-walk behaviour (stopping when not sneaking)
  */
-public class SafewalkTypeTwoPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class SafewalkTypeTwoPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
     @Override
     protected int process(User user, BlockPlaceEvent event)

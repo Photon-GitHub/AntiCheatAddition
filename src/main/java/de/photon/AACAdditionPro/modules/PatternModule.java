@@ -63,24 +63,29 @@ public interface PatternModule extends Module
 
     /**
      * Special handling class for {@link Pattern}s that use packets.
-     * This class will automatically ensure that only the correct packet is used.
+     * This class will automatically ensure that only the correct packets are used.
      */
     abstract class PacketPattern extends Pattern<User, PacketContainer>
     {
-        private final PacketType packetTypeProcessed;
+        private final Set<PacketType> packetTypesProcessed;
 
         /**
          * Constructs a new {@link PacketPattern}.
          *
-         * @param packetTypeProcessed the only {@link PacketType} this {@link PacketPattern} will use.
+         * @param packetTypesProcessed the {@link PacketType}s this {@link PacketPattern} will use.
          */
-        protected PacketPattern(PacketType packetTypeProcessed) {this.packetTypeProcessed = packetTypeProcessed;}
+        protected PacketPattern(Set<PacketType> packetTypesProcessed)
+        {
+            this.packetTypesProcessed = packetTypesProcessed;
+        }
 
         @Override
         public Integer apply(User user, PacketContainer packetContainer)
         {
             return this.enabled ?
-                   (packetContainer.getType() == packetTypeProcessed ? this.process(user, packetContainer) : 0) :
+                   (packetTypesProcessed.contains(packetContainer.getType()) ?
+                    this.process(user, packetContainer) :
+                    0) :
                    0;
         }
     }

@@ -12,7 +12,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
  * This {@link de.photon.AACAdditionPro.modules.PatternModule.Pattern} detects suspicious stops right before the edges
  * of {@link org.bukkit.block.Block}s.
  */
-public class SafewalkTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class SafewalkTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
     @Override
     protected int process(User user, BlockPlaceEvent event)

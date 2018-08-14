@@ -11,7 +11,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
  * This pattern detects bursts of sprinting while scaffolding. No legit is able to properly utilize sprinting so far
  * because of the direction limitations.
  */
-public class SprintingPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class SprintingPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
     @LoadFromConfiguration(configPath = ".parts.sprinting.sprinting_threshold")
     private int sprintingThreshold;

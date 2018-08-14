@@ -9,7 +9,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 /**
  * This {@link de.photon.AACAdditionPro.modules.PatternModule.Pattern} checks the average time between block places.
  */
-public class AveragePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class AveragePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
     @Override
     public int process(User user, BlockPlaceEvent event)

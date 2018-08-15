@@ -15,6 +15,11 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Set;
 
+/**
+ * This {@link de.photon.AACAdditionPro.modules.PatternModule.Pattern} randomly injects KeepAlive packets into the
+ * regular communication with the client to improve the detection speed of cheats.
+ * This is restricted to minecraft 1.8.8 as higher versions have changed the KeepAlive packet handling.
+ */
 class KeepAliveInjectPattern extends PatternModule.Pattern<Object, Object> implements RestrictedServerVersion
 {
     private BukkitTask injectTask;

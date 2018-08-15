@@ -10,6 +10,9 @@ import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLook;
 import de.photon.AACAdditionPro.util.world.LocationUtils;
 
+/**
+ * This {@link de.photon.AACAdditionPro.modules.PatternModule.PacketPattern} detects spoofed positions.
+ */
 class PositionSpoofPattern extends PatternModule.PacketPattern
 {
     PositionSpoofPattern()

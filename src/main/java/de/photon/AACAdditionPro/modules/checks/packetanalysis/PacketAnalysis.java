@@ -67,8 +67,7 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         }
         else if (event.getPacketType() == PacketType.Play.Server.POSITION)
         {
-            final WrapperPlayServerPosition serverPositionWrapper = new WrapperPlayServerPosition(event.getPacket());
-            user.getPacketAnalysisData().lastPositionForceData = new PacketAnalysisData.PositionForceData(serverPositionWrapper.getLocation(user.getPlayer().getWorld()));
+            user.getPacketAnalysisData().lastPositionForceData = new PacketAnalysisData.PositionForceData(new WrapperPlayServerPosition(event.getPacket()).getLocation(user.getPlayer().getWorld()));
         }
     }
 

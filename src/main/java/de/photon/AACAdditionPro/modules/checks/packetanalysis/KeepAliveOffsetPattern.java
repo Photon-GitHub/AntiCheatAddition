@@ -6,6 +6,10 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.data.PacketAnalysisData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 
+/**
+ * This {@link de.photon.AACAdditionPro.modules.PatternModule.Pattern} detects responses to KeepAlive packets which are
+ * out of order.
+ */
 public class KeepAliveOffsetPattern extends PatternModule.Pattern<User, Integer>
 {
     @Override

@@ -10,6 +10,12 @@ import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 
+/**
+ * This {@link de.photon.AACAdditionPro.modules.PatternModule.PacketPattern} checks for fluctuating response times of
+ * the client.
+ * To do this it uses the fact that every {{@link com.comphenix.protocol.PacketType.Play.Server#POSITION}} packet must
+ * be answered with an {@link com.comphenix.protocol.PacketType.Play.Client#POSITION_LOOK} packet
+ */
 class ComparePattern extends PatternModule.PacketPattern
 {
     @LoadFromConfiguration(configPath = ".parts.Compare.allowed_offset")
@@ -21,7 +27,7 @@ class ComparePattern extends PatternModule.PacketPattern
 
     ComparePattern()
     {
-        // Response to PacketType.Play.Client.POSITION
+        // Response to PacketType.Play.Server.POSITION
         super(ImmutableSet.of(PacketType.Play.Client.POSITION_LOOK));
     }
 

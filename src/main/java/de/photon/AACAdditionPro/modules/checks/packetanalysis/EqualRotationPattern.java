@@ -10,6 +10,11 @@ import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
 
+/**
+ * This {@link de.photon.AACAdditionPro.modules.PatternModule.PacketPattern} checks for rotation packets which have
+ * exactly the same yaw/pitch values as the last packet. When moving these values are never equal to each other when
+ * sent by a vanilla client.
+ */
 class EqualRotationPattern extends PatternModule.PacketPattern
 {
     EqualRotationPattern()

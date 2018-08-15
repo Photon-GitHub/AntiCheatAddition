@@ -9,6 +9,9 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.data.PacketAnalysisData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 
+/**
+ * This {@link de.photon.AACAdditionPro.modules.PatternModule.PacketPattern} flags KeepAlive packets that are ignored by the client.
+ */
 class KeepAliveIgnoredPattern extends PatternModule.PacketPattern
 {
     KeepAliveIgnoredPattern()

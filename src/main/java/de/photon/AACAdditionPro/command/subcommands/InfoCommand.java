@@ -54,7 +54,7 @@ public class InfoCommand extends InternalCommand
                     final int vl = AACAdditionPro.getInstance().getModuleManager().getViolationLevelManagement(moduleType).getVL(p.getUniqueId());
                     if (vl != 0)
                     {
-                        messages.put(vl, AACAdditionPro.getInstance().getModuleManager().getModule(moduleType).getName());
+                        messages.put(vl, AACAdditionPro.getInstance().getModuleManager().getModule(moduleType).getConfigString());
                     }
                 } catch (IllegalArgumentException | NoViolationLevelManagementException ignore)
                 {

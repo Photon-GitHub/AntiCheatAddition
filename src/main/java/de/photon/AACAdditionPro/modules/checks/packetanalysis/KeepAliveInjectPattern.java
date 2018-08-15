@@ -51,7 +51,11 @@ class KeepAliveInjectPattern extends PatternModule.Pattern<Object, Object> imple
     public void disable()
     {
         super.disable();
-        injectTask.cancel();
+
+        if (injectTask != null)
+        {
+            injectTask.cancel();
+        }
     }
 
     @Override

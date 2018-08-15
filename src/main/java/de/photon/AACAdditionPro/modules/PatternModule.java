@@ -59,7 +59,7 @@ public interface PatternModule extends Module
         @Override
         public boolean shouldNotify()
         {
-            return true;
+            return false;
         }
 
         @Override

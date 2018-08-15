@@ -17,7 +17,7 @@ public interface Module
             if (module instanceof RestrictedServerVersion && RestrictedServerVersion.allowedToStart((RestrictedServerVersion) module))
             {
                 if (module.shouldNotify())
-                    VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " is not compatible with your server version.");
+                    VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " is not compatible with your server version.", true, false);
                 return;
             }
 
@@ -25,7 +25,7 @@ public interface Module
             if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled"))
             {
                 if (module.shouldNotify())
-                    VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " was chosen not to be enabled.");
+                    VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " was chosen not to be enabled.", true, false);
                 return;
             }
 
@@ -33,7 +33,7 @@ public interface Module
             if (module instanceof Dependency && !Dependency.allowedToStart((Dependency) module))
             {
                 if (module.shouldNotify())
-                    VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been not been enabled as of missing dependencies.");
+                    VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been not been enabled as of missing dependencies.", true, false);
                 return;
             }
 
@@ -53,8 +53,9 @@ public interface Module
                 PatternModule.enablePatterns((PatternModule) module);
 
             module.enable();
+
             if (module.shouldNotify())
-                VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been enabled.");
+                VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been enabled.", true, false);
         } catch (final Exception e)
         {
             VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be enabled.", true, true);
@@ -83,7 +84,7 @@ public interface Module
 
             module.disable();
             if (module.shouldNotify())
-                VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been disabled.");
+                VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been disabled.", true, false);
         } catch (final Exception e)
         {
             VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be disabled.", true, true);

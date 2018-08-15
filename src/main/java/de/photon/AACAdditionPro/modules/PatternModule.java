@@ -17,18 +17,6 @@ public interface PatternModule extends Module
      */
     Set<Pattern> getPatterns();
 
-    @Override
-    default void enable()
-    {
-        enablePatterns(this);
-    }
-
-    @Override
-    default void disable()
-    {
-        disablePatterns(this);
-    }
-
     static void enablePatterns(final PatternModule module)
     {
         for (Pattern pattern : module.getPatterns())
@@ -69,9 +57,9 @@ public interface PatternModule extends Module
         protected abstract int process(T t, U u);
 
         @Override
-        public boolean isSilent()
+        public boolean shouldNotify()
         {
-            return false;
+            return true;
         }
 
         @Override

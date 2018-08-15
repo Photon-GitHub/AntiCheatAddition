@@ -16,7 +16,7 @@ public interface Module
             // ServerVersion check
             if (module instanceof RestrictedServerVersion && RestrictedServerVersion.allowedToStart((RestrictedServerVersion) module))
             {
-                if (!module.isSilent())
+                if (module.shouldNotify())
                     VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " is not compatible with your server version.");
                 return;
             }
@@ -24,7 +24,7 @@ public interface Module
             // Enabled
             if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled"))
             {
-                if (!module.isSilent())
+                if (module.shouldNotify())
                     VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " was chosen not to be enabled.");
                 return;
             }
@@ -32,7 +32,7 @@ public interface Module
             // Dependency check
             if (module instanceof Dependency && !Dependency.allowedToStart((Dependency) module))
             {
-                if (!module.isSilent())
+                if (module.shouldNotify())
                     VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been not been enabled as of missing dependencies.");
                 return;
             }
@@ -49,8 +49,11 @@ public interface Module
             if (module instanceof PluginMessageListenerModule)
                 PluginMessageListenerModule.enable((PluginMessageListenerModule) module);
 
+            if (module instanceof PatternModule)
+                PatternModule.enablePatterns((PatternModule) module);
+
             module.enable();
-            if (!module.isSilent())
+            if (module.shouldNotify())
                 VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been enabled.");
         } catch (final Exception e)
         {
@@ -75,8 +78,11 @@ public interface Module
             if (module instanceof PluginMessageListenerModule)
                 PluginMessageListenerModule.disable((PluginMessageListenerModule) module);
 
+            if (module instanceof PatternModule)
+                PatternModule.disablePatterns((PatternModule) module);
+
             module.disable();
-            if (!module.isSilent())
+            if (module.shouldNotify())
                 VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been disabled.");
         } catch (final Exception e)
         {
@@ -98,9 +104,9 @@ public interface Module
     /**
      * Whether or not there are messages regarding this module when enabled/disabled.
      */
-    default boolean isSilent()
+    default boolean shouldNotify()
     {
-        return false;
+        return true;
     }
 
     /**

@@ -138,12 +138,6 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     }
 
     @Override
-    public void enable()
-    {
-        PatternModule.enablePatterns(this);
-    }
-
-    @Override
     public ViolationLevelManagement getViolationLevelManagement()
     {
         return vlManager;

@@ -10,9 +10,9 @@ import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLook;
 import de.photon.AACAdditionPro.util.world.LocationUtils;
 
-public class PositionSpoofPattern extends PatternModule.PacketPattern
+class PositionSpoofPattern extends PatternModule.PacketPattern
 {
-    public PositionSpoofPattern()
+    PositionSpoofPattern()
     {
         // Response to PacketType.Play.Client.POSITION
         super(ImmutableSet.of(PacketType.Play.Client.POSITION_LOOK));

@@ -42,7 +42,6 @@ class PositionPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
         if (flag)
         {
             VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + event.getPlayer().getName() + " placed from a suspicious location.");
-            // Flag the player
             return 5;
         }
 

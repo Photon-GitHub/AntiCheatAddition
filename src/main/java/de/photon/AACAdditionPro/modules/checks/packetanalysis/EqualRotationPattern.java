@@ -12,7 +12,7 @@ import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
 
 class EqualRotationPattern extends PatternModule.PacketPattern
 {
-    public EqualRotationPattern()
+    EqualRotationPattern()
     {
         super(ImmutableSet.of(PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK));
     }

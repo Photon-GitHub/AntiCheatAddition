@@ -47,7 +47,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
     // ------------------------------------------- BlockPlace Handling ---------------------------------------------- //
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPre(final BlockPlaceEvent event)
+    public void onPreBlockPlace(final BlockPlaceEvent event)
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
@@ -66,7 +66,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void on(final BlockPlaceEvent event)
+    public void onBlockPlace(final BlockPlaceEvent event)
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 

@@ -422,13 +422,10 @@ PacketAnalysis:
       # Do you want to enable EqualRotation
       enabled: true
     # This part analyses KeepAlive packets.
+    #
+    # NOTE: Even with all subparts turned off a basic unregistered subpart is always active to prevent crash clients.
+    # This particular subpart cannot have false positives and must be set off deliberately by modifying the protocol.
     KeepAlive:
-      # Unregistered checks for illegal packets that are not possible within the minecraft protocol
-      # DO NOT DISABLE THIS SUBPART WHILE KEEPING OTHER SUBPARTS ENABLED!
-      # This check will add 20 vl
-      unregistered:
-        # Do you want to enable the unregistered KeepAlive packet checking
-        enabled: true
       # Ignored checks for KeepAlive packets the client has not responded to, which is illegal in the minecraft
       # protocol.
       # This check will add 10 vl.

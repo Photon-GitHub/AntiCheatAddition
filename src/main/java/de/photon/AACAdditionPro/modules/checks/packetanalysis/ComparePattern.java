@@ -10,7 +10,7 @@ import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 
-public class ComparePattern extends PatternModule.PacketPattern
+class ComparePattern extends PatternModule.PacketPattern
 {
     @LoadFromConfiguration(configPath = ".parts.Compare.allowed_offset")
     private int allowedOffset;
@@ -19,7 +19,7 @@ public class ComparePattern extends PatternModule.PacketPattern
     @LoadFromConfiguration(configPath = ".parts.Compare.violation_time")
     private int violationTime;
 
-    public ComparePattern()
+    ComparePattern()
     {
         // Response to PacketType.Play.Client.POSITION
         super(ImmutableSet.of(PacketType.Play.Client.POSITION_LOOK));

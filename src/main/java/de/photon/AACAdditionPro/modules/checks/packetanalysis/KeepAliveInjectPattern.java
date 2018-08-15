@@ -15,7 +15,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Set;
 
-public class KeepAliveInjectPattern extends PatternModule.Pattern<Object, Object> implements RestrictedServerVersion
+class KeepAliveInjectPattern extends PatternModule.Pattern<Object, Object> implements RestrictedServerVersion
 {
     private BukkitTask injectTask;
 

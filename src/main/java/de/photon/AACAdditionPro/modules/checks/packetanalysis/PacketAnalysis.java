@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.modules.Module;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PacketListenerModule;
 import de.photon.AACAdditionPro.modules.PatternModule;
@@ -15,11 +14,12 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.user.data.PacketAnalysisData;
 import de.photon.AACAdditionPro.util.VerboseSender;
-import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientKeepAlive;
+import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerKeepAlive;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 
+import java.util.Iterator;
 import java.util.Set;
 
 public class PacketAnalysis extends PacketAdapter implements PacketListenerModule, PatternModule, ViolationModule
@@ -29,18 +29,10 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     private PacketPattern comparePattern = new ComparePattern();
     private PacketPattern equalRotationPattern = new EqualRotationPattern();
     private PacketPattern positionSpoofPattern = new PositionSpoofPattern();
+
+    private Pattern<User, Integer> keepAliveOffsetPattern = new KeepAliveOffsetPattern();
     private PacketPattern keepAliveIgnoredPattern = new KeepAliveIgnoredPattern();
     private Pattern<Object, Object> keepAliveInjectPattern = new KeepAliveInjectPattern();
-
-    private boolean keepAlive;
-    @LoadFromConfiguration(configPath = ".parts.KeepAlive.unregistered.enabled")
-    private boolean keepAliveUnregistered;
-    @LoadFromConfiguration(configPath = ".parts.KeepAlive.ignored.enabled")
-    private boolean keepAliveIgnored;
-    @LoadFromConfiguration(configPath = ".parts.KeepAlive.offset.enabled")
-    private boolean keepAliveOffset;
-    @LoadFromConfiguration(configPath = ".parts.KeepAlive.inject.enabled")
-    private boolean keepAliveInject;
 
     public PacketAnalysis()
     {
@@ -62,14 +54,18 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()) || !keepAlive)
+        if (User.isUserInvalid(user, this.getModuleType()))
         {
             return;
         }
 
-        vlManager.flag(user.getPlayer(), keepAliveIgnoredPattern.apply(user, event.getPacket()), -1, () -> {}, () -> {});
-
-        if (event.getPacketType() == PacketType.Play.Server.POSITION)
+        if (event.getPacketType() == PacketType.Play.Server.KEEP_ALIVE)
+        {
+            // Register the KeepAlive
+            user.getPacketAnalysisData().getKeepAlives().addLast(new PacketAnalysisData.KeepAlivePacketData(new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId()));
+            vlManager.flag(user.getPlayer(), keepAliveIgnoredPattern.apply(user, event.getPacket()), -1, () -> {}, () -> {});
+        }
+        else if (event.getPacketType() == PacketType.Play.Server.POSITION)
         {
             final WrapperPlayServerPosition serverPositionWrapper = new WrapperPlayServerPosition(event.getPacket());
             user.getPacketAnalysisData().lastPositionForceData = new PacketAnalysisData.PositionForceData(serverPositionWrapper.getLocation(user.getPlayer().getWorld()));
@@ -94,45 +90,38 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE)
         {
             // --------------------------------------------- KeepAlive ---------------------------------------------- //
-            if (keepAlive)
+
+            final long keepAliveId = new WrapperPlayClientKeepAlive(event.getPacket()).getKeepAliveId();
+            PacketAnalysisData.KeepAlivePacketData keepAlivePacketData = null;
+
+            int offset = 0;
+            final Iterator<PacketAnalysisData.KeepAlivePacketData> iterator = user.getPacketAnalysisData().getKeepAlives().descendingIterator();
+            PacketAnalysisData.KeepAlivePacketData current;
+            while (iterator.hasNext())
             {
-                final WrapperPlayClientKeepAlive clientKeepAliveWrapper = new WrapperPlayClientKeepAlive(event.getPacket());
-                PacketAnalysisData.KeepAlivePacketData keepAlivePacketData = null;
+                current = iterator.next();
 
-                int index = user.getPacketAnalysisData().getKeepAlives().size() - 1;
-                while (index >= 0)
+                if (current.getKeepAliveID() == keepAliveId)
                 {
-                    PacketAnalysisData.KeepAlivePacketData alivePacketData = user.getPacketAnalysisData().getKeepAlives().get(index);
-                    if (alivePacketData.getKeepAliveID() == clientKeepAliveWrapper.getKeepAliveId())
-                    {
-                        keepAlivePacketData = alivePacketData;
-                        break;
-                    }
-                    index--;
+                    keepAlivePacketData = current;
+                    break;
                 }
 
-                // A packet with the same data must have been sent before.
-                if (keepAlivePacketData == null)
-                {
-                    VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
-                    vlManager.flag(user.getPlayer(), 20, -1, () -> {}, () -> {});
-                }
-                else
-                {
-                    keepAlivePacketData.registerResponse();
+                offset++;
+            }
 
-                    if (keepAliveOffset &&
-                        user.getPacketAnalysisData().getKeepAlives().size() == PacketAnalysisData.KEEPALIVE_QUEUE_SIZE)
-                    {
-                        // -1 because of size -> index conversion
-                        final int offset = (PacketAnalysisData.KEEPALIVE_QUEUE_SIZE - 1) - index;
-                        if (offset > 0)
-                        {
-                            VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent packets out of order with an offset of: " + offset);
-                            vlManager.flag(user.getPlayer(), Math.min((PacketAnalysisData.KEEPALIVE_QUEUE_SIZE - index) * 2, 10), -1, () -> {}, () -> {});
-                        }
-                    }
-                }
+            // A packet with the same data must have been sent before.
+            if (keepAlivePacketData == null ||
+                // If the packet already has a response something is off.
+                keepAlivePacketData.hasRegisteredResponse())
+            {
+                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
+                vlManager.flag(user.getPlayer(), 20, -1, () -> {}, () -> {});
+            }
+            else
+            {
+                keepAlivePacketData.registerResponse();
+                vlManager.flag(user.getPlayer(), keepAliveOffsetPattern.apply(user, offset), -1, () -> {}, () -> {});
             }
         }
 
@@ -151,19 +140,7 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     @Override
     public void enable()
     {
-        keepAlive = keepAliveUnregistered || keepAliveIgnored || keepAliveOffset || keepAliveInject;
-
-        // Unregistered must be enabled to use offset analysis.
-        if (keepAlive && !keepAliveUnregistered)
-        {
-            keepAlive = false;
-
-            Module.disableModule(this.keepAliveIgnoredPattern);
-            Module.disableModule(this.keepAliveInjectPattern);
-
-            VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData | Failed to enable KeepAlive part", true, true);
-            VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData | In order to use the KeepAlive you need to enable the unregistered analysis!", true, true);
-        }
+        PatternModule.enablePatterns(this);
     }
 
     @Override
@@ -175,7 +152,7 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     @Override
     public Set<Pattern> getPatterns()
     {
-        return ImmutableSet.of(comparePattern, equalRotationPattern, positionSpoofPattern, keepAliveInjectPattern);
+        return ImmutableSet.of(comparePattern, equalRotationPattern, positionSpoofPattern, keepAliveOffsetPattern, keepAliveIgnoredPattern, keepAliveInjectPattern);
     }
 
     @Override

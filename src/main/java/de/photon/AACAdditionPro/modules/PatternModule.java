@@ -17,6 +17,18 @@ public interface PatternModule extends Module
      */
     Set<Pattern> getPatterns();
 
+    @Override
+    default void enable()
+    {
+        enablePatterns(this);
+    }
+
+    @Override
+    default void disable()
+    {
+        disablePatterns(this);
+    }
+
     static void enablePatterns(final PatternModule module)
     {
         for (Pattern pattern : module.getPatterns())
@@ -25,12 +37,20 @@ public interface PatternModule extends Module
         }
     }
 
+    static void disablePatterns(final PatternModule module)
+    {
+        for (Pattern pattern : module.getPatterns())
+        {
+            Module.disableModule(pattern);
+        }
+    }
+
     /**
      * Represents a single {@link Pattern} that is hold by a {@link PatternModule}
      */
     abstract class Pattern<T, U> implements BiFunction<T, U, Integer>, Module
     {
-        boolean enabled = false;
+        protected boolean enabled = false;
 
         @Override
         public Integer apply(T t, U u)
@@ -47,6 +67,12 @@ public interface PatternModule extends Module
          * @return the vlIncrease of the {@link PatternModule}.
          */
         protected abstract int process(T t, U u);
+
+        @Override
+        public boolean isSilent()
+        {
+            return false;
+        }
 
         @Override
         public void enable()

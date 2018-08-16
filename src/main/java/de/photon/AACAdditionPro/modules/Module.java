@@ -14,7 +14,7 @@ public interface Module
         try
         {
             // ServerVersion check
-            if (module instanceof RestrictedServerVersion && RestrictedServerVersion.allowedToStart((RestrictedServerVersion) module))
+            if (module instanceof RestrictedServerVersion && !RestrictedServerVersion.allowedToStart((RestrictedServerVersion) module))
             {
                 if (module.shouldNotify())
                     VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " is not compatible with your server version.", true, false);

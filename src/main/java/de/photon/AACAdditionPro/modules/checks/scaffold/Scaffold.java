@@ -102,7 +102,8 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
                     user.getPositionData().hasPlayerSneakedRecently(175)
             )))
         {
-            int vl = averagePattern.apply(user, event);
+            int vl = anglePattern.apply(user, event);
+            vl += averagePattern.apply(user, event);
             vl += positionPattern.apply(user, event);
 
             // --------------------------------------------- Rotations ---------------------------------------------- //

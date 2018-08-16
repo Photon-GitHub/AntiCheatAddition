@@ -24,7 +24,7 @@ import java.util.Set;
 
 public class Scaffold implements ListenerModule, PatternModule, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 70L);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 80L);
 
     private final Pattern<User, BlockPlaceEvent> anglePattern = new AnglePattern();
     private final Pattern<User, BlockPlaceEvent> averagePattern = new AveragePattern();

@@ -23,11 +23,17 @@ class AnglePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
         final Vector placedVector = new Vector(placedFace.getModX(), placedFace.getModY(), placedFace.getModZ());
 
         // If greater than 90
-        if (user.getPlayer().getLocation().getDirection().angle(placedVector) > MAX_ANGLE &&
-            ++user.getScaffoldData().angleFails > angleThreshold)
+        if (user.getPlayer().getLocation().getDirection().angle(placedVector) > MAX_ANGLE)
         {
-            VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " placed a block with a suspicious angle.");
-            return 3;
+            if (++user.getScaffoldData().angleFails > angleThreshold)
+            {
+                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " placed a block with a suspicious angle.");
+                return 3;
+            }
+        }
+        else
+        {
+            user.getScaffoldData().angleFails--;
         }
         return 0;
     }

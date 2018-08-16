@@ -496,7 +496,7 @@ Scaffold:
       enabled: true
       # How many suspicious angles should Scaffold count as legit
       # The value must be greater or equal to 0.
-      angle_threshold: 3
+      angle_threshold: 2
     # The main part of Scaffold preventing too fast Scaffolding
     # This part is always enabled as it provides the basic framework.
     # The average part might add between 4 and 24 violation levels depending on the severity of the violation.
@@ -523,12 +523,15 @@ Scaffold:
       # Disabling all types will disable the part.
       # Type1 will add 3 vl
       type1:
+        # Should this part of the check be enabled
         enabled: true
       # Type2 will add 2 vl
       type2:
+        # Should this part of the check be enabled
         enabled: true
       # Type3 will add 1 vl
       type3:
+        # Should this part of the check be enabled
         enabled: true
       # How many suspicious rotations should Scaffold count as legit
       # The value must be greater or equal to 0.
@@ -537,11 +540,16 @@ Scaffold:
     safewalk:
       # What types of this part should be enabled
       # Disabling all types will disable the part.
-      # Type1 will add 1 vl
+      # Type1 will add 3 vl
       type1:
+        # Should this part of the check be enabled
         enabled: true
+        # How many suspicious positions should Scaffold count as legit
+        # The value must be greater or equal to 0.
+        safewalk_threshold: 3
       # Type2 will add 2 vl
       type2:
+        # Should this part of the check be enabled
         enabled: true
     # This part detects sprinting between blockplaces.
     # The sprinting check always adds 8 vl.

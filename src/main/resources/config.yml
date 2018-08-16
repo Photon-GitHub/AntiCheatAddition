@@ -490,6 +490,7 @@ Scaffold:
   # Control the different solutions of Scaffold
   parts:
     # This part detects suspicious angles when the player places blocks.
+    # The angle part will add 3 vl if failed.
     angle:
       # Should this part of the check be enabled
       enabled: true
@@ -498,7 +499,7 @@ Scaffold:
       angle_threshold: 3
     # The main part of Scaffold preventing too fast Scaffolding
     # This part is always enabled as it provides the basic framework.
-    # The average check might add between 4 and 24 violation levels depending on the severity of the violation.
+    # The average part might add between 4 and 24 violation levels depending on the severity of the violation.
     average:
       # Should this part of the check be enabled
       enabled: true

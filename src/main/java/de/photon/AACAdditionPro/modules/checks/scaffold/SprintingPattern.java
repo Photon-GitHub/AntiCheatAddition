@@ -13,7 +13,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
  */
 class SprintingPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
-    @LoadFromConfiguration(configPath = ".parts.sprinting.sprinting_threshold")
+    @LoadFromConfiguration(configPath = ".sprinting_threshold")
     private int sprintingThreshold;
 
     @Override

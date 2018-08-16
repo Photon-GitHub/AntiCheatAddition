@@ -18,11 +18,11 @@ import de.photon.AACAdditionPro.util.mathematics.MathUtils;
  */
 class ComparePattern extends PatternModule.PacketPattern
 {
-    @LoadFromConfiguration(configPath = ".parts.Compare.allowed_offset")
+    @LoadFromConfiguration(configPath = ".allowed_offset")
     private int allowedOffset;
-    @LoadFromConfiguration(configPath = ".parts.Compare.compare_threshold")
+    @LoadFromConfiguration(configPath = ".compare_threshold")
     private int compareThreshold;
-    @LoadFromConfiguration(configPath = ".parts.Compare.violation_time")
+    @LoadFromConfiguration(configPath = ".violation_time")
     private int violationTime;
 
     ComparePattern()

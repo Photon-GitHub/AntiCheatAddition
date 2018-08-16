@@ -26,6 +26,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 70L);
 
+    private final Pattern<User, BlockPlaceEvent> anglePattern = new AnglePattern();
     private final Pattern<User, BlockPlaceEvent> averagePattern = new AveragePattern();
     private final Pattern<User, BlockPlaceEvent> positionPattern = new PositionPattern();
     private final Pattern<User, BlockPlaceEvent> rotationTypeOne = new RotationTypeOnePattern();
@@ -144,7 +145,8 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
     @Override
     public Set<Pattern> getPatterns()
     {
-        return ImmutableSet.of(averagePattern,
+        return ImmutableSet.of(anglePattern,
+                               averagePattern,
                                positionPattern,
                                rotationTypeOne,
                                rotationTypeTwo,

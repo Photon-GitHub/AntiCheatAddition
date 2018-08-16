@@ -20,6 +20,12 @@ public class ScaffoldData extends TimeData
     private static final double DELAY_DIAGONAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.diagonal");
 
     /**
+     * This is used to determine wrong angles while scaffolding.
+     * One wrong angle might be legit, but more instances are a clear hint.
+     */
+    public long angleFails = 0;
+
+    /**
      * This is used to determine fast rotations prior to scaffolding.
      * One fast rotation might be legit, but more instances are a clear hint.
      */

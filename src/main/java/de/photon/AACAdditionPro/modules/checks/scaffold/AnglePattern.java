@@ -13,7 +13,7 @@ class AnglePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
     private static final double MAX_ANGLE = Math.toRadians(90);
 
-    @LoadFromConfiguration(configPath = ".angle_threshold")
+    @LoadFromConfiguration(configPath = ".violation_threshold")
     private int angleThreshold;
 
     @Override

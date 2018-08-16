@@ -496,7 +496,7 @@ Scaffold:
       enabled: true
       # How many suspicious angles should Scaffold count as legit
       # The value must be greater or equal to 0.
-      angle_threshold: 2
+      violation_threshold: 2
     # The main part of Scaffold preventing too fast Scaffolding
     # This part is always enabled as it provides the basic framework.
     # The average part might add between 4 and 24 violation levels depending on the severity of the violation.
@@ -506,12 +506,12 @@ Scaffold:
       # The minimum delay between blockplaces that will be enforced by AACAdditionPro (measured in ms)
       delays:
         # This delay applies to all straight building techniques
-        normal: 248
+        normal: 238
         # Constants used for building techniques which include sneaking
         sneaking_addition: 30
         sneaking_slow_addition: 40
         # This delay applies to diagonal building
-        diagonal: 148
+        diagonal: 138
     # This part detects suspicious placement positions.
     # The position check always adds 5 vl.
     position:
@@ -535,7 +535,7 @@ Scaffold:
         enabled: true
       # How many suspicious rotations should Scaffold count as legit
       # The value must be greater or equal to 0.
-      rotation_threshold: 6
+      violation_threshold: 6
     # This checks for behaviour associated with safe-walk
     safewalk:
       # What types of this part should be enabled
@@ -546,11 +546,14 @@ Scaffold:
         enabled: true
         # How many suspicious positions should Scaffold count as legit
         # The value must be greater or equal to 0.
-        safewalk_threshold: 3
-      # Type2 will add 2 vl
+        violation_threshold: 1
+      # Type2 will add 4 vl
       type2:
         # Should this part of the check be enabled
         enabled: true
+        # How many suspicious positions should Scaffold count as legit
+        # The value must be greater or equal to 0.
+        violation_threshold: 1
     # This part detects sprinting between blockplaces.
     # The sprinting check always adds 8 vl.
     sprinting:
@@ -558,7 +561,7 @@ Scaffold:
       enabled: true
       # How many suspicious sprinting periods should Scaffold count as legit
       # The value must be greater or equal to 0.
-      sprinting_threshold: 3
+      violation_threshold: 3
   # Map of violation levels to command
   thresholds:
     16: "aacstaffnotify {player} in {world} is suspected for Scaffold"

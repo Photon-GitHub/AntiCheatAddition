@@ -15,7 +15,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
  */
 class SafewalkTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
-    @LoadFromConfiguration(configPath = ".safewalk_threshold")
+    @LoadFromConfiguration(configPath = ".violation_threshold")
     private int violationThreshold;
 
     @Override

@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
+import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -12,6 +13,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
  */
 class SafewalkTypeTwoPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
+    @LoadFromConfiguration(configPath = ".violation_threshold")
+    private int violationThreshold;
+
     @Override
     protected int process(User user, BlockPlaceEvent event)
     {
@@ -22,8 +26,15 @@ class SafewalkTypeTwoPattern extends PatternModule.Pattern<User, BlockPlaceEvent
             // Has not sneaked recently
             !(user.getPositionData().hasPlayerSneakedRecently(175) && user.getPositionData().getLastSneakTime() > 148))
         {
-            VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
-            return 2;
+            if (++user.getScaffoldData().safewalkTypeTwoFails > violationThreshold)
+            {
+                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
+                return 4;
+            }
+        }
+        else
+        {
+            user.getScaffoldData().safewalkTypeTwoFails--;
         }
         return 0;
     }

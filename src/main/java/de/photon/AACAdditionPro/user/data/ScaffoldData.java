@@ -38,6 +38,12 @@ public class ScaffoldData extends TimeData
     public long safewalkTypeOneFails = 0;
 
     /**
+     * This is used to suspicious locations.
+     * One fast rotation might be legit, but more instances are a clear hint.
+     */
+    public long safewalkTypeTwoFails = 0;
+
+    /**
      * This is used to determine sprinting during scaffolding.
      * Some sprinting might be legit.
      */

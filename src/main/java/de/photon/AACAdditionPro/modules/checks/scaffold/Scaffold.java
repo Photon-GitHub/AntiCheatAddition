@@ -42,7 +42,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
-    @LoadFromConfiguration(configPath = ".parts.rotation.rotation_threshold")
+    @LoadFromConfiguration(configPath = ".parts.rotation.violation_threshold")
     private int rotationThreshold;
 
     // ------------------------------------------- BlockPlace Handling ---------------------------------------------- //

@@ -23,6 +23,14 @@ public enum Configs
         this.configurationRepresentation = new ConfigurationRepresentation(this.configFile);
     }
 
+    public static void saveChangesForAllConfigs()
+    {
+        for (Configs config : values())
+        {
+            config.saveChanges();
+        }
+    }
+
     public void saveChanges()
     {
         try

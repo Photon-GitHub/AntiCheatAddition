@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.util.violationlevels;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationEvent;
+import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import org.bukkit.Bukkit;
@@ -98,6 +98,12 @@ public class ViolationLevelManagement implements Listener
      */
     public void flag(final Player player, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable specialCode)
     {
+        // Prevent unnecessary flagging.
+        if (vlIncrease <= 0)
+        {
+            return;
+        }
+
         // Only create the event if it should be called.
         final PlayerAdditionViolationEvent playerAdditionViolationEvent = new PlayerAdditionViolationEvent(
                 player,

@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.user.data;
 
-import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
 import de.photon.AACAdditionPro.heuristics.NeuralPattern;
+import de.photon.AACAdditionPro.modules.checks.InventoryHeuristics;
 import de.photon.AACAdditionPro.user.Data;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.datawrappers.InventoryClick;

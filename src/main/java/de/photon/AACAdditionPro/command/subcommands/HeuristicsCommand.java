@@ -8,6 +8,7 @@ import de.photon.AACAdditionPro.command.subcommands.heuristics.ListCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.RemoveCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.RenameCommand;
 import de.photon.AACAdditionPro.command.subcommands.heuristics.TrainCommand;
+import de.photon.AACAdditionPro.modules.checks.InventoryHeuristics;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -17,8 +18,8 @@ import java.util.Queue;
 public class HeuristicsCommand extends InternalCommand
 {
     /**
-     * The constant for the {@link de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics}' interactions with the chat.
-     * This is the header that appears on top of each message block sent by the {@link de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics}.
+     * The constant for the {@link InventoryHeuristics}' interactions with the chat.
+     * This is the header that appears on top of each message block sent by the {@link InventoryHeuristics}.
      */
     public static final String HEURISTICS_HEADER = ChatColor.GOLD + "------" + ChatColor.DARK_RED + " Heuristics - Pattern " + ChatColor.GOLD + "------";
     public static final String FRAMEWORK_DISABLED = PREFIX + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.";

@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.util.visibility.informationmodifiers;
 
 import com.comphenix.protocol.PacketType;
-import de.photon.AACAdditionPro.Module;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.visibility.PlayerInformationModifier;
@@ -30,6 +29,6 @@ public class InformationObfuscator extends PlayerInformationModifier
     @Override
     protected Set<ServerVersion> getSupportedVersions()
     {
-        return Module.NON_188_VERSIONS;
+        return ServerVersion.NON_188_VERSIONS;
     }
 }

@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.util.fakeentity.movement.submovements;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.api.killauraentity.Movement;
+import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.Location;
 

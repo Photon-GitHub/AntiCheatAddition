@@ -39,7 +39,7 @@ public class LookPacketData extends TimeData
     @Getter
     private final Deque<RotationChange> rotationChangeQueue = new LinkedList<>();
 
-    // First index is for timeout, second one for significant rotation changes (scaffold)
+    // [0] = Significant rotation changes (scaffold)
     public LookPacketData(final User user)
     {
         super(user, 0);

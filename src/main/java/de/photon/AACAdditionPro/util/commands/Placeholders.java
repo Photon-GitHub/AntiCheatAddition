@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.util.commands;
 import com.google.common.base.Preconditions;
 import de.photon.AACAdditionPro.util.general.StringUtils;
 import me.konsolas.aac.api.AACAPIProvider;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -60,6 +61,8 @@ public final class Placeholders
     private static String applyGlobalPlaceholders(String input, final World world, final String violationInformation)
     {
         Preconditions.checkState(AACAPIProvider.isAPILoaded(), "Placeholder-parsing failed because AAC's API is not loaded.");
+
+        input = applySinglePlaceholder(input, "{server}", Bukkit.getServerName(), Byte.MAX_VALUE);
 
         input = applySinglePlaceholder(input, "{tps}", String.valueOf(AACAPIProvider.getAPI().getTPS()), (byte) 5);
 

@@ -1,41 +1,43 @@
 package de.photon.AACAdditionPro;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import de.photon.AACAdditionPro.additions.LogBot;
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
-import de.photon.AACAdditionPro.checks.subchecks.AutoFish;
-import de.photon.AACAdditionPro.checks.subchecks.AutoPotion;
-import de.photon.AACAdditionPro.checks.subchecks.Esp;
-import de.photon.AACAdditionPro.checks.subchecks.Fastswitch;
-import de.photon.AACAdditionPro.checks.subchecks.GravitationalModifier;
-import de.photon.AACAdditionPro.checks.subchecks.ImpossibleChat;
-import de.photon.AACAdditionPro.checks.subchecks.InventoryHeuristics;
-import de.photon.AACAdditionPro.checks.subchecks.InventoryHit;
-import de.photon.AACAdditionPro.checks.subchecks.InventoryMove;
-import de.photon.AACAdditionPro.checks.subchecks.InventoryRotation;
-import de.photon.AACAdditionPro.checks.subchecks.KillauraEntity;
-import de.photon.AACAdditionPro.checks.subchecks.MultiInteraction;
-import de.photon.AACAdditionPro.checks.subchecks.PacketAnalysis;
-import de.photon.AACAdditionPro.checks.subchecks.Pingspoof;
-import de.photon.AACAdditionPro.checks.subchecks.Scaffold;
-import de.photon.AACAdditionPro.checks.subchecks.SkinBlinker;
-import de.photon.AACAdditionPro.checks.subchecks.Teaming;
-import de.photon.AACAdditionPro.checks.subchecks.Tower;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.BetterSprintingControl;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.DamageIndicator;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.FiveZigControl;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.ForgeControl;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LabyModControl;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.LiteloaderControl;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.OldLabyModControl;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.PXModControl;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.SchematicaControl;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VapeControl;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.VersionControl;
-import de.photon.AACAdditionPro.checks.subchecks.clientcontrol.WorldDownloaderControl;
 import de.photon.AACAdditionPro.command.MainCommand;
 import de.photon.AACAdditionPro.events.APILoadedEvent;
+import de.photon.AACAdditionPro.modules.ModuleManager;
+import de.photon.AACAdditionPro.modules.additions.LogBot;
+import de.photon.AACAdditionPro.modules.checks.AutoFish;
+import de.photon.AACAdditionPro.modules.checks.AutoPotion;
+import de.photon.AACAdditionPro.modules.checks.Esp;
+import de.photon.AACAdditionPro.modules.checks.Fastswitch;
+import de.photon.AACAdditionPro.modules.checks.GravitationalModifier;
+import de.photon.AACAdditionPro.modules.checks.ImpossibleChat;
+import de.photon.AACAdditionPro.modules.checks.InventoryHeuristics;
+import de.photon.AACAdditionPro.modules.checks.InventoryHit;
+import de.photon.AACAdditionPro.modules.checks.InventoryMove;
+import de.photon.AACAdditionPro.modules.checks.InventoryRotation;
+import de.photon.AACAdditionPro.modules.checks.KillauraEntity;
+import de.photon.AACAdditionPro.modules.checks.MultiInteraction;
+import de.photon.AACAdditionPro.modules.checks.Pingspoof;
+import de.photon.AACAdditionPro.modules.checks.SkinBlinker;
+import de.photon.AACAdditionPro.modules.checks.Teaming;
+import de.photon.AACAdditionPro.modules.checks.Tower;
+import de.photon.AACAdditionPro.modules.checks.packetanalysis.PacketAnalysis;
+import de.photon.AACAdditionPro.modules.checks.scaffold.Scaffold;
+import de.photon.AACAdditionPro.modules.clientcontrol.BetterSprintingControl;
+import de.photon.AACAdditionPro.modules.clientcontrol.DamageIndicator;
+import de.photon.AACAdditionPro.modules.clientcontrol.FiveZigControl;
+import de.photon.AACAdditionPro.modules.clientcontrol.ForgeControl;
+import de.photon.AACAdditionPro.modules.clientcontrol.LabyModControl;
+import de.photon.AACAdditionPro.modules.clientcontrol.LiteloaderControl;
+import de.photon.AACAdditionPro.modules.clientcontrol.OldLabyModControl;
+import de.photon.AACAdditionPro.modules.clientcontrol.PXModControl;
+import de.photon.AACAdditionPro.modules.clientcontrol.SchematicaControl;
+import de.photon.AACAdditionPro.modules.clientcontrol.VapeControl;
+import de.photon.AACAdditionPro.modules.clientcontrol.VersionControl;
+import de.photon.AACAdditionPro.modules.clientcontrol.WorldDownloaderControl;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.fakeentity.DelegatingKillauraEntityController;
@@ -45,6 +47,7 @@ import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.myles.ViaVersion.api.Via;
@@ -231,7 +234,7 @@ public class AACAdditionPro extends JavaPlugin
 
             // Managers
             this.registerListener(new UserManager());
-            this.moduleManager = new ModuleManager(
+            this.moduleManager = new ModuleManager(ImmutableSet.of(
                     // Additions
                     new LogBot(),
 
@@ -267,7 +270,7 @@ public class AACAdditionPro extends JavaPlugin
                     new Scaffold(),
                     new SkinBlinker(),
                     new Teaming(),
-                    new Tower()
+                    new Tower())
             );
 
             // Commands
@@ -298,17 +301,11 @@ public class AACAdditionPro extends JavaPlugin
         // Plugin is already disabled -> VerboseSender is not allowed to register a task
         VerboseSender.getInstance().setAllowedToRegisterTasks(false);
 
-        // Disable all checks
-        try
-        {
-            moduleManager.forEach(Module::disable);
-        } catch (NullPointerException ignore)
-        {
-            // This can happen if the modulemanager is already finalized.
-        }
+        moduleManager.shutdown();
 
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
+        HandlerList.unregisterAll(AACAdditionPro.getInstance());
 
         VerboseSender.getInstance().sendVerboseMessage("AACAdditionPro disabled.", true, false);
         VerboseSender.getInstance().sendVerboseMessage(" ", true, false);
@@ -358,7 +355,7 @@ public class AACAdditionPro extends JavaPlugin
     }
 
     /**
-     * Disables all addons regarding the {@link de.photon.AACAdditionPro.checks.subchecks.KillauraEntity} check.
+     * Disables all addons regarding the {@link KillauraEntity} check.
      */
     public void disableKillauraEntityAPI()
     {

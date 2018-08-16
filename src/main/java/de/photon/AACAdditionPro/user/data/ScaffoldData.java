@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.user.data;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.datawrappers.ScaffoldBlockPlace;
@@ -20,10 +20,28 @@ public class ScaffoldData extends TimeData
     private static final double DELAY_DIAGONAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.diagonal");
 
     /**
+     * This is used to determine wrong angles while scaffolding.
+     * One wrong angle might be legit, but more instances are a clear hint.
+     */
+    public long angleFails = 0;
+
+    /**
      * This is used to determine fast rotations prior to scaffolding.
      * One fast rotation might be legit, but more instances are a clear hint.
      */
     public long rotationFails = 0;
+
+    /**
+     * This is used to suspicious locations.
+     * One fast rotation might be legit, but more instances are a clear hint.
+     */
+    public long safewalkTypeOneFails = 0;
+
+    /**
+     * This is used to suspicious locations.
+     * One fast rotation might be legit, but more instances are a clear hint.
+     */
+    public long safewalkTypeTwoFails = 0;
 
     /**
      * This is used to determine sprinting during scaffolding.

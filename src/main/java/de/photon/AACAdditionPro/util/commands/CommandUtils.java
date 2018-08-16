@@ -1,8 +1,8 @@
 package de.photon.AACAdditionPro.util.commands;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.ModuleType;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationCommandEvent;
+import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

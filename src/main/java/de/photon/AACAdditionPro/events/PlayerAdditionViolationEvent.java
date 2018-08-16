@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.events;
 
-import de.photon.AACAdditionPro.ModuleType;
+import de.photon.AACAdditionPro.modules.ModuleType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 

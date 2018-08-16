@@ -19,9 +19,11 @@ public class Reflect
 
     public static ClassReflect from(String classPath)
     {
-        try {
+        try
+        {
             return from(Reflect.class.getClassLoader().loadClass(classPath));
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e)
+        {
             e.printStackTrace();
         }
 

@@ -5,10 +5,10 @@ import de.photon.AACAdditionPro.user.User;
 import lombok.Getter;
 import org.bukkit.Location;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Deque;
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class PacketAnalysisData extends TimeData
 {
@@ -20,7 +20,7 @@ public class PacketAnalysisData extends TimeData
 
     // Synchronized lists as the Protocol is async.
     @Getter
-    private final List<KeepAlivePacketData> keepAlives = Collections.synchronizedList(new LinkedList<>());
+    private final Deque<KeepAlivePacketData> keepAlives = new ConcurrentLinkedDeque<>();
 
     public PacketAnalysisData(User user)
     {
@@ -30,23 +30,26 @@ public class PacketAnalysisData extends TimeData
 
     /**
      * Calculates how long the client needs to answer a KeepAlive packet on average.
-     * Only uses the last 3 values for the calculation.
+     * Only uses the last 4 values for the calculation.
      */
     public long recentKeepAliveResponseTime()
     {
         long sum = 0;
         int datapoints = 0;
 
-        for (int i = keepAlives.size() - 1; i >= 0 && datapoints <= 3; i--)
-        {
-            // Leave out ignored packets.
-            if (keepAlives.get(i).timeDifference < 0)
-            {
-                continue;
-            }
+        final Iterator<KeepAlivePacketData> iterator = keepAlives.descendingIterator();
+        KeepAlivePacketData data;
 
-            sum += keepAlives.get(i).timeDifference;
-            datapoints++;
+        while (iterator.hasNext() && datapoints <= 3)
+        {
+            data = iterator.next();
+
+            // Leave out ignored packets.
+            if (data.timeDifference >= 0)
+            {
+                sum += data.timeDifference;
+                datapoints++;
+            }
         }
         return sum / datapoints;
     }

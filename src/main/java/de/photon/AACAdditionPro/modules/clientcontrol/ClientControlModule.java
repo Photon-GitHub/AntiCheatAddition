@@ -5,7 +5,7 @@ import de.photon.AACAdditionPro.modules.Module;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
-import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import de.photon.AACAdditionPro.util.general.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,8 +18,7 @@ abstract class ClientControlModule implements Module
 
     // All the commands executed upon detection
     // If a module does not have commands to execute this will just be an empty list.
-    @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
-    private List<String> commandsOnDetection;
+    private List<String> commandsOnDetection = ConfigUtils.loadStringOrStringList(this.getConfigString() + ".commands_on_detection");
 
     /**
      * This is used for the ClientControl checks as they do not need full thresholds
@@ -81,6 +80,7 @@ abstract class ClientControlModule implements Module
 
     boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String... flags)
     {
+        System.out.println("Module " + this.getConfigString() + " Commands: " + this.commandsOnDetection.toString());
         final User user = UserManager.getUser(player.getUniqueId());
 
         return !User.isUserInvalid(user, this.getModuleType()) &&

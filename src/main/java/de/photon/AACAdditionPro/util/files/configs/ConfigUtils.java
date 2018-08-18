@@ -122,7 +122,7 @@ public final class ConfigUtils
             final String possibleCommand = AACAdditionPro.getInstance().getConfig().getString(path);
 
             // No-command indicator
-            if (possibleCommand.equals("{}"))
+            if (possibleCommand == null || possibleCommand.equals("{}"))
             {
                 return Collections.emptyList();
             }

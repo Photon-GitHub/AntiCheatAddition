@@ -9,6 +9,7 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -25,6 +26,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class InventoryData extends TimeData
 {
@@ -114,10 +116,23 @@ public class InventoryData extends TimeData
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            if (user != null)
+            if (user != null &&
+                event.getAction() == Action.RIGHT_CLICK_BLOCK &&
+                BlockUtils.CONTAINERS.contains(event.getClickedBlock().getType()))
             {
-                if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
-                    BlockUtils.CONTAINERS.contains(event.getClickedBlock().getType()))
+                boolean sneakingRequiredToPlaceBlock = false;
+                final ItemStack[] handStacks = InventoryUtils.getHandContents(event.getPlayer());
+                for (ItemStack handStack : handStacks)
+                {
+                    if (handStack.getType().isBlock())
+                    {
+                        sneakingRequiredToPlaceBlock = true;
+                        break;
+                    }
+                }
+
+                // Not sneaking when the player can place a block that way.
+                if (!(sneakingRequiredToPlaceBlock && event.getPlayer().isSneaking()))
                 {
                     user.getInventoryData().updateTimeStamp(0);
                 }

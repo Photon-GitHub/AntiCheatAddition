@@ -5,7 +5,7 @@ import de.photon.AACAdditionPro.modules.Module;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
-import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import de.photon.AACAdditionPro.util.general.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,8 +18,7 @@ abstract class ClientControlModule implements Module
 
     // All the commands executed upon detection
     // If a module does not have commands to execute this will just be an empty list.
-    @LoadFromConfiguration(configPath = ".commands_on_detection", listType = String.class)
-    private List<String> commandsOnDetection;
+    private List<String> commandsOnDetection = ConfigUtils.loadStringOrStringList(this.getConfigString() + ".commands_on_detection");
 
     /**
      * This is used for the ClientControl checks as they do not need full thresholds
@@ -83,20 +82,8 @@ abstract class ClientControlModule implements Module
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
-            return false;
-        }
-
-        // Bypassed players are already filtered out.
-        boolean flag = true;
-
-        if (isBrandChannel(channel))
-        {
-            flag = this.mcBrandMessageContains(channel, message, flags);
-        }
-
-        // Should flag
-        return flag;
+        return !User.isUserInvalid(user, this.getModuleType()) &&
+               this.isBrandChannel(channel) &&
+               this.mcBrandMessageContains(channel, message, flags);
     }
 }

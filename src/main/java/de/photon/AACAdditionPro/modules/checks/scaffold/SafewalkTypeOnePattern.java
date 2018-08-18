@@ -53,7 +53,7 @@ class SafewalkTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent
 
             if (sneakBorder)
             {
-                if (++user.getScaffoldData().safewalkTypeOneFails > violationThreshold)
+                if (++user.getScaffoldData().safewalkTypeOneFails >= this.violationThreshold)
                 {
                     VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
                     return 3;

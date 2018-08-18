@@ -412,7 +412,7 @@ PacketAnalysis:
       # How many offset milliseconds are classified as part of naturally fluctuating connections
       allowed_offset: 120
       # How many violations Compare will ignore before starting to flag
-      compare_threshold: 2
+      violation_threshold: 3
       # The minimum time between two violations to prevent excessive flagging in lag spikes
       # Measured in milliseconds
       violation_time: 10000
@@ -496,7 +496,7 @@ Scaffold:
       enabled: true
       # How many suspicious angles should Scaffold count as legit
       # The value must be greater or equal to 0.
-      violation_threshold: 2
+      violation_threshold: 3
     # The main part of Scaffold preventing too fast Scaffolding
     # This part is always enabled as it provides the basic framework.
     # The average part might add between 4 and 24 violation levels depending on the severity of the violation.
@@ -546,14 +546,14 @@ Scaffold:
         enabled: true
         # How many suspicious positions should Scaffold count as legit
         # The value must be greater or equal to 0.
-        violation_threshold: 1
+        violation_threshold: 2
       # Type2 will add 4 vl
       type2:
         # Should this part of the check be enabled
         enabled: true
         # How many suspicious positions should Scaffold count as legit
         # The value must be greater or equal to 0.
-        violation_threshold: 1
+        violation_threshold: 2
     # This part detects sprinting between blockplaces.
     # The sprinting check always adds 8 vl.
     sprinting:
@@ -561,7 +561,7 @@ Scaffold:
       enabled: true
       # How many suspicious sprinting periods should Scaffold count as legit
       # The value must be greater or equal to 0.
-      violation_threshold: 3
+      violation_threshold: 4
   # Map of violation levels to command
   thresholds:
     16: "aacstaffnotify {player} in {world} is suspected for Scaffold"

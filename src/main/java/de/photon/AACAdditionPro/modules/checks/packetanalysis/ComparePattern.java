@@ -20,8 +20,8 @@ class ComparePattern extends PatternModule.PacketPattern
 {
     @LoadFromConfiguration(configPath = ".allowed_offset")
     private int allowedOffset;
-    @LoadFromConfiguration(configPath = ".compare_threshold")
-    private int compareThreshold;
+    @LoadFromConfiguration(configPath = ".violation_threshold")
+    private int violationThreshold;
     @LoadFromConfiguration(configPath = ".violation_time")
     private int violationTime;
 
@@ -47,7 +47,7 @@ class ComparePattern extends PatternModule.PacketPattern
                 // Minimum time between flags to decrease lag spike effects.
                 if (!user.getPacketAnalysisData().recentlyUpdated(0, violationTime) &&
                     // Minimum fails to mitigate some fluctuations
-                    ++user.getPacketAnalysisData().compareFails > this.compareThreshold)
+                    ++user.getPacketAnalysisData().compareFails >= this.violationThreshold)
                 {
                     VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
 

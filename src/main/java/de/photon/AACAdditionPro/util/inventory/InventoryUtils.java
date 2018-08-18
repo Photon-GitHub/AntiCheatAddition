@@ -1,12 +1,35 @@
 package de.photon.AACAdditionPro.util.inventory;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.ItemStack;
 
 public final class InventoryUtils
 {
+    /**
+     * Gets the content of the main hand for version 1.8.8 or the content of both hands in higher versions.
+     */
+    public static ItemStack[] getHandContents(Player player)
+    {
+        switch (ServerVersion.getActiveServerVersion())
+        {
+            case MC188:
+                return new ItemStack[]{player.getInventory().getItemInHand()};
+            case MC111:
+            case MC112:
+            case MC113:
+                return new ItemStack[]{
+                        player.getInventory().getItemInMainHand(),
+                        player.getInventory().getItemInOffHand()
+                };
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
+    }
+
     /**
      * Calculates the distance between two raw slots.
      *

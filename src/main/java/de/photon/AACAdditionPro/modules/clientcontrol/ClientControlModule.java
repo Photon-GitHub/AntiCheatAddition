@@ -88,15 +88,6 @@ abstract class ClientControlModule implements Module
             return false;
         }
 
-        // Bypassed players are already filtered out.
-        boolean flag = true;
-
-        if (isBrandChannel(channel))
-        {
-            flag = this.mcBrandMessageContains(channel, message, flags);
-        }
-
-        // Should flag
-        return flag;
+        return this.isBrandChannel(channel) && this.mcBrandMessageContains(channel, message, flags);
     }
 }

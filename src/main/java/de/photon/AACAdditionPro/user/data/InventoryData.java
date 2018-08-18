@@ -117,6 +117,7 @@ public class InventoryData extends TimeData
             if (user != null)
             {
                 if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
+                    !event.getPlayer().isSneaking() &&
                     BlockUtils.CONTAINERS.contains(event.getClickedBlock().getType()))
                 {
                     user.getInventoryData().updateTimeStamp(0);

@@ -80,7 +80,6 @@ abstract class ClientControlModule implements Module
 
     boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String... flags)
     {
-        System.out.println("Module " + this.getConfigString() + " Commands: " + this.commandsOnDetection.toString());
         final User user = UserManager.getUser(player.getUniqueId());
 
         return !User.isUserInvalid(user, this.getModuleType()) &&

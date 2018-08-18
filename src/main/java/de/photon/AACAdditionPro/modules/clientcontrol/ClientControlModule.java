@@ -83,11 +83,8 @@ abstract class ClientControlModule implements Module
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
-            return false;
-        }
-
-        return this.isBrandChannel(channel) && this.mcBrandMessageContains(channel, message, flags);
+        return !User.isUserInvalid(user, this.getModuleType()) &&
+               this.isBrandChannel(channel) &&
+               this.mcBrandMessageContains(channel, message, flags);
     }
 }

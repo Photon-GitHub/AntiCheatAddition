@@ -31,7 +31,7 @@ import de.photon.AACAdditionPro.modules.clientcontrol.DamageIndicator;
 import de.photon.AACAdditionPro.modules.clientcontrol.FiveZigControl;
 import de.photon.AACAdditionPro.modules.clientcontrol.ForgeControl;
 import de.photon.AACAdditionPro.modules.clientcontrol.LabyModControl;
-import de.photon.AACAdditionPro.modules.clientcontrol.LiteloaderControl;
+import de.photon.AACAdditionPro.modules.clientcontrol.LiteLoaderControl;
 import de.photon.AACAdditionPro.modules.clientcontrol.OldLabyModControl;
 import de.photon.AACAdditionPro.modules.clientcontrol.PXModControl;
 import de.photon.AACAdditionPro.modules.clientcontrol.SchematicaControl;
@@ -244,7 +244,7 @@ public class AACAdditionPro extends JavaPlugin
                     new FiveZigControl(),
                     new ForgeControl(),
                     new LabyModControl(),
-                    new LiteloaderControl(),
+                    new LiteLoaderControl(),
                     new OldLabyModControl(),
                     new PXModControl(),
                     new SchematicaControl(),

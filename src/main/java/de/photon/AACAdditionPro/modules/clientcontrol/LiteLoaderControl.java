@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Set;
 
-public class LiteloaderControl extends ClientControlModule implements PluginMessageListenerModule
+public class LiteLoaderControl extends ClientControlModule implements PluginMessageListenerModule
 {
     private static final String[] LITELOADERFLAGS = {
             "LiteLoader"

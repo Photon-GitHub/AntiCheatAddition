@@ -14,14 +14,14 @@ import org.bukkit.event.block.BlockPlaceEvent;
 class SprintingPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
     @LoadFromConfiguration(configPath = ".violation_threshold")
-    private int violation_threshold;
+    private int violationThreshold;
 
     @Override
     public int process(User user, BlockPlaceEvent event)
     {
         if (user.getPositionData().hasPlayerSprintedRecently(400))
         {
-            if (++user.getScaffoldData().sprintingFails > this.violation_threshold)
+            if (++user.getScaffoldData().sprintingFails >= this.violationThreshold)
             {
                 VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
                 // Flag the player

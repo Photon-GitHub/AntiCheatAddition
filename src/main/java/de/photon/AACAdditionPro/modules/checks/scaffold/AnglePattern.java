@@ -14,7 +14,7 @@ class AnglePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
     private static final double MAX_ANGLE = Math.toRadians(90);
 
     @LoadFromConfiguration(configPath = ".violation_threshold")
-    private int angleThreshold;
+    private int violationThreshold;
 
     @Override
     protected int process(User user, BlockPlaceEvent event)
@@ -25,13 +25,13 @@ class AnglePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
         // If greater than 90
         if (user.getPlayer().getLocation().getDirection().angle(placedVector) > MAX_ANGLE)
         {
-            if (++user.getScaffoldData().angleFails > angleThreshold)
+            if (++user.getScaffoldData().angleFails >= this.violationThreshold)
             {
                 VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " placed a block with a suspicious angle.");
                 return 3;
             }
         }
-        else
+        else if (user.getScaffoldData().angleFails > 0)
         {
             user.getScaffoldData().angleFails--;
         }

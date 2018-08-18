@@ -26,13 +26,13 @@ class SafewalkTypeTwoPattern extends PatternModule.Pattern<User, BlockPlaceEvent
             // Has not sneaked recently
             !(user.getPositionData().hasPlayerSneakedRecently(175) && user.getPositionData().getLastSneakTime() > 148))
         {
-            if (++user.getScaffoldData().safewalkTypeTwoFails > violationThreshold)
+            if (++user.getScaffoldData().safewalkTypeTwoFails >= this.violationThreshold)
             {
                 VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
                 return 4;
             }
         }
-        else
+        else if (user.getScaffoldData().safewalkTypeTwoFails > 0)
         {
             user.getScaffoldData().safewalkTypeTwoFails--;
         }

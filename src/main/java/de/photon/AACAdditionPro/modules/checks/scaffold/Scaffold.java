@@ -116,7 +116,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
 
             if (rotationVl > 0)
             {
-                if (++user.getScaffoldData().rotationFails > this.rotationThreshold)
+                if (++user.getScaffoldData().rotationFails >= this.rotationThreshold)
                 {
                     // Flag the player
                     vl += rotationVl;

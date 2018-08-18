@@ -220,12 +220,12 @@ InventoryHit:
 InventoryMove:
   # Do you want to enable the InventoryMove check
   enabled: true
-  # The minimum TPS the server must have to activate this check
-  # Low TPS will cause an extreme amount of false positives.
-  min_tps: 19.5
   # Violation before AACAdditionPro starts to cancel the movements.
   # Set this to 0 to never cancel movement.
   cancel_vl: 10
+  # The minimum TPS the server must have to activate this check
+  # Low TPS will cause an extreme amount of false positives.
+  min_tps: 19.5
   # This allows to add more lenience on servers with very high-ping players by stretching the no-punish time after
   # opening an inventory.
   # Normal connections are already covered by the default values.

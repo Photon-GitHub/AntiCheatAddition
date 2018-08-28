@@ -9,7 +9,7 @@ import org.bukkit.Location;
 public class BasicFollowMovement implements Movement
 {
     private final double entityOffset = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.KILLAURA_ENTITY.getConfigString() + ".position.entityOffset");
-    private double offsetRandomizationRange = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.KILLAURA_ENTITY.getConfigString() + ".position.offsetRandomizationRange");
+    private final double offsetRandomizationRange = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.KILLAURA_ENTITY.getConfigString() + ".position.offsetRandomizationRange");
 
     private boolean isTPNeeded;
     private boolean shouldSprint;

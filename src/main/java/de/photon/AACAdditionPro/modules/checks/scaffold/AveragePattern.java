@@ -3,8 +3,11 @@ package de.photon.AACAdditionPro.modules.checks.scaffold;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.datawrappers.ScaffoldBlockPlace;
 import de.photon.AACAdditionPro.util.VerboseSender;
+import de.photon.AACAdditionPro.util.entity.PotionUtil;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.potion.PotionEffectType;
 
 /**
  * This {@link de.photon.AACAdditionPro.modules.PatternModule.Pattern} checks the average time between block places.
@@ -15,7 +18,14 @@ class AveragePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
     public int process(User user, BlockPlaceEvent event)
     {
         // Should check average?
-        if (user.getScaffoldData().getScaffoldBlockPlaces().hasReachedBufferSize())
+        // Buffer the ScaffoldBlockPlace
+        if (user.getScaffoldData().getScaffoldBlockPlaces().bufferObject(new ScaffoldBlockPlace(
+                event.getBlockPlaced(),
+                event.getBlockPlaced().getFace(event.getBlockAgainst()),
+                // Speed-Effect
+                PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED)),
+                user.getPlayer().getLocation().getYaw(),
+                user.getPositionData().hasPlayerSneakedRecently(175))))
         {
             /*
             Indices:

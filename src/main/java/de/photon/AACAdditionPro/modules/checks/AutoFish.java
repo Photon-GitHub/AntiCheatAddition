@@ -75,7 +75,7 @@ public class AutoFish implements ListenerModule, ViolationModule, RestrictedServ
                     user.getFishingData().bufferConsistencyData())
                 {
                     // Enough data, now checking
-                    final DoubleSummaryStatistics consistencyStatistics = user.getFishingData().consistencyBuffer.clearSummary();
+                    final DoubleSummaryStatistics consistencyStatistics = user.getFishingData().getStatistics().getSummaryStatistics();
 
                     // Calculate the maximum offset.
                     final double maxOffset = Math.max(MathUtils.offset(consistencyStatistics.getMin(), consistencyStatistics.getAverage()), MathUtils.offset(consistencyStatistics.getMax(), consistencyStatistics.getAverage()));
@@ -91,6 +91,8 @@ public class AutoFish implements ListenerModule, ViolationModule, RestrictedServ
                                                                    StringUtils.limitStringLength(String.valueOf(maxOffset), 7) +
                                                                    " | flag offset: " +
                                                                    StringUtils.limitStringLength(String.valueOf(flagOffset), 7));
+
+                    user.getFishingData().getStatistics().reset();
 
                     // Has the player violated the check?
                     if (flagOffset > 0)

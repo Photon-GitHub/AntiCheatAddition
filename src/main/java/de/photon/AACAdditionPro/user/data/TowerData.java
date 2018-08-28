@@ -17,31 +17,18 @@ public class TowerData extends TimeData
     private static final int BUFFER_SIZE = 6;
 
     @Getter
-    protected final ConditionalBuffer<TowerBlockPlace> blockPlaces = new ConditionalBuffer<TowerBlockPlace>(BUFFER_SIZE)
+    private final ConditionalBuffer<TowerBlockPlace> blockPlaces = new ConditionalBuffer<TowerBlockPlace>(BUFFER_SIZE)
     {
         @Override
         protected boolean verifyObject(TowerBlockPlace object)
         {
-            return blockPlaces.isEmpty() ||
-                   BlockUtils.isNext(blockPlaces.peek().getBlock(), object.getBlock(), false);
+            return this.getDeque().isEmpty() || BlockUtils.isNext(this.getDeque().peek().getBlock(), object.getBlock(), false);
         }
     };
 
     public TowerData(final User user)
     {
         super(user, 0);
-    }
-
-    /**
-     * Adds a {@link TowerBlockPlace} to the buffer
-     *
-     * @param towerBlockPlace The {@link TowerBlockPlace} which should be added.
-     *
-     * @return whether or not the {@link TowerBlockPlace} was accepted by {@link ConditionalBuffer#verifyObject(Object)}
-     */
-    public boolean bufferBlockPlace(final TowerBlockPlace towerBlockPlace)
-    {
-        return blockPlaces.bufferObject(towerBlockPlace);
     }
 
     /**
@@ -56,7 +43,7 @@ public class TowerData extends TimeData
     {
         final double[] result = new double[2];
         // -1 because there is one pop to fill the "last" variable in the beginning.
-        final int divisor = this.blockPlaces.size() - 1;
+        final int divisor = this.blockPlaces.getDeque().size() - 1;
         this.blockPlaces.clearLastTwoObjectsIteration((last, current) -> {
             result[0] += current.calculateDelay();
             result[1] += (last.getTime() - current.getTime());
@@ -69,7 +56,7 @@ public class TowerData extends TimeData
     @Override
     public void unregister()
     {
-        this.blockPlaces.clear();
+        this.blockPlaces.getDeque().clear();
         super.unregister();
     }
 }

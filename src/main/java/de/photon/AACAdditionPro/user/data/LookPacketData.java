@@ -169,6 +169,7 @@ public class LookPacketData extends TimeData
                 {
                     user.getLookPacketData().rotationChangeQueue.addLast(rotationChange);
                 }
+
                 while (user.getLookPacketData().rotationChangeQueue.size() > QUEUE_CAPACITY)
                 {
                     user.getLookPacketData().rotationChangeQueue.removeFirst();

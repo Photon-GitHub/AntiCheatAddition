@@ -150,6 +150,12 @@ public class LookPacketData extends TimeData
                 !event.isCancelled())
             {
                 final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+                if (user == null)
+                {
+                    return;
+                }
+
                 final IWrapperPlayClientLook lookWrapper = event::getPacket;
 
                 final RotationChange rotationChange = new RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());

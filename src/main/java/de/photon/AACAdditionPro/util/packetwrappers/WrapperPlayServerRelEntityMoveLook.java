@@ -23,12 +23,14 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
     @Override
     public int getByteOffset()
     {
+        //TODO: UNVERIFIED!!!
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
                 return 3;
             case MC111:
             case MC112:
+            case MC113:
                 return 0;
             default:
                 throw new IllegalStateException("Unknown minecraft version");

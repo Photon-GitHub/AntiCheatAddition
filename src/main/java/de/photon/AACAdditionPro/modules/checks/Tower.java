@@ -63,7 +63,8 @@ public class Tower implements ListenerModule, ViolationModule
                     break;
                 case MC111:
                 case MC112:
-                    levitation = PotionUtil.getAmplifier(user.getPlayer().getPotionEffect(PotionEffectType.LEVITATION));
+                case MC113:
+                    levitation = PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.LEVITATION));
                     break;
                 default:
                     throw new IllegalStateException("Unknown minecraft version");

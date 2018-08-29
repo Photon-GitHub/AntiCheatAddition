@@ -231,17 +231,18 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
+                // Health
                 dataWatcher.setObject(6, 20F);
+                // Skin flags
                 dataWatcher.setObject(10, (byte) 127);
                 break;
-            case MC110:
             case MC111:
             case MC112:
-                WrappedDataWatcher.WrappedDataWatcherObject[] objects = new WrappedDataWatcher.WrappedDataWatcherObject[2];
-                objects[0] = new WrappedDataWatcher.WrappedDataWatcherObject(6, WrappedDataWatcher.Registry.get(Byte.class));
-                objects[1] = new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(Byte.class));
-                dataWatcher.setObject(objects[0], (byte) 20);
-                dataWatcher.setObject(objects[1], (byte) 127);
+            case MC113:
+                // Health
+                dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(7, WrappedDataWatcher.Registry.get(Byte.class)), (byte) 20);
+                // Skin flags
+                dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(13, WrappedDataWatcher.Registry.get(Byte.class)), (byte) 127);
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");

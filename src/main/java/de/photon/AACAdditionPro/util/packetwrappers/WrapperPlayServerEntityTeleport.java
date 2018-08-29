@@ -27,6 +27,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
                 return handle.getIntegers().read(1) / 32.0;
             case MC111:
             case MC112:
+            case MC113:
                 return handle.getDoubles().read(0);
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -42,6 +43,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
                 break;
             case MC111:
             case MC112:
+            case MC113:
                 handle.getDoubles().write(0, value);
                 break;
             default:
@@ -57,6 +59,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
                 return handle.getIntegers().read(2) / 32.0;
             case MC111:
             case MC112:
+            case MC113:
                 return handle.getDoubles().read(1);
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -72,6 +75,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
                 break;
             case MC111:
             case MC112:
+            case MC113:
                 handle.getDoubles().write(1, value);
                 break;
             default:
@@ -87,6 +91,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
                 return handle.getIntegers().read(3) / 32.0;
             case MC111:
             case MC112:
+            case MC113:
                 return handle.getDoubles().read(2);
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -102,6 +107,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
                 break;
             case MC111:
             case MC112:
+            case MC113:
                 handle.getDoubles().write(2, value);
                 break;
             default:

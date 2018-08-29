@@ -32,7 +32,9 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 return handle.getBytes().read(0) / 32D;
             case MC111:
             case MC112:
-                return handle.getIntegers().read(1) / 4096D;
+            case MC113:
+                // TODO: ACTUALLY VERIFY THAT THESE ARE NOT INTEGERS!!!
+                return handle.getShorts().read(1) / 4096D;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
@@ -47,7 +49,9 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 break;
             case MC111:
             case MC112:
-                handle.getIntegers().write(1, (int) (value * 4096));
+            case MC113:
+                // TODO: ACTUALLY VERIFY THAT THESE ARE NOT INTEGERS!!!
+                handle.getShorts().write(1, (short) (value * 4096));
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -62,7 +66,9 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 return handle.getBytes().read(1) / 32D;
             case MC111:
             case MC112:
-                return handle.getIntegers().read(2) / 4096D;
+            case MC113:
+                // TODO: ACTUALLY VERIFY THAT THESE ARE NOT INTEGERS!!!
+                return handle.getShorts().read(2) / 4096D;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
@@ -77,7 +83,9 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 break;
             case MC111:
             case MC112:
-                handle.getIntegers().write(2, (int) (value * 4096));
+            case MC113:
+                // TODO: ACTUALLY VERIFY THAT THESE ARE NOT INTEGERS!!!
+                handle.getShorts().write(2, (short) (value * 4096));
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -92,7 +100,9 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 return handle.getBytes().read(2) / 32D;
             case MC111:
             case MC112:
-                return handle.getIntegers().read(3) / 4096D;
+            case MC113:
+                // TODO: ACTUALLY VERIFY THAT THESE ARE NOT INTEGERS!!!
+                return handle.getShorts().read(3) / 4096D;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
@@ -107,7 +117,9 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 break;
             case MC111:
             case MC112:
-                handle.getIntegers().write(3, (int) (value * 4096));
+            case MC113:
+                // TODO: ACTUALLY VERIFY THAT THESE ARE NOT INTEGERS!!!
+                handle.getShorts().write(3, (short) (value * 4096));
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");

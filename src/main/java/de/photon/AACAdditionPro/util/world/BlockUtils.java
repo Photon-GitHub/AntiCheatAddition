@@ -32,6 +32,8 @@ public final class BlockUtils
 
             case MC111:
             case MC112:
+                // TODO: UNVERIFIED!
+            case MC113:
                 CONTAINERS = ImmutableSet.of(Material.CHEST,
                                              Material.TRAPPED_CHEST,
                                              Material.ENDER_CHEST,

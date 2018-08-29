@@ -82,7 +82,8 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
 
                 case MC111:
                 case MC112:
-                    // index 7 in 1.10+
+                case MC113:
+                    // index 7 in 1.11+
                     index = 7;
 
                     if (!entity.getPassengers().isEmpty())

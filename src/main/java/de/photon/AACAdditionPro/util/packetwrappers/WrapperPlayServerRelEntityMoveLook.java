@@ -23,7 +23,6 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
     @Override
     public int getByteOffset()
     {
-        //TODO: UNVERIFIED!!!
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:

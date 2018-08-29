@@ -5,6 +5,10 @@ import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 
 public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOnGround
 {
+    /**
+     * This is a method to support multiple packets in one interface.
+     * Minecraft 1.8.8 has various other packet layouts that make this method one necessary.
+     */
     default int getByteOffset()
     {
         return 0;

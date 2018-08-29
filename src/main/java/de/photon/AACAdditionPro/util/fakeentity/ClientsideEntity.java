@@ -496,15 +496,12 @@ public abstract class ClientsideEntity
             case MC111:
             case MC112:
             case MC113:
-                final WrappedDataWatcher.WrappedDataWatcherObject visibilityWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class));
-                final WrappedDataWatcher.WrappedDataWatcherObject arrowInEntityWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(Integer.class));
-
                 entityMetadataWrapper.setMetadata(Arrays.asList(
                         // Invisibility itself
-                        new WrappedWatchableObject(visibilityWatcher, visibleByte),
+                        new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class)), visibleByte),
                         // Arrows in entity.
                         // IN 1.12.2 THIS IS AN INTEGER!
-                        new WrappedWatchableObject(arrowInEntityWatcher, 0)));
+                        new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(Integer.class)), 0)));
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");

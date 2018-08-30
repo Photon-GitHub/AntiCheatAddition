@@ -17,12 +17,15 @@ public class FishingData extends TimeData
      */
     public int failedCounter = 0;
 
+    public boolean lastAttemptSuccessful = false;
+
     @Getter
     private final DoubleStatistics statistics = new DoubleStatistics();
 
     public FishingData(final User user)
     {
-        super(user, 0, 0);
+        // [0] = Timestamp of last fish bite (PlayerFishEvent.State.BITE)
+        super(user, 0);
     }
 
     /**

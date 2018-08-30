@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 
 class InhumanReactionPattern extends PatternModule.Pattern<User, PlayerFishEvent>
 {
-    @LoadFromConfiguration(configPath = ".parts.inhuman_reaction.fishing_milliseconds")
+    @LoadFromConfiguration(configPath = ".fishing_milliseconds")
     private int fishing_milliseconds;
 
     @Override

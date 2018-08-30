@@ -432,7 +432,7 @@ public abstract class ClientsideEntity
             int knockbackStrength = observedPlayer.isSprinting() ? 1 : 0;
 
             // The first index is always the main hand.
-            final ItemStack itemInHand = InventoryUtils.getHandContents(observedPlayer)[0];
+            final ItemStack itemInHand = InventoryUtils.getHandContents(observedPlayer).get(0);
 
             if (itemInHand != null)
             {

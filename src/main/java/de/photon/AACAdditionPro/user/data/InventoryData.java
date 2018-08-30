@@ -121,8 +121,7 @@ public class InventoryData extends TimeData
                 BlockUtils.CONTAINERS.contains(event.getClickedBlock().getType()))
             {
                 boolean sneakingRequiredToPlaceBlock = false;
-                final ItemStack[] handStacks = InventoryUtils.getHandContents(event.getPlayer());
-                for (ItemStack handStack : handStacks)
+                for (ItemStack handStack : InventoryUtils.getHandContents(event.getPlayer()))
                 {
                     if (handStack.getType().isBlock())
                     {

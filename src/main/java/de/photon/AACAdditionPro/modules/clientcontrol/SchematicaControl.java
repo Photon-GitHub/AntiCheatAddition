@@ -62,7 +62,6 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
         {
             e.printStackTrace();
         }
-
     }
 
     @Override

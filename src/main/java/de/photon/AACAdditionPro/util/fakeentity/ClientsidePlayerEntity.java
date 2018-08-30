@@ -241,7 +241,7 @@ public class ClientsidePlayerEntity extends ClientsideEntity
             case MC113:
                 //TODO: THIS CRASHES CLIENTS!
                 // Health
-                dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(7, WrappedDataWatcher.Registry.get(Byte.class)), (byte) 20);
+                dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(7, WrappedDataWatcher.Registry.get(Float.class)), (byte) 20);
                 // Skin flags
                 dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(13, WrappedDataWatcher.Registry.get(Byte.class)), (byte) 127);
                 break;

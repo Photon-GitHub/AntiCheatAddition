@@ -19,7 +19,6 @@ import java.util.Set;
 
 public class SchematicaControl extends ClientControlModule implements ListenerModule, PluginMessageListenerModule
 {
-    @SuppressWarnings("FieldCanBeLocal")
     private static final String SCHEMATICA_CHANNEL = "schematica";
 
     /**

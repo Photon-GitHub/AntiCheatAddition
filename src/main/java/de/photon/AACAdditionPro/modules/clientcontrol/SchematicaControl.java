@@ -44,8 +44,6 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
             return;
         }
 
-        byte[] pluginMessage = null;
-
         // Encoding the data
         try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
              final DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream))
@@ -57,14 +55,14 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
                 dataOutputStream.writeBoolean(b);
             }
 
-            // The message that is sent to disable the plugin
-            pluginMessage = byteArrayOutputStream.toByteArray();
+            user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(),
+                                               SCHEMATICA_CHANNEL,
+                                               Objects.requireNonNull(byteArrayOutputStream.toByteArray(), "Schematica plugin message is null"));
         } catch (final IOException e)
         {
             e.printStackTrace();
         }
 
-        user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), SCHEMATICA_CHANNEL, Objects.requireNonNull(pluginMessage, "Schematica plugin message is null"));
     }
 
     @Override

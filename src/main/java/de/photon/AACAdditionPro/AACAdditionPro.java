@@ -72,7 +72,7 @@ public class AACAdditionPro extends JavaPlugin
      * If the version of AAC is older than this version the plugin will disable itself in order to assure that bugs
      * cannot be caused by an incompatible AAC version.
      */
-    private static final transient String minimumAACVersion = "3.5.0";
+    private static final transient String MINIMUM_AAC_VERSION = "3.5.0";
 
     private static final Field killauraEntityControllerField;
     private static final Field delegatingKillauraEntityControllerField;
@@ -116,32 +116,28 @@ public class AACAdditionPro extends JavaPlugin
     /**
      * Checks if the given AAC version is too old for AACAdditionPro.
      */
-    private static boolean isVersionTooOld(String aacVersionNumber)
+    private static boolean isVersionTooOld(final String aacVersionNumber)
     {
-        final String[] minVersionParts = AACAdditionPro.minimumAACVersion.split(".");
-        final String[] versionNumberParts = aacVersionNumber.split(".");
+        final String[] minimumVersionParts = AACAdditionPro.MINIMUM_AAC_VERSION.split("\\.");
+        final String[] actualVersionParts = aacVersionNumber.split("\\.");
 
-        final int minLength = Math.min(minVersionParts.length, versionNumberParts.length);
-        int oneNumber;
-        int twoNumber;
+        final int smallestLength = Math.min(minimumVersionParts.length, actualVersionParts.length);
+        int minimumVersionPart;
+        int actualVersionPart;
 
-        for (int i = 0; i < minLength; i++)
+        for (int i = 0; i < smallestLength; i++)
         {
-            oneNumber = Integer.valueOf(minVersionParts[i]);
-            twoNumber = Integer.valueOf(versionNumberParts[i]);
+            minimumVersionPart = Integer.valueOf(minimumVersionParts[i]);
+            actualVersionPart = Integer.valueOf(actualVersionParts[i]);
 
-            if (oneNumber > twoNumber)
-            {
-                return true;
-            }
-            else if (oneNumber < twoNumber)
-            {
-                return false;
-            }
+            if (minimumVersionPart == actualVersionPart)
+                continue;
+
+            return minimumVersionPart > actualVersionPart;
         }
 
         // Same numbers, now check for additions
-        return minVersionParts.length > versionNumberParts.length;
+        return minimumVersionParts.length > actualVersionParts.length;
     }
 
     /**
@@ -211,7 +207,7 @@ public class AACAdditionPro extends JavaPlugin
             if (isVersionTooOld(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion()))
             {
                 VerboseSender.getInstance().sendVerboseMessage("AAC version is not supported.", true, true);
-                VerboseSender.getInstance().sendVerboseMessage("This plugin needs AAC version " + minimumAACVersion + " or newer.", true, true);
+                VerboseSender.getInstance().sendVerboseMessage("This plugin needs AAC version " + MINIMUM_AAC_VERSION + " or newer.", true, true);
                 return;
             }
 
@@ -300,8 +296,6 @@ public class AACAdditionPro extends JavaPlugin
     {
         // Plugin is already disabled -> VerboseSender is not allowed to register a task
         VerboseSender.getInstance().setAllowedToRegisterTasks(false);
-
-        moduleManager.shutdown();
 
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);

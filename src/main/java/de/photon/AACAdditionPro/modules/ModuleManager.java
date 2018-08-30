@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.modules;
 
+import com.google.common.base.Preconditions;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.util.files.configs.Configs;
@@ -7,6 +8,8 @@ import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -16,30 +19,18 @@ import java.util.Set;
 public final class ModuleManager
 {
     @Getter
-    private final Set<Module> modules;
+    private final Map<ModuleType, Module> modules = new EnumMap<>(ModuleType.class);
 
     public ModuleManager(final Set<Module> modules)
     {
-        this.modules = modules;
-        this.modules.forEach(Module::enableModule);
+        for (Module module : modules)
+        {
+            this.modules.put(module.getModuleType(), module);
+            Module.enableModule(module);
+        }
 
         // Invoke the changing of configs after all enable calls.
         Configs.saveChangesForAllConfigs();
-    }
-
-    /**
-     * Tries to orderly disable all modules.
-     */
-    public void shutdown()
-    {
-        // Disable all checks
-        try
-        {
-            this.modules.forEach(Module::disableModule);
-        } catch (NullPointerException ignore)
-        {
-            // This can happen if the modulemanager is already finalized.
-        }
     }
 
     /**
@@ -53,14 +44,9 @@ public final class ModuleManager
      */
     public Module getModule(final ModuleType moduleType)
     {
-        for (final Module module : this.modules)
-        {
-            if (module.getModuleType() == moduleType)
-            {
-                return module;
-            }
-        }
-        throw new IllegalArgumentException("The ModuleType: " + moduleType.name() + " is not used in any registered check (is the server version compatible with it?).");
+        final Module module = this.modules.get(moduleType);
+        Preconditions.checkArgument(module != null, "The ModuleType: " + moduleType.name() + " is not used in any registered check (is the server version compatible with it?).");
+        return module;
     }
 
     /**
@@ -76,6 +62,7 @@ public final class ModuleManager
     public ViolationLevelManagement getViolationLevelManagement(final ModuleType moduleType)
     {
         final Module module = this.getModule(moduleType);
+
         if (module instanceof ViolationModule)
         {
             return ((ViolationModule) module).getViolationLevelManagement();

@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.util.inventory;
 
+import com.google.common.collect.ImmutableList;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
 import org.bukkit.Bukkit;
@@ -7,24 +8,26 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public final class InventoryUtils
 {
     /**
      * Gets the content of the main hand for version 1.8.8 or the content of both hands in higher versions.
+     *
+     * @return an {@link ImmutableList} which contains all the {@link ItemStack}s a player has: 1 in MC 1.8.8 and 2 in higher versions.
      */
-    public static ItemStack[] getHandContents(Player player)
+    public static List<ItemStack> getHandContents(Player player)
     {
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
-                return new ItemStack[]{player.getInventory().getItemInHand()};
+                return ImmutableList.of(player.getInventory().getItemInHand());
             case MC111:
             case MC112:
             case MC113:
-                return new ItemStack[]{
-                        player.getInventory().getItemInMainHand(),
-                        player.getInventory().getItemInOffHand()
-                };
+                return ImmutableList.of(player.getInventory().getItemInMainHand(),
+                                        player.getInventory().getItemInOffHand());
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }

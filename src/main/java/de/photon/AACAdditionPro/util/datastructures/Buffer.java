@@ -2,18 +2,21 @@ package de.photon.AACAdditionPro.util.datastructures;
 
 import lombok.Getter;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class Buffer<T> extends Stack<T>
+public class Buffer<T>
 {
+    private final int capacity;
     @Getter
-    private final int bufferSize;
+    private Deque<T> deque;
 
-    public Buffer(final int bufferSize)
+    public Buffer(int capacity)
     {
-        this.bufferSize = bufferSize;
+        this.capacity = capacity;
+        this.deque = new ArrayDeque<>(this.capacity);
     }
 
     /**
@@ -25,26 +28,13 @@ public class Buffer<T> extends Stack<T>
      */
     public boolean bufferObject(final T object)
     {
-        this.bufferObjectIgnoreSize(object);
-        return this.size() >= this.bufferSize;
-    }
-
-    /**
-     * Adds an {@link Object} of type {@link T} to the buffer
-     *
-     * @param object The object which should be added.
-     *
-     * @return true if the {@link Object} was accepted
-     */
-    public boolean bufferObjectIgnoreSize(final T object)
-    {
-        this.push(object);
-        return true;
+        this.deque.push(object);
+        return this.hasReachedBufferSize();
     }
 
     public boolean hasReachedBufferSize()
     {
-        return this.size() >= this.bufferSize;
+        return this.deque.size() >= this.capacity;
     }
 
     /**
@@ -54,9 +44,9 @@ public class Buffer<T> extends Stack<T>
      */
     public void clearLastObjectIteration(final Consumer<T> lastObjectConsumer)
     {
-        while (!this.isEmpty())
+        while (!this.deque.isEmpty())
         {
-            lastObjectConsumer.accept(this.pop());
+            lastObjectConsumer.accept(this.deque.pop());
         }
     }
 
@@ -69,13 +59,13 @@ public class Buffer<T> extends Stack<T>
      */
     public void clearLastTwoObjectsIteration(final BiConsumer<T, T> lastObjectsConsumer)
     {
-        if (!this.isEmpty())
+        if (!this.deque.isEmpty())
         {
-            T last = this.pop();
+            T last = this.deque.pop();
             T current;
-            while (!this.isEmpty())
+            while (!this.deque.isEmpty())
             {
-                current = this.pop();
+                current = this.deque.pop();
                 lastObjectsConsumer.accept(last, current);
                 last = current;
             }

@@ -97,7 +97,7 @@ public class InventoryHeuristicsData extends Data
     @Override
     public void unregister()
     {
-        this.inventoryClicks.clear();
+        this.inventoryClicks.getDeque().clear();
         this.lastClick = null;
         this.trainingLabel = null;
         this.trainedPattern = null;

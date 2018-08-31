@@ -14,31 +14,25 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Set;
 
 public class SchematicaControl extends ClientControlModule implements ListenerModule, PluginMessageListenerModule
 {
-    @SuppressWarnings("FieldCanBeLocal")
     private static final String SCHEMATICA_CHANNEL = "schematica";
 
     /**
-     * This depicts what features of schematica are allowed
-     * true means that the
+     * This array holds what features of schematica should be disabled.
+     * Please note that the original plugin uses a positive layout (only allow what is set) and here we use a negative
+     * layout (only disable what is set), which is why the values are inverted. <p></p>
      * <p>
-     * [0] | printer <br>
-     * [1] | saveToFile <br>
-     * [2] | load
+     * Link to the original plugin: <a href="https://www.spigotmc.org/resources/schematicaplugin.14411/">https://www.spigotmc.org/resources/schematicaplugin.14411/</a>
      */
-    private final boolean[] features = new boolean[3];
-
-    public SchematicaControl()
-    {
-        // Disable parts
-        // True in config = Do disable
-        features[0] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.printer");
-        features[1] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.saveToFile");
-        features[2] = AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.load");
-    }
+    private final boolean[] disable = {
+            !AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.printer"),
+            !AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.saveToFile"),
+            !AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable.load")
+    };
 
     @EventHandler
     public void on(final PlayerJoinEvent event)
@@ -51,28 +45,22 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
         }
 
         // Encoding the data
-        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        final DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-
-        try
+        try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             final DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream))
         {
             dataOutputStream.writeByte(0);
-            for (final boolean b : features)
+
+            for (final boolean b : disable)
             {
                 dataOutputStream.writeBoolean(b);
             }
+
+            user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(),
+                                               SCHEMATICA_CHANNEL,
+                                               Objects.requireNonNull(byteArrayOutputStream.toByteArray(), "Schematica plugin message is null"));
         } catch (final IOException e)
         {
             e.printStackTrace();
-        }
-
-        // The message that is sent to disable the plugin
-        final byte[] pluginMessage = byteArrayOutputStream.toByteArray();
-
-        // TODO: Is this working? Maybe have a deeper look into Schematica.
-        if (pluginMessage != null)
-        {
-            user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), SCHEMATICA_CHANNEL, pluginMessage);
         }
     }
 

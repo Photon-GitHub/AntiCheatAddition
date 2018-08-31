@@ -18,7 +18,7 @@ abstract class ClientControlModule implements Module
 
     // All the commands executed upon detection
     // If a module does not have commands to execute this will just be an empty list.
-    private List<String> commandsOnDetection = ConfigUtils.loadStringOrStringList(this.getConfigString() + ".commands_on_detection");
+    private final List<String> commandsOnDetection = ConfigUtils.loadStringOrStringList(this.getConfigString() + ".commands_on_detection");
 
     /**
      * This is used for the ClientControl checks as they do not need full thresholds

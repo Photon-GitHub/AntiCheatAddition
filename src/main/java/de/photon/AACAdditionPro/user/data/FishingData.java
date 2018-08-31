@@ -4,21 +4,28 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.util.datastructures.DoubleBuffer;
+import de.photon.AACAdditionPro.util.datastructures.DoubleStatistics;
+import lombok.Getter;
 
 public class FishingData extends TimeData
 {
+    private static final int CONSISTENCY_EVENTS = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.AUTO_FISH.getConfigString() + ".parts.consistency.consistency_events");
+
     /**
      * This represents the amount of fails between two successful fishing times.
      * If this is too high an explanation attempt of an afk fish farm is more sensible than a bot.
      */
     public int failedCounter = 0;
 
-    public final DoubleBuffer consistencyBuffer = new DoubleBuffer(AACAdditionPro.getInstance().getConfig().getInt(ModuleType.AUTO_FISH.getConfigString() + ".parts.consistency.consistency_events"));
+    public boolean lastAttemptSuccessful = false;
+
+    @Getter
+    private final DoubleStatistics statistics = new DoubleStatistics();
 
     public FishingData(final User user)
     {
-        super(user, 0, 0);
+        // [0] = Timestamp of last fish bite (PlayerFishEvent.State.BITE)
+        super(user, 0);
     }
 
     /**
@@ -29,6 +36,7 @@ public class FishingData extends TimeData
      */
     public boolean bufferConsistencyData()
     {
-        return this.consistencyBuffer.bufferObject((double) (System.currentTimeMillis() - this.getTimeStamp(1)));
+        this.statistics.getSummaryStatistics().accept((double) (System.currentTimeMillis() - this.getTimeStamp(1)));
+        return this.statistics.getSummaryStatistics().getCount() >= CONSISTENCY_EVENTS;
     }
 }

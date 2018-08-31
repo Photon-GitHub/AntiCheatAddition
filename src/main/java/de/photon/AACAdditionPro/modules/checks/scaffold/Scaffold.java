@@ -7,8 +7,6 @@ import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.modules.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
-import de.photon.AACAdditionPro.user.datawrappers.ScaffoldBlockPlace;
-import de.photon.AACAdditionPro.util.entity.PotionUtil;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
@@ -18,7 +16,6 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.Set;
 
@@ -91,16 +88,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
             BlockUtils.getBlocksAround(blockPlaced, false).stream().filter(block -> !BlockUtils.LIQUIDS.contains(block.getType())).count() == 1 &&
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
-            BlockUtils.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())) &&
-            // Buffer the ScaffoldBlockPlace
-            user.getScaffoldData().getScaffoldBlockPlaces().bufferObjectIgnoreSize(new ScaffoldBlockPlace(
-                    blockPlaced,
-                    blockPlaced.getFace(event.getBlockAgainst()),
-                    // Speed-Effect
-                    PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED)),
-                    user.getPlayer().getLocation().getYaw(),
-                    user.getPositionData().hasPlayerSneakedRecently(175)
-            )))
+            BlockUtils.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
         {
             int vl = anglePattern.apply(user, event);
             vl += averagePattern.apply(user, event);

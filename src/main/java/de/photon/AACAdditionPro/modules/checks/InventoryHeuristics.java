@@ -100,13 +100,13 @@ public class InventoryHeuristics implements ListenerModule, ViolationModule
             // [1] = yDistance
             // [2] = Time deltas
             // [3] = ClickTypes
-            final double[][] inputMatrix = new double[4][user.getInventoryHeuristicsData().inventoryClicks.size()];
+            final double[][] inputMatrix = new double[4][user.getInventoryHeuristicsData().inventoryClicks.getDeque().size()];
 
-            int index = user.getInventoryHeuristicsData().inventoryClicks.size() - 1;
+            int index = user.getInventoryHeuristicsData().inventoryClicks.getDeque().size() - 1;
             InventoryClick.BetweenClickInformation current;
-            while (!user.getInventoryHeuristicsData().inventoryClicks.isEmpty())
+            while (!user.getInventoryHeuristicsData().inventoryClicks.getDeque().isEmpty())
             {
-                current = user.getInventoryHeuristicsData().inventoryClicks.pop();
+                current = user.getInventoryHeuristicsData().inventoryClicks.getDeque().pop();
                 inputMatrix[0][index] = current.xDistance;
                 inputMatrix[1][index] = current.yDistance;
 

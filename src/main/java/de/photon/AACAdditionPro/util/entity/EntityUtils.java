@@ -29,6 +29,7 @@ public final class EntityUtils
                 return false;
             case MC111:
             case MC112:
+            case MC113:
                 return livingEntity.isGliding();
             default:
                 throw new IllegalStateException("Unknown minecraft version");

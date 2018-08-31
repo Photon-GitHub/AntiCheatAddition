@@ -12,6 +12,7 @@ import de.photon.AACAdditionPro.util.entity.EntityUtils;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Collision;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
+import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
@@ -37,7 +38,6 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 public abstract class ClientsideEntity
@@ -262,6 +262,7 @@ public abstract class ClientsideEntity
                 break;
             case MC111:
             case MC112:
+            case MC113:
                 teleportThreshold = 8;
                 break;
             default:
@@ -430,19 +431,8 @@ public abstract class ClientsideEntity
             // Calculate knockback strength
             int knockbackStrength = observedPlayer.isSprinting() ? 1 : 0;
 
-            final ItemStack itemInHand;
-            switch (ServerVersion.getActiveServerVersion())
-            {
-                case MC188:
-                    itemInHand = observedPlayer.getItemInHand();
-                    break;
-                case MC111:
-                case MC112:
-                    itemInHand = observedPlayer.getInventory().getItemInMainHand();
-                    break;
-                default:
-                    throw new IllegalStateException("Unknown minecraft version");
-            }
+            // The first index is always the main hand.
+            final ItemStack itemInHand = InventoryUtils.getHandContents(observedPlayer).get(0);
 
             if (itemInHand != null)
             {
@@ -495,27 +485,23 @@ public abstract class ClientsideEntity
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
-                final List<WrappedWatchableObject> wrappedWatchableObjectsOldMC = Arrays.asList(
+                entityMetadataWrapper.setMetadata(Arrays.asList(
                         // Invisibility itself
                         new WrappedWatchableObject(0, visibleByte),
                         // Arrows in entity.
                         // IN 1.8.8 THIS IS A BYTE, NOT AN INTEGER!
-                        new WrappedWatchableObject(10, (byte) 0));
-                entityMetadataWrapper.setMetadata(wrappedWatchableObjectsOldMC);
+                        new WrappedWatchableObject(10, (byte) 0)));
                 break;
 
             case MC111:
             case MC112:
-                final WrappedDataWatcher.WrappedDataWatcherObject visibilityWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class));
-                final WrappedDataWatcher.WrappedDataWatcherObject arrowInEntityWatcher = new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(Integer.class));
-
-                final List<WrappedWatchableObject> wrappedWatchableObjectsNewMC = Arrays.asList(
+            case MC113:
+                entityMetadataWrapper.setMetadata(Arrays.asList(
                         // Invisibility itself
-                        new WrappedWatchableObject(visibilityWatcher, visibleByte),
+                        new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class)), visibleByte),
                         // Arrows in entity.
                         // IN 1.12.2 THIS IS AN INTEGER!
-                        new WrappedWatchableObject(arrowInEntityWatcher, 0));
-                entityMetadataWrapper.setMetadata(wrappedWatchableObjectsNewMC);
+                        new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(Integer.class)), 0)));
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");

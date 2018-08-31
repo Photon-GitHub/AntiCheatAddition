@@ -55,8 +55,7 @@ public class ScaffoldData extends TimeData
         @Override
         protected boolean verifyObject(ScaffoldBlockPlace object)
         {
-            return this.isEmpty() ||
-                   BlockUtils.isNext(this.peek().getBlock(), object.getBlock(), true);
+            return this.getDeque().isEmpty() || BlockUtils.isNext(this.getDeque().peek().getBlock(), object.getBlock(), true);
         }
     };
 
@@ -78,9 +77,9 @@ public class ScaffoldData extends TimeData
         final double[] result = new double[2];
 
         // -1 because there is one pop to fill the "last" variable in the beginning.
-        final int divisor = this.scaffoldBlockPlaces.size() - 1;
+        final int divisor = this.scaffoldBlockPlaces.getDeque().size() - 1;
 
-        final boolean moonwalk = this.scaffoldBlockPlaces.stream().filter((blockPlace) -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
+        final boolean moonwalk = this.scaffoldBlockPlaces.getDeque().stream().filter((blockPlace) -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
 
         this.scaffoldBlockPlaces.clearLastTwoObjectsIteration(
                 (last, current) ->

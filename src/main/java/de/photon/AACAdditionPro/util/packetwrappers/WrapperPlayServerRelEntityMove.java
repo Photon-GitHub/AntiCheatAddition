@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.google.common.base.Preconditions;
 import de.photon.AACAdditionPro.ServerVersion;
 
 public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity implements IWrapperPlayServerEntityOnGround
@@ -32,6 +33,8 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 return handle.getBytes().read(0) / 32D;
             case MC111:
             case MC112:
+            case MC113:
+                // Integers are ok, even though wiki.vg says short
                 return handle.getIntegers().read(1) / 4096D;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -40,6 +43,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public void setDx(double value)
     {
+        Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
@@ -47,6 +51,8 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 break;
             case MC111:
             case MC112:
+            case MC113:
+                // Integers are ok, even though wiki.vg says short
                 handle.getIntegers().write(1, (int) (value * 4096));
                 break;
             default:
@@ -62,6 +68,8 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 return handle.getBytes().read(1) / 32D;
             case MC111:
             case MC112:
+            case MC113:
+                // Integers are ok, even though wiki.vg says short
                 return handle.getIntegers().read(2) / 4096D;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -70,6 +78,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public void setDy(double value)
     {
+        Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
@@ -77,6 +86,8 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 break;
             case MC111:
             case MC112:
+            case MC113:
+                // Integers are ok, even though wiki.vg says short
                 handle.getIntegers().write(2, (int) (value * 4096));
                 break;
             default:
@@ -92,6 +103,8 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 return handle.getBytes().read(2) / 32D;
             case MC111:
             case MC112:
+            case MC113:
+                // Integers are ok, even though wiki.vg says short
                 return handle.getIntegers().read(3) / 4096D;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -100,6 +113,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
 
     public void setDz(double value)
     {
+        Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
@@ -107,6 +121,8 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 break;
             case MC111:
             case MC112:
+            case MC113:
+                // Integers are ok, even though wiki.vg says short
                 handle.getIntegers().write(3, (int) (value * 4096));
                 break;
             default:

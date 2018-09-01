@@ -21,7 +21,7 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ClientsidePlayerEntity extends ClientsideEntity
+public class ClientsidePlayerEntity extends ClientsideHittableLivingEntity
 {
     private final boolean visible_in_tablist;
     private final boolean shouldAssignTeam;

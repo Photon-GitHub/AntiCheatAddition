@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.util.mathematics;
 
+import de.photon.AACAdditionPro.util.fakeentity.ClientsideLivingEntity;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
@@ -66,7 +67,7 @@ public final class RotationUtil
     }
 
     /**
-     * Fixes the rotation for the {@link de.photon.AACAdditionPro.util.fakeentity.ClientsideEntity}s
+     * Fixes the rotation for the {@link ClientsideLivingEntity}s
      */
     public static byte getFixRotation(final float yawpitch)
     {

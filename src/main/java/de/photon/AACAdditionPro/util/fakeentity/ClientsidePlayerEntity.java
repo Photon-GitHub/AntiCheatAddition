@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.util.fakeentity;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
@@ -225,34 +224,11 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // Add the player in the Tablist via PlayerInfo
         this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, this.ping);
 
-        // DataWatcher
-        final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
-
-        switch (ServerVersion.getActiveServerVersion())
-        {
-            case MC188:
-                // Health
-                dataWatcher.setObject(6, 20F);
-                // Skin flags
-                dataWatcher.setObject(10, (byte) 127);
-                break;
-            case MC111:
-            case MC112:
-            case MC113:
-                // Health
-                dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(7, WrappedDataWatcher.Registry.get(Float.class)), 20F);
-                // Skin flags
-                dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(13, WrappedDataWatcher.Registry.get(Byte.class)), (byte) 127);
-                break;
-            default:
-                throw new IllegalStateException("Unknown minecraft version");
-        }
-
         // Spawn the entity
         final WrapperPlayServerNamedEntitySpawn spawnEntityWrapper = new WrapperPlayServerNamedEntitySpawn();
 
         spawnEntityWrapper.setEntityID(this.entityID);
-        spawnEntityWrapper.setMetadata(dataWatcher);
+        spawnEntityWrapper.setMetadata(spawnEntityWrapper.builder().setHealthMetadata(20F).setSkinMetadata((byte) 127).asWatcher());
         spawnEntityWrapper.setPosition(location.toVector());
         spawnEntityWrapper.setPlayerUUID(this.gameProfile.getUUID());
         spawnEntityWrapper.setYaw(ThreadLocalRandom.current().nextInt(15));

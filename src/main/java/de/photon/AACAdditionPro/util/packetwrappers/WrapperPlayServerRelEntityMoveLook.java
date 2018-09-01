@@ -6,8 +6,7 @@ import de.photon.AACAdditionPro.ServerVersion;
 
 public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEntityMove implements IWrapperPlayServerEntityLook
 {
-    public static final PacketType TYPE =
-            PacketType.Play.Server.REL_ENTITY_MOVE_LOOK;
+    public static final PacketType TYPE = PacketType.Play.Server.REL_ENTITY_MOVE_LOOK;
 
     public WrapperPlayServerRelEntityMoveLook()
     {
@@ -34,5 +33,17 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
+    }
+
+    @Override
+    public boolean getOnGround()
+    {
+        return this.getHandle().getBooleans().read(0);
+    }
+
+    @Override
+    public void setOnGround(final boolean value)
+    {
+        this.getHandle().getBooleans().write(0, value);
     }
 }

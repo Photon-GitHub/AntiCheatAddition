@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import de.photon.AACAdditionPro.ServerVersion;
+import org.bukkit.Location;
 
 public class WrapperPlayServerEntityTeleport extends AbstractPacket implements IWrapperPlayServerEntityLook
 {
@@ -17,6 +18,17 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
     public WrapperPlayServerEntityTeleport(PacketContainer packet)
     {
         super(packet, TYPE);
+    }
+
+    @Override
+    public void setWithLocation(Location location)
+    {
+        this.setX(location.getX());
+        this.setY(location.getY());
+        this.setZ(location.getZ());
+
+        this.setYaw(location.getYaw());
+        this.setPitch(location.getPitch());
     }
 
     public double getX()

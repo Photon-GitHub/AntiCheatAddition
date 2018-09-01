@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.util.packetwrappers;
 
-public interface IWrapperPlayServerEntityOnGround extends IWrapperPlayServerEntity
+public interface IWrapperPlayServerEntityOnGround extends IWrapperPlayEntity
 {
 
     /**

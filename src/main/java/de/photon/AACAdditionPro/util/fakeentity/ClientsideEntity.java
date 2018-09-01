@@ -1,20 +1,21 @@
 package de.photon.AACAdditionPro.util.fakeentity;
 
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
-import de.photon.AACAdditionPro.util.entity.EntityUtils;
+import de.photon.AACAdditionPro.util.entity.EntityUtil;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Collision;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientOnGround;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayServerEntityLook;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayServerRelEntityMove;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityDestroy;
@@ -24,7 +25,6 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityMetad
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityTeleport;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMove;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMoveLook;
-import de.photon.AACAdditionPro.util.reflection.Reflect;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -36,20 +36,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Objects;
 
 public abstract class ClientsideEntity
 {
     // xz-Distance after which a teleport is forced.
-    private static final Field entityCountField;
 
-    static
-    {
-        entityCountField = Reflect.fromNMS("Entity").field("entityCount").getField();
-        entityCountField.setAccessible(true);
-    }
 
     @Getter
     protected final int entityID;
@@ -123,13 +115,7 @@ public abstract class ClientsideEntity
         tickTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::tick, 1L, 1L);
 
         // Get a valid entity ID
-        try
-        {
-            this.entityID = getNextEntityID();
-        } catch (IllegalAccessException ex)
-        {
-            throw new RuntimeException("Could not create ClientsideEntity for player " + observedPlayer.getName(), ex);
-        }
+        this.entityID = EntityIdUtil.getNextEntityID();
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //
@@ -214,7 +200,7 @@ public abstract class ClientsideEntity
             // Whether the entity should jump if horizontally collided
             if (this.currentMovementCalculator.jumpIfCollidedHorizontally() &&
                 // Check whether the entity can really jump to that location.
-                EntityUtils.getMaterialsInHitbox(this.location.clone().add(tempJumpVelocity), this.hitbox).stream().noneMatch(material -> material != Material.AIR))
+                EntityUtil.getMaterialsInHitbox(this.location.clone().add(tempJumpVelocity), this.hitbox).stream().noneMatch(material -> material != Material.AIR))
             {
                 this.jump();
             }
@@ -246,14 +232,12 @@ public abstract class ClientsideEntity
             return;
         }
 
-        double xDiff = this.location.getX() - this.lastLocation.getX();
-        double yDiff = this.location.getY() - this.lastLocation.getY();
-        double zDiff = this.location.getZ() - this.lastLocation.getZ();
+        final Vector relativeLocation = this.location.toVector().subtract(this.lastLocation.toVector());
 
         final boolean savedOnGround = this.onGround;
 
         // Teleport needed ?
-        int teleportThreshold;
+        final int teleportThreshold;
         // Do not use the client version here.
         switch (ServerVersion.getActiveServerVersion())
         {
@@ -269,16 +253,11 @@ public abstract class ClientsideEntity
                 throw new IllegalStateException("Unknown minecraft version");
         }
 
-        if (Math.abs(xDiff) + Math.abs(yDiff) + Math.abs(zDiff) > teleportThreshold || needsTeleport)
+        if (Math.abs(relativeLocation.getX()) + Math.abs(relativeLocation.getY()) + Math.abs(relativeLocation.getZ()) > teleportThreshold || needsTeleport)
         {
             final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
-            // Position
-            teleportWrapper.setX(this.location.getX());
-            teleportWrapper.setY(this.location.getY());
-            teleportWrapper.setZ(this.location.getZ());
-            // Angle
-            teleportWrapper.setYaw(this.location.getYaw());
-            teleportWrapper.setPitch(this.location.getPitch());
+            // Position + Angle
+            teleportWrapper.setWithLocation(this.location);
             // OnGround
             teleportWrapper.setOnGround(savedOnGround);
             // Send the packet
@@ -289,54 +268,35 @@ public abstract class ClientsideEntity
         else
         {
             // Sending relative movement
-            boolean move = xDiff != 0 || yDiff != 0 || zDiff != 0;
-            boolean look = this.location.getPitch() != this.lastLocation.getPitch() || this.location.getYaw() != this.lastLocation.getYaw();
+            final boolean move = relativeLocation.lengthSquared() != 0;
+            final boolean look = this.location.getPitch() != this.lastLocation.getPitch() || this.location.getYaw() != this.lastLocation.getYaw();
 
-            WrapperPlayServerEntity packetWrapper;
+            // Get the correct packet.
+            final WrapperPlayServerEntity packetWrapper = move ?
+                                                          (look ?
+                                                           new WrapperPlayServerRelEntityMoveLook() :
+                                                           new WrapperPlayServerRelEntityMove()) :
+                                                          (look ?
+                                                           new WrapperPlayServerEntityLook() :
+                                                           new WrapperPlayServerEntity());
 
-            if (move)
+            if (packetWrapper instanceof IWrapperPlayClientOnGround)
             {
-                WrapperPlayServerRelEntityMove movePacketWrapper;
+                final IWrapperPlayClientOnGround onGroundWrapper = (IWrapperPlayClientOnGround) packetWrapper;
+                onGroundWrapper.setOnGround(savedOnGround);
 
-                if (look)
+                if (onGroundWrapper instanceof IWrapperPlayServerEntityLook)
                 {
-                    WrapperPlayServerRelEntityMoveLook moveLookPacketWrapper = new WrapperPlayServerRelEntityMoveLook();
-
-                    // Angle
-                    moveLookPacketWrapper.setYaw(this.location.getYaw());
-                    moveLookPacketWrapper.setPitch(this.location.getPitch());
-
-                    movePacketWrapper = moveLookPacketWrapper;
-                    // System.out.println("Sending movelook");
-                }
-                else
-                {
-                    movePacketWrapper = new WrapperPlayServerRelEntityMove();
-                    // System.out.println("Sending move");
+                    final IWrapperPlayServerEntityLook lookWrapper = (IWrapperPlayServerEntityLook) onGroundWrapper;
+                    lookWrapper.setYaw(this.location.getYaw());
+                    lookWrapper.setPitch(this.location.getPitch());
                 }
 
-                movePacketWrapper.setOnGround(savedOnGround);
-                movePacketWrapper.setDiffs(xDiff, yDiff, zDiff);
-                packetWrapper = movePacketWrapper;
-            }
-            else if (look)
-            {
-                WrapperPlayServerEntityLook lookPacketWrapper = new WrapperPlayServerEntityLook();
-
-                // Angles
-                lookPacketWrapper.setYaw(this.location.getYaw());
-                lookPacketWrapper.setPitch(this.location.getPitch());
-                // OnGround
-                lookPacketWrapper.setOnGround(savedOnGround);
-
-                packetWrapper = lookPacketWrapper;
-                // System.out.println("Sending look");
-
-            }
-            else
-            {
-                packetWrapper = new WrapperPlayServerEntity();
-                // System.out.println("Sending idle");
+                if (onGroundWrapper instanceof IWrapperPlayServerRelEntityMove)
+                {
+                    final IWrapperPlayServerRelEntityMove relMoveWrapper = (IWrapperPlayServerRelEntityMove) onGroundWrapper;
+                    relMoveWrapper.setDiffs(relativeLocation);
+                }
             }
 
             packetWrapper.setEntityID(this.entityID);
@@ -482,30 +442,14 @@ public abstract class ClientsideEntity
         entityMetadataWrapper.setEntityID(this.entityID);
 
         final byte visibleByte = (byte) (visible ? 0 : 0x20);
-        switch (ServerVersion.getActiveServerVersion())
-        {
-            case MC188:
-                entityMetadataWrapper.setMetadata(Arrays.asList(
-                        // Invisibility itself
-                        new WrappedWatchableObject(0, visibleByte),
-                        // Arrows in entity.
-                        // IN 1.8.8 THIS IS A BYTE, NOT AN INTEGER!
-                        new WrappedWatchableObject(10, (byte) 0)));
-                break;
 
-            case MC111:
-            case MC112:
-            case MC113:
-                entityMetadataWrapper.setMetadata(Arrays.asList(
-                        // Invisibility itself
-                        new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class)), visibleByte),
-                        // Arrows in entity.
-                        // IN 1.12.2 THIS IS AN INTEGER!
-                        new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(Integer.class)), 0)));
-                break;
-            default:
-                throw new IllegalStateException("Unknown minecraft version");
-        }
+        entityMetadataWrapper.setMetadata(entityMetadataWrapper.builder()
+                                                               // Invisibility
+                                                               .setZeroIndex(visibleByte)
+                                                               // Arrows in entity.
+                                                               .setArrowInEntityMetadata(0)
+                                                               .asList());
+
         entityMetadataWrapper.sendPacket(this.observedPlayer);
 
         this.visible = visible;
@@ -528,21 +472,6 @@ public abstract class ClientsideEntity
     public void spawn(Location location)
     {
         this.spawned = true;
-    }
-
-    /**
-     * Prevents bypasses based on the EntityID, especially for higher numbers
-     *
-     * @return the next free EntityID
-     */
-    private static int getNextEntityID() throws IllegalAccessException
-    {
-        // Get entity id for next entity (this one)
-        final int entityID = entityCountField.getInt(null);
-
-        // Increase entity id for next entity
-        entityCountField.setInt(null, entityID + 1);
-        return entityID;
     }
 
     // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //

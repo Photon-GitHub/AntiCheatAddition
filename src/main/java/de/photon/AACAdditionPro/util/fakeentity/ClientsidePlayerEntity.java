@@ -10,7 +10,6 @@ import de.photon.AACAdditionPro.util.fakeentity.displayinformation.DisplayInform
 import de.photon.AACAdditionPro.util.fakeentity.equipment.Equipment;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
-import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
 import lombok.Getter;
@@ -79,22 +78,16 @@ public class ClientsidePlayerEntity extends ClientsideHittableLivingEntity
         }
 
         // Try to look to the target
-        Location target = this.observedPlayer.getLocation();
-        double diffX = target.getX() - this.location.getX();
-        double diffY = target.getY() + this.observedPlayer.getEyeHeight() * 0.9D - (this.location.getY() + this.observedPlayer.getEyeHeight());
-        double diffZ = target.getZ() - this.location.getZ();
-        double dist = Math.hypot(diffX, diffZ);
+        this.location.setDirection(this.observedPlayer.getEyeLocation()
+                                                      // Add randomization
+                                                      .add(MathUtils.randomBoundaryDouble(-0.15, 0.3),
+                                                           MathUtils.randomBoundaryDouble(-0.15, 0.3),
+                                                           MathUtils.randomBoundaryDouble(-0.15, 0.3))
+                                                      .toVector()
+                                                      // Subtract the current position.
+                                                      .subtract(this.getEyeLocation().toVector()));
 
-        // Yaw
-        float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0F;
-        this.headYaw = RotationUtil.wrapToAllowedYaw((float) MathUtils.randomBoundaryDouble(yaw - 10, 20));
-        this.location.setYaw(yaw);
-
-        // Pitch
-        float pitch = (float) Math.toDegrees(Math.asin(diffY / dist));
-        pitch += ThreadLocalRandom.current().nextInt(5);
-        pitch = RotationUtil.reduceAngle(pitch, 90);
-        this.location.setPitch(pitch);
+        this.headYaw = this.location.getYaw();
 
         this.move(this.location);
 
@@ -147,6 +140,16 @@ public class ClientsidePlayerEntity extends ClientsideHittableLivingEntity
     {
         return this.gameProfile.getName();
     }
+
+    // -------------------------------------------------------------- Movement ------------------------------------------------------------ //
+
+    @Override
+    public Location getEyeLocation()
+    {
+        // this.getLocation() is already a cloned location.
+        return this.getLocation().add(0, Hitbox.PLAYER.getHeight(), 0);
+    }
+
 
     // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //
 

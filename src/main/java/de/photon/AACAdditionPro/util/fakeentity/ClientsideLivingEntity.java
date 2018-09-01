@@ -323,6 +323,10 @@ public abstract class ClientsideLivingEntity
         }
     }
 
+    public Location getEyeLocation()
+    {
+        return this.getLocation();
+    }
 
     public Location getLocation()
     {

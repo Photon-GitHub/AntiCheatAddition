@@ -3,7 +3,7 @@ package de.photon.AACAdditionPro.util.fakeentity.movement.submovements;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.modules.ModuleType;
-import de.photon.AACAdditionPro.util.mathematics.MathUtils;
+import de.photon.AACAdditionPro.util.random.RandomUtil;
 import org.bukkit.Location;
 
 public class BasicFollowMovement implements Movement
@@ -29,7 +29,7 @@ public class BasicFollowMovement implements Movement
                                                  // No normalization as getDirection() already returns a normalized vector.
                                                  .multiply(
                                                          // Negative offset to make sure the entity is behind the player.
-                                                         -(MathUtils.randomBoundaryDouble(entityOffset, offsetRandomizationRange))
+                                                         -(RandomUtil.randomBoundaryDouble(entityOffset, offsetRandomizationRange))
                                                           ));
 
         final double lengthSquared = Math.max(oldEntityLocation.distanceSquared(playerWorkLocation), playerLocation.distanceSquared(playerWorkLocation));

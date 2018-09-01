@@ -9,9 +9,10 @@ import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.fakeentity.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.fakeentity.equipment.Equipment;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
-import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
+import de.photon.AACAdditionPro.util.random.RandomUtil;
+import de.photon.AACAdditionPro.util.random.RandomizedAction;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -39,10 +40,47 @@ public class ClientsidePlayerEntity extends ClientsideHittableLivingEntity
     private Team currentTeam;
 
     // Main ticker for the entity
-    private short lastJump = 0;
-    private short lastSwing = 0;
-    private short lastHandSwap = 0;
-    private short lastArmorSwap = 0;
+    private RandomizedAction jumpAction = new RandomizedAction(30, 80)
+    {
+        @Override
+        public void run()
+        {
+            jump();
+        }
+    };
+
+    private RandomizedAction handSwapAction = new RandomizedAction(40, 65)
+    {
+        @Override
+        public void run()
+        {
+            // Automatic offhand handling
+            equipment.replaceHands();
+            // Send the updated Equipment
+            equipment.updateEquipment();
+        }
+    };
+
+    private RandomizedAction armorSwapAction = new RandomizedAction(200, 200)
+    {
+        @Override
+        public void run()
+        {
+            // Automatic offhand handling
+            equipment.replaceRandomArmorPiece();
+            // Send the updated Equipment
+            equipment.updateEquipment();
+        }
+    };
+
+    private RandomizedAction swingAction = new RandomizedAction(15, 65)
+    {
+        @Override
+        public void run()
+        {
+            swing();
+        }
+    };
 
     private final Equipment equipment;
 
@@ -80,9 +118,9 @@ public class ClientsidePlayerEntity extends ClientsideHittableLivingEntity
         // Try to look to the target
         this.location.setDirection(this.observedPlayer.getEyeLocation()
                                                       // Add randomization
-                                                      .add(MathUtils.randomBoundaryDouble(-0.15, 0.3),
-                                                           MathUtils.randomBoundaryDouble(-0.15, 0.3),
-                                                           MathUtils.randomBoundaryDouble(-0.15, 0.3))
+                                                      .add(RandomUtil.randomBoundaryDouble(-0.15, 0.3),
+                                                           RandomUtil.randomBoundaryDouble(-0.15, 0.3),
+                                                           RandomUtil.randomBoundaryDouble(-0.15, 0.3))
                                                       .toVector()
                                                       // Subtract the current position.
                                                       .subtract(this.getEyeLocation().toVector()));
@@ -92,42 +130,20 @@ public class ClientsidePlayerEntity extends ClientsideHittableLivingEntity
         this.move(this.location);
 
         // Maybe we should switch movement states?
-        if (lastJump++ > MathUtils.randomBoundaryInt(30, 80))
-        {
-            lastJump = 0;
-            jump();
-        }
+        this.jumpAction.cycle();
+
 
         // Swap items if needed
         if (shouldSwap)
         {
-            if (lastHandSwap++ > MathUtils.randomBoundaryInt(40, 65))
-            {
-                lastHandSwap = 0;
-                // Automatic offhand handling
-                equipment.replaceHands();
-                // Send the updated Equipment
-                equipment.updateEquipment();
-            }
-
-            if (lastArmorSwap++ > MathUtils.randomBoundaryInt(200, 200))
-            {
-                lastArmorSwap = 0;
-                // Automatic offhand handling
-                equipment.replaceRandomArmorPiece();
-                // Send the updated Equipment
-                equipment.updateEquipment();
-            }
+            handSwapAction.cycle();
+            armorSwapAction.cycle();
         }
 
         // Swing items if enabled
         if (shouldSwing)
         {
-            if (lastSwing++ > MathUtils.randomBoundaryInt(15, 55))
-            {
-                lastSwing = 0;
-                swing();
-            }
+            swingAction.cycle();
         }
     }
 
@@ -165,13 +181,13 @@ public class ClientsidePlayerEntity extends ClientsideHittableLivingEntity
                 // Fake the ping if the entity is already spawned
                 if (this.isSpawned())
                 {
-                    this.ping = MathUtils.randomBoundaryInt(21, 4);
+                    this.ping = RandomUtil.randomBoundaryInt(21, 4);
                     this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY, this.ping);
                 }
 
                 recursiveUpdatePing();
             }
-        }, (long) MathUtils.randomBoundaryInt(15, 40));
+        }, (long) RandomUtil.randomBoundaryInt(15, 40));
     }
 
     @Override

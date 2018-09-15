@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.command.subcommands.HeuristicsCommand;
 import de.photon.AACAdditionPro.command.subcommands.InfoCommand;
 import de.photon.AACAdditionPro.command.subcommands.TabListRemoveCommand;
 import de.photon.AACAdditionPro.command.subcommands.VerboseCommand;
+import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,18 +14,20 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 public class MainCommand extends InternalCommand implements CommandExecutor, TabCompleter
 {
-    public static final MainCommand instance = new MainCommand();
+    @Getter
+    private static final MainCommand instance = new MainCommand();
 
     private MainCommand()
     {
-        super("aacadditionpro", null, (byte) 0,
+        super("aacadditionpro",
+              null,
               new EntityCheckCommand(),
               new HeuristicsCommand(),
               new InfoCommand(),
@@ -62,12 +65,23 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
             }
         }
 
-        final int resultingArgumentIndex = currentArgumentIndex;
-        return currentArgumentIndex == args.length ?
-               // No tab filtering as the player has not started typing
-               currentCommand.getTabPossibilities() :
-               // If arguments are still left try to chose the correct tab possibilities from them.
-               currentCommand.getTabPossibilities().stream().filter(tabPossibility -> tabPossibility.startsWith(args[resultingArgumentIndex])).collect(Collectors.toList());
+        final List<String> tabs = currentCommand.getTabPossibilities();
+
+        // No tab filtering as the player has not started typing
+        if (currentArgumentIndex == args.length)
+        {
+            return tabs;
+        }
+
+        // If arguments are still left try to choose the correct tab possibilities from them.
+        final List<String> tabPossibilities = new ArrayList<>(tabs.size());
+        for (String tabPossibility : tabs)
+        {
+            if (tabPossibility.startsWith(args[currentArgumentIndex]))
+                tabPossibilities.add(tabPossibility);
+        }
+        return tabPossibilities;
+
     }
 
     @Override
@@ -80,11 +94,5 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     protected String[] getCommandHelp()
     {
         return new String[]{"The main command of AACAdditionPro"};
-    }
-
-    @Override
-    protected List<String> getTabPossibilities()
-    {
-        return getChildTabs();
     }
 }

@@ -24,7 +24,10 @@ public class TrainCommand extends InternalCommand
 {
     public TrainCommand()
     {
-        super("train", InternalPermission.NEURAL_TRAIN, false, (byte) 2, (byte) 4);
+        super("train",
+              InternalPermission.NEURAL_TRAIN,
+              (byte) 2,
+              (byte) 4);
     }
 
     @Override

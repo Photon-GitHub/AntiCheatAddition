@@ -10,14 +10,15 @@ import de.photon.AACAdditionPro.oldneural.Graph;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.List;
 import java.util.Queue;
 
 public class CreateCommand extends InternalCommand
 {
     public CreateCommand()
     {
-        super("create", InternalPermission.NEURAL_CREATE, (byte) 3);
+        super("create",
+              InternalPermission.NEURAL_CREATE,
+              (byte) 3);
     }
 
     @Override
@@ -92,11 +93,5 @@ public class CreateCommand extends InternalCommand
                 "T = TimeDeltas | X = X-Distances | Y = Y-Distances | C = ClickTypes",
                 "Examples: TXY, T, CT, TYXC"
         };
-    }
-
-    @Override
-    protected List<String> getTabPossibilities()
-    {
-        return getChildTabs();
     }
 }

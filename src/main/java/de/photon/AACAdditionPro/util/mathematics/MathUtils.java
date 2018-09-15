@@ -51,4 +51,20 @@ public final class MathUtils
     {
         return a > b ? (a - b) : (b - a);
     }
+
+    /**
+     * Shortcut for number >= min && number <= max
+     */
+    public static boolean inRange(final int min, final int max, final int number)
+    {
+        return number >= min && number <= max;
+    }
+
+    /**
+     * Shortcut for number >= min && number <= max
+     */
+    public static boolean inRange(final double min, final double max, final double number)
+    {
+        return number >= min && number <= max;
+    }
 }

@@ -46,6 +46,8 @@ public class ViolationLevelManagement implements Listener
         // The ModuleType of the check
         this.moduleType = moduleType;
 
+        ModuleType.VL_MODULETYPES.add(moduleType);
+
         // Listener registration as of the PlayerQuitEvent
         AACAdditionPro.getInstance().registerListener(this);
 

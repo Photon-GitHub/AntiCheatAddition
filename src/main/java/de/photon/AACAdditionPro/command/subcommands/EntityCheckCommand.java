@@ -30,7 +30,10 @@ public class EntityCheckCommand extends InternalCommand
 
     public EntityCheckCommand()
     {
-        super("entitycheck", InternalPermission.ENTITYCHECK, false, (byte) 2, (byte) 2);
+        super("entitycheck",
+              InternalPermission.ENTITYCHECK,
+              (byte) 2,
+              (byte) 2);
     }
 
     @Override
@@ -120,11 +123,9 @@ public class EntityCheckCommand extends InternalCommand
             }
         }
         else
-
         {
-            sender.sendMessage(PREFIX + ChatColor.RED + "KillauraEntity is disabled or not in on_command mode.");
+            sendErrorMessage(sender, "KillauraEntity is disabled or not in on_command mode.");
         }
-
     }
 
     @Override
@@ -140,6 +141,6 @@ public class EntityCheckCommand extends InternalCommand
     @Override
     protected List<String> getTabPossibilities()
     {
-        return this.getPlayerNameTabs();
+        return getPlayerNameTabs();
     }
 }

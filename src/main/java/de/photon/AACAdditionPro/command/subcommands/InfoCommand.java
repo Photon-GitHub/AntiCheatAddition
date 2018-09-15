@@ -8,16 +8,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 public class InfoCommand extends InternalCommand
 {
-    private SortedMap<Integer, ModuleType> messages = new TreeMap<>(Collections.reverseOrder(Integer::compareTo));
-
     public InfoCommand()
     {
         super("info",
@@ -37,13 +33,14 @@ public class InfoCommand extends InternalCommand
             return;
         }
 
+        final ArrayList<ModuleVl> messages = new ArrayList<>();
         for (ModuleType moduleType : ModuleType.VL_MODULETYPES)
         {
             // Casting is ok here as only AACAdditionProChecks will be in the CheckManager.
             final int vl = AACAdditionPro.getInstance().getModuleManager().getViolationLevelManagement(moduleType).getVL(player.getUniqueId());
             if (vl != 0)
             {
-                messages.put(vl, moduleType);
+                messages.add(new ModuleVl(moduleType, vl));
             }
         }
 
@@ -55,10 +52,9 @@ public class InfoCommand extends InternalCommand
         }
         else
         {
-            messages.forEach((integer, moduleType) -> sender.sendMessage(ChatColor.GOLD + moduleType.getConfigString() + " -> vl " + integer));
+            messages.sort(ModuleVl::compareTo);
+            messages.forEach((moduleVl) -> sender.sendMessage(ChatColor.GOLD + moduleVl.moduleType.getConfigString() + " -> vl " + moduleVl.vl));
         }
-
-        messages.clear();
     }
 
     @Override
@@ -71,5 +67,24 @@ public class InfoCommand extends InternalCommand
     protected List<String> getTabPossibilities()
     {
         return getPlayerNameTabs();
+    }
+
+    private static class ModuleVl implements Comparable<ModuleVl>
+    {
+        private ModuleType moduleType;
+        private int vl;
+
+        public ModuleVl(ModuleType moduleType, int vl)
+        {
+            this.moduleType = moduleType;
+            this.vl = vl;
+        }
+
+        @Override
+        public int compareTo(ModuleVl o)
+        {
+            // Reversed to make the top vl appear first.
+            return Integer.compare(o.vl, this.vl);
+        }
     }
 }

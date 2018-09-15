@@ -33,7 +33,7 @@ public class InfoCommand extends InternalCommand
             return;
         }
 
-        final ArrayList<ModuleVl> messages = new ArrayList<>();
+        final List<ModuleVl> messages = new ArrayList<>();
         for (ModuleType moduleType : ModuleType.VL_MODULETYPES)
         {
             // Casting is ok here as only AACAdditionProChecks will be in the CheckManager.

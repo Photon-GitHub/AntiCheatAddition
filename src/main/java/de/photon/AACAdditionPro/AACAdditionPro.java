@@ -44,6 +44,7 @@ import de.photon.AACAdditionPro.util.fakeentity.DelegatingKillauraEntityControll
 import de.photon.AACAdditionPro.util.files.FileUtilities;
 import lombok.Getter;
 import lombok.Setter;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -211,6 +212,12 @@ public class AACAdditionPro extends JavaPlugin
                 return;
             }
 
+            // ------------------------------------------------------------------------------------------------------ //
+            //                                                Metrics                                                 //
+            // ------------------------------------------------------------------------------------------------------ //
+
+            final Metrics metrics = new Metrics(this);
+
             // The first getConfig call will automatically saveToFile and cache the config.
 
             // ------------------------------------------------------------------------------------------------------ //
@@ -222,7 +229,13 @@ public class AACAdditionPro extends JavaPlugin
             {
                 //noinspection unchecked
                 viaAPI = Via.getAPI();
+                metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Used"));
             }
+            else
+            {
+                metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Not used"));
+            }
+
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //

@@ -4,12 +4,11 @@ import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.util.VerboseSender;
+import de.photon.AACAdditionPro.util.datastructures.DoubleStatistics;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.general.StringUtils;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.event.player.PlayerFishEvent;
-
-import java.util.DoubleSummaryStatistics;
 
 class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
 {
@@ -29,12 +28,12 @@ class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
                 // Negative maximum_fails indicate not allowing afk fishing farms.
                 if ((maximum_fails < 0 || user.getFishingData().failedCounter <= maximum_fails) &&
                     // If the last attempt was a fail do not check (false positives)
-                    user.getFishingData().lastAttemptSuccessful &&
+                    user.getFishingData().getTimeStamp(1) != 0 &&
                     // Add the delta to the consistencyBuffer of the user.
                     user.getFishingData().bufferConsistencyData())
                 {
                     // Enough data, now checking
-                    final DoubleSummaryStatistics consistencyStatistics = user.getFishingData().getStatistics().getSummaryStatistics();
+                    final DoubleStatistics consistencyStatistics = user.getFishingData().getStatistics();
 
                     // Calculate the maximum offset.
                     final double maxOffset = Math.max(MathUtils.offset(consistencyStatistics.getMin(), consistencyStatistics.getAverage()), MathUtils.offset(consistencyStatistics.getMax(), consistencyStatistics.getAverage()));
@@ -63,12 +62,12 @@ class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
             // No consistency when not fishing / failed fishing
             case IN_GROUND:
             case FAILED_ATTEMPT:
-                user.getFishingData().lastAttemptSuccessful = false;
+                user.getFishingData().nullifyTimeStamp(1);
                 user.getFishingData().failedCounter++;
                 break;
             case CAUGHT_FISH:
                 // CAUGHT_FISH covers all forms of items from the water.
-                user.getFishingData().lastAttemptSuccessful = true;
+                user.getFishingData().updateTimeStamp(1);
                 break;
             default:
                 break;

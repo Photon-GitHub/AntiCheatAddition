@@ -3,7 +3,7 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 
-public class WrapperPlayServerEntity extends AbstractPacket implements IWrapperPlayServerEntity
+public class WrapperPlayServerEntity extends AbstractPacket implements IWrapperPlayEntity
 {
     public static final PacketType TYPE = PacketType.Play.Server.ENTITY;
 

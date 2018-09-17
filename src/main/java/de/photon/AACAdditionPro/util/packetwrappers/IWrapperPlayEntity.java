@@ -5,7 +5,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
-public interface IWrapperPlayServerEntity
+public interface IWrapperPlayEntity
 {
 
     PacketContainer getHandle();

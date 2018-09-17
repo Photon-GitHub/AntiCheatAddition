@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.util.fakeentity;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
@@ -10,10 +9,10 @@ import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.fakeentity.displayinformation.DisplayInformation;
 import de.photon.AACAdditionPro.util.fakeentity.equipment.Equipment;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
-import de.photon.AACAdditionPro.util.mathematics.MathUtils;
-import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerNamedEntitySpawn;
+import de.photon.AACAdditionPro.util.random.RandomUtil;
+import de.photon.AACAdditionPro.util.random.RandomizedAction;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,7 +21,7 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ClientsidePlayerEntity extends ClientsideEntity
+public class ClientsidePlayerEntity extends ClientsideHittableLivingEntity
 {
     private final boolean visible_in_tablist;
     private final boolean shouldAssignTeam;
@@ -41,10 +40,47 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     private Team currentTeam;
 
     // Main ticker for the entity
-    private short lastJump = 0;
-    private short lastSwing = 0;
-    private short lastHandSwap = 0;
-    private short lastArmorSwap = 0;
+    private RandomizedAction jumpAction = new RandomizedAction(30, 80)
+    {
+        @Override
+        public void run()
+        {
+            jump();
+        }
+    };
+
+    private RandomizedAction handSwapAction = new RandomizedAction(40, 65)
+    {
+        @Override
+        public void run()
+        {
+            // Automatic offhand handling
+            equipment.replaceHands();
+            // Send the updated Equipment
+            equipment.updateEquipment();
+        }
+    };
+
+    private RandomizedAction armorSwapAction = new RandomizedAction(200, 200)
+    {
+        @Override
+        public void run()
+        {
+            // Automatic offhand handling
+            equipment.replaceRandomArmorPiece();
+            // Send the updated Equipment
+            equipment.updateEquipment();
+        }
+    };
+
+    private RandomizedAction swingAction = new RandomizedAction(15, 65)
+    {
+        @Override
+        public void run()
+        {
+            swing();
+        }
+    };
 
     private final Equipment equipment;
 
@@ -80,62 +116,34 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         }
 
         // Try to look to the target
-        Location target = this.observedPlayer.getLocation();
-        double diffX = target.getX() - this.location.getX();
-        double diffY = target.getY() + this.observedPlayer.getEyeHeight() * 0.9D - (this.location.getY() + this.observedPlayer.getEyeHeight());
-        double diffZ = target.getZ() - this.location.getZ();
-        double dist = Math.hypot(diffX, diffZ);
+        this.location.setDirection(this.observedPlayer.getEyeLocation()
+                                                      // Add randomization
+                                                      .add(RandomUtil.randomBoundaryDouble(-0.15, 0.3),
+                                                           RandomUtil.randomBoundaryDouble(-0.15, 0.3),
+                                                           RandomUtil.randomBoundaryDouble(-0.15, 0.3))
+                                                      .toVector()
+                                                      // Subtract the current position.
+                                                      .subtract(this.getEyeLocation().toVector()));
 
-        // Yaw
-        float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90.0F;
-        this.headYaw = RotationUtil.wrapToAllowedYaw((float) MathUtils.randomBoundaryDouble(yaw - 10, 20));
-        this.location.setYaw(yaw);
-
-        // Pitch
-        float pitch = (float) Math.toDegrees(Math.asin(diffY / dist));
-        pitch += ThreadLocalRandom.current().nextInt(5);
-        pitch = RotationUtil.reduceAngle(pitch, 90);
-        this.location.setPitch(pitch);
+        this.headYaw = this.location.getYaw();
 
         this.move(this.location);
 
         // Maybe we should switch movement states?
-        if (lastJump++ > MathUtils.randomBoundaryInt(30, 80))
-        {
-            lastJump = 0;
-            jump();
-        }
+        this.jumpAction.cycle();
+
 
         // Swap items if needed
         if (shouldSwap)
         {
-            if (lastHandSwap++ > MathUtils.randomBoundaryInt(40, 65))
-            {
-                lastHandSwap = 0;
-                // Automatic offhand handling
-                equipment.replaceHands();
-                // Send the updated Equipment
-                equipment.updateEquipment();
-            }
-
-            if (lastArmorSwap++ > MathUtils.randomBoundaryInt(200, 200))
-            {
-                lastArmorSwap = 0;
-                // Automatic offhand handling
-                equipment.replaceRandomArmorPiece();
-                // Send the updated Equipment
-                equipment.updateEquipment();
-            }
+            handSwapAction.cycle();
+            armorSwapAction.cycle();
         }
 
         // Swing items if enabled
         if (shouldSwing)
         {
-            if (lastSwing++ > MathUtils.randomBoundaryInt(15, 55))
-            {
-                lastSwing = 0;
-                swing();
-            }
+            swingAction.cycle();
         }
     }
 
@@ -148,6 +156,16 @@ public class ClientsidePlayerEntity extends ClientsideEntity
     {
         return this.gameProfile.getName();
     }
+
+    // -------------------------------------------------------------- Movement ------------------------------------------------------------ //
+
+    @Override
+    public Location getEyeLocation()
+    {
+        // this.getLocation() is already a cloned location.
+        return this.getLocation().add(0, Hitbox.PLAYER.getHeight(), 0);
+    }
+
 
     // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //
 
@@ -163,13 +181,13 @@ public class ClientsidePlayerEntity extends ClientsideEntity
                 // Fake the ping if the entity is already spawned
                 if (this.isSpawned())
                 {
-                    this.ping = MathUtils.randomBoundaryInt(21, 4);
+                    this.ping = RandomUtil.randomBoundaryInt(21, 4);
                     this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.UPDATE_LATENCY, this.ping);
                 }
 
                 recursiveUpdatePing();
             }
-        }, (long) MathUtils.randomBoundaryInt(15, 40));
+        }, (long) RandomUtil.randomBoundaryInt(15, 40));
     }
 
     @Override
@@ -225,34 +243,11 @@ public class ClientsidePlayerEntity extends ClientsideEntity
         // Add the player in the Tablist via PlayerInfo
         this.updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, this.ping);
 
-        // DataWatcher
-        final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
-
-        switch (ServerVersion.getActiveServerVersion())
-        {
-            case MC188:
-                // Health
-                dataWatcher.setObject(6, 20F);
-                // Skin flags
-                dataWatcher.setObject(10, (byte) 127);
-                break;
-            case MC111:
-            case MC112:
-            case MC113:
-                // Health
-                dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(7, WrappedDataWatcher.Registry.get(Float.class)), 20F);
-                // Skin flags
-                dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(13, WrappedDataWatcher.Registry.get(Byte.class)), (byte) 127);
-                break;
-            default:
-                throw new IllegalStateException("Unknown minecraft version");
-        }
-
         // Spawn the entity
         final WrapperPlayServerNamedEntitySpawn spawnEntityWrapper = new WrapperPlayServerNamedEntitySpawn();
 
         spawnEntityWrapper.setEntityID(this.entityID);
-        spawnEntityWrapper.setMetadata(dataWatcher);
+        spawnEntityWrapper.setMetadata(spawnEntityWrapper.builder().setHealthMetadata(20F).setSkinMetadata((byte) 127).asWatcher());
         spawnEntityWrapper.setPosition(location.toVector());
         spawnEntityWrapper.setPlayerUUID(this.gameProfile.getUUID());
         spawnEntityWrapper.setYaw(ThreadLocalRandom.current().nextInt(15));

@@ -16,7 +16,9 @@ public class RenameCommand extends InternalCommand
 {
     public RenameCommand()
     {
-        super("rename", InternalPermission.NEURAL_CREATE, (byte) 1);
+        super("rename",
+              InternalPermission.NEURAL_CREATE,
+              (byte) 1);
     }
 
     @Override

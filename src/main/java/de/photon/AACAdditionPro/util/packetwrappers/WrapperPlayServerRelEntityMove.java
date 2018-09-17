@@ -5,7 +5,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.base.Preconditions;
 import de.photon.AACAdditionPro.ServerVersion;
 
-public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity implements IWrapperPlayServerEntityOnGround
+public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity implements IWrapperPlayServerRelEntityMove
 {
     public static final PacketType TYPE = PacketType.Play.Server.REL_ENTITY_MOVE;
 
@@ -25,6 +25,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
         super(packet, packetType);
     }
 
+    @Override
     public double getDx()
     {
         switch (ServerVersion.getActiveServerVersion())
@@ -41,6 +42,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
         }
     }
 
+    @Override
     public void setDx(double value)
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
@@ -60,6 +62,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
         }
     }
 
+    @Override
     public double getDy()
     {
         switch (ServerVersion.getActiveServerVersion())
@@ -76,6 +79,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
         }
     }
 
+    @Override
     public void setDy(double value)
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
@@ -95,6 +99,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
         }
     }
 
+    @Override
     public double getDz()
     {
         switch (ServerVersion.getActiveServerVersion())
@@ -111,6 +116,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
         }
     }
 
+    @Override
     public void setDz(double value)
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
@@ -128,12 +134,5 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
-    }
-
-    public void setDiffs(double xDiff, double yDiff, double zDiff)
-    {
-        setDx(xDiff);
-        setDy(yDiff);
-        setDz(zDiff);
     }
 }

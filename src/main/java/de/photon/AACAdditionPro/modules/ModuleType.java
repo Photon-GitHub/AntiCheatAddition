@@ -2,6 +2,9 @@ package de.photon.AACAdditionPro.modules;
 
 import lombok.Getter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 public enum ModuleType
 {
@@ -43,6 +46,8 @@ public enum ModuleType
 
     private final String configString;
     private final String violationMessage;
+
+    public final static Set<ModuleType> VL_MODULETYPES = new HashSet<>();
 
     ModuleType(final String configString)
     {

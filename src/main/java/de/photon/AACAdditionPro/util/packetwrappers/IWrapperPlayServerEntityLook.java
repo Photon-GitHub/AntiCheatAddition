@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 
 
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
+import org.bukkit.Location;
 
 public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOnGround
 {
@@ -12,6 +13,17 @@ public interface IWrapperPlayServerEntityLook extends IWrapperPlayServerEntityOn
     default int getByteOffset()
     {
         return 0;
+    }
+
+    /**
+     * This sets all the values according to the given {@link Location}.
+     *
+     * @param location the {@link Location} which is used to set all values
+     */
+    default void setWithLocation(final Location location)
+    {
+        this.setYaw(location.getYaw());
+        this.setPitch(location.getPitch());
     }
 
     /**

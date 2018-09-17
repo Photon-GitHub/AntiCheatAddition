@@ -1,50 +1,59 @@
 package de.photon.AACAdditionPro.command;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import de.photon.AACAdditionPro.InternalPermission;
-import lombok.Getter;
+import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class InternalCommand
 {
     protected static final String PREFIX = ChatColor.DARK_RED + "[AACAdditionPro] ";
 
-    public final String name;
+    private final String name;
     private final InternalPermission permission;
-    private final boolean onlyPlayers;
     private final byte minArguments;
     private final byte maxArguments;
 
-    @Getter
-    private final Set<InternalCommand> childCommands;
+    private final Map<String, InternalCommand> childCommands;
+    protected final List<String> childTabs;
+
+    public InternalCommand(String name, InternalPermission permission, InternalCommand... childCommands)
+    {
+        this(name, permission, (byte) 0, childCommands);
+    }
 
     public InternalCommand(String name, InternalPermission permission, byte minArguments, InternalCommand... childCommands)
     {
-        this(name, permission, false, minArguments, childCommands);
+        this(name, permission, minArguments, Byte.MAX_VALUE, childCommands);
     }
 
-    public InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments, InternalCommand... childCommands)
-    {
-        this(name, permission, onlyPlayers, minArguments, Byte.MAX_VALUE, childCommands);
-    }
-
-    public InternalCommand(String name, InternalPermission permission, boolean onlyPlayers, byte minArguments, byte maxArguments, InternalCommand... childCommands)
+    public InternalCommand(String name, InternalPermission permission, byte minArguments, byte maxArguments, InternalCommand... childCommands)
     {
         this.name = name;
         this.permission = permission;
-        this.onlyPlayers = onlyPlayers;
         this.minArguments = minArguments;
         this.maxArguments = maxArguments;
 
-        this.childCommands = ImmutableSet.copyOf(childCommands);
+        final ImmutableList.Builder<String> listBuilder = ImmutableList.builder();
+        final ImmutableMap.Builder<String, InternalCommand> builder = ImmutableMap.builder();
+
+        for (InternalCommand childCommand : childCommands)
+        {
+            listBuilder.add(childCommand.name);
+            builder.put(childCommand.name, childCommand);
+        }
+
+        this.childTabs = listBuilder.build();
+        this.childCommands = builder.build();
     }
 
     /**
@@ -58,7 +67,7 @@ public abstract class InternalCommand
         // No permission is set or the sender has the permission
         if (!InternalPermission.hasPermission(sender, this.permission))
         {
-            sender.sendMessage(PREFIX + ChatColor.RED + "You don't have permission to do this.");
+            sendNoPermissionMessage(sender);
             return;
         }
 
@@ -90,16 +99,9 @@ public abstract class InternalCommand
         // ------- Normal command procedure or childCommands is null or no fitting child commands were found. ------- //
 
         // Correct amount of arguments
-        if (arguments.size() < minArguments || arguments.size() > maxArguments)
+        if (!MathUtils.inRange(minArguments, maxArguments, arguments.size()))
         {
-            sender.sendMessage(PREFIX + ChatColor.RED + "Wrong amount of arguments: " + arguments.size() + " expected: " + minArguments + " to " + maxArguments);
-            return;
-        }
-
-        // Only players
-        if (onlyPlayers && !(sender instanceof Player))
-        {
-            sender.sendMessage(PREFIX + ChatColor.RED + "Only a player can use this command.");
+            sendErrorMessage(sender, "Wrong amount of arguments: " + arguments.size() + " expected: " + minArguments + " to " + maxArguments);
             return;
         }
 
@@ -116,7 +118,10 @@ public abstract class InternalCommand
      */
     protected abstract String[] getCommandHelp();
 
-    protected abstract List<String> getTabPossibilities();
+    protected List<String> getTabPossibilities()
+    {
+        return this.childTabs;
+    }
 
     /**
      * Gets a child command of this command by its name.
@@ -127,28 +132,13 @@ public abstract class InternalCommand
      */
     protected InternalCommand getChildCommandByNameIgnoreCase(final String name)
     {
-        for (InternalCommand childCommand : this.childCommands)
-        {
-            if (childCommand.name.equalsIgnoreCase(name))
-            {
-                return childCommand;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns an array of {@link String}s containing the names of all child commands.
-     */
-    protected List<String> getChildTabs()
-    {
-        return this.childCommands.stream().map(internalCommand -> internalCommand.name).collect(Collectors.toList());
+        return this.childCommands.get(name.toLowerCase());
     }
 
     /**
      * Returns an array of {@link String}s containing the names of all currently online players.
      */
-    protected List<String> getPlayerNameTabs()
+    protected static List<String> getPlayerNameTabs()
     {
         return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
     }
@@ -172,19 +162,13 @@ public abstract class InternalCommand
             number = Double.parseDouble(argument);
         } catch (NumberFormatException exception)
         {
-            sender.sendMessage(PREFIX + ChatColor.RED + "Please enter a valid number.");
+            sendErrorMessage(sender, "Please enter a valid number.");
             return null;
         }
 
-        if (number > max)
+        if (!MathUtils.inRange(min, max, number))
         {
-            sender.sendMessage(PREFIX + ChatColor.RED + "The number must at most be " + max);
-            return null;
-        }
-
-        if (number < min)
-        {
-            sender.sendMessage(PREFIX + ChatColor.RED + "The number must at least be " + min);
+            sendErrorMessage(sender, "The number " + number + " must be between " + min + " and " + max);
             return null;
         }
 
@@ -194,8 +178,24 @@ public abstract class InternalCommand
     /**
      * Sends a message showing that a "Player could not be found."
      */
-    public static void sendPlayerNotFoundMessage(CommandSender sender)
+    public static void sendNoPermissionMessage(final CommandSender sender)
     {
-        sender.sendMessage(PREFIX + ChatColor.RED + "Player could not be found.");
+        sendErrorMessage(sender, "You don't have permission to do this.");
+    }
+
+    /**
+     * Sends a message showing that a "Player could not be found."
+     */
+    public static void sendPlayerNotFoundMessage(final CommandSender sender)
+    {
+        sendErrorMessage(sender, "Player could not be found.");
+    }
+
+    /**
+     * Shortcut for sender.sendMessage(PREFIX + ChatColor.RED + message);
+     */
+    public static void sendErrorMessage(final CommandSender sender, final String message)
+    {
+        sender.sendMessage(PREFIX + ChatColor.RED + message);
     }
 }

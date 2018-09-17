@@ -12,7 +12,6 @@ import de.photon.AACAdditionPro.modules.checks.InventoryHeuristics;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.List;
 import java.util.Queue;
 
 public class HeuristicsCommand extends InternalCommand
@@ -32,7 +31,8 @@ public class HeuristicsCommand extends InternalCommand
 
     public HeuristicsCommand()
     {
-        super("heuristics", InternalPermission.NEURAL, (byte) 0,
+        super("heuristics",
+              InternalPermission.NEURAL,
               new CreateCommand(),
               new ListCommand(),
               new RemoveCommand(),
@@ -45,13 +45,13 @@ public class HeuristicsCommand extends InternalCommand
     {
         if (!heuristicsUnlocked())
         {
-            sender.sendMessage(PREFIX + ChatColor.RED + "InventoryHeuristics framework is not loaded, enabled or unlocked.");
+            sendErrorMessage(sender, "InventoryHeuristics framework is not loaded, enabled or unlocked.");
         }
         else
         {
             sender.sendMessage(HEURISTICS_HEADER);
             sender.sendMessage(ChatColor.GOLD + "Welcome to the heuristics framework.");
-            sender.sendMessage(String.valueOf(ChatColor.RED) + "Possible commands: " + ChatColor.GOLD + String.join(", ", this.getChildTabs()));
+            sender.sendMessage(ChatColor.RED + "Possible commands: " + ChatColor.GOLD + String.join(", ", this.childTabs));
         }
     }
 
@@ -74,11 +74,5 @@ public class HeuristicsCommand extends InternalCommand
     protected String[] getCommandHelp()
     {
         return new String[]{"Utilities for the InventoryHeuristics"};
-    }
-
-    @Override
-    protected List<String> getTabPossibilities()
-    {
-        return getChildTabs();
     }
 }

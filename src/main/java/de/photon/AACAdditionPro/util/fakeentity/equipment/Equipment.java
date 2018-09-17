@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.util.fakeentity.equipment;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import de.photon.AACAdditionPro.util.fakeentity.ClientsideEntity;
+import de.photon.AACAdditionPro.util.fakeentity.ClientsideLivingEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -11,10 +11,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Equipment extends EnumMap<EnumWrappers.ItemSlot, Material>
 {
-    private final ClientsideEntity entity;
+    private final ClientsideLivingEntity entity;
     private final boolean offhand;
 
-    public Equipment(ClientsideEntity entity, boolean offhand)
+    public Equipment(ClientsideLivingEntity entity, boolean offhand)
     {
         super(EnumWrappers.ItemSlot.class);
         this.entity = entity;
@@ -86,7 +86,7 @@ public class Equipment extends EnumMap<EnumWrappers.ItemSlot, Material>
     }
 
     /**
-     * Equips the {@link ClientsideEntity} with this {@link Equipment}.
+     * Equips the {@link ClientsideLivingEntity} with this {@link Equipment}.
      */
     public void updateEquipment()
     {

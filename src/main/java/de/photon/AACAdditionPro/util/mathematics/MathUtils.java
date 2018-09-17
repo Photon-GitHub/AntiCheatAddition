@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.util.mathematics;
 
 
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.DoublePredicate;
 
 public final class MathUtils
@@ -54,28 +53,18 @@ public final class MathUtils
     }
 
     /**
-     * Generates a new random integer.
-     *
-     * @param min            the result will at least be this parameter
-     * @param randomBoundary the result will at most be min + randomBoundary
-     *
-     * @return the resulting random integer
+     * Shortcut for number >= min && number <= max
      */
-    public static int randomBoundaryInt(int min, int randomBoundary)
+    public static boolean inRange(final int min, final int max, final int number)
     {
-        return min + ThreadLocalRandom.current().nextInt(randomBoundary);
+        return number >= min && number <= max;
     }
 
     /**
-     * Generates a new random double.
-     *
-     * @param min            the result will at least be this parameter
-     * @param randomBoundary the result will at most be min + randomBoundary
-     *
-     * @return the resulting random double
+     * Shortcut for number >= min && number <= max
      */
-    public static double randomBoundaryDouble(double min, double randomBoundary)
+    public static boolean inRange(final double min, final double max, final double number)
     {
-        return min + ThreadLocalRandom.current().nextDouble(randomBoundary);
+        return number >= min && number <= max;
     }
 }

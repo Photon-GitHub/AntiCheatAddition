@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class EntityUtils
+public final class EntityUtil
 {
     /**
      * Determines if a {@link LivingEntity} is gliding (i.e. flying with an elytra)

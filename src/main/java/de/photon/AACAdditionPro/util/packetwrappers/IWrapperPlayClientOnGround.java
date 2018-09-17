@@ -4,7 +4,6 @@ import com.comphenix.protocol.events.PacketContainer;
 
 public interface IWrapperPlayClientOnGround
 {
-
     PacketContainer getHandle();
 
     /**

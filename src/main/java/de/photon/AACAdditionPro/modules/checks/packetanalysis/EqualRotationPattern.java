@@ -3,12 +3,18 @@ package de.photon.AACAdditionPro.modules.checks.packetanalysis;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.collect.ImmutableSet;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
+import de.photon.AACAdditionPro.util.entity.EntityUtil;
+import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
+import org.bukkit.Material;
+
+import java.util.Set;
 
 /**
  * This {@link de.photon.AACAdditionPro.modules.PatternModule.PacketPattern} checks for rotation packets which have
@@ -17,6 +23,9 @@ import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
  */
 class EqualRotationPattern extends PatternModule.PacketPattern
 {
+    // A set of materials which hitboxes changed in minecraft 1.9
+    private static final Set<Material> CHANGED_HITBOX_MATERIALS = ImmutableSet.of(Material.STAINED_GLASS_PANE, Material.THIN_GLASS, Material.IRON_FENCE, Material.CHEST, Material.ANVIL);
+
     EqualRotationPattern()
     {
         super(ImmutableSet.of(PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK));
@@ -40,7 +49,13 @@ class EqualRotationPattern extends PatternModule.PacketPattern
             currentYaw == user.getLookPacketData().getRealLastYaw() &&
             currentPitch == user.getLookPacketData().getRealLastPitch() &&
             // Labymod fp when standing still / hit in corner fp
-            user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
+            user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY) &&
+            // Fixes false positives on versions 1.9+ because of changed hitboxes
+            !(ServerVersion.getActiveServerVersion() == ServerVersion.MC188 &&
+              ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC188 &&
+              EntityUtil.isHitboxInMaterials(user.getPlayer().getLocation(), user.getPlayer().isSneaking() ?
+                                                                             Hitbox.SNEAKING_PLAYER :
+                                                                             Hitbox.PLAYER, CHANGED_HITBOX_MATERIALS)))
         {
             VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.");
             return 1;

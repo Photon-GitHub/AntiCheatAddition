@@ -12,7 +12,7 @@ import de.photon.AACAdditionPro.modules.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.user.data.PositionData;
-import de.photon.AACAdditionPro.util.entity.EntityUtils;
+import de.photon.AACAdditionPro.util.entity.EntityUtil;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
@@ -82,11 +82,11 @@ public class InventoryMove extends PacketAdapter implements ListenerModule, Pack
             // world add errors.
             ChunkUtils.isChunkLoaded(user.getPlayer().getLocation()) &&
             // The player is currently not in a liquid (liquids push)
-            !EntityUtils.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
-                                                          Hitbox.SNEAKING_PLAYER :
-                                                          Hitbox.PLAYER) &&
+            !EntityUtil.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
+                                                         Hitbox.SNEAKING_PLAYER :
+                                                         Hitbox.PLAYER) &&
             // Not using an Elytra
-            !EntityUtils.isFlyingWithElytra(user.getPlayer()) &&
+            !EntityUtil.isFlyingWithElytra(user.getPlayer()) &&
             // Player is in an inventory
             user.getInventoryData().hasOpenInventory() &&
             // Player has not been hit recently
@@ -116,7 +116,7 @@ public class InventoryMove extends PacketAdapter implements ListenerModule, Pack
             if (user.getInventoryData().notRecentlyOpened(allowedRecentlyOpenedTime) &&
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
-                EntityUtils.getLivingEntitiesAroundPlayer(
+                EntityUtil.getLivingEntitiesAroundPlayer(
                         user.getPlayer(),
                         // No division by 2 here as the hitbox of the other player is also important (-> 2 players)
                         Hitbox.PLAYER.getOffsetX() + 0.1,
@@ -166,7 +166,7 @@ public class InventoryMove extends PacketAdapter implements ListenerModule, Pack
         // Flight may trigger this
         if (!user.getPlayer().getAllowFlight() &&
             // Not using an Elytra
-            !EntityUtils.isFlyingWithElytra(user.getPlayer()) &&
+            !EntityUtil.isFlyingWithElytra(user.getPlayer()) &&
             // Sprinting and Sneaking as detection
             (user.getPlayer().isSprinting() || user.getPlayer().isSneaking()) &&
             // The player has an opened inventory

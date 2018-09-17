@@ -19,7 +19,10 @@ public class TabListRemoveCommand extends InternalCommand
 {
     public TabListRemoveCommand()
     {
-        super("tablistremove", InternalPermission.TABLISTREMOVE, false, (byte) 2, (byte) 3);
+        super("tablistremove",
+              InternalPermission.TABLISTREMOVE,
+              (byte) 2,
+              (byte) 3);
     }
 
     @Override
@@ -86,6 +89,6 @@ public class TabListRemoveCommand extends InternalCommand
     @Override
     protected List<String> getTabPossibilities()
     {
-        return this.getPlayerNameTabs();
+        return getPlayerNameTabs();
     }
 }

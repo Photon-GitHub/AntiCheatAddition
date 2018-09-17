@@ -8,8 +8,8 @@ import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.modules.RestrictedServerVersion;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
-import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerKeepAlive;
+import de.photon.AACAdditionPro.util.random.RandomUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -42,7 +42,7 @@ class KeepAliveInjectPattern extends PatternModule.Pattern<Object, Object> imple
                         }
                     }
                     recursiveKeepAliveInjection();
-                }, MathUtils.randomBoundaryInt(80, 35));
+                }, RandomUtil.randomBoundaryInt(80, 35));
     }
 
     @Override

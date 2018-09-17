@@ -11,14 +11,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Queue;
 
 public class ListCommand extends InternalCommand
 {
     public ListCommand()
     {
-        super("list", InternalPermission.NEURAL, (byte) 0);
+        super("list", InternalPermission.NEURAL);
     }
 
     @Override
@@ -96,11 +95,5 @@ public class ListCommand extends InternalCommand
     protected String[] getCommandHelp()
     {
         return new String[]{"Lists all active heuristics."};
-    }
-
-    @Override
-    protected List<String> getTabPossibilities()
-    {
-        return getChildTabs();
     }
 }

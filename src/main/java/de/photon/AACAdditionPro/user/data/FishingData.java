@@ -17,15 +17,14 @@ public class FishingData extends TimeData
      */
     public int failedCounter = 0;
 
-    public boolean lastAttemptSuccessful = false;
-
     @Getter
     private final DoubleStatistics statistics = new DoubleStatistics();
 
     public FishingData(final User user)
     {
         // [0] = Timestamp of last fish bite (PlayerFishEvent.State.BITE)
-        super(user, 0);
+        // [1] = Timestamp used for the time between a caught fish (pull in fishing rod) and a new fishing attempt
+        super(user, 0,0);
     }
 
     /**
@@ -36,7 +35,7 @@ public class FishingData extends TimeData
      */
     public boolean bufferConsistencyData()
     {
-        this.statistics.getSummaryStatistics().accept((double) (System.currentTimeMillis() - this.getTimeStamp(1)));
-        return this.statistics.getSummaryStatistics().getCount() >= CONSISTENCY_EVENTS;
+        this.statistics.accept((double) this.passedTime(1));
+        return this.statistics.getCount() >= CONSISTENCY_EVENTS;
     }
 }

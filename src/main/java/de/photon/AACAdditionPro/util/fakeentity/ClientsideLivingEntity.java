@@ -1,20 +1,20 @@
 package de.photon.AACAdditionPro.util.fakeentity;
 
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
-import de.photon.AACAdditionPro.util.entity.EntityUtils;
+import de.photon.AACAdditionPro.util.entity.EntityUtil;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Collision;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
-import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientOnGround;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayServerEntityLook;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayServerRelEntityMove;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityDestroy;
@@ -24,58 +24,37 @@ import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityMetad
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityTeleport;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMove;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMoveLook;
-import de.photon.AACAdditionPro.util.reflection.Reflect;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Objects;
 
-public abstract class ClientsideEntity
+public abstract class ClientsideLivingEntity
 {
-    // xz-Distance after which a teleport is forced.
-    private static final Field entityCountField;
-
-    static
-    {
-        entityCountField = Reflect.fromNMS("Entity").field("entityCount").getField();
-        entityCountField.setAccessible(true);
-    }
-
     @Getter
     protected final int entityID;
 
     /**
-     * Determines whether this {@link ClientsideEntity} is already spawned.
+     * Determines whether this {@link ClientsideLivingEntity} is already spawned.
      */
     @Getter
     private boolean spawned;
 
     /**
-     * Determines whether this {@link ClientsideEntity} should tp in the next move, ignoring all other calculations.
+     * Determines whether this {@link ClientsideLivingEntity} should tp in the next move, ignoring all other calculations.
      */
     @Setter
     private boolean needsTeleport;
 
     /**
-     * Stores the last timestamp this {@link ClientsideEntity} was hit.
+     * The current velocity of this {@link ClientsideLivingEntity}.
      */
-    public long lastHurtMillis;
-    private BukkitTask hurtTask = null;
-
-    /**
-     * The current velocity of this {@link ClientsideEntity}.
-     */
-    private Vector velocity = new Vector(0, 0, 0);
+    protected Vector velocity = new Vector(0, 0, 0);
 
     protected Location lastLocation;
     protected Location location;
@@ -106,13 +85,13 @@ public abstract class ClientsideEntity
     private Movement currentMovementCalculator;
 
     /**
-     * Constructs a new {@link ClientsideEntity}.
+     * Constructs a new {@link ClientsideLivingEntity}.
      *
-     * @param observedPlayer the player that should see this {@link ClientsideEntity}
-     * @param hitbox         the {@link Hitbox} of this {@link ClientsideEntity}
-     * @param movement       the {@link Movement} of this {@link ClientsideEntity}.
+     * @param observedPlayer the player that should see this {@link ClientsideLivingEntity}
+     * @param hitbox         the {@link Hitbox} of this {@link ClientsideLivingEntity}
+     * @param movement       the {@link Movement} of this {@link ClientsideLivingEntity}.
      */
-    public ClientsideEntity(final Player observedPlayer, final Hitbox hitbox, final Movement movement)
+    public ClientsideLivingEntity(final Player observedPlayer, final Hitbox hitbox, final Movement movement)
     {
         this.observedPlayer = observedPlayer;
         this.hitbox = hitbox;
@@ -123,21 +102,15 @@ public abstract class ClientsideEntity
         tickTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::tick, 1L, 1L);
 
         // Get a valid entity ID
-        try
-        {
-            this.entityID = getNextEntityID();
-        } catch (IllegalAccessException ex)
-        {
-            throw new RuntimeException("Could not create ClientsideEntity for player " + observedPlayer.getName(), ex);
-        }
+        this.entityID = EntityIdUtil.getNextEntityID();
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //
 
     /**
-     * This is used to check if this {@link ClientsideEntity} is attached to an {@link User} and therefore valid
+     * This is used to check if this {@link ClientsideLivingEntity} is attached to an {@link User} and therefore valid
      *
-     * @return true if this {@link ClientsideEntity} is attached to an {@link User}, false otherwise
+     * @return true if this {@link ClientsideLivingEntity} is attached to an {@link User}, false otherwise
      */
     public boolean isValid()
     {
@@ -214,7 +187,7 @@ public abstract class ClientsideEntity
             // Whether the entity should jump if horizontally collided
             if (this.currentMovementCalculator.jumpIfCollidedHorizontally() &&
                 // Check whether the entity can really jump to that location.
-                EntityUtils.getMaterialsInHitbox(this.location.clone().add(tempJumpVelocity), this.hitbox).stream().noneMatch(material -> material != Material.AIR))
+                EntityUtil.getMaterialsInHitbox(this.location.clone().add(tempJumpVelocity), this.hitbox).stream().noneMatch(material -> material != Material.AIR))
             {
                 this.jump();
             }
@@ -227,9 +200,9 @@ public abstract class ClientsideEntity
     // -------------------------------------------------------------- Movement ------------------------------------------------------------ //
 
     /**
-     * Moves the {@link ClientsideEntity} somewhere
+     * Moves the {@link ClientsideLivingEntity} somewhere
      *
-     * @param location the target {@link Location} this {@link ClientsideEntity} should be moved to.
+     * @param location the target {@link Location} this {@link ClientsideLivingEntity} should be moved to.
      */
     public void move(Location location)
     {
@@ -246,14 +219,12 @@ public abstract class ClientsideEntity
             return;
         }
 
-        double xDiff = this.location.getX() - this.lastLocation.getX();
-        double yDiff = this.location.getY() - this.lastLocation.getY();
-        double zDiff = this.location.getZ() - this.lastLocation.getZ();
+        final Vector relativeLocation = this.location.toVector().subtract(this.lastLocation.toVector());
 
         final boolean savedOnGround = this.onGround;
 
         // Teleport needed ?
-        int teleportThreshold;
+        final int teleportThreshold;
         // Do not use the client version here.
         switch (ServerVersion.getActiveServerVersion())
         {
@@ -269,16 +240,11 @@ public abstract class ClientsideEntity
                 throw new IllegalStateException("Unknown minecraft version");
         }
 
-        if (Math.abs(xDiff) + Math.abs(yDiff) + Math.abs(zDiff) > teleportThreshold || needsTeleport)
+        if (Math.abs(relativeLocation.getX()) + Math.abs(relativeLocation.getY()) + Math.abs(relativeLocation.getZ()) > teleportThreshold || needsTeleport)
         {
             final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
-            // Position
-            teleportWrapper.setX(this.location.getX());
-            teleportWrapper.setY(this.location.getY());
-            teleportWrapper.setZ(this.location.getZ());
-            // Angle
-            teleportWrapper.setYaw(this.location.getYaw());
-            teleportWrapper.setPitch(this.location.getPitch());
+            // Position + Angle
+            teleportWrapper.setWithLocation(this.location);
             // OnGround
             teleportWrapper.setOnGround(savedOnGround);
             // Send the packet
@@ -289,54 +255,35 @@ public abstract class ClientsideEntity
         else
         {
             // Sending relative movement
-            boolean move = xDiff != 0 || yDiff != 0 || zDiff != 0;
-            boolean look = this.location.getPitch() != this.lastLocation.getPitch() || this.location.getYaw() != this.lastLocation.getYaw();
+            final boolean move = relativeLocation.lengthSquared() != 0;
+            final boolean look = this.location.getPitch() != this.lastLocation.getPitch() || this.location.getYaw() != this.lastLocation.getYaw();
 
-            WrapperPlayServerEntity packetWrapper;
+            // Get the correct packet.
+            final WrapperPlayServerEntity packetWrapper = move ?
+                                                          (look ?
+                                                           new WrapperPlayServerRelEntityMoveLook() :
+                                                           new WrapperPlayServerRelEntityMove()) :
+                                                          (look ?
+                                                           new WrapperPlayServerEntityLook() :
+                                                           new WrapperPlayServerEntity());
 
-            if (move)
+            if (packetWrapper instanceof IWrapperPlayClientOnGround)
             {
-                WrapperPlayServerRelEntityMove movePacketWrapper;
+                final IWrapperPlayClientOnGround onGroundWrapper = (IWrapperPlayClientOnGround) packetWrapper;
+                onGroundWrapper.setOnGround(savedOnGround);
 
-                if (look)
+                if (onGroundWrapper instanceof IWrapperPlayServerEntityLook)
                 {
-                    WrapperPlayServerRelEntityMoveLook moveLookPacketWrapper = new WrapperPlayServerRelEntityMoveLook();
-
-                    // Angle
-                    moveLookPacketWrapper.setYaw(this.location.getYaw());
-                    moveLookPacketWrapper.setPitch(this.location.getPitch());
-
-                    movePacketWrapper = moveLookPacketWrapper;
-                    // System.out.println("Sending movelook");
-                }
-                else
-                {
-                    movePacketWrapper = new WrapperPlayServerRelEntityMove();
-                    // System.out.println("Sending move");
+                    final IWrapperPlayServerEntityLook lookWrapper = (IWrapperPlayServerEntityLook) onGroundWrapper;
+                    lookWrapper.setYaw(this.location.getYaw());
+                    lookWrapper.setPitch(this.location.getPitch());
                 }
 
-                movePacketWrapper.setOnGround(savedOnGround);
-                movePacketWrapper.setDiffs(xDiff, yDiff, zDiff);
-                packetWrapper = movePacketWrapper;
-            }
-            else if (look)
-            {
-                WrapperPlayServerEntityLook lookPacketWrapper = new WrapperPlayServerEntityLook();
-
-                // Angles
-                lookPacketWrapper.setYaw(this.location.getYaw());
-                lookPacketWrapper.setPitch(this.location.getPitch());
-                // OnGround
-                lookPacketWrapper.setOnGround(savedOnGround);
-
-                packetWrapper = lookPacketWrapper;
-                // System.out.println("Sending look");
-
-            }
-            else
-            {
-                packetWrapper = new WrapperPlayServerEntity();
-                // System.out.println("Sending idle");
+                if (onGroundWrapper instanceof IWrapperPlayServerRelEntityMove)
+                {
+                    final IWrapperPlayServerRelEntityMove relMoveWrapper = (IWrapperPlayServerRelEntityMove) onGroundWrapper;
+                    relMoveWrapper.setDiffs(relativeLocation);
+                }
             }
 
             packetWrapper.setEntityID(this.entityID);
@@ -376,6 +323,10 @@ public abstract class ClientsideEntity
         }
     }
 
+    public Location getEyeLocation()
+    {
+        return this.getLocation();
+    }
 
     public Location getLocation()
     {
@@ -407,7 +358,7 @@ public abstract class ClientsideEntity
     }
 
     /**
-     * Calculates a valid {@link Location} to teleport this {@link ClientsideEntity} to.
+     * Calculates a valid {@link Location} to teleport this {@link ClientsideLivingEntity} to.
      */
     public Location calculateTeleportLocation()
     {
@@ -415,41 +366,6 @@ public abstract class ClientsideEntity
     }
 
     // -------------------------------------------------------------- Simulation ------------------------------------------------------------ //
-
-    /**
-     * Fake being hurt by the observedPlayer in the next sync server tick
-     */
-    public void hurtByObserved()
-    {
-        hurtTask = Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-            lastHurtMillis = System.currentTimeMillis();
-            hurt();
-
-            Location observedLoc = observedPlayer.getLocation();
-            observedLoc.setPitch(0);
-
-            // Calculate knockback strength
-            int knockbackStrength = observedPlayer.isSprinting() ? 1 : 0;
-
-            // The first index is always the main hand.
-            final ItemStack itemInHand = InventoryUtils.getHandContents(observedPlayer).get(0);
-
-            if (itemInHand != null)
-            {
-                knockbackStrength += itemInHand.getEnchantmentLevel(Enchantment.KNOCKBACK);
-            }
-
-            // Apply velocity
-            if (knockbackStrength > 0)
-            {
-                velocity.add(observedLoc.getDirection().normalize().setY(.1).multiply(knockbackStrength * .5));
-
-                //TODO wrong code, its not applied generally, needs to be moved into the method the fake entity hits another entity and apply knockback + sprinting options
-//                    motX *= 0.6D;
-//                    motZ *= 0.6D;
-            }
-        });
-    }
 
     /**
      * Fakes the swing - animation to make the entity look like it is a real, fighting {@link Player}.
@@ -460,58 +376,30 @@ public abstract class ClientsideEntity
     }
 
     /**
-     * Fakes the hurt - animation to make the entity look like it was hurt
-     */
-    public void hurt()
-    {
-        fakeAnimation(1);
-    }
-
-    /**
      * Used to apply the visibility effect to the entity and remove it once again.
      */
     public void setVisibility(final boolean visible)
     {
-        if (this.visible == visible)
+        // Do we need to change something?
+        if (this.visible != visible)
         {
-            // No need to change anything.
-            return;
+            final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata();
+            entityMetadataWrapper.setEntityID(this.entityID);
+
+            entityMetadataWrapper.setMetadata(entityMetadataWrapper.builder()
+                                                                   // Invisibility
+                                                                   .setZeroIndex((byte) (visible ? 0 : 0x20))
+                                                                   // Arrows in entity.
+                                                                   .setArrowInEntityMetadata(0)
+                                                                   .asList());
+
+            entityMetadataWrapper.sendPacket(this.observedPlayer);
+
+            this.visible = visible;
         }
-
-        final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata();
-        entityMetadataWrapper.setEntityID(this.entityID);
-
-        final byte visibleByte = (byte) (visible ? 0 : 0x20);
-        switch (ServerVersion.getActiveServerVersion())
-        {
-            case MC188:
-                entityMetadataWrapper.setMetadata(Arrays.asList(
-                        // Invisibility itself
-                        new WrappedWatchableObject(0, visibleByte),
-                        // Arrows in entity.
-                        // IN 1.8.8 THIS IS A BYTE, NOT AN INTEGER!
-                        new WrappedWatchableObject(10, (byte) 0)));
-                break;
-
-            case MC111:
-            case MC112:
-            case MC113:
-                entityMetadataWrapper.setMetadata(Arrays.asList(
-                        // Invisibility itself
-                        new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class)), visibleByte),
-                        // Arrows in entity.
-                        // IN 1.12.2 THIS IS AN INTEGER!
-                        new WrappedWatchableObject(new WrappedDataWatcher.WrappedDataWatcherObject(10, WrappedDataWatcher.Registry.get(Integer.class)), 0)));
-                break;
-            default:
-                throw new IllegalStateException("Unknown minecraft version");
-        }
-        entityMetadataWrapper.sendPacket(this.observedPlayer);
-
-        this.visible = visible;
     }
 
-    private void fakeAnimation(final int animationType)
+    protected void fakeAnimation(final int animationType)
     {
         // Entity is already spawned.
         if (this.isSpawned())
@@ -530,21 +418,6 @@ public abstract class ClientsideEntity
         this.spawned = true;
     }
 
-    /**
-     * Prevents bypasses based on the EntityID, especially for higher numbers
-     *
-     * @return the next free EntityID
-     */
-    private static int getNextEntityID() throws IllegalAccessException
-    {
-        // Get entity id for next entity (this one)
-        final int entityID = entityCountField.getInt(null);
-
-        // Increase entity id for next entity
-        entityCountField.setInt(null, entityID + 1);
-        return entityID;
-    }
-
     // --------------------------------------------------------------- Despawn -------------------------------------------------------------- //
 
     public void despawn()
@@ -554,12 +427,6 @@ public abstract class ClientsideEntity
         {
             Bukkit.getScheduler().cancelTask(tickTask);
             this.tickTask = -1;
-        }
-
-        // Cancel hurt task
-        if (hurtTask != null)
-        {
-            hurtTask.cancel();
         }
 
         if (spawned)

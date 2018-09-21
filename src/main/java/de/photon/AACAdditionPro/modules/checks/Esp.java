@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.modules.checks;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
-import de.photon.AACAdditionPro.modules.Module;
+import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
@@ -35,7 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class Esp implements Module
+public class Esp implements ListenerModule
 {
     // The auto-config-data
     private double renderDistanceSquared = 0;

@@ -21,7 +21,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -65,12 +64,11 @@ public class Esp implements Module
         final int updateTicks = AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".update_ticks");
         updateMillis = 50 * updateTicks;
 
-        final YamlConfiguration spigot = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration();
-        final ConfigurationSection worlds = spigot.getConfigurationSection("world-settings");
+        final ConfigurationSection worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
 
         for (final String world : worlds.getKeys(false))
         {
-            int currentPlayerTrackingRange = spigot.getInt(worlds.getCurrentPath() + "." + world + ".entity-tracking-range.players");
+            int currentPlayerTrackingRange = worlds.getInt(world + ".entity-tracking-range.players");
 
             // Square
             currentPlayerTrackingRange *= currentPlayerTrackingRange;
@@ -199,7 +197,9 @@ public class Esp implements Module
             case MC112:
             case MC113:
                 if (watched.hasPotionEffect(PotionEffectType.GLOWING))
+                {
                     return true;
+                }
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -265,7 +265,9 @@ public class Esp implements Module
 
                     // Not yet cached.
                     if (length == 0)
+                    {
                         continue;
+                    }
 
                     final Material type = cacheLocation.getBlock().getType();
 
@@ -277,7 +279,9 @@ public class Esp implements Module
                 }
 
                 if (cacheHit)
+                {
                     continue;
+                }
 
                 // --------------------------------------- Normal Calculation --------------------------------------- //
 
@@ -392,10 +396,14 @@ public class Esp implements Module
         public boolean equals(final Object o)
         {
             if (this == o)
+            {
                 return true;
+            }
 
             if (o == null || getClass() != o.getClass())
+            {
                 return false;
+            }
 
             // The other object
             final Pair pair = (Pair) o;

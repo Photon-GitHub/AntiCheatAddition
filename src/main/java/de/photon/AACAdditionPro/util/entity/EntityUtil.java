@@ -23,17 +23,10 @@ public final class EntityUtil
      */
     public static boolean isFlyingWithElytra(final LivingEntity livingEntity)
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
-            case MC188:
-                return false;
-            case MC111:
-            case MC112:
-            case MC113:
-                return livingEntity.isGliding();
-            default:
-                throw new IllegalStateException("Unknown minecraft version");
-        }
+        // On 1.8.8 there is no Elytra
+        return ServerVersion.getActiveServerVersion() != ServerVersion.MC188 &&
+               // On higher versions check for gliding.
+               livingEntity.isGliding();
     }
 
     /**

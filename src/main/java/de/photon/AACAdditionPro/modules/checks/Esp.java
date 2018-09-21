@@ -105,63 +105,65 @@ public class Esp implements Module
                         // This makes sure the player won't have a connection with himself.
                         observingUser = users.remove();
 
-                        if (observingUser.getPlayer().getGameMode() != GameMode.SPECTATOR)
+                        // Do not process spectators.
+                        if (observingUser.getPlayer().getGameMode() == GameMode.SPECTATOR)
                         {
-                            // All users can potentially be seen
-                            for (final User watched : users)
+                            continue;
+                        }
+
+                        // All users can potentially be seen
+                        for (final User watched : users)
+                        {
+                            // The watched player is also not in Spectator mode
+                            if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR &&
+                                // The players are in the same world
+                                observingUser.getPlayer().getWorld().getUID().equals(watched.getPlayer().getWorld().getUID()))
                             {
-                                // The watched player is also not in Spectator mode
-                                if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR &&
-                                    // The players are in the same world
-                                    observingUser.getPlayer().getWorld().getUID().equals(watched.getPlayer().getWorld().getUID()))
-                                {
-                                    // The users are always in the same world (see above)
-                                    final double pairDistanceSquared = observingUser.getPlayer().getLocation().distanceSquared(watched.getPlayer().getLocation());
+                                // The users are always in the same world (see above)
+                                final double pairDistanceSquared = observingUser.getPlayer().getLocation().distanceSquared(watched.getPlayer().getLocation());
 
-                                    final User finalObservingUser = observingUser;
-                                    pairExecutor.execute(() -> {
-                                        // Less than 1 block distance
-                                        // Everything (smaller than 1)^2 will result in something smaller than 1
-                                        if (pairDistanceSquared < 1)
-                                        {
-                                            updatePairHideMode(finalObservingUser, watched, HideMode.NONE);
-                                            return;
-                                        }
+                                final User finalObservingUser = observingUser;
+                                pairExecutor.execute(() -> {
+                                    // Less than 1 block distance
+                                    // Everything (smaller than 1)^2 will result in something smaller than 1
+                                    if (pairDistanceSquared < 1)
+                                    {
+                                        updatePairHideMode(finalObservingUser, watched, HideMode.NONE);
+                                        return;
+                                    }
 
-                                        if (pairDistanceSquared > renderDistanceSquared)
-                                        {
-                                            updatePairHideMode(finalObservingUser, watched, hideAfterRenderDistance ?
-                                                                                            HideMode.FULL :
-                                                                                            HideMode.NONE);
-                                            return;
-                                        }
+                                    if (pairDistanceSquared > renderDistanceSquared)
+                                    {
+                                        updatePairHideMode(finalObservingUser, watched, hideAfterRenderDistance ?
+                                                                                        HideMode.FULL :
+                                                                                        HideMode.NONE);
+                                        return;
+                                    }
 
-                                        // Update hide mode in both directions.
-                                        updateHideMode(finalObservingUser, watched.getPlayer(),
-                                                       canSee(finalObservingUser, watched) ?
-                                                       // Is the user visible
-                                                       HideMode.NONE :
-                                                       // If the observed player is sneaking hide him fully
-                                                       (watched.getPlayer().isSneaking() ?
-                                                        HideMode.FULL :
-                                                        HideMode.INFORMATION_ONLY));
+                                    // Update hide mode in both directions.
+                                    updateHideMode(finalObservingUser, watched.getPlayer(),
+                                                   canSee(finalObservingUser, watched) ?
+                                                   // Is the user visible
+                                                   HideMode.NONE :
+                                                   // If the observed player is sneaking hide him fully
+                                                   (watched.getPlayer().isSneaking() ?
+                                                    HideMode.FULL :
+                                                    HideMode.INFORMATION_ONLY));
 
-                                        updateHideMode(watched, finalObservingUser.getPlayer(),
-                                                       canSee(watched, finalObservingUser) ?
-                                                       // Is the user visible
-                                                       HideMode.NONE :
-                                                       // If the observed player is sneaking hide him fully
-                                                       (finalObservingUser.getPlayer().isSneaking() ?
-                                                        HideMode.FULL :
-                                                        HideMode.INFORMATION_ONLY));
-                                    });
-                                }
+                                    updateHideMode(watched, finalObservingUser.getPlayer(),
+                                                   canSee(watched, finalObservingUser) ?
+                                                   // Is the user visible
+                                                   HideMode.NONE :
+                                                   // If the observed player is sneaking hide him fully
+                                                   (finalObservingUser.getPlayer().isSneaking() ?
+                                                    HideMode.FULL :
+                                                    HideMode.INFORMATION_ONLY));
+                                });
                             }
                         }
                     }
 
                     pairExecutor.shutdown();
-                    users.clear();
 
                     try
                     {
@@ -180,37 +182,25 @@ public class Esp implements Module
     /**
      * Determines if two {@link User}s can see each other.
      */
-    private boolean canSee(User observerUser, User watchedUser)
+    private boolean canSee(final User observerUser, final User watchedUser)
     {
         final Player observer = observerUser.getPlayer();
         final Player watched = watchedUser.getPlayer();
 
-        // ------------------------------------- Glowing ------------------------------------ //
-        switch (ServerVersion.getActiveServerVersion())
-        {
-            case MC188:
-                break;
-            case MC111:
-            case MC112:
-            case MC113:
-                if (watched.hasPotionEffect(PotionEffectType.GLOWING))
-                {
-                    return true;
-                }
-                break;
-            default:
-                throw new IllegalStateException("Unknown minecraft version");
-        }
-
-        // ----------------------------------- Calculation ---------------------------------- //
-
         // Not bypassed
         if (observerUser.isBypassed(this.getModuleType()) ||
             // Has not logged in recently to prevent bugs
-            observerUser.getLoginData().recentlyUpdated(0, 3000))
+            observerUser.getLoginData().recentlyUpdated(0, 3000) ||
+            // Glowing handling
+            // Glowing does not exist in 1.8.8
+            (ServerVersion.getActiveServerVersion() != ServerVersion.MC188 &&
+             // If an entity is glowing it can always be seen.
+             watched.hasPotionEffect(PotionEffectType.GLOWING)))
         {
             return true;
         }
+
+        // ----------------------------------- Calculation ---------------------------------- //
 
         //canSee = observer.hasLineOfSight(watched);
         final Vector[] cameraVectors = VectorUtils.getCameraVectors(observer);
@@ -304,21 +294,19 @@ public class Esp implements Module
     {
         if (event.getNewGameMode() == GameMode.SPECTATOR)
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final User spectator = UserManager.getUser(event.getPlayer().getUniqueId());
 
             // Not bypassed
-            if (User.isUserInvalid(user, this.getModuleType()))
+            if (User.isUserInvalid(spectator, this.getModuleType()))
             {
                 return;
             }
 
-            // Manually clear the EspInformationData for better performance.
-            for (Player hiddenPlayer : user.getEspInformationData().hiddenPlayers.keySet())
+            // Spectators can see everyone and can be seen by everyone (let vanilla handle this)
+            for (User user : UserManager.getUsersUnwrapped())
             {
-                informationOnlyHider.unModifyInformation(user.getPlayer(), hiddenPlayer);
-                fullHider.unModifyInformation(user.getPlayer(), hiddenPlayer);
+                updatePairHideMode(spectator, user, HideMode.NONE);
             }
-            user.getEspInformationData().hiddenPlayers.clear();
         }
     }
 

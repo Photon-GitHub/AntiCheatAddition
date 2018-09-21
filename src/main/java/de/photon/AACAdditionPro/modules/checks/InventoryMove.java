@@ -63,8 +63,7 @@ public class InventoryMove extends PacketAdapter implements ListenerModule, Pack
 
         final Vector moveTo = new Vector(event.getPacket().getDoubles().readSafely(0),
                                          event.getPacket().getDoubles().readSafely(1),
-                                         event.getPacket().getDoubles().readSafely(2)
-        );
+                                         event.getPacket().getDoubles().readSafely(2));
 
         final Location knownPosition = user.getPlayer().getLocation();
 
@@ -78,19 +77,21 @@ public class InventoryMove extends PacketAdapter implements ListenerModule, Pack
             !user.getPlayer().isInsideVehicle() &&
             // Not flying (may trigger some fps)
             !user.getPlayer().isFlying() &&
-            // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
-            // world add errors.
-            ChunkUtils.isChunkLoaded(user.getPlayer().getLocation()) &&
-            // The player is currently not in a liquid (liquids push)
-            !EntityUtil.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
-                                                         Hitbox.SNEAKING_PLAYER :
-                                                         Hitbox.PLAYER) &&
             // Not using an Elytra
             !EntityUtil.isFlyingWithElytra(user.getPlayer()) &&
             // Player is in an inventory
             user.getInventoryData().hasOpenInventory() &&
             // Player has not been hit recently
             user.getPlayer().getNoDamageTicks() == 0 &&
+            // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
+            // world add errors.
+            // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load
+            // errors.
+            ChunkUtils.isChunkLoaded(user.getPlayer().getLocation()) &&
+            // The player is currently not in a liquid (liquids push)
+            !EntityUtil.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
+                                                         Hitbox.SNEAKING_PLAYER :
+                                                         Hitbox.PLAYER) &&
             // Auto-Disable if TPS are too low
             AACAPIProvider.getAPI().getTPS() > min_tps)
         {
@@ -127,20 +128,14 @@ public class InventoryMove extends PacketAdapter implements ListenerModule, Pack
                 {
                     //TODO: TEST THIS; THIS MIGHT SEND EMPTY PACKETS ?
                     event.setCancelled(true);
-                    //event.getPacket().getDoubles().writeSafely(0, knownPosition.getX());
-                    //event.getPacket().getDoubles().writeSafely(2, knownPosition.getZ());
 
                     // Update client
                     final WrapperPlayServerPosition packet = new WrapperPlayServerPosition();
 
                     //Init with the known values
-                    packet.setX(knownPosition.getX());
-                    packet.setY(knownPosition.getY());
-                    packet.setZ(knownPosition.getZ());
-                    packet.setYaw(knownPosition.getYaw());
-                    packet.setPitch(knownPosition.getPitch());
+                    packet.setWithLocation(knownPosition);
 
-                    //Set the flags and send the packet
+                    // Set no flags as we do not have a relative movement here.
                     packet.setNoFlags();
                     packet.sendPacket(event.getPlayer());
                 }, () -> {});

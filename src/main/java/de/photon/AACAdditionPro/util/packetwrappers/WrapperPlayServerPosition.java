@@ -146,6 +146,15 @@ public class WrapperPlayServerPosition extends AbstractPacket
         return new Location(world, this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
     }
 
+    public void setWithLocation(final Location location)
+    {
+        this.setX(location.getX());
+        this.setY(location.getY());
+        this.setZ(location.getZ());
+        this.setYaw(location.getYaw());
+        this.setPitch(location.getPitch());
+    }
+
     private static final Class<?> FLAGS_CLASS = MinecraftReflection
             .getMinecraftClass("EnumPlayerTeleportFlags",
                                "PacketPlayOutPosition$EnumPlayerTeleportFlags");

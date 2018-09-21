@@ -6,11 +6,11 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.google.common.collect.ImmutableSet;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 public class WrapperPlayServerPosition extends AbstractPacket
@@ -195,14 +195,6 @@ public class WrapperPlayServerPosition extends AbstractPacket
      */
     public void setAllFlags()
     {
-        this.setFlags(
-                new HashSet<PlayerTeleportFlag>()
-                {{
-                    add(WrapperPlayServerPosition.PlayerTeleportFlag.X);
-                    add(WrapperPlayServerPosition.PlayerTeleportFlag.Y);
-                    add(WrapperPlayServerPosition.PlayerTeleportFlag.Z);
-                    add(WrapperPlayServerPosition.PlayerTeleportFlag.Y_ROT);
-                    add(WrapperPlayServerPosition.PlayerTeleportFlag.X_ROT);
-                }});
+        this.setFlags(ImmutableSet.copyOf(PlayerTeleportFlag.values()));
     }
 }

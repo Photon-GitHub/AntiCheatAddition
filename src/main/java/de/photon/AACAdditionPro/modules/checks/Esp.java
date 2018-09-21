@@ -28,7 +28,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
@@ -49,7 +48,7 @@ public class Esp implements Module
     private static final double MAX_FOV = Math.toRadians(165D);
 
     // Use a LinkedList design for optimal storage usage as the amount of bypassed / spectator players cannot be estimated.
-    private final Deque<Pair> playerConnections = new ArrayDeque<>();
+    private final Queue<User> users = new ArrayDeque<>();
 
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
@@ -93,8 +92,10 @@ public class Esp implements Module
         taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
                 () -> {
-                    // Put all users in a List for fast removal.
-                    final Queue<User> users = new ArrayDeque<>(UserManager.getUsersUnwrapped());
+                    // Put all users in a Queue for fast removal.
+                    users.addAll(UserManager.getUsersUnwrapped());
+
+                    final ExecutorService pairExecutor = Executors.newWorkStealingPool();
 
                     // Iterate through all player-constellations
                     User observingUser;
@@ -114,57 +115,53 @@ public class Esp implements Module
                                     // The players are in the same world
                                     observingUser.getPlayer().getWorld().getUID().equals(watched.getPlayer().getWorld().getUID()))
                                 {
-                                    playerConnections.addLast(new Pair(observingUser, watched));
+                                    // The users are always in the same world (see above)
+                                    final double pairDistanceSquared = observingUser.getPlayer().getLocation().distanceSquared(watched.getPlayer().getLocation());
+
+                                    final User finalObservingUser = observingUser;
+                                    pairExecutor.execute(() -> {
+                                        // Less than 1 block distance
+                                        // Everything (smaller than 1)^2 will result in something smaller than 1
+                                        if (pairDistanceSquared < 1)
+                                        {
+                                            updatePairHideMode(finalObservingUser, watched, HideMode.NONE);
+                                            return;
+                                        }
+
+                                        if (pairDistanceSquared > renderDistanceSquared)
+                                        {
+                                            updatePairHideMode(finalObservingUser, watched, hideAfterRenderDistance ?
+                                                                                            HideMode.FULL :
+                                                                                            HideMode.NONE);
+                                            return;
+                                        }
+
+                                        // Update hide mode in both directions.
+                                        updateHideMode(finalObservingUser, watched.getPlayer(),
+                                                       canSee(finalObservingUser, watched) ?
+                                                       // Is the user visible
+                                                       HideMode.NONE :
+                                                       // If the observed player is sneaking hide him fully
+                                                       (watched.getPlayer().isSneaking() ?
+                                                        HideMode.FULL :
+                                                        HideMode.INFORMATION_ONLY));
+
+                                        updateHideMode(watched, finalObservingUser.getPlayer(),
+                                                       canSee(watched, finalObservingUser) ?
+                                                       // Is the user visible
+                                                       HideMode.NONE :
+                                                       // If the observed player is sneaking hide him fully
+                                                       (finalObservingUser.getPlayer().isSneaking() ?
+                                                        HideMode.FULL :
+                                                        HideMode.INFORMATION_ONLY));
+                                    });
                                 }
                             }
                         }
                     }
 
-                    final ExecutorService pairExecutor = Executors.newWorkStealingPool();
-
-                    Pair pair;
-                    while (!playerConnections.isEmpty())
-                    {
-                        // Automatically empty the playerConnections
-                        // Remove last entry for performance
-                        pair = playerConnections.removeLast();
-
-                        // The users are always in the same world (see abovel)
-                        final double pairDistanceSquared = pair.usersOfPair[0].getPlayer().getLocation().distanceSquared(pair.usersOfPair[1].getPlayer().getLocation());
-
-                        final Pair currentPair = pair;
-                        pairExecutor.execute(() -> {
-                            // Less than 1 block distance
-                            // Everything (smaller than 1)^2 will result in something smaller than 1
-                            if (pairDistanceSquared < 1)
-                            {
-                                updatePairHideMode(currentPair, HideMode.NONE);
-                                return;
-                            }
-
-                            if (pairDistanceSquared > renderDistanceSquared)
-                            {
-                                updatePairHideMode(currentPair, hideAfterRenderDistance ?
-                                                                HideMode.FULL :
-                                                                HideMode.NONE);
-                                return;
-                            }
-
-                            for (byte b = 0; b <= 1; b++)
-                            {
-                                updateHideMode(currentPair.usersOfPair[b], currentPair.usersOfPair[1 - b].getPlayer(),
-                                               // Is the user visible
-                                               canSee(currentPair.usersOfPair[b], currentPair.usersOfPair[1 - b]) ?
-                                               HideMode.NONE :
-                                               // If the observed player is sneaking hide him fully
-                                               (currentPair.usersOfPair[1 - b].getPlayer().isSneaking() ?
-                                                HideMode.FULL :
-                                                HideMode.INFORMATION_ONLY));
-                            }
-                        });
-                    }
-
                     pairExecutor.shutdown();
+                    users.clear();
 
                     try
                     {
@@ -325,10 +322,10 @@ public class Esp implements Module
         }
     }
 
-    private void updatePairHideMode(final Pair pair, final HideMode hideMode)
+    private void updatePairHideMode(final User first, final User second, final HideMode hideMode)
     {
-        updateHideMode(pair.usersOfPair[0], pair.usersOfPair[1].getPlayer(), hideMode);
-        updateHideMode(pair.usersOfPair[1], pair.usersOfPair[0].getPlayer(), hideMode);
+        updateHideMode(first, second.getPlayer(), hideMode);
+        updateHideMode(second, first.getPlayer(), hideMode);
     }
 
     // No need to synchronize hiddenPlayers as it is accessed in a synchronized task.
@@ -378,43 +375,5 @@ public class Esp implements Module
     public ModuleType getModuleType()
     {
         return ModuleType.ESP;
-    }
-
-    private static class Pair
-    {
-        final User[] usersOfPair;
-
-        Pair(final User a, final User b)
-        {
-            usersOfPair = new User[]{
-                    a,
-                    b
-            };
-        }
-
-        @Override
-        public boolean equals(final Object o)
-        {
-            if (this == o)
-            {
-                return true;
-            }
-
-            if (o == null || getClass() != o.getClass())
-            {
-                return false;
-            }
-
-            // The other object
-            final Pair pair = (Pair) o;
-            return (usersOfPair[0].getPlayer().getUniqueId().equals(pair.usersOfPair[0].getPlayer().getUniqueId()) || usersOfPair[0].getPlayer().getUniqueId().equals(pair.usersOfPair[1].getPlayer().getUniqueId())) &&
-                   (usersOfPair[1].getPlayer().getUniqueId().equals(pair.usersOfPair[1].getPlayer().getUniqueId()) || usersOfPair[1].getPlayer().getUniqueId().equals(pair.usersOfPair[0].getPlayer().getUniqueId()));
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return usersOfPair[0].getPlayer().getUniqueId().hashCode() + usersOfPair[1].getPlayer().getUniqueId().hashCode();
-        }
     }
 }

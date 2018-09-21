@@ -156,7 +156,9 @@ public class WrapperPlayServerPosition extends AbstractPacket
         Y,
         Z,
         Y_ROT,
-        X_ROT
+        X_ROT;
+
+        private final static Set<PlayerTeleportFlag> ALL_FLAGS = ImmutableSet.copyOf(PlayerTeleportFlag.values());
     }
 
     private StructureModifier<Set<PlayerTeleportFlag>> getFlagsModifier()
@@ -195,6 +197,6 @@ public class WrapperPlayServerPosition extends AbstractPacket
      */
     public void setAllFlags()
     {
-        this.setFlags(ImmutableSet.copyOf(PlayerTeleportFlag.values()));
+        this.setFlags(PlayerTeleportFlag.ALL_FLAGS);
     }
 }

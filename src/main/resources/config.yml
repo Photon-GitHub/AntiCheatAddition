@@ -253,7 +253,8 @@ InventoryRotation:
 # This check can cause performance problems as it needs to calculate movement, select equipment and take many more
 # actions to make the entities mostly bypass-proof. If you encounter TPS drops try to disable this check first.
 #
-# This check currently undergoes an overall rewrite, thus it is currently IN BETA
+# This check currently undergoes an overall rewrite, thus it is currently EXPERIMENTAL and should not be used on
+# productive servers.
 KillauraEntity:
   # Do you want to enable the KillauraEntity check
   # Disabled by default as this check is currently rewritten.

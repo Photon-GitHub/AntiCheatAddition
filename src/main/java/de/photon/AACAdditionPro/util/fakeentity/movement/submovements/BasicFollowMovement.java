@@ -32,7 +32,11 @@ public class BasicFollowMovement implements Movement
                                                          -(RandomUtil.randomBoundaryDouble(entityOffset, offsetRandomizationRange))
                                                           ));
 
-        final double lengthSquared = Math.max(oldEntityLocation.distanceSquared(playerWorkLocation), playerLocation.distanceSquared(playerWorkLocation));
+        final double lengthSquared = oldEntityLocation.getWorld().getUID().equals(playerWorkLocation.getWorld().getUID()) ?
+                                     Math.max(oldEntityLocation.distanceSquared(playerWorkLocation), playerLocation.distanceSquared(playerWorkLocation)) :
+                                     // Set to a high value if not in the same world
+                                     128D;
+
         isTPNeeded = lengthSquared > 64;
         shouldSprint = !isTPNeeded && lengthSquared > 25;
 

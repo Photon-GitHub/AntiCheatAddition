@@ -15,13 +15,16 @@ public class KeepAliveOffsetPattern extends PatternModule.Pattern<User, Integer>
     @Override
     protected int process(User user, Integer offset)
     {
-        if (user.getPacketAnalysisData().getKeepAlives().size() == PacketAnalysisData.KEEPALIVE_QUEUE_SIZE)
+        synchronized (user.getPacketAnalysisData().getKeepAlives())
         {
-            // -1 because of size -> index conversion
-            if (offset > 0)
+            if (user.getPacketAnalysisData().getKeepAlives().size() == PacketAnalysisData.KEEPALIVE_QUEUE_SIZE)
             {
-                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent packets out of order with an offset of: " + offset);
-                return Math.min(offset * 2, 10);
+                // -1 because of size -> index conversion
+                if (offset > 0)
+                {
+                    VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent packets out of order with an offset of: " + offset);
+                    return Math.min(offset * 2, 10);
+                }
             }
         }
         return 0;

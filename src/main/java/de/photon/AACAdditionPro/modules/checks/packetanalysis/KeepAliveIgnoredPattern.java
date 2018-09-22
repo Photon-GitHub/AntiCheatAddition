@@ -22,12 +22,15 @@ class KeepAliveIgnoredPattern extends PatternModule.PacketPattern
     @Override
     protected int process(User user, PacketContainer packetContainer)
     {
-        // Check on sending to force the client to respond in a certain time-frame.
-        if (user.getPacketAnalysisData().getKeepAlives().size() > PacketAnalysisData.KEEPALIVE_QUEUE_SIZE &&
-            !user.getPacketAnalysisData().getKeepAlives().removeFirst().hasRegisteredResponse())
+        synchronized (user.getPacketAnalysisData().getKeepAlives())
         {
-            VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " ignored KeepAlive packet.");
-            return 10;
+            // Check on sending to force the client to respond in a certain time-frame.
+            if (user.getPacketAnalysisData().getKeepAlives().size() > PacketAnalysisData.KEEPALIVE_QUEUE_SIZE &&
+                !user.getPacketAnalysisData().getKeepAlives().remove().hasRegisteredResponse())
+            {
+                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " ignored KeepAlive packet.");
+                return 10;
+            }
         }
         return 0;
     }

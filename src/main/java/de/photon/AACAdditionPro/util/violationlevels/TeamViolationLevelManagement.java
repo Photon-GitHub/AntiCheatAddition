@@ -68,24 +68,13 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
             this.flag(player, vl_increase, cancel_vl, onCancel, specialCode);
         }
 
-
         punishTeam(players, this.getTeamVl(uuids));
     }
 
     @Override
     public void setVL(final Player player, final int newVl)
     {
-        // A value smaller than 0 can be removed
-        if (newVl > 0 &&
-            // If the player is offline he can be removed
-            player.isOnline())
-        {
-            violationLevels.put(player.getUniqueId(), newVl);
-        }
-        else
-        {
-            violationLevels.remove(player.getUniqueId());
-        }
+        violationLevels.put(player.getUniqueId(), newVl);
     }
 
     /**

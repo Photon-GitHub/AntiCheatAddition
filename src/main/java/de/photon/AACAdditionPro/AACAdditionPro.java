@@ -42,6 +42,7 @@ import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.fakeentity.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.files.FileUtilities;
+import de.photon.AACAdditionPro.util.sorting.CompareUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.bstats.bukkit.Metrics;
@@ -115,33 +116,6 @@ public class AACAdditionPro extends JavaPlugin
     }
 
     /**
-     * Checks if the given AAC version is too old for AACAdditionPro.
-     */
-    private static boolean isVersionTooOld(final String aacVersionNumber)
-    {
-        final String[] minimumVersionParts = AACAdditionPro.MINIMUM_AAC_VERSION.split("\\.");
-        final String[] actualVersionParts = aacVersionNumber.split("\\.");
-
-        final int smallestLength = Math.min(minimumVersionParts.length, actualVersionParts.length);
-        int minimumVersionPart;
-        int actualVersionPart;
-
-        for (int i = 0; i < smallestLength; i++)
-        {
-            minimumVersionPart = Integer.valueOf(minimumVersionParts[i]);
-            actualVersionPart = Integer.valueOf(actualVersionParts[i]);
-
-            if (minimumVersionPart == actualVersionPart)
-                continue;
-
-            return minimumVersionPart > actualVersionPart;
-        }
-
-        // Same numbers, now check for additions
-        return minimumVersionParts.length > actualVersionParts.length;
-    }
-
-    /**
      * Registers a new {@link Listener} for AACAdditionPro.
      *
      * @param listener the {@link Listener} which should be registered in the {@link org.bukkit.plugin.PluginManager}
@@ -205,7 +179,10 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Is the numerical representation of the min AAC version smaller than the representation of the real version
-            if (isVersionTooOld(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion()))
+            final int[] minimumVersionParts = Arrays.stream(AACAdditionPro.MINIMUM_AAC_VERSION.split("\\.")).mapToInt(Integer::valueOf).toArray();
+            final int[] actualVersionParts = Arrays.stream(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion().split("\\.")).mapToInt(Integer::valueOf).toArray();
+
+            if (CompareUtils.compareIntegerArray(minimumVersionParts, actualVersionParts) <= 0)
             {
                 VerboseSender.getInstance().sendVerboseMessage("AAC version is not supported.", true, true);
                 VerboseSender.getInstance().sendVerboseMessage("This plugin needs AAC version " + MINIMUM_AAC_VERSION + " or newer.", true, true);

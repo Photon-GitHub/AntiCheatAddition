@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.util.violationlevels;
 
+import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.commands.Placeholders;
@@ -95,22 +96,25 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
      */
     private void punishTeam(final List<Player> playersOfTeam, final Integer teamVL)
     {
-        thresholds.keySet().stream()
-                  // Filter out all elements that are too big
-                  .filter((integer) -> integer <= teamVL)
-                  // Find the biggest element below teamVL
-                  .max(Integer::compare)
-                  // Make sure the element exists
-                  .ifPresent(vl -> {
-                      // Execute the commands
-                      for (final String s : thresholds.get(vl))
-                      {
-                          // Command cannot be null as of the new loading process.
-                          final String realCommand = Placeholders.applyPlaceholders(s, playersOfTeam, null);
-
-                          // Sync command execution
-                          CommandUtils.executeCommand(realCommand);
-                      }
-                  });
+        // Only schedule the command execution if the plugin is loaded
+        if (AACAdditionPro.getInstance().isLoaded())
+        {
+            // Find the biggest element below teamVL
+            for (int i = this.thresholds.size() - 1; i >= 0; i--)
+            {
+                if (this.thresholds.get(i).getVl() <= teamVL)
+                {
+                    // Execute the commands
+                    for (final String command : this.thresholds.get(i).getCommandList())
+                    {
+                        // Sync command execution
+                        CommandUtils.executeCommand(Placeholders.applyPlaceholders(command, playersOfTeam, null));
+                    }
+                    // Due to the sorting of the commands (and the fact that only one command should be executed) we can
+                    // break here.
+                    break;
+                }
+            }
+        }
     }
 }

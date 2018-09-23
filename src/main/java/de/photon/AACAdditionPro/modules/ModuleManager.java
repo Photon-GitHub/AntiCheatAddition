@@ -79,8 +79,12 @@ public final class ModuleManager
     public void setStateOfModule(final ModuleType moduleType, final boolean state)
     {
         if (state)
+        {
             Module.enableModule(this.getModule(moduleType));
+        }
         else
+        {
             Module.disableModule(this.getModule(moduleType));
+        }
     }
 }

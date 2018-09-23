@@ -34,30 +34,35 @@ class ComparePattern extends PatternModule.PacketPattern
     @Override
     protected int process(User user, PacketContainer packetContainer)
     {
-        // Make sure enough datapoints exist for checking.
-        if (user.getPacketAnalysisData().getKeepAlives().size() > 10)
+        final double offset;
+        try
         {
-            final double offset = MathUtils.offset(
+            offset = MathUtils.offset(
                     user.getPacketAnalysisData().recentKeepAliveResponseTime(),
                     user.getPacketAnalysisData().lastPositionForceData.timeDifference()) - allowedOffset;
+            // recentKeepAliveResponseTime() might throw an IllegalStateException if there are not enough answered
+            // KeepAlive packets in the queue.
+        } catch (IllegalStateException tooFewDataPoints)
+        {
+            return 0;
+        }
 
-            // Should flag
-            if (offset > 0)
+        // Should flag
+        if (offset > 0)
+        {
+            // Minimum time between flags to decrease lag spike effects.
+            if (!user.getPacketAnalysisData().recentlyUpdated(0, violationTime) &&
+                // Minimum fails to mitigate some fluctuations
+                ++user.getPacketAnalysisData().compareFails >= this.violationThreshold)
             {
-                // Minimum time between flags to decrease lag spike effects.
-                if (!user.getPacketAnalysisData().recentlyUpdated(0, violationTime) &&
-                    // Minimum fails to mitigate some fluctuations
-                    ++user.getPacketAnalysisData().compareFails >= this.violationThreshold)
-                {
-                    VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
+                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
 
-                    return Math.min(Math.max(1, (int) (offset / 50)), 12);
-                }
+                return Math.min(Math.max(1, (int) (offset / 50)), 12);
             }
-            else if (user.getPacketAnalysisData().compareFails > 0)
-            {
-                user.getPacketAnalysisData().compareFails--;
-            }
+        }
+        else if (user.getPacketAnalysisData().compareFails > 0)
+        {
+            user.getPacketAnalysisData().compareFails--;
         }
         return 0;
     }

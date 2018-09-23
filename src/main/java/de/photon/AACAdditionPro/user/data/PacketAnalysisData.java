@@ -19,9 +19,11 @@ public class PacketAnalysisData extends TimeData
     public PositionForceData lastPositionForceData = null;
     public long compareFails = 0;
 
-    // Synchronized lists as the Protocol is async.
     @Getter
-    // KEEPALIVE_QUEUE_SIZE + 1 because there might always be one more element in the queue before the first one is deleted.
+    /* The central Deque of the KeepAlive packet handling.
+     *  Synchronized access to the Deque is a must.
+     *
+     *  KEEPALIVE_QUEUE_SIZE + 1 because there might always be one more element in the queue before the first one is deleted.*/
     private final Deque<KeepAlivePacketData> keepAlives = new ArrayDeque<>(KEEPALIVE_QUEUE_SIZE + 1);
 
     public PacketAnalysisData(User user)
@@ -34,14 +36,14 @@ public class PacketAnalysisData extends TimeData
      * Calculates how long the client needs to answer a KeepAlive packet on average.
      * Only uses the last 4 values for the calculation.
      */
-    public long recentKeepAliveResponseTime()
+    public long recentKeepAliveResponseTime() throws IllegalStateException
     {
         synchronized (keepAlives)
         {
             Preconditions.checkState(!keepAlives.isEmpty(), "KeepAlive queue is empty.");
 
             long sum = 0;
-            int datapoints = 0;
+            byte datapoints = 0;
 
             final Iterator<KeepAlivePacketData> iterator = keepAlives.descendingIterator();
             KeepAlivePacketData data;
@@ -57,8 +59,17 @@ public class PacketAnalysisData extends TimeData
                     datapoints++;
                 }
             }
+
+            Preconditions.checkState(datapoints > 0, "No answered KeepAlive packets found.");
             return sum / datapoints;
         }
+    }
+
+    @Override
+    public void unregister()
+    {
+        this.keepAlives.clear();
+        super.unregister();
     }
 
     public static class PositionForceData

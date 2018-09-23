@@ -260,7 +260,7 @@ public class AACAdditionPro extends JavaPlugin
             );
 
             // Commands
-            this.getCommand("aacadditionpro").setExecutor(MainCommand.getInstance());
+            this.getCommand(MainCommand.getInstance().getMainCommandName()).setExecutor(MainCommand.getInstance());
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                          Enabled-Verbose + API                                         //

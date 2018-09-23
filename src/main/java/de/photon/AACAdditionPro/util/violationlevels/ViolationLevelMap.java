@@ -9,9 +9,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ViolationLevelMap extends ConcurrentHashMap<UUID, Integer> implements Listener
+class ViolationLevelMap extends ConcurrentHashMap<UUID, Integer> implements Listener
 {
-    public ViolationLevelMap(final long decayTicks)
+    ViolationLevelMap(final long decayTicks)
     {
         super();
 

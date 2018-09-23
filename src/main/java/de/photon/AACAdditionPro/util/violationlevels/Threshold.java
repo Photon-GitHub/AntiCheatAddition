@@ -4,7 +4,7 @@ import lombok.Getter;
 
 import java.util.List;
 
-public class Threshold implements Comparable<Threshold>
+class Threshold implements Comparable<Threshold>
 {
     @Getter
     private final int vl;

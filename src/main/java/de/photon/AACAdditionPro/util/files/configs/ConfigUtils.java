@@ -2,7 +2,6 @@ package de.photon.AACAdditionPro.util.files.configs;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.modules.Module;
-import de.photon.AACAdditionPro.util.violationlevels.Threshold;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -10,7 +9,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -175,27 +173,5 @@ public final class ConfigUtils
                 // Generate a ConfigurationSection that contains all keys
                 AACAdditionPro.getInstance().getConfig().getConfigurationSection(sectionPath),
                 "Severe loading error: Config-Section is null when loading: " + sectionPath).getKeys(false);
-    }
-
-    /**
-     * Tries to load all thresholds from the given config key.
-     *
-     * @param thresholdSectionPath the given path to the section that contains the thresholds
-     *
-     * @return a mutable {@link List} containing all {@link Threshold}s.
-     */
-    public static List<Threshold> loadThresholds(final String thresholdSectionPath)
-    {
-        final Set<String> keys = Objects.requireNonNull(loadKeys(thresholdSectionPath), "Severe loading error: Keys are null when loading: " + thresholdSectionPath);
-
-        final List<Threshold> builder = new ArrayList<>();
-
-        for (final String key : keys)
-        {
-            //Put the command into thresholds
-            builder.add(new Threshold(Integer.parseInt(key), loadStringOrStringList(thresholdSectionPath + "." + key)));
-        }
-
-        return builder;
     }
 }

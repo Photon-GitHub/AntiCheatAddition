@@ -5,7 +5,6 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationEvent;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
-import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -47,7 +46,7 @@ public class ViolationLevelManagement
         AACAdditionPro.getInstance().registerListener(this.violationLevels);
 
         // Load the thresholds and sort them.
-        thresholds = ImmutableList.sortedCopyOf(ConfigUtils.loadThresholds(moduleType.getConfigString() + ".thresholds"));
+        thresholds = ImmutableList.sortedCopyOf(Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds"));
     }
 
     /**

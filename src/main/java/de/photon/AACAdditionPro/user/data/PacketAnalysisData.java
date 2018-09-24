@@ -1,14 +1,15 @@
 package de.photon.AACAdditionPro.user.data;
 
+import com.google.common.base.Preconditions;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import lombok.Getter;
 import org.bukkit.Location;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class PacketAnalysisData extends TimeData
 {
@@ -18,9 +19,12 @@ public class PacketAnalysisData extends TimeData
     public PositionForceData lastPositionForceData = null;
     public long compareFails = 0;
 
-    // Synchronized lists as the Protocol is async.
     @Getter
-    private final Deque<KeepAlivePacketData> keepAlives = new ConcurrentLinkedDeque<>();
+    /* The central Deque of the KeepAlive packet handling.
+     *  Synchronized access to the Deque is a must.
+     *
+     *  KEEPALIVE_QUEUE_SIZE + 1 because there might always be one more element in the queue before the first one is deleted.*/
+    private final Deque<KeepAlivePacketData> keepAlives = new ArrayDeque<>(KEEPALIVE_QUEUE_SIZE + 1);
 
     public PacketAnalysisData(User user)
     {
@@ -32,32 +36,40 @@ public class PacketAnalysisData extends TimeData
      * Calculates how long the client needs to answer a KeepAlive packet on average.
      * Only uses the last 4 values for the calculation.
      */
-    public long recentKeepAliveResponseTime()
+    public long recentKeepAliveResponseTime() throws IllegalStateException
     {
-        long sum = 0;
-        int datapoints = 0;
-
-        final Iterator<KeepAlivePacketData> iterator = keepAlives.descendingIterator();
-        KeepAlivePacketData data;
-
-        while (iterator.hasNext() && datapoints <= 3)
+        synchronized (keepAlives)
         {
-            data = iterator.next();
+            Preconditions.checkState(!keepAlives.isEmpty(), "KeepAlive queue is empty.");
 
-            // Leave out ignored packets.
-            if (data.timeDifference >= 0)
+            long sum = 0;
+            byte datapoints = 0;
+
+            final Iterator<KeepAlivePacketData> iterator = keepAlives.descendingIterator();
+            KeepAlivePacketData data;
+
+            while (iterator.hasNext() && datapoints <= 3)
             {
-                sum += data.timeDifference;
-                datapoints++;
+                data = iterator.next();
+
+                // Leave out ignored packets.
+                if (data.timeDifference >= 0)
+                {
+                    sum += data.timeDifference;
+                    datapoints++;
+                }
             }
+
+            Preconditions.checkState(datapoints > 0, "No answered KeepAlive packets found.");
+            return sum / datapoints;
         }
-        return sum / datapoints;
     }
 
     @Override
     public void unregister()
     {
-        keepAlives.clear();
+        this.keepAlives.clear();
+        super.unregister();
     }
 
     public static class PositionForceData

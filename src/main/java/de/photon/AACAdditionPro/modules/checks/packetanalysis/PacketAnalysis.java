@@ -62,7 +62,10 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         if (event.getPacketType() == PacketType.Play.Server.KEEP_ALIVE)
         {
             // Register the KeepAlive
-            user.getPacketAnalysisData().getKeepAlives().addLast(new PacketAnalysisData.KeepAlivePacketData(new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId()));
+            synchronized (user.getPacketAnalysisData().getKeepAlives())
+            {
+                user.getPacketAnalysisData().getKeepAlives().add(new PacketAnalysisData.KeepAlivePacketData(new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId()));
+            }
             vlManager.flag(user.getPlayer(), keepAliveIgnoredPattern.apply(user, event.getPacket()), -1, () -> {}, () -> {});
         }
         else if (event.getPacketType() == PacketType.Play.Server.POSITION)
@@ -94,19 +97,22 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
             PacketAnalysisData.KeepAlivePacketData keepAlivePacketData = null;
 
             int offset = 0;
-            final Iterator<PacketAnalysisData.KeepAlivePacketData> iterator = user.getPacketAnalysisData().getKeepAlives().descendingIterator();
-            PacketAnalysisData.KeepAlivePacketData current;
-            while (iterator.hasNext())
+            synchronized (user.getPacketAnalysisData().getKeepAlives())
             {
-                current = iterator.next();
-
-                if (current.getKeepAliveID() == keepAliveId)
+                final Iterator<PacketAnalysisData.KeepAlivePacketData> iterator = user.getPacketAnalysisData().getKeepAlives().descendingIterator();
+                PacketAnalysisData.KeepAlivePacketData current;
+                while (iterator.hasNext())
                 {
-                    keepAlivePacketData = current;
-                    break;
-                }
+                    current = iterator.next();
 
-                offset++;
+                    if (current.getKeepAliveID() == keepAliveId)
+                    {
+                        keepAlivePacketData = current;
+                        break;
+                    }
+
+                    offset++;
+                }
             }
 
             // A packet with the same data must have been sent before.

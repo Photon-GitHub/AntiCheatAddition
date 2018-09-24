@@ -4,6 +4,7 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.random.RandomUtil;
+import de.photon.AACAdditionPro.util.world.LocationUtils;
 import org.bukkit.Location;
 
 public class BasicFollowMovement implements Movement
@@ -32,7 +33,9 @@ public class BasicFollowMovement implements Movement
                                                          -(RandomUtil.randomBoundaryDouble(entityOffset, offsetRandomizationRange))
                                                           ));
 
-        final double lengthSquared = Math.max(oldEntityLocation.distanceSquared(playerWorkLocation), playerLocation.distanceSquared(playerWorkLocation));
+        // playerLocation and playerWorkLocation are guaranteed to be in the same world.
+        final double lengthSquared = Math.max(LocationUtils.safeWorldDistanceSquared(oldEntityLocation, playerWorkLocation), playerLocation.distanceSquared(playerWorkLocation));
+
         isTPNeeded = lengthSquared > 64;
         shouldSprint = !isTPNeeded && lengthSquared > 25;
 

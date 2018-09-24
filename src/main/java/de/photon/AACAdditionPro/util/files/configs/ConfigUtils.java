@@ -11,11 +11,8 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public final class ConfigUtils
 {
@@ -35,7 +32,9 @@ public final class ConfigUtils
             annotation = field.getAnnotation(LoadFromConfiguration.class);
 
             if (annotation == null)
+            {
                 continue;
+            }
 
             // Make it possible to modify the field
             field.setAccessible(true);
@@ -56,26 +55,44 @@ public final class ConfigUtils
             {
                 // Boolean
                 if (type == boolean.class || type == Boolean.class)
+                {
                     field.setBoolean(object, AACAdditionPro.getInstance().getConfig().getBoolean(path));
-                    // Numbers
+                }
+                // Numbers
                 else if (type == double.class || type == Double.class)
+                {
                     field.setDouble(object, AACAdditionPro.getInstance().getConfig().getDouble(path));
+                }
                 else if (type == int.class || type == Integer.class)
+                {
                     field.setInt(object, AACAdditionPro.getInstance().getConfig().getInt(path));
+                }
                 else if (type == long.class || type == Long.class)
+                {
                     field.setLong(object, AACAdditionPro.getInstance().getConfig().getLong(path));
+                }
                 else if (type == String.class)
+                {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getString(path));
-                    // Special stuff
+                }
+                // Special stuff
                 else if (type == ItemStack.class)
+                {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getItemStack(path));
+                }
                 else if (type == Color.class)
+                {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getColor(path));
+                }
                 else if (type == OfflinePlayer.class)
+                {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getOfflinePlayer(path));
+                }
                 else if (type == Vector.class)
+                {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getVector(path));
-                    // Lists
+                }
+                // Lists
                 else if (type == List.class)
                 {
                     // StringLists
@@ -156,28 +173,5 @@ public final class ConfigUtils
                 // Generate a ConfigurationSection that contains all keys
                 AACAdditionPro.getInstance().getConfig().getConfigurationSection(sectionPath),
                 "Severe loading error: Config-Section is null when loading: " + sectionPath).getKeys(false);
-    }
-
-    /**
-     * Tries to load all thresholds from the given config key.
-     *
-     * @param thresholdSectionPath the given path to the section that contains the thresholds
-     *
-     * @return a {@link Map} where the keys are {@link Integer}s and representing the threshold and Objects that are {@link List}s of {@link String}(s) which contain the commands that should be run when triggering the threshold.
-     */
-    public static ConcurrentMap<Integer, List<String>> loadThresholds(final String thresholdSectionPath)
-    {
-        final Set<String> keys = Objects.requireNonNull(loadKeys(thresholdSectionPath), "Severe loading error: Keys are null when loading: " + thresholdSectionPath);
-
-        // Create the Map the thresholds will be put in
-        final ConcurrentMap<Integer, List<String>> thresholds = new ConcurrentHashMap<>(keys.size(), 1);
-
-        for (final String key : keys)
-        {
-            //Put the command into thresholds
-            thresholds.put(Integer.parseInt(key), loadStringOrStringList(thresholdSectionPath + "." + key));
-        }
-
-        return thresholds;
     }
 }

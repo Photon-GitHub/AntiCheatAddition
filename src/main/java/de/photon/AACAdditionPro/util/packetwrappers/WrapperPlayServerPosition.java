@@ -6,11 +6,11 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.google.common.collect.ImmutableSet;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 public class WrapperPlayServerPosition extends AbstractPacket
@@ -146,6 +146,15 @@ public class WrapperPlayServerPosition extends AbstractPacket
         return new Location(world, this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
     }
 
+    public void setWithLocation(final Location location)
+    {
+        this.setX(location.getX());
+        this.setY(location.getY());
+        this.setZ(location.getZ());
+        this.setYaw(location.getYaw());
+        this.setPitch(location.getPitch());
+    }
+
     private static final Class<?> FLAGS_CLASS = MinecraftReflection
             .getMinecraftClass("EnumPlayerTeleportFlags",
                                "PacketPlayOutPosition$EnumPlayerTeleportFlags");
@@ -156,7 +165,9 @@ public class WrapperPlayServerPosition extends AbstractPacket
         Y,
         Z,
         Y_ROT,
-        X_ROT
+        X_ROT;
+
+        private final static Set<PlayerTeleportFlag> ALL_FLAGS = ImmutableSet.copyOf(PlayerTeleportFlag.values());
     }
 
     private StructureModifier<Set<PlayerTeleportFlag>> getFlagsModifier()
@@ -195,14 +206,6 @@ public class WrapperPlayServerPosition extends AbstractPacket
      */
     public void setAllFlags()
     {
-        this.setFlags(
-                new HashSet<PlayerTeleportFlag>()
-                {{
-                    add(WrapperPlayServerPosition.PlayerTeleportFlag.X);
-                    add(WrapperPlayServerPosition.PlayerTeleportFlag.Y);
-                    add(WrapperPlayServerPosition.PlayerTeleportFlag.Z);
-                    add(WrapperPlayServerPosition.PlayerTeleportFlag.Y_ROT);
-                    add(WrapperPlayServerPosition.PlayerTeleportFlag.X_ROT);
-                }});
+        this.setFlags(PlayerTeleportFlag.ALL_FLAGS);
     }
 }

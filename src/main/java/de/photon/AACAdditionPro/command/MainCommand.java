@@ -35,6 +35,11 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
               new VerboseCommand());
     }
 
+    public String getMainCommandName()
+    {
+        return this.name;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
@@ -78,7 +83,9 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
         for (String tabPossibility : tabs)
         {
             if (tabPossibility.startsWith(args[currentArgumentIndex]))
+            {
                 tabPossibilities.add(tabPossibility);
+            }
         }
         return tabPossibilities;
 

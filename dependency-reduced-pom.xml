@@ -4,7 +4,7 @@
   <groupId>de.photon</groupId>
   <artifactId>AACAdditionPro</artifactId>
   <name>AACAdditionPro</name>
-  <version>4.3.0</version>
+  <version>4.3.1</version>
   <description>This plugin provides niche checks for cheats which are not covered by AAC</description>
   <build>
     <defaultGoal>clean install</defaultGoal>
@@ -98,10 +98,14 @@
     </dependency>
     <dependency>
       <groupId>com.comphenix.protocol</groupId>
-      <artifactId>ProtocolLib-API</artifactId>
-      <version>4.3.0</version>
+      <artifactId>ProtocolLib</artifactId>
+      <version>4.4.0</version>
       <scope>provided</scope>
       <exclusions>
+        <exclusion>
+          <artifactId>ProtocolLib-API</artifactId>
+          <groupId>com.comphenix.protocol</groupId>
+        </exclusion>
         <exclusion>
           <artifactId>cglib-nodep</artifactId>
           <groupId>cglib</groupId>
@@ -133,7 +137,7 @@
     <dependency>
       <groupId>us.myles</groupId>
       <artifactId>viaversion</artifactId>
-      <version>1.4.1</version>
+      <version>1.5.0</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>

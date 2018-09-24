@@ -18,7 +18,7 @@ public abstract class InternalCommand
 {
     protected static final String PREFIX = ChatColor.DARK_RED + "[AACAdditionPro] ";
 
-    private final String name;
+    protected final String name;
     private final InternalPermission permission;
     private final byte minArguments;
     private final byte maxArguments;

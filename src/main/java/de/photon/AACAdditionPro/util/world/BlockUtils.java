@@ -12,58 +12,53 @@ import java.util.Set;
 
 public final class BlockUtils
 {
-    public static final Set<Material> LIQUIDS = ImmutableSet.of(Material.WATER, Material.LAVA, Material.STATIONARY_WATER, Material.STATIONARY_LAVA);
+    public static final Set<Material> LIQUIDS = ImmutableSet.of(Material.WATER,
+                                                                Material.LAVA,
+                                                                Material.STATIONARY_WATER,
+                                                                Material.STATIONARY_LAVA);
     public static final Set<Material> CONTAINERS;
 
     static
     {
+        ImmutableSet.Builder<Material> containerBuilder = new ImmutableSet.Builder<>();
         switch (ServerVersion.getActiveServerVersion())
         {
-            case MC188:
-                CONTAINERS = ImmutableSet.of(Material.CHEST,
-                                             Material.TRAPPED_CHEST,
-                                             Material.ENDER_CHEST,
-                                             Material.ANVIL,
-                                             Material.FURNACE,
-                                             Material.DISPENSER,
-                                             Material.DROPPER,
-                                             Material.BREWING_STAND);
-                break;
-
-            case MC111:
-            case MC112:
-                // TODO: UNVERIFIED!
             case MC113:
-                CONTAINERS = ImmutableSet.of(Material.CHEST,
-                                             Material.TRAPPED_CHEST,
-                                             Material.ENDER_CHEST,
-                                             Material.ANVIL,
-                                             Material.FURNACE,
-                                             Material.DISPENSER,
-                                             Material.DROPPER,
-                                             Material.BREWING_STAND,
-                                             Material.BLACK_SHULKER_BOX,
-                                             Material.BROWN_SHULKER_BOX,
-                                             Material.BLUE_SHULKER_BOX,
-                                             Material.CYAN_SHULKER_BOX,
-                                             Material.GRAY_SHULKER_BOX,
-                                             Material.GREEN_SHULKER_BOX,
-                                             Material.LIGHT_BLUE_SHULKER_BOX,
-                                             Material.LIME_SHULKER_BOX,
-                                             Material.MAGENTA_SHULKER_BOX,
-                                             Material.ORANGE_SHULKER_BOX,
-                                             Material.PINK_SHULKER_BOX,
-                                             Material.PURPLE_SHULKER_BOX,
-                                             Material.RED_SHULKER_BOX,
-                                             Material.SILVER_SHULKER_BOX,
-                                             Material.WHITE_SHULKER_BOX,
-                                             Material.YELLOW_SHULKER_BOX);
+                // TODO: UNVERIFIED!
+            case MC112:
+            case MC111:
+                // Additionally add the shulker boxes.
+                containerBuilder.add(Material.BLACK_SHULKER_BOX,
+                                     Material.BROWN_SHULKER_BOX,
+                                     Material.BLUE_SHULKER_BOX,
+                                     Material.CYAN_SHULKER_BOX,
+                                     Material.GRAY_SHULKER_BOX,
+                                     Material.GREEN_SHULKER_BOX,
+                                     Material.LIGHT_BLUE_SHULKER_BOX,
+                                     Material.LIME_SHULKER_BOX,
+                                     Material.MAGENTA_SHULKER_BOX,
+                                     Material.ORANGE_SHULKER_BOX,
+                                     Material.PINK_SHULKER_BOX,
+                                     Material.PURPLE_SHULKER_BOX,
+                                     Material.RED_SHULKER_BOX,
+                                     Material.SILVER_SHULKER_BOX,
+                                     Material.WHITE_SHULKER_BOX,
+                                     Material.YELLOW_SHULKER_BOX);
+            case MC188:
+                containerBuilder.add(Material.CHEST,
+                                     Material.TRAPPED_CHEST,
+                                     Material.ENDER_CHEST,
+                                     Material.ANVIL,
+                                     Material.FURNACE,
+                                     Material.DISPENSER,
+                                     Material.DROPPER,
+                                     Material.BREWING_STAND);
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
 
-
+        CONTAINERS = containerBuilder.build();
     }
 
     public static final Set<BlockFace> HORIZONTAL_FACES = ImmutableSet.of(
@@ -91,9 +86,12 @@ public final class BlockUtils
      */
     public static boolean isNext(final Block a, final Block b, final boolean onlyHorizontal)
     {
-        return a.getWorld().equals(b.getWorld()) && (onlyHorizontal ?
-                                                     HORIZONTAL_FACES.contains(a.getFace(b)) :
-                                                     ALL_FACES.contains(a.getFace(b)));
+        // Same world
+        return a.getWorld().getUID().equals(b.getWorld().getUID())
+               // Next to each other.
+               && (onlyHorizontal ?
+                   HORIZONTAL_FACES.contains(a.getFace(b)) :
+                   ALL_FACES.contains(a.getFace(b)));
     }
 
     /**
@@ -148,6 +146,13 @@ public final class BlockUtils
      */
     public static boolean isReallyOccluding(Material material)
     {
-        return material.isOccluding() && material != Material.BARRIER && material != Material.MOB_SPAWNER;
+        switch (material)
+        {
+            case BARRIER:
+            case MOB_SPAWNER:
+                return false;
+            default:
+                return material.isOccluding();
+        }
     }
 }

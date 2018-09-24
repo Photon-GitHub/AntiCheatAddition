@@ -218,6 +218,7 @@ public class ConfigurationRepresentation
             {
                 break;
             }
+
             affectedLines++;
         }
         return affectedLines;
@@ -230,10 +231,9 @@ public class ConfigurationRepresentation
      */
     private static short depth(final String string)
     {
-        final char[] chars = string.toCharArray();
-        for (short i = 0; i < chars.length; i++)
+        for (short i = 0; i < string.length(); i++)
         {
-            if (chars[i] != ' ')
+            if (string.charAt(i) != ' ')
             {
                 return i;
             }

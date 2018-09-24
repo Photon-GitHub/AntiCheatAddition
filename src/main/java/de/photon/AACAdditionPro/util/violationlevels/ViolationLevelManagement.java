@@ -1,34 +1,29 @@
 package de.photon.AACAdditionPro.util.violationlevels;
 
+import com.google.common.collect.ImmutableList;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationEvent;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
-import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-public class ViolationLevelManagement implements Listener
+public class ViolationLevelManagement
 {
     /**
      * The {@link Map} violation-levels of all the players.
      */
-    protected final ConcurrentMap<UUID, Integer> violationLevels = new ConcurrentHashMap<>();
+    protected final ViolationLevelMap violationLevels;
 
     /**
-     * The {@link Map} of the command that are defined in the config at certain violation-levels.
-     * This is automatically a {@link ConcurrentHashMap} as of the
+     * A {@link List} of {@link Threshold}s which is guaranteed to be sorted.
      */
-    final ConcurrentMap<Integer, List<String>> thresholds;
+    protected final List<Threshold> thresholds;
 
     /**
      * The {@link ModuleType} of the handler, used for reload
@@ -38,41 +33,35 @@ public class ViolationLevelManagement implements Listener
     /**
      * Create a new {@link ViolationLevelManagement}
      *
-     * @param moduleType    the {@link ModuleType} of the module this {@link ViolationLevelManagement} is being used by.
-     * @param decreaseDelay the time in ticks until the vl of a player is decreased by one. If this is negative no decrease will happen.
+     * @param moduleType the {@link ModuleType} of the module this {@link ViolationLevelManagement} is being used by.
+     * @param decayTicks the time in ticks until the vl of a player is decreased by one. If this is negative no decrease will happen.
      */
-    public ViolationLevelManagement(final ModuleType moduleType, final long decreaseDelay)
+    public ViolationLevelManagement(final ModuleType moduleType, final long decayTicks)
     {
         // The ModuleType of the check
         this.moduleType = moduleType;
 
         ModuleType.VL_MODULETYPES.add(moduleType);
 
+        this.violationLevels = new ViolationLevelMap(decayTicks);
         // Listener registration as of the PlayerQuitEvent
-        AACAdditionPro.getInstance().registerListener(this);
+        AACAdditionPro.getInstance().registerListener(this.violationLevels);
 
-        // Load the thresholds
-        thresholds = ConfigUtils.loadThresholds(moduleType.getConfigString() + ".thresholds");
-
-        // Might need to have a vl manager without vl decrease
-        if (decreaseDelay > 0)
+        // Load the thresholds and sort them.
+        switch (ServerVersion.getActiveServerVersion())
         {
-            //The vl-decrease
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(
-                    AACAdditionPro.getInstance(), () -> {
-                        for (Map.Entry<UUID, Integer> entry : violationLevels.entrySet())
-                        {
-                            final int newVl = entry.getValue() - 1;
-                            if (newVl > 0)
-                            {
-                                entry.setValue(newVl);
-                            }
-                            else
-                            {
-                                violationLevels.remove(entry.getKey());
-                            }
-                        }
-                    }, 0L, decreaseDelay);
+            case MC188:
+            case MC111:
+                final List<Threshold> temp = Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds");
+                Collections.sort(temp);
+                thresholds = ImmutableList.copyOf(temp);
+                break;
+            case MC112:
+            case MC113:
+                thresholds = ImmutableList.sortedCopyOf(Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds"));
+                break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
         }
     }
 
@@ -92,13 +81,13 @@ public class ViolationLevelManagement implements Listener
     /**
      * Flags a {@link Player} in the violationLevelManagement with the amount of vlIncrease
      *
-     * @param player      the player that should be flagged.
-     * @param vlIncrease  how much the vl should be increased.
-     * @param cancelVl    the ViolationLevel up from which onCancel is run. Set to -1 to disable
-     * @param onCancel    a {@link Runnable} that is executed if the vl is higher that cancelVl
-     * @param specialCode a {@link Runnable} to define special code such as critical_vl. Contrary to normal code it is only run if the event is not cancelled.
+     * @param player           the player that should be flagged.
+     * @param vlIncrease       how much the vl should be increased.
+     * @param cancelVl         the ViolationLevel up from which onCancel is run. Set to -1 to disable
+     * @param onCancel         a {@link Runnable} that is executed if the vl is higher that cancelVl
+     * @param runIfEventPassed a {@link Runnable} to define special code such as critical_vl. Contrary to normal code it is only run if the event is not cancelled.
      */
-    public void flag(final Player player, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable specialCode)
+    public void flag(final Player player, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable runIfEventPassed)
     {
         // Prevent unnecessary flagging.
         if (vlIncrease <= 0)
@@ -117,7 +106,6 @@ public class ViolationLevelManagement implements Listener
         // Call the event
         AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(playerAdditionViolationEvent);
 
-
         if (!playerAdditionViolationEvent.isCancelled())
         {
             this.addVL(player, vlIncrease);
@@ -128,7 +116,7 @@ public class ViolationLevelManagement implements Listener
                 onCancel.run();
             }
 
-            specialCode.run();
+            runIfEventPassed.run();
         }
     }
 
@@ -152,23 +140,13 @@ public class ViolationLevelManagement implements Listener
     {
         final int oldVl = this.getVL(player.getUniqueId());
 
-        // A value smaller than 0 can be removed
-        if (newVl > 0 &&
-            // If the player is offline he can be removed
-            player.isOnline())
-        {
-            violationLevels.put(player.getUniqueId(), newVl);
+        violationLevels.put(player.getUniqueId(), newVl);
 
-            // setVL is also called when decreasing the vl
-            // thus we must prevent double punishment
-            if (oldVl < newVl)
-            {
-                this.punishPlayer(player, oldVl, newVl);
-            }
-        }
-        else
+        // setVL is also called when decreasing the vl
+        // thus we must prevent double punishment
+        if (oldVl < newVl)
         {
-            violationLevels.remove(player.getUniqueId());
+            this.punishPlayer(player, oldVl, newVl);
         }
     }
 
@@ -194,25 +172,25 @@ public class ViolationLevelManagement implements Listener
         // Only schedule the command execution if the plugin is loaded
         if (AACAdditionPro.getInstance().isLoaded())
         {
-            // Iterate through all the keys
-            thresholds.forEach((threshold, commandList) -> {
-                // If the key should be applied here
-                if (threshold > fromVl && threshold <= toVl)
+            for (Threshold threshold : this.thresholds)
+            {
+                // Use the guaranteed sorting of the thresholds to break the loop here as only higher-vl thresholds will
+                // follow.
+                if (threshold.getVl() > toVl)
+                {
+                    break;
+                }
+
+                if (threshold.getVl() > fromVl)
                 {
                     // Iterate through all the commands that are presented in the threshold of key
-                    for (final String command : commandList)
+                    for (final String command : threshold.getCommandList())
                     {
                         // Calling of the event + Sync command execution
                         CommandUtils.executeCommandWithPlaceholders(command, player, this.moduleType, (double) toVl);
                     }
                 }
-            });
+            }
         }
-    }
-
-    @EventHandler
-    public void on(final PlayerQuitEvent event)
-    {
-        violationLevels.remove(event.getPlayer().getUniqueId());
     }
 }

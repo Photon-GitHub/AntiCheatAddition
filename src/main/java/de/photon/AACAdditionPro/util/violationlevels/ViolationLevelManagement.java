@@ -174,6 +174,13 @@ public class ViolationLevelManagement
         {
             for (Threshold threshold : this.thresholds)
             {
+                // Use the guaranteed sorting of the thresholds to break the loop here as only higher-vl thresholds will
+                // follow.
+                if (threshold.getVl() > toVl)
+                {
+                    break;
+                }
+
                 if (threshold.getVl() > fromVl)
                 {
                     // Iterate through all the commands that are presented in the threshold of key
@@ -182,13 +189,6 @@ public class ViolationLevelManagement
                         // Calling of the event + Sync command execution
                         CommandUtils.executeCommandWithPlaceholders(command, player, this.moduleType, (double) toVl);
                     }
-                }
-
-                // Use the guaranteed sorting of the thresholds to break the loop here as only higher-vl thresholds will
-                // follow.
-                if (threshold.getVl() > toVl)
-                {
-                    break;
                 }
             }
         }

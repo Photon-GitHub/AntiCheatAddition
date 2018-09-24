@@ -46,14 +46,12 @@ public class LogBot implements Module, Runnable
                                     // Minimum time
                                     currentTime - file.lastModified() > timeToDelete)
                                 {
-                                    if (file.delete())
-                                    {
-                                        VerboseSender.getInstance().sendVerboseMessage("Deleted " + nameOfFile);
-                                    }
-                                    else
-                                    {
-                                        VerboseSender.getInstance().sendVerboseMessage("Could not delete old file " + nameOfFile, true, true);
-                                    }
+                                    final boolean result = file.delete();
+                                    VerboseSender.getInstance().sendVerboseMessage((result ?
+                                                                                    "Deleted " :
+                                                                                    "Could not delete old file ") + nameOfFile,
+                                                                                   true,
+                                                                                   !result);
                                 }
                             }
                         }

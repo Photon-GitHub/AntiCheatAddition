@@ -68,13 +68,49 @@ public final class VerboseSender implements Listener
      */
     public void sendVerboseMessage(final String s, final boolean force_console, final boolean error)
     {
-        // Prevent errors on disable as of scheduling
+        // Remove color codes
         final String logMessage = ChatColor.stripColor(s);
 
         if (writeToFile)
         {
-            // Remove color codes
-            this.log(logMessage);
+            try
+            {
+                // Get the logfile that is in use currently or create a new one if needed.
+                final LocalDateTime now = LocalDateTime.now();
+
+                // Doesn't need to check for logFile == null as the currentDayOfYear will be -1 in the beginning.
+                if (currentDayOfYear != now.getDayOfYear() || !logFile.exists())
+                {
+                    currentDayOfYear = now.getDayOfYear();
+                    logFile = FileUtilities.saveFileInFolder("logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
+                }
+
+                // Reserve the required builder size.
+                // Time length is always 12, together with 2 brackets and one space this will result in 15.
+                final StringBuilder verboseMessage = new StringBuilder(15 + logMessage.length());
+                // Add the beginning of the PREFIX
+                verboseMessage.append('[');
+                // Get the current time
+                verboseMessage.append(now.format(DateTimeFormatter.ISO_LOCAL_TIME));
+
+                // Add a 0 if it is too short
+                // Technically only 12, but we already appended the "[", thus one more.
+                while (verboseMessage.length() < 13)
+                {
+                    verboseMessage.append('0');
+                }
+
+                // Add the rest of the PREFIX and the message
+                verboseMessage.append("] ");
+                verboseMessage.append(logMessage);
+                verboseMessage.append('\n');
+
+                // Log the message
+                Files.write(logFile.toPath(), verboseMessage.toString().getBytes(), StandardOpenOption.APPEND);
+            } catch (final IOException e)
+            {
+                e.printStackTrace();
+            }
         }
 
         if (writeToConsole || force_console)
@@ -89,7 +125,7 @@ public final class VerboseSender implements Listener
             }
         }
 
-        // Prevent error on disable
+        // Prevent errors on disable as of scheduling
         if (allowedToRegisterTasks && writeToPlayers)
         {
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
@@ -98,48 +134,6 @@ public final class VerboseSender implements Listener
                     user.getPlayer().sendMessage(PRE_STRING + s);
                 }
             });
-        }
-    }
-
-    private void log(final String message)
-    {
-        try
-        {
-            // Get the logfile that is in use currently or create a new one if needed.
-            final LocalDateTime now = LocalDateTime.now();
-
-            // Doesn't need to check for logFile == null as the currentDayOfYear will be -1 in the beginning.
-            if (currentDayOfYear != now.getDayOfYear() || !logFile.exists())
-            {
-                currentDayOfYear = now.getDayOfYear();
-                logFile = FileUtilities.saveFileInFolder("logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
-            }
-
-            // Reserve the required builder size.
-            // Time length is always 12, together with 2 brackets and one space this will result in 15.
-            final StringBuilder verboseMessage = new StringBuilder(15 + message.length());
-            // Add the beginning of the PREFIX
-            verboseMessage.append('[');
-            // Get the current time
-            verboseMessage.append(now.format(DateTimeFormatter.ISO_LOCAL_TIME));
-
-            // Add a 0 if it is too short
-            // Technically only 12, but we already appended the "[", thus one more.
-            while (verboseMessage.length() < 13)
-            {
-                verboseMessage.append('0');
-            }
-
-            // Add the rest of the PREFIX and the message
-            verboseMessage.append("] ");
-            verboseMessage.append(message);
-            verboseMessage.append('\n');
-
-            // Log the message
-            Files.write(logFile.toPath(), verboseMessage.toString().getBytes(), StandardOpenOption.APPEND);
-        } catch (final IOException e)
-        {
-            e.printStackTrace();
         }
     }
 

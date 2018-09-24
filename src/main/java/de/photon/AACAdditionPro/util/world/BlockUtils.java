@@ -23,19 +23,10 @@ public final class BlockUtils
         ImmutableSet.Builder<Material> containerBuilder = new ImmutableSet.Builder<>();
         switch (ServerVersion.getActiveServerVersion())
         {
-            case MC188:
-                containerBuilder.add(Material.CHEST,
-                                     Material.TRAPPED_CHEST,
-                                     Material.ENDER_CHEST,
-                                     Material.ANVIL,
-                                     Material.FURNACE,
-                                     Material.DISPENSER,
-                                     Material.DROPPER,
-                                     Material.BREWING_STAND);
-            case MC111:
-            case MC112:
-                // TODO: UNVERIFIED!
             case MC113:
+                // TODO: UNVERIFIED!
+            case MC112:
+            case MC111:
                 // Additionally add the shulker boxes.
                 containerBuilder.add(Material.BLACK_SHULKER_BOX,
                                      Material.BROWN_SHULKER_BOX,
@@ -53,6 +44,15 @@ public final class BlockUtils
                                      Material.SILVER_SHULKER_BOX,
                                      Material.WHITE_SHULKER_BOX,
                                      Material.YELLOW_SHULKER_BOX);
+            case MC188:
+                containerBuilder.add(Material.CHEST,
+                                     Material.TRAPPED_CHEST,
+                                     Material.ENDER_CHEST,
+                                     Material.ANVIL,
+                                     Material.FURNACE,
+                                     Material.DISPENSER,
+                                     Material.DROPPER,
+                                     Material.BREWING_STAND);
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");

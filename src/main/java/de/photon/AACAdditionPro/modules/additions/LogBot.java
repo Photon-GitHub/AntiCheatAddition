@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.modules.additions;
 
+import com.google.common.collect.ImmutableMap;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.modules.Module;
 import de.photon.AACAdditionPro.modules.ModuleType;
@@ -7,14 +8,18 @@ import de.photon.AACAdditionPro.util.VerboseSender;
 import org.bukkit.Bukkit;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class LogBot implements Module, Runnable
 {
     // HashMap's real capacity is always a power of 2
-    private final Map<File, Long> logDeletionTimes = new HashMap<>(4, 1F);
+    private final Map<File, Long> logDeletionTimes = ImmutableMap.of(
+            // Put the respective times in milliseconds into the map.
+            new File("plugins/AAC", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AAC")),
+            new File("plugins/AACAdditionPro", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AACAdditionPro")),
+            new File("logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".Server")));
+
     private int task_number;
 
     @Override
@@ -63,11 +68,6 @@ public class LogBot implements Module, Runnable
     @Override
     public void enable()
     {
-        // Put the respective times in milliseconds into the map.
-        logDeletionTimes.put(new File("plugins/AAC", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AAC")));
-        logDeletionTimes.put(new File("plugins/AACAdditionPro", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AACAdditionPro")));
-        logDeletionTimes.put(new File("logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".Server")));
-
         // Start a daily executed task to clean up the logs.
         task_number = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this, 1, TimeUnit.DAYS.toMillis(1));
     }

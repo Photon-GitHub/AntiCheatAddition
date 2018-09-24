@@ -2,11 +2,13 @@ package de.photon.AACAdditionPro.util.violationlevels;
 
 import com.google.common.collect.ImmutableList;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationEvent;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -46,7 +48,21 @@ public class ViolationLevelManagement
         AACAdditionPro.getInstance().registerListener(this.violationLevels);
 
         // Load the thresholds and sort them.
-        thresholds = ImmutableList.sortedCopyOf(Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds"));
+        switch (ServerVersion.getActiveServerVersion())
+        {
+            case MC188:
+            case MC111:
+                final List<Threshold> temp = Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds");
+                Collections.sort(temp);
+                thresholds = ImmutableList.copyOf(temp);
+                break;
+            case MC112:
+            case MC113:
+                thresholds = ImmutableList.sortedCopyOf(Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds"));
+                break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
     }
 
     /**

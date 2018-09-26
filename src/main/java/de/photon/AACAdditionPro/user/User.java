@@ -45,17 +45,11 @@ public class User
     private TowerData towerData = new TowerData(this);
     private VelocityChangeData velocityChangeData = new VelocityChangeData(this);
 
-    /**
-     * Should the player receive verbose-messages?
-     * This can be set via the /aacadditionpro verbose command
-     */
-    public boolean verbose;
-
     public User(final Player player)
     {
         this.player = player;
         this.loginData = new TimeData(this, System.currentTimeMillis());
-        this.verbose = InternalPermission.hasPermission(player, InternalPermission.VERBOSE);
+        UserManager.setVerbose(this, InternalPermission.hasPermission(player, InternalPermission.VERBOSE));
     }
 
     public boolean isBypassed(ModuleType moduleType)

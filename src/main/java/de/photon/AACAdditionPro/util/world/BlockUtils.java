@@ -28,6 +28,7 @@ public final class BlockUtils
                                              Material.DISPENSER,
                                              Material.DROPPER,
                                              Material.BREWING_STAND);
+
                 LIQUIDS = ImmutableSet.of(Material.WATER,
                                           Material.LAVA,
                                           Material.getMaterial("STATIONARY_WATER"),
@@ -59,6 +60,7 @@ public final class BlockUtils
                                              Material.getMaterial("SILVER_SHULKER_BOX"),
                                              Material.WHITE_SHULKER_BOX,
                                              Material.YELLOW_SHULKER_BOX);
+
                 LIQUIDS = ImmutableSet.of(Material.WATER,
                                           Material.LAVA,
                                           Material.getMaterial("STATIONARY_WATER"),

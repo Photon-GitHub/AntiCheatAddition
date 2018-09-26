@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.util.fakeentity.equipment;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.util.fakeentity.ClientsideLivingEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
 import org.bukkit.Material;
@@ -82,7 +83,19 @@ public class Equipment extends EnumMap<EnumWrappers.ItemSlot, Material>
      */
     private void replaceSlot(final EnumWrappers.ItemSlot itemSlot)
     {
-        this.put(itemSlot, EquipmentDatabase.instance.getRandomEquipment(this.entity.getObservedPlayer(), itemSlot));
+        switch (ServerVersion.getActiveServerVersion())
+        {
+            case MC188:
+            case MC111:
+            case MC112:
+                this.put(itemSlot, LegacyEquipmentDatabase.INSTANCE.getRandomEquipment(this.entity.getObservedPlayer(), itemSlot));
+                break;
+            case MC113:
+                this.put(itemSlot, EquipmentDatabase.INSTANCE.getRandomEquipment(this.entity.getObservedPlayer(), itemSlot));
+                break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
     }
 
     /**

@@ -32,6 +32,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.StringUtil;
 
@@ -56,6 +57,23 @@ public class KillauraEntity implements ListenerModule, ViolationModule
     private final int respawnTimer = 20 * AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".respawn_timer");
 
     private BukkitTask respawnTask;
+
+    @EventHandler
+    public void onTabComplete(final TabCompleteEvent event)
+    {
+        if (event.getSender() instanceof Player)
+        {
+            final ClientsidePlayerEntity playerEntity = this.getClientSidePlayerEntity(((Player) event.getSender()).getUniqueId());
+
+            if (playerEntity != null &&
+                // Online players already have a tab completion
+                !preferOnlineProfiles &&
+                StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getBuffer()))
+            {
+                event.getCompletions().add(playerEntity.getName());
+            }
+        }
+    }
 
     @EventHandler
     public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)

@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,6 +16,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 public final class EntityUtil
 {
@@ -65,19 +68,11 @@ public final class EntityUtil
     {
         final Set<Material> materials = new HashSet<>();
 
-        final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
+        iterateThroughHitboxBlocks(location, hitbox, block -> {
+            materials.add(block.getType());
+            return false;
+        });
 
-        // Cast the first value as that will only make it smaller, the second one has to be ceiled as it could be the same value once again.
-        for (int x = (int) axisAlignedBB.getMinX(); x <= (int) Math.ceil(axisAlignedBB.getMaxX()); x++)
-        {
-            for (int y = (int) axisAlignedBB.getMinY(); y <= (int) Math.ceil(axisAlignedBB.getMaxY()); y++)
-            {
-                for (int z = (int) axisAlignedBB.getMinZ(); z <= (int) Math.ceil(axisAlignedBB.getMaxZ()); z++)
-                {
-                    materials.add(location.getWorld().getBlockAt(x, y, z).getType());
-                }
-            }
-        }
         return materials;
     }
 
@@ -101,22 +96,57 @@ public final class EntityUtil
      */
     public static boolean isHitboxInMaterials(final Location location, final Hitbox hitbox, final Collection<Material> materials)
     {
-        final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
-
-        // Cast the first value as that will only make it smaller, the second one has to be ceiled as it could be the same value once again.
-        for (int x = (int) axisAlignedBB.getMinX(); x <= (int) Math.ceil(axisAlignedBB.getMaxX()); x++)
+        if (materials.isEmpty())
         {
-            for (int y = (int) axisAlignedBB.getMinY(); y <= (int) Math.ceil(axisAlignedBB.getMaxY()); y++)
+            return false;
+        }
+
+        final AtomicBoolean found = new AtomicBoolean(false);
+        iterateThroughHitboxBlocks(location, hitbox, (block -> {
+            if (materials.contains(block.getType()))
             {
-                for (int z = (int) axisAlignedBB.getMinZ(); z <= (int) Math.ceil(axisAlignedBB.getMaxZ()); z++)
+                found.set(true);
+                return true;
+            }
+            return false;
+        }));
+
+        return found.get();
+    }
+
+    /**
+     * Iterates through all blocks a hitbox contains.
+     *
+     * @param location the {@link Location} to base the {@link Hitbox} on.
+     * @param hitbox   the type of {@link Hitbox} that should be constructed.
+     * @param function the {@link Function} that defines what should be done with each {@link Block}. If the
+     *                 {@link Function} returns false, the loop will be stopped.
+     */
+    private static void iterateThroughHitboxBlocks(final Location location, final Hitbox hitbox, final Function<Block, Boolean> function)
+    {
+        final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
+        int xMin = (int) axisAlignedBB.getMinX();
+        int yMin = (int) axisAlignedBB.getMinY();
+        int zMin = (int) axisAlignedBB.getMinZ();
+
+        // Add 1 to ceil the value as the cast to int floors it.
+        int xMax = ((int) axisAlignedBB.getMaxX()) + 1;
+        int yMax = ((int) axisAlignedBB.getMaxY()) + 1;
+        int zMax = ((int) axisAlignedBB.getMaxZ()) + 1;
+
+
+        for (; xMin <= xMax; xMin++)
+        {
+            for (; yMin <= yMax; yMin++)
+            {
+                for (; zMin <= zMax; zMin++)
                 {
-                    if (materials.contains(location.getWorld().getBlockAt(x, y, z).getType()))
+                    if (function.apply(location.getWorld().getBlockAt(xMin, yMin, zMin)))
                     {
-                        return true;
+                        return;
                     }
                 }
             }
         }
-        return false;
     }
 }

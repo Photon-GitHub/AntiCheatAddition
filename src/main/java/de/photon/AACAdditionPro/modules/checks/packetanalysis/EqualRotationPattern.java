@@ -14,6 +14,7 @@ import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
 import org.bukkit.Material;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -24,7 +25,29 @@ import java.util.Set;
 class EqualRotationPattern extends PatternModule.PacketPattern
 {
     // A set of materials which hitboxes changed in minecraft 1.9
-    private static final Set<Material> CHANGED_HITBOX_MATERIALS = ImmutableSet.of(Material.STAINED_GLASS_PANE, Material.THIN_GLASS, Material.IRON_FENCE, Material.CHEST, Material.ANVIL);
+    private static final Set<Material> CHANGED_HITBOX_MATERIALS;
+
+    static
+    {
+        switch (ServerVersion.getActiveServerVersion())
+        {
+            case MC188:
+                CHANGED_HITBOX_MATERIALS = ImmutableSet.of(Material.getMaterial("STAINED_GLASS_PANE"),
+                                                           Material.getMaterial("THIN_GLASS"),
+                                                           Material.getMaterial("IRON_FENCE"),
+                                                           Material.CHEST,
+                                                           Material.ANVIL);
+                break;
+            case MC111:
+            case MC112:
+            case MC113:
+                // Hitbox bugs are fixed in higher versions.
+                CHANGED_HITBOX_MATERIALS = Collections.emptySet();
+                break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
+    }
 
     EqualRotationPattern()
     {

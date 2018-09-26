@@ -89,7 +89,7 @@ public final class BlockUtils
                                              Material.RED_SHULKER_BOX,
                                              Material.WHITE_SHULKER_BOX,
                                              Material.YELLOW_SHULKER_BOX);
-                
+
                 LIQUIDS = ImmutableSet.of(Material.WATER,
                                           Material.LAVA);
                 break;

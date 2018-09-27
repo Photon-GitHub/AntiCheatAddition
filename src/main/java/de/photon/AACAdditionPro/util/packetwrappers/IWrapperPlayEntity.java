@@ -1,14 +1,11 @@
 package de.photon.AACAdditionPro.util.packetwrappers;
 
-import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
-public interface IWrapperPlayEntity
+public interface IWrapperPlayEntity extends IWrapperPlay
 {
-
-    PacketContainer getHandle();
 
     /**
      * Retrieve Entity ID.

@@ -11,7 +11,7 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
-import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientLook;
+import de.photon.AACAdditionPro.util.packetwrappers.client.IWrapperPlayClientLook;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -24,8 +24,7 @@ public class LookPacketData extends TimeData
 {
     private static final byte QUEUE_CAPACITY = 20;
 
-    static
-    {
+    static {
         LookPacketData.LookPacketDataUpdater dataUpdater = new LookPacketData.LookPacketDataUpdater();
         ProtocolLibrary.getProtocolManager().addPacketListener(dataUpdater);
     }
@@ -66,10 +65,8 @@ public class LookPacketData extends TimeData
         final RotationChange[] elementArray = this.rotationChangeQueue.toArray(new RotationChange[0]);
 
         // Start at 1 as of the 0 element being the first "last element".
-        for (int i = 1; i < elementArray.length; i++)
-        {
-            if (MathUtils.offset(System.currentTimeMillis(), elementArray[i].getTime()) > 1000)
-            {
+        for (int i = 1; i < elementArray.length; i++) {
+            if (MathUtils.offset(System.currentTimeMillis(), elementArray[i].getTime()) > 1000) {
                 continue;
             }
 
@@ -78,8 +75,7 @@ public class LookPacketData extends TimeData
                                                     elementArray[i - 1].getTime()) / 50);
 
             // The current tick should be ignored, no gap filler.
-            if (ticks > 1)
-            {
+            if (ticks > 1) {
                 // How many ticks have been left out?
                 gapFillers += (ticks - 1);
             }
@@ -151,8 +147,7 @@ public class LookPacketData extends TimeData
             {
                 final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-                if (user == null)
-                {
+                if (user == null) {
                     return;
                 }
 
@@ -161,24 +156,20 @@ public class LookPacketData extends TimeData
                 final RotationChange rotationChange = new RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
 
                 // Same tick -> merge
-                if (rotationChange.getTime() - user.getLookPacketData().rotationChangeQueue.getLast().getTime() < 55)
-                {
+                if (rotationChange.getTime() - user.getLookPacketData().rotationChangeQueue.getLast().getTime() < 55) {
                     user.getLookPacketData().rotationChangeQueue.getLast().merge(rotationChange);
                 }
-                else
-                {
+                else {
                     user.getLookPacketData().rotationChangeQueue.addLast(rotationChange);
                 }
 
-                while (user.getLookPacketData().rotationChangeQueue.size() > QUEUE_CAPACITY)
-                {
+                while (user.getLookPacketData().rotationChangeQueue.size() > QUEUE_CAPACITY) {
                     user.getLookPacketData().rotationChangeQueue.removeFirst();
                 }
 
                 // Huge angle change
                 // Use the queue values here to because the other ones are already updated.
-                if (RotationUtil.getDirection(user.getLookPacketData().realLastYaw, user.getLookPacketData().realLastPitch).angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
-                {
+                if (RotationUtil.getDirection(user.getLookPacketData().realLastYaw, user.getLookPacketData().realLastPitch).angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35) {
                     user.getLookPacketData().updateTimeStamp(0);
                 }
 

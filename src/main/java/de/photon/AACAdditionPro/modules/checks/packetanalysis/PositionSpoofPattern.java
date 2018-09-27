@@ -7,7 +7,7 @@ import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.util.VerboseSender;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientPositionLook;
+import de.photon.AACAdditionPro.util.packetwrappers.client.WrapperPlayClientPositionLook;
 import de.photon.AACAdditionPro.util.world.LocationUtils;
 
 /**

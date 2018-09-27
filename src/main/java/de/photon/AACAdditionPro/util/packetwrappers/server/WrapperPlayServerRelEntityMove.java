@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.util.packetwrappers;
+package de.photon.AACAdditionPro.util.packetwrappers.server;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
@@ -28,8 +28,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
     @Override
     public double getDx()
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getBytes().read(0) / 32D;
             case MC111:
@@ -46,8 +45,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
     public void setDx(double value)
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getBytes().write(0, (byte) (value * 32));
                 break;
@@ -65,8 +63,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
     @Override
     public double getDy()
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getBytes().read(1) / 32D;
             case MC111:
@@ -83,8 +80,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
     public void setDy(double value)
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getBytes().write(1, (byte) (value * 32));
                 break;
@@ -102,8 +98,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
     @Override
     public double getDz()
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getBytes().read(2) / 32D;
             case MC111:
@@ -120,8 +115,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
     public void setDz(double value)
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getBytes().write(2, (byte) (value * 32));
                 break;

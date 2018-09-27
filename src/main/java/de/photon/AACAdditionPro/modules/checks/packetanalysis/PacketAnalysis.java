@@ -14,9 +14,8 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.user.data.PacketAnalysisData;
 import de.photon.AACAdditionPro.util.VerboseSender;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayClientKeepAlive;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerKeepAlive;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 
 import java.util.Iterator;
@@ -54,22 +53,18 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
-        if (event.getPacketType() == PacketType.Play.Server.KEEP_ALIVE)
-        {
+        if (event.getPacketType() == PacketType.Play.Server.KEEP_ALIVE) {
             // Register the KeepAlive
-            synchronized (user.getPacketAnalysisData().getKeepAlives())
-            {
+            synchronized (user.getPacketAnalysisData().getKeepAlives()) {
                 user.getPacketAnalysisData().getKeepAlives().add(new PacketAnalysisData.KeepAlivePacketData(new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId()));
             }
             vlManager.flag(user.getPlayer(), keepAliveIgnoredPattern.apply(user, event.getPacket()), -1, () -> {}, () -> {});
         }
-        else if (event.getPacketType() == PacketType.Play.Server.POSITION)
-        {
+        else if (event.getPacketType() == PacketType.Play.Server.POSITION) {
             user.getPacketAnalysisData().lastPositionForceData = new PacketAnalysisData.PositionForceData(new WrapperPlayServerPosition(event.getPacket()).getLocation(user.getPlayer().getWorld()));
         }
     }
@@ -80,8 +75,7 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -89,24 +83,20 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
 
         vlManager.flag(user.getPlayer(), this.equalRotationPattern.apply(user, event.getPacket()), -1, () -> {}, () -> {});
 
-        if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE)
-        {
+        if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
             // --------------------------------------------- KeepAlive ---------------------------------------------- //
 
-            final long keepAliveId = new WrapperPlayClientKeepAlive(event.getPacket()).getKeepAliveId();
+            final long keepAliveId = new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId();
             PacketAnalysisData.KeepAlivePacketData keepAlivePacketData = null;
 
             int offset = 0;
-            synchronized (user.getPacketAnalysisData().getKeepAlives())
-            {
+            synchronized (user.getPacketAnalysisData().getKeepAlives()) {
                 final Iterator<PacketAnalysisData.KeepAlivePacketData> iterator = user.getPacketAnalysisData().getKeepAlives().descendingIterator();
                 PacketAnalysisData.KeepAlivePacketData current;
-                while (iterator.hasNext())
-                {
+                while (iterator.hasNext()) {
                     current = iterator.next();
 
-                    if (current.getKeepAliveID() == keepAliveId)
-                    {
+                    if (current.getKeepAliveID() == keepAliveId) {
                         keepAlivePacketData = current;
                         break;
                     }
@@ -123,16 +113,14 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
                 VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
                 vlManager.flag(user.getPlayer(), 20, -1, () -> {}, () -> {});
             }
-            else
-            {
+            else {
                 keepAlivePacketData.registerResponse();
                 vlManager.flag(user.getPlayer(), keepAliveOffsetPattern.apply(user, offset), -1, () -> {}, () -> {});
             }
         }
 
         // ----------------------------------------- Compare + PositionSpoof ---------------------------------------- //
-        if (user.getPacketAnalysisData().lastPositionForceData != null)
-        {
+        if (user.getPacketAnalysisData().lastPositionForceData != null) {
             // Special code to update the timestamp of the last compare flag.
             vlManager.flag(user.getPlayer(), this.comparePattern.apply(user, event.getPacket()), -1, () -> {}, () -> user.getPacketAnalysisData().updateTimeStamp(0));
             vlManager.flag(user.getPlayer(), this.positionSpoofPattern.apply(user, event.getPacket()), -1, () -> {}, () -> {});

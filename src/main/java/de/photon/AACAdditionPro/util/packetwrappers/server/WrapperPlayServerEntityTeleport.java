@@ -1,11 +1,13 @@
-package de.photon.AACAdditionPro.util.packetwrappers;
+package de.photon.AACAdditionPro.util.packetwrappers.server;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.packetwrappers.AbstractPacket;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayPosition;
 import org.bukkit.Location;
 
-public class WrapperPlayServerEntityTeleport extends AbstractPacket implements IWrapperPlayServerEntityLook
+public class WrapperPlayServerEntityTeleport extends AbstractPacket implements IWrapperPlayServerLook, IWrapperPlayPosition
 {
     public static final PacketType TYPE = PacketType.Play.Server.ENTITY_TELEPORT;
 
@@ -31,10 +33,10 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
         this.setPitch(location.getPitch());
     }
 
+    @Override
     public double getX()
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(1) / 32.0;
             case MC111:
@@ -46,10 +48,10 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
         }
     }
 
+    @Override
     public void setX(double value)
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(1, (int) value * 32);
                 break;
@@ -63,10 +65,10 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
         }
     }
 
+    @Override
     public double getY()
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(2) / 32.0;
             case MC111:
@@ -78,10 +80,10 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
         }
     }
 
+    @Override
     public void setY(double value)
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(2, (int) value * 32);
                 break;
@@ -95,10 +97,10 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
         }
     }
 
+    @Override
     public double getZ()
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(3) / 32.0;
             case MC111:
@@ -110,10 +112,10 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
         }
     }
 
+    @Override
     public void setZ(double value)
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(3, (int) value * 32);
                 break;

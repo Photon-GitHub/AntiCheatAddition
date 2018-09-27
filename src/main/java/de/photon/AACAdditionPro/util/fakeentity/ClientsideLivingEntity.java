@@ -12,18 +12,18 @@ import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
-import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayClientOnGround;
-import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayServerEntityLook;
-import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayServerRelEntityMove;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerAnimation;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntity;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityDestroy;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityHeadRotation;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityLook;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityMetadata;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityTeleport;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMove;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerRelEntityMoveLook;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayOnGround;
+import de.photon.AACAdditionPro.util.packetwrappers.server.IWrapperPlayServerLook;
+import de.photon.AACAdditionPro.util.packetwrappers.server.IWrapperPlayServerRelEntityMove;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerAnimation;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerEntity;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerEntityDestroy;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerEntityHeadRotation;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerEntityLook;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerEntityMetadata;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerEntityTeleport;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerRelEntityMove;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerRelEntityMoveLook;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -133,23 +133,20 @@ public abstract class ClientsideLivingEntity
         // Get the next position and move
         final Location moveToLocation = Objects.requireNonNull(this.currentMovementCalculator.calculate(this.observedPlayer.getLocation(), this.location.clone()), "Movement did not calculate a valid location.");
 
-        if (this.currentMovementCalculator.isTPNeeded())
-        {
+        if (this.currentMovementCalculator.isTPNeeded()) {
             this.needsTeleport = true;
         }
 
         // ------------------------------------------ Velocity system -----------------------------------------------//
 
-        if (this.needsTeleport)
-        {
+        if (this.needsTeleport) {
             this.move(Collision.getClosestFreeSpaceYAxis(moveToLocation, this.hitbox));
 
             // Velocity reset on teleport.
             this.velocity.zero();
             this.needsTeleport = false;
         }
-        else
-        {
+        else {
             // Only set the x- and the z- axis (y should be handled by autojumping).
             final Location moveVelocity = moveToLocation.subtract(this.location);
             this.velocity.setX(moveVelocity.getX()).setZ(moveVelocity.getZ());
@@ -168,14 +165,12 @@ public abstract class ClientsideLivingEntity
             this.sprinting = this.currentMovementCalculator.shouldSprint();
 
             // Calculate velocity
-            if (this.onGround)
-            {
+            if (this.onGround) {
                 // After a certain period the entity might reach a velocity so high that it appears to be "glitching"
                 // through the ground. This can be prevented by resetting the velocity if the entity is onGround.
                 this.velocity.setY(0);
             }
-            else
-            {
+            else {
                 this.velocity = Gravitation.applyGravitationAndAirResistance(this.velocity, Gravitation.PLAYER);
             }
 
@@ -214,8 +209,7 @@ public abstract class ClientsideLivingEntity
      */
     private void sendMove()
     {
-        if (!this.spawned)
-        {
+        if (!this.spawned) {
             return;
         }
 
@@ -226,8 +220,7 @@ public abstract class ClientsideLivingEntity
         // Teleport needed ?
         final int teleportThreshold;
         // Do not use the client version here.
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 teleportThreshold = 4;
                 break;
@@ -240,8 +233,7 @@ public abstract class ClientsideLivingEntity
                 throw new IllegalStateException("Unknown minecraft version");
         }
 
-        if (Math.abs(relativeLocation.getX()) + Math.abs(relativeLocation.getY()) + Math.abs(relativeLocation.getZ()) > teleportThreshold || needsTeleport)
-        {
+        if (Math.abs(relativeLocation.getX()) + Math.abs(relativeLocation.getY()) + Math.abs(relativeLocation.getZ()) > teleportThreshold || needsTeleport) {
             final WrapperPlayServerEntityTeleport teleportWrapper = new WrapperPlayServerEntityTeleport();
             // Position + Angle
             teleportWrapper.setWithLocation(this.location);
@@ -252,8 +244,7 @@ public abstract class ClientsideLivingEntity
             this.needsTeleport = false;
             // System.out.println("Sent TP to: " + this.location.getX() + " | " + this.location.getY() + " | " + this.location.getZ());
         }
-        else
-        {
+        else {
             // Sending relative movement
             final boolean move = relativeLocation.lengthSquared() != 0;
             final boolean look = this.location.getPitch() != this.lastLocation.getPitch() || this.location.getYaw() != this.lastLocation.getYaw();
@@ -267,20 +258,17 @@ public abstract class ClientsideLivingEntity
                                                            new WrapperPlayServerEntityLook() :
                                                            new WrapperPlayServerEntity());
 
-            if (packetWrapper instanceof IWrapperPlayClientOnGround)
-            {
-                final IWrapperPlayClientOnGround onGroundWrapper = (IWrapperPlayClientOnGround) packetWrapper;
+            if (packetWrapper instanceof IWrapperPlayOnGround) {
+                final IWrapperPlayOnGround onGroundWrapper = (IWrapperPlayOnGround) packetWrapper;
                 onGroundWrapper.setOnGround(savedOnGround);
 
-                if (onGroundWrapper instanceof IWrapperPlayServerEntityLook)
-                {
-                    final IWrapperPlayServerEntityLook lookWrapper = (IWrapperPlayServerEntityLook) onGroundWrapper;
+                if (onGroundWrapper instanceof IWrapperPlayServerLook) {
+                    final IWrapperPlayServerLook lookWrapper = (IWrapperPlayServerLook) onGroundWrapper;
                     lookWrapper.setYaw(this.location.getYaw());
                     lookWrapper.setPitch(this.location.getPitch());
                 }
 
-                if (onGroundWrapper instanceof IWrapperPlayServerRelEntityMove)
-                {
+                if (onGroundWrapper instanceof IWrapperPlayServerRelEntityMove) {
                     final IWrapperPlayServerRelEntityMove relMoveWrapper = (IWrapperPlayServerRelEntityMove) onGroundWrapper;
                     relMoveWrapper.setDiffs(relativeLocation);
                 }
@@ -295,12 +283,10 @@ public abstract class ClientsideLivingEntity
 
     public void jump()
     {
-        if (this.onGround)
-        {
+        if (this.onGround) {
             velocity.setY(Jumping.getJumpYMotion(null));
 
-            if (this.sprinting)
-            {
+            if (this.sprinting) {
                 velocity.add(location.getDirection().setY(0).normalize().multiply(.2F));
             }
         }
@@ -381,8 +367,7 @@ public abstract class ClientsideLivingEntity
     public void setVisibility(final boolean visible)
     {
         // Do we need to change something?
-        if (this.visible != visible)
-        {
+        if (this.visible != visible) {
             final WrapperPlayServerEntityMetadata entityMetadataWrapper = new WrapperPlayServerEntityMetadata();
             entityMetadataWrapper.setEntityID(this.entityID);
 
@@ -402,8 +387,7 @@ public abstract class ClientsideLivingEntity
     protected void fakeAnimation(final int animationType)
     {
         // Entity is already spawned.
-        if (this.isSpawned())
-        {
+        if (this.isSpawned()) {
             final WrapperPlayServerAnimation animationWrapper = new WrapperPlayServerAnimation();
             animationWrapper.setEntityID(this.entityID);
             animationWrapper.setAnimation(animationType);
@@ -423,14 +407,12 @@ public abstract class ClientsideLivingEntity
     public void despawn()
     {
         // Cancel tick task
-        if (tickTask != -1)
-        {
+        if (tickTask != -1) {
             Bukkit.getScheduler().cancelTask(tickTask);
             this.tickTask = -1;
         }
 
-        if (spawned)
-        {
+        if (spawned) {
             final WrapperPlayServerEntityDestroy entityDestroyWrapper = new WrapperPlayServerEntityDestroy();
             entityDestroyWrapper.setEntityIds(new int[]{this.entityID});
             entityDestroyWrapper.sendPacket(observedPlayer);

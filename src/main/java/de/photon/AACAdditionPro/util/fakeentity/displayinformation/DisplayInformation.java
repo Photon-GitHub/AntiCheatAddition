@@ -7,7 +7,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.fakeentity.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPlayerInfo;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerPlayerInfo;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 

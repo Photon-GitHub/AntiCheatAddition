@@ -1,15 +1,17 @@
-package de.photon.AACAdditionPro.util.packetwrappers;
+package de.photon.AACAdditionPro.util.packetwrappers.server;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.photon.AACAdditionPro.ServerVersion;
-import de.photon.AACAdditionPro.util.mathematics.RotationUtil;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayEntity;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayPosition;
+import de.photon.AACAdditionPro.util.packetwrappers.MetadataPacket;
 import org.bukkit.util.Vector;
 
 import java.util.UUID;
 
-public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements IWrapperPlayEntity
+public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements IWrapperPlayEntity, IWrapperPlayPosition, IWrapperPlayServerLook
 {
     public static final PacketType TYPE = PacketType.Play.Server.NAMED_ENTITY_SPAWN;
 
@@ -68,10 +70,10 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
         setZ(position.getZ());
     }
 
+    @Override
     public double getX()
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(1) / 32.0D;
             case MC111:
@@ -83,10 +85,10 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
         }
     }
 
+    @Override
     public void setX(double value)
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(1, (int) (value * 32));
                 break;
@@ -100,10 +102,10 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
         }
     }
 
+    @Override
     public double getY()
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(2) / 32.0D;
             case MC111:
@@ -115,10 +117,10 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
         }
     }
 
+    @Override
     public void setY(double value)
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(2, (int) (value * 32));
                 break;
@@ -132,10 +134,10 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
         }
     }
 
+    @Override
     public double getZ()
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(3) / 32.0D;
             case MC111:
@@ -147,10 +149,10 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
         }
     }
 
+    @Override
     public void setZ(double value)
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 handle.getIntegers().write(3, (int) (value * 32));
                 break;
@@ -162,46 +164,6 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
-    }
-
-    /**
-     * Retrieve the yaw of the spawned entity.
-     *
-     * @return The current Yaw
-     */
-    public float getYaw()
-    {
-        return RotationUtil.convertFixedRotation(handle.getBytes().read(0));
-    }
-
-    /**
-     * Set the yaw of the spawned entity.
-     *
-     * @param value - new yaw.
-     */
-    public void setYaw(float value)
-    {
-        handle.getBytes().write(0, RotationUtil.getFixRotation(value));
-    }
-
-    /**
-     * Retrieve the pitch of the spawned entity.
-     *
-     * @return The current pitch
-     */
-    public float getPitch()
-    {
-        return RotationUtil.convertFixedRotation(handle.getBytes().read(1));
-    }
-
-    /**
-     * Set the pitch of the spawned entity.
-     *
-     * @param value - new pitch.
-     */
-    public void setPitch(float value)
-    {
-        handle.getBytes().write(1, RotationUtil.getFixRotation(value));
     }
 
     /**

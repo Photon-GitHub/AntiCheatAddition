@@ -1,8 +1,10 @@
-package de.photon.AACAdditionPro.util.packetwrappers;
+package de.photon.AACAdditionPro.util.packetwrappers.server;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayEntity;
+import de.photon.AACAdditionPro.util.packetwrappers.MetadataPacket;
 
 import java.util.List;
 

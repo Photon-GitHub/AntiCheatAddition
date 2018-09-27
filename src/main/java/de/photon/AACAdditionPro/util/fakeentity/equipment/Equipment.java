@@ -3,7 +3,7 @@ package de.photon.AACAdditionPro.util.fakeentity.equipment;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.util.fakeentity.ClientsideLivingEntity;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerEntityEquipment;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerEntityEquipment;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

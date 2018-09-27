@@ -1,18 +1,18 @@
-package de.photon.AACAdditionPro.util.packetwrappers;
+package de.photon.AACAdditionPro.util.packetwrappers.server;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.packetwrappers.AbstractPacket;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayEntity;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class WrapperPlayServerEntityEquipment extends AbstractPacket
+public class WrapperPlayServerEntityEquipment extends AbstractPacket implements IWrapperPlayEntity
 {
     public static final PacketType TYPE = PacketType.Play.Server.ENTITY_EQUIPMENT;
 
@@ -27,52 +27,6 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
         super(packet, TYPE);
     }
 
-    /**
-     * Retrieve Entity ID.
-     * <p>
-     * Notes: entity's ID
-     *
-     * @return The current Entity ID
-     */
-    public int getEntityID()
-    {
-        return handle.getIntegers().read(0);
-    }
-
-    /**
-     * Set Entity ID.
-     *
-     * @param value - new value.
-     */
-    public void setEntityID(final int value)
-    {
-        handle.getIntegers().write(0, value);
-    }
-
-    /**
-     * Retrieve the entity of the painting that will be spawned.
-     *
-     * @param world - the current world of the entity.
-     *
-     * @return The spawned entity.
-     */
-    public Entity getEntity(final World world)
-    {
-        return handle.getEntityModifier(world).read(0);
-    }
-
-    /**
-     * Retrieve the entity of the painting that will be spawned.
-     *
-     * @param event - the packet event.
-     *
-     * @return The spawned entity.
-     */
-    public Entity getEntity(final PacketEvent event)
-    {
-        return getEntity(event.getPlayer().getWorld());
-    }
-
     public ItemSlot getSlot()
     {
         return handle.getItemSlots().read(0);
@@ -81,14 +35,12 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
     public void setSlot(final ItemSlot value)
     {
         // Player = null will return the server version.
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 int index = value.ordinal();
 
                 // Reduce by one if index greater 0 as the offhand (index 1) doesn't exist.
-                if (index > 0)
-                {
+                if (index > 0) {
                     index--;
                 }
 
@@ -134,14 +86,12 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket
      */
     public static void clearAllSlots(int entityId, Player observer)
     {
-        for (final EnumWrappers.ItemSlot slot : EnumWrappers.ItemSlot.values())
-        {
+        for (final EnumWrappers.ItemSlot slot : EnumWrappers.ItemSlot.values()) {
             //Update the equipment with fake-packets
             final WrapperPlayServerEntityEquipment wrapperPlayServerEntityEquipment = new WrapperPlayServerEntityEquipment();
 
             wrapperPlayServerEntityEquipment.setEntityID(entityId);
             wrapperPlayServerEntityEquipment.setItem(new ItemStack(Material.AIR));
-
 
             // 1.8.8 is automatically included as of the bukkit-handling, therefore server-version specific handling
             // as of the different server classes / enums and the null-removal above.

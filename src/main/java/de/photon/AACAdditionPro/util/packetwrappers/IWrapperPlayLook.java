@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.util.packetwrappers;
 
-public interface IWrapperPlayClientLook extends IWrapperPlayClientOnGround
+public interface IWrapperPlayLook extends IWrapperPlayOnGround
 {
     /**
      * Retrieve Yaw.
@@ -9,20 +9,14 @@ public interface IWrapperPlayClientLook extends IWrapperPlayClientOnGround
      *
      * @return The current Yaw
      */
-    default float getYaw()
-    {
-        return this.getHandle().getFloat().read(0);
-    }
+    float getYaw();
 
     /**
      * Set Yaw.
      *
      * @param value - new value.
      */
-    default void setYaw(final float value)
-    {
-        this.getHandle().getFloat().write(0, value);
-    }
+    void setYaw(final float value);
 
     /**
      * Retrieve Pitch.
@@ -31,18 +25,12 @@ public interface IWrapperPlayClientLook extends IWrapperPlayClientOnGround
      *
      * @return The current Pitch
      */
-    default float getPitch()
-    {
-        return this.getHandle().getFloat().read(1);
-    }
+    float getPitch();
 
     /**
      * Set Pitch.
      *
      * @param value - new value.
      */
-    default void setPitch(final float value)
-    {
-        this.getHandle().getFloat().write(1, value);
-    }
+    void setPitch(final float value);
 }

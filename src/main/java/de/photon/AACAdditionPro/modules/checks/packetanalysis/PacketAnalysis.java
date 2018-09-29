@@ -14,6 +14,7 @@ import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.user.data.PacketAnalysisData;
 import de.photon.AACAdditionPro.util.VerboseSender;
+import de.photon.AACAdditionPro.util.packetwrappers.client.WrapperPlayClientKeepAlive;
 import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
 import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
@@ -86,7 +87,7 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
             // --------------------------------------------- KeepAlive ---------------------------------------------- //
 
-            final long keepAliveId = new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId();
+            final long keepAliveId = new WrapperPlayClientKeepAlive(event.getPacket()).getKeepAliveId();
             PacketAnalysisData.KeepAlivePacketData keepAlivePacketData = null;
 
             int offset = 0;

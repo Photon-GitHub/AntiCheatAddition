@@ -5,7 +5,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.google.common.collect.Lists;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
@@ -18,11 +17,11 @@ import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.fakeentity.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.fakeentity.DelegatingKillauraEntityController;
+import de.photon.AACAdditionPro.util.fakeentity.FakeEntityUtil;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -38,8 +37,6 @@ import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -60,7 +57,7 @@ public class KillauraEntity implements ListenerModule, ViolationModule
 
     private BukkitTask respawnTask;
 
-    final Listener tabListener;
+    private final Listener tabListener;
 
     public KillauraEntity()
     {
@@ -273,10 +270,10 @@ public class KillauraEntity implements ListenerModule, ViolationModule
             // No profile was set by the API
             boolean onlineProfile = preferOnlineProfiles;
             if (gameProfile == null) {
-                gameProfile = this.getGameProfile(user.getPlayer(), preferOnlineProfiles);
+                gameProfile = FakeEntityUtil.getGameProfile(user.getPlayer(), preferOnlineProfiles);
 
                 if (gameProfile == null) {
-                    gameProfile = this.getGameProfile(user.getPlayer(), false);
+                    gameProfile = FakeEntityUtil.getGameProfile(user.getPlayer(), false);
                     onlineProfile = false;
 
                     if (gameProfile == null) {
@@ -315,36 +312,6 @@ public class KillauraEntity implements ListenerModule, ViolationModule
                 }
             });
         }, 2L);
-    }
-
-    /**
-     * This method tries to get a new {@link WrappedGameProfile} from the server.
-     *
-     * @param observedPlayer the observed player is excluded from this search as seeing himself with cause great
-     *                       problems.
-     * @param onlinePlayers  whether or not gameprofiles of online players should be preferred.
-     */
-    private WrappedGameProfile getGameProfile(Player observedPlayer, boolean onlinePlayers)
-    {
-        // Use ArrayList as removal actions are unlikely.
-        final List<OfflinePlayer> players = onlinePlayers ?
-                                            (new ArrayList<>(Bukkit.getOnlinePlayers())) :
-                                            (Lists.newArrayList(Bukkit.getOfflinePlayers()));
-
-        OfflinePlayer chosenPlayer;
-        do {
-            // Check if we can serve OfflinePlayer profiles.
-            if (players.isEmpty()) {
-                return null;
-            }
-
-            // Choose a random player
-            chosenPlayer = players.remove(this.random.nextInt(players.size()));
-            // and make sure it is not the observed player
-        } while (chosenPlayer.getName().equals(observedPlayer.getName()));
-
-        // Generate the GameProfile
-        return new WrappedGameProfile(chosenPlayer.getUniqueId(), chosenPlayer.getName());
     }
 
     /**
@@ -444,6 +411,9 @@ public class KillauraEntity implements ListenerModule, ViolationModule
         return ModuleType.KILLAURA_ENTITY;
     }
 
+    /**
+     * Tab {@link Listener} for minecraft 1.12.2 and below.
+     */
     private class LegacyTabListener implements Listener
     {
         @EventHandler
@@ -461,6 +431,9 @@ public class KillauraEntity implements ListenerModule, ViolationModule
         }
     }
 
+    /**
+     * Tab {@link Listener} for minecraft 1.13 and above.
+     */
     private class TabListener implements Listener
     {
         @EventHandler

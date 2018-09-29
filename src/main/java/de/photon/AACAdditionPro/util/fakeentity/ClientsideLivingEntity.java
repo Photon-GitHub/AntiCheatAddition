@@ -102,7 +102,7 @@ public abstract class ClientsideLivingEntity
         tickTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::tick, 1L, 1L);
 
         // Get a valid entity ID
-        this.entityID = EntityIdUtil.getNextEntityID();
+        this.entityID = FakeEntityUtil.getNextEntityID();
     }
 
     // --------------------------------------------------------------- General -------------------------------------------------------------- //

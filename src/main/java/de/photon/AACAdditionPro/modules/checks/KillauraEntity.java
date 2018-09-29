@@ -37,15 +37,12 @@ import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.StringUtil;
 
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class KillauraEntity implements ListenerModule, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 55);
-
-    private final Random random = new Random();
 
     @LoadFromConfiguration(configPath = ".on_command")
     private boolean onCommand;

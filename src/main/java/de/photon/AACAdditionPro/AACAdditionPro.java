@@ -79,8 +79,7 @@ public class AACAdditionPro extends JavaPlugin
     private static final Field killauraEntityControllerField;
     private static final Field delegatingKillauraEntityControllerField;
 
-    static
-    {
+    static {
         killauraEntityControllerField = KillauraEntityAddon.class.getDeclaredFields()[1];
         killauraEntityControllerField.setAccessible(true);
 
@@ -128,14 +127,11 @@ public class AACAdditionPro extends JavaPlugin
     @Override
     public FileConfiguration getConfig()
     {
-        if (cachedConfig == null)
-        {
+        if (cachedConfig == null) {
             File savedFile = null;
-            try
-            {
+            try {
                 savedFile = FileUtilities.saveFileInFolder("config.yml");
-            } catch (final IOException e)
-            {
+            } catch (final IOException e) {
                 VerboseSender.getInstance().sendVerboseMessage("Failed to create config folder / file", true, true);
                 e.printStackTrace();
             }
@@ -148,8 +144,7 @@ public class AACAdditionPro extends JavaPlugin
     @Override
     public void onEnable()
     {
-        try
-        {
+        try {
             // Enabled message
             VerboseSender.getInstance().sendVerboseMessage("Enabling plugin...", true, false);
 
@@ -182,8 +177,7 @@ public class AACAdditionPro extends JavaPlugin
             final int[] minimumVersionParts = Arrays.stream(AACAdditionPro.MINIMUM_AAC_VERSION.split("\\.")).mapToInt(Integer::valueOf).toArray();
             final int[] actualVersionParts = Arrays.stream(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion().split("\\.")).mapToInt(Integer::valueOf).toArray();
 
-            if (CompareUtils.compareIntegerArray(minimumVersionParts, actualVersionParts) < 0)
-            {
+            if (CompareUtils.compareIntegerArray(minimumVersionParts, actualVersionParts) < 0) {
                 VerboseSender.getInstance().sendVerboseMessage("AAC version is not supported.", true, true);
                 VerboseSender.getInstance().sendVerboseMessage("This plugin needs AAC version " + MINIMUM_AAC_VERSION + " or newer.", true, true);
                 return;
@@ -202,14 +196,12 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Call is correct here as Bukkit always has a player api.
-            if (this.getServer().getPluginManager().getPlugin("ViaVersion") != null)
-            {
+            if (this.getServer().getPluginManager().getPlugin("ViaVersion") != null) {
                 //noinspection unchecked
                 viaAPI = Via.getAPI();
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Used"));
             }
-            else
-            {
+            else {
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Not used"));
             }
 
@@ -271,8 +263,7 @@ public class AACAdditionPro extends JavaPlugin
             this.loaded = true;
             this.getServer().getPluginManager().callEvent(new APILoadedEvent());
 
-        } catch (final Exception e)
-        {
+        } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //
             // ------------------------------------------------------------------------------------------------------ //
@@ -309,8 +300,7 @@ public class AACAdditionPro extends JavaPlugin
         // check provided plugin (Required for better exception messages)
         JavaPlugin plugin = Objects.requireNonNull(killauraEntityAddon, "EXTERNAL PLUGIN ERROR: KillauraEntityAddon is null").getPlugin();
 
-        if (plugin == null || plugin.getName() == null)
-        {
+        if (plugin == null || plugin.getName() == null) {
             throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin provided as KillauraEntityAddon: " + plugin);
         }
 
@@ -329,11 +319,9 @@ public class AACAdditionPro extends JavaPlugin
                 // Check KillauraEntity-API being available
                 Objects.requireNonNull(killauraEntityController, "KillauraEntity-API not ready, enable the KillauraEntity check"));
 
-        try
-        {
+        try {
             killauraEntityControllerField.set(this.killauraEntityAddon, currentDelegatingKillauraEntityController);
-        } catch (IllegalAccessException e)
-        {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -343,19 +331,15 @@ public class AACAdditionPro extends JavaPlugin
      */
     public void disableKillauraEntityAPI()
     {
-        try
-        {
-            if (this.killauraEntityAddon != null)
-            {
+        try {
+            if (this.killauraEntityAddon != null) {
                 killauraEntityControllerField.set(this.killauraEntityAddon, null);
             }
 
-            if (this.currentDelegatingKillauraEntityController != null)
-            {
+            if (this.currentDelegatingKillauraEntityController != null) {
                 delegatingKillauraEntityControllerField.set(currentDelegatingKillauraEntityController, null);
             }
-        } catch (IllegalAccessException e)
-        {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }

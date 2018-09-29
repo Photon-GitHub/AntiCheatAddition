@@ -1,19 +1,21 @@
-package de.photon.AACAdditionPro.util.packetwrappers;
+package de.photon.AACAdditionPro.util.packetwrappers.server;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.utility.MinecraftReflection;
-import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.google.common.collect.ImmutableSet;
+import de.photon.AACAdditionPro.util.packetwrappers.AbstractPacket;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayLook;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayPosition;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.Collections;
 import java.util.Set;
 
-public class WrapperPlayServerPosition extends AbstractPacket
+public class WrapperPlayServerPosition extends AbstractPacket implements IWrapperPlayPosition, IWrapperPlayLook
 {
     public static final PacketType TYPE = PacketType.Play.Server.POSITION;
 
@@ -28,111 +30,25 @@ public class WrapperPlayServerPosition extends AbstractPacket
         super(packet, TYPE);
     }
 
-    /**
-     * Retrieve X.
-     * <p>
-     * Notes: absolute/Relative position
-     *
-     * @return The current X
-     */
-    public double getX()
-    {
-        return handle.getDoubles().read(0);
-    }
-
-    /**
-     * Set X.
-     *
-     * @param value - new value.
-     */
-    public void setX(final double value)
-    {
-        handle.getDoubles().write(0, value);
-    }
-
-    /**
-     * Retrieve Y.
-     * <p>
-     * Notes: absolute/Relative position
-     *
-     * @return The current Y
-     */
-    public double getY()
-    {
-        return handle.getDoubles().read(1);
-    }
-
-    /**
-     * Set Y.
-     *
-     * @param value - new value.
-     */
-    public void setY(final double value)
-    {
-        handle.getDoubles().write(1, value);
-    }
-
-    /**
-     * Retrieve Z.
-     * <p>
-     * Notes: absolute/Relative position
-     *
-     * @return The current Z
-     */
-    public double getZ()
-    {
-        return handle.getDoubles().read(2);
-    }
-
-    /**
-     * Set Z.
-     *
-     * @param value - new value.
-     */
-    public void setZ(final double value)
-    {
-        handle.getDoubles().write(2, value);
-    }
-
-    /**
-     * Retrieve Yaw.
-     * <p>
-     * Notes: absolute/Relative rotation on the X Axis, in degrees
-     *
-     * @return The current Yaw
-     */
+    @Override
     public float getYaw()
     {
         return handle.getFloat().read(0);
     }
 
-    /**
-     * Set Yaw.
-     *
-     * @param value - new value.
-     */
+    @Override
     public void setYaw(final float value)
     {
         handle.getFloat().write(0, value);
     }
 
-    /**
-     * Retrieve Pitch.
-     * <p>
-     * Notes: absolute/Relative rotation on the Y Axis, in degrees
-     *
-     * @return The current Pitch
-     */
+    @Override
     public float getPitch()
     {
         return handle.getFloat().read(1);
     }
 
-    /**
-     * Set Pitch.
-     *
-     * @param value - new value.
-     */
+    @Override
     public void setPitch(final float value)
     {
         handle.getFloat().write(1, value);
@@ -146,18 +62,20 @@ public class WrapperPlayServerPosition extends AbstractPacket
         return new Location(world, this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
     }
 
+    @Override
     public void setWithLocation(final Location location)
     {
         this.setX(location.getX());
         this.setY(location.getY());
         this.setZ(location.getZ());
+
         this.setYaw(location.getYaw());
         this.setPitch(location.getPitch());
     }
 
-    private static final Class<?> FLAGS_CLASS = MinecraftReflection
-            .getMinecraftClass("EnumPlayerTeleportFlags",
-                               "PacketPlayOutPosition$EnumPlayerTeleportFlags");
+    private static final Class<?> FLAGS_CLASS = MinecraftReflection.getMinecraftClass(
+            "EnumPlayerTeleportFlags",
+            "PacketPlayOutPosition$EnumPlayerTeleportFlags");
 
     public enum PlayerTeleportFlag
     {
@@ -172,11 +90,16 @@ public class WrapperPlayServerPosition extends AbstractPacket
 
     private StructureModifier<Set<PlayerTeleportFlag>> getFlagsModifier()
     {
+        return handle.getSets(EnumWrappers.getGenericConverter(FLAGS_CLASS, PlayerTeleportFlag.class));
+    }
+
+   /* private StructureModifier<Set<PlayerTeleportFlag>> getFlagsModifier()
+    {
         return handle.getModifier().withType(
                 Set.class,
                 BukkitConverters.getSetConverter(FLAGS_CLASS, EnumWrappers
                         .getGenericConverter(PlayerTeleportFlag.class)));
-    }
+    }*/
 
     public Set<PlayerTeleportFlag> getFlags()
     {

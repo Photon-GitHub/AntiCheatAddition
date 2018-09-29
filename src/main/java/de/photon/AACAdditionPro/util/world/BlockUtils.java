@@ -12,53 +12,92 @@ import java.util.Set;
 
 public final class BlockUtils
 {
-    public static final Set<Material> LIQUIDS = ImmutableSet.of(Material.WATER,
-                                                                Material.LAVA,
-                                                                Material.STATIONARY_WATER,
-                                                                Material.STATIONARY_LAVA);
+    public static final Set<Material> LIQUIDS;
     public static final Set<Material> CONTAINERS;
 
     static
     {
-        ImmutableSet.Builder<Material> containerBuilder = new ImmutableSet.Builder<>();
         switch (ServerVersion.getActiveServerVersion())
         {
-            case MC113:
-                // TODO: UNVERIFIED!
-            case MC112:
-            case MC111:
-                // Additionally add the shulker boxes.
-                containerBuilder.add(Material.BLACK_SHULKER_BOX,
-                                     Material.BROWN_SHULKER_BOX,
-                                     Material.BLUE_SHULKER_BOX,
-                                     Material.CYAN_SHULKER_BOX,
-                                     Material.GRAY_SHULKER_BOX,
-                                     Material.GREEN_SHULKER_BOX,
-                                     Material.LIGHT_BLUE_SHULKER_BOX,
-                                     Material.LIME_SHULKER_BOX,
-                                     Material.MAGENTA_SHULKER_BOX,
-                                     Material.ORANGE_SHULKER_BOX,
-                                     Material.PINK_SHULKER_BOX,
-                                     Material.PURPLE_SHULKER_BOX,
-                                     Material.RED_SHULKER_BOX,
-                                     Material.SILVER_SHULKER_BOX,
-                                     Material.WHITE_SHULKER_BOX,
-                                     Material.YELLOW_SHULKER_BOX);
             case MC188:
-                containerBuilder.add(Material.CHEST,
-                                     Material.TRAPPED_CHEST,
-                                     Material.ENDER_CHEST,
-                                     Material.ANVIL,
-                                     Material.FURNACE,
-                                     Material.DISPENSER,
-                                     Material.DROPPER,
-                                     Material.BREWING_STAND);
+                CONTAINERS = ImmutableSet.of(Material.CHEST,
+                                             Material.TRAPPED_CHEST,
+                                             Material.ENDER_CHEST,
+                                             Material.ANVIL,
+                                             Material.FURNACE,
+                                             Material.DISPENSER,
+                                             Material.DROPPER,
+                                             Material.BREWING_STAND);
+
+                LIQUIDS = ImmutableSet.of(Material.WATER,
+                                          Material.LAVA,
+                                          Material.getMaterial("STATIONARY_WATER"),
+                                          Material.getMaterial("STATIONARY_LAVA"));
+                break;
+            case MC111:
+            case MC112:
+                CONTAINERS = ImmutableSet.of(Material.CHEST,
+                                             Material.TRAPPED_CHEST,
+                                             Material.ENDER_CHEST,
+                                             Material.ANVIL,
+                                             Material.FURNACE,
+                                             Material.DISPENSER,
+                                             Material.DROPPER,
+                                             Material.BREWING_STAND,
+                                             Material.BLACK_SHULKER_BOX,
+                                             Material.BROWN_SHULKER_BOX,
+                                             Material.BLUE_SHULKER_BOX,
+                                             Material.CYAN_SHULKER_BOX,
+                                             Material.GRAY_SHULKER_BOX,
+                                             Material.GREEN_SHULKER_BOX,
+                                             Material.LIGHT_BLUE_SHULKER_BOX,
+                                             Material.LIME_SHULKER_BOX,
+                                             Material.MAGENTA_SHULKER_BOX,
+                                             Material.ORANGE_SHULKER_BOX,
+                                             Material.PINK_SHULKER_BOX,
+                                             Material.PURPLE_SHULKER_BOX,
+                                             Material.RED_SHULKER_BOX,
+                                             Material.getMaterial("SILVER_SHULKER_BOX"),
+                                             Material.WHITE_SHULKER_BOX,
+                                             Material.YELLOW_SHULKER_BOX);
+
+                LIQUIDS = ImmutableSet.of(Material.WATER,
+                                          Material.LAVA,
+                                          Material.getMaterial("STATIONARY_WATER"),
+                                          Material.getMaterial("STATIONARY_LAVA"));
+                break;
+            case MC113:
+                CONTAINERS = ImmutableSet.of(Material.CHEST,
+                                             Material.TRAPPED_CHEST,
+                                             Material.ENDER_CHEST,
+                                             Material.ANVIL,
+                                             Material.FURNACE,
+                                             Material.DISPENSER,
+                                             Material.DROPPER,
+                                             Material.BREWING_STAND,
+                                             Material.SHULKER_BOX,
+                                             Material.BLACK_SHULKER_BOX,
+                                             Material.BROWN_SHULKER_BOX,
+                                             Material.BLUE_SHULKER_BOX,
+                                             Material.CYAN_SHULKER_BOX,
+                                             Material.GRAY_SHULKER_BOX,
+                                             Material.GREEN_SHULKER_BOX,
+                                             Material.LIGHT_BLUE_SHULKER_BOX,
+                                             Material.LIME_SHULKER_BOX,
+                                             Material.MAGENTA_SHULKER_BOX,
+                                             Material.ORANGE_SHULKER_BOX,
+                                             Material.PINK_SHULKER_BOX,
+                                             Material.PURPLE_SHULKER_BOX,
+                                             Material.RED_SHULKER_BOX,
+                                             Material.WHITE_SHULKER_BOX,
+                                             Material.YELLOW_SHULKER_BOX);
+
+                LIQUIDS = ImmutableSet.of(Material.WATER,
+                                          Material.LAVA);
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
-
-        CONTAINERS = containerBuilder.build();
     }
 
     public static final Set<BlockFace> HORIZONTAL_FACES = ImmutableSet.of(
@@ -146,13 +185,16 @@ public final class BlockUtils
      */
     public static boolean isReallyOccluding(Material material)
     {
-        switch (material)
+        switch (ServerVersion.getActiveServerVersion())
         {
-            case BARRIER:
-            case MOB_SPAWNER:
-                return false;
+            case MC188:
+            case MC111:
+            case MC112:
+                return material != Material.BARRIER && material != Material.getMaterial("MOB_SPAWNER") && material.isOccluding();
+            case MC113:
+                return material != Material.BARRIER && material != Material.SPAWNER && material.isOccluding();
             default:
-                return material.isOccluding();
+                throw new IllegalStateException("Unknown minecraft version");
         }
     }
 }

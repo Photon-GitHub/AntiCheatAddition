@@ -8,7 +8,7 @@ import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.modules.RestrictedServerVersion;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerKeepAlive;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
 import de.photon.AACAdditionPro.util.random.RandomUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;

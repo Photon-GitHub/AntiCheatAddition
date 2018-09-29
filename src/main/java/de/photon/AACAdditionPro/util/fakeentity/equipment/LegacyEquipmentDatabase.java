@@ -20,42 +20,42 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class EquipmentDatabase
+public class LegacyEquipmentDatabase
 {
-    public static final EquipmentDatabase INSTANCE = new EquipmentDatabase();
+    public static final LegacyEquipmentDatabase INSTANCE = new LegacyEquipmentDatabase();
     private static final Set<Material> AIR_SET = Collections.singleton(Material.AIR);
 
     private final Random random = new Random();
 
     private final EnumMap<EnumWrappers.ItemSlot, Set<Material>> slotMap = new EnumMap<>(EnumWrappers.ItemSlot.class);
 
-    private EquipmentDatabase()
+    private LegacyEquipmentDatabase()
     {
         // -------------------------------------------------- Armor ------------------------------------------------- //
         slotMap.put(EnumWrappers.ItemSlot.HEAD, Sets.newHashSet(
                 Material.LEATHER_HELMET,
-                Material.GOLDEN_HELMET,
+                Material.getMaterial("GOLD_HELMET"),
                 Material.CHAINMAIL_HELMET,
                 Material.IRON_HELMET,
                 Material.DIAMOND_HELMET));
 
         slotMap.put(EnumWrappers.ItemSlot.CHEST, Sets.newHashSet(
                 Material.LEATHER_CHESTPLATE,
-                Material.GOLDEN_CHESTPLATE,
+                Material.getMaterial("GOLD_CHESTPLATE"),
                 Material.CHAINMAIL_CHESTPLATE,
                 Material.IRON_CHESTPLATE,
                 Material.DIAMOND_CHESTPLATE));
 
         slotMap.put(EnumWrappers.ItemSlot.LEGS, Sets.newHashSet(
                 Material.LEATHER_LEGGINGS,
-                Material.GOLDEN_LEGGINGS,
+                Material.getMaterial("GOLD_LEGGINGS"),
                 Material.CHAINMAIL_LEGGINGS,
                 Material.IRON_LEGGINGS,
                 Material.DIAMOND_LEGGINGS));
 
         slotMap.put(EnumWrappers.ItemSlot.FEET, Sets.newHashSet(
                 Material.LEATHER_BOOTS,
-                Material.GOLDEN_BOOTS,
+                Material.getMaterial("GOLD_BOOTS"),
                 Material.CHAINMAIL_BOOTS,
                 Material.IRON_BOOTS,
                 Material.DIAMOND_BOOTS));
@@ -75,8 +75,8 @@ public class EquipmentDatabase
 
         if (this.isMaterialAllowed("normal.raw"))
         {
-            handMaterials.add(Material.BEEF);
-            handMaterials.add(Material.CHICKEN);
+            handMaterials.add(Material.getMaterial("RAW_BEEF"));
+            handMaterials.add(Material.getMaterial("RAW_CHICKEN"));
         }
 
         if (this.isMaterialAllowed("normal.cooked"))
@@ -108,38 +108,38 @@ public class EquipmentDatabase
 
         final Set<Material> toolMaterials = Sets.newHashSet(
                 // Wood
-                Material.WOODEN_AXE,
-                Material.WOODEN_HOE,
-                Material.WOODEN_PICKAXE,
-                Material.WOODEN_SHOVEL,
-                Material.WOODEN_SWORD,
+                Material.getMaterial("WOOD_AXE"),
+                Material.getMaterial("WOOD_HOE"),
+                Material.getMaterial("WOOD_PICKAXE"),
+                Material.getMaterial("WOOD_SPADE"),
+                Material.getMaterial("WOOD_SWORD"),
 
                 // Gold
-                Material.GOLDEN_AXE,
-                Material.GOLDEN_HOE,
-                Material.GOLDEN_PICKAXE,
-                Material.GOLDEN_SHOVEL,
-                Material.GOLDEN_SWORD,
+                Material.getMaterial("GOLD_AXE"),
+                Material.getMaterial("GOLD_HOE"),
+                Material.getMaterial("GOLD_PICKAXE"),
+                Material.getMaterial("GOLD_SPADE"),
+                Material.getMaterial("GOLD_SWORD"),
 
                 // Stone
                 Material.STONE_AXE,
                 Material.STONE_HOE,
                 Material.STONE_PICKAXE,
-                Material.STONE_SHOVEL,
+                Material.getMaterial("STONE_SPADE"),
                 Material.STONE_SWORD,
 
                 // Iron
                 Material.IRON_AXE,
                 Material.IRON_HOE,
                 Material.IRON_PICKAXE,
-                Material.IRON_SHOVEL,
+                Material.getMaterial("IRON_SPADE"),
                 Material.IRON_SWORD,
 
                 //Diamond
                 Material.DIAMOND_AXE,
                 Material.DIAMOND_HOE,
                 Material.DIAMOND_PICKAXE,
-                Material.DIAMOND_SHOVEL,
+                Material.getMaterial("DIAMOND_SPADE"),
                 Material.DIAMOND_SWORD);
 
         for (final String toolKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.tools"))

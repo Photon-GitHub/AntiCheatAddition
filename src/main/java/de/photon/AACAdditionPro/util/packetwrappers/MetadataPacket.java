@@ -37,8 +37,7 @@ public abstract class MetadataPacket extends AbstractPacket
          */
         public MetadataBuilder setMetadata(final int index, final Class classOfValue, final Object value)
         {
-            switch (ServerVersion.getActiveServerVersion())
-            {
+            switch (ServerVersion.getActiveServerVersion()) {
                 case MC188:
                     dataWatcher.setObject(index, value);
                     break;
@@ -74,8 +73,7 @@ public abstract class MetadataPacket extends AbstractPacket
          */
         public MetadataBuilder setHealthMetadata(final float health)
         {
-            switch (ServerVersion.getActiveServerVersion())
-            {
+            switch (ServerVersion.getActiveServerVersion()) {
                 case MC188:
                     return this.setMetadata(6, Float.class, health);
                 case MC111:
@@ -94,8 +92,7 @@ public abstract class MetadataPacket extends AbstractPacket
          */
         public MetadataBuilder setArrowInEntityMetadata(final int arrows)
         {
-            switch (ServerVersion.getActiveServerVersion())
-            {
+            switch (ServerVersion.getActiveServerVersion()) {
                 case MC188:
                     // IN 1.8.8 THIS IS A BYTE, NOT AN INTEGER!
                     return this.setMetadata(10, Byte.class, (byte) arrows);
@@ -118,8 +115,7 @@ public abstract class MetadataPacket extends AbstractPacket
          */
         public MetadataBuilder setSkinMetadata(final byte skinParts)
         {
-            switch (ServerVersion.getActiveServerVersion())
-            {
+            switch (ServerVersion.getActiveServerVersion()) {
                 case MC188:
                     return this.setMetadata(10, Byte.class, skinParts);
                 case MC111:

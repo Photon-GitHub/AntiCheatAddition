@@ -1,15 +1,15 @@
 package de.photon.AACAdditionPro.user;
 
+import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -18,6 +18,8 @@ public class UserManager implements Listener
 {
     // Concurrency to tackle some ConcurrentModificationExceptions
     private static final ConcurrentMap<UUID, User> users = new ConcurrentHashMap<>();
+    @Getter
+    private static final Set<User> verboseUsers = ConcurrentHashMap.newKeySet();
 
     public static User getUser(final UUID uuid)
     {
@@ -44,20 +46,24 @@ public class UserManager implements Listener
         return users.values();
     }
 
-    /**
-     * Gets all {@link User}s that have activated verbose.
-     */
-    public static Collection<User> getVerboseUsers()
+    public static boolean isVerbose(final User user)
     {
-        final List<User> verboseUsers = new ArrayList<>();
-        for (User user : getUsersUnwrapped())
+        return verboseUsers.contains(user);
+    }
+
+    /**
+     * Sets the verbose state of an {@link User}.
+     */
+    public static void setVerbose(final User user, final boolean verbose)
+    {
+        if (verbose)
         {
-            if (user.verbose)
-            {
-                verboseUsers.add(user);
-            }
+            verboseUsers.add(user);
         }
-        return verboseUsers;
+        else
+        {
+            verboseUsers.remove(user);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

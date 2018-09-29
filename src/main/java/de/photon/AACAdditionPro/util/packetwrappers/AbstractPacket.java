@@ -4,11 +4,12 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 
-public abstract class AbstractPacket
+public abstract class AbstractPacket implements IWrapperPlay
 {
     // The packet we will be modifying
     protected PacketContainer handle;
@@ -19,19 +20,11 @@ public abstract class AbstractPacket
      * @param handle - handle to the raw packet data.
      * @param type   - the packet type.
      */
-    protected AbstractPacket(final PacketContainer handle, final PacketType type)
+    protected AbstractPacket(PacketContainer handle, PacketType type)
     {
         // Make sure we're given a valid packet
-        if (handle == null)
-        {
-            throw new IllegalArgumentException("Packet handle cannot be NULL.");
-        }
-        if (!Objects.equal(handle.getType(), type))
-        {
-            throw new IllegalArgumentException(handle.getHandle()
-                                               + " is not a packet of type " + type);
-        }
-
+        Preconditions.checkNotNull(handle, "Packet handle cannot be NULL.");
+        Preconditions.checkArgument(Objects.equal(handle.getType(), type), handle.getHandle() + " is not a packet of type " + type);
         this.handle = handle;
     }
 
@@ -52,16 +45,21 @@ public abstract class AbstractPacket
      *
      * @throws RuntimeException If the packet cannot be sent.
      */
-    public void sendPacket(final Player receiver)
+    public void sendPacket(Player receiver)
     {
-        try
-        {
-            ProtocolLibrary.getProtocolManager().sendServerPacket(receiver,
-                                                                  getHandle());
-        } catch (final InvocationTargetException e)
-        {
+        try {
+            ProtocolLibrary.getProtocolManager().sendServerPacket(receiver, getHandle());
+        } catch (InvocationTargetException e) {
             throw new RuntimeException("Cannot send packet.", e);
         }
+    }
+
+    /**
+     * Send the current packet to all online players.
+     */
+    public void broadcastPacket()
+    {
+        ProtocolLibrary.getProtocolManager().broadcastServerPacket(getHandle());
     }
 
     /**
@@ -71,15 +69,12 @@ public abstract class AbstractPacket
      *
      * @throws RuntimeException if the packet cannot be received.
      */
-    public void receivePacket(final Player sender)
+    public void receivePacket(Player sender)
     {
-        try
-        {
-            ProtocolLibrary.getProtocolManager().recieveClientPacket(sender,
-                                                                     getHandle());
-        } catch (final Exception e)
-        {
-            throw new RuntimeException("Cannot recieve packet.", e);
+        try {
+            ProtocolLibrary.getProtocolManager().recieveClientPacket(sender, getHandle());
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot receive packet.", e);
         }
     }
 }

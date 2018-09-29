@@ -1,11 +1,7 @@
 package de.photon.AACAdditionPro.util.packetwrappers;
 
-import com.comphenix.protocol.events.PacketContainer;
-
-public interface IWrapperPlayClientOnGround
+public interface IWrapperPlayOnGround extends IWrapperPlay
 {
-    PacketContainer getHandle();
-
     /**
      * Retrieve On Ground.
      * <p>

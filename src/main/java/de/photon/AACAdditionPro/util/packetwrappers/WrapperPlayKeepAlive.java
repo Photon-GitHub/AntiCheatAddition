@@ -4,19 +4,17 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import de.photon.AACAdditionPro.ServerVersion;
 
-public class WrapperPlayServerKeepAlive extends AbstractPacket
+public abstract class WrapperPlayKeepAlive extends AbstractPacket
 {
-    public static final PacketType TYPE = PacketType.Play.Server.KEEP_ALIVE;
-
-    public WrapperPlayServerKeepAlive()
+    /**
+     * Constructs a new strongly typed wrapper for the given packet.
+     *
+     * @param handle - handle to the raw packet data.
+     * @param type   - the packet type.
+     */
+    protected WrapperPlayKeepAlive(PacketContainer handle, PacketType type)
     {
-        super(new PacketContainer(TYPE), TYPE);
-        handle.getModifier().writeDefaults();
-    }
-
-    public WrapperPlayServerKeepAlive(PacketContainer packet)
-    {
-        super(packet, TYPE);
+        super(handle, type);
     }
 
     /**
@@ -26,8 +24,7 @@ public class WrapperPlayServerKeepAlive extends AbstractPacket
      */
     public long getKeepAliveId()
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
             case MC111:
                 return handle.getIntegers().read(0);
@@ -46,8 +43,7 @@ public class WrapperPlayServerKeepAlive extends AbstractPacket
      */
     public void setKeepAliveId(long value)
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
             case MC111:
                 handle.getIntegers().write(0, (int) value);

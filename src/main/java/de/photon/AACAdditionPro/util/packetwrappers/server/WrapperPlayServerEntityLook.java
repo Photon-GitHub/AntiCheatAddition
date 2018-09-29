@@ -1,9 +1,9 @@
-package de.photon.AACAdditionPro.util.packetwrappers;
+package de.photon.AACAdditionPro.util.packetwrappers.server;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 
-public class WrapperPlayServerEntityLook extends WrapperPlayServerEntity implements IWrapperPlayServerEntityLook
+public class WrapperPlayServerEntityLook extends WrapperPlayServerEntity implements IWrapperPlayServerLook
 {
     public static final PacketType TYPE = PacketType.Play.Server.ENTITY_LOOK;
 

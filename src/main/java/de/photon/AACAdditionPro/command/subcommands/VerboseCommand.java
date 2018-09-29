@@ -33,7 +33,7 @@ public class VerboseCommand extends InternalPlayerCommand
             return;
         }
 
-        boolean toggleTo = !user.verbose;
+        boolean toggleTo = !UserManager.isVerbose(user);
         if (arguments.peek() != null)
         {
             switch (arguments.peek().toLowerCase())
@@ -50,8 +50,8 @@ public class VerboseCommand extends InternalPlayerCommand
         }
 
         //Toggle mode
-        user.verbose = toggleTo;
-        sendToggleMessage(sender, user.verbose);
+        UserManager.setVerbose(user, toggleTo);
+        sendToggleMessage(sender, toggleTo);
     }
 
     /**

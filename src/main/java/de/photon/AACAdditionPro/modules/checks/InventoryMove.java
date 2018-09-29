@@ -16,7 +16,7 @@ import de.photon.AACAdditionPro.util.entity.EntityUtil;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
-import de.photon.AACAdditionPro.util.packetwrappers.WrapperPlayServerPosition;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerPosition;
 import de.photon.AACAdditionPro.util.reflection.Reflect;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import de.photon.AACAdditionPro.util.world.ChunkUtils;
@@ -117,12 +117,7 @@ public class InventoryMove extends PacketAdapter implements ListenerModule, Pack
             if (user.getInventoryData().notRecentlyOpened(allowedRecentlyOpenedTime) &&
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
-                EntityUtil.getLivingEntitiesAroundPlayer(
-                        user.getPlayer(),
-                        // No division by 2 here as the hitbox of the other player is also important (-> 2 players)
-                        Hitbox.PLAYER.getOffsetX() + 0.1,
-                        Hitbox.PLAYER.getHeight() + 0.1,
-                        Hitbox.PLAYER.getOffsetZ() + 0.1).isEmpty())
+                EntityUtil.getLivingEntitiesAroundPlayer(user.getPlayer(), Hitbox.PLAYER, 0.1D).isEmpty())
             {
                 vlManager.flag(user.getPlayer(), cancel_vl, () ->
                 {

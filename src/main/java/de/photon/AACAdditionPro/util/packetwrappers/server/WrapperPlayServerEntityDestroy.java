@@ -1,7 +1,8 @@
-package de.photon.AACAdditionPro.util.packetwrappers;
+package de.photon.AACAdditionPro.util.packetwrappers.server;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import de.photon.AACAdditionPro.util.packetwrappers.AbstractPacket;
 
 public class WrapperPlayServerEntityDestroy extends AbstractPacket
 {

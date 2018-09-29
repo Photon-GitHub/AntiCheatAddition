@@ -32,7 +32,21 @@ public final class EntityUtil
     /**
      * Gets all {@link LivingEntity}s around an {@link Entity}
      *
-     * @param entity the location from which the distance is measured
+     * @param entity the entity from which the distance is measured
+     * @param hitbox the {@link Hitbox} of the entity
+     * @param offset additional distance from the hitbox in all directions
+     *
+     * @return a {@link List} of {@link LivingEntity}s which are in range.
+     */
+    public static List<LivingEntity> getLivingEntitiesAroundPlayer(final Entity entity, final Hitbox hitbox, final double offset)
+    {
+        return getLivingEntitiesAroundPlayer(entity, hitbox.getOffsetX() + offset, hitbox.getHeight() + offset, hitbox.getOffsetZ() + offset);
+    }
+
+    /**
+     * Gets all {@link LivingEntity}s around an {@link Entity}
+     *
+     * @param entity the entity from which the distance is measured
      * @param x      the maximum x-distance between the initialPlayer and the checked {@link Player} to add the checked {@link Player} to the {@link List}.
      * @param y      the maximum y-distance between the initialPlayer and the checked {@link Player} to add the checked {@link Player} to the {@link List}.
      * @param z      the maximum z-distance between the initialPlayer and the checked {@link Player} to add the checked {@link Player} to the {@link List}.
@@ -66,18 +80,27 @@ public final class EntityUtil
         final Set<Material> materials = new HashSet<>();
 
         final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
+        int xMin = (int) axisAlignedBB.getMinX();
+        int yMin = (int) axisAlignedBB.getMinY();
+        int zMin = (int) axisAlignedBB.getMinZ();
 
-        // Cast the first value as that will only make it smaller, the second one has to be ceiled as it could be the same value once again.
-        for (int x = (int) axisAlignedBB.getMinX(); x <= (int) Math.ceil(axisAlignedBB.getMaxX()); x++)
+        // Add 1 to ceil the value as the cast to int floors it.
+        int xMax = ((int) axisAlignedBB.getMaxX()) + 1;
+        int yMax = ((int) axisAlignedBB.getMaxY()) + 1;
+        int zMax = ((int) axisAlignedBB.getMaxZ()) + 1;
+
+
+        for (; xMin <= xMax; xMin++)
         {
-            for (int y = (int) axisAlignedBB.getMinY(); y <= (int) Math.ceil(axisAlignedBB.getMaxY()); y++)
+            for (; yMin <= yMax; yMin++)
             {
-                for (int z = (int) axisAlignedBB.getMinZ(); z <= (int) Math.ceil(axisAlignedBB.getMaxZ()); z++)
+                for (; zMin <= zMax; zMin++)
                 {
-                    materials.add(location.getWorld().getBlockAt(x, y, z).getType());
+                    materials.add(location.getWorld().getBlockAt(xMin, yMin, zMin).getType());
                 }
             }
         }
+
         return materials;
     }
 
@@ -101,16 +124,29 @@ public final class EntityUtil
      */
     public static boolean isHitboxInMaterials(final Location location, final Hitbox hitbox, final Collection<Material> materials)
     {
-        final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
-
-        // Cast the first value as that will only make it smaller, the second one has to be ceiled as it could be the same value once again.
-        for (int x = (int) axisAlignedBB.getMinX(); x <= (int) Math.ceil(axisAlignedBB.getMaxX()); x++)
+        if (materials.isEmpty())
         {
-            for (int y = (int) axisAlignedBB.getMinY(); y <= (int) Math.ceil(axisAlignedBB.getMaxY()); y++)
+            return false;
+        }
+
+        final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
+        int xMin = (int) axisAlignedBB.getMinX();
+        int yMin = (int) axisAlignedBB.getMinY();
+        int zMin = (int) axisAlignedBB.getMinZ();
+
+        // Add 1 to ceil the value as the cast to int floors it.
+        int xMax = ((int) axisAlignedBB.getMaxX()) + 1;
+        int yMax = ((int) axisAlignedBB.getMaxY()) + 1;
+        int zMax = ((int) axisAlignedBB.getMaxZ()) + 1;
+
+
+        for (; xMin <= xMax; xMin++)
+        {
+            for (; yMin <= yMax; yMin++)
             {
-                for (int z = (int) axisAlignedBB.getMinZ(); z <= (int) Math.ceil(axisAlignedBB.getMaxZ()); z++)
+                for (; zMin <= zMax; zMin++)
                 {
-                    if (materials.contains(location.getWorld().getBlockAt(x, y, z).getType()))
+                    if (materials.contains(location.getWorld().getBlockAt(xMin, yMin, zMin).getType()))
                     {
                         return true;
                     }

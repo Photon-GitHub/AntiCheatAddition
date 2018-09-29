@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.google.common.collect.Lists;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.modules.ListenerModule;
@@ -25,6 +26,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -58,34 +60,152 @@ public class KillauraEntity implements ListenerModule, ViolationModule
 
     private BukkitTask respawnTask;
 
-    @EventHandler
-    public void onTabComplete(final TabCompleteEvent event)
-    {
-        if (event.getSender() instanceof Player)
-        {
-            final ClientsidePlayerEntity playerEntity = this.getClientSidePlayerEntity(((Player) event.getSender()).getUniqueId());
+    final Listener tabListener;
 
-            if (playerEntity != null &&
-                // Online players already have a tab completion
-                !preferOnlineProfiles &&
-                StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getBuffer()))
-            {
-                event.getCompletions().add(playerEntity.getName());
-            }
+    public KillauraEntity()
+    {
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC188:
+            case MC111:
+            case MC112:
+                this.tabListener = new LegacyTabListener();
+                break;
+            case MC113:
+                this.tabListener = new TabListener();
+                break;
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
         }
     }
 
-    @EventHandler
-    public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)
+    @Override
+    public void enable()
     {
-        final ClientsidePlayerEntity playerEntity = this.getClientSidePlayerEntity(event.getPlayer().getUniqueId());
-
-        if (playerEntity != null &&
-            // Online players already have a tab completion
-            !preferOnlineProfiles &&
-            StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken()))
+        AACAdditionPro.getInstance().registerListener(tabListener);
+        AACAdditionPro.getInstance().setKillauraEntityController(new DelegatingKillauraEntityController(null) //extending the delegation for obfuscation purposes, does not make any difference at the end
         {
-            event.getTabCompletions().add(playerEntity.getName());
+            @Override
+            public boolean isValid()
+            {
+                return true;
+            }
+
+            @Override
+            public boolean isSpawnedFor(Player player)
+            {
+                final User user = UserManager.getUser(player.getUniqueId());
+                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY)) {
+                    return false;
+                }
+                final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+                return clientSidePlayerEntity != null && clientSidePlayerEntity.isSpawned();
+            }
+
+            @Override
+            public boolean setSpawnedForPlayer(Player player, boolean spawned)
+            {
+                final User user = UserManager.getUser(player.getUniqueId());
+                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY)) {
+                    return false;
+                }
+
+                final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+                if (clientSidePlayerEntity == null) {
+                    return false;
+                }
+
+                if (clientSidePlayerEntity.isSpawned()) {
+                    clientSidePlayerEntity.despawn();
+                }
+                else {
+                    clientSidePlayerEntity.spawn(clientSidePlayerEntity.calculateTeleportLocation());
+                }
+                return true;
+            }
+
+            @Override
+            public boolean setSpawnedForPlayer(Player player, boolean spawned, Location spawnLocation)
+            {
+                final User user = UserManager.getUser(player.getUniqueId());
+                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY)) {
+                    return false;
+                }
+
+                final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+                if (clientSidePlayerEntity == null) {
+                    return false;
+                }
+
+                if (clientSidePlayerEntity.isSpawned()) {
+                    clientSidePlayerEntity.despawn();
+                }
+                else {
+                    //Manual location copy to prevent users from inserting locations with a bad copy method
+                    Location location = new Location(spawnLocation.getWorld(), spawnLocation.getX(), spawnLocation.getY(), spawnLocation.getZ(), spawnLocation.getYaw(), spawnLocation.getPitch());
+                    clientSidePlayerEntity.spawn(location);
+                }
+                return true;
+            }
+
+            @Override
+            public Movement getMovement()
+            {
+                return Movement.BASIC_FOLLOW_MOVEMENT;
+            }
+        });
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), PacketType.Play.Client.USE_ENTITY)
+        {
+            @Override
+            public void onPacketReceiving(final PacketEvent event)
+            {
+                final int entityId = event.getPacket().getIntegers().read(0);
+
+                // Add velocity to the bot so the bot does never stand inside or in front of the player
+                final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+                // Not bypassed
+                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY)) {
+                    return;
+                }
+
+                final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+
+                if (playerEntity != null &&
+                    entityId == playerEntity.getEntityID())
+                {
+                    playerEntity.hurtByObserved();
+                    // To prevent false positives ensure the correct position.
+                    playerEntity.setNeedsTeleport(true);
+                    vlManager.flag(event.getPlayer(), -1, () -> {}, () -> {});
+                    event.setCancelled(true);
+                }
+            }
+        });
+
+        //Show entity for already online players on reload
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            onJoin(new PlayerJoinEvent(player, null));
+        }
+
+        if (this.respawnTimer > 0) {
+            this.respawnScheduler();
+        }
+    }
+
+    @Override
+    public void disable()
+    {
+        AACAdditionPro.getInstance().setKillauraEntityController(null);
+        AACAdditionPro.getInstance().disableKillauraEntityAPI();
+
+        // Despawn on reload
+        for (User user : UserManager.getUsersUnwrapped()) {
+            user.getClientSideEntityData().despawnClientSidePlayerEntity();
+        }
+
+        if (this.respawnTask != null) {
+            this.respawnTask.cancel();
         }
     }
 
@@ -94,8 +214,7 @@ public class KillauraEntity implements ListenerModule, ViolationModule
     {
         final ClientsidePlayerEntity playerEntity = this.getClientSidePlayerEntity(event.getPlayer().getUniqueId());
 
-        if (playerEntity != null)
-        {
+        if (playerEntity != null) {
             // Add velocity to the bot so the bot does never stand inside or in front of the player
             playerEntity.setVelocity(event.getVelocity());
         }
@@ -112,8 +231,7 @@ public class KillauraEntity implements ListenerModule, ViolationModule
     public void onJoin(final PlayerJoinEvent event)
     {
         final Player player = event.getPlayer();
-        switch (player.getGameMode())
-        {
+        switch (player.getGameMode()) {
             case CREATIVE:
             case SPECTATOR:
                 return;
@@ -130,8 +248,7 @@ public class KillauraEntity implements ListenerModule, ViolationModule
             final User user = UserManager.getUser(player.getUniqueId());
 
             // Not bypassed
-            if (User.isUserInvalid(user, this.getModuleType()))
-            {
+            if (User.isUserInvalid(user, this.getModuleType())) {
                 return;
             }
 
@@ -140,36 +257,29 @@ public class KillauraEntity implements ListenerModule, ViolationModule
 
             // Ask API endpoint for valid profiles
             KillauraEntityAddon killauraEntityAddon = AACAdditionPro.getInstance().getKillauraEntityAddon();
-            if (killauraEntityAddon != null)
-            {
-                try
-                {
+            if (killauraEntityAddon != null) {
+                try {
                     gameProfile = killauraEntityAddon.getKillauraEntityGameProfile(user.getPlayer());
                     final Movement potentialMovement = killauraEntityAddon.getController().getMovement();
 
-                    if (potentialMovement != null)
-                    {
+                    if (potentialMovement != null) {
                         movement = potentialMovement;
                     }
-                } catch (Throwable t)
-                {
+                } catch (Throwable t) {
                     new RuntimeException("Error in plugin " + killauraEntityAddon.getPlugin().getName() + " while trying to get a killaura-entity gameprofile for " + user.getPlayer().getName(), t).printStackTrace();
                 }
             }
 
             // No profile was set by the API
             boolean onlineProfile = preferOnlineProfiles;
-            if (gameProfile == null)
-            {
+            if (gameProfile == null) {
                 gameProfile = this.getGameProfile(user.getPlayer(), preferOnlineProfiles);
 
-                if (gameProfile == null)
-                {
+                if (gameProfile == null) {
                     gameProfile = this.getGameProfile(user.getPlayer(), false);
                     onlineProfile = false;
 
-                    if (gameProfile == null)
-                    {
+                    if (gameProfile == null) {
                         VerboseSender.getInstance().sendVerboseMessage("KillauraEntity: Could not spawn entity as of too few game profiles for player " + user.getPlayer().getName(), true, true);
                         // No WrappedGameProfile can be set as there are no valid offline players.
                         return;
@@ -184,8 +294,7 @@ public class KillauraEntity implements ListenerModule, ViolationModule
             final boolean resultingOnline = onlineProfile;
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
                 // Make sure no NPE is thrown because the player logged out.
-                if (User.isUserInvalid(user, this.getModuleType()))
-                {
+                if (User.isUserInvalid(user, this.getModuleType())) {
                     return;
                 }
 
@@ -201,8 +310,7 @@ public class KillauraEntity implements ListenerModule, ViolationModule
                 // Spawn the entity
                 playerEntity.spawn(playerEntity.calculateTeleportLocation());
 
-                if (this.onCommand)
-                {
+                if (this.onCommand) {
                     playerEntity.setVisibility(false);
                 }
             });
@@ -224,11 +332,9 @@ public class KillauraEntity implements ListenerModule, ViolationModule
                                             (Lists.newArrayList(Bukkit.getOfflinePlayers()));
 
         OfflinePlayer chosenPlayer;
-        do
-        {
+        do {
             // Check if we can serve OfflinePlayer profiles.
-            if (players.isEmpty())
-            {
+            if (players.isEmpty()) {
                 return null;
             }
 
@@ -279,157 +385,12 @@ public class KillauraEntity implements ListenerModule, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // User not there
-        if (user == null)
-        {
+        if (user == null) {
             // Don't check bypassed since it might change and it would run forever
             return;
         }
 
         user.getClientSideEntityData().despawnClientSidePlayerEntity();
-    }
-
-    @Override
-    public void enable()
-    {
-        AACAdditionPro.getInstance().setKillauraEntityController(new DelegatingKillauraEntityController(null) //extending the delegation for obfuscation purposes, does not make any difference at the end
-        {
-            @Override
-            public boolean isValid()
-            {
-                return true;
-            }
-
-            @Override
-            public boolean isSpawnedFor(Player player)
-            {
-                final User user = UserManager.getUser(player.getUniqueId());
-                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY))
-                {
-                    return false;
-                }
-                final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-                return clientSidePlayerEntity != null && clientSidePlayerEntity.isSpawned();
-            }
-
-            @Override
-            public boolean setSpawnedForPlayer(Player player, boolean spawned)
-            {
-                final User user = UserManager.getUser(player.getUniqueId());
-                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY))
-                {
-                    return false;
-                }
-
-                final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-                if (clientSidePlayerEntity == null)
-                {
-                    return false;
-                }
-
-                if (clientSidePlayerEntity.isSpawned())
-                {
-                    clientSidePlayerEntity.despawn();
-                }
-                else
-                {
-                    clientSidePlayerEntity.spawn(clientSidePlayerEntity.calculateTeleportLocation());
-                }
-                return true;
-            }
-
-            @Override
-            public boolean setSpawnedForPlayer(Player player, boolean spawned, Location spawnLocation)
-            {
-                final User user = UserManager.getUser(player.getUniqueId());
-                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY))
-                {
-                    return false;
-                }
-
-                final ClientsidePlayerEntity clientSidePlayerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-                if (clientSidePlayerEntity == null)
-                {
-                    return false;
-                }
-
-                if (clientSidePlayerEntity.isSpawned())
-                {
-                    clientSidePlayerEntity.despawn();
-                }
-                else
-                {
-                    //Manual location copy to prevent users from inserting locations with a bad copy method
-                    Location location = new Location(spawnLocation.getWorld(), spawnLocation.getX(), spawnLocation.getY(), spawnLocation.getZ(), spawnLocation.getYaw(), spawnLocation.getPitch());
-                    clientSidePlayerEntity.spawn(location);
-                }
-                return true;
-            }
-
-            @Override
-            public Movement getMovement()
-            {
-                return Movement.BASIC_FOLLOW_MOVEMENT;
-            }
-        });
-
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), PacketType.Play.Client.USE_ENTITY)
-        {
-            @Override
-            public void onPacketReceiving(final PacketEvent event)
-            {
-                final int entityId = event.getPacket().getIntegers().read(0);
-
-                // Add velocity to the bot so the bot does never stand inside or in front of the player
-                final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-                // Not bypassed
-                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY))
-                {
-                    return;
-                }
-
-                final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-
-                if (playerEntity != null &&
-                    entityId == playerEntity.getEntityID())
-                {
-                    playerEntity.hurtByObserved();
-                    // To prevent false positives ensure the correct position.
-                    playerEntity.setNeedsTeleport(true);
-                    vlManager.flag(event.getPlayer(), -1, () -> {}, () -> {});
-                    event.setCancelled(true);
-                }
-            }
-        });
-
-        //Show entity for already online players on reload
-        for (Player player : Bukkit.getOnlinePlayers())
-        {
-            onJoin(new PlayerJoinEvent(player, null));
-        }
-
-        if (this.respawnTimer > 0)
-        {
-            this.respawnScheduler();
-        }
-    }
-
-    @Override
-    public void disable()
-    {
-        AACAdditionPro.getInstance().setKillauraEntityController(null);
-        AACAdditionPro.getInstance().disableKillauraEntityAPI();
-
-        // Despawn on reload
-        for (User user : UserManager.getUsersUnwrapped())
-        {
-            user.getClientSideEntityData().despawnClientSidePlayerEntity();
-        }
-
-        if (this.respawnTask != null)
-        {
-            this.respawnTask.cancel();
-        }
     }
 
     /**
@@ -438,12 +399,10 @@ public class KillauraEntity implements ListenerModule, ViolationModule
     private void respawnScheduler()
     {
         // Use the wrapped one to ensure no ConcurrentModificationExceptions can appear.
-        for (final User user : UserManager.getUsers())
-        {
+        for (final User user : UserManager.getUsers()) {
             final ClientsidePlayerEntity playerEntity = this.getClientSidePlayerEntity(user.getPlayer().getUniqueId());
 
-            if (playerEntity != null && playerEntity.getTicksExisted() > this.respawnTimer)
-            {
+            if (playerEntity != null && playerEntity.getTicksExisted() > this.respawnTimer) {
                 this.respawnEntity(user.getPlayer());
             }
         }
@@ -459,15 +418,12 @@ public class KillauraEntity implements ListenerModule, ViolationModule
         final User user = UserManager.getUser(uuid);
 
         // Not bypassed
-        if (user == null)
-        {
+        if (user == null) {
             return null;
         }
 
-        if (user.isBypassed(this.getModuleType()))
-        {
-            if (user.getClientSideEntityData().clientSidePlayerEntity != null)
-            {
+        if (user.isBypassed(this.getModuleType())) {
+            if (user.getClientSideEntityData().clientSidePlayerEntity != null) {
                 user.getClientSideEntityData().despawnClientSidePlayerEntity();
             }
             return null;
@@ -486,5 +442,41 @@ public class KillauraEntity implements ListenerModule, ViolationModule
     public ModuleType getModuleType()
     {
         return ModuleType.KILLAURA_ENTITY;
+    }
+
+    private class LegacyTabListener implements Listener
+    {
+        @EventHandler
+        public void onPlayerChatTabComplete(final PlayerChatTabCompleteEvent event)
+        {
+            final ClientsidePlayerEntity playerEntity = getClientSidePlayerEntity(event.getPlayer().getUniqueId());
+
+            if (playerEntity != null &&
+                // Online players already have a tab completion
+                !preferOnlineProfiles &&
+                StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken()))
+            {
+                event.getTabCompletions().add(playerEntity.getName());
+            }
+        }
+    }
+
+    private class TabListener implements Listener
+    {
+        @EventHandler
+        public void onTabComplete(final TabCompleteEvent event)
+        {
+            if (event.getSender() instanceof Player) {
+                final ClientsidePlayerEntity playerEntity = getClientSidePlayerEntity(((Player) event.getSender()).getUniqueId());
+
+                if (playerEntity != null &&
+                    // Online players already have a tab completion
+                    !preferOnlineProfiles &&
+                    StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getBuffer()))
+                {
+                    event.getCompletions().add(playerEntity.getName());
+                }
+            }
+        }
     }
 }

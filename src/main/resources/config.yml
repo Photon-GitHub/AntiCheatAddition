@@ -182,12 +182,34 @@ Inventory:
   parts:
     # This part flags hitting while the inventory is open.
     # This part will add 10 vl.
-    InventoryHit:
-      # Do you want to enable the InventoryHit check
+    Hit:
+      # Do you want to enable the hit part
       enabled: true
       # Violation before AACAdditionPro starts to cancel the hits.
       # Set this to 0 to never cancel hits.
       cancel_vl: 30
+    # The move part detects movement when a player is still in his inventory.
+    Move:
+      # Do you want to enable the move part
+      enabled: true
+      # Violation before AACAdditionPro starts to cancel the movements.
+      # Set this to 0 to never cancel movement.
+      cancel_vl: 30
+      # The minimum TPS the server must have to activate this check
+      # Low TPS will cause an extreme amount of false positives.
+      min_tps: 19.5
+      # This allows to add more lenience on servers with very high-ping players by stretching the no-punish time after
+      # opening an inventory.
+      # Normal connections are already covered by the default values.
+      lenience_millis: 0
+    # This part detects inventory interactions while a player is sprinting or sneaking.
+    # This part will add 20 vl.
+    Sprinting:
+      # Do you want to enable the sprinting part part
+      enabled: true
+      # Violation before AACAdditionPro starts to cancel the inventory interactions.
+      # Set this to 0 to never cancel inventory interactions.
+      cancel_vl: 20
   # Map of violation levels to command
   thresholds:
     55: "aacstaffnotify {player} in {world} is suspected for inventory cheats. | Confidence: {vl}"

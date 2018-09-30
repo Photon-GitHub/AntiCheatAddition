@@ -32,8 +32,7 @@ public class MultiInteraction implements ListenerModule, ViolationModule
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -51,8 +50,7 @@ public class MultiInteraction implements ListenerModule, ViolationModule
             // Time in ms that will flag if it has not passed
             int enforcedTicks = 0;
 
-            switch (event.getAction())
-            {
+            switch (event.getAction()) {
                 // ------------------------------------------ Exemptions -------------------------------------------- //
                 case NOTHING:
                     // Nothing happens, therefore exempted
@@ -67,8 +65,7 @@ public class MultiInteraction implements ListenerModule, ViolationModule
                     addedVl = 1;
                     enforcedTicks = 1;
                     // Enough distance to keep false positives at bay.
-                    if (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) >= 3)
-                    {
+                    if (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) >= 3) {
                         return;
                     }
                     break;
@@ -103,8 +100,7 @@ public class MultiInteraction implements ListenerModule, ViolationModule
 
                 case MOVE_TO_OTHER_INVENTORY:
                     // Last material false positive.
-                    if (user.getInventoryData().getLastMaterial() == event.getCurrentItem().getType())
-                    {
+                    if (user.getInventoryData().getLastMaterial() == event.getCurrentItem().getType()) {
                         return;
                     }
 
@@ -115,8 +111,7 @@ public class MultiInteraction implements ListenerModule, ViolationModule
                     break;
 
                 case SWAP_WITH_CURSOR:
-                    switch (event.getSlotType())
-                    {
+                    switch (event.getSlotType()) {
                         // Armor slots are not eligible for less ticks as of quick change problems with the feet slot.
                         // No false positives possible in fuel or crafting slot as it is only one slot which is separated from others
                         case FUEL:
@@ -134,8 +129,7 @@ public class MultiInteraction implements ListenerModule, ViolationModule
 
             // Convert ticks to millis.
             // 25 to account for server lag.
-            if (user.getInventoryData().recentlyClicked(25 + (enforcedTicks * 50)))
-            {
+            if (user.getInventoryData().recentlyClicked(25 + (enforcedTicks * 50))) {
                 vlManager.flag(user.getPlayer(), addedVl, cancel_vl, () ->
                 {
                     event.setCancelled(true);

@@ -2,6 +2,7 @@ name: AACAdditionPro
 version: '${project.version}'
 description: '${project.description}'
 author: Photon
+api-version: 1.13
 
 depend: [AAC, ProtocolLib]
 softdepend: [LabyModAPI, ViaVersion]

@@ -10,6 +10,7 @@ import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
+import de.photon.AACAdditionPro.util.packetwrappers.client.WrapperPlayClientCustomPayload;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -30,8 +31,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class InventoryData extends TimeData
 {
-    static
-    {
+    static {
         InventoryDataUpdater dataUpdater = new InventoryDataUpdater();
         AACAdditionPro.getInstance().registerListener(dataUpdater);
         ProtocolLibrary.getProtocolManager().addPacketListener(dataUpdater);
@@ -86,12 +86,13 @@ public class InventoryData extends TimeData
         @Override
         public void onPacketReceiving(final PacketEvent event)
         {
+            final WrapperPlayClientCustomPayload customPayloadWrapper = new WrapperPlayClientCustomPayload(event.getPacket());
+
             if (!event.isCancelled() &&
-                event.getPacket().getStrings().readSafely(0).equalsIgnoreCase("MC|Beacon"))
+                customPayloadWrapper.getChannel().getKey().equalsIgnoreCase("MC|Beacon"))
             {
                 final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-                if (user != null)
-                {
+                if (user != null) {
                     // User has made a beacon action/transaction so the inventory must internally be closed this way as
                     // no InventoryCloseEvent is fired.
                     user.getInventoryData().nullifyTimeStamp(0);
@@ -105,8 +106,7 @@ public class InventoryData extends TimeData
         {
             final User user = UserManager.getUser(event.getEntity().getUniqueId());
 
-            if (user != null)
-            {
+            if (user != null) {
                 user.getInventoryData().nullifyTimeStamp(0);
             }
         }
@@ -121,18 +121,15 @@ public class InventoryData extends TimeData
                 BlockUtils.CONTAINERS.contains(event.getClickedBlock().getType()))
             {
                 boolean sneakingRequiredToPlaceBlock = false;
-                for (ItemStack handStack : InventoryUtils.getHandContents(event.getPlayer()))
-                {
-                    if (handStack.getType().isBlock())
-                    {
+                for (ItemStack handStack : InventoryUtils.getHandContents(event.getPlayer())) {
+                    if (handStack.getType().isBlock()) {
                         sneakingRequiredToPlaceBlock = true;
                         break;
                     }
                 }
 
                 // Not sneaking when the player can place a block that way.
-                if (!(sneakingRequiredToPlaceBlock && event.getPlayer().isSneaking()))
-                {
+                if (!(sneakingRequiredToPlaceBlock && event.getPlayer().isSneaking())) {
                     user.getInventoryData().updateTimeStamp(0);
                 }
             }
@@ -144,13 +141,10 @@ public class InventoryData extends TimeData
         {
             final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
-            if (user != null)
-            {
-                if (event.getSlotType() != InventoryType.SlotType.QUICKBAR)
-                {
+            if (user != null) {
+                if (event.getSlotType() != InventoryType.SlotType.QUICKBAR) {
                     // Only update if the inventory is currently closed to not interfere with opening time checks.
-                    if (!user.getInventoryData().hasOpenInventory())
-                    {
+                    if (!user.getInventoryData().hasOpenInventory()) {
                         user.getInventoryData().updateTimeStamp(0);
                     }
                     user.getInventoryData().updateTimeStamp(1);
@@ -168,8 +162,7 @@ public class InventoryData extends TimeData
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            if (user != null)
-            {
+            if (user != null) {
                 user.getInventoryData().nullifyTimeStamp(0);
             }
         }
@@ -180,8 +173,7 @@ public class InventoryData extends TimeData
             // Removed theUser.getPlayer().getOpenInventory().getType() != InventoryType.CRAFTING.
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            if (user != null)
-            {
+            if (user != null) {
                 user.getInventoryData().updateTimeStamp(0);
             }
         }
@@ -191,8 +183,7 @@ public class InventoryData extends TimeData
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            if (user != null)
-            {
+            if (user != null) {
                 user.getInventoryData().nullifyTimeStamp(0);
             }
         }
@@ -202,8 +193,7 @@ public class InventoryData extends TimeData
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            if (user != null)
-            {
+            if (user != null) {
                 user.getInventoryData().nullifyTimeStamp(0);
             }
         }
@@ -213,8 +203,7 @@ public class InventoryData extends TimeData
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            if (user != null)
-            {
+            if (user != null) {
                 user.getInventoryData().nullifyTimeStamp(0);
             }
         }

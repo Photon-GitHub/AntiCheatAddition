@@ -177,7 +177,7 @@ public class AACAdditionPro extends JavaPlugin
             final int[] minimumVersionParts = Arrays.stream(AACAdditionPro.MINIMUM_AAC_VERSION.split("\\.")).mapToInt(Integer::valueOf).toArray();
             final int[] actualVersionParts = Arrays.stream(this.getServer().getPluginManager().getPlugin("AAC").getDescription().getVersion().split("\\.")).mapToInt(Integer::valueOf).toArray();
 
-            if (CompareUtils.compareIntegerArray(minimumVersionParts, actualVersionParts) < 0) {
+            if (CompareUtils.compareIntegerArray(minimumVersionParts, actualVersionParts) > 0) {
                 VerboseSender.getInstance().sendVerboseMessage("AAC version is not supported.", true, true);
                 VerboseSender.getInstance().sendVerboseMessage("This plugin needs AAC version " + MINIMUM_AAC_VERSION + " or newer.", true, true);
                 return;

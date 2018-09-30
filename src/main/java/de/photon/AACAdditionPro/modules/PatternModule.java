@@ -19,16 +19,14 @@ public interface PatternModule extends Module
 
     static void enablePatterns(final PatternModule module)
     {
-        for (Pattern pattern : module.getPatterns())
-        {
+        for (Pattern pattern : module.getPatterns()) {
             Module.enableModule(pattern);
         }
     }
 
     static void disablePatterns(final PatternModule module)
     {
-        for (Pattern pattern : module.getPatterns())
-        {
+        for (Pattern pattern : module.getPatterns()) {
             Module.disableModule(pattern);
         }
     }

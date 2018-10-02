@@ -65,21 +65,18 @@ public class Esp implements ListenerModule
 
         final ConfigurationSection worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
 
-        for (final String world : worlds.getKeys(false))
-        {
+        for (final String world : worlds.getKeys(false)) {
             int currentPlayerTrackingRange = worlds.getInt(world + ".entity-tracking-range.players");
 
             // Square
             currentPlayerTrackingRange *= currentPlayerTrackingRange;
 
-            if (currentPlayerTrackingRange > renderDistanceSquared)
-            {
+            if (currentPlayerTrackingRange > renderDistanceSquared) {
                 renderDistanceSquared = currentPlayerTrackingRange;
 
                 // Do the maths inside here as reading from a file takes longer than calculating this.
                 // 19321 == 139^2 as of the maximum range of the block-iterator
-                if (renderDistanceSquared > 19321)
-                {
+                if (renderDistanceSquared > 19321) {
                     hideAfterRenderDistance = false;
                     renderDistanceSquared = 19321;
                     break;
@@ -99,21 +96,18 @@ public class Esp implements ListenerModule
 
                     // Iterate through all player-constellations
                     User observingUser;
-                    while (!users.isEmpty())
-                    {
+                    while (!users.isEmpty()) {
                         // Remove the finished player to reduce the amount of added entries.
                         // This makes sure the player won't have a connection with himself.
                         observingUser = users.remove();
 
                         // Do not process spectators.
-                        if (observingUser.getPlayer().getGameMode() == GameMode.SPECTATOR)
-                        {
+                        if (observingUser.getPlayer().getGameMode() == GameMode.SPECTATOR) {
                             continue;
                         }
 
                         // All users can potentially be seen
-                        for (final User watched : users)
-                        {
+                        for (final User watched : users) {
                             // The watched player is also not in Spectator mode
                             if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR &&
                                 // The players are in the same world
@@ -126,14 +120,12 @@ public class Esp implements ListenerModule
                                 pairExecutor.execute(() -> {
                                     // Less than 1 block distance
                                     // Everything (smaller than 1)^2 will result in something smaller than 1
-                                    if (pairDistanceSquared < 1)
-                                    {
+                                    if (pairDistanceSquared < 1) {
                                         updatePairHideMode(finalObservingUser, watched, HideMode.NONE);
                                         return;
                                     }
 
-                                    if (pairDistanceSquared > renderDistanceSquared)
-                                    {
+                                    if (pairDistanceSquared > renderDistanceSquared) {
                                         updatePairHideMode(finalObservingUser, watched, hideAfterRenderDistance ?
                                                                                         HideMode.FULL :
                                                                                         HideMode.NONE);
@@ -165,14 +157,11 @@ public class Esp implements ListenerModule
 
                     pairExecutor.shutdown();
 
-                    try
-                    {
-                        if (!pairExecutor.awaitTermination(updateMillis, TimeUnit.MILLISECONDS))
-                        {
+                    try {
+                        if (!pairExecutor.awaitTermination(updateMillis, TimeUnit.MILLISECONDS)) {
                             VerboseSender.getInstance().sendVerboseMessage("Could not finish ESP cycle. Please consider upgrading your hardware or increasing the update_ticks option in the config if this message appears in large quantities.", false, true);
                         }
-                    } catch (InterruptedException e)
-                    {
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     // Update_Ticks: the refresh-rate of the check.
@@ -214,10 +203,8 @@ public class Esp implements ListenerModule
         // BlockIterator mechanics.
         final Set<Double> lastIntersectionsCache = new HashSet<>();
 
-        for (Vector cameraVector : cameraVectors)
-        {
-            for (final Vector destinationVector : watchedHitboxVectors)
-            {
+        for (Vector cameraVector : cameraVectors) {
+            for (final Vector destinationVector : watchedHitboxVectors) {
                 final Location start = cameraVector.toLocation(observer.getWorld());
                 // The resulting Vector
                 // The camera is not blocked by non-solid blocks
@@ -229,16 +216,14 @@ public class Esp implements ListenerModule
                 // ---------------------------------------------- FOV ----------------------------------------------- //
                 final Vector cameraRotation = cameraVector.clone().subtract(observer.getLocation().toVector());
 
-                if (cameraRotation.angle(between) > MAX_FOV)
-                {
+                if (cameraRotation.angle(between) > MAX_FOV) {
                     continue;
                 }
 
                 // ---------------------------------------- Cache Calculation --------------------------------------- //
 
                 // Make sure the chunks are loaded.
-                if (!ChunkUtils.areChunksLoadedBetweenLocations(start, start.clone().add(between)))
-                {
+                if (!ChunkUtils.areChunksLoadedBetweenLocations(start, start.clone().add(between))) {
                     // If the chunks are not loaded assume the players can see each other.
                     return true;
                 }
@@ -246,27 +231,23 @@ public class Esp implements ListenerModule
                 boolean cacheHit = false;
 
                 Location cacheLocation;
-                for (Double length : lastIntersectionsCache)
-                {
+                for (Double length : lastIntersectionsCache) {
                     cacheLocation = start.clone().add(between.clone().normalize().multiply(length));
 
                     // Not yet cached.
-                    if (length == 0)
-                    {
+                    if (length == 0) {
                         continue;
                     }
 
                     final Material type = cacheLocation.getBlock().getType();
 
-                    if (BlockUtils.isReallyOccluding(type) && type.isSolid())
-                    {
+                    if (BlockUtils.isReallyOccluding(type) && type.isSolid()) {
                         cacheHit = true;
                         break;
                     }
                 }
 
-                if (cacheHit)
-                {
+                if (cacheHit) {
                     continue;
                 }
 
@@ -275,8 +256,7 @@ public class Esp implements ListenerModule
                 final double intersect = VectorUtils.getDistanceToFirstIntersectionWithBlock(start, between);
 
                 // No intersection found
-                if (intersect == 0)
-                {
+                if (intersect == 0) {
                     return true;
                 }
 
@@ -292,19 +272,16 @@ public class Esp implements ListenerModule
     @EventHandler
     public void onGameModeChange(PlayerGameModeChangeEvent event)
     {
-        if (event.getNewGameMode() == GameMode.SPECTATOR)
-        {
+        if (event.getNewGameMode() == GameMode.SPECTATOR) {
             final User spectator = UserManager.getUser(event.getPlayer().getUniqueId());
 
             // Not bypassed
-            if (User.isUserInvalid(spectator, this.getModuleType()))
-            {
+            if (User.isUserInvalid(spectator, this.getModuleType())) {
                 return;
             }
 
             // Spectators can see everyone and can be seen by everyone (let vanilla handle this)
-            for (User user : UserManager.getUsersUnwrapped())
-            {
+            for (User user : UserManager.getUsersUnwrapped()) {
                 updatePairHideMode(spectator, user, HideMode.NONE);
             }
         }
@@ -323,11 +300,11 @@ public class Esp implements ListenerModule
         Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
             // Observer might have left by now.
             if (observer != null &&
+                observer.getEspInformationData() != null &&
                 // Doesn't need to update anything.
                 observer.getEspInformationData().hiddenPlayers.get(watched) != hideMode)
             {
-                switch (hideMode)
-                {
+                switch (hideMode) {
                     case FULL:
                         observer.getEspInformationData().hiddenPlayers.put(watched, HideMode.FULL);
                         // FULL: fullHider active, informationOnlyHider inactive

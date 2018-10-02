@@ -29,8 +29,7 @@ public final class CommandUtils
                 moduleType);
 
         Bukkit.getPluginManager().callEvent(commandEvent);
-        if (!commandEvent.isCancelled())
-        {
+        if (!commandEvent.isCancelled()) {
             executeCommand(commandEvent.getCommand());
         }
     }
@@ -47,12 +46,10 @@ public final class CommandUtils
                 AACAdditionPro.getInstance(),
                 () -> {
                     //Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
-                    try
-                    {
+                    try {
                         Bukkit.dispatchCommand(AACAdditionPro.getInstance().getServer().getConsoleSender(), command);
                         VerboseSender.getInstance().sendVerboseMessage(ChatColor.GOLD + "Executed command: " + command);
-                    } catch (final Exception e)
-                    {
+                    } catch (final Exception e) {
                         VerboseSender.getInstance().sendVerboseMessage("Could not execute command /" + command, true, true);
                     }
                 });

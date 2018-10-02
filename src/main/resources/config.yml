@@ -189,6 +189,7 @@ Inventory:
       # Set this to 0 to never cancel hits.
       cancel_vl: 30
     # The move part detects movement when a player is still in his inventory.
+    # This part will add 3 vl.
     Move:
       # Do you want to enable the move part
       enabled: true
@@ -202,10 +203,15 @@ Inventory:
       # opening an inventory.
       # Normal connections are already covered by the default values.
       lenience_millis: 0
+    # The rotation part detects head movement while having an open inventory.
+    # This part will add 1 vl.
+    Rotation:
+      # Do you want to enable the rotation part
+      enabled: true
     # This part detects inventory interactions while a player is sprinting or sneaking.
     # This part will add 20 vl.
     Sprinting:
-      # Do you want to enable the sprinting part part
+      # Do you want to enable the sprinting part
       enabled: true
       # Violation before AACAdditionPro starts to cancel the inventory interactions.
       # Set this to 0 to never cancel inventory interactions.

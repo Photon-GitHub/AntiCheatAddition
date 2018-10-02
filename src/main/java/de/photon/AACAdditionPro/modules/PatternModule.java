@@ -54,6 +54,11 @@ public interface PatternModule extends Module
          */
         protected abstract int process(T t, U u);
 
+        /**
+         * The action to be performed if the cancel_vl is surpassed
+         */
+        public void cancelAction(T t, U u) {}
+
         @Override
         public boolean shouldNotify()
         {

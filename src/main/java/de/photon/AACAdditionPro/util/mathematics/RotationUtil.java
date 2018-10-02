@@ -54,12 +54,10 @@ public final class RotationUtil
      */
     private static float reduceAngle(float input, float minMax, float step)
     {
-        if (input >= minMax)
-        {
+        if (input >= minMax) {
             input -= step;
         }
-        else if (input < -minMax)
-        {
+        else if (input < -minMax) {
             input += step;
         }
 
@@ -80,6 +78,14 @@ public final class RotationUtil
     public static float convertFixedRotation(final byte fixedRotation)
     {
         return fixedRotation * FIX_INVERSE_CONVERT_FACTOR;
+    }
+
+    /**
+     * Determines if two {@link Location}s are facing in the same direction, i.e. the yaw and pitch are the same.
+     */
+    public static boolean sameDirection(final Location one, final Location two)
+    {
+        return one.getYaw() == two.getYaw() && one.getPitch() == two.getPitch();
     }
 
     /**

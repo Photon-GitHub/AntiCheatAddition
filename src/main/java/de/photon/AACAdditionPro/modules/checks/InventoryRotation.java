@@ -9,6 +9,7 @@ import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+@Deprecated
 public class InventoryRotation implements ListenerModule, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 50L);
@@ -19,8 +20,7 @@ public class InventoryRotation implements ListenerModule, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 

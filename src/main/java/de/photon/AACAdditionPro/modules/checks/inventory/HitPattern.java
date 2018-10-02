@@ -13,7 +13,7 @@ class HitPattern extends PatternModule.Pattern<User, EntityDamageByEntityEvent>
 {
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
-    private static int cancelVL;
+    private static int cancelVl;
 
     @Override
     protected int process(User user, EntityDamageByEntityEvent event)
@@ -32,9 +32,15 @@ class HitPattern extends PatternModule.Pattern<User, EntityDamageByEntityEvent>
     }
 
     @Override
+    public void cancelAction(User user, EntityDamageByEntityEvent event)
+    {
+        event.setCancelled(true);
+    }
+
+    @Override
     public String getConfigString()
     {
-        return this.getModuleType().getConfigString() + ".parts.InventoryHit";
+        return this.getModuleType().getConfigString() + ".parts.Hit";
     }
 
     @Override

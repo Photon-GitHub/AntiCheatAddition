@@ -27,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.util.Vector;
 
+@Deprecated
 public class InventoryMove extends PacketAdapter implements ListenerModule, PacketListenerModule, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100);
@@ -49,8 +50,7 @@ public class InventoryMove extends PacketAdapter implements ListenerModule, Pack
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -100,8 +100,7 @@ public class InventoryMove extends PacketAdapter implements ListenerModule, Pack
             final boolean currentlyNotJumping = (user.getPlayer().getVelocity().getY() <= 0 && user.getPlayer().getFallDistance() == 0);
 
             // Not allowed to start another jump in the inventory
-            if (currentlyNotJumping)
-            {
+            if (currentlyNotJumping) {
                 user.getPositionData().allowedToJump = false;
             }
 
@@ -136,8 +135,7 @@ public class InventoryMove extends PacketAdapter implements ListenerModule, Pack
                 }, () -> {});
             }
         }
-        else
-        {
+        else {
             user.getPositionData().allowedToJump = true;
         }
     }
@@ -148,8 +146,7 @@ public class InventoryMove extends PacketAdapter implements ListenerModule, Pack
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 

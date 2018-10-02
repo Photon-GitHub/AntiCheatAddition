@@ -13,10 +13,6 @@ import de.photon.AACAdditionPro.modules.checks.Esp;
 import de.photon.AACAdditionPro.modules.checks.Fastswitch;
 import de.photon.AACAdditionPro.modules.checks.GravitationalModifier;
 import de.photon.AACAdditionPro.modules.checks.ImpossibleChat;
-import de.photon.AACAdditionPro.modules.checks.InventoryHeuristics;
-import de.photon.AACAdditionPro.modules.checks.InventoryHit;
-import de.photon.AACAdditionPro.modules.checks.InventoryMove;
-import de.photon.AACAdditionPro.modules.checks.InventoryRotation;
 import de.photon.AACAdditionPro.modules.checks.KillauraEntity;
 import de.photon.AACAdditionPro.modules.checks.MultiInteraction;
 import de.photon.AACAdditionPro.modules.checks.Pingspoof;
@@ -24,6 +20,7 @@ import de.photon.AACAdditionPro.modules.checks.SkinBlinker;
 import de.photon.AACAdditionPro.modules.checks.Teaming;
 import de.photon.AACAdditionPro.modules.checks.Tower;
 import de.photon.AACAdditionPro.modules.checks.autofish.AutoFish;
+import de.photon.AACAdditionPro.modules.checks.inventory.Inventory;
 import de.photon.AACAdditionPro.modules.checks.packetanalysis.PacketAnalysis;
 import de.photon.AACAdditionPro.modules.checks.scaffold.Scaffold;
 import de.photon.AACAdditionPro.modules.clientcontrol.BetterSprintingControl;
@@ -237,10 +234,11 @@ public class AACAdditionPro extends JavaPlugin
                     new Fastswitch(),
                     new GravitationalModifier(),
                     new ImpossibleChat(),
-                    new InventoryHeuristics(),
-                    new InventoryHit(),
-                    new InventoryMove(),
-                    new InventoryRotation(),
+                    new Inventory(),
+                    //new InventoryHeuristics(),
+                    //new InventoryHit(),
+                    //new InventoryMove(),
+                    //new InventoryRotation(),
                     new KillauraEntity(),
                     new MultiInteraction(),
                     new PacketAnalysis(),

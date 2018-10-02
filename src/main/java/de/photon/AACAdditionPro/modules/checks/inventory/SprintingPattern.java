@@ -7,6 +7,7 @@ import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.entity.EntityUtil;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import lombok.Getter;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -37,9 +38,16 @@ class SprintingPattern extends PatternModule.Pattern<User, InventoryClickEvent>
     }
 
     @Override
+    public void cancelAction(User user, InventoryClickEvent event)
+    {
+        event.setCancelled(true);
+        InventoryUtils.syncUpdateInventory(user.getPlayer());
+    }
+
+    @Override
     public String getConfigString()
     {
-        return this.getModuleType().getConfigString() + ".parts.InventoryHit";
+        return this.getModuleType().getConfigString() + ".parts.Sprinting";
     }
 
     @Override

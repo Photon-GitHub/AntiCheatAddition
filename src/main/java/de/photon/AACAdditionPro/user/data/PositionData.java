@@ -19,8 +19,7 @@ import org.bukkit.event.player.PlayerToggleSprintEvent;
  */
 public class PositionData extends TimeData
 {
-    static
-    {
+    static {
         AACAdditionPro.getInstance().registerListener(new PositionDataUpdater());
     }
 
@@ -36,12 +35,12 @@ public class PositionData extends TimeData
     public PositionData(final User user)
     {
         /*
-         * 1 -> is head movement
-         * 2 -> normal movement
-         * 3 -> xz-movement.
+         * [0]  head movement
+         * [1]  normal movement
+         * [2]  xz-movement.
          *
-         * 4 -> last sprinting
-         * 5 -> last sneaking
+         * [3]  last sprinting
+         * [4]  last sneaking
          */
         super(user, System.currentTimeMillis(), System.currentTimeMillis(), System.currentTimeMillis(), 0, 0);
     }
@@ -89,8 +88,7 @@ public class PositionData extends TimeData
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            if (user != null)
-            {
+            if (user != null) {
                 // Head + normal movement
                 user.getPositionData().updateTimeStamp(0);
 
@@ -102,8 +100,7 @@ public class PositionData extends TimeData
                     user.getPositionData().updateTimeStamp(2);
                 }
                 // Any non-head movement.
-                else if (event.getFrom().getY() != event.getTo().getY())
-                {
+                else if (event.getFrom().getY() != event.getTo().getY()) {
                     user.getPositionData().updateTimeStamp(1);
                 }
             }
@@ -114,11 +111,9 @@ public class PositionData extends TimeData
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            if (user != null)
-            {
+            if (user != null) {
                 user.getPositionData().currentlySneaking = event.isSneaking();
-                if (!user.getPositionData().currentlySneaking)
-                {
+                if (!user.getPositionData().currentlySneaking) {
                     user.getPositionData().lastSneakTime = user.getPositionData().passedTime(4);
                 }
                 user.getPositionData().updateTimeStamp(4);
@@ -130,11 +125,9 @@ public class PositionData extends TimeData
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            if (user != null)
-            {
+            if (user != null) {
                 user.getPositionData().currentlySprinting = event.isSprinting();
-                if (!user.getPositionData().currentlySprinting)
-                {
+                if (!user.getPositionData().currentlySprinting) {
                     user.getPositionData().lastSprintTime = user.getPositionData().passedTime(3);
                 }
                 user.getPositionData().updateTimeStamp(3);

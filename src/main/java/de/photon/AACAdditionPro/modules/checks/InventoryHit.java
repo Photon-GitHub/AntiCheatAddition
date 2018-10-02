@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+@Deprecated
 public class InventoryHit implements ListenerModule, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 100L);

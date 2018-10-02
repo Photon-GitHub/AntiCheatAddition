@@ -90,6 +90,8 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     public Set<Pattern> getPatterns()
     {
         return ImmutableSet.of(hitPattern,
+                               movePattern,
+                               rotationPattern,
                                sprintingPattern);
     }
 

@@ -14,7 +14,6 @@ import de.photon.AACAdditionPro.modules.checks.Fastswitch;
 import de.photon.AACAdditionPro.modules.checks.GravitationalModifier;
 import de.photon.AACAdditionPro.modules.checks.ImpossibleChat;
 import de.photon.AACAdditionPro.modules.checks.KillauraEntity;
-import de.photon.AACAdditionPro.modules.checks.MultiInteraction;
 import de.photon.AACAdditionPro.modules.checks.Pingspoof;
 import de.photon.AACAdditionPro.modules.checks.SkinBlinker;
 import de.photon.AACAdditionPro.modules.checks.Teaming;
@@ -240,7 +239,7 @@ public class AACAdditionPro extends JavaPlugin
                     //new InventoryMove(),
                     //new InventoryRotation(),
                     new KillauraEntity(),
-                    new MultiInteraction(),
+                    //new MultiInteraction(),
                     new PacketAnalysis(),
                     new Pingspoof(),
                     new Scaffold(),

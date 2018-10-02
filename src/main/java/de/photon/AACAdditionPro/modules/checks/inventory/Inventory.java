@@ -28,6 +28,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
 
     private final Pattern<User, EntityDamageByEntityEvent> hitPattern = new HitPattern();
     private final Pattern<User, PacketEvent> movePattern = new MovePattern();
+    private final Pattern<User, InventoryClickEvent> multiInteractionPattern = new MultiInteractionPattern();
     private final PacketPattern rotationPattern = new RotationPattern();
     private final Pattern<User, InventoryClickEvent> sprintingPattern = new SprintingPattern();
 
@@ -54,8 +55,8 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
         }
 
 
-        vlManager.flag(user.getPlayer(), movePattern.apply(user, event), HitPattern.getCancelVl(), () -> movePattern.cancelAction(user, event), () -> {});
-        vlManager.flag(user.getPlayer(), rotationPattern.apply(user, event.getPacket()), HitPattern.getCancelVl(), () -> rotationPattern.cancelAction(user, event.getPacket()), () -> {});
+        vlManager.flag(user.getPlayer(), movePattern.apply(user, event), MovePattern.getCancelVl(), () -> movePattern.cancelAction(user, event), () -> {});
+        vlManager.flag(user.getPlayer(), rotationPattern.apply(user, event.getPacket()), -1, () -> {}, () -> {});
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -73,7 +74,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void on(final InventoryClickEvent event)
     {
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
@@ -83,7 +84,8 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
             return;
         }
 
-        vlManager.flag(user.getPlayer(), sprintingPattern.apply(user, event), SprintingPattern.getCancelVL(), () -> sprintingPattern.cancelAction(user, event), () -> {});
+        vlManager.flag(user.getPlayer(), sprintingPattern.apply(user, event), SprintingPattern.getCancelVl(), () -> sprintingPattern.cancelAction(user, event), () -> {});
+        vlManager.flag(user.getPlayer(), multiInteractionPattern.apply(user, event), MultiInteractionPattern.getCancelVl(), () -> multiInteractionPattern.cancelAction(user, event), () -> {});
     }
 
     @Override
@@ -91,6 +93,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     {
         return ImmutableSet.of(hitPattern,
                                movePattern,
+                               multiInteractionPattern,
                                rotationPattern,
                                sprintingPattern);
     }

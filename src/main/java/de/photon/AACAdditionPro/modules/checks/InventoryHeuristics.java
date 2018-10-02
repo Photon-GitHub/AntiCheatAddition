@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-@Deprecated
 public class InventoryHeuristics implements ListenerModule, ViolationModule
 {
     // Concurrency as heuristics are potentially added concurrently.

@@ -56,12 +56,10 @@ public class UserManager implements Listener
      */
     public static void setVerbose(final User user, final boolean verbose)
     {
-        if (verbose)
-        {
+        if (verbose) {
             verboseUsers.add(user);
         }
-        else
-        {
+        else {
             verboseUsers.remove(user);
         }
     }
@@ -76,6 +74,7 @@ public class UserManager implements Listener
     public void onQuit(final PlayerQuitEvent event)
     {
         final User removedUser = users.remove(event.getPlayer().getUniqueId());
+        verboseUsers.remove(removedUser);
         removedUser.unregister();
     }
 }

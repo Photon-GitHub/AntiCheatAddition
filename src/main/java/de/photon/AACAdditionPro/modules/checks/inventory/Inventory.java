@@ -56,7 +56,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
 
 
         vlManager.flag(user.getPlayer(), movePattern.apply(user, event), MovePattern.getCancelVl(), () -> movePattern.cancelAction(user, event), () -> {});
-        vlManager.flag(user.getPlayer(), rotationPattern.apply(user, event.getPacket()), -1, () -> {}, () -> {});
+        vlManager.flag(user.getPlayer(), rotationPattern.apply(user, event), -1, () -> {}, () -> {});
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

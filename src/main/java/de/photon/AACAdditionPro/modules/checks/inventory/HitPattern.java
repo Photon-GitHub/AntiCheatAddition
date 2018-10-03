@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.modules.checks.inventory;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import lombok.Getter;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -25,7 +24,7 @@ class HitPattern extends PatternModule.Pattern<User, EntityDamageByEntityEvent>
             // Is a hit-attack
             event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK)
         {
-            VerboseSender.getInstance().sendVerboseMessage("Inventory-Verbose | Player: " + user.getPlayer().getName() + " hit an entity while having an open inventory.");
+            message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " hit an entity while having an open inventory.";
             return 10;
         }
         return 0;

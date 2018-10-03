@@ -16,6 +16,8 @@ class SprintingPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
     @LoadFromConfiguration(configPath = ".violation_threshold")
     private int violationThreshold;
 
+    SprintingPattern() {super(message);}
+
     @Override
     public int process(User user, BlockPlaceEvent event)
     {

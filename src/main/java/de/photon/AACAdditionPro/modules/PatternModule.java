@@ -1,8 +1,11 @@
 package de.photon.AACAdditionPro.modules;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.util.VerboseSender;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -36,12 +39,23 @@ public interface PatternModule extends Module
      */
     abstract class Pattern<T, U> implements BiFunction<T, U, Integer>, Module
     {
-        protected boolean enabled = false;
+        @Getter(AccessLevel.PROTECTED)
+        private boolean enabled = false;
+
+        protected String message = null;
 
         @Override
         public Integer apply(T t, U u)
         {
-            return this.enabled ? process(t, u) : 0;
+            if (this.isEnabled()) {
+                final int process = process(t, u);
+
+                if (process > 0 && message != null) {
+                    VerboseSender.getInstance().sendVerboseMessage(message);
+                }
+                return process;
+            }
+            return 0;
         }
 
         @Override
@@ -82,7 +96,7 @@ public interface PatternModule extends Module
      * Special handling class for {@link Pattern}s that use packets.
      * This class will automatically ensure that only the correct packets are used.
      */
-    abstract class PacketPattern extends Pattern<User, PacketContainer>
+    abstract class PacketPattern extends Pattern<User, PacketEvent>
     {
         private final Set<PacketType> packetTypesProcessed;
 
@@ -97,13 +111,19 @@ public interface PatternModule extends Module
         }
 
         @Override
-        public Integer apply(User user, PacketContainer packetContainer)
+        public Integer apply(User user, PacketEvent packetEvent)
         {
-            return this.enabled ?
-                   (packetTypesProcessed.contains(packetContainer.getType()) ?
-                    this.process(user, packetContainer) :
-                    0) :
-                   0;
+            if (this.isEnabled() &&
+                packetTypesProcessed.contains(packetEvent.getPacketType()))
+            {
+                final int process = process(user, packetEvent);
+
+                if (process > 0 && message != null) {
+                    VerboseSender.getInstance().sendVerboseMessage(message);
+                }
+                return process;
+            }
+            return 0;
         }
     }
 }

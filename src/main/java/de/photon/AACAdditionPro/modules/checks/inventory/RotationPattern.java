@@ -1,12 +1,11 @@
 package de.photon.AACAdditionPro.modules.checks.inventory;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.packetwrappers.client.IWrapperPlayClientLook;
 
 class RotationPattern extends PatternModule.PacketPattern
@@ -17,9 +16,9 @@ class RotationPattern extends PatternModule.PacketPattern
     }
 
     @Override
-    protected int process(User user, PacketContainer packetContainer)
+    protected int process(User user, PacketEvent packetEvent)
     {
-        final IWrapperPlayClientLook lookWrapper = () -> packetContainer;
+        final IWrapperPlayClientLook lookWrapper = packetEvent::getPacket;
 
         // Not flying (may trigger some fps)
         if (!user.getPlayer().getAllowFlight() &&
@@ -33,7 +32,7 @@ class RotationPattern extends PatternModule.PacketPattern
             // The player has opened his inventory for at least one second.
             user.getInventoryData().notRecentlyOpened(1000))
         {
-            VerboseSender.getInstance().sendVerboseMessage("Inventory-Verbose | Player: " + user.getPlayer().getName() + " sent new rotations while having an open inventory.");
+            message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " sent new rotations while having an open inventory.";
             return 1;
         }
         return 0;

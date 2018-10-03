@@ -48,8 +48,7 @@ public class ViolationLevelManagement
         AACAdditionPro.getInstance().registerListener(this.violationLevels);
 
         // Load the thresholds and sort them.
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
             case MC111:
                 final List<Threshold> temp = Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds");
@@ -89,9 +88,22 @@ public class ViolationLevelManagement
      */
     public void flag(final Player player, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable runIfEventPassed)
     {
+        flag(player, this.moduleType.getViolationMessage(), vlIncrease, cancelVl, onCancel, runIfEventPassed);
+    }
+
+    /**
+     * Flags a {@link Player} in the violationLevelManagement with the amount of vlIncrease
+     *
+     * @param player           the player that should be flagged.
+     * @param vlIncrease       how much the vl should be increased.
+     * @param cancelVl         the ViolationLevel up from which onCancel is run. Set to -1 to disable
+     * @param onCancel         a {@link Runnable} that is executed if the vl is higher that cancelVl
+     * @param runIfEventPassed a {@link Runnable} to define special code such as critical_vl. Contrary to normal code it is only run if the event is not cancelled.
+     */
+    public void flag(final Player player, final String message, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable runIfEventPassed)
+    {
         // Prevent unnecessary flagging.
-        if (vlIncrease <= 0)
-        {
+        if (vlIncrease <= 0) {
             return;
         }
 
@@ -100,19 +112,17 @@ public class ViolationLevelManagement
                 player,
                 this.moduleType,
                 this.getVL(player.getUniqueId()) + vlIncrease,
-                this.moduleType.getViolationMessage()
+                message
         );
 
         // Call the event
         AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(playerAdditionViolationEvent);
 
-        if (!playerAdditionViolationEvent.isCancelled())
-        {
+        if (!playerAdditionViolationEvent.isCancelled()) {
             this.addVL(player, vlIncrease);
 
             //Cancel
-            if (cancelVl > 0 && cancelVl <= this.getVL(player.getUniqueId()))
-            {
+            if (cancelVl > 0 && cancelVl <= this.getVL(player.getUniqueId())) {
                 onCancel.run();
             }
 
@@ -144,8 +154,7 @@ public class ViolationLevelManagement
 
         // setVL is also called when decreasing the vl
         // thus we must prevent double punishment
-        if (oldVl < newVl)
-        {
+        if (oldVl < newVl) {
             this.punishPlayer(player, oldVl, newVl);
         }
     }
@@ -170,22 +179,17 @@ public class ViolationLevelManagement
     private void punishPlayer(final Player player, final int fromVl, final int toVl)
     {
         // Only schedule the command execution if the plugin is loaded
-        if (AACAdditionPro.getInstance().isLoaded())
-        {
-            for (Threshold threshold : this.thresholds)
-            {
+        if (AACAdditionPro.getInstance().isLoaded()) {
+            for (Threshold threshold : this.thresholds) {
                 // Use the guaranteed sorting of the thresholds to break the loop here as only higher-vl thresholds will
                 // follow.
-                if (threshold.getVl() > toVl)
-                {
+                if (threshold.getVl() > toVl) {
                     break;
                 }
 
-                if (threshold.getVl() > fromVl)
-                {
+                if (threshold.getVl() > fromVl) {
                     // Iterate through all the commands that are presented in the threshold of key
-                    for (final String command : threshold.getCommandList())
-                    {
+                    for (final String command : threshold.getCommandList()) {
                         // Calling of the event + Sync command execution
                         CommandUtils.executeCommandWithPlaceholders(command, player, this.moduleType, (double) toVl);
                     }

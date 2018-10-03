@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.modules.checks.scaffold;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.event.block.BlockPlaceEvent;
 
@@ -19,8 +18,7 @@ class PositionPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
         final double zOffset = MathUtils.offset(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
 
         boolean flag;
-        switch (event.getBlock().getFace(event.getBlockAgainst()))
-        {
+        switch (event.getBlock().getFace(event.getBlockAgainst())) {
             case EAST:
                 flag = xOffset <= 0;
                 break;
@@ -39,9 +37,8 @@ class PositionPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
                 break;
         }
 
-        if (flag)
-        {
-            VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + event.getPlayer().getName() + " placed from a suspicious location.");
+        if (flag) {
+            message = "Scaffold-Verbose | Player: " + event.getPlayer().getName() + " placed from a suspicious location.";
             return 5;
         }
 

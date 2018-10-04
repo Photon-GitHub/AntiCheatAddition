@@ -1,14 +1,12 @@
 package de.photon.AACAdditionPro.util.files;
 
-import com.google.common.io.ByteStreams;
+import com.google.common.base.Preconditions;
 import de.photon.AACAdditionPro.AACAdditionPro;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 
 public final class FileUtilities
 {
@@ -29,49 +27,17 @@ public final class FileUtilities
      */
     public static File saveFileInFolder(String resourcePath) throws IOException
     {
-        if (resourcePath == null || resourcePath.equals(""))
-        {
-            throw new IllegalArgumentException("ResourcePath cannot be null or empty");
-        }
+        Preconditions.checkArgument(!"".equals(resourcePath), "ResourcePath cannot be null or empty");
 
         resourcePath = resourcePath.replace('\\', '/');
 
         final File outFile = new File(AACAdditionPro.getInstance().getDataFolder(), resourcePath);
-        final int lastIndex = resourcePath.lastIndexOf('/');
-        final File outDir = new File(AACAdditionPro.getInstance().getDataFolder(), resourcePath.substring(0, lastIndex >= 0 ?
-                                                                                                             lastIndex :
-                                                                                                             0));
-
-        if (!outDir.exists())
-        {
-            if (!outDir.mkdirs())
-            {
-                throw new IOException("Unable to create the directory \"" + outDir.getPath() + "\"");
-            }
-        }
 
         // Create the file if it does not exist
-        if (!outFile.exists())
-        {
-            if (outFile.createNewFile())
-            {
-                // Stream to read from the default-file
-                final InputStream in = AACAdditionPro.getInstance().getResource(resourcePath);
-
-                // Stream to write into the newly created file
-                final OutputStream out = new FileOutputStream(outFile);
-
-                if (in != null)
-                {
-                    // Write the content of the default file to the newly created file
-                    ByteStreams.copy(in, out);
-                    in.close();
-                }
-
-                out.close();
-            }
-            else
-            {
+        if (!outFile.exists()) {
+            try {
+                Files.copy(AACAdditionPro.getInstance().getResource(resourcePath), outFile.toPath());
+            } catch (IOException exception) {
                 // Could not create the file
                 throw new IOException("The file " + outFile.getName() + " could not be created in " + outFile.getPath());
             }

@@ -8,7 +8,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class Placeholders
@@ -24,7 +23,7 @@ public final class Placeholders
      */
     public static String applyPlaceholders(String input, final Player player, final String violationInformation)
     {
-        Objects.requireNonNull(player, "Placeholder-parsing failed because the list of players is null or empty.");
+        Preconditions.checkNotNull(player, "Placeholder-parsing failed because the list of players is null or empty.");
 
         // Player
         input = applySinglePlaceholder(input, "{player}", player.getName(), (byte) 32);
@@ -66,8 +65,7 @@ public final class Placeholders
 
         input = applySinglePlaceholder(input, "{tps}", String.valueOf(AACAPIProvider.getAPI().getTPS()), (byte) 5);
 
-        if (violationInformation != null)
-        {
+        if (violationInformation != null) {
             input = applySinglePlaceholder(input, "{vl}", violationInformation, (byte) 5);
         }
 

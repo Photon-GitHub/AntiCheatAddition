@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 
@@ -36,8 +37,8 @@ public final class FileUtilities
 
         // Create the file if it does not exist
         if (!outFile.exists()) {
-            try {
-                Files.copy(AACAdditionPro.getInstance().getResource(resourcePath), outFile.toPath());
+            try (InputStream in = AACAdditionPro.getInstance().getResource(resourcePath)) {
+                Files.copy(in, outFile.toPath());
             } catch (IOException exception) {
                 // Could not create the file
                 throw new IOException("The file " + outFile.getName() + " could not be created in " + outFile.getPath());

@@ -27,7 +27,8 @@ public final class FileUtilities
      */
     public static File saveFileInFolder(String resourcePath) throws IOException
     {
-        Preconditions.checkArgument(!"".equals(resourcePath), "ResourcePath cannot be null or empty");
+        Preconditions.checkNotNull(resourcePath, "ResourcePath cannot be null");
+        Preconditions.checkArgument(!"".equals(resourcePath), "ResourcePath cannot empty");
 
         resourcePath = resourcePath.replace('\\', '/');
 

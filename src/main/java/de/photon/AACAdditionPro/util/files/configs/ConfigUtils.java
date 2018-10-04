@@ -26,13 +26,11 @@ public final class ConfigUtils
     {
         // Config-Annotation processing
         LoadFromConfiguration annotation;
-        for (Field field : object.getClass().getDeclaredFields())
-        {
+        for (Field field : object.getClass().getDeclaredFields()) {
             // Load the annotation and check if it is present.
             annotation = field.getAnnotation(LoadFromConfiguration.class);
 
-            if (annotation == null)
-            {
+            if (annotation == null) {
                 continue;
             }
 
@@ -42,8 +40,7 @@ public final class ConfigUtils
             // Get the full config path.
             String path = annotation.configPath();
 
-            if (prePath != null)
-            {
+            if (prePath != null) {
                 path = prePath + path;
             }
 
@@ -51,70 +48,55 @@ public final class ConfigUtils
             final Class type = field.getType();
 
             // The different classes
-            try
-            {
+            try {
                 // Boolean
-                if (type == boolean.class || type == Boolean.class)
-                {
+                if (type == boolean.class || type == Boolean.class) {
                     field.setBoolean(object, AACAdditionPro.getInstance().getConfig().getBoolean(path));
                 }
                 // Numbers
-                else if (type == double.class || type == Double.class)
-                {
+                else if (type == double.class || type == Double.class) {
                     field.setDouble(object, AACAdditionPro.getInstance().getConfig().getDouble(path));
                 }
-                else if (type == int.class || type == Integer.class)
-                {
+                else if (type == int.class || type == Integer.class) {
                     field.setInt(object, AACAdditionPro.getInstance().getConfig().getInt(path));
                 }
-                else if (type == long.class || type == Long.class)
-                {
+                else if (type == long.class || type == Long.class) {
                     field.setLong(object, AACAdditionPro.getInstance().getConfig().getLong(path));
                 }
-                else if (type == String.class)
-                {
+                else if (type == String.class) {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getString(path));
                 }
                 // Special stuff
-                else if (type == ItemStack.class)
-                {
+                else if (type == ItemStack.class) {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getItemStack(path));
                 }
-                else if (type == Color.class)
-                {
+                else if (type == Color.class) {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getColor(path));
                 }
-                else if (type == OfflinePlayer.class)
-                {
+                else if (type == OfflinePlayer.class) {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getOfflinePlayer(path));
                 }
-                else if (type == Vector.class)
-                {
+                else if (type == Vector.class) {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getVector(path));
                 }
                 // Lists
-                else if (type == List.class)
-                {
+                else if (type == List.class) {
                     // StringLists
-                    if (annotation.listType() == String.class)
-                    {
+                    if (annotation.listType() == String.class) {
                         field.set(object, ConfigUtils.loadStringOrStringList(path));
 
                         // Unknown type
                     }
-                    else
-                    {
+                    else {
                         field.set(object, AACAdditionPro.getInstance().getConfig().getList(path));
                     }
 
                 }
                 // No special type found
-                else
-                {
+                else {
                     field.set(object, AACAdditionPro.getInstance().getConfig().get(path));
                 }
-            } catch (IllegalAccessException e)
-            {
+            } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
@@ -134,22 +116,16 @@ public final class ConfigUtils
         final List<String> input = AACAdditionPro.getInstance().getConfig().getStringList(path);
 
         // Single command
-        if (input.isEmpty())
-        {
+        if (input.isEmpty()) {
             final String possibleCommand = AACAdditionPro.getInstance().getConfig().getString(path);
 
-            // No-command indicator
-            if (possibleCommand == null || possibleCommand.equals("{}"))
-            {
-                return Collections.emptyList();
-            }
-            return Collections.singletonList(possibleCommand);
+            // No-command indicator or null
+            return "{}".equals(possibleCommand) ? Collections.emptyList() : Collections.singletonList(possibleCommand);
         }
 
         // Input is not empty
         // No-command indicator
-        if (input.get(0).equals("{}"))
-        {
+        if ("{}".equals(input.get(0))) {
             return Collections.emptyList();
         }
 

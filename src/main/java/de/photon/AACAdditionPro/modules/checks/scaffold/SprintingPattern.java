@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.modules.checks.scaffold;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import org.bukkit.event.block.BlockPlaceEvent;
 
@@ -16,22 +15,17 @@ class SprintingPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
     @LoadFromConfiguration(configPath = ".violation_threshold")
     private int violationThreshold;
 
-    SprintingPattern() {super(message);}
-
     @Override
     public int process(User user, BlockPlaceEvent event)
     {
-        if (user.getPositionData().hasPlayerSprintedRecently(400))
-        {
-            if (++user.getScaffoldData().sprintingFails >= this.violationThreshold)
-            {
-                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
+        if (user.getPositionData().hasPlayerSprintedRecently(400)) {
+            if (++user.getScaffoldData().sprintingFails >= this.violationThreshold) {
+                message = "Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.";
                 // Flag the player
                 return 8;
             }
         }
-        else if (user.getScaffoldData().sprintingFails > 0)
-        {
+        else if (user.getScaffoldData().sprintingFails > 0) {
             user.getScaffoldData().sprintingFails--;
         }
 

@@ -35,8 +35,10 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     public Inventory()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.LOWEST,
+              // Look
+              PacketType.Play.Client.LOOK,
               // Move
-              PacketType.Play.Server.POSITION,
+              PacketType.Play.Client.POSITION,
               PacketType.Play.Client.POSITION_LOOK);
     }
 

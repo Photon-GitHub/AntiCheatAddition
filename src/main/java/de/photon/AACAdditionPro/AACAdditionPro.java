@@ -39,7 +39,6 @@ import de.photon.AACAdditionPro.modules.clientcontrol.WorldDownloaderControl;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.fakeentity.DelegatingKillauraEntityController;
-import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.sorting.CompareUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -125,7 +124,8 @@ public class AACAdditionPro extends JavaPlugin
     public FileConfiguration getConfig()
     {
         if (cachedConfig == null) {
-            final File savedFile = FileUtilities.saveFileInFolder("config.yml");
+            this.saveDefaultConfig();
+            final File savedFile = new File(this.getDataFolder(), "config.yml");
             Preconditions.checkNotNull(savedFile, "Config file needed to load the YamlConfiguration was not found.");
             cachedConfig = YamlConfiguration.loadConfiguration(savedFile);
         }

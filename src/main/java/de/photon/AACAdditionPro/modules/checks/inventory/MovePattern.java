@@ -38,13 +38,6 @@ class MovePattern extends PatternModule.PacketPattern
     {
 
         final IWrapperPlayPosition positionWrapper = packetEvent::getPacket;
-        // Get motX and motZ
-        // final Object nmsHandle = Reflect.fromOBC("entity.CraftPlayer").method("getHandle").invoke(user.getPlayer());
-
-        // motX and motZ are not 0 if the player is collided accordingly.
-        // final double motX = Reflect.fromNMS("Entity").field("motX").from(nmsHandle).asDouble();
-        //final double motZ = Reflect.fromNMS("Entity").field("motZ").from(nmsHandle).asDouble();
-
 
         final Vector moveTo = new Vector(positionWrapper.getX(),
                                          positionWrapper.getY(),
@@ -55,9 +48,6 @@ class MovePattern extends PatternModule.PacketPattern
         // Check if this is a clientside movement:
         // Position Vectors are not the same
         if (!moveTo.equals(knownPosition.toVector()) &&
-            // or movement is not 0
-            //motX != 0 &&
-            // motZ != 0 &&
             // Not inside a vehicle
             !user.getPlayer().isInsideVehicle() &&
             // Not flying (may trigger some fps)
@@ -68,6 +58,8 @@ class MovePattern extends PatternModule.PacketPattern
             user.getInventoryData().hasOpenInventory() &&
             // Player has not been hit recently
             user.getPlayer().getNoDamageTicks() == 0 &&
+            // Recent teleports can cause bugs
+            !user.getTeleportData().recentlyUpdated(0, 1000) &&
             // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
             // world add errors.
             // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load
@@ -80,25 +72,28 @@ class MovePattern extends PatternModule.PacketPattern
             // Auto-Disable if TPS are too low
             AACAPIProvider.getAPI().getTPS() > min_tps)
         {
-            // Open inventory while jumping is covered by the safe-time and the fall distance
-            // This covers the big jumps
-            final boolean currentlyNotJumping = (user.getPlayer().getVelocity().getY() <= 0 && user.getPlayer().getFallDistance() == 0);
+            final boolean positiveVelocity = knownPosition.getY() < moveTo.getY();
 
-            // Not allowed to start another jump in the inventory
-            if (currentlyNotJumping) {
-                user.getPositionData().allowedToJump = false;
+            if (positiveVelocity != user.getVelocityChangeData().positiveVelocity) {
+                if (user.getPositionData().allowedToJump) {
+                    user.getPositionData().allowedToJump = false;
+                    return 0;
+                }
+
+                message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " jumped while having an open inventory.";
+                return 10;
             }
 
-            // If the player is jumping and is allowed to jump the max. time is 500 (478.5 is the legit jump time regarding the Tower check).
-            // Otherwise it is 100 (little compensation for the "breaking" when sprinting previously
-            final int allowedRecentlyOpenedTime = (currentlyNotJumping ?
-                                                   100 :
-                                                   user.getPositionData().allowedToJump ?
-                                                   500 :
-                                                   100) + lenience_millis;
+            // Make sure that the last jump is a little bit ago (same "breaking" effect that needs compensation.)
+            if (user.getVelocityChangeData().recentlyUpdated(1, 1750)) {
+                return 0;
+            }
 
-            // Was already in inventory or no air - movement (fall distance + velocity)
-            if (user.getInventoryData().notRecentlyOpened(allowedRecentlyOpenedTime) &&
+            // No Y change anymore. AAC and the rule above makes sure that people cannot jump again.
+            // While falling down people can modify their inventories.
+            if (knownPosition.getY() == moveTo.getY() &&
+                // 100 is a little compensation for the "breaking" when sprinting previously
+                user.getInventoryData().notRecentlyOpened(100 + lenience_millis) &&
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
                 EntityUtil.getLivingEntitiesAroundPlayer(user.getPlayer(), Hitbox.PLAYER, 0.1D).isEmpty())

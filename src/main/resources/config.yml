@@ -189,7 +189,7 @@ Inventory:
       # Set this to 0 to never cancel hits.
       cancel_vl: 30
     # The move part detects movement when a player is still in his inventory.
-    # This part will add 3 vl.
+    # This part will add 3 vl when a player moves illegally and 10 vl if a player jumps illegally.
     Move:
       # Do you want to enable the move part
       enabled: true
@@ -233,8 +233,8 @@ Inventory:
       cancel_vl: 20
   # Map of violation levels to command
   thresholds:
-    55: "aacstaffnotify {player} in {world} is suspected for inventory cheats. | Confidence: {vl}"
-    80: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats. | Confidence: {vl}"
+    55: "aacstaffnotify {player} in {world} is suspected for inventory cheats."
+    80: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats."
     100: "aackick {player} Inventory cheats."
 
 # The inventory heuristics provide a neural network framework to detect advanced inventory cheats.

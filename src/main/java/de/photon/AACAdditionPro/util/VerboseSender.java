@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.events.PlayerAdditionViolationEvent;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.commands.Placeholders;
+import de.photon.AACAdditionPro.util.files.FileUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -78,10 +79,7 @@ public final class VerboseSender implements Listener
                 // Doesn't need to check for logFile == null as the currentDayOfYear will be -1 in the beginning.
                 if (currentDayOfYear != now.getDayOfYear() || !logFile.exists()) {
                     currentDayOfYear = now.getDayOfYear();
-                    logFile = new File(AACAdditionPro.getInstance().getDataFolder(), "logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
-                    // No inspection here as the logFile is guaranteed to not exist.
-                    //noinspection ResultOfMethodCallIgnored
-                    logFile.createNewFile();
+                    logFile = FileUtil.createFile(new File(AACAdditionPro.getInstance().getDataFolder().getPath() + "/logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log"));
                 }
 
                 // Reserve the required builder size.

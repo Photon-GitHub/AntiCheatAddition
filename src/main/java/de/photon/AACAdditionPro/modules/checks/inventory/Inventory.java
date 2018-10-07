@@ -107,6 +107,6 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.SCAFFOLD;
+        return ModuleType.INVENTORY;
     }
 }

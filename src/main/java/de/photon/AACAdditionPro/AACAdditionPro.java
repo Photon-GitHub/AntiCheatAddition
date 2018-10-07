@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
@@ -53,7 +54,6 @@ import us.myles.ViaVersion.api.Via;
 import us.myles.ViaVersion.api.ViaAPI;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Objects;
@@ -125,14 +125,9 @@ public class AACAdditionPro extends JavaPlugin
     public FileConfiguration getConfig()
     {
         if (cachedConfig == null) {
-            File savedFile = null;
-            try {
-                savedFile = FileUtilities.saveFileInFolder("config.yml");
-            } catch (final IOException e) {
-                this.getLogger().severe("Failed to create config folder / file");
-                e.printStackTrace();
-            }
-            cachedConfig = YamlConfiguration.loadConfiguration(Objects.requireNonNull(savedFile, "Config file needed to get the FileConfiguration was not found."));
+            final File savedFile = FileUtilities.saveFileInFolder("config.yml");
+            Preconditions.checkNotNull(savedFile, "Config file needed to load the YamlConfiguration was not found.");
+            cachedConfig = YamlConfiguration.loadConfiguration(savedFile);
         }
 
         return cachedConfig;

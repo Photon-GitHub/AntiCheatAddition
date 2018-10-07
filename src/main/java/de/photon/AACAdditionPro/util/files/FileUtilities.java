@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.util.files;
 
 import com.google.common.base.Preconditions;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,10 +24,8 @@ public final class FileUtilities
      * If the file does not exist it tries to create it.
      *
      * @param resourcePath the full path that should be appended to the default data folder.
-     *
-     * @throws IOException in the case of a failed file / folder creation.
      */
-    public static File saveFileInFolder(String resourcePath) throws IOException
+    public static File saveFileInFolder(String resourcePath)
     {
         Preconditions.checkNotNull(resourcePath, "ResourcePath cannot be null");
         Preconditions.checkArgument(!"".equals(resourcePath), "ResourcePath cannot empty");
@@ -41,7 +40,8 @@ public final class FileUtilities
                 Files.copy(in, outFile.toPath());
             } catch (IOException exception) {
                 // Could not create the file
-                throw new IOException("The file " + outFile.getName() + " could not be created in " + outFile.getPath());
+                Bukkit.getLogger().severe("The file " + outFile.getName() + " could not be created in " + outFile.getPath());
+                exception.printStackTrace();
             }
         }
         return outFile;

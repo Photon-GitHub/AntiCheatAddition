@@ -129,7 +129,7 @@ public class AACAdditionPro extends JavaPlugin
             try {
                 savedFile = FileUtilities.saveFileInFolder("config.yml");
             } catch (final IOException e) {
-                VerboseSender.getInstance().sendVerboseMessage("Failed to create config folder / file", true, true);
+                this.getLogger().severe("Failed to create config folder / file");
                 e.printStackTrace();
             }
             cachedConfig = YamlConfiguration.loadConfiguration(Objects.requireNonNull(savedFile, "Config file needed to get the FileConfiguration was not found."));

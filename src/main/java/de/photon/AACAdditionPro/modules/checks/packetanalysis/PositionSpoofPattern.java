@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.modules.checks.packetanalysis;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
@@ -22,9 +22,9 @@ class PositionSpoofPattern extends PatternModule.PacketPattern
     }
 
     @Override
-    protected int process(User user, PacketContainer packetContainer)
+    protected int process(User user, PacketEvent packetEvent)
     {
-        final WrapperPlayClientPositionLook clientPositionLookWrapper = new WrapperPlayClientPositionLook(packetContainer);
+        final WrapperPlayClientPositionLook clientPositionLookWrapper = new WrapperPlayClientPositionLook(packetEvent.getPacket());
 
         // Only check if the player has been teleported recently
         if (user.getTeleportData().recentlyUpdated(0, 1000) &&
@@ -40,8 +40,7 @@ class PositionSpoofPattern extends PatternModule.PacketPattern
                                            100 :
                                            (user.getPlayer().isSprinting() ? 25 : 9);
 
-            if (!LocationUtils.areLocationsInRange(user.getPacketAnalysisData().lastPositionForceData.getLocation(), clientPositionLookWrapper.getLocation(user.getPlayer().getWorld()), allowedDistance))
-            {
+            if (!LocationUtils.areLocationsInRange(user.getPacketAnalysisData().lastPositionForceData.getLocation(), clientPositionLookWrapper.getLocation(user.getPlayer().getWorld()), allowedDistance)) {
                 VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " tried to spoof position packets.");
                 return 10;
             }

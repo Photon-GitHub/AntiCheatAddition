@@ -42,8 +42,7 @@ public class InventoryHeuristics implements ListenerModule, ViolationModule
 
     private final double detection_confidence = AACAdditionPro.getInstance().getConfig().getDouble(this.getConfigString() + ".detection_confidence") / 100;
 
-    static
-    {
+    static {
         // Input handling
         INPUT_MAPPING = new HashMap<>();
         INPUT_MAPPING.put("X", 0);
@@ -57,12 +56,10 @@ public class InventoryHeuristics implements ListenerModule, ViolationModule
         // Hardcoded patterns
         patternsToAdd.add(new HC00000001());
 
-        if (patternsToAdd.isEmpty())
-        {
+        if (patternsToAdd.isEmpty()) {
             VerboseSender.getInstance().sendVerboseMessage("InventoryHeuristics: No pattern has been loaded.", true, true);
         }
-        else
-        {
+        else {
             patternsToAdd.forEach(
                     pattern ->
                     {
@@ -89,13 +86,11 @@ public class InventoryHeuristics implements ListenerModule, ViolationModule
         final double[] slotLocation = InventoryUtils.locateSlot(event.getRawSlot(), event.getWhoClicked().getOpenInventory().getTopInventory().getType());
 
         // Guarantees that there are no gaps in the Buffer.
-        if (slotLocation == null)
-        {
+        if (slotLocation == null) {
             return;
         }
 
-        if (user.getInventoryHeuristicsData().bufferClick(new InventoryClick(slotLocation, event.getClick())))
-        {
+        if (user.getInventoryHeuristicsData().bufferClick(new InventoryClick(slotLocation, event.getClick()))) {
             // [0] = xDistance
             // [1] = yDistance
             // [2] = Time deltas
@@ -104,8 +99,7 @@ public class InventoryHeuristics implements ListenerModule, ViolationModule
 
             int index = user.getInventoryHeuristicsData().inventoryClicks.getDeque().size() - 1;
             InventoryClick.BetweenClickInformation current;
-            while (!user.getInventoryHeuristicsData().inventoryClicks.getDeque().isEmpty())
-            {
+            while (!user.getInventoryHeuristicsData().inventoryClicks.getDeque().isEmpty()) {
                 current = user.getInventoryHeuristicsData().inventoryClicks.getDeque().pop();
                 inputMatrix[0][index] = current.xDistance;
                 inputMatrix[1][index] = current.yDistance;
@@ -120,20 +114,17 @@ public class InventoryHeuristics implements ListenerModule, ViolationModule
             }
 
             // Training
-            for (Pattern pattern : PATTERNS.values())
-            {
+            for (Pattern pattern : PATTERNS.values()) {
                 final Output cheatingOutput = Arrays.stream(pattern.evaluateOrTrain(pattern.generateDataset(inputMatrix, user.getInventoryHeuristicsData().trainingLabel)))
                                                     .filter(output -> output.getLabel().equals("cheating"))
                                                     .findAny()
                                                     .orElseThrow(() -> new NeuralNetworkException("Could not find cheating output for pattern " + pattern.getName()));
 
-                if (cheatingOutput.getConfidence() > detection_confidence)
-                {
+                if (cheatingOutput.getConfidence() > detection_confidence) {
                     final InventoryHeuristicsEvent inventoryHeuristicsEvent = new InventoryHeuristicsEvent(user.getPlayer(), pattern.getName(), cheatingOutput.getConfidence());
                     Bukkit.getPluginManager().callEvent(inventoryHeuristicsEvent);
 
-                    if (!inventoryHeuristicsEvent.isCancelled())
-                    {
+                    if (!inventoryHeuristicsEvent.isCancelled()) {
                         user.getInventoryHeuristicsData().setPatternConfidence(pattern.getName(), cheatingOutput.getConfidence());
                         VerboseSender.getInstance().sendVerboseMessage("Player " + user.getPlayer().getName() + " has been detected by pattern " + pattern.getName() + " with a confidence of " + cheatingOutput.getConfidence());
                     }
@@ -141,8 +132,7 @@ public class InventoryHeuristics implements ListenerModule, ViolationModule
             }
 
             final double globalConfidence = user.getInventoryHeuristicsData().calculateGlobalConfidence();
-            if (globalConfidence != 0)
-            {
+            if (globalConfidence != 0) {
                 // Might not be the case, i.e. no detections
                 vlManager.setVL(user.getPlayer(), (int) (globalConfidence * 100));
             }
@@ -165,15 +155,13 @@ public class InventoryHeuristics implements ListenerModule, ViolationModule
     {
         final List<Integer> inputs = new ArrayList<>();
         INPUT_MAPPING.forEach((keyString, inputIndex) -> {
-            if (inputString.contains(keyString))
-            {
+            if (inputString.contains(keyString)) {
                 inputs.add(inputIndex);
             }
         });
 
         int[] resultingInputs = new int[inputs.size()];
-        for (int i = 0; i < inputs.size(); i++)
-        {
+        for (int i = 0; i < inputs.size(); i++) {
             resultingInputs[i] = inputs.get(i);
         }
         return resultingInputs;

@@ -18,6 +18,7 @@ public enum ModuleType
     FASTSWITCH("Fastswitch"),
     GRAVITATIONAL_MODIFIER("GravitationalModifier"),
     IMPOSSIBLE_CHAT("ImpossibleChat", "sent illegal chat message (ImpossibleChat)"),
+    INVENTORY("Inventory", "has suspicious inventory interactions."),
     INVENTORY_HEURISTICS("InventoryHeuristics"),
     INVENTORY_HIT("InventoryHit", "failed Killaura/Triggerbot (InventoryHit)"),
     INVENTORY_MOVE("InventoryMove"),

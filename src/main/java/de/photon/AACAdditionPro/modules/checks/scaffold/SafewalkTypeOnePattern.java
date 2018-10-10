@@ -4,7 +4,6 @@ import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.data.PositionData;
-import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -31,8 +30,7 @@ class SafewalkTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent
             final double zOffset = MathUtils.offset(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
 
             boolean sneakBorder;
-            switch (event.getBlock().getFace(event.getBlockAgainst()))
-            {
+            switch (event.getBlock().getFace(event.getBlockAgainst())) {
                 case EAST:
                     sneakBorder = xOffset > 0.28D && xOffset < 0.305D;
                     break;
@@ -51,16 +49,13 @@ class SafewalkTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent
                     break;
             }
 
-            if (sneakBorder)
-            {
-                if (++user.getScaffoldData().safewalkTypeOneFails >= this.violationThreshold)
-                {
-                    VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
+            if (sneakBorder) {
+                if (++user.getScaffoldData().safewalkTypeOneFails >= this.violationThreshold) {
+                    message = "Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)";
                     return 3;
                 }
             }
-            else
-            {
+            else {
                 user.getScaffoldData().safewalkTypeOneFails = 0;
             }
         }

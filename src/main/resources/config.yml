@@ -174,6 +174,69 @@ ImpossibleChat:
     5: "aacstaffnotify {player} in {world} is highly suspected for ImpossibleChat"
     8: "aackick {player} ImpossibleChat"
 
+# This check contains a lot of parts covering all aspects of inventory interaction.
+Inventory:
+  # Do you want to enable the PacketAnalysis check
+  enabled: true
+  # Control the different parts of PacketAnalysis
+  parts:
+    # This part flags hitting while the inventory is open.
+    # This part will add 10 vl.
+    Hit:
+      # Do you want to enable the hit part
+      enabled: true
+      # Violation before AACAdditionPro starts to cancel the hits.
+      # Set this to 0 to never cancel hits.
+      cancel_vl: 30
+    # The move part detects movement when a player is still in his inventory.
+    # This part will add 3 vl when a player moves illegally and 10 vl if a player jumps illegally.
+    Move:
+      # Do you want to enable the move part
+      enabled: true
+      # Violation before AACAdditionPro starts to cancel the movements.
+      # Set this to 0 to never cancel movement.
+      cancel_vl: 30
+      # The minimum TPS the server must have to activate this check
+      # Low TPS will cause an extreme amount of false positives.
+      min_tps: 19.5
+      # This allows to add more lenience on servers with very high-ping players by stretching the no-punish time after
+      # opening an inventory.
+      # Normal connections are already covered by the default values.
+      lenience_millis: 0
+    # The MultiInteraction part prevents players from moving more than one item per tick
+    # This part will add 1 to 3 vl, depending on the severity of the violation.
+    MultiInteraction:
+      # Do you want to enable the MultiInteraction part
+      enabled: true
+      # Violation before AACAdditionPro starts to cancel the interacts.
+      # Set this to 0 to never cancel interacts.
+      cancel_vl: 18
+      # If a player has a ping higher than that value he bypasses the check
+      # Please make sure that you have some pingspoofer protection enabled if you use this feature
+      # Set this to -1 to disable
+      max_ping: 400
+      # The minimum TPS the server must have to activate this check
+      # Low TPS will cause an extreme amount of false positives.
+      min_tps: 18.5
+    # The rotation part detects head movement while having an open inventory.
+    # This part will add 1 vl.
+    Rotation:
+      # Do you want to enable the rotation part
+      enabled: true
+    # This part detects inventory interactions while a player is sprinting or sneaking.
+    # This part will add 20 vl.
+    Sprinting:
+      # Do you want to enable the sprinting part
+      enabled: true
+      # Violation before AACAdditionPro starts to cancel the inventory interactions.
+      # Set this to 0 to never cancel inventory interactions.
+      cancel_vl: 20
+  # Map of violation levels to command
+  thresholds:
+    55: "aacstaffnotify {player} in {world} is suspected for inventory cheats."
+    80: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats."
+    100: "aackick {player} Inventory cheats."
+
 # The inventory heuristics provide a neural network framework to detect advanced inventory cheats.
 # This check is currently rewritten and therefore EXPERIMENTAL
 InventoryHeuristics:
@@ -202,51 +265,6 @@ InventoryHeuristics:
     55: "aacstaffnotify {player} in {world} is suspected for inventory cheats. | Confidence: {vl}"
     80: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats. | Confidence: {vl}"
     95: "aackick {player} Inventory cheats."
-
-# InventoryHit checks if a player modifies his inventory while hitting at the same time.
-InventoryHit:
-  # Do you want to enable the InventoryHit check
-  enabled: true
-  # Violation before AACAdditionPro starts to cancel the hits.
-  # Set this to 0 to never cancel hits.
-  cancel_vl: 3
-  # Map of violation levels to command
-  thresholds:
-    3: "aacstaffnotify {player} in {world} is suspected for Killaura/Autoarmor (InventoryHit)"
-    6: "aacstaffnotify {player} in {world} is highly suspected for Killaura/Autoarmor (InventoryHit)"
-    10: "aackick {player} Killaura/Triggerbot"
-
-# The InventoryMove check detects inventory clicks while moving
-InventoryMove:
-  # Do you want to enable the InventoryMove check
-  enabled: true
-  # Violation before AACAdditionPro starts to cancel the movements.
-  # Set this to 0 to never cancel movement.
-  cancel_vl: 10
-  # The minimum TPS the server must have to activate this check
-  # Low TPS will cause an extreme amount of false positives.
-  min_tps: 19.5
-  # This allows to add more lenience on servers with very high-ping players by stretching the no-punish time after
-  # opening an inventory.
-  # Normal connections are already covered by the default values.
-  lenience_millis: 0
-  # Map of violation levels to command
-  # The sprint/sneak module will generate 4 vl when failed.
-  # The packet module will generate 1 vl when failed.
-  thresholds:
-    10: "aacstaffnotify {player} in {world} is suspected for InventoryMove"
-    20: "aacstaffnotify {player} in {world} is highly suspected for InventoryMove"
-    32: "aackick {player} InventoryMove"
-
-# InventoryRotation checks if a player is moving his head while being in an inventory.
-InventoryRotation:
-  # Do you want to enable the InventoryRotation check
-  enabled: true
-  # Map of violation levels to commands
-  thresholds:
-    12: "aacstaffnotify {player} in {world} is suspected for Killaura/Autoarmor (InventoryRotation)"
-    24: "aacstaffnotify {player} in {world} is highly suspected for Killaura/Autoarmor (InventoryRotation)"
-    35: "aackick {player} Killaura/Autoarmor"
 
 # Brings back an entity check of the old AAC 1.9.10 times but much more advanced.
 #
@@ -375,28 +393,6 @@ KillauraEntity:
     10: "aacstaffnotify {player} in {world} is highly suspected for Killaura"
     15: "aackick {player} Killaura"
 
-# The MultiInteraction check prevents players from moving more than one item per tick
-MultiInteraction:
-  # Do you want to enable the MultiInteraction check
-  enabled: true
-  # Violation before AACAdditionPro starts to cancel the interacts.
-  # Set this to 0 to never cancel interacts.
-  cancel_vl: 18
-  # If a player has a ping higher than that value he bypasses the check
-  # Please make sure that you have some pingspoofer protection enabled if you use this feature
-  # Set this to -1 to disable
-  max_ping: 400
-  # The minimum TPS the server must have to activate this check
-  # Low TPS will cause an extreme amount of false positives.
-  min_tps: 18.5
-  # The check will add 3 vl for normal violations and 2 vl for drop violations.
-  # Map of violation levels to command
-  thresholds:
-    18: "aacstaffnotify {player} in {world} may be using MultiInteraction"
-    36: "aacstaffnotify {player} in {world} is suspected for MultiInteraction"
-    66: "aacstaffnotify {player} in {world} is highly suspected for MultiInteraction"
-    100: "aackick {player} MultiInteraction"
-
 # PacketAnalysis is a general check which aims to detect modifications that are closely linked to interfering with the
 # protocol directly, such as pingspoof or freecam, but also various killauras, aimbots and other rotation-based modules.
 PacketAnalysis:
@@ -406,7 +402,7 @@ PacketAnalysis:
   parts:
     # This parts compares interactions of the client with different packet types to gain insight whether or not
     # the client purposefully delays some packets (pingspoof and freecam).
-    # This check will add 1 to 12 vl, depending on the severity of the violation.
+    # This part will add 1 to 12 vl, depending on the severity of the violation.
     Compare:
       # Do you want to enable packet time comparison
       enabled: true
@@ -429,13 +425,13 @@ PacketAnalysis:
     KeepAlive:
       # Ignored checks for KeepAlive packets the client has not responded to, which is illegal in the minecraft
       # protocol.
-      # This check will add 10 vl.
+      # This part will add 10 vl.
       ignored:
         # Do you want to enable the ignored KeepAlive packet checking
         enabled: true
       # Offset analyses the packet order.
-      # This check also catches various pingspoof modifications.
-      # This check will add 2 to 10 vl, depending on the severity of the violation.
+      # This part also catches various pingspoof modifications.
+      # This part will add 2 to 10 vl, depending on the severity of the violation.
       offset:
         # Do you want to enable the packet offset checking
         enabled: true
@@ -447,7 +443,7 @@ PacketAnalysis:
         enabled: true
     # This handled illegal position packets which could otherwise be used to bypass parts of the check.
     # Disabling this will SEVERELY weaken other parts of the check.
-    # This check will add 10 vl.
+    # This part will add 10 vl.
     PositionSpoof:
       # Do you want to enable the position spoof checking
       enabled: true
@@ -463,7 +459,7 @@ Pingspoof:
   # Do you want to enable the Pingspoof check
   # Disabled by default as this is a legacy check that will be replaced by PacketAnalysis.
   enabled: false
-  # This is the ping-offset. Increase if you have false pos.
+  # This is the ping-offset. Increase if you have false positives.
   ping_offset: 3.0
   # If the measured real-ping of a player is higher than this, he will be ignored
   # (A real high-ping player)

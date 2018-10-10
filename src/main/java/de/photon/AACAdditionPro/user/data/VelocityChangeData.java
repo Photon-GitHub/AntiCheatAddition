@@ -1,15 +1,77 @@
 package de.photon.AACAdditionPro.user.data;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
+import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayPosition;
+import de.photon.AACAdditionPro.util.world.BlockUtils;
+import org.bukkit.event.Listener;
 
 public class VelocityChangeData extends TimeData
 {
+    static {
+        VelocityChangeDataUpdater velocityChangeDataUpdater = new VelocityChangeDataUpdater();
+        ProtocolLibrary.getProtocolManager().addPacketListener(velocityChangeDataUpdater);
+    }
+
     public boolean positiveVelocity;
     public int velocityChangeCounter;
 
     public VelocityChangeData(final User user)
     {
-        super(user, 0);
+        // [0] check cycle of GravitationalModifier
+        // [1] last velocity change
+        super(user, 0, 0);
+
+    }
+
+    /**
+     * A singleton class to reduce the reqired {@link Listener}s to a minimum.
+     */
+    private static class VelocityChangeDataUpdater extends PacketAdapter
+    {
+        // Beacon handling
+        private VelocityChangeDataUpdater()
+        {
+            super(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.POSITION, PacketType.Play.Client.POSITION_LOOK);
+        }
+
+        @Override
+        public void onPacketReceiving(final PacketEvent event)
+        {
+            if (event.isPlayerTemporary()) {
+                return;
+            }
+
+            final IWrapperPlayPosition position = event::getPacket;
+
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user != null) {
+
+                // The player wasn't hurt and got velocity for that.
+                if (user.getPlayer().getNoDamageTicks() == 0 &&
+                    // Recent teleports can cause bugs
+                    !user.getTeleportData().recentlyUpdated(0, 1000) &&
+                    // Players can jump up and down more often if there is a block above them
+                    user.getPlayer().getEyeLocation().getBlock().isEmpty() &&
+                    BlockUtils.countBlocksAround(user.getPlayer().getEyeLocation().getBlock(), false) == 0)
+                {
+                    final boolean updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
+
+                    if (updatedPositiveVelocity != user.getVelocityChangeData().positiveVelocity) {
+                        user.getVelocityChangeData().positiveVelocity = updatedPositiveVelocity;
+                        user.getVelocityChangeData().velocityChangeCounter++;
+                        user.getVelocityChangeData().updateTimeStamp(1);
+                    }
+                }
+            }
+        }
     }
 }

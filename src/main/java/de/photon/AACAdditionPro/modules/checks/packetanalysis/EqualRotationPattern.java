@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.modules.checks.packetanalysis;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ModuleType;
@@ -53,10 +53,10 @@ class EqualRotationPattern extends PatternModule.PacketPattern
     }
 
     @Override
-    protected int process(User user, PacketContainer packetContainer)
+    protected int process(User user, PacketEvent packetEvent)
     {
         // Get the packet.
-        final IWrapperPlayClientLook lookWrapper = () -> packetContainer;
+        final IWrapperPlayClientLook lookWrapper = packetEvent::getPacket;
 
         final float currentYaw = lookWrapper.getYaw();
         final float currentPitch = lookWrapper.getPitch();
@@ -78,7 +78,7 @@ class EqualRotationPattern extends PatternModule.PacketPattern
                                                                              Hitbox.SNEAKING_PLAYER :
                                                                              Hitbox.PLAYER, CHANGED_HITBOX_MATERIALS)))
         {
-            VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.");
+            message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.";
             return 1;
         }
         return 0;

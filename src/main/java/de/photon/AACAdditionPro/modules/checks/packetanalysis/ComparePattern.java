@@ -1,12 +1,11 @@
 package de.photon.AACAdditionPro.modules.checks.packetanalysis;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 
@@ -32,36 +31,31 @@ class ComparePattern extends PatternModule.PacketPattern
     }
 
     @Override
-    protected int process(User user, PacketContainer packetContainer)
+    protected int process(User user, PacketEvent packetEvent)
     {
         final double offset;
-        try
-        {
+        try {
             offset = MathUtils.offset(
                     user.getPacketAnalysisData().recentKeepAliveResponseTime(),
                     user.getPacketAnalysisData().lastPositionForceData.timeDifference()) - allowedOffset;
             // recentKeepAliveResponseTime() might throw an IllegalStateException if there are not enough answered
             // KeepAlive packets in the queue.
-        } catch (IllegalStateException tooFewDataPoints)
-        {
+        } catch (IllegalStateException tooFewDataPoints) {
             return 0;
         }
 
         // Should flag
-        if (offset > 0)
-        {
+        if (offset > 0) {
             // Minimum time between flags to decrease lag spike effects.
             if (!user.getPacketAnalysisData().recentlyUpdated(0, violationTime) &&
                 // Minimum fails to mitigate some fluctuations
                 ++user.getPacketAnalysisData().compareFails >= this.violationThreshold)
             {
-                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.");
-
+                message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.";
                 return Math.min(Math.max(1, (int) (offset / 50)), 12);
             }
         }
-        else if (user.getPacketAnalysisData().compareFails > 0)
-        {
+        else if (user.getPacketAnalysisData().compareFails > 0) {
             user.getPacketAnalysisData().compareFails--;
         }
         return 0;

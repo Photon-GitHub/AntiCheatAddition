@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
@@ -14,16 +15,13 @@ import de.photon.AACAdditionPro.modules.checks.Fastswitch;
 import de.photon.AACAdditionPro.modules.checks.GravitationalModifier;
 import de.photon.AACAdditionPro.modules.checks.ImpossibleChat;
 import de.photon.AACAdditionPro.modules.checks.InventoryHeuristics;
-import de.photon.AACAdditionPro.modules.checks.InventoryHit;
-import de.photon.AACAdditionPro.modules.checks.InventoryMove;
-import de.photon.AACAdditionPro.modules.checks.InventoryRotation;
 import de.photon.AACAdditionPro.modules.checks.KillauraEntity;
-import de.photon.AACAdditionPro.modules.checks.MultiInteraction;
 import de.photon.AACAdditionPro.modules.checks.Pingspoof;
 import de.photon.AACAdditionPro.modules.checks.SkinBlinker;
 import de.photon.AACAdditionPro.modules.checks.Teaming;
 import de.photon.AACAdditionPro.modules.checks.Tower;
 import de.photon.AACAdditionPro.modules.checks.autofish.AutoFish;
+import de.photon.AACAdditionPro.modules.checks.inventory.Inventory;
 import de.photon.AACAdditionPro.modules.checks.packetanalysis.PacketAnalysis;
 import de.photon.AACAdditionPro.modules.checks.scaffold.Scaffold;
 import de.photon.AACAdditionPro.modules.clientcontrol.BetterSprintingControl;
@@ -41,7 +39,6 @@ import de.photon.AACAdditionPro.modules.clientcontrol.WorldDownloaderControl;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.fakeentity.DelegatingKillauraEntityController;
-import de.photon.AACAdditionPro.util.files.FileUtilities;
 import de.photon.AACAdditionPro.util.sorting.CompareUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,7 +53,6 @@ import us.myles.ViaVersion.api.Via;
 import us.myles.ViaVersion.api.ViaAPI;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Objects;
@@ -128,14 +124,10 @@ public class AACAdditionPro extends JavaPlugin
     public FileConfiguration getConfig()
     {
         if (cachedConfig == null) {
-            File savedFile = null;
-            try {
-                savedFile = FileUtilities.saveFileInFolder("config.yml");
-            } catch (final IOException e) {
-                VerboseSender.getInstance().sendVerboseMessage("Failed to create config folder / file", true, true);
-                e.printStackTrace();
-            }
-            cachedConfig = YamlConfiguration.loadConfiguration(Objects.requireNonNull(savedFile, "Config file needed to get the FileConfiguration was not found."));
+            this.saveDefaultConfig();
+            final File savedFile = new File(this.getDataFolder(), "config.yml");
+            Preconditions.checkNotNull(savedFile, "Config file needed to load the YamlConfiguration was not found.");
+            cachedConfig = YamlConfiguration.loadConfiguration(savedFile);
         }
 
         return cachedConfig;
@@ -237,12 +229,9 @@ public class AACAdditionPro extends JavaPlugin
                     new Fastswitch(),
                     new GravitationalModifier(),
                     new ImpossibleChat(),
+                    new Inventory(),
                     new InventoryHeuristics(),
-                    new InventoryHit(),
-                    new InventoryMove(),
-                    new InventoryRotation(),
                     new KillauraEntity(),
-                    new MultiInteraction(),
                     new PacketAnalysis(),
                     new Pingspoof(),
                     new Scaffold(),

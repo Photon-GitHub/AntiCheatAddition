@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.modules.checks.autofish;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.datastructures.DoubleStatistics;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.general.StringUtils;
@@ -21,8 +20,7 @@ class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
     @Override
     protected int process(User user, PlayerFishEvent event)
     {
-        switch (event.getState())
-        {
+        switch (event.getState()) {
             case FISHING:
                 // Not too many failed attempts in between (afk fish farm false positives)
                 // Negative maximum_fails indicate not allowing afk fishing farms.
@@ -41,14 +39,14 @@ class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
                     // Ceil in order to make sure that the result is at least 1
                     final double flagOffset = Math.ceil((violation_offset - maxOffset) * 0.5D);
 
-                    VerboseSender.getInstance().sendVerboseMessage("AutoFish-Verbose | Player " +
-                                                                   user.getPlayer().getName() +
-                                                                   " failed consistency | average time: " +
-                                                                   StringUtils.limitStringLength(String.valueOf(consistencyStatistics.getAverage()), 7) +
-                                                                   " | maximum offset: " +
-                                                                   StringUtils.limitStringLength(String.valueOf(maxOffset), 7) +
-                                                                   " | flag offset: " +
-                                                                   StringUtils.limitStringLength(String.valueOf(flagOffset), 7));
+                    message = "AutoFish-Verbose | Player " +
+                              user.getPlayer().getName() +
+                              " failed consistency | average time: " +
+                              StringUtils.limitStringLength(String.valueOf(consistencyStatistics.getAverage()), 7) +
+                              " | maximum offset: " +
+                              StringUtils.limitStringLength(String.valueOf(maxOffset), 7) +
+                              " | flag offset: " +
+                              StringUtils.limitStringLength(String.valueOf(flagOffset), 7);
 
                     user.getFishingData().getStatistics().reset();
 

@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.modules.checks.scaffold;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.util.VerboseSender;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -14,9 +13,8 @@ class RotationTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent
     @Override
     protected int process(User user, BlockPlaceEvent event)
     {
-        if (user.getLookPacketData().recentlyUpdated(0, 125))
-        {
-            VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1");
+        if (user.getLookPacketData().recentlyUpdated(0, 125)) {
+            message = "Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1";
             return 3;
         }
         return 0;

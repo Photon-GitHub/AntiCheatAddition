@@ -4,7 +4,6 @@ import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.datawrappers.ScaffoldBlockPlace;
-import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.entity.PotionUtil;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.potion.PotionEffectType;
@@ -35,12 +34,11 @@ class AveragePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
             final double[] results = user.getScaffoldData().calculateTimes();
 
             // delta-times are too low -> flag
-            if (results[1] < results[0])
-            {
+            if (results[1] < results[0]) {
                 // Calculate the vl
                 final int vlIncrease = (int) (4 * Math.min(Math.ceil((results[0] - results[1]) / 15D), 6));
 
-                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[0] + " | real: " + results[1] + " | vl increase: " + vlIncrease);
+                message = "Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + results[0] + " | real: " + results[1] + " | vl increase: " + vlIncrease;
                 return vlIncrease;
             }
         }

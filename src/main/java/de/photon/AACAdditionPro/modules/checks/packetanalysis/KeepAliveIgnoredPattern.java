@@ -1,7 +1,7 @@
 package de.photon.AACAdditionPro.modules.checks.packetanalysis;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
@@ -20,10 +20,9 @@ class KeepAliveIgnoredPattern extends PatternModule.PacketPattern
     }
 
     @Override
-    protected int process(User user, PacketContainer packetContainer)
+    protected int process(User user, PacketEvent packetEvent)
     {
-        synchronized (user.getPacketAnalysisData().getKeepAlives())
-        {
+        synchronized (user.getPacketAnalysisData().getKeepAlives()) {
             // Check on sending to force the client to respond in a certain time-frame.
             if (user.getPacketAnalysisData().getKeepAlives().size() > PacketAnalysisData.KEEPALIVE_QUEUE_SIZE &&
                 !user.getPacketAnalysisData().getKeepAlives().remove().hasRegisteredResponse())

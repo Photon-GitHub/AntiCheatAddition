@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
@@ -125,9 +124,7 @@ public class AACAdditionPro extends JavaPlugin
     {
         if (cachedConfig == null) {
             this.saveDefaultConfig();
-            final File savedFile = new File(this.getDataFolder(), "config.yml");
-            Preconditions.checkNotNull(savedFile, "Config file needed to load the YamlConfiguration was not found.");
-            cachedConfig = YamlConfiguration.loadConfiguration(savedFile);
+            cachedConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
         }
 
         return cachedConfig;

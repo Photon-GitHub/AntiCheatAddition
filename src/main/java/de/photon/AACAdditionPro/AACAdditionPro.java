@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
@@ -284,20 +285,14 @@ public class AACAdditionPro extends JavaPlugin
     {
         // Make sure that the provided KillauraEntityAddon is not null and
         // check provided plugin (Required for better exception messages)
-        JavaPlugin plugin = Objects.requireNonNull(killauraEntityAddon, "EXTERNAL PLUGIN ERROR: KillauraEntityAddon is null").getPlugin();
+        final JavaPlugin plugin = Objects.requireNonNull(killauraEntityAddon, "EXTERNAL PLUGIN ERROR: KillauraEntityAddon is null").getPlugin();
 
-        if (plugin == null || plugin.getName() == null) {
-            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin provided as KillauraEntityAddon: " + plugin);
-        }
-
-        // Invalid description
-        if (plugin.getDescription() == null ||
-            plugin.getDescription().getName() == null ||
-            // AACAdditionPro itself cannot be a KillauraEntityAddon
-            plugin.getName().equalsIgnoreCase(AACAdditionPro.getInstance().getName()))
-        {
-            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin provided as KillauraEntityAddon: " + plugin.getName() + " - " + plugin);
-        }
+        // Invalid plugin
+        Preconditions.checkArgument(plugin != null &&
+                                    plugin.getDescription() != null &&
+                                    plugin.getDescription().getName() != null &&
+                                    !plugin.getName().equalsIgnoreCase(AACAdditionPro.getInstance().getName()),
+                                    "EXTERNAL PLUGIN ERROR: Invalid plugin provided as KillauraEntityAddon: " + plugin);
 
         // Set up the new KillauraEntityAddon
         this.killauraEntityAddon = killauraEntityAddon;

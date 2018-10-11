@@ -19,11 +19,11 @@ public abstract class ConditionalBuffer<T> extends SimpleBuffer<T>
     public boolean bufferObject(T object)
     {
         if (this.verifyObject(object)) {
-            super.bufferObject(object);
+            return super.bufferObject(object);
         }
         else {
             this.getDeque().clear();
+            return false;
         }
-        return this.hasReachedBufferSize();
     }
 }

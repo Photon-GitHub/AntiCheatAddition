@@ -21,9 +21,8 @@ public abstract class ConditionalBuffer<T> extends SimpleBuffer<T>
         if (this.verifyObject(object)) {
             return super.bufferObject(object);
         }
-        else {
-            this.getDeque().clear();
-            return false;
-        }
+
+        this.getDeque().clear();
+        return false;
     }
 }

@@ -8,18 +8,16 @@ public class SkinData
     /**
      * Updates the saved skin components.
      *
-     * @return false if there weren't any old skin components or the skin components haven't changed, else true.
+     * @return true if the skinComponents changed and there have already been some skin components beforehand.
      */
     public boolean updateSkinComponents(int newSkinComponents)
     {
-        if (this.skinComponents == null)
-        {
+        if (this.skinComponents == null) {
             this.skinComponents = newSkinComponents;
             return false;
         }
 
-        if (this.skinComponents == newSkinComponents)
-        {
+        if (this.skinComponents == newSkinComponents) {
             return false;
         }
 

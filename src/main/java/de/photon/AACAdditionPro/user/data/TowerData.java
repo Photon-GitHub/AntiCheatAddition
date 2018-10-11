@@ -45,7 +45,7 @@ public class TowerData extends TimeData
         // -1 because there is one pop to fill the "last" variable in the beginning.
         final int divisor = this.blockPlaces.getDeque().size() - 1;
         this.blockPlaces.clearLastTwoObjectsIteration((last, current) -> {
-            result[0] += current.calculateDelay();
+            result[0] += current.getDelay();
             result[1] += (last.getTime() - current.getTime());
         });
         result[0] /= divisor;

@@ -16,7 +16,6 @@ public enum ModuleType
     AUTO_POTION("AutoPotion"),
     ESP("Esp"),
     FASTSWITCH("Fastswitch"),
-    GRAVITATIONAL_MODIFIER("GravitationalModifier"),
     IMPOSSIBLE_CHAT("ImpossibleChat", "sent illegal chat message (ImpossibleChat)"),
     INVENTORY("Inventory", "has suspicious inventory interactions."),
     INVENTORY_HEURISTICS("InventoryHeuristics"),

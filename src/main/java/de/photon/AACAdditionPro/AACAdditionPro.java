@@ -12,7 +12,6 @@ import de.photon.AACAdditionPro.modules.additions.LogBot;
 import de.photon.AACAdditionPro.modules.checks.AutoPotion;
 import de.photon.AACAdditionPro.modules.checks.Esp;
 import de.photon.AACAdditionPro.modules.checks.Fastswitch;
-import de.photon.AACAdditionPro.modules.checks.GravitationalModifier;
 import de.photon.AACAdditionPro.modules.checks.ImpossibleChat;
 import de.photon.AACAdditionPro.modules.checks.InventoryHeuristics;
 import de.photon.AACAdditionPro.modules.checks.KillauraEntity;
@@ -225,7 +224,6 @@ public class AACAdditionPro extends JavaPlugin
                     new AutoPotion(),
                     new Esp(),
                     new Fastswitch(),
-                    new GravitationalModifier(),
                     new ImpossibleChat(),
                     new Inventory(),
                     new InventoryHeuristics(),

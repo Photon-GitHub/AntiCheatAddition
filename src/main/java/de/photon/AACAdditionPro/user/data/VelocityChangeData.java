@@ -10,7 +10,6 @@ import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayPosition;
-import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.event.Listener;
 
 public class VelocityChangeData extends TimeData
@@ -60,8 +59,7 @@ public class VelocityChangeData extends TimeData
                     // Recent teleports can cause bugs
                     !user.getTeleportData().recentlyUpdated(0, 1000) &&
                     // Players can jump up and down more often if there is a block above them
-                    user.getPlayer().getEyeLocation().getBlock().isEmpty() &&
-                    BlockUtils.countBlocksAround(user.getPlayer().getEyeLocation().getBlock(), false) == 0)
+                    user.getPlayer().getEyeLocation().getBlock().isEmpty())
                 {
                     final boolean updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
 

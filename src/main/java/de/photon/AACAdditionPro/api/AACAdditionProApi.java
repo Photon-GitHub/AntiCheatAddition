@@ -2,8 +2,8 @@ package de.photon.AACAdditionPro.api;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
-import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.modules.ModuleType;
+import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings({
@@ -30,9 +30,9 @@ public final class AACAdditionProApi
      *
      * @return The Violation-Level as an int.
      *
-     * @throws NoViolationLevelManagementException if the check of the given {@link ModuleType} does not have violation-levels
+     * @throws IllegalArgumentException if the check does not have a {@link ViolationLevelManagement}.
      */
-    public static int getVL(final Player player, final ModuleType moduleType) throws NoViolationLevelManagementException
+    public static int getVL(final Player player, final ModuleType moduleType)
     {
         return AACAdditionPro.getInstance().getModuleManager().getViolationLevelManagement(moduleType).getVL(player.getUniqueId());
     }
@@ -44,9 +44,9 @@ public final class AACAdditionProApi
      * @param moduleType the Check in which the Violation-Level will be set.
      * @param new_vl     The new Violation-Level of the player.
      *
-     * @throws NoViolationLevelManagementException if the check of the given {@link ModuleType} does not have violation-levels
+     * @throws IllegalArgumentException if the check does not have a {@link ViolationLevelManagement}.
      */
-    public static void setVl(final Player player, final ModuleType moduleType, final int new_vl) throws NoViolationLevelManagementException
+    public static void setVl(final Player player, final ModuleType moduleType, final int new_vl)
     {
         AACAdditionPro.getInstance().getModuleManager().getViolationLevelManagement(moduleType).setVL(player, new_vl);
     }

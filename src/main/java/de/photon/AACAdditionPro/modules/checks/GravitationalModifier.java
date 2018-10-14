@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.modules.checks;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.ViolationModule;
@@ -42,7 +41,7 @@ public class GravitationalModifier implements ListenerModule, ViolationModule
     }
 
     @Override
-    public ViolationLevelManagement getViolationLevelManagement() throws NoViolationLevelManagementException
+    public ViolationLevelManagement getViolationLevelManagement()
     {
         return vlManager;
     }

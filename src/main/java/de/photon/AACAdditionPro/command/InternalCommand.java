@@ -9,10 +9,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 public abstract class InternalCommand
 {
@@ -46,8 +47,7 @@ public abstract class InternalCommand
         final ImmutableList.Builder<String> listBuilder = ImmutableList.builder();
         final ImmutableMap.Builder<String, InternalCommand> builder = ImmutableMap.builder();
 
-        for (InternalCommand childCommand : childCommands)
-        {
+        for (InternalCommand childCommand : childCommands) {
             listBuilder.add(childCommand.name);
             builder.put(childCommand.name, childCommand);
         }
@@ -65,20 +65,16 @@ public abstract class InternalCommand
     void invokeCommand(final CommandSender sender, final Queue<String> arguments)
     {
         // No permission is set or the sender has the permission
-        if (!InternalPermission.hasPermission(sender, this.permission))
-        {
+        if (!InternalPermission.hasPermission(sender, this.permission)) {
             sendNoPermissionMessage(sender);
             return;
         }
 
         // Any additional arguments
-        if (arguments.peek() != null)
-        {
+        if (arguments.peek() != null) {
             // Command help
-            if (arguments.peek().equals("?"))
-            {
-                for (final String help : this.getCommandHelp())
-                {
+            if (arguments.peek().equals("?")) {
+                for (final String help : this.getCommandHelp()) {
                     sender.sendMessage(PREFIX + ChatColor.GOLD + help);
                 }
                 return;
@@ -87,8 +83,7 @@ public abstract class InternalCommand
             // Delegate to SubCommands
             final InternalCommand childCommand = this.getChildCommandByNameIgnoreCase(arguments.peek());
 
-            if (childCommand != null)
-            {
+            if (childCommand != null) {
                 // Remove the current command arg
                 arguments.remove();
                 childCommand.invokeCommand(sender, arguments);
@@ -99,8 +94,7 @@ public abstract class InternalCommand
         // ------- Normal command procedure or childCommands is null or no fitting child commands were found. ------- //
 
         // Correct amount of arguments
-        if (!MathUtils.inRange(minArguments, maxArguments, arguments.size()))
-        {
+        if (!MathUtils.inRange(minArguments, maxArguments, arguments.size())) {
             sendErrorMessage(sender, "Wrong amount of arguments: " + arguments.size() + " expected: " + minArguments + " to " + maxArguments);
             return;
         }
@@ -140,7 +134,12 @@ public abstract class InternalCommand
      */
     protected static List<String> getPlayerNameTabs()
     {
-        return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+        final Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+        final List<String> list = new ArrayList<>(players.size());
+        for (Player player : players) {
+            list.add(player.getName());
+        }
+        return list;
     }
 
     /**
@@ -156,18 +155,15 @@ public abstract class InternalCommand
     public static Double validateNumberArgument(CommandSender sender, String argument, double min, double max)
     {
         final double number;
-        try
-        {
+        try {
             // Use .parseDouble instead of .valueOf for better performance because of redundant boxing.
             number = Double.parseDouble(argument);
-        } catch (NumberFormatException exception)
-        {
+        } catch (NumberFormatException exception) {
             sendErrorMessage(sender, "Please enter a valid number.");
             return null;
         }
 
-        if (!MathUtils.inRange(min, max, number))
-        {
+        if (!MathUtils.inRange(min, max, number)) {
             sendErrorMessage(sender, "The number " + number + " must be between " + min + " and " + max);
             return null;
         }

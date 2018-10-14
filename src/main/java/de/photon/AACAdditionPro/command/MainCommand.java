@@ -54,36 +54,30 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
         InternalCommand currentCommand = this;
         InternalCommand potentialChildCommand;
         int currentArgumentIndex = 0;
-        while (currentArgumentIndex < args.length)
-        {
+        while (currentArgumentIndex < args.length) {
             potentialChildCommand = currentCommand.getChildCommandByNameIgnoreCase(args[currentArgumentIndex]);
 
-            if (potentialChildCommand == null)
-            {
+            if (potentialChildCommand == null) {
                 // Stop looping once no child command was found.
                 break;
             }
-            else
-            {
-                currentCommand = potentialChildCommand;
-                currentArgumentIndex++;
-            }
+
+            currentCommand = potentialChildCommand;
+            currentArgumentIndex++;
+
         }
 
         final List<String> tabs = currentCommand.getTabPossibilities();
 
         // No tab filtering as the player has not started typing
-        if (currentArgumentIndex == args.length)
-        {
+        if (currentArgumentIndex == args.length) {
             return tabs;
         }
 
         // If arguments are still left try to choose the correct tab possibilities from them.
         final List<String> tabPossibilities = new ArrayList<>(tabs.size());
-        for (String tabPossibility : tabs)
-        {
-            if (tabPossibility.startsWith(args[currentArgumentIndex]))
-            {
+        for (String tabPossibility : tabs) {
+            if (tabPossibility.startsWith(args[currentArgumentIndex])) {
                 tabPossibilities.add(tabPossibility);
             }
         }

@@ -14,7 +14,7 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
 {
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
-    private static int cancelVl;
+    private int cancelVl;
 
     @LoadFromConfiguration(configPath = ".max_ping")
     private double max_ping;

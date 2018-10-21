@@ -149,16 +149,6 @@ Fastswitch:
     5: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
     9: "aackick {player} Fastswitch"
 
-# GravitationalModifier improves the detection speed of various movement-cheats
-GravitationalModifier:
-  # Do you want to enable the GravitationalModifier check
-  enabled: true
-  # Map of violation levels to command
-  thresholds:
-    10: "aacstaffnotify {player} in {world} is suspected for movement cheats (GravitationalModifier)"
-    15: "aacstaffnotify {player} in {world} is highly suspected for movement cheats (GravitationalModifier)"
-    20: "aackick {player} Illegal movement modification"
-
 # ImpossibleChat check detects sending chat messages while being in an inventory, blocking, sprinting and other illegal
 # situations.
 ImpossibleChat:
@@ -176,9 +166,9 @@ ImpossibleChat:
 
 # This check contains a lot of parts covering all aspects of inventory interaction.
 Inventory:
-  # Do you want to enable the PacketAnalysis check
+  # Do you want to enable the Inventory check
   enabled: true
-  # Control the different parts of PacketAnalysis
+  # Control the different parts of Inventory
   parts:
     # This part flags hitting while the inventory is open.
     # This part will add 10 vl.

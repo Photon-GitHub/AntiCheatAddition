@@ -60,11 +60,9 @@ public class EquipmentDatabase
                 Material.IRON_BOOTS,
                 Material.DIAMOND_BOOTS));
 
-        for (final String armorKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.armor"))
-        {
+        for (final String armorKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.armor")) {
             // Disabled category
-            if (!this.isMaterialAllowed("armor." + armorKey))
-            {
+            if (!this.isMaterialAllowed("armor." + armorKey)) {
                 final String upCaseArmorKey = armorKey.toUpperCase();
                 slotMap.values().forEach(materialList -> materialList.removeIf(material -> material.name().contains(upCaseArmorKey)));
             }
@@ -73,14 +71,12 @@ public class EquipmentDatabase
         // ------------------------------------------------- Normal ------------------------------------------------- //
         final Set<Material> handMaterials = new HashSet<>();
 
-        if (this.isMaterialAllowed("normal.raw"))
-        {
+        if (this.isMaterialAllowed("normal.raw")) {
             handMaterials.add(Material.BEEF);
             handMaterials.add(Material.CHICKEN);
         }
 
-        if (this.isMaterialAllowed("normal.cooked"))
-        {
+        if (this.isMaterialAllowed("normal.cooked")) {
             handMaterials.add(Material.COOKED_BEEF);
             handMaterials.add(Material.COOKED_CHICKEN);
             handMaterials.add(Material.COOKED_MUTTON);
@@ -88,17 +84,14 @@ public class EquipmentDatabase
         }
 
         // All other materials where the exact name is in the config.
-        for (final String normalKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.normal"))
-        {
+        for (final String normalKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.normal")) {
             // Disabled category
-            if (this.isMaterialAllowed("normal." + normalKey))
-            {
+            if (this.isMaterialAllowed("normal." + normalKey)) {
                 handMaterials.addAll(Arrays.stream(Material.values()).filter(material -> material.name().equalsIgnoreCase(normalKey)).collect(Collectors.toList()));
             }
         }
 
-        if (this.isMaterialAllowed("normal.ingot"))
-        {
+        if (this.isMaterialAllowed("normal.ingot")) {
             handMaterials.add(Material.GOLD_INGOT);
             handMaterials.add(Material.IRON_INGOT);
         }
@@ -142,11 +135,9 @@ public class EquipmentDatabase
                 Material.DIAMOND_SHOVEL,
                 Material.DIAMOND_SWORD);
 
-        for (final String toolKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.tools"))
-        {
+        for (final String toolKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.tools")) {
             // Disabled category
-            if (!this.isMaterialAllowed("tools." + toolKey))
-            {
+            if (!this.isMaterialAllowed("tools." + toolKey)) {
                 final String upCaseArmorKey = toolKey.toUpperCase();
                 slotMap.values().forEach(materialList -> materialList.removeIf(material -> material.name().contains(upCaseArmorKey)));
             }

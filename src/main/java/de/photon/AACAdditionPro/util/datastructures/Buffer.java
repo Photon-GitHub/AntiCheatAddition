@@ -1,23 +1,12 @@
 package de.photon.AACAdditionPro.util.datastructures;
 
-import lombok.Getter;
-
-import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class Buffer<T>
+public interface Buffer<T>
 {
-    private final int capacity;
-    @Getter
-    private Deque<T> deque;
-
-    public Buffer(int capacity)
-    {
-        this.capacity = capacity;
-        this.deque = new ArrayDeque<>(this.capacity);
-    }
+    Deque<T> getDeque();
 
     /**
      * Adds an {@link Object} of type {@link T} to the buffer
@@ -26,27 +15,19 @@ public class Buffer<T>
      *
      * @return true if the size of the buffer is bigger than the max_size.
      */
-    public boolean bufferObject(final T object)
-    {
-        this.deque.push(object);
-        return this.hasReachedBufferSize();
-    }
+    boolean bufferObject(final T object);
 
-    public boolean hasReachedBufferSize()
-    {
-        return this.deque.size() >= this.capacity;
-    }
+    boolean hasReachedBufferSize();
 
     /**
      * Iterates through the buffer and clears it at the same time.
      *
      * @param lastObjectConsumer the code which should run for each element.
      */
-    public void clearLastObjectIteration(final Consumer<T> lastObjectConsumer)
+    default void clearLastObjectIteration(final Consumer<T> lastObjectConsumer)
     {
-        while (!this.deque.isEmpty())
-        {
-            lastObjectConsumer.accept(this.deque.pop());
+        while (!this.getDeque().isEmpty()) {
+            lastObjectConsumer.accept(this.getDeque().pop());
         }
     }
 
@@ -57,15 +38,13 @@ public class Buffer<T>
      *
      * @param lastObjectsConsumer the code which should be run in each cycle, consuming the last and the current object.
      */
-    public void clearLastTwoObjectsIteration(final BiConsumer<T, T> lastObjectsConsumer)
+    default void clearLastTwoObjectsIteration(final BiConsumer<T, T> lastObjectsConsumer)
     {
-        if (!this.deque.isEmpty())
-        {
-            T last = this.deque.pop();
+        if (!this.getDeque().isEmpty()) {
+            T last = this.getDeque().pop();
             T current;
-            while (!this.deque.isEmpty())
-            {
-                current = this.deque.pop();
+            while (!this.getDeque().isEmpty()) {
+                current = this.getDeque().pop();
                 lastObjectsConsumer.accept(last, current);
                 last = current;
             }

@@ -1,9 +1,11 @@
 package de.photon.AACAdditionPro.user.datawrappers;
 
+import com.google.common.collect.ImmutableList;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Gravitation;
 import de.photon.AACAdditionPro.util.fakeentity.movement.Jumping;
+import lombok.Getter;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
@@ -11,7 +13,12 @@ public class TowerBlockPlace extends BlockPlace
 {
     private static final double TOWER_LENIENCY = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.TOWER.getConfigString() + ".tower_leniency");
     private static final double LEVITATION_LENIENCY = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.TOWER.getConfigString() + ".levitation_leniency");
-    private static final double[] AMPLIFIER_CHACHE = {
+
+    /**
+     * This {@link java.util.List} provides usually used and tested values to speed up performance and possibly low-
+     * quality simulation results.
+     */
+    private static final ImmutableList<Double> AMPLIFIER_CHACHE = ImmutableList.of(
             // 478.4 * 0.925
             442.52D,
             // 578.4 * 0.925
@@ -21,46 +28,40 @@ public class TowerBlockPlace extends BlockPlace
             // 190 * 0.925
             175.75,
             // 140 * 0.925
-            129.5
-    };
+            129.5);
 
-    private final Integer jumpBoostLevel;
-    private final Integer levitationLevel;
+    @Getter
+    private final double delay;
 
     public TowerBlockPlace(Block block, Integer jumpBoostLevel, Integer levitationLevel)
     {
         super(block);
-        this.jumpBoostLevel = jumpBoostLevel;
-        this.levitationLevel = levitationLevel;
+        delay = calculateDelay(jumpBoostLevel, levitationLevel);
     }
 
     /**
      * Calculates the time needed to place one block.
      */
-    public double calculateDelay()
+    private static double calculateDelay(Integer jumpBoostLevel, Integer levitationLevel)
     {
-        if (levitationLevel != null)
-        {
+        if (levitationLevel != null) {
             // 0.9 Blocks per second per levitation level.
-            return 900 / (levitationLevel + 1D) * TOWER_LENIENCY * LEVITATION_LENIENCY;
+            return 900 / ((levitationLevel + 1D) * TOWER_LENIENCY * LEVITATION_LENIENCY);
         }
 
         // No JUMP_BOOST
-        if (jumpBoostLevel == null)
-        {
-            return AMPLIFIER_CHACHE[0];
+        if (jumpBoostLevel == null) {
+            return AMPLIFIER_CHACHE.get(0);
         }
 
         // Player has JUMP_BOOST
-        if (jumpBoostLevel < 0)
-        {
+        if (jumpBoostLevel < 0) {
             // Negative JUMP_BOOST -> Not allowed to place blocks -> Very high delay
             return 1500;
         }
 
-        if (jumpBoostLevel + 1 < AMPLIFIER_CHACHE.length)
-        {
-            return AMPLIFIER_CHACHE[jumpBoostLevel + 1];
+        if (jumpBoostLevel + 1 < AMPLIFIER_CHACHE.size()) {
+            return AMPLIFIER_CHACHE.get(jumpBoostLevel + 1);
         }
 
         // The velocity in the beginning
@@ -70,13 +71,11 @@ public class TowerBlockPlace extends BlockPlace
         double currentBlockValue = currentVelocity.getY();
 
         // Start the tick-loop at 2 due to the one tick outside.
-        for (short ticks = 2; ticks < 160; ticks++)
-        {
+        for (short ticks = 2; ticks < 160; ticks++) {
             currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER);
 
             // Break as the player has already reached the max height (no more blocks to place below).
-            if (currentVelocity.getY() <= 0)
-            {
+            if (currentVelocity.getY() <= 0) {
                 // If the result is lower here, the detection is more lenient.
                 // * 50 : Convert ticks to milliseconds
                 // 0.925 is additional leniency

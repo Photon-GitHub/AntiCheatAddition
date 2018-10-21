@@ -11,53 +11,61 @@ public interface Module
      */
     static void enableModule(final Module module)
     {
-        try
-        {
+        try {
             // ServerVersion check
-            if (module instanceof RestrictedServerVersion && !RestrictedServerVersion.allowedToStart((RestrictedServerVersion) module))
-            {
-                if (module.shouldNotify())
+            if (module instanceof RestrictedServerVersion && !RestrictedServerVersion.allowedToStart((RestrictedServerVersion) module)) {
+                if (module.shouldNotify()) {
                     VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " is not compatible with your server version.", true, false);
+                }
                 return;
             }
 
             // Enabled
-            if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled"))
-            {
-                if (module.shouldNotify())
+            if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled")) {
+                if (module.shouldNotify()) {
                     VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " was chosen not to be enabled.", true, false);
+                }
                 return;
             }
 
             // Dependency check
-            if (module instanceof Dependency && !Dependency.allowedToStart((Dependency) module))
-            {
-                if (module.shouldNotify())
+            if (module instanceof Dependency && !Dependency.allowedToStart((Dependency) module)) {
+                if (module.shouldNotify()) {
                     VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been not been enabled as of missing dependencies.", true, false);
+                }
                 return;
             }
 
             // Load the config values
             ConfigUtils.processLoadFromConfiguration(module, module.getConfigString());
 
-            if (module instanceof ListenerModule)
+            if (module instanceof ListenerModule) {
                 ListenerModule.enable((ListenerModule) module);
+            }
 
-            if (module instanceof PacketListenerModule)
+            if (module instanceof PacketListenerModule) {
                 PacketListenerModule.enable((PacketListenerModule) module);
+            }
 
-            if (module instanceof PluginMessageListenerModule)
+            if (module instanceof PluginMessageListenerModule) {
                 PluginMessageListenerModule.enable((PluginMessageListenerModule) module);
+            }
 
-            if (module instanceof PatternModule)
+            if (module instanceof PatternModule) {
                 PatternModule.enablePatterns((PatternModule) module);
+            }
 
             module.enable();
 
-            if (module.shouldNotify())
+            // Make sure that parts don't change the state of the PatternModule
+            if (!(module instanceof PatternModule.Pattern)) {
+                module.getModuleType().setEnabled(true);
+            }
+
+            if (module.shouldNotify()) {
                 VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been enabled.", true, false);
-        } catch (final Exception e)
-        {
+            }
+        } catch (final Exception e) {
             VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be enabled.", true, true);
             e.printStackTrace();
         }
@@ -68,25 +76,34 @@ public interface Module
      */
     static void disableModule(final Module module)
     {
-        try
-        {
-            if (module instanceof ListenerModule)
+        try {
+            if (module instanceof ListenerModule) {
                 ListenerModule.disable((ListenerModule) module);
+            }
 
-            if (module instanceof PacketListenerModule)
+            if (module instanceof PacketListenerModule) {
                 PacketListenerModule.disable((PacketListenerModule) module);
+            }
 
-            if (module instanceof PluginMessageListenerModule)
+            if (module instanceof PluginMessageListenerModule) {
                 PluginMessageListenerModule.disable((PluginMessageListenerModule) module);
+            }
 
-            if (module instanceof PatternModule)
+            if (module instanceof PatternModule) {
                 PatternModule.disablePatterns((PatternModule) module);
+            }
 
             module.disable();
-            if (module.shouldNotify())
+
+            // Make sure that parts don't change the state of the PatternModule
+            if (!(module instanceof PatternModule.Pattern)) {
+                module.getModuleType().setEnabled(false);
+            }
+
+            if (module.shouldNotify()) {
                 VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been disabled.", true, false);
-        } catch (final Exception e)
-        {
+            }
+        } catch (final Exception e) {
             VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be disabled.", true, true);
             e.printStackTrace();
         }

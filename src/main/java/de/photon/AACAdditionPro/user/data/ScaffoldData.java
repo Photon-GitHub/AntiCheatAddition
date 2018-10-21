@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.datawrappers.ScaffoldBlockPlace;
+import de.photon.AACAdditionPro.util.datastructures.Buffer;
 import de.photon.AACAdditionPro.util.datastructures.ConditionalBuffer;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
@@ -13,7 +14,7 @@ public class ScaffoldData extends TimeData
 {
     // Default buffer size is 6, being well tested.
     private static final int BUFFER_SIZE = 6;
-    // Use static here as Datas are often created.
+    // Use static here as ScaffoldDatas are often created.
     private static final double DELAY_NORMAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.normal");
     private static final double SNEAKING_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_addition");
     private static final double SNEAKING_SLOW_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_slow_addition");
@@ -50,7 +51,7 @@ public class ScaffoldData extends TimeData
     public long sprintingFails = 0;
 
     @Getter
-    private final ConditionalBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces = new ConditionalBuffer<ScaffoldBlockPlace>(BUFFER_SIZE)
+    private final Buffer<ScaffoldBlockPlace> scaffoldBlockPlaces = new ConditionalBuffer<ScaffoldBlockPlace>(BUFFER_SIZE)
     {
         @Override
         protected boolean verifyObject(ScaffoldBlockPlace object)
@@ -85,17 +86,14 @@ public class ScaffoldData extends TimeData
                 (last, current) ->
                 {
                     double delay;
-                    if (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace())
-                    {
+                    if (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace()) {
                         delay = DELAY_NORMAL;
 
-                        if (!moonwalk && last.isSneaked() && current.isSneaked())
-                        {
+                        if (!moonwalk && last.isSneaked() && current.isSneaked()) {
                             delay += SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2 * current.getYaw())));
                         }
                     }
-                    else
-                    {
+                    else {
                         delay = DELAY_DIAGONAL;
                     }
 

@@ -1,6 +1,8 @@
 package de.photon.AACAdditionPro.modules;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,15 +18,10 @@ public enum ModuleType
     AUTO_POTION("AutoPotion"),
     ESP("Esp"),
     FASTSWITCH("Fastswitch"),
-    GRAVITATIONAL_MODIFIER("GravitationalModifier"),
     IMPOSSIBLE_CHAT("ImpossibleChat", "sent illegal chat message (ImpossibleChat)"),
     INVENTORY("Inventory", "has suspicious inventory interactions."),
     INVENTORY_HEURISTICS("InventoryHeuristics"),
-    INVENTORY_HIT("InventoryHit", "failed Killaura/Triggerbot (InventoryHit)"),
-    INVENTORY_MOVE("InventoryMove"),
-    INVENTORY_ROTATION("InventoryRotation", "failed InventoryMove/Autoarmor (InventoryRotation)"),
     KILLAURA_ENTITY("KillauraEntity", "failed KillauraEntity (hit the Killaura-Bot)"),
-    MULTI_INTERACTION("MultiInteraction"),
     PACKET_ANALYSIS("PacketAnalysis"),
     PINGSPOOF("Pingspoof"),
     SCAFFOLD("Scaffold"),
@@ -45,10 +42,14 @@ public enum ModuleType
     VERSION_CONTROL("ClientControl.VersionControl"),
     WORLDDOWNLOAD_CONTROL("ClientControl.WorldDownloader", "uses WorldDownloader");
 
+    public final static Set<ModuleType> VL_MODULETYPES = new HashSet<>();
+
+    @Getter
+    @Setter(AccessLevel.PACKAGE)
+    private boolean enabled;
+
     private final String configString;
     private final String violationMessage;
-
-    public final static Set<ModuleType> VL_MODULETYPES = new HashSet<>();
 
     ModuleType(final String configString)
     {

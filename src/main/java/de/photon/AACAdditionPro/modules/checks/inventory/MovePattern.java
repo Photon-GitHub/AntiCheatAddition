@@ -21,7 +21,7 @@ class MovePattern extends PatternModule.PacketPattern
 {
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
-    private static int cancelVl;
+    private int cancelVl;
 
     @LoadFromConfiguration(configPath = ".min_tps")
     private double min_tps;

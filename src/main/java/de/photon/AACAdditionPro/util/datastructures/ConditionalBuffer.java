@@ -1,6 +1,6 @@
 package de.photon.AACAdditionPro.util.datastructures;
 
-public abstract class ConditionalBuffer<T> extends Buffer<T>
+public abstract class ConditionalBuffer<T> extends SimpleBuffer<T>
 {
     public ConditionalBuffer(int capacity)
     {
@@ -18,15 +18,11 @@ public abstract class ConditionalBuffer<T> extends Buffer<T>
     @Override
     public boolean bufferObject(T object)
     {
-        final boolean verify = this.verifyObject(object);
-        if (verify)
-        {
-            super.bufferObject(object);
+        if (this.verifyObject(object)) {
+            return super.bufferObject(object);
         }
-        else
-        {
-            this.getDeque().clear();
-        }
-        return verify;
+
+        this.getDeque().clear();
+        return false;
     }
 }

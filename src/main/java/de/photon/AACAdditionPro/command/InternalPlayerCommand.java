@@ -28,8 +28,7 @@ public abstract class InternalPlayerCommand extends InternalCommand
     void invokeCommand(CommandSender sender, Queue<String> arguments)
     {
         // Only players
-        if (!(sender instanceof Player))
-        {
+        if (!(sender instanceof Player)) {
             sender.sendMessage(PREFIX + ChatColor.RED + "Only a player can use this command.");
             return;
         }

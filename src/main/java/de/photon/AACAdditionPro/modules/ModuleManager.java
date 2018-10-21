@@ -2,7 +2,6 @@ package de.photon.AACAdditionPro.modules;
 
 import com.google.common.base.Preconditions;
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.exceptions.NoViolationLevelManagementException;
 import de.photon.AACAdditionPro.util.files.configs.Configs;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import lombok.Getter;
@@ -23,8 +22,7 @@ public final class ModuleManager
 
     public ModuleManager(final Set<Module> modules)
     {
-        for (Module module : modules)
-        {
+        for (Module module : modules) {
             this.modules.put(module.getModuleType(), module);
             Module.enableModule(module);
         }
@@ -39,14 +37,10 @@ public final class ModuleManager
      * @param moduleType the {@link ModuleType} of the {@link Module} that should be found
      *
      * @return the {@link Module} if a match was found
-     *
-     * @throws IllegalArgumentException if the provided {@link ModuleType} parameter is not used in a {@link Module}
      */
     public Module getModule(final ModuleType moduleType)
     {
-        final Module module = this.modules.get(moduleType);
-        Preconditions.checkArgument(module != null, "The ModuleType: " + moduleType.name() + " is not used in any registered check (is the server version compatible with it?).");
-        return module;
+        return this.modules.get(moduleType);
     }
 
     /**
@@ -56,34 +50,38 @@ public final class ModuleManager
      *
      * @return the check if it was found
      *
-     * @throws IllegalArgumentException            if the provided {@link ModuleType} parameter is not used in a check
-     * @throws NoViolationLevelManagementException if the module doesn't have a {@link ViolationLevelManagement}
+     * @throws IllegalArgumentException if the check does not have a {@link ViolationLevelManagement}.
      */
     public ViolationLevelManagement getViolationLevelManagement(final ModuleType moduleType)
     {
         final Module module = this.getModule(moduleType);
+        Preconditions.checkArgument(module instanceof ViolationModule, "ModuleType " + moduleType.name() + " does not reference to a module with a ViolationLevelManagement.");
+        return ((ViolationModule) module).getViolationLevelManagement();
+    }
 
-        if (module instanceof ViolationModule)
-        {
-            return ((ViolationModule) module).getViolationLevelManagement();
-        }
-
-        throw new NoViolationLevelManagementException(moduleType);
+    /**
+     * Checks if a {@link Module} of a certain {@link ModuleType} is enabled.
+     *
+     * @param moduleType the {@link ModuleType} of the module that should be checked
+     *
+     * @return <code> true</code> if the module referred to by the {@link ModuleType} is enabled, else <code>false</code>
+     */
+    public boolean getStateOfModule(final ModuleType moduleType)
+    {
+        return moduleType.isEnabled();
     }
 
     /**
      * Enables or disables a check in runtime
      *
-     * @param moduleType the {@link ModuleType} of the check that should be disabled.
+     * @param moduleType the {@link ModuleType} of the module that should be enabled or disabled.
      */
     public void setStateOfModule(final ModuleType moduleType, final boolean state)
     {
-        if (state)
-        {
+        if (state) {
             Module.enableModule(this.getModule(moduleType));
         }
-        else
-        {
+        else {
             Module.disableModule(this.getModule(moduleType));
         }
     }

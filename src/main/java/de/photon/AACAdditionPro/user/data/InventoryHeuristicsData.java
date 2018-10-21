@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.user.Data;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.datawrappers.InventoryClick;
 import de.photon.AACAdditionPro.util.datastructures.Buffer;
+import de.photon.AACAdditionPro.util.datastructures.SimpleBuffer;
 
 import java.util.DoubleSummaryStatistics;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class InventoryHeuristicsData extends Data
     /**
      * Used to record inventory interactions for training the neural net.
      */
-    public final Buffer<InventoryClick.BetweenClickInformation> inventoryClicks = new Buffer<>(InventoryHeuristics.SAMPLES);
+    public final Buffer<InventoryClick.BetweenClickInformation> inventoryClicks = new SimpleBuffer<>(InventoryHeuristics.SAMPLES);
     private InventoryClick lastClick = null;
 
     public String trainingLabel = null;
@@ -32,8 +33,7 @@ public class InventoryHeuristicsData extends Data
 
     public boolean bufferClick(final InventoryClick inventoryClick)
     {
-        if (lastClick != null)
-        {
+        if (lastClick != null) {
             return this.inventoryClicks.bufferObject(new InventoryClick.BetweenClickInformation(lastClick, inventoryClick));
         }
         lastClick = inventoryClick;
@@ -51,12 +51,10 @@ public class InventoryHeuristicsData extends Data
         patternMap.forEach((patternName, confidence) -> {
             final double newConfidence = confidence - 0.1;
 
-            if (newConfidence > 0)
-            {
+            if (newConfidence > 0) {
                 patternMap.put(patternName, newConfidence);
             }
-            else
-            {
+            else {
                 patternMap.remove(patternName);
             }
         });
@@ -72,8 +70,7 @@ public class InventoryHeuristicsData extends Data
     public void setPatternConfidence(final String patternName, final double confidence)
     {
         // Only set if the confidence level increases.
-        if (patternMap.getOrDefault(patternName, 0D) < confidence)
-        {
+        if (patternMap.getOrDefault(patternName, 0D) < confidence) {
             patternMap.put(patternName, confidence);
         }
     }

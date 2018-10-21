@@ -12,7 +12,6 @@ import de.photon.AACAdditionPro.modules.additions.LogBot;
 import de.photon.AACAdditionPro.modules.checks.AutoPotion;
 import de.photon.AACAdditionPro.modules.checks.Esp;
 import de.photon.AACAdditionPro.modules.checks.Fastswitch;
-import de.photon.AACAdditionPro.modules.checks.GravitationalModifier;
 import de.photon.AACAdditionPro.modules.checks.ImpossibleChat;
 import de.photon.AACAdditionPro.modules.checks.InventoryHeuristics;
 import de.photon.AACAdditionPro.modules.checks.KillauraEntity;
@@ -70,7 +69,7 @@ public class AACAdditionPro extends JavaPlugin
      * If the version of AAC is older than this version the plugin will disable itself in order to assure that bugs
      * cannot be caused by an incompatible AAC version.
      */
-    private static final transient String MINIMUM_AAC_VERSION = "3.5.0";
+    private static final String MINIMUM_AAC_VERSION = "3.5.0";
 
     private static final Field killauraEntityControllerField;
     private static final Field delegatingKillauraEntityControllerField;
@@ -125,9 +124,7 @@ public class AACAdditionPro extends JavaPlugin
     {
         if (cachedConfig == null) {
             this.saveDefaultConfig();
-            final File savedFile = new File(this.getDataFolder(), "config.yml");
-            Preconditions.checkNotNull(savedFile, "Config file needed to load the YamlConfiguration was not found.");
-            cachedConfig = YamlConfiguration.loadConfiguration(savedFile);
+            cachedConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
         }
 
         return cachedConfig;
@@ -227,7 +224,6 @@ public class AACAdditionPro extends JavaPlugin
                     new AutoPotion(),
                     new Esp(),
                     new Fastswitch(),
-                    new GravitationalModifier(),
                     new ImpossibleChat(),
                     new Inventory(),
                     new InventoryHeuristics(),
@@ -287,20 +283,14 @@ public class AACAdditionPro extends JavaPlugin
     {
         // Make sure that the provided KillauraEntityAddon is not null and
         // check provided plugin (Required for better exception messages)
-        JavaPlugin plugin = Objects.requireNonNull(killauraEntityAddon, "EXTERNAL PLUGIN ERROR: KillauraEntityAddon is null").getPlugin();
+        final JavaPlugin plugin = Objects.requireNonNull(killauraEntityAddon, "EXTERNAL PLUGIN ERROR: KillauraEntityAddon is null").getPlugin();
 
-        if (plugin == null || plugin.getName() == null) {
-            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin provided as KillauraEntityAddon: " + plugin);
-        }
-
-        // Invalid description
-        if (plugin.getDescription() == null ||
-            plugin.getDescription().getName() == null ||
-            // AACAdditionPro itself cannot be a KillauraEntityAddon
-            plugin.getName().equalsIgnoreCase(AACAdditionPro.getInstance().getName()))
-        {
-            throw new IllegalArgumentException("EXTERNAL PLUGIN ERROR: Invalid plugin provided as KillauraEntityAddon: " + plugin.getName() + " - " + plugin);
-        }
+        // Invalid plugin
+        Preconditions.checkArgument(plugin != null &&
+                                    plugin.getDescription() != null &&
+                                    plugin.getDescription().getName() != null &&
+                                    !plugin.getName().equalsIgnoreCase(AACAdditionPro.getInstance().getName()),
+                                    "EXTERNAL PLUGIN ERROR: Invalid plugin provided as KillauraEntityAddon: " + plugin);
 
         // Set up the new KillauraEntityAddon
         this.killauraEntityAddon = killauraEntityAddon;

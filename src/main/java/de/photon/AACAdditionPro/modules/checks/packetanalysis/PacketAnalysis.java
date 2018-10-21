@@ -26,13 +26,13 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 200);
 
-    private final PacketPattern comparePattern = new ComparePattern();
-    private final PacketPattern equalRotationPattern = new EqualRotationPattern();
-    private final PacketPattern positionSpoofPattern = new PositionSpoofPattern();
+    private final ComparePattern comparePattern = new ComparePattern();
+    private final EqualRotationPattern equalRotationPattern = new EqualRotationPattern();
+    private final PositionSpoofPattern positionSpoofPattern = new PositionSpoofPattern();
 
-    private final Pattern<User, Integer> keepAliveOffsetPattern = new KeepAliveOffsetPattern();
-    private final PacketPattern keepAliveIgnoredPattern = new KeepAliveIgnoredPattern();
-    private final Pattern<Object, Object> keepAliveInjectPattern = new KeepAliveInjectPattern();
+    private final KeepAliveOffsetPattern keepAliveOffsetPattern = new KeepAliveOffsetPattern();
+    private final KeepAliveIgnoredPattern keepAliveIgnoredPattern = new KeepAliveIgnoredPattern();
+    private final KeepAliveInjectPattern keepAliveInjectPattern = new KeepAliveInjectPattern();
 
     public PacketAnalysis()
     {

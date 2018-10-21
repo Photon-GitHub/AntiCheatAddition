@@ -23,15 +23,15 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 80L);
 
-    private final Pattern<User, BlockPlaceEvent> anglePattern = new AnglePattern();
-    private final Pattern<User, BlockPlaceEvent> averagePattern = new AveragePattern();
-    private final Pattern<User, BlockPlaceEvent> positionPattern = new PositionPattern();
-    private final Pattern<User, BlockPlaceEvent> rotationTypeOne = new RotationTypeOnePattern();
-    private final Pattern<User, Float> rotationTypeTwo = new RotationTypeTwoPattern();
-    private final Pattern<User, Float> rotationTypeThree = new RotationTypeThreePattern();
-    private final Pattern<User, BlockPlaceEvent> sprintingPattern = new SprintingPattern();
-    private final Pattern<User, BlockPlaceEvent> safewalkTypeOne = new SafewalkTypeOnePattern();
-    private final Pattern<User, BlockPlaceEvent> safewalkTypeTwo = new SafewalkTypeTwoPattern();
+    private final AnglePattern anglePattern = new AnglePattern();
+    private final AveragePattern averagePattern = new AveragePattern();
+    private final PositionPattern positionPattern = new PositionPattern();
+    private final RotationTypeOnePattern rotationTypeOne = new RotationTypeOnePattern();
+    private final RotationTypeTwoPattern rotationTypeTwo = new RotationTypeTwoPattern();
+    private final RotationTypeThreePattern rotationTypeThree = new RotationTypeThreePattern();
+    private final SprintingPattern sprintingPattern = new SprintingPattern();
+    private final SafewalkTypeOnePattern safewalkTypeOne = new SafewalkTypeOnePattern();
+    private final SafewalkTypeTwoPattern safewalkTypeTwo = new SafewalkTypeTwoPattern();
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancel_vl;
@@ -50,14 +50,12 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
         // To prevent too fast scaffolding -> Timeout
-        if (user.getScaffoldData().recentlyUpdated(0, timeout))
-        {
+        if (user.getScaffoldData().recentlyUpdated(0, timeout)) {
             event.setCancelled(true);
             InventoryUtils.syncUpdateInventory(user.getPlayer());
         }
@@ -69,8 +67,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -102,16 +99,13 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
                              rotationTypeTwo.apply(user, angleInformation[0]) +
                              rotationTypeThree.apply(user, angleInformation[1]);
 
-            if (rotationVl > 0)
-            {
-                if (++user.getScaffoldData().rotationFails >= this.rotationThreshold)
-                {
+            if (rotationVl > 0) {
+                if (++user.getScaffoldData().rotationFails >= this.rotationThreshold) {
                     // Flag the player
                     vl += rotationVl;
                 }
             }
-            else if (user.getScaffoldData().rotationFails > 0)
-            {
+            else if (user.getScaffoldData().rotationFails > 0) {
                 user.getScaffoldData().rotationFails--;
             }
 
@@ -119,8 +113,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
             vl += safewalkTypeOne.apply(user, event);
             vl += safewalkTypeTwo.apply(user, event);
 
-            if (vl > 0)
-            {
+            if (vl > 0) {
                 vlManager.flag(event.getPlayer(), vl, cancel_vl, () ->
                 {
                     event.setCancelled(true);

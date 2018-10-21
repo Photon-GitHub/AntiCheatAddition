@@ -30,7 +30,7 @@ public final class AACAdditionProApi
      *
      * @return The Violation-Level as an int.
      *
-     * @throws IllegalArgumentException if the check does not have a {@link ViolationLevelManagement}.
+     * @throws IllegalArgumentException if the module does not have a {@link ViolationLevelManagement}.
      */
     public static int getVL(final Player player, final ModuleType moduleType)
     {
@@ -44,7 +44,7 @@ public final class AACAdditionProApi
      * @param moduleType the Check in which the Violation-Level will be set.
      * @param new_vl     The new Violation-Level of the player.
      *
-     * @throws IllegalArgumentException if the check does not have a {@link ViolationLevelManagement}.
+     * @throws IllegalArgumentException if the module does not have a {@link ViolationLevelManagement}.
      */
     public static void setVl(final Player player, final ModuleType moduleType, final int new_vl)
     {
@@ -54,7 +54,7 @@ public final class AACAdditionProApi
     /**
      * Enables or disables a module on the fly.
      *
-     * @param moduleType the {@link ModuleType} of the check that should be enabled.
+     * @param moduleType the {@link ModuleType} of the module that should be enabled.
      */
     public static void setStateOfModule(final ModuleType moduleType, final boolean state)
     {

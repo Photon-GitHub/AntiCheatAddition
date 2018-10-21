@@ -32,15 +32,14 @@ public class AutoFish implements ListenerModule, PatternModule, ViolationModule,
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // User valid and not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
-        int vl = this.consistencyPattern.apply(user, event);
-        vl += this.inhumanReactionPattern.apply(user, event);
-
-        vlManager.flag(event.getPlayer(), vl, cancel_vl, () -> event.setCancelled(true), () -> {});
+        vlManager.flag(event.getPlayer(),
+                       this.consistencyPattern.apply(user, event) + this.inhumanReactionPattern.apply(user, event),
+                       cancel_vl,
+                       () -> event.setCancelled(true), () -> {});
     }
 
     @Override

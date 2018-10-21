@@ -166,9 +166,9 @@ ImpossibleChat:
 
 # This check contains a lot of parts covering all aspects of inventory interaction.
 Inventory:
-  # Do you want to enable the PacketAnalysis check
+  # Do you want to enable the Inventory check
   enabled: true
-  # Control the different parts of PacketAnalysis
+  # Control the different parts of Inventory
   parts:
     # This part flags hitting while the inventory is open.
     # This part will add 10 vl.

@@ -60,9 +60,21 @@ public final class ModuleManager
     }
 
     /**
+     * Checks if a {@link Module} of a certain {@link ModuleType} is enabled.
+     *
+     * @param moduleType the {@link ModuleType} of the module that should be checked
+     *
+     * @return <code> true</code> if the module referred to by the {@link ModuleType} is enabled, else <code>false</code>
+     */
+    public boolean getStateOfModule(final ModuleType moduleType)
+    {
+        return moduleType.isEnabled();
+    }
+
+    /**
      * Enables or disables a check in runtime
      *
-     * @param moduleType the {@link ModuleType} of the check that should be disabled.
+     * @param moduleType the {@link ModuleType} of the module that should be enabled or disabled.
      */
     public void setStateOfModule(final ModuleType moduleType, final boolean state)
     {

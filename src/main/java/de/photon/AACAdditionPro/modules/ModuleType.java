@@ -1,6 +1,8 @@
 package de.photon.AACAdditionPro.modules;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,10 +42,14 @@ public enum ModuleType
     VERSION_CONTROL("ClientControl.VersionControl"),
     WORLDDOWNLOAD_CONTROL("ClientControl.WorldDownloader", "uses WorldDownloader");
 
+    public final static Set<ModuleType> VL_MODULETYPES = new HashSet<>();
+
+    @Getter
+    @Setter(AccessLevel.PACKAGE)
+    private boolean enabled;
+
     private final String configString;
     private final String violationMessage;
-
-    public final static Set<ModuleType> VL_MODULETYPES = new HashSet<>();
 
     ModuleType(final String configString)
     {

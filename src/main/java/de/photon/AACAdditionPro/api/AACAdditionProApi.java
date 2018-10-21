@@ -2,14 +2,12 @@ package de.photon.AACAdditionPro.api;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
+import de.photon.AACAdditionPro.modules.Module;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.entity.Player;
 
-@SuppressWarnings({
-                          "unused",
-                          "WeakerAccess"
-                  })
+@SuppressWarnings({"unused", "WeakerAccess"})
 public final class AACAdditionProApi
 {
     /**
@@ -49,6 +47,18 @@ public final class AACAdditionProApi
     public static void setVl(final Player player, final ModuleType moduleType, final int new_vl)
     {
         AACAdditionPro.getInstance().getModuleManager().getViolationLevelManagement(moduleType).setVL(player, new_vl);
+    }
+
+    /**
+     * Checks if a {@link Module} of a certain {@link ModuleType} is enabled.
+     *
+     * @param moduleType the {@link ModuleType} of the module that should be checked
+     *
+     * @return <code> true</code> if the module referred to by the {@link ModuleType} is enabled, else <code>false</code>
+     */
+    public static boolean getStateOfModule(final ModuleType moduleType)
+    {
+        return AACAdditionPro.getInstance().getModuleManager().getStateOfModule(moduleType);
     }
 
     /**

@@ -14,7 +14,7 @@ class SprintingPattern extends PatternModule.Pattern<User, InventoryClickEvent>
 {
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
-    private static int cancelVl;
+    private int cancelVl;
 
     @Override
     protected int process(User user, InventoryClickEvent event)

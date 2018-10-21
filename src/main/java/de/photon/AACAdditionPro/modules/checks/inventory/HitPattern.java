@@ -12,7 +12,7 @@ class HitPattern extends PatternModule.Pattern<User, EntityDamageByEntityEvent>
 {
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
-    private static int cancelVl;
+    private int cancelVl;
 
     @Override
     protected int process(User user, EntityDamageByEntityEvent event)

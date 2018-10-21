@@ -26,11 +26,11 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 80L);
 
-    private final Pattern<User, EntityDamageByEntityEvent> hitPattern = new HitPattern();
-    private final Pattern<User, PacketEvent> movePattern = new MovePattern();
-    private final Pattern<User, InventoryClickEvent> multiInteractionPattern = new MultiInteractionPattern();
-    private final PacketPattern rotationPattern = new RotationPattern();
-    private final Pattern<User, InventoryClickEvent> sprintingPattern = new SprintingPattern();
+    private final HitPattern hitPattern = new HitPattern();
+    private final MovePattern movePattern = new MovePattern();
+    private final MultiInteractionPattern multiInteractionPattern = new MultiInteractionPattern();
+    private final RotationPattern rotationPattern = new RotationPattern();
+    private final SprintingPattern sprintingPattern = new SprintingPattern();
 
     public Inventory()
     {
@@ -57,7 +57,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
         }
 
 
-        vlManager.flag(user.getPlayer(), movePattern.apply(user, event), MovePattern.getCancelVl(), () -> movePattern.cancelAction(user, event), () -> {});
+        vlManager.flag(user.getPlayer(), movePattern.apply(user, event), movePattern.getCancelVl(), () -> movePattern.cancelAction(user, event), () -> {});
         vlManager.flag(user.getPlayer(), rotationPattern.apply(user, event), -1, () -> {}, () -> {});
     }
 
@@ -72,7 +72,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
                 return;
             }
 
-            vlManager.flag(user.getPlayer(), hitPattern.apply(user, event), HitPattern.getCancelVl(), () -> hitPattern.cancelAction(user, event), () -> {});
+            vlManager.flag(user.getPlayer(), hitPattern.apply(user, event), hitPattern.getCancelVl(), () -> hitPattern.cancelAction(user, event), () -> {});
         }
     }
 
@@ -86,8 +86,8 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
             return;
         }
 
-        vlManager.flag(user.getPlayer(), sprintingPattern.apply(user, event), SprintingPattern.getCancelVl(), () -> sprintingPattern.cancelAction(user, event), () -> {});
-        vlManager.flag(user.getPlayer(), multiInteractionPattern.apply(user, event), MultiInteractionPattern.getCancelVl(), () -> multiInteractionPattern.cancelAction(user, event), () -> {});
+        vlManager.flag(user.getPlayer(), sprintingPattern.apply(user, event), sprintingPattern.getCancelVl(), () -> sprintingPattern.cancelAction(user, event), () -> {});
+        vlManager.flag(user.getPlayer(), multiInteractionPattern.apply(user, event), multiInteractionPattern.getCancelVl(), () -> multiInteractionPattern.cancelAction(user, event), () -> {});
     }
 
     @Override

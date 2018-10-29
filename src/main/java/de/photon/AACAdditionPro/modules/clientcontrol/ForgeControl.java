@@ -23,9 +23,15 @@ public class ForgeControl extends ClientControlModule implements PluginMessageLi
     }
 
     @Override
-    public Set<String> getPluginMessageChannels()
+    public Set<String> getLegacyPluginMessageChannels()
     {
         return ImmutableSet.of("FML", "FMLHS", MC_BRAND_CHANNEL);
+    }
+
+    @Override
+    public Set<String> getPluginMessageChannels()
+    {
+        return ImmutableSet.of("minecraft:FML", "minecraft:FMLHS", MC_BRAND_CHANNEL);
     }
 
     @Override

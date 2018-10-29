@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.modules.clientcontrol;
 
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PluginMessageListenerModule;
@@ -19,7 +20,9 @@ import java.util.Set;
 
 public class SchematicaControl extends ClientControlModule implements ListenerModule, PluginMessageListenerModule
 {
-    private static final String SCHEMATICA_CHANNEL = "schematica";
+    private static final String SCHEMATICA_CHANNEL = ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ?
+                                                     "schematica" :
+                                                     "minecraft:schematica";
 
     /**
      * This array holds what features of schematica should be disabled.
@@ -39,8 +42,7 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -50,22 +52,26 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
         {
             dataOutputStream.writeByte(0);
 
-            for (final boolean b : disable)
-            {
+            for (final boolean b : disable) {
                 dataOutputStream.writeBoolean(b);
             }
 
             user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(),
                                                SCHEMATICA_CHANNEL,
                                                Objects.requireNonNull(byteArrayOutputStream.toByteArray(), "Schematica plugin message is null"));
-        } catch (final IOException e)
-        {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {}
+
+    @Override
+    public Set<String> getLegacyPluginMessageChannels()
+    {
+        return ImmutableSet.of(SCHEMATICA_CHANNEL);
+    }
 
     @Override
     public Set<String> getPluginMessageChannels()

@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.modules.clientcontrol;
 
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.events.ClientControlEvent;
 import de.photon.AACAdditionPro.modules.Module;
 import de.photon.AACAdditionPro.user.User;
@@ -14,7 +15,9 @@ import java.util.List;
 
 abstract class ClientControlModule implements Module
 {
-    static final String MC_BRAND_CHANNEL = "MC|Brand";
+    static final String MC_BRAND_CHANNEL = ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ?
+                                           "MC|Brand" :
+                                           "minecraft:MC|Brand";
 
     // All the commands executed upon detection
     // If a module does not have commands to execute this will just be an empty list.
@@ -36,8 +39,7 @@ abstract class ClientControlModule implements Module
         Bukkit.getPluginManager().callEvent(clientControlEvent);
 
         // The event must not be cancelled
-        if (!clientControlEvent.isCancelled())
-        {
+        if (!clientControlEvent.isCancelled()) {
             // Execution of the commands
             this.commandsOnDetection.forEach(rawCommand -> CommandUtils.executeCommandWithPlaceholders(rawCommand, player, this.getModuleType(), null));
         }

@@ -14,10 +14,15 @@ public class LiteLoaderControl extends ClientControlModule implements PluginMess
     @Override
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
     {
-        if (this.shouldFlagBrandCheck(channel, player, message, LITELOADERFLAGS))
-        {
+        if (this.shouldFlagBrandCheck(channel, player, message, LITELOADERFLAGS)) {
             executeCommands(player);
         }
+    }
+
+    @Override
+    public Set<String> getLegacyPluginMessageChannels()
+    {
+        return ImmutableSet.of(MC_BRAND_CHANNEL);
     }
 
     @Override

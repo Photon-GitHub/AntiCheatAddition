@@ -38,9 +38,16 @@ public class BetterSprintingControl extends ClientControlModule implements Plugi
     }
 
     @Override
-    public Set<String> getPluginMessageChannels()
+    public Set<String> getLegacyPluginMessageChannels()
     {
         return ImmutableSet.of("BSM", "BSprint");
+    }
+
+
+    @Override
+    public Set<String> getPluginMessageChannels()
+    {
+        return ImmutableSet.of("minecraft:BSM", "minecraft:BSprint");
     }
 
     @Override

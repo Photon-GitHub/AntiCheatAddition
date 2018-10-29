@@ -633,6 +633,8 @@ Tower:
 ClientControl:
   # This is a popular PVP modification granting additional information in various HUDs, such as potion effects.
   # Also has a TS3 module for easier communication, just like LabyMod
+  #
+  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   5zig:
     # Do you want to enable 5zig-Control
     enabled: false
@@ -660,6 +662,8 @@ ClientControl:
     - "aacstaffnotify {player} in {world} uses 5zig"
 
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
+  #
+  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   BetterSprinting:
     # Do you want to enable BetterSprinting-Control
     enabled: false
@@ -682,6 +686,8 @@ ClientControl:
       monsters: true
 
   # A very popular mod-loader.
+  #
+  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   Forge:
     # Do you want to enable Forge-Control
     # This cannot be blocked; I recommend to kick if desired
@@ -741,6 +747,8 @@ ClientControl:
 
   # LiteLoader is alternative mod-loader to forge.
   # Many ghost clients exist for LiteLoader, therefore I recommend to block it.
+  #
+  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   LiteLoader:
     # Do you want to enable LiteLoader-Control
     # This cannot be blocked; I recommend to kick if desired
@@ -790,6 +798,8 @@ ClientControl:
       # The mod cannot be detected, just disabled
 
   # A pvp modification from France
+  #
+  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   PXMod:
     # Do you want to enable PXMod-Control
     enabled: false
@@ -798,6 +808,8 @@ ClientControl:
 
   # A mod that lets you display (clientside) holograms to improve building, but also has
   # a module to download worlds.
+  #
+  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   Schematica:
     # Do you want to enable Schematica-Control
     enabled: false
@@ -817,6 +829,8 @@ ClientControl:
   # Vape is a very popular ghost-client, often seen in ranked pvp gameplay and optimized to be especially hard to find
   # in screenshares
   # This will only detect some cracked versions of the client.
+  #
+  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   Vape:
     # Do you want to enable Vape-Control
     enabled: false

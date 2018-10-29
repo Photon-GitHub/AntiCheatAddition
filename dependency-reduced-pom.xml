@@ -8,15 +8,6 @@
   <description>This plugin provides niche checks for cheats which are not covered by AAC</description>
   <build>
     <defaultGoal>clean install</defaultGoal>
-    <resources>
-      <resource>
-        <filtering>true</filtering>
-        <directory>src\main\resources</directory>
-      </resource>
-      <resource>
-        <directory>pattern</directory>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
@@ -67,7 +58,7 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.13.1-R0.1-SNAPSHOT</version>
+      <version>1.13.2-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>

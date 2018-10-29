@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.modules.clientcontrol;
 
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PluginMessageListenerModule;
 import de.photon.AACAdditionPro.user.User;
@@ -14,7 +15,9 @@ import java.util.Set;
 public class FiveZigControl extends ClientControlModule implements PluginMessageListenerModule
 {
     // Backup: Channel name has to be EXACTLY "5zig_Set"
-    private static final String FIVEZIGCHANNEL = "5zig_Set";
+    private static final String FIVEZIGCHANNEL = ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ?
+                                                 "5zig_Set" :
+                                                 "minecraft:5zig_Set";
 
     /**
      * This depicts what features of 5zig are allowed
@@ -33,8 +36,7 @@ public class FiveZigControl extends ClientControlModule implements PluginMessage
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -45,8 +47,7 @@ public class FiveZigControl extends ClientControlModule implements PluginMessage
         final BitSet disableBitSet = new BitSet();
 
         // Set the according bits
-        for (byte b = 0; b < features.length; b++)
-        {
+        for (byte b = 0; b < features.length; b++) {
             disableBitSet.set(b, features[b]);
         }
 
@@ -72,6 +73,12 @@ public class FiveZigControl extends ClientControlModule implements PluginMessage
     public ModuleType getModuleType()
     {
         return ModuleType.FIVEZIG_CONTROL;
+    }
+
+    @Override
+    public Set<String> getLegacyPluginMessageChannels()
+    {
+        return ImmutableSet.of(FIVEZIGCHANNEL);
     }
 
     @Override

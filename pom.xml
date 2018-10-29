@@ -21,16 +21,6 @@
     <build>
         <defaultGoal>clean install</defaultGoal>
 
-        <resources>
-            <resource>
-                <directory>src\main\resources</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>pattern</directory>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -85,7 +75,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.13.1-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

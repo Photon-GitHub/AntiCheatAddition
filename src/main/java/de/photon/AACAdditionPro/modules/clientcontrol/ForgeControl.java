@@ -1,13 +1,15 @@
 package de.photon.AACAdditionPro.modules.clientcontrol;
 
 import com.google.common.collect.ImmutableSet;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PluginMessageListenerModule;
+import de.photon.AACAdditionPro.modules.RestrictedServerVersion;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
 
-public class ForgeControl extends ClientControlModule implements PluginMessageListenerModule
+public class ForgeControl extends ClientControlModule implements PluginMessageListenerModule, RestrictedServerVersion
 {
 
     @Override
@@ -38,5 +40,11 @@ public class ForgeControl extends ClientControlModule implements PluginMessageLi
     public ModuleType getModuleType()
     {
         return ModuleType.FORGE_CONTROL;
+    }
+
+    @Override
+    public Set<ServerVersion> getSupportedVersions()
+    {
+        return ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS;
     }
 }

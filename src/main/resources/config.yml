@@ -663,7 +663,7 @@ ClientControl:
 
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   #
-  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
+  # NOT COMPATIBLE WITH MINECRAFT 1.13 YET
   BetterSprinting:
     # Do you want to enable BetterSprinting-Control
     enabled: false
@@ -687,7 +687,7 @@ ClientControl:
 
   # A very popular mod-loader.
   #
-  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
+  # NOT COMPATIBLE WITH MINECRAFT 1.13 YET
   Forge:
     # Do you want to enable Forge-Control
     # This cannot be blocked; I recommend to kick if desired
@@ -809,7 +809,7 @@ ClientControl:
   # A mod that lets you display (clientside) holograms to improve building, but also has
   # a module to download worlds.
   #
-  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
+  # NOT COMPATIBLE WITH MINECRAFT 1.13 YET
   Schematica:
     # Do you want to enable Schematica-Control
     enabled: false
@@ -829,8 +829,6 @@ ClientControl:
   # Vape is a very popular ghost-client, often seen in ranked pvp gameplay and optimized to be especially hard to find
   # in screenshares
   # This will only detect some cracked versions of the client.
-  #
-  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   Vape:
     # Do you want to enable Vape-Control
     enabled: false

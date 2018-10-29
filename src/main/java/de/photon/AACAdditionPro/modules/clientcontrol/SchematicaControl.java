@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PluginMessageListenerModule;
+import de.photon.AACAdditionPro.modules.RestrictedServerVersion;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import org.bukkit.entity.Player;
@@ -18,7 +19,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 
-public class SchematicaControl extends ClientControlModule implements ListenerModule, PluginMessageListenerModule
+public class SchematicaControl extends ClientControlModule implements ListenerModule, PluginMessageListenerModule, RestrictedServerVersion
 {
     private static final String SCHEMATICA_CHANNEL = ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ?
                                                      "schematica" :
@@ -83,5 +84,11 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
     public ModuleType getModuleType()
     {
         return ModuleType.SCHEMATICA_CONTROL;
+    }
+
+    @Override
+    public Set<ServerVersion> getSupportedVersions()
+    {
+        return ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS;
     }
 }

@@ -1,19 +1,22 @@
 package de.photon.AACAdditionPro.modules.clientcontrol;
 
 import com.google.common.collect.ImmutableSet;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PluginMessageListenerModule;
+import de.photon.AACAdditionPro.modules.RestrictedServerVersion;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
+import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.Set;
 
-public class VapeControl extends ClientControlModule implements ListenerModule, PluginMessageListenerModule
+public class VapeControl extends ClientControlModule implements ListenerModule, PluginMessageListenerModule, RestrictedServerVersion
 {
     @EventHandler
     public void on(PlayerJoinEvent event)
@@ -26,18 +29,15 @@ public class VapeControl extends ClientControlModule implements ListenerModule, 
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
         String clientData;
 
-        try
-        {
+        try {
             clientData = new String(message);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             clientData = "";
         }
 
@@ -46,20 +46,20 @@ public class VapeControl extends ClientControlModule implements ListenerModule, 
     }
 
     @Override
-    public Set<String> getLegacyPluginMessageChannels()
+    public Set<MessageChannel> getPluginMessageChannels()
     {
-        return ImmutableSet.of("LOLIMAHCKER");
-    }
-
-    @Override
-    public Set<String> getPluginMessageChannels()
-    {
-        return ImmutableSet.of("minecraft:LOLIMAHCKER");
+        return ImmutableSet.of(new MessageChannel("minecraft", "lolimahcker", "LOLIMAHCKER"));
     }
 
     @Override
     public ModuleType getModuleType()
     {
         return ModuleType.VAPE_CONTROL;
+    }
+
+    @Override
+    public Set<ServerVersion> getSupportedVersions()
+    {
+        return ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS;
     }
 }

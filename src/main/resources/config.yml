@@ -758,6 +758,8 @@ ClientControl:
 
   # This covers outdated versions of LabyMod prior to version 3.0
   # A very popular PvP modification similar to 5zig but with more features and TS3 support
+  #
+  # Not compatible with 1.13.2 as this only covers old LabyMod versions.
   OldLabyMod:
     # Do you want to enable OldLabyMod-Control
     enabled: false
@@ -829,6 +831,8 @@ ClientControl:
   # Vape is a very popular ghost-client, often seen in ranked pvp gameplay and optimized to be especially hard to find
   # in screenshares
   # This will only detect some cracked versions of the client.
+  #
+  # NOT COMPATIBLE WITH MINECRAFT 1.13 AS THE BACKDOOR DEPENDS ON CODE THAT HAS CHANGED DRAMATICALLY IN 1.13
   Vape:
     # Do you want to enable Vape-Control
     enabled: false
@@ -851,12 +855,11 @@ ClientControl:
       '1.8': true
       # 1.9 is not officially supported by this plugin. Issues can occur.
       '1.9': false
-      '1.10': true
+      # 1.10 is not officially supported by this plugin. Issues can occur.
+      '1.10': false
       '1.11': true
       '1.12': true
-      # NOTE: 1.13 support is HIGHLY EXPERIMENTAL AND UNTESTED. AACADDITIONPRO DOES NOT OFFICIALLY SUPPORT THAT
-      # VERSION RIGHT NOW!
-      '1.13': false
+      '1.13': true
 
   # WorldDownloader is a popular modification to get the maps of a server
   WorldDownloader:

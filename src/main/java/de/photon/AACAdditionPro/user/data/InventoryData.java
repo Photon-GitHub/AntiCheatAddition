@@ -89,7 +89,8 @@ public class InventoryData extends TimeData
             final WrapperPlayClientCustomPayload customPayloadWrapper = new WrapperPlayClientCustomPayload(event.getPacket());
 
             if (!event.isCancelled() &&
-                customPayloadWrapper.getChannel().getKey().equalsIgnoreCase("MC|Beacon"))
+                (customPayloadWrapper.getChannel().getFullKey().equalsIgnoreCase("minecraft:beacon") ||
+                 customPayloadWrapper.getChannel().getFullKey().equalsIgnoreCase("minecraft:book_open")))
             {
                 final User user = UserManager.getUser(event.getPlayer().getUniqueId());
                 if (user != null) {

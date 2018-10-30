@@ -1,6 +1,5 @@
 package de.photon.AACAdditionPro.modules.clientcontrol;
 
-import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.events.ClientControlEvent;
 import de.photon.AACAdditionPro.modules.Module;
 import de.photon.AACAdditionPro.user.User;
@@ -8,6 +7,7 @@ import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import de.photon.AACAdditionPro.util.general.StringUtils;
+import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -15,9 +15,7 @@ import java.util.List;
 
 abstract class ClientControlModule implements Module
 {
-    static final String MC_BRAND_CHANNEL = ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ?
-                                           "MC|Brand" :
-                                           "minecraft:MC|Brand";
+    static final MessageChannel MC_BRAND_CHANNEL = new MessageChannel("minecraft", "brand");
 
     // All the commands executed upon detection
     // If a module does not have commands to execute this will just be an empty list.
@@ -52,7 +50,7 @@ abstract class ClientControlModule implements Module
      */
     boolean isBrandChannel(final String channel)
     {
-        return channel.equals(MC_BRAND_CHANNEL);
+        return channel.equals(MC_BRAND_CHANNEL.getChannel());
     }
 
     /**

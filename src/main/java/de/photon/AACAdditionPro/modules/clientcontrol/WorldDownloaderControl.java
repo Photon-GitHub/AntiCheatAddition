@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.modules.clientcontrol;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PluginMessageListenerModule;
+import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
@@ -22,20 +23,11 @@ public class WorldDownloaderControl extends ClientControlModule implements Plugi
     }
 
     @Override
-    public Set<String> getLegacyPluginMessageChannels()
+    public Set<MessageChannel> getPluginMessageChannels()
     {
-        return ImmutableSet.of("WDL|INIT",
-                               "WDL|CONTROL",
-                               "WDL|REQUEST",
-                               MC_BRAND_CHANNEL);
-    }
-
-    @Override
-    public Set<String> getPluginMessageChannels()
-    {
-        return ImmutableSet.of("wdl:init",
-                               "wdl:control",
-                               "wdl:request",
+        return ImmutableSet.of(new MessageChannel("wdl", "init"),
+                               new MessageChannel("wdl", "control"),
+                               new MessageChannel("wdl", "request"),
                                MC_BRAND_CHANNEL);
     }
 

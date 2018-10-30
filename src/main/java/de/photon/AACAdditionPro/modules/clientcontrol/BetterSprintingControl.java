@@ -9,6 +9,7 @@ import de.photon.AACAdditionPro.modules.RestrictedServerVersion;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
@@ -23,15 +24,13 @@ public class BetterSprintingControl extends ClientControlModule implements Plugi
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
         // Bypassed players are already filtered out.
         // The mod provides a method to disable it
-        if (disable)
-        {
+        if (disable) {
             // The channel is always BSM, the right one.
             user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), channel, new byte[]{1});
         }
@@ -40,16 +39,10 @@ public class BetterSprintingControl extends ClientControlModule implements Plugi
     }
 
     @Override
-    public Set<String> getLegacyPluginMessageChannels()
+    public Set<MessageChannel> getPluginMessageChannels()
     {
-        return ImmutableSet.of("BSM", "BSprint");
-    }
-
-
-    @Override
-    public Set<String> getPluginMessageChannels()
-    {
-        return ImmutableSet.of("minecraft:BSM", "minecraft:BSprint");
+        return ImmutableSet.of(new MessageChannel("minecraft", "bsm", "BSM"),
+                               new MessageChannel("minecraft", "bsprint", "BSprint"));
     }
 
     @Override

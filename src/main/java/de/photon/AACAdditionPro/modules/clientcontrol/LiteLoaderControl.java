@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.modules.clientcontrol;
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PluginMessageListenerModule;
+import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
@@ -20,13 +21,7 @@ public class LiteLoaderControl extends ClientControlModule implements PluginMess
     }
 
     @Override
-    public Set<String> getLegacyPluginMessageChannels()
-    {
-        return ImmutableSet.of(MC_BRAND_CHANNEL);
-    }
-
-    @Override
-    public Set<String> getPluginMessageChannels()
+    public Set<MessageChannel> getPluginMessageChannels()
     {
         return ImmutableSet.of(MC_BRAND_CHANNEL);
     }

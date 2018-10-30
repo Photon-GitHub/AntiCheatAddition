@@ -663,7 +663,7 @@ ClientControl:
 
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   #
-  # NOT COMPATIBLE WITH MINECRAFT 1.13 YET
+  # NOT COMPATIBLE WITH MINECRAFT 1.13 YET -> CLIENTCONTROL WILL AUTODISABLE ON 1.13.2
   BetterSprinting:
     # Do you want to enable BetterSprinting-Control
     enabled: false
@@ -687,7 +687,7 @@ ClientControl:
 
   # A very popular mod-loader.
   #
-  # NOT COMPATIBLE WITH MINECRAFT 1.13 YET
+  # NOT COMPATIBLE WITH MINECRAFT 1.13 YET -> CLIENTCONTROL WILL AUTODISABLE ON 1.13.2
   Forge:
     # Do you want to enable Forge-Control
     # This cannot be blocked; I recommend to kick if desired

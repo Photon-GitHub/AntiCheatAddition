@@ -811,7 +811,7 @@ ClientControl:
   # A mod that lets you display (clientside) holograms to improve building, but also has
   # a module to download worlds.
   #
-  # NOT COMPATIBLE WITH MINECRAFT 1.13 YET
+  # NOT COMPATIBLE WITH MINECRAFT 1.13 YET -> CLIENTCONTROL WILL AUTODISABLE ON 1.13.2
   Schematica:
     # Do you want to enable Schematica-Control
     enabled: false

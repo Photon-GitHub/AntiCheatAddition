@@ -14,25 +14,19 @@ public interface Module
         try {
             // ServerVersion check
             if (module instanceof RestrictedServerVersion && !RestrictedServerVersion.allowedToStart((RestrictedServerVersion) module)) {
-                if (module.shouldNotify()) {
-                    VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " is not compatible with your server version.", true, false);
-                }
+                sendNotice(module, module.getConfigString() + " is not compatible with your server version.");
                 return;
             }
 
             // Enabled
             if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled")) {
-                if (module.shouldNotify()) {
-                    VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " was chosen not to be enabled.", true, false);
-                }
+                sendNotice(module, module.getConfigString() + " was chosen not to be enabled.");
                 return;
             }
 
             // Dependency check
             if (module instanceof Dependency && !Dependency.allowedToStart((Dependency) module)) {
-                if (module.shouldNotify()) {
-                    VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been not been enabled as of missing dependencies.", true, false);
-                }
+                sendNotice(module, module.getConfigString() + " has been not been enabled as of missing dependencies.");
                 return;
             }
 
@@ -62,9 +56,7 @@ public interface Module
                 module.getModuleType().setEnabled(true);
             }
 
-            if (module.shouldNotify()) {
-                VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been enabled.", true, false);
-            }
+            sendNotice(module, module.getConfigString() + " has been enabled.");
         } catch (final Exception e) {
             VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be enabled.", true, true);
             e.printStackTrace();
@@ -100,12 +92,20 @@ public interface Module
                 module.getModuleType().setEnabled(false);
             }
 
-            if (module.shouldNotify()) {
-                VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been disabled.", true, false);
-            }
+            sendNotice(module, module.getConfigString() + " has been disabled.");
         } catch (final Exception e) {
             VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be disabled.", true, true);
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Sends a message if {@link Module#shouldNotify()} returns true.
+     */
+    static void sendNotice(final Module module, final String message)
+    {
+        if (module.shouldNotify()) {
+            VerboseSender.getInstance().sendVerboseMessage(message, true, false);
         }
     }
 

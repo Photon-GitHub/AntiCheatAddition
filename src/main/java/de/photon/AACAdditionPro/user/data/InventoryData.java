@@ -5,12 +5,14 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.client.WrapperPlayClientCustomPayload;
+import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -28,6 +30,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Set;
 
 public class InventoryData extends TimeData
 {
@@ -77,6 +81,9 @@ public class InventoryData extends TimeData
      */
     private static class InventoryDataUpdater extends PacketAdapter implements Listener
     {
+        private static final Set<String> INVENTORY_CHANNELS = ImmutableSet.of(new MessageChannel("minecraft", "beacon").getChannel(),
+                                                                              new MessageChannel("minecraft", "book_open").getChannel());
+
         // Beacon handling
         public InventoryDataUpdater()
         {
@@ -89,7 +96,7 @@ public class InventoryData extends TimeData
             final WrapperPlayClientCustomPayload customPayloadWrapper = new WrapperPlayClientCustomPayload(event.getPacket());
 
             if (!event.isCancelled() &&
-                customPayloadWrapper.getChannel().getKey().equalsIgnoreCase("MC|Beacon"))
+                INVENTORY_CHANNELS.contains(customPayloadWrapper.getChannel().getChannel()))
             {
                 final User user = UserManager.getUser(event.getPlayer().getUniqueId());
                 if (user != null) {

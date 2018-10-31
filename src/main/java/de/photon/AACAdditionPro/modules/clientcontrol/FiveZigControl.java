@@ -2,19 +2,22 @@ package de.photon.AACAdditionPro.modules.clientcontrol;
 
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PluginMessageListenerModule;
+import de.photon.AACAdditionPro.modules.RestrictedServerVersion;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
 
 import java.util.BitSet;
 import java.util.Set;
 
-public class FiveZigControl extends ClientControlModule implements PluginMessageListenerModule
+public class FiveZigControl extends ClientControlModule implements PluginMessageListenerModule, RestrictedServerVersion
 {
     // Backup: Channel name has to be EXACTLY "5zig_Set"
-    private static final String FIVEZIGCHANNEL = "5zig_Set";
+    private static final MessageChannel FIVEZIGCHANNEL = new MessageChannel("5zig", "set", "5zig_Set");
 
     /**
      * This depicts what features of 5zig are allowed
@@ -33,8 +36,7 @@ public class FiveZigControl extends ClientControlModule implements PluginMessage
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -45,12 +47,11 @@ public class FiveZigControl extends ClientControlModule implements PluginMessage
         final BitSet disableBitSet = new BitSet();
 
         // Set the according bits
-        for (byte b = 0; b < features.length; b++)
-        {
+        for (byte b = 0; b < features.length; b++) {
             disableBitSet.set(b, features[b]);
         }
 
-        user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), FIVEZIGCHANNEL, disableBitSet.toByteArray());
+        user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), FIVEZIGCHANNEL.getChannel(), disableBitSet.toByteArray());
         executeCommands(user.getPlayer());
 
         // ------------------------------------------------ 5zig end -------------------------------------------- //
@@ -75,8 +76,14 @@ public class FiveZigControl extends ClientControlModule implements PluginMessage
     }
 
     @Override
-    public Set<String> getPluginMessageChannels()
+    public Set<MessageChannel> getPluginMessageChannels()
     {
         return ImmutableSet.of(FIVEZIGCHANNEL);
+    }
+
+    @Override
+    public Set<ServerVersion> getSupportedVersions()
+    {
+        return ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS;
     }
 }

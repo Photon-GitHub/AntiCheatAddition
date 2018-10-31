@@ -2,11 +2,14 @@ package de.photon.AACAdditionPro.modules.clientcontrol;
 
 import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PluginMessageListenerModule;
+import de.photon.AACAdditionPro.modules.RestrictedServerVersion;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -17,9 +20,9 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 
-public class SchematicaControl extends ClientControlModule implements ListenerModule, PluginMessageListenerModule
+public class SchematicaControl extends ClientControlModule implements ListenerModule, PluginMessageListenerModule, RestrictedServerVersion
 {
-    private static final String SCHEMATICA_CHANNEL = "schematica";
+    private static final MessageChannel SCHEMATICA_CHANNEL = new MessageChannel("minecraft", "schematica", "schematica");
 
     /**
      * This array holds what features of schematica should be disabled.
@@ -39,8 +42,7 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -50,16 +52,14 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
         {
             dataOutputStream.writeByte(0);
 
-            for (final boolean b : disable)
-            {
+            for (final boolean b : disable) {
                 dataOutputStream.writeBoolean(b);
             }
 
             user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(),
-                                               SCHEMATICA_CHANNEL,
+                                               SCHEMATICA_CHANNEL.getChannel(),
                                                Objects.requireNonNull(byteArrayOutputStream.toByteArray(), "Schematica plugin message is null"));
-        } catch (final IOException e)
-        {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
     }
@@ -68,7 +68,7 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {}
 
     @Override
-    public Set<String> getPluginMessageChannels()
+    public Set<MessageChannel> getPluginMessageChannels()
     {
         return ImmutableSet.of(SCHEMATICA_CHANNEL);
     }
@@ -77,5 +77,11 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
     public ModuleType getModuleType()
     {
         return ModuleType.SCHEMATICA_CONTROL;
+    }
+
+    @Override
+    public Set<ServerVersion> getSupportedVersions()
+    {
+        return ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS;
     }
 }

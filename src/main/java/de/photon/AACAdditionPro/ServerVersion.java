@@ -18,11 +18,13 @@ public enum ServerVersion
     MC188("1.8.8", true),
     MC19("1.9", false),
     MC110("1.10", false),
-    MC111("1.11", true),
-    MC112("1.12", true),
+    MC111("1.11.2", true),
+    MC112("1.12.2", true),
     MC113("1.13", true);
 
+
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = ImmutableSet.of(MC188, MC111, MC112, MC113);
+    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = ImmutableSet.of(MC188, MC111, MC112);
     public static final Set<ServerVersion> NON_188_VERSIONS = ImmutableSet.of(MC111, MC112, MC113);
 
     private final String versionOutputString;
@@ -34,13 +36,10 @@ public enum ServerVersion
     @Getter
     private static ServerVersion activeServerVersion;
 
-    static
-    {
+    static {
         final String versionOutput = Bukkit.getVersion();
-        for (final ServerVersion serverVersion : ServerVersion.values())
-        {
-            if (versionOutput.contains(serverVersion.getVersionOutputString()))
-            {
+        for (final ServerVersion serverVersion : ServerVersion.values()) {
+            if (versionOutput.contains(serverVersion.getVersionOutputString())) {
                 activeServerVersion = serverVersion;
                 // break for better performance as no other version should be found.
                 break;

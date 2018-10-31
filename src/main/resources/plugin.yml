@@ -1,8 +1,9 @@
 name: AACAdditionPro
-version: '${project.version}'
-description: '${project.description}'
+version: ${project.version}
+description: ${project.description}
 author: Photon
 api-version: 1.13
+website: https://www.spigotmc.org/resources/aacadditionpro.33590/
 
 depend: [AAC, ProtocolLib]
 softdepend: [LabyModAPI, ViaVersion]

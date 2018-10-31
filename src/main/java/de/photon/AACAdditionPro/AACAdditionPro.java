@@ -134,9 +134,6 @@ public class AACAdditionPro extends JavaPlugin
     public void onEnable()
     {
         try {
-            // Enabled message
-            VerboseSender.getInstance().sendVerboseMessage("Enabling plugin...", true, false);
-
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //

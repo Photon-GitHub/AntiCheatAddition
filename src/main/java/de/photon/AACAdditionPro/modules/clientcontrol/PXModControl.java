@@ -5,6 +5,7 @@ import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PluginMessageListenerModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
@@ -16,8 +17,7 @@ public class PXModControl extends ClientControlModule implements PluginMessageLi
     {
         final User user = UserManager.getUser(player.getUniqueId());
 
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -25,9 +25,9 @@ public class PXModControl extends ClientControlModule implements PluginMessageLi
     }
 
     @Override
-    public Set<String> getPluginMessageChannels()
+    public Set<MessageChannel> getPluginMessageChannels()
     {
-        return ImmutableSet.of("PX|Version");
+        return ImmutableSet.of(new MessageChannel("px", "version"));
     }
 
     @Override

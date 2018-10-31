@@ -1,13 +1,15 @@
 package de.photon.AACAdditionPro.modules.clientcontrol;
 
-import com.comphenix.protocol.wrappers.MinecraftKey;
 import com.google.common.collect.ImmutableMap;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
+import de.photon.AACAdditionPro.modules.RestrictedServerVersion;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerCustomPayload;
+import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -15,8 +17,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Map;
+import java.util.Set;
 
-public class OldLabyModControl extends ClientControlModule implements ListenerModule
+public class OldLabyModControl extends ClientControlModule implements ListenerModule, RestrictedServerVersion
 {
     private Map<String, Boolean> featureMap;
 
@@ -45,7 +48,7 @@ public class OldLabyModControl extends ClientControlModule implements ListenerMo
         }
 
         final WrapperPlayServerCustomPayload packetWrapper = new WrapperPlayServerCustomPayload();
-        packetWrapper.setChannel(new MinecraftKey("LABYMOD"));
+        packetWrapper.setChannel(new MessageChannel("minecraft", "labymod", "LABYMOD"));
 
         try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
              ObjectOutputStream out = new ObjectOutputStream(byteOut))
@@ -62,5 +65,11 @@ public class OldLabyModControl extends ClientControlModule implements ListenerMo
     public ModuleType getModuleType()
     {
         return ModuleType.OLD_LABYMOD_CONTROL;
+    }
+
+    @Override
+    public Set<ServerVersion> getSupportedVersions()
+    {
+        return ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS;
     }
 }

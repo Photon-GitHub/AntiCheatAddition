@@ -6,7 +6,7 @@
 
     <groupId>de.photon</groupId>
     <artifactId>AACAdditionPro</artifactId>
-    <version>4.5.0</version>
+    <version>4.5.1</version>
 
     <name>AACAdditionPro</name>
     <description>This plugin provides niche checks for cheats which are not covered by AAC</description>
@@ -21,6 +21,7 @@
     <build>
         <defaultGoal>clean install</defaultGoal>
 
+        <!-- This adds the plugin.yml and config.yml as files that need to be processed. -->
         <resources>
             <resource>
                 <directory>src\main\resources</directory>
@@ -31,6 +32,8 @@
                 <filtering>false</filtering>
             </resource>
         </resources>
+
+        <!-- This shades the metrics in -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -85,7 +88,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.13.1-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

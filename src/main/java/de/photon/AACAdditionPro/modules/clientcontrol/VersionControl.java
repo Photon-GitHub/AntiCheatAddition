@@ -56,20 +56,22 @@ public class VersionControl implements Module, Dependency
             if (protocolVersion.allowed) {
                 versionStrings.add(protocolVersion.name);
             }
-            else
-            // Set the blocked versions
-            {
+            else {
+                // Set the blocked versions
                 blockedProtocolNumbers.addAll(protocolVersion.versionNumbers);
             }
         }
 
         // Set the kick message.
-        Configs.VIAVERSION.getConfigurationRepresentation().getYamlConfiguration().set(
+        Configs.VIAVERSION.getConfigurationRepresentation().requestValueChange(
                 "block-disconnect-msg",
                 // Construct the message.
                 AACAdditionPro.getInstance().getConfig().getString("ClientControl.VersionControl.message")
                               // Replace the special placeholder
                               .replace("{supportedVersions}", String.join(", ", versionStrings)));
+
+        // Make the protocol numbers appear more visually appealing in the ViaVersion config
+        blockedProtocolNumbers.sort(Integer::compareTo);
 
         // Block the affected protocol numbers.
         Configs.VIAVERSION.getConfigurationRepresentation().requestValueChange("block-protocols", blockedProtocolNumbers);

@@ -81,6 +81,7 @@ public class InventoryData extends TimeData
             AACAdditionPro.getInstance().registerListener(this);
 
             // No longer needed in 1.13.2, thus only legacy handling
+            // On 1.13.2 this is handled by the InventoryCloseEvent
             if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
                 ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.CUSTOM_PAYLOAD)
                 {

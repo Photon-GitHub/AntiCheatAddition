@@ -21,6 +21,19 @@
     <build>
         <defaultGoal>clean install</defaultGoal>
 
+        <!-- This adds the plugin.yml and config.yml as files that need to be processed. -->
+        <resources>
+            <resource>
+                <directory>src\main\resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>pattern</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
+        <!-- This shades the metrics in -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

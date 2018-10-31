@@ -35,6 +35,8 @@ public class MessageChannel extends MinecraftKey
                 this.legacyName = "WDL|" + tempKey.toUpperCase();
                 break;
             default:
+                // This is done to make sure that 1.13.2 servers with plugins that utilize PluginMessageChannels
+                // do not see a lot of exceptions.
                 this.legacyName = null;
                 break;
         }

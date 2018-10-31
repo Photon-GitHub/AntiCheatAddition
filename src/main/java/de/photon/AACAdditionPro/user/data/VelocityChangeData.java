@@ -20,7 +20,6 @@ public class VelocityChangeData extends TimeData
     }
 
     public boolean positiveVelocity;
-    public int velocityChangeCounter;
 
     public VelocityChangeData(final User user)
     {
@@ -63,7 +62,6 @@ public class VelocityChangeData extends TimeData
 
                     if (updatedPositiveVelocity != user.getVelocityChangeData().positiveVelocity) {
                         user.getVelocityChangeData().positiveVelocity = updatedPositiveVelocity;
-                        user.getVelocityChangeData().velocityChangeCounter++;
                         user.getVelocityChangeData().updateTimeStamp(1);
                     }
                 }

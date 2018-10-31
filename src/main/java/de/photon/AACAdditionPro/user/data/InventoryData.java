@@ -5,14 +5,13 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.client.WrapperPlayClientCustomPayload;
-import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -31,14 +30,10 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Set;
-
 public class InventoryData extends TimeData
 {
     static {
-        InventoryDataUpdater dataUpdater = new InventoryDataUpdater();
-        AACAdditionPro.getInstance().registerListener(dataUpdater);
-        ProtocolLibrary.getProtocolManager().addPacketListener(dataUpdater);
+        new InventoryDataUpdater();
     }
 
     /**
@@ -79,31 +74,35 @@ public class InventoryData extends TimeData
     /**
      * A singleton class to reduce the reqired {@link Listener}s to a minimum.
      */
-    private static class InventoryDataUpdater extends PacketAdapter implements Listener
+    private static class InventoryDataUpdater implements Listener
     {
-        private static final Set<String> INVENTORY_CHANNELS = ImmutableSet.of(new MessageChannel("minecraft", "beacon").getChannel(),
-                                                                              new MessageChannel("minecraft", "book_open").getChannel());
-
-        // Beacon handling
         public InventoryDataUpdater()
         {
-            super(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.CUSTOM_PAYLOAD);
-        }
+            AACAdditionPro.getInstance().registerListener(this);
 
-        @Override
-        public void onPacketReceiving(final PacketEvent event)
-        {
-            final WrapperPlayClientCustomPayload customPayloadWrapper = new WrapperPlayClientCustomPayload(event.getPacket());
+            // No longer needed in 1.13.2, thus only legacy handling
+            // On 1.13.2 this is handled by the InventoryCloseEvent
+            if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
+                ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.CUSTOM_PAYLOAD)
+                {
+                    @Override
+                    public void onPacketReceiving(PacketEvent event)
+                    {
+                        final WrapperPlayClientCustomPayload customPayloadWrapper = new WrapperPlayClientCustomPayload(event.getPacket());
 
-            if (!event.isCancelled() &&
-                INVENTORY_CHANNELS.contains(customPayloadWrapper.getChannel().getChannel()))
-            {
-                final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-                if (user != null) {
-                    // User has made a beacon action/transaction so the inventory must internally be closed this way as
-                    // no InventoryCloseEvent is fired.
-                    user.getInventoryData().nullifyTimeStamp(0);
-                }
+                        if (!event.isCancelled() &&
+                            // No longer needed in 1.13.2, thus only legacy handling
+                            "MC|Beacon".equals(customPayloadWrapper.getChannel().getLegacyName()))
+                        {
+                            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+                            if (user != null) {
+                                // User has made a beacon action/transaction so the inventory must internally be closed this way as
+                                // no InventoryCloseEvent is fired.
+                                user.getInventoryData().nullifyTimeStamp(0);
+                            }
+                        }
+                    }
+                });
             }
         }
 

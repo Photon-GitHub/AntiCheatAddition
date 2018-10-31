@@ -20,13 +20,11 @@ public class VelocityChangeData extends TimeData
     }
 
     public boolean positiveVelocity;
-    public int velocityChangeCounter;
 
     public VelocityChangeData(final User user)
     {
-        // [0] check cycle of GravitationalModifier
-        // [1] last velocity change
-        super(user, 0, 0);
+        // [0] last velocity change
+        super(user, 0);
 
     }
 
@@ -48,8 +46,6 @@ public class VelocityChangeData extends TimeData
                 return;
             }
 
-            final IWrapperPlayPosition position = event::getPacket;
-
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
@@ -57,16 +53,15 @@ public class VelocityChangeData extends TimeData
                 // The player wasn't hurt and got velocity for that.
                 if (user.getPlayer().getNoDamageTicks() == 0 &&
                     // Recent teleports can cause bugs
-                    !user.getTeleportData().recentlyUpdated(0, 1000) &&
-                    // Players can jump up and down more often if there is a block above them
-                    user.getPlayer().getEyeLocation().getBlock().isEmpty())
+                    !user.getTeleportData().recentlyUpdated(0, 1000))
                 {
+                    final IWrapperPlayPosition position = event::getPacket;
+
                     final boolean updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
 
                     if (updatedPositiveVelocity != user.getVelocityChangeData().positiveVelocity) {
                         user.getVelocityChangeData().positiveVelocity = updatedPositiveVelocity;
-                        user.getVelocityChangeData().velocityChangeCounter++;
-                        user.getVelocityChangeData().updateTimeStamp(1);
+                        user.getVelocityChangeData().updateTimeStamp(0);
                     }
                 }
             }

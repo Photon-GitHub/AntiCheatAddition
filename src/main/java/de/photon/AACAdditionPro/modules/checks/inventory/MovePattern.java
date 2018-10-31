@@ -85,7 +85,7 @@ class MovePattern extends PatternModule.PacketPattern
             }
 
             // Make sure that the last jump is a little bit ago (same "breaking" effect that needs compensation.)
-            if (user.getVelocityChangeData().recentlyUpdated(1, 1750)) {
+            if (user.getVelocityChangeData().recentlyUpdated(0, 1750)) {
                 return 0;
             }
 

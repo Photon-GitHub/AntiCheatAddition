@@ -846,7 +846,7 @@ ClientControl:
   VersionControl:
     # Do you want to enable VersionControl
     enabled: false
-    # This option allows you to define a message of
+    # This option allows you to define a message that will be shown to players which join with a disallowed version
     # THIS WILL OVERRIDE THE block-disconnect-msg OPTION IN THE VIAVERSION CONFIG!
     message: "You are using an unsupported version. Supported Versions are {supportedVersions}"
     # What versions should be able to join?

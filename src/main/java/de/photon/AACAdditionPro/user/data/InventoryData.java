@@ -1,16 +1,20 @@
 package de.photon.AACAdditionPro.user.data;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
+import de.photon.AACAdditionPro.util.packetwrappers.client.WrapperPlayClientCustomPayload;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,7 +29,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.messaging.PluginMessageListener;
 
 public class InventoryData extends TimeData
 {
@@ -71,29 +74,34 @@ public class InventoryData extends TimeData
     /**
      * A singleton class to reduce the reqired {@link Listener}s to a minimum.
      */
-    private static class InventoryDataUpdater implements Listener, PluginMessageListener
+    private static class InventoryDataUpdater implements Listener
     {
         public InventoryDataUpdater()
         {
             AACAdditionPro.getInstance().registerListener(this);
 
-            // Only old versions need the beacon handling.
-            if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
-                Bukkit.getMessenger().registerIncomingPluginChannel(AACAdditionPro.getInstance(), "MC|Beacon", this);
-            }
-        }
-
-        @Override
-        public void onPluginMessageReceived(String channel, Player player, byte[] message)
-        {
             // No longer needed in 1.13.2, thus only legacy handling
-            if (channel.equals("MC|Beacon")) {
-                final User user = UserManager.getUser(player.getUniqueId());
-                if (user != null) {
-                    // User has made a beacon action/transaction so the inventory must internally be closed this way as
-                    // no InventoryCloseEvent is fired.
-                    user.getInventoryData().nullifyTimeStamp(0);
-                }
+            if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
+                ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.CUSTOM_PAYLOAD)
+                {
+                    @Override
+                    public void onPacketReceiving(PacketEvent event)
+                    {
+                        final WrapperPlayClientCustomPayload customPayloadWrapper = new WrapperPlayClientCustomPayload(event.getPacket());
+
+                        if (!event.isCancelled() &&
+                            // No longer needed in 1.13.2, thus only legacy handling
+                            "MC|Beacon".equals(customPayloadWrapper.getChannel().getLegacyName()))
+                        {
+                            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+                            if (user != null) {
+                                // User has made a beacon action/transaction so the inventory must internally be closed this way as
+                                // no InventoryCloseEvent is fired.
+                                user.getInventoryData().nullifyTimeStamp(0);
+                            }
+                        }
+                    }
+                });
             }
         }
 

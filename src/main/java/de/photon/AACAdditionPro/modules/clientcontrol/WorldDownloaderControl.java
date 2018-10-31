@@ -13,13 +13,7 @@ public class WorldDownloaderControl extends ClientControlModule implements Plugi
     @Override
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
     {
-        // MCBrand channel with flag
-        if (this.shouldFlagBrandCheck(channel, player, message, "worlddownloader-vanilla") ||
-            // or other channel
-            !this.isBrandChannel(channel))
-        {
-            executeCommands(player);
-        }
+        executeCommands(player);
     }
 
     @Override
@@ -27,8 +21,7 @@ public class WorldDownloaderControl extends ClientControlModule implements Plugi
     {
         return ImmutableSet.of(new MessageChannel("wdl", "init"),
                                new MessageChannel("wdl", "control"),
-                               new MessageChannel("wdl", "request"),
-                               MC_BRAND_CHANNEL);
+                               new MessageChannel("wdl", "request"));
     }
 
     @Override

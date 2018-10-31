@@ -57,9 +57,7 @@ public class VelocityChangeData extends TimeData
                 // The player wasn't hurt and got velocity for that.
                 if (user.getPlayer().getNoDamageTicks() == 0 &&
                     // Recent teleports can cause bugs
-                    !user.getTeleportData().recentlyUpdated(0, 1000) &&
-                    // Players can jump up and down more often if there is a block above them
-                    user.getPlayer().getEyeLocation().getBlock().isEmpty())
+                    !user.getTeleportData().recentlyUpdated(0, 1000))
                 {
                     final boolean updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
 

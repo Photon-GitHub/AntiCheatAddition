@@ -1,8 +1,9 @@
 name: AACAdditionPro
-version: '${project.version}'
-description: '${project.description}'
+version: 4.5.1
+description: This plugin provides niche checks for cheats which are not covered by AAC
 author: Photon
 api-version: 1.13
+website: https://www.spigotmc.org/resources/aacadditionpro.33590/
 
 depend: [AAC, ProtocolLib]
 softdepend: [LabyModAPI, ViaVersion]

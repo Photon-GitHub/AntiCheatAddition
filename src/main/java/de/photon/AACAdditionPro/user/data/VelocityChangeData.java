@@ -47,8 +47,6 @@ public class VelocityChangeData extends TimeData
                 return;
             }
 
-            final IWrapperPlayPosition position = event::getPacket;
-
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
@@ -58,6 +56,8 @@ public class VelocityChangeData extends TimeData
                     // Recent teleports can cause bugs
                     !user.getTeleportData().recentlyUpdated(0, 1000))
                 {
+                    final IWrapperPlayPosition position = event::getPacket;
+
                     final boolean updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
 
                     if (updatedPositiveVelocity != user.getVelocityChangeData().positiveVelocity) {

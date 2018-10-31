@@ -27,7 +27,7 @@ public class VersionControl implements Module, Dependency
             new ProtocolVersion("1.10", ServerVersion.MC110, 210),
             new ProtocolVersion("1.11", ServerVersion.MC111, 315, 316),
             new ProtocolVersion("1.12", ServerVersion.MC112, 335, 338, 340),
-            new ProtocolVersion("1.13", ServerVersion.MC113, 393));
+            new ProtocolVersion("1.13", ServerVersion.MC113, 393, 401, 404));
 
     /**
      * Method used to get the {@link ServerVersion} from the protocol version number.
@@ -37,10 +37,8 @@ public class VersionControl implements Module, Dependency
      */
     public static ServerVersion getServerVersionFromProtocolVersion(int protocolVersion)
     {
-        for (ProtocolVersion version : PROTOCOL_VERSIONS)
-        {
-            if (version.versionNumbers.contains(protocolVersion))
-            {
+        for (ProtocolVersion version : PROTOCOL_VERSIONS) {
+            if (version.versionNumbers.contains(protocolVersion)) {
                 return version.equivalentServerVersion;
             }
         }
@@ -54,13 +52,15 @@ public class VersionControl implements Module, Dependency
         final Collection<String> versionStrings = new ArrayList<>();
         final List<Integer> blockedProtocolNumbers = new ArrayList<>();
 
-        for (ProtocolVersion protocolVersion : PROTOCOL_VERSIONS)
-        {
-            if (protocolVersion.allowed)
+        for (ProtocolVersion protocolVersion : PROTOCOL_VERSIONS) {
+            if (protocolVersion.allowed) {
                 versionStrings.add(protocolVersion.name);
+            }
             else
-                // Set the blocked versions
+            // Set the blocked versions
+            {
                 blockedProtocolNumbers.addAll(protocolVersion.versionNumbers);
+            }
         }
 
         // Set the kick message.

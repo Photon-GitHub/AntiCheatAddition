@@ -90,6 +90,7 @@ public class ConfigurationRepresentation
             }
             else if (value instanceof String)
             {
+                initialLine += ' ';
                 initialLine += '\"';
                 initialLine += ((String) value);
                 initialLine += '\"';

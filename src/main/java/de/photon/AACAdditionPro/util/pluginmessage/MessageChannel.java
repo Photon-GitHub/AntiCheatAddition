@@ -35,7 +35,8 @@ public class MessageChannel extends MinecraftKey
                 this.legacyName = "WDL|" + tempKey.toUpperCase();
                 break;
             default:
-                throw new IllegalArgumentException("Legacy plugin message conversion is not possible for prefix " + this.getPrefix());
+                this.legacyName = null;
+                break;
         }
     }
 

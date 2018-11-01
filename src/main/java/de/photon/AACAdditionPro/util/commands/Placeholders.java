@@ -69,7 +69,7 @@ public final class Placeholders
         input = applySinglePlaceholder(input, "{date}", now.format(DateTimeFormatter.ISO_LOCAL_DATE), Byte.MAX_VALUE);
 
         // Time
-        input = applySinglePlaceholder(input, "{date}", now.format(DateTimeFormatter.ISO_LOCAL_TIME), (byte) 8);
+        input = applySinglePlaceholder(input, "{time}", now.format(DateTimeFormatter.ISO_LOCAL_TIME), (byte) 8);
 
         // Server name
         input = applySinglePlaceholder(input, "{server}", Bukkit.getServerName(), Byte.MAX_VALUE);

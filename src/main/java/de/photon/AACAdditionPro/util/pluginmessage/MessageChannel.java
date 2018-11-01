@@ -4,10 +4,13 @@ import com.comphenix.protocol.wrappers.MinecraftKey;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 public class MessageChannel extends MinecraftKey
 {
+    public static final MessageChannel MC_BRAND_CHANNEL = new MessageChannel("minecraft", "brand");
+
     @Getter
     private final String legacyName;
 
@@ -58,32 +61,34 @@ public class MessageChannel extends MinecraftKey
     }
 
     /**
-     * Registers the channel for a certain {@link PluginMessageListener} (both incoming and outgoing packets)
+     * Registers the incoming channel for a certain {@link PluginMessageListener}
      */
-    public void registerChannel(final PluginMessageListener listener)
+    public void registerIncomingChannel(final PluginMessageListener listener)
     {
-        if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
-            AACAdditionPro.getInstance().getServer().getMessenger().registerIncomingPluginChannel(AACAdditionPro.getInstance(), this.getLegacyName(), listener);
-            AACAdditionPro.getInstance().getServer().getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getLegacyName());
-        }
-        else {
-            AACAdditionPro.getInstance().getServer().getMessenger().registerIncomingPluginChannel(AACAdditionPro.getInstance(), this.getFullKey(), listener);
-            AACAdditionPro.getInstance().getServer().getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getFullKey());
-        }
+        Bukkit.getMessenger().registerIncomingPluginChannel(AACAdditionPro.getInstance(), this.getChannel(), listener);
     }
 
     /**
-     * Unregisters the channel for a certain {@link PluginMessageListener} (both incoming and outgoing packets)
+     * Unregisters the incoming channel for a certain {@link PluginMessageListener}
      */
-    public void unregisterChannel(final PluginMessageListener listener)
+    public void unregisterIncomingChannel(final PluginMessageListener listener)
     {
-        if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
-            AACAdditionPro.getInstance().getServer().getMessenger().unregisterIncomingPluginChannel(AACAdditionPro.getInstance(), this.getLegacyName(), listener);
-            AACAdditionPro.getInstance().getServer().getMessenger().unregisterOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getLegacyName());
-        }
-        else {
-            AACAdditionPro.getInstance().getServer().getMessenger().unregisterIncomingPluginChannel(AACAdditionPro.getInstance(), this.getFullKey(), listener);
-            AACAdditionPro.getInstance().getServer().getMessenger().unregisterOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getFullKey());
-        }
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(AACAdditionPro.getInstance(), this.getChannel(), listener);
+    }
+
+    /**
+     * Registers the outgoing channel for a certain {@link PluginMessageListener}
+     */
+    public void registerOutgoingChannel(final PluginMessageListener listener)
+    {
+        Bukkit.getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
+    }
+
+    /**
+     * Unregisters the outgoing channel for a certain {@link PluginMessageListener}
+     */
+    public void unregisterOutgoingChannel(final PluginMessageListener listener)
+    {
+        Bukkit.getMessenger().unregisterOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
     }
 }

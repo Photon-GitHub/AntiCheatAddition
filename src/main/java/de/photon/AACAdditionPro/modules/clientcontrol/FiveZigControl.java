@@ -76,7 +76,13 @@ public class FiveZigControl extends ClientControlModule implements PluginMessage
     }
 
     @Override
-    public Set<MessageChannel> getPluginMessageChannels()
+    public Set<MessageChannel> getIncomingChannels()
+    {
+        return ImmutableSet.of(FIVEZIGCHANNEL);
+    }
+
+    @Override
+    public Set<MessageChannel> getOutgoingChannels()
     {
         return ImmutableSet.of(FIVEZIGCHANNEL);
     }

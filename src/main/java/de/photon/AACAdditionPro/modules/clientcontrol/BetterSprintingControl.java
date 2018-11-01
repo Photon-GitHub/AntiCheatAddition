@@ -16,6 +16,9 @@ import java.util.Set;
 
 public class BetterSprintingControl extends ClientControlModule implements PluginMessageListenerModule, RestrictedServerVersion
 {
+    private static final Set<MessageChannel> CHANNELS = ImmutableSet.of(new MessageChannel("minecraft", "bsm", "BSM"),
+                                                                        new MessageChannel("minecraft", "bsprint", "BSprint"));
+
     @LoadFromConfiguration(configPath = ".disable")
     private boolean disable;
 
@@ -39,10 +42,15 @@ public class BetterSprintingControl extends ClientControlModule implements Plugi
     }
 
     @Override
-    public Set<MessageChannel> getPluginMessageChannels()
+    public Set<MessageChannel> getIncomingChannels()
     {
-        return ImmutableSet.of(new MessageChannel("minecraft", "bsm", "BSM"),
-                               new MessageChannel("minecraft", "bsprint", "BSprint"));
+        return CHANNELS;
+    }
+
+    @Override
+    public Set<MessageChannel> getOutgoingChannels()
+    {
+        return CHANNELS;
     }
 
     @Override

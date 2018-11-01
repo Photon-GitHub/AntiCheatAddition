@@ -46,7 +46,7 @@ public class VapeControl extends ClientControlModule implements ListenerModule, 
     }
 
     @Override
-    public Set<MessageChannel> getPluginMessageChannels()
+    public Set<MessageChannel> getIncomingChannels()
     {
         return ImmutableSet.of(new MessageChannel("minecraft", "lolimahcker", "LOLIMAHCKER"));
     }

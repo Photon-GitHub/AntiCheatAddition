@@ -25,7 +25,7 @@ public class PXModControl extends ClientControlModule implements PluginMessageLi
     }
 
     @Override
-    public Set<MessageChannel> getPluginMessageChannels()
+    public Set<MessageChannel> getIncomingChannels()
     {
         return ImmutableSet.of(new MessageChannel("px", "version"));
     }

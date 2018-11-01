@@ -21,9 +21,9 @@ public class LiteLoaderControl extends ClientControlModule implements PluginMess
     }
 
     @Override
-    public Set<MessageChannel> getPluginMessageChannels()
+    public Set<MessageChannel> getIncomingChannels()
     {
-        return ImmutableSet.of(MC_BRAND_CHANNEL);
+        return ImmutableSet.of(MessageChannel.MC_BRAND_CHANNEL);
     }
 
     @Override

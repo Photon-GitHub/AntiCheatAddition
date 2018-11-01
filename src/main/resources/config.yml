@@ -864,8 +864,11 @@ ClientControl:
   # WorldDownloader is a popular modification to get the maps of a server
   WorldDownloader:
     # Do you want to enable WorldDownloader-Control
-    # This cannot be blocked; I recommend to kick if desired
     enabled: false
+    # This mod provides a method to disable it.
+    # Set the value to true if you want to block the mod
+    # THIS IS CURRENTLY IN BETA. PLEASE TEST BEFORE USING IT ON A PRODUCTIVE SERVER!
+    disable: true
     commands_on_detection:
     - "aackick {player} WorldDownloader"
 
@@ -878,18 +881,32 @@ ClientControl:
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
+# BrandHider allows you to modify the brand that is shown in the debug screen of minecraft.
+# This can be useful if you want to create a custom message or just hide your actual setup.
+BrandHider:
+  # Do you want to enable the BrandHider
+  enabled: false
+  # This is the replacement text for the brand.
+  # You can use the character & for color codes and all placeholders that are available in normal checks
+  brand: "Some Spigot"
+  # If you want to display attributes that update over time, e.g. TPS, Ping, Time or Date this will update the values
+  # in the defined interval.
+  # Set to 0 to disable the refreshing (recommended if you only use static text or placeholders that do not change)
+  # Measured in ticks
+  refresh_rate: 0
+
 # This automatically deletes old log files of both AAC and AACAdditionPro
 # It activates automatically on restart and after that in a 12 hour cycle.
 LogBot:
   # Do you want to enable the LogBot
   enabled: false
-  # After how many days should AAC-logs be deleted
+  # After how many days should AAC logs be deleted
   # Set to -1 to disable
   AAC: 10
-  # After how many days should AACAdditionPro-logs be deleted
+  # After how many days should AACAdditionPro logs be deleted
   # Set to -1 to disable
   AACAdditionPro: 10
-  # After how many days should Server-logs be deleted
+  # After how many days should server logs be deleted
   # Set to -1 to disable
   Server: 10
 
@@ -901,12 +918,12 @@ LogBot:
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
-# Should players with the aac.verbose permission get the AACAdditionPro-verbose messages
+# Should players with the aac.verbose permission get the AACAdditionPro verbose messages
 Verbose:
   # Do you want AACAdditionPro to log into a log-file
   file: true
-  # Should players be able to get Verbose-Messages, if they have the aac.verbose permission
-  # Players can toggle the verbose-output with the command /aacadditionpro verbose
+  # Should players be able to get verbose messages if they have the aac.verbose permission
+  # Players can toggle the verbose output with the command /aacadditionpro verbose
   players: false
   # Should the verbose output be logged in the console (very spammy, only recommended for testing purposes)
   console: false

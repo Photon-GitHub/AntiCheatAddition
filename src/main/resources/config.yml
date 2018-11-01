@@ -878,6 +878,14 @@ ClientControl:
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
+# BrandManager allows you to modify the brand that is shown in the debug screen of minecraft.
+# This can be useful if you want to create a custom, colorful message or just hide your actual setup.
+BrandManager:
+  # Do you want to enable the BrandManager
+  enabled: false
+  # This is the replacement text for the brand.
+  brand: "Spigot"
+
 # This automatically deletes old log files of both AAC and AACAdditionPro
 # It activates automatically on restart and after that in a 12 hour cycle.
 LogBot:

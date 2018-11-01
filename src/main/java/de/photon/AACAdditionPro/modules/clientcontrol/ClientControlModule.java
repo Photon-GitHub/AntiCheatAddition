@@ -15,8 +15,6 @@ import java.util.List;
 
 abstract class ClientControlModule implements Module
 {
-    static final MessageChannel MC_BRAND_CHANNEL = new MessageChannel("minecraft", "brand");
-
     // All the commands executed upon detection
     // If a module does not have commands to execute this will just be an empty list.
     private final List<String> commandsOnDetection = ConfigUtils.loadStringOrStringList(this.getConfigString() + ".commands_on_detection");
@@ -50,7 +48,7 @@ abstract class ClientControlModule implements Module
      */
     boolean isBrandChannel(final String channel)
     {
-        return channel.equals(MC_BRAND_CHANNEL.getChannel());
+        return channel.equals(MessageChannel.MC_BRAND_CHANNEL.getChannel());
     }
 
     /**

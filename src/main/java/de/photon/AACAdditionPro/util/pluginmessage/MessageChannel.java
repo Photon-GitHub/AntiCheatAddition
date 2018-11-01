@@ -8,6 +8,8 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 
 public class MessageChannel extends MinecraftKey
 {
+    public static final MessageChannel MC_BRAND_CHANNEL = new MessageChannel("minecraft", "brand");
+
     @Getter
     private final String legacyName;
 

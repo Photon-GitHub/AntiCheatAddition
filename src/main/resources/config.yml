@@ -879,7 +879,8 @@ ClientControl:
 # ------------------------------------------------------------------------------------------------------------------- #
 
 # BrandManager allows you to modify the brand that is shown in the debug screen of minecraft.
-# This can be useful if you want to create a custom, colorful message or just hide your actual setup.
+# Compared to other plugins that have similar functionality this manager is more optimized and can use ProtocolLib.
+# This can be useful if you want to create a custom message or just hide your actual setup.
 BrandManager:
   # Do you want to enable the BrandManager
   enabled: false

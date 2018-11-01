@@ -1,6 +1,8 @@
 package de.photon.AACAdditionPro.util.reflection;
 
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author geNAZt
@@ -48,5 +50,27 @@ public class TempValueReflect
         }
 
         return 0;
+    }
+
+    public <T> List<T> asList(Class<T> clazz)
+    {
+        try {
+            return (List<T>) this.field.get(obj);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public <T> Set<T> asSet(Class<T> clazz)
+    {
+        try {
+            return (Set<T>) this.field.get(obj);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

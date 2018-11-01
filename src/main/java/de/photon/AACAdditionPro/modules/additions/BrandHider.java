@@ -1,42 +1,58 @@
 package de.photon.AACAdditionPro.modules.additions;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
 import de.photon.AACAdditionPro.AACAdditionPro;
+import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
-import de.photon.AACAdditionPro.modules.PacketListenerModule;
-import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerCustomPayload;
+import de.photon.AACAdditionPro.util.commands.Placeholders;
+import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.pluginmessage.ByteBufUtil;
 import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
+import de.photon.AACAdditionPro.util.reflection.FieldReflect;
+import de.photon.AACAdditionPro.util.reflection.Reflect;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.nio.charset.StandardCharsets;
-
-public class BrandHider extends PacketAdapter implements PacketListenerModule
+public class BrandHider implements ListenerModule
 {
-    private final byte[] brand;
+    private FieldReflect playerChannelsField = Reflect.fromOBC("entity.CraftPlayer").field("channels");
+    private final String brand = ChatColor.translateAlternateColorCodes('&', AACAdditionPro.getInstance().getConfig().getString(this.getConfigString() + ".brand")) + ChatColor.RESET;
 
-    public BrandHider()
-    {
-        super(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, PacketType.Play.Server.CUSTOM_PAYLOAD);
-        brand = Unpooled.copiedBuffer(AACAdditionPro.getInstance().getConfig().getString(this.getConfigString() + ".brand"),
-                                      StandardCharsets.UTF_8).array();
-
-        Bukkit.getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel());
-    }
+    @LoadFromConfiguration(configPath = ".refresh_rate")
+    private long refreshRate;
 
     @Override
-    public void onPacketSending(PacketEvent event)
+    public void enable()
     {
-        final WrapperPlayServerCustomPayload customPayload = new WrapperPlayServerCustomPayload(event.getPacket());
+        Bukkit.getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel());
 
-        if (customPayload.getChannel().getChannel().equals(MessageChannel.MC_BRAND_CHANNEL.getChannel())) {
-            event.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(),
-                                                MessageChannel.MC_BRAND_CHANNEL.getChannel(),
-                                                brand);
+        if (refreshRate > 0) {
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () -> {
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    this.updateBrand(onlinePlayer);
+                }
+            }, 20, refreshRate);
         }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event)
+    {
+        playerChannelsField.from(event.getPlayer()).asSet(String.class).add(MessageChannel.MC_BRAND_CHANNEL.getChannel());
+        updateBrand(event.getPlayer());
+    }
+
+    private void updateBrand(final Player player)
+    {
+        ByteBuf byteBuf = Unpooled.buffer();
+        final String sentBrand = Placeholders.applyPlaceholders(brand, player, null);
+        ByteBufUtil.writeString(sentBrand, byteBuf);
+        player.sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel(), ByteBufUtil.toArray(byteBuf));
+        byteBuf.release();
     }
 
     @Override

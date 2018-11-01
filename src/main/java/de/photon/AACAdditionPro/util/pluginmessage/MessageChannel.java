@@ -4,6 +4,7 @@ import com.comphenix.protocol.wrappers.MinecraftKey;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 public class MessageChannel extends MinecraftKey
@@ -64,7 +65,7 @@ public class MessageChannel extends MinecraftKey
      */
     public void registerIncomingChannel(final PluginMessageListener listener)
     {
-        AACAdditionPro.getInstance().getServer().getMessenger().registerIncomingPluginChannel(AACAdditionPro.getInstance(), this.getChannel(), listener);
+        Bukkit.getMessenger().registerIncomingPluginChannel(AACAdditionPro.getInstance(), this.getChannel(), listener);
     }
 
     /**
@@ -72,7 +73,7 @@ public class MessageChannel extends MinecraftKey
      */
     public void unregisterIncomingChannel(final PluginMessageListener listener)
     {
-        AACAdditionPro.getInstance().getServer().getMessenger().unregisterIncomingPluginChannel(AACAdditionPro.getInstance(), this.getChannel(), listener);
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(AACAdditionPro.getInstance(), this.getChannel(), listener);
     }
 
     /**
@@ -80,7 +81,7 @@ public class MessageChannel extends MinecraftKey
      */
     public void registerOutgoingChannel(final PluginMessageListener listener)
     {
-        AACAdditionPro.getInstance().getServer().getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
+        Bukkit.getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
     }
 
     /**
@@ -88,6 +89,6 @@ public class MessageChannel extends MinecraftKey
      */
     public void unregisterOutgoingChannel(final PluginMessageListener listener)
     {
-        AACAdditionPro.getInstance().getServer().getMessenger().unregisterOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
+        Bukkit.getMessenger().unregisterOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
     }
 }

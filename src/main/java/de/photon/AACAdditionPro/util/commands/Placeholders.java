@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,8 +63,18 @@ public final class Placeholders
     {
         Preconditions.checkState(AACAPIProvider.isAPILoaded(), "Placeholder-parsing failed because AAC's API is not loaded.");
 
+        final LocalDateTime now = LocalDateTime.now();
+
+        // Date
+        input = applySinglePlaceholder(input, "{date}", now.format(DateTimeFormatter.ISO_LOCAL_DATE), Byte.MAX_VALUE);
+
+        // Time
+        input = applySinglePlaceholder(input, "{date}", now.format(DateTimeFormatter.ISO_LOCAL_TIME), (byte) 8);
+
+        // Server name
         input = applySinglePlaceholder(input, "{server}", Bukkit.getServerName(), Byte.MAX_VALUE);
 
+        // Ticks per second
         input = applySinglePlaceholder(input, "{tps}", String.valueOf(AACAPIProvider.getAPI().getTPS()), (byte) 5);
 
         if (violationInformation != null) {

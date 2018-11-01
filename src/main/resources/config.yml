@@ -866,7 +866,7 @@ ClientControl:
     # Do you want to enable WorldDownloader-Control
     enabled: false
     # This mod provides a method to disable it.
-    # Set the corresponding value to true if you want to block the mod
+    # Set the value to true if you want to block the mod
     disable: true
     commands_on_detection:
     - "aackick {player} WorldDownloader"

@@ -864,8 +864,10 @@ ClientControl:
   # WorldDownloader is a popular modification to get the maps of a server
   WorldDownloader:
     # Do you want to enable WorldDownloader-Control
-    # This cannot be blocked; I recommend to kick if desired
     enabled: false
+    # This mod provides a method to disable it.
+    # Set the corresponding value to true if you want to block the mod
+    disable: true
     commands_on_detection:
     - "aackick {player} WorldDownloader"
 
@@ -892,13 +894,13 @@ BrandManager:
 LogBot:
   # Do you want to enable the LogBot
   enabled: false
-  # After how many days should AAC-logs be deleted
+  # After how many days should AAC logs be deleted
   # Set to -1 to disable
   AAC: 10
-  # After how many days should AACAdditionPro-logs be deleted
+  # After how many days should AACAdditionPro logs be deleted
   # Set to -1 to disable
   AACAdditionPro: 10
-  # After how many days should Server-logs be deleted
+  # After how many days should server logs be deleted
   # Set to -1 to disable
   Server: 10
 
@@ -910,12 +912,12 @@ LogBot:
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
-# Should players with the aac.verbose permission get the AACAdditionPro-verbose messages
+# Should players with the aac.verbose permission get the AACAdditionPro verbose messages
 Verbose:
   # Do you want AACAdditionPro to log into a log-file
   file: true
-  # Should players be able to get Verbose-Messages, if they have the aac.verbose permission
-  # Players can toggle the verbose-output with the command /aacadditionpro verbose
+  # Should players be able to get verbose messages if they have the aac.verbose permission
+  # Players can toggle the verbose output with the command /aacadditionpro verbose
   players: false
   # Should the verbose output be logged in the console (very spammy, only recommended for testing purposes)
   console: false

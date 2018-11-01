@@ -46,11 +46,16 @@ public class WorldDownloaderControl extends ClientControlModule implements Plugi
     }
 
     @Override
-    public Set<MessageChannel> getPluginMessageChannels()
+    public Set<MessageChannel> getIncomingChannels()
     {
         return ImmutableSet.of(new MessageChannel("wdl", "init"),
-                               new MessageChannel("wdl", "control"),
                                new MessageChannel("wdl", "request"));
+    }
+
+    @Override
+    public Set<MessageChannel> getOutgoingChannels()
+    {
+        return ImmutableSet.of(new MessageChannel("wdl", "control"));
     }
 
     @Override

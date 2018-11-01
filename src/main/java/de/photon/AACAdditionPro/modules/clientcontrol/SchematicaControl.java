@@ -10,7 +10,6 @@ import de.photon.AACAdditionPro.modules.RestrictedServerVersion;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -65,10 +64,7 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
     }
 
     @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] message) {}
-
-    @Override
-    public Set<MessageChannel> getPluginMessageChannels()
+    public Set<MessageChannel> getOutgoingChannels()
     {
         return ImmutableSet.of(SCHEMATICA_CHANNEL);
     }

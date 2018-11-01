@@ -20,7 +20,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class BrandHider implements ListenerModule
 {
     private FieldReflect playerChannelsField = Reflect.fromOBC("entity.CraftPlayer").field("channels");
-    private final String brand = ChatColor.translateAlternateColorCodes('&', AACAdditionPro.getInstance().getConfig().getString(this.getConfigString() + ".brand")) + ChatColor.RESET;
+    private static String BRAND;
+
+    public static void setBRAND(String brand)
+    {
+        BrandHider.BRAND = ChatColor.translateAlternateColorCodes('&', brand) + ChatColor.RESET;
+        updateAllBrands();
+    }
 
     @LoadFromConfiguration(configPath = ".refresh_rate")
     private long refreshRate;
@@ -29,13 +35,10 @@ public class BrandHider implements ListenerModule
     public void enable()
     {
         Bukkit.getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel());
+        setBRAND(AACAdditionPro.getInstance().getConfig().getString(this.getConfigString() + ".brand"));
 
         if (refreshRate > 0) {
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), () -> {
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    this.updateBrand(onlinePlayer);
-                }
-            }, 20, refreshRate);
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), BrandHider::updateAllBrands, 20, refreshRate);
         }
     }
 
@@ -46,10 +49,17 @@ public class BrandHider implements ListenerModule
         updateBrand(event.getPlayer());
     }
 
-    private void updateBrand(final Player player)
+    private static void updateAllBrands()
+    {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            updateBrand(onlinePlayer);
+        }
+    }
+
+    private static void updateBrand(final Player player)
     {
         ByteBuf byteBuf = Unpooled.buffer();
-        final String sentBrand = Placeholders.applyPlaceholders(brand, player, null);
+        final String sentBrand = Placeholders.applyPlaceholders(BRAND, player, null);
         ByteBufUtil.writeString(sentBrand, byteBuf);
         player.sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel(), ByteBufUtil.toArray(byteBuf));
         byteBuf.release();

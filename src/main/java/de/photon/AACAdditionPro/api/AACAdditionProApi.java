@@ -4,6 +4,7 @@ import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.modules.Module;
 import de.photon.AACAdditionPro.modules.ModuleType;
+import de.photon.AACAdditionPro.modules.additions.BrandHider;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.entity.Player;
 
@@ -78,5 +79,13 @@ public final class AACAdditionProApi
     public static void setKillauraEntityAddon(KillauraEntityAddon addon)
     {
         AACAdditionPro.getInstance().setKillauraEntityAddon(addon);
+    }
+
+    /**
+     * Sets the brand that BrandHider should use
+     */
+    public static void setBrandHiderBrand(final String string)
+    {
+        BrandHider.setBRAND(string);
     }
 }

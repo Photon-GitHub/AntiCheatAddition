@@ -90,19 +90,4 @@ public class MessageChannel extends MinecraftKey
     {
         AACAdditionPro.getInstance().getServer().getMessenger().unregisterOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
     }
-
-    /**
-     * Registers the channel for a certain {@link PluginMessageListener}
-     */
-    @Deprecated
-    public void registerChannel(final PluginMessageListener listener)
-    {
-
-    }
-
-    @Deprecated
-    public void unregisterChannel(final PluginMessageListener listener)
-    {
-
-    }
 }

@@ -14,11 +14,11 @@ import org.bukkit.Bukkit;
 
 import java.nio.charset.StandardCharsets;
 
-public class BrandManager extends PacketAdapter implements PacketListenerModule
+public class BrandHider extends PacketAdapter implements PacketListenerModule
 {
     private final byte[] brand;
 
-    public BrandManager()
+    public BrandHider()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, PacketType.Play.Server.CUSTOM_PAYLOAD);
         brand = Unpooled.copiedBuffer(AACAdditionPro.getInstance().getConfig().getString(this.getConfigString() + ".brand"),
@@ -42,6 +42,6 @@ public class BrandManager extends PacketAdapter implements PacketListenerModule
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.BRAND_MANAGER;
+        return ModuleType.BRAND_HIDER;
     }
 }

@@ -8,7 +8,7 @@ import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityController;
 import de.photon.AACAdditionPro.command.MainCommand;
 import de.photon.AACAdditionPro.events.APILoadedEvent;
 import de.photon.AACAdditionPro.modules.ModuleManager;
-import de.photon.AACAdditionPro.modules.additions.BrandManager;
+import de.photon.AACAdditionPro.modules.additions.BrandHider;
 import de.photon.AACAdditionPro.modules.additions.LogBot;
 import de.photon.AACAdditionPro.modules.checks.AutoPotion;
 import de.photon.AACAdditionPro.modules.checks.Esp;
@@ -201,7 +201,7 @@ public class AACAdditionPro extends JavaPlugin
             this.registerListener(new UserManager());
             this.moduleManager = new ModuleManager(ImmutableSet.of(
                     // Additions
-                    new BrandManager(),
+                    new BrandHider(),
                     new LogBot(),
 
                     // ClientControl

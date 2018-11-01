@@ -11,7 +11,7 @@ import java.util.Set;
 public enum ModuleType
 {
     // Additions
-    BRAND_MANAGER("BrandManager"),
+    BRAND_HIDER("BrandHider"),
     LOG_BOT("LogBot"),
 
     // Normal checks

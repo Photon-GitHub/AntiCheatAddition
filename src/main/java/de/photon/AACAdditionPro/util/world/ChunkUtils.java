@@ -35,80 +35,85 @@ public final class ChunkUtils
      */
     public static boolean areChunksLoadedBetweenLocations(final Location one, final Location two)
     {
-        if (!one.getWorld().getUID().equals(two.getWorld().getUID()))
-        {
+        if (!one.getWorld().getUID().equals(two.getWorld().getUID())) {
             throw new IllegalArgumentException("Tried to check chunks between worlds.");
         }
 
-        // Convert block coordinates to chunk coordinates
-        final int oneChunkX = one.getBlockX() >> 4;
-        final int oneChunkZ = one.getBlockZ() >> 4;
+        // Basic starting location check
+        if (!isChunkLoaded(one.getWorld(), one.getBlockX(), one.getBlockZ())) {
+            return false;
+        }
 
-        final int twoChunkX = two.getBlockX() >> 4;
-        final int twoChunkZ = two.getBlockZ() >> 4;
+        final boolean modifyX;
 
-        // Get the chunk coordinate
-        final double xDiff = Math.abs(oneChunkX - twoChunkX);
-        final double zDiff = Math.abs(oneChunkZ - twoChunkZ);
+        final double deltaX = two.getX() - one.getX();
+        final double deltaZ = two.getZ() - one.getZ();
 
-        // Get the iteration directions.
-        // 0.5 to ensure chunks on the boarder are still checked.
-        final double xDir = oneChunkX > twoChunkX ? -0.5 : 0.5;
-        final double zDir = oneChunkZ > twoChunkZ ? -0.5 : 0.5;
+        final double xStep;
+        final double zStep;
 
-        double[] chunkCoords = new double[]{oneChunkX, oneChunkZ};
+        final int steps;
 
-        int lastChunkX = Integer.MIN_VALUE;
-        int lastChunkZ = Integer.MIN_VALUE;
+        if (Math.abs(deltaX) > Math.abs(deltaZ)) {
+            modifyX = false;
+            steps = (int) Math.ceil(Math.abs(deltaX));
+            xStep = Math.signum(deltaX);
+            zStep = deltaZ / steps;
+        }
+        else {
+            modifyX = true;
+            steps = (int) Math.ceil(Math.abs(deltaZ));
+            xStep = deltaX / Math.abs(deltaZ);
+            zStep = Math.signum(deltaZ);
+        }
 
-        if (xDiff > zDiff)
-        {
-            double zIncrease = (zDiff / xDiff) * zDir;
+        double workingX = one.getX();
+        double workingZ = one.getZ();
+        double workingModifiedX;
+        double workingModifiedZ;
 
-            for (int i = 0; i <= xDiff; i++)
-            {
-                final int curChunkX = (int) Math.floor(chunkCoords[0]);
-                final int curChunkZ = (int) Math.floor(chunkCoords[1]);
+        int chunkX;
+        int chunkZ;
 
-                if (curChunkX != lastChunkX || curChunkZ != lastChunkZ)
-                {
-                    if (!one.getWorld().isChunkLoaded(curChunkX, curChunkZ))
-                    {
-                        return false;
-                    }
+        // Cache the last and current chunk for faster processing.
+        // The last chunk is important as of the modifier.
+        final int[] currentChunkCoords = {((int) Math.floor(workingX)) >> 4, ((int) Math.floor(workingZ)) >> 4};
+        final int[] lastChunkCoords = {currentChunkCoords[0], currentChunkCoords[1]};
 
-                    lastChunkX = curChunkX;
-                    lastChunkZ = curChunkZ;
+        for (int i = 0; i < steps; i++) {
+            workingX += xStep;
+            workingZ += zStep;
+
+            // Modifier to make sure that border behaviour of BlockIterator is covered.
+            for (int modifier = -1; modifier <= 1; modifier++) {
+                if (modifyX) {
+                    workingModifiedX = workingX + modifier;
+                    workingModifiedZ = workingZ;
+                }
+                else {
+                    workingModifiedX = workingX;
+                    workingModifiedZ = workingZ + modifier;
                 }
 
-                chunkCoords[0] += xDir;
-                chunkCoords[1] += zIncrease;
-            }
-        }
-        else
-        {
-            double xIncrease = (xDiff / zDiff) * xDir;
+                chunkX = ((int) Math.floor(workingModifiedX)) >> 4;
+                chunkZ = ((int) Math.floor(workingModifiedZ)) >> 4;
 
-            for (int i = 0; i <= zDiff; i++)
-            {
-                final int curChunkX = (int) Math.floor(chunkCoords[0]);
-                final int curChunkZ = (int) Math.floor(chunkCoords[1]);
-
-                if (curChunkX != lastChunkX || curChunkZ != lastChunkZ)
+                // Check if the chunk has already been checked
+                if ((currentChunkCoords[0] != chunkX || currentChunkCoords[1] != chunkZ) &&
+                    (lastChunkCoords[0] != chunkX || lastChunkCoords[1] != chunkZ))
                 {
-                    if (!one.getWorld().isChunkLoaded(curChunkX, curChunkZ))
-                    {
+                    lastChunkCoords[0] = currentChunkCoords[0];
+                    lastChunkCoords[1] = currentChunkCoords[1];
+                    currentChunkCoords[0] = chunkX;
+                    currentChunkCoords[1] = chunkZ;
+
+                    if (!one.getWorld().isChunkLoaded(chunkX, chunkZ)) {
                         return false;
                     }
-
-                    lastChunkX = curChunkX;
-                    lastChunkZ = curChunkZ;
                 }
-
-                chunkCoords[0] += xIncrease;
-                chunkCoords[1] += zDir;
             }
         }
+
         return true;
     }
 }

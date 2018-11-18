@@ -8,11 +8,11 @@ import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.data.PositionData;
-import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.entity.EntityUtil;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.packetwrappers.client.IWrapperPlayClientLook;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 
 import java.util.Collections;
 import java.util.Set;
@@ -71,6 +71,11 @@ class EqualRotationPattern extends PatternModule.PacketPattern
             currentPitch == user.getLookPacketData().getRealLastPitch() &&
             // Labymod fp when standing still / hit in corner fp
             user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY) &&
+            // False positive when jumping from great heights into a pool with slime blocks on the bottom.
+            !(EntityUtil.isHitboxInLiquids(user.getPlayer().getLocation(), user.getPlayer().isSneaking() ?
+                                                                           Hitbox.SNEAKING_PLAYER :
+                                                                           Hitbox.PLAYER) &&
+              user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SLIME_BLOCK) &&
             // Fixes false positives on versions 1.9+ because of changed hitboxes
             !(ServerVersion.getActiveServerVersion() == ServerVersion.MC188 &&
               ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC188 &&

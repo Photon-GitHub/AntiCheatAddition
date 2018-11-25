@@ -1,5 +1,6 @@
 package de.photon.AACAdditionPro.modules.checks;
 
+import com.google.common.collect.ImmutableMap;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ListenerModule;
@@ -29,8 +30,10 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 public class Esp implements ListenerModule
 {
     // The auto-config-data
-    private double renderDistanceSquared = 0;
+    private Map<UUID, Integer> playerTrackingRanges;
     private boolean hideAfterRenderDistance = true;
 
     private int updateMillis;
@@ -65,6 +68,8 @@ public class Esp implements ListenerModule
 
         final ConfigurationSection worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
 
+        final ImmutableMap.Builder<UUID, Integer> rangeBuilder = ImmutableMap.builder();
+
         int currentPlayerTrackingRange;
         for (final String world : worlds.getKeys(false)) {
             currentPlayerTrackingRange = worlds.getInt(world + ".entity-tracking-range.players");
@@ -72,18 +77,17 @@ public class Esp implements ListenerModule
             // Square
             currentPlayerTrackingRange *= currentPlayerTrackingRange;
 
-            if (currentPlayerTrackingRange > renderDistanceSquared) {
-                renderDistanceSquared = currentPlayerTrackingRange;
-
-                // Do the maths inside here as reading from a file takes longer than calculating this.
-                // 19321 == 139^2 as of the maximum range of the block-iterator
-                if (renderDistanceSquared > 19321) {
-                    hideAfterRenderDistance = false;
-                    renderDistanceSquared = 19321;
-                    break;
-                }
+            // Do the maths inside here as reading from a file takes longer than calculating this.
+            // 19321 == 139^2 as of the maximum range of the block-iterator
+            if (currentPlayerTrackingRange > 19321) {
+                hideAfterRenderDistance = false;
+                currentPlayerTrackingRange = 19321;
             }
+
+            rangeBuilder.put(Bukkit.getWorld(world).getUID(), currentPlayerTrackingRange);
         }
+
+        this.playerTrackingRanges = rangeBuilder.build();
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
@@ -96,11 +100,10 @@ public class Esp implements ListenerModule
                     final ExecutorService pairExecutor = Executors.newWorkStealingPool();
 
                     // Iterate through all player-constellations
-                    User observingUser;
                     while (!users.isEmpty()) {
                         // Remove the finished player to reduce the amount of added entries.
                         // This makes sure the player won't have a connection with himself.
-                        observingUser = users.remove();
+                        final User observingUser = users.remove();
 
                         // Do not process spectators.
                         if (observingUser.getPlayer().getGameMode() == GameMode.SPECTATOR) {
@@ -117,25 +120,24 @@ public class Esp implements ListenerModule
                                 // The users are always in the same world (see above)
                                 final double pairDistanceSquared = observingUser.getPlayer().getLocation().distanceSquared(watched.getPlayer().getLocation());
 
-                                final User finalObservingUser = observingUser;
                                 pairExecutor.execute(() -> {
                                     // Less than 1 block distance
                                     // Everything (smaller than 1)^2 will result in something smaller than 1
                                     if (pairDistanceSquared < 1) {
-                                        updatePairHideMode(finalObservingUser, watched, HideMode.NONE);
+                                        updatePairHideMode(observingUser, watched, HideMode.NONE);
                                         return;
                                     }
 
-                                    if (pairDistanceSquared > renderDistanceSquared) {
-                                        updatePairHideMode(finalObservingUser, watched, hideAfterRenderDistance ?
-                                                                                        HideMode.FULL :
-                                                                                        HideMode.NONE);
+                                    if (pairDistanceSquared > this.playerTrackingRanges.get(observingUser.getPlayer().getWorld().getUID())) {
+                                        updatePairHideMode(observingUser, watched, hideAfterRenderDistance ?
+                                                                                   HideMode.FULL :
+                                                                                   HideMode.NONE);
                                         return;
                                     }
 
                                     // Update hide mode in both directions.
-                                    updateHideMode(finalObservingUser, watched.getPlayer(),
-                                                   canSee(finalObservingUser, watched) ?
+                                    updateHideMode(observingUser, watched.getPlayer(),
+                                                   canSee(observingUser, watched) ?
                                                    // Is the user visible
                                                    HideMode.NONE :
                                                    // If the observed player is sneaking hide him fully
@@ -143,12 +145,12 @@ public class Esp implements ListenerModule
                                                     HideMode.FULL :
                                                     HideMode.INFORMATION_ONLY));
 
-                                    updateHideMode(watched, finalObservingUser.getPlayer(),
-                                                   canSee(watched, finalObservingUser) ?
+                                    updateHideMode(watched, observingUser.getPlayer(),
+                                                   canSee(watched, observingUser) ?
                                                    // Is the user visible
                                                    HideMode.NONE :
                                                    // If the observed player is sneaking hide him fully
-                                                   (finalObservingUser.getPlayer().isSneaking() ?
+                                                   (observingUser.getPlayer().isSneaking() ?
                                                     HideMode.FULL :
                                                     HideMode.INFORMATION_ONLY));
                                 });

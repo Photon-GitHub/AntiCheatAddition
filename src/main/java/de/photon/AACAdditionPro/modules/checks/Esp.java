@@ -65,8 +65,9 @@ public class Esp implements ListenerModule
 
         final ConfigurationSection worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
 
+        int currentPlayerTrackingRange;
         for (final String world : worlds.getKeys(false)) {
-            int currentPlayerTrackingRange = worlds.getInt(world + ".entity-tracking-range.players");
+            currentPlayerTrackingRange = worlds.getInt(world + ".entity-tracking-range.players");
 
             // Square
             currentPlayerTrackingRange *= currentPlayerTrackingRange;

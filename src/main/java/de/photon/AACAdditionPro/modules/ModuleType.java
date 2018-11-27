@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 @Getter
@@ -43,7 +43,7 @@ public enum ModuleType
     VERSION_CONTROL("ClientControl.VersionControl"),
     WORLDDOWNLOAD_CONTROL("ClientControl.WorldDownloader", "uses WorldDownloader");
 
-    public final static Set<ModuleType> VL_MODULETYPES = new HashSet<>();
+    public final static Set<ModuleType> VL_MODULETYPES = EnumSet.noneOf(ModuleType.class);
 
     @Getter
     @Setter(AccessLevel.PACKAGE)

@@ -218,7 +218,7 @@ public class Graph
     private double[] calculate(final double[] inputs)
     {
         // Set the inputs
-        // Check lenght of data.
+        // Check length of data.
         if (inputs.length != this.neuronsInLayers[0])
         {
             throw new IllegalArgumentException("Wrong input length for Graph. Expected: " + this.neuronsInLayers[0] + " | Real: " + inputs.length);

@@ -1,12 +1,13 @@
 package de.photon.AACAdditionPro.util.world;
 
-import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.ServerVersion;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,104 +16,102 @@ public final class BlockUtils
     public static final Set<Material> LIQUIDS;
     public static final Set<Material> CONTAINERS;
 
-    static
-    {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+    static {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-                CONTAINERS = ImmutableSet.of(Material.CHEST,
-                                             Material.TRAPPED_CHEST,
-                                             Material.ENDER_CHEST,
-                                             Material.ANVIL,
-                                             Material.FURNACE,
-                                             Material.DISPENSER,
-                                             Material.DROPPER,
-                                             Material.BREWING_STAND);
+                CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
+                                                                    Material.TRAPPED_CHEST,
+                                                                    Material.ENDER_CHEST,
+                                                                    Material.ANVIL,
+                                                                    Material.FURNACE,
+                                                                    Material.DISPENSER,
+                                                                    Material.DROPPER,
+                                                                    Material.BREWING_STAND));
 
-                LIQUIDS = ImmutableSet.of(Material.WATER,
-                                          Material.LAVA,
-                                          Material.getMaterial("STATIONARY_WATER"),
-                                          Material.getMaterial("STATIONARY_LAVA"));
+                LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
+                                                                 Material.LAVA,
+                                                                 Material.getMaterial("STATIONARY_WATER"),
+                                                                 Material.getMaterial("STATIONARY_LAVA")));
                 break;
             case MC111:
             case MC112:
-                CONTAINERS = ImmutableSet.of(Material.CHEST,
-                                             Material.TRAPPED_CHEST,
-                                             Material.ENDER_CHEST,
-                                             Material.ANVIL,
-                                             Material.FURNACE,
-                                             Material.DISPENSER,
-                                             Material.DROPPER,
-                                             Material.BREWING_STAND,
-                                             Material.BLACK_SHULKER_BOX,
-                                             Material.BROWN_SHULKER_BOX,
-                                             Material.BLUE_SHULKER_BOX,
-                                             Material.CYAN_SHULKER_BOX,
-                                             Material.GRAY_SHULKER_BOX,
-                                             Material.GREEN_SHULKER_BOX,
-                                             Material.LIGHT_BLUE_SHULKER_BOX,
-                                             Material.LIME_SHULKER_BOX,
-                                             Material.MAGENTA_SHULKER_BOX,
-                                             Material.ORANGE_SHULKER_BOX,
-                                             Material.PINK_SHULKER_BOX,
-                                             Material.PURPLE_SHULKER_BOX,
-                                             Material.RED_SHULKER_BOX,
-                                             Material.getMaterial("SILVER_SHULKER_BOX"),
-                                             Material.WHITE_SHULKER_BOX,
-                                             Material.YELLOW_SHULKER_BOX);
+                CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
+                                                                    Material.TRAPPED_CHEST,
+                                                                    Material.ENDER_CHEST,
+                                                                    Material.ANVIL,
+                                                                    Material.FURNACE,
+                                                                    Material.DISPENSER,
+                                                                    Material.DROPPER,
+                                                                    Material.BREWING_STAND,
+                                                                    Material.BLACK_SHULKER_BOX,
+                                                                    Material.BROWN_SHULKER_BOX,
+                                                                    Material.BLUE_SHULKER_BOX,
+                                                                    Material.CYAN_SHULKER_BOX,
+                                                                    Material.GRAY_SHULKER_BOX,
+                                                                    Material.GREEN_SHULKER_BOX,
+                                                                    Material.LIGHT_BLUE_SHULKER_BOX,
+                                                                    Material.LIME_SHULKER_BOX,
+                                                                    Material.MAGENTA_SHULKER_BOX,
+                                                                    Material.ORANGE_SHULKER_BOX,
+                                                                    Material.PINK_SHULKER_BOX,
+                                                                    Material.PURPLE_SHULKER_BOX,
+                                                                    Material.RED_SHULKER_BOX,
+                                                                    Material.getMaterial("SILVER_SHULKER_BOX"),
+                                                                    Material.WHITE_SHULKER_BOX,
+                                                                    Material.YELLOW_SHULKER_BOX));
 
-                LIQUIDS = ImmutableSet.of(Material.WATER,
-                                          Material.LAVA,
-                                          Material.getMaterial("STATIONARY_WATER"),
-                                          Material.getMaterial("STATIONARY_LAVA"));
+                LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
+                                                                 Material.LAVA,
+                                                                 Material.getMaterial("STATIONARY_WATER"),
+                                                                 Material.getMaterial("STATIONARY_LAVA")));
                 break;
             case MC113:
-                CONTAINERS = ImmutableSet.of(Material.CHEST,
-                                             Material.TRAPPED_CHEST,
-                                             Material.ENDER_CHEST,
-                                             Material.ANVIL,
-                                             Material.FURNACE,
-                                             Material.DISPENSER,
-                                             Material.DROPPER,
-                                             Material.BREWING_STAND,
-                                             Material.SHULKER_BOX,
-                                             Material.BLACK_SHULKER_BOX,
-                                             Material.BROWN_SHULKER_BOX,
-                                             Material.BLUE_SHULKER_BOX,
-                                             Material.CYAN_SHULKER_BOX,
-                                             Material.GRAY_SHULKER_BOX,
-                                             Material.GREEN_SHULKER_BOX,
-                                             Material.LIGHT_BLUE_SHULKER_BOX,
-                                             Material.LIME_SHULKER_BOX,
-                                             Material.MAGENTA_SHULKER_BOX,
-                                             Material.ORANGE_SHULKER_BOX,
-                                             Material.PINK_SHULKER_BOX,
-                                             Material.PURPLE_SHULKER_BOX,
-                                             Material.RED_SHULKER_BOX,
-                                             Material.WHITE_SHULKER_BOX,
-                                             Material.YELLOW_SHULKER_BOX);
+                CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
+                                                                    Material.TRAPPED_CHEST,
+                                                                    Material.ENDER_CHEST,
+                                                                    Material.ANVIL,
+                                                                    Material.FURNACE,
+                                                                    Material.DISPENSER,
+                                                                    Material.DROPPER,
+                                                                    Material.BREWING_STAND,
+                                                                    Material.SHULKER_BOX,
+                                                                    Material.BLACK_SHULKER_BOX,
+                                                                    Material.BROWN_SHULKER_BOX,
+                                                                    Material.BLUE_SHULKER_BOX,
+                                                                    Material.CYAN_SHULKER_BOX,
+                                                                    Material.GRAY_SHULKER_BOX,
+                                                                    Material.GREEN_SHULKER_BOX,
+                                                                    Material.LIGHT_BLUE_SHULKER_BOX,
+                                                                    Material.LIME_SHULKER_BOX,
+                                                                    Material.MAGENTA_SHULKER_BOX,
+                                                                    Material.ORANGE_SHULKER_BOX,
+                                                                    Material.PINK_SHULKER_BOX,
+                                                                    Material.PURPLE_SHULKER_BOX,
+                                                                    Material.RED_SHULKER_BOX,
+                                                                    Material.WHITE_SHULKER_BOX,
+                                                                    Material.YELLOW_SHULKER_BOX));
 
-                LIQUIDS = ImmutableSet.of(Material.WATER,
-                                          Material.LAVA);
+                LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
+                                                                 Material.LAVA));
                 break;
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
     }
 
-    public static final Set<BlockFace> HORIZONTAL_FACES = ImmutableSet.of(
+    public static final Set<BlockFace> HORIZONTAL_FACES = Collections.unmodifiableSet(EnumSet.of(
             BlockFace.NORTH,
             BlockFace.SOUTH,
             BlockFace.WEST,
-            BlockFace.EAST);
+            BlockFace.EAST));
 
-    public static final Set<BlockFace> ALL_FACES = ImmutableSet.of(
+    public static final Set<BlockFace> ALL_FACES = Collections.unmodifiableSet(EnumSet.of(
             BlockFace.UP,
             BlockFace.DOWN,
             BlockFace.NORTH,
             BlockFace.SOUTH,
             BlockFace.WEST,
-            BlockFace.EAST);
+            BlockFace.EAST));
 
     /**
      * This can be used to know if the {@link Block}s are next to each other.
@@ -146,10 +145,8 @@ public final class BlockUtils
         byte count = 0;
         for (final BlockFace f : onlyHorizontal ?
                                  HORIZONTAL_FACES :
-                                 ALL_FACES)
-        {
-            if (!block.getRelative(f).isEmpty())
-            {
+                                 ALL_FACES) {
+            if (!block.getRelative(f).isEmpty()) {
                 count++;
             }
         }
@@ -169,11 +166,9 @@ public final class BlockUtils
         final List<Block> blocks = new ArrayList<>(onlyHorizontal ? 4 : 6);
         for (final BlockFace face : onlyHorizontal ?
                                     HORIZONTAL_FACES :
-                                    ALL_FACES)
-        {
+                                    ALL_FACES) {
             final Block relative = block.getRelative(face);
-            if (!relative.isEmpty())
-            {
+            if (!relative.isEmpty()) {
                 blocks.add(relative);
             }
         }
@@ -185,8 +180,7 @@ public final class BlockUtils
      */
     public static boolean isReallyOccluding(Material material)
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
             case MC111:
             case MC112:

@@ -15,6 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -30,11 +31,11 @@ class EqualRotationPattern extends PatternModule.PacketPattern
     static {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-                CHANGED_HITBOX_MATERIALS = ImmutableSet.of(Material.getMaterial("STAINED_GLASS_PANE"),
-                                                           Material.getMaterial("THIN_GLASS"),
-                                                           Material.getMaterial("IRON_FENCE"),
-                                                           Material.CHEST,
-                                                           Material.ANVIL);
+                CHANGED_HITBOX_MATERIALS = Collections.unmodifiableSet(EnumSet.of(Material.getMaterial("STAINED_GLASS_PANE"),
+                                                                                  Material.getMaterial("THIN_GLASS"),
+                                                                                  Material.getMaterial("IRON_FENCE"),
+                                                                                  Material.CHEST,
+                                                                                  Material.ANVIL));
                 break;
             case MC111:
             case MC112:

@@ -21,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 public class Esp implements ListenerModule
 {
     // The auto-config-data
+    private static int DEFAULT_TRACKING_RANGE;
     private Map<UUID, Integer> playerTrackingRanges;
     private boolean hideAfterRenderDistance = true;
 
@@ -84,7 +86,16 @@ public class Esp implements ListenerModule
                 currentPlayerTrackingRange = 19321;
             }
 
-            rangeBuilder.put(Bukkit.getWorld(world).getUID(), currentPlayerTrackingRange);
+            if (world.equals("default")) {
+                DEFAULT_TRACKING_RANGE = currentPlayerTrackingRange;
+            }
+            else {
+                final World correspondingWorld = Bukkit.getWorld(world);
+
+                if (correspondingWorld != null) {
+                    rangeBuilder.put(correspondingWorld.getUID(), currentPlayerTrackingRange);
+                }
+            }
         }
 
         this.playerTrackingRanges = rangeBuilder.build();
@@ -128,7 +139,7 @@ public class Esp implements ListenerModule
                                         return;
                                     }
 
-                                    if (pairDistanceSquared > this.playerTrackingRanges.get(observingUser.getPlayer().getWorld().getUID())) {
+                                    if (pairDistanceSquared > this.playerTrackingRanges.getOrDefault(observingUser.getPlayer().getWorld().getUID(), DEFAULT_TRACKING_RANGE)) {
                                         updatePairHideMode(observingUser, watched, hideAfterRenderDistance ?
                                                                                    HideMode.FULL :
                                                                                    HideMode.NONE);

@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.modules.checks.packetanalysis;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
+import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
@@ -11,12 +12,14 @@ import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.entity.EntityUtil;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.packetwrappers.client.IWrapperPlayClientLook;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This {@link de.photon.AACAdditionPro.modules.PatternModule.PacketPattern} checks for rotation packets which have
@@ -71,21 +74,33 @@ class EqualRotationPattern extends PatternModule.PacketPattern
             currentYaw == user.getLookPacketData().getRealLastYaw() &&
             currentPitch == user.getLookPacketData().getRealLastPitch() &&
             // Labymod fp when standing still / hit in corner fp
-            user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY) &&
-            // False positive when jumping from great heights into a pool with slime blocks on the bottom.
-            !(EntityUtil.isHitboxInLiquids(user.getPlayer().getLocation(), user.getPlayer().isSneaking() ?
-                                                                           Hitbox.SNEAKING_PLAYER :
-                                                                           Hitbox.PLAYER) &&
-              user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SLIME_BLOCK) &&
-            // Fixes false positives on versions 1.9+ because of changed hitboxes
-            !(ServerVersion.getActiveServerVersion() == ServerVersion.MC188 &&
-              ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC188 &&
-              EntityUtil.isHitboxInMaterials(user.getPlayer().getLocation(), user.getPlayer().isSneaking() ?
-                                                                             Hitbox.SNEAKING_PLAYER :
-                                                                             Hitbox.PLAYER, CHANGED_HITBOX_MATERIALS)))
+            user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
         {
-            message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.";
-            return 1;
+            // Not a big performance deal as most packets have already been filtered out, now we just account for
+            // the last false positives.
+            // Sync call because the isHitboxInLiquids method will load chunks (prevent errors).
+            try {
+                if (Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () ->
+                        // False positive when jumping from great heights into a pool with slime blocks on the bottom.
+                        !(EntityUtil.isHitboxInLiquids(user.getPlayer().getLocation(),
+                                                       user.getPlayer().isSneaking() ?
+                                                       Hitbox.SNEAKING_PLAYER :
+                                                       Hitbox.PLAYER) &&
+                          user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SLIME_BLOCK) &&
+                        // Fixes false positives on versions 1.9+ because of changed hitboxes
+                        !(ServerVersion.getActiveServerVersion() == ServerVersion.MC188 &&
+                          ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC188 &&
+                          EntityUtil.isHitboxInMaterials(user.getPlayer().getLocation(),
+                                                         user.getPlayer().isSneaking() ?
+                                                         Hitbox.SNEAKING_PLAYER :
+                                                         Hitbox.PLAYER, CHANGED_HITBOX_MATERIALS))).get())
+                {
+                    message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.";
+                    return 1;
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
         }
         return 0;
     }

@@ -33,6 +33,6 @@ public class PXModControl extends ClientControlModule implements PluginMessageLi
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.BETTERSPRINTING_CONTROL;
+        return ModuleType.PXMOD_CONTROL;
     }
 }

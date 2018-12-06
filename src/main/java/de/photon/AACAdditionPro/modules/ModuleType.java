@@ -38,6 +38,7 @@ public enum ModuleType
     LABYMOD_CONTROL("ClientControl.LabyMod", "uses LabyMod"),
     LITELOADER_CONTROL("ClientControl.LiteLoader", "uses LiteLoader"),
     OLD_LABYMOD_CONTROL("ClientControl.OldLabyMod", "uses LabyMod"),
+    PXMOD_CONTROL("ClientControl.PXMod", "uses PXMod"),
     SCHEMATICA_CONTROL("ClientControl.Schematica", "uses Schematica"),
     VAPE_CONTROL("ClientControl.Vape", "uses Vape"),
     VERSION_CONTROL("ClientControl.VersionControl"),

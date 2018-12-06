@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * This {@link de.photon.AACAdditionPro.modules.PatternModule.PacketPattern} checks for rotation packets which have
@@ -93,12 +95,12 @@ class EqualRotationPattern extends PatternModule.PacketPattern
                           EntityUtil.isHitboxInMaterials(user.getPlayer().getLocation(),
                                                          user.getPlayer().isSneaking() ?
                                                          Hitbox.SNEAKING_PLAYER :
-                                                         Hitbox.PLAYER, CHANGED_HITBOX_MATERIALS))).get())
+                                                         Hitbox.PLAYER, CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS))
                 {
                     message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.";
                     return 1;
                 }
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 e.printStackTrace();
             }
         }

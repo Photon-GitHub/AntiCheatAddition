@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 @Getter
@@ -38,12 +38,13 @@ public enum ModuleType
     LABYMOD_CONTROL("ClientControl.LabyMod", "uses LabyMod"),
     LITELOADER_CONTROL("ClientControl.LiteLoader", "uses LiteLoader"),
     OLD_LABYMOD_CONTROL("ClientControl.OldLabyMod", "uses LabyMod"),
+    PXMOD_CONTROL("ClientControl.PXMod", "uses PXMod"),
     SCHEMATICA_CONTROL("ClientControl.Schematica", "uses Schematica"),
     VAPE_CONTROL("ClientControl.Vape", "uses Vape"),
     VERSION_CONTROL("ClientControl.VersionControl"),
     WORLDDOWNLOAD_CONTROL("ClientControl.WorldDownloader", "uses WorldDownloader");
 
-    public final static Set<ModuleType> VL_MODULETYPES = new HashSet<>();
+    public final static Set<ModuleType> VL_MODULETYPES = EnumSet.noneOf(ModuleType.class);
 
     @Getter
     @Setter(AccessLevel.PACKAGE)

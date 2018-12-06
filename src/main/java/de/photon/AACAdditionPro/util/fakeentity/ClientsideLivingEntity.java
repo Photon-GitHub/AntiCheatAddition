@@ -78,7 +78,7 @@ public abstract class ClientsideLivingEntity
 
     @Getter
     private long ticksExisted = 0;
-    private int tickTask = -1;
+    private int tickTask;
 
     // Movement state machine
     @Setter

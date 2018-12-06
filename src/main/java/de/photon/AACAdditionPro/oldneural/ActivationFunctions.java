@@ -4,14 +4,14 @@ public enum ActivationFunctions implements ActivationFunction
 {
     LEAKY_RECTIFIED_LINEAR_UNIT
             {
-                private static final double MODIFER = 0.01D;
+                private static final double MODIFIER = 0.01D;
 
                 @Override
                 public double applyActivationFunction(double input)
                 {
                     if (input < 0)
                     {
-                        input *= MODIFER;
+                        input *= MODIFIER;
                     }
                     return input;
                 }
@@ -19,7 +19,7 @@ public enum ActivationFunctions implements ActivationFunction
                 @Override
                 public double applyDerivedActivationFunction(double input)
                 {
-                    return input < 0 ? MODIFER : 1;
+                    return input < 0 ? MODIFIER : 1;
                 }
 
                 @Override

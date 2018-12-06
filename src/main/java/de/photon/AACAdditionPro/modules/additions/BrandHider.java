@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class BrandHider implements ListenerModule
 {
-    private FieldReflect playerChannelsField = Reflect.fromOBC("entity.CraftPlayer").field("channels");
+    private final FieldReflect playerChannelsField = Reflect.fromOBC("entity.CraftPlayer").field("channels");
     private static String BRAND;
 
     public static void setBRAND(String brand)

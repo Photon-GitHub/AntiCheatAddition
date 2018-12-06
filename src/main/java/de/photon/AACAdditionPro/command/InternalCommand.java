@@ -145,7 +145,7 @@ public abstract class InternalCommand
     /**
      * Checks a numeric argument for correctness.
      *
-     * @param sender   the sender of the command (necessary for error messsages)
+     * @param sender   the sender of the command (necessary for error messages)
      * @param argument the {@link String} which should be the desired number
      * @param min      the lower boundary of the number
      * @param max      the upper boundary of the number

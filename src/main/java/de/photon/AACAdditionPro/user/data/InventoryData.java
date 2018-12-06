@@ -72,7 +72,7 @@ public class InventoryData extends TimeData
     }
 
     /**
-     * A singleton class to reduce the reqired {@link Listener}s to a minimum.
+     * A singleton class to reduce the required {@link Listener}s to a minimum.
      */
     private static class InventoryDataUpdater implements Listener
     {
@@ -126,8 +126,10 @@ public class InventoryData extends TimeData
                 event.getAction() == Action.RIGHT_CLICK_BLOCK &&
                 BlockUtils.CONTAINERS.contains(event.getClickedBlock().getType()))
             {
+                // Make sure that the container is opened and the player doesn't just place a block next to it.
                 boolean sneakingRequiredToPlaceBlock = false;
                 for (ItemStack handStack : InventoryUtils.getHandContents(event.getPlayer())) {
+                    // Check if the material is a placable block
                     if (handStack.getType().isBlock()) {
                         sneakingRequiredToPlaceBlock = true;
                         break;
@@ -147,18 +149,19 @@ public class InventoryData extends TimeData
         {
             final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
-            if (user != null) {
-                if (event.getSlotType() != InventoryType.SlotType.QUICKBAR) {
-                    // Only update if the inventory is currently closed to not interfere with opening time checks.
-                    if (!user.getInventoryData().hasOpenInventory()) {
-                        user.getInventoryData().updateTimeStamp(0);
-                    }
-                    user.getInventoryData().updateTimeStamp(1);
-                    user.getInventoryData().lastRawSlot = event.getRawSlot();
-                    user.getInventoryData().lastMaterial = event.getCurrentItem() == null ?
-                                                           Material.AIR :
-                                                           event.getCurrentItem().getType();
+            if (user != null &&
+                // Quickbar actions can be performed outside the inventory.
+                event.getSlotType() != InventoryType.SlotType.QUICKBAR)
+            {
+                // Only update if the inventory is currently closed to not interfere with opening time checks.
+                if (!user.getInventoryData().hasOpenInventory()) {
+                    user.getInventoryData().updateTimeStamp(0);
                 }
+                user.getInventoryData().updateTimeStamp(1);
+                user.getInventoryData().lastRawSlot = event.getRawSlot();
+                user.getInventoryData().lastMaterial = event.getCurrentItem() == null ?
+                                                       Material.AIR :
+                                                       event.getCurrentItem().getType();
             }
 
         }

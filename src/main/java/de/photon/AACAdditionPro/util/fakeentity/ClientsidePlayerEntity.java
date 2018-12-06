@@ -40,7 +40,7 @@ public class ClientsidePlayerEntity extends ClientsideHittableLivingEntity
     private Team currentTeam;
 
     // Main ticker for the entity
-    private RandomizedAction jumpAction = new RandomizedAction(30, 80)
+    private final RandomizedAction jumpAction = new RandomizedAction(30, 80)
     {
         @Override
         public void run()
@@ -49,7 +49,7 @@ public class ClientsidePlayerEntity extends ClientsideHittableLivingEntity
         }
     };
 
-    private RandomizedAction handSwapAction = new RandomizedAction(40, 65)
+    private final RandomizedAction handSwapAction = new RandomizedAction(40, 65)
     {
         @Override
         public void run()
@@ -61,7 +61,7 @@ public class ClientsidePlayerEntity extends ClientsideHittableLivingEntity
         }
     };
 
-    private RandomizedAction armorSwapAction = new RandomizedAction(200, 200)
+    private final RandomizedAction armorSwapAction = new RandomizedAction(200, 200)
     {
         @Override
         public void run()
@@ -73,7 +73,7 @@ public class ClientsidePlayerEntity extends ClientsideHittableLivingEntity
         }
     };
 
-    private RandomizedAction swingAction = new RandomizedAction(15, 65)
+    private final RandomizedAction swingAction = new RandomizedAction(15, 65)
     {
         @Override
         public void run()

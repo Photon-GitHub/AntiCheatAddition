@@ -51,7 +51,7 @@ class ComparePattern extends PatternModule.PacketPattern
                 // Minimum fails to mitigate some fluctuations
                 ++user.getPacketAnalysisData().compareFails >= this.violationThreshold)
             {
-                message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays.";
+                message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays. Mitigated Offset: " + offset;
                 return Math.min(Math.max(1, (int) (offset / 50)), 12);
             }
         }

@@ -4,7 +4,6 @@ import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.user.data.AutoPotionData;
 import de.photon.AACAdditionPro.user.data.ClientSideEntityData;
-import de.photon.AACAdditionPro.user.data.EspInformationData;
 import de.photon.AACAdditionPro.user.data.FishingData;
 import de.photon.AACAdditionPro.user.data.InventoryData;
 import de.photon.AACAdditionPro.user.data.InventoryHeuristicsData;
@@ -28,7 +27,6 @@ public class User
 
     private AutoPotionData autoPotionData = new AutoPotionData(this);
     private ClientSideEntityData clientSideEntityData = new ClientSideEntityData(this);
-    private EspInformationData espInformationData = new EspInformationData(this);
     private TimeData fastSwitchData = new TimeData(this);
     private FishingData fishingData = new FishingData(this);
     private InventoryData inventoryData = new InventoryData(this);
@@ -74,9 +72,6 @@ public class User
 
         clientSideEntityData.unregister();
         clientSideEntityData = null;
-
-        espInformationData.unregister();
-        espInformationData = null;
 
         fastSwitchData.unregister();
         fastSwitchData = null;

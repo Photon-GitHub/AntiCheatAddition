@@ -15,9 +15,10 @@ public class InformationObfuscator extends PlayerInformationModifier
     public void modifyInformation(final Player observer, final Entity entity)
     {
         validate(observer, entity);
-        setModifyInformation(observer, entity.getEntityId(), false);
 
-        WrapperPlayServerEntityEquipment.clearAllSlots(entity.getEntityId(), observer);
+        if (setModifyInformation(observer, entity.getEntityId(), false)) {
+            WrapperPlayServerEntityEquipment.clearAllSlots(entity.getEntityId(), observer);
+        }
     }
 
     @Override

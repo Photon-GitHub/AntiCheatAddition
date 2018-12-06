@@ -101,7 +101,7 @@ permissions:
   aacadditionpro.bypass.clientcontrol.oldlabymod:
     description: Allows a player to bypass the OldLabyMod clientcontrol
   aacadditionpro.bypass.clientcontrol.pxmod:
-    description: Allows a player to bypass the pxmod clientcontrol
+    description: Allows a player to bypass the PXMod clientcontrol
   aacadditionpro.bypass.clientcontrol.schematica:
     description: Allows a player to bypass the Schematica clientcontrol
   aacadditionpro.bypass.clientcontrol.vape:

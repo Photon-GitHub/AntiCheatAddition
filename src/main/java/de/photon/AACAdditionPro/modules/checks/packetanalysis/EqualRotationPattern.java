@@ -100,8 +100,10 @@ class EqualRotationPattern extends PatternModule.PacketPattern
                     message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.";
                     return 1;
                 }
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
+            } catch (TimeoutException e) {
+                System.out.println("Discard packet check due to high server load. If this message appears frequently please consider upgrading your server.");
             }
         }
         return 0;

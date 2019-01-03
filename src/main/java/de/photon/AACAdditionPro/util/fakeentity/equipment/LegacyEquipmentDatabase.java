@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.util.fakeentity.equipment;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.events.KillauraEntityEquipmentPrepareEvent;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -60,11 +60,9 @@ public class LegacyEquipmentDatabase
                 Material.IRON_BOOTS,
                 Material.DIAMOND_BOOTS));
 
-        for (final String armorKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.armor"))
-        {
+        for (final String armorKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.armor")) {
             // Disabled category
-            if (!this.isMaterialAllowed("armor." + armorKey))
-            {
+            if (!this.isMaterialAllowed("armor." + armorKey)) {
                 final String upCaseArmorKey = armorKey.toUpperCase();
                 slotMap.values().forEach(materialList -> materialList.removeIf(material -> material.name().contains(upCaseArmorKey)));
             }
@@ -73,14 +71,12 @@ public class LegacyEquipmentDatabase
         // ------------------------------------------------- Normal ------------------------------------------------- //
         final Set<Material> handMaterials = new HashSet<>();
 
-        if (this.isMaterialAllowed("normal.raw"))
-        {
+        if (this.isMaterialAllowed("normal.raw")) {
             handMaterials.add(Material.getMaterial("RAW_BEEF"));
             handMaterials.add(Material.getMaterial("RAW_CHICKEN"));
         }
 
-        if (this.isMaterialAllowed("normal.cooked"))
-        {
+        if (this.isMaterialAllowed("normal.cooked")) {
             handMaterials.add(Material.COOKED_BEEF);
             handMaterials.add(Material.COOKED_CHICKEN);
             handMaterials.add(Material.COOKED_MUTTON);
@@ -88,17 +84,14 @@ public class LegacyEquipmentDatabase
         }
 
         // All other materials where the exact name is in the config.
-        for (final String normalKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.normal"))
-        {
+        for (final String normalKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.normal")) {
             // Disabled category
-            if (this.isMaterialAllowed("normal." + normalKey))
-            {
+            if (this.isMaterialAllowed("normal." + normalKey)) {
                 handMaterials.addAll(Arrays.stream(Material.values()).filter(material -> material.name().equalsIgnoreCase(normalKey)).collect(Collectors.toList()));
             }
         }
 
-        if (this.isMaterialAllowed("normal.ingot"))
-        {
+        if (this.isMaterialAllowed("normal.ingot")) {
             handMaterials.add(Material.GOLD_INGOT);
             handMaterials.add(Material.IRON_INGOT);
         }
@@ -142,11 +135,9 @@ public class LegacyEquipmentDatabase
                 Material.getMaterial("DIAMOND_SPADE"),
                 Material.DIAMOND_SWORD);
 
-        for (final String toolKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.tools"))
-        {
+        for (final String toolKey : ConfigUtils.loadKeys(ModuleType.KILLAURA_ENTITY.getConfigString() + ".equipment.tools")) {
             // Disabled category
-            if (!this.isMaterialAllowed("tools." + toolKey))
-            {
+            if (!this.isMaterialAllowed("tools." + toolKey)) {
                 final String upCaseArmorKey = toolKey.toUpperCase();
                 slotMap.values().forEach(materialList -> materialList.removeIf(material -> material.name().contains(upCaseArmorKey)));
             }
@@ -159,7 +150,7 @@ public class LegacyEquipmentDatabase
         slotMap.put(EnumWrappers.ItemSlot.OFFHAND, handMaterials);
 
         // Make all material sets immutable and improve performance.
-        slotMap.forEach((slot, materials) -> slotMap.put(slot, ImmutableSet.copyOf(materials)));
+        slotMap.forEach((slot, materials) -> slotMap.put(slot, EnumSet.copyOf(materials)));
     }
 
     private boolean isMaterialAllowed(final String configName)

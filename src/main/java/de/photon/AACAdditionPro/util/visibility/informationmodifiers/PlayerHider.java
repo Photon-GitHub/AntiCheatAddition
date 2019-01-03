@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.util.visibility.informationmodifiers;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import de.photon.AACAdditionPro.util.visibility.PlayerInformationModifier;
 import org.bukkit.entity.Entity;
@@ -22,7 +23,7 @@ public class PlayerHider extends PlayerInformationModifier
 
             // Make the entity disappear
             try {
-                manager.sendServerPacket(observer, destroyEntity);
+                ProtocolLibrary.getProtocolManager().sendServerPacket(observer, destroyEntity);
             } catch (final InvocationTargetException e) {
                 throw new RuntimeException("Cannot send server packet.", e);
             }

@@ -310,27 +310,29 @@ public class Esp implements ListenerModule
     // No need to synchronize hiddenPlayers as it is accessed in a synchronized task.
     private void updateHideMode(final User observer, final Player watched, final HideMode hideMode)
     {
+        final Player observingPlayer = observer.getPlayer();
+
         // unModifyInformation and modifyInformation are not thread-safe.
         Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
             // Observer might have left by now.
-            if (observer != null) {
+            if (observingPlayer != null) {
                 // There is no need to manually check if something has changed as the PlayerInformationModifiers already
                 // do that.
                 switch (hideMode) {
                     case FULL:
                         // FULL: fullHider active, informationOnlyHider inactive
-                        informationOnlyHider.unModifyInformation(observer.getPlayer(), watched);
-                        fullHider.modifyInformation(observer.getPlayer(), watched);
+                        informationOnlyHider.unModifyInformation(observingPlayer, watched);
+                        fullHider.modifyInformation(observingPlayer, watched);
                         break;
                     case INFORMATION_ONLY:
                         // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
-                        fullHider.unModifyInformation(observer.getPlayer(), watched);
-                        informationOnlyHider.modifyInformation(observer.getPlayer(), watched);
+                        fullHider.unModifyInformation(observingPlayer, watched);
+                        informationOnlyHider.modifyInformation(observingPlayer, watched);
                         break;
                     case NONE:
                         // NONE: fullHider inactive, informationOnlyHider inactive
-                        informationOnlyHider.unModifyInformation(observer.getPlayer(), watched);
-                        fullHider.unModifyInformation(observer.getPlayer(), watched);
+                        informationOnlyHider.unModifyInformation(observingPlayer, watched);
+                        fullHider.unModifyInformation(observingPlayer, watched);
                         break;
                 }
             }

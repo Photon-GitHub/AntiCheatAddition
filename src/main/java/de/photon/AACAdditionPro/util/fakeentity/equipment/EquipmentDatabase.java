@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.util.fakeentity.equipment;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.events.KillauraEntityEquipmentPrepareEvent;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -150,7 +150,7 @@ public class EquipmentDatabase
         slotMap.put(EnumWrappers.ItemSlot.OFFHAND, handMaterials);
 
         // Make all material sets immutable and improve performance.
-        slotMap.forEach((slot, materials) -> slotMap.put(slot, ImmutableSet.copyOf(materials)));
+        slotMap.forEach((slot, materials) -> slotMap.put(slot, EnumSet.copyOf(materials)));
     }
 
     private boolean isMaterialAllowed(final String configName)

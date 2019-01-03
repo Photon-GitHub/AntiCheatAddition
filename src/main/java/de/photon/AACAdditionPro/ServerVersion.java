@@ -1,6 +1,5 @@
 package de.photon.AACAdditionPro;
 
-import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.modules.Module;
 import de.photon.AACAdditionPro.modules.clientcontrol.VersionControl;
 import lombok.Getter;
@@ -9,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import us.myles.ViaVersion.api.ViaAPI;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -23,9 +23,9 @@ public enum ServerVersion
     MC113("1.13", true);
 
 
-    public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = ImmutableSet.of(MC188, MC111, MC112, MC113);
-    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = ImmutableSet.of(MC188, MC111, MC112);
-    public static final Set<ServerVersion> NON_188_VERSIONS = ImmutableSet.of(MC111, MC112, MC113);
+    public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = EnumSet.of(MC188, MC111, MC112, MC113);
+    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = EnumSet.of(MC188, MC111, MC112);
+    public static final Set<ServerVersion> NON_188_VERSIONS = EnumSet.of(MC111, MC112, MC113);
 
     private final String versionOutputString;
     private final boolean supported;

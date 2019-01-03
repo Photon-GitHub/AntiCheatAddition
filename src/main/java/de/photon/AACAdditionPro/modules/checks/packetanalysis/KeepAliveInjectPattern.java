@@ -1,6 +1,5 @@
 package de.photon.AACAdditionPro.modules.checks.packetanalysis;
 
-import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ModuleType;
@@ -13,6 +12,7 @@ import de.photon.AACAdditionPro.util.random.RandomUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -72,7 +72,7 @@ class KeepAliveInjectPattern extends PatternModule.Pattern<Object, Object> imple
     @Override
     public Set<ServerVersion> getSupportedVersions()
     {
-        return ImmutableSet.of(ServerVersion.MC188);
+        return EnumSet.of(ServerVersion.MC188);
     }
 
     @Override

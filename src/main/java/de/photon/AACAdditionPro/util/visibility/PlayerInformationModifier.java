@@ -2,7 +2,6 @@ package de.photon.AACAdditionPro.util.visibility;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
@@ -28,7 +27,6 @@ import java.util.Set;
 
 public abstract class PlayerInformationModifier
 {
-    protected final ProtocolManager manager = ProtocolLibrary.getProtocolManager();
     private final Table<Integer, Integer, Boolean> observerEntityMap = HashBasedTable.create();
 
     /**
@@ -37,8 +35,7 @@ public abstract class PlayerInformationModifier
     protected PlayerInformationModifier()
     {
         // Only start if the ServerVersion is supported
-        if (ServerVersion.supportsActiveServerVersion(this.getSupportedVersions()))
-        {
+        if (ServerVersion.supportsActiveServerVersion(this.getSupportedVersions())) {
             // Register events and packet listener
             AACAdditionPro.getInstance().registerListener(new Listener()
             {
@@ -58,8 +55,7 @@ public abstract class PlayerInformationModifier
                     // task is executed.
                     final Entity[] entities = event.getChunk().getEntities();
                     Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
-                        for (final Entity entity : entities)
-                        {
+                        for (final Entity entity : entities) {
                             removeEntity(entity);
                         }
                         return null;
@@ -73,15 +69,17 @@ public abstract class PlayerInformationModifier
                 }
             });
 
-            this.manager.addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, this.getAffectedPackets())
+            ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, this.getAffectedPackets())
             {
                 @Override
                 public void onPacketSending(final PacketEvent event)
                 {
                     final int entityID = event.getPacket().getIntegers().read(0);
 
-                    // See if this packet should be cancelled
-                    if (isInformationModified(event.getPlayer(), entityID))
+                    // Make sure that we do not have temporary players who cause problems in the mapping.
+                    if (!event.isPlayerTemporary() &&
+                        // See if this packet should be cancelled
+                        isInformationModified(event.getPlayer(), entityID))
                     {
                         event.setCancelled(true);
                     }
@@ -107,15 +105,7 @@ public abstract class PlayerInformationModifier
      */
     private boolean getMembership(final Player observer, final int entityID)
     {
-        try
-        {
-            return observerEntityMap.contains(observer.getEntityId(), entityID);
-        } catch (final UnsupportedOperationException ignore)
-        {
-            // Nothing here as this is a ProtocolLib problem with it's temporal players who have less methods
-            // due to reflection.
-        }
-        return false;
+        return observerEntityMap.contains(observer.getEntityId(), entityID);
     }
 
     /**
@@ -130,22 +120,9 @@ public abstract class PlayerInformationModifier
     // Helper method
     private boolean setMembership(final Player observer, final int entityID, final boolean member)
     {
-        try
-        {
-            if (member)
-            {
-                return observerEntityMap.put(observer.getEntityId(), entityID, true) != null;
-            }
-            else
-            {
-                return observerEntityMap.remove(observer.getEntityId(), entityID) != null;
-            }
-        } catch (final UnsupportedOperationException ignore)
-        {
-            // Nothing here as this is a ProtocolLib problem with it's temporal players who have less methods
-            // due to reflection.
-        }
-        return false;
+        return member ?
+               observerEntityMap.put(observer.getEntityId(), entityID, true) != null :
+               observerEntityMap.remove(observer.getEntityId(), entityID) != null;
     }
 
     /**
@@ -155,18 +132,10 @@ public abstract class PlayerInformationModifier
      */
     private void removeEntity(final Entity entity)
     {
-        try
-        {
-            final int entityID = entity.getEntityId();
+        final int entityID = entity.getEntityId();
 
-            for (final Map<Integer, Boolean> maps : observerEntityMap.rowMap().values())
-            {
-                maps.remove(entityID);
-            }
-        } catch (final UnsupportedOperationException ignore)
-        {
-            // Nothing here as this is a ProtocolLib problem with it's temporal players who have less methods
-            // due to reflection.
+        for (final Map<Integer, Boolean> maps : observerEntityMap.rowMap().values()) {
+            maps.remove(entityID);
         }
     }
 
@@ -177,15 +146,8 @@ public abstract class PlayerInformationModifier
      */
     private void removePlayer(final Player player)
     {
-        try
-        {
-            // Cleanup
-            observerEntityMap.rowMap().remove(player.getEntityId());
-        } catch (final UnsupportedOperationException ignore)
-        {
-            // Nothing here as this is a ProtocolLib problem with it's temporal players who have less methods
-            // due to reflection.
-        }
+        // Cleanup
+        observerEntityMap.rowMap().remove(player.getEntityId());
     }
 
     /**
@@ -196,20 +158,12 @@ public abstract class PlayerInformationModifier
      */
     public final void unModifyInformation(final Player observer, final Entity entity)
     {
-        try
-        {
-            validate(observer, entity);
-            final boolean hiddenBefore = !setModifyInformation(observer, entity.getEntityId(), true);
+        validate(observer, entity);
+        final boolean hiddenBefore = !setModifyInformation(observer, entity.getEntityId(), true);
 
-            // Resend packets
-            if (manager != null && hiddenBefore)
-            {
-                manager.updateEntity(entity, Collections.singletonList(observer));
-            }
-        } catch (final UnsupportedOperationException ignore)
-        {
-            // Nothing here as this is a ProtocolLib problem with it's temporal players who have less methods
-            // due to reflection.
+        // Resend packets
+        if (ProtocolLibrary.getProtocolManager() != null && hiddenBefore) {
+            ProtocolLibrary.getProtocolManager().updateEntity(entity, Collections.singletonList(observer));
         }
     }
 

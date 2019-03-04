@@ -6,14 +6,12 @@ import de.photon.AACAdditionPro.util.files.configs.Configs;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * Manages the {@link Module}s of {@link AACAdditionPro}.
- * It extends {@link ArrayList} and thus has an in-built iterator.
  */
 public final class ModuleManager
 {

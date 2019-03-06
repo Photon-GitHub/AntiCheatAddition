@@ -21,7 +21,6 @@ public enum ModuleType
     FASTSWITCH("Fastswitch"),
     IMPOSSIBLE_CHAT("ImpossibleChat", "sent illegal chat message (ImpossibleChat)"),
     INVENTORY("Inventory", "has suspicious inventory interactions."),
-    INVENTORY_HEURISTICS("InventoryHeuristics"),
     KILLAURA_ENTITY("KillauraEntity", "failed KillauraEntity (hit the Killaura-Bot)"),
     PACKET_ANALYSIS("PacketAnalysis"),
     PINGSPOOF("Pingspoof"),

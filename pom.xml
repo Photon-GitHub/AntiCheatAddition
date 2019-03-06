@@ -43,6 +43,11 @@
                     <minimizeJar>true</minimizeJar>
                     <relocations>
                         <relocation>
+                            <pattern>org.tensorflow</pattern>
+                            <!-- Replace this with your package! -->
+                            <shadedPattern>de.photon.AACAdditionPro</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>org.bstats</pattern>
                             <!-- Replace this with your package! -->
                             <shadedPattern>de.photon.AACAdditionPro</shadedPattern>

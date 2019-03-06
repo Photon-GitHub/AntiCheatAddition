@@ -33,7 +33,7 @@
             </resource>
         </resources>
 
-        <!-- This shades the metrics in -->
+        <!-- This shades the metrics and tensorflow in -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -67,26 +67,36 @@
     </build>
 
     <repositories>
+        <!-- Spigot -->
         <repository>
             <id>spigot-hub-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+        </repository>
+        <!-- Public AAC API -->
+        <repository>
+            <id>janmm14-public</id>
+            <url>https://repo.janmm14.de/repository/public/</url>
         </repository>
         <repository>
             <id>sonatype-oss-public</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+        <!-- ProtocolLib -->
         <repository>
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/nexus/repository/public/</url>
         </repository>
+        <!-- ViaVersion -->
         <repository>
             <id>viaversion-repo</id>
             <url>https://repo.viaversion.com/</url>
         </repository>
+        <!-- BStats Metrics -->
         <repository>
             <id>bstats-repo</id>
             <url>http://repo.bstats.org/content/repositories/releases/</url>
         </repository>
+        <!-- Lombok -->
         <repository>
             <id>projectlombok.org</id>
             <url>http://projectlombok.org/mavenrepo</url>
@@ -113,11 +123,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.konsolas</groupId>
-            <artifactId>aac</artifactId>
-            <version>3.4.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/AAC.jar</systemPath>
+            <groupId>de.janmm14</groupId>
+            <artifactId>aac-api</artifactId>
+            <version>3.6.0</version>
         </dependency>
         <dependency>
             <groupId>net.labymod</groupId>

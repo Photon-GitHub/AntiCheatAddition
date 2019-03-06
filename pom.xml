@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.photon</groupId>
+    <artifactId>AACAdditionPro</artifactId>
+    <version>5.0.0-SNAPSHOT</version>
+
+    <name>AACAdditionPro</name>
+    <description>This plugin provides niche checks for cheats which are not covered by AAC</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <javaversion>1.8</javaversion>
+        <maven.compiler.source>${javaversion}</maven.compiler.source>
+        <maven.compiler.target>${javaversion}</maven.compiler.target>
+    </properties>
+
+    <build>
+        <defaultGoal>clean install</defaultGoal>
+
+        <!-- This adds the plugin.yml and config.yml as files that need to be processed. -->
+        <resources>
+            <resource>
+                <directory>src\main\resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>pattern</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
+        <!-- This shades the metrics and tensorflow in -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <minimizeJar>true</minimizeJar>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.tensorflow</pattern>
+                            <!-- Replace this with your package! -->
+                            <shadedPattern>de.photon.AACAdditionPro.tensorflow</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <!-- Replace this with your package! -->
+                            <shadedPattern>de.photon.AACAdditionPro</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <!-- Spigot -->
+        <repository>
+            <id>spigot-hub-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+        </repository>
+        <!-- Public AAC API -->
+        <repository>
+            <id>janmm14-public</id>
+            <url>https://repo.janmm14.de/repository/public/</url>
+        </repository>
+        <repository>
+            <id>sonatype-oss-public</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+        <!-- ProtocolLib -->
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>http://repo.dmulloy2.net/nexus/repository/public/</url>
+        </repository>
+        <!-- ViaVersion -->
+        <repository>
+            <id>viaversion-repo</id>
+            <url>https://repo.viaversion.com/</url>
+        </repository>
+        <!-- BStats Metrics -->
+        <repository>
+            <id>bstats-repo</id>
+            <url>http://repo.bstats.org/content/repositories/releases/</url>
+        </repository>
+        <!-- Lombok -->
+        <repository>
+            <id>projectlombok.org</id>
+            <url>http://projectlombok.org/mavenrepo</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>4.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.0.13.Final</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.janmm14</groupId>
+            <artifactId>aac-api</artifactId>
+            <version>3.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.labymod</groupId>
+            <artifactId>serverapi</artifactId>
+            <version>1.1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/LabyAPI.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>us.myles</groupId>
+            <artifactId>viaversion</artifactId>
+            <version>1.6.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>1.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.tensorflow</groupId>
+            <artifactId>tensorflow</artifactId>
+            <version>1.12.0</version>
+        </dependency>
+    </dependencies>
+</project>

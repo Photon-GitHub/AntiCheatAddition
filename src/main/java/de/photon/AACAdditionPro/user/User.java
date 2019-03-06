@@ -6,7 +6,6 @@ import de.photon.AACAdditionPro.user.data.AutoPotionData;
 import de.photon.AACAdditionPro.user.data.ClientSideEntityData;
 import de.photon.AACAdditionPro.user.data.FishingData;
 import de.photon.AACAdditionPro.user.data.InventoryData;
-import de.photon.AACAdditionPro.user.data.InventoryHeuristicsData;
 import de.photon.AACAdditionPro.user.data.LookPacketData;
 import de.photon.AACAdditionPro.user.data.PacketAnalysisData;
 import de.photon.AACAdditionPro.user.data.PingData;
@@ -30,7 +29,6 @@ public class User
     private TimeData fastSwitchData = new TimeData(this);
     private FishingData fishingData = new FishingData(this);
     private InventoryData inventoryData = new InventoryData(this);
-    private InventoryHeuristicsData inventoryHeuristicsData = new InventoryHeuristicsData(this);
     private PacketAnalysisData packetAnalysisData = new PacketAnalysisData(this);
     private TimeData loginData;
     private LookPacketData lookPacketData = new LookPacketData(this);
@@ -81,9 +79,6 @@ public class User
 
         inventoryData.unregister();
         inventoryData = null;
-
-        inventoryHeuristicsData.unregister();
-        inventoryHeuristicsData = null;
 
         packetAnalysisData.unregister();
         packetAnalysisData = null;

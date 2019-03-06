@@ -14,7 +14,6 @@ import de.photon.AACAdditionPro.modules.checks.AutoPotion;
 import de.photon.AACAdditionPro.modules.checks.Esp;
 import de.photon.AACAdditionPro.modules.checks.Fastswitch;
 import de.photon.AACAdditionPro.modules.checks.ImpossibleChat;
-import de.photon.AACAdditionPro.modules.checks.InventoryHeuristics;
 import de.photon.AACAdditionPro.modules.checks.KillauraEntity;
 import de.photon.AACAdditionPro.modules.checks.Pingspoof;
 import de.photon.AACAdditionPro.modules.checks.SkinBlinker;
@@ -225,7 +224,6 @@ public class AACAdditionPro extends JavaPlugin
                     new Fastswitch(),
                     new ImpossibleChat(),
                     new Inventory(),
-                    new InventoryHeuristics(),
                     new KillauraEntity(),
                     new PacketAnalysis(),
                     new Pingspoof(),

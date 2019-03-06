@@ -170,6 +170,10 @@ Inventory:
   enabled: true
   # Control the different parts of Inventory
   parts:
+    # This part uses pre-trained TensorFlow models to check for common bot-like clicking.
+    AutomatedClickHeuristic:
+      # Do you want to enable the automated click heuristic part
+      enabled: true
     # This part flags hitting while the inventory is open.
     # This part will add 10 vl.
     Hit:
@@ -226,35 +230,6 @@ Inventory:
     55: "aacstaffnotify {player} in {world} is suspected for inventory cheats."
     80: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats."
     100: "aackick {player} Inventory cheats."
-
-# The inventory heuristics provide a neural network framework to detect advanced inventory cheats.
-# This check is currently rewritten and therefore EXPERIMENTAL
-InventoryHeuristics:
-  # Do you want to enable the InventoryHeuristics
-  # Disabled as the check is currently experimental
-  enabled: false
-  # The min confidence a single pattern must have to count as detection
-  detection_confidence: 55.0
-  # This will allow you to access all of the framework, including the creation of your own heuristics and training them.
-  #
-  # Required knowledge:
-  # - Basic knowledge of Java's SERIALIZATION
-  # - Advanced knowledge of NEURAL NETWORKS (function, building and training)
-  # - Understanding what Backpropagation is
-  # - Understanding the principle of HIDDEN LAYERS
-  # - Acknowledging that training a neural network will require lots of performance
-  #
-  # UNDER NO CIRCUMSTANCES ENABLE THIS IF YOU DO NOT HAVE THE REQUIRED KNOWLEDGE.
-  # THIS IS A VERY POWERFUL TOOL AND CAN CRIPPLE YOUR SERVER IF USED IN THE WRONG WAY.
-  # I WILL _NOT_ PROVIDE SUPPORT FOR THIS FUNCTION: USE AT YOUR OWN RISK!
-  unlock_full_framework: false
-  # Map of confidence levels to command
-  # Confidences will not add up.
-  # 100 is the maximum confidence possible to reach.
-  thresholds:
-    55: "aacstaffnotify {player} in {world} is suspected for inventory cheats. | Confidence: {vl}"
-    80: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats. | Confidence: {vl}"
-    95: "aackick {player} Inventory cheats."
 
 # Brings back an entity check of the old AAC 1.9.10 times but much more advanced.
 #
@@ -583,14 +558,14 @@ Teaming:
   no_pvp_time: 6000
   # This contains all worlds the check should be enabled in.
   enabled_worlds:
-  - "world"
-  - "world_nether"
-  - "world_the_end"
+    - "world"
+    - "world_nether"
+    - "world_the_end"
   # Here you can define zones in which the check should not be run
   # An entry is formatted as following:
   # - <affected_world> <x1> <z1> <x2> <z2>
   safe_zones:
-  - "world -15 -15 15 15"
+    - "world -15 -15 15 15"
   # These ViolationLevel are cumulative for a team.
   # E.g. a potential team of 6 members will generate 6 vl after every delay.
   thresholds:
@@ -659,7 +634,7 @@ ClientControl:
       # A feature of 5zig to automatically reconnect to a server
       auto_reconnect: false
     commands_on_detection:
-    - "aacstaffnotify {player} in {world} uses 5zig"
+      - "aacstaffnotify {player} in {world} uses 5zig"
 
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   #
@@ -671,7 +646,7 @@ ClientControl:
     # Do you want to disable this mod
     disable: true
     commands_on_detection:
-    - "aacstaffnotify {player} in {world} uses BetterSprinting"
+      - "aacstaffnotify {player} in {world} uses BetterSprinting"
 
   # This will spoof the health of all players on your server so that DamageIndicators (and any other mod to that tries
   # to show other players' health, like HealthTags and ESP) becomes useless.
@@ -693,7 +668,7 @@ ClientControl:
     # This cannot be blocked; I recommend to kick if desired
     enabled: false
     commands_on_detection:
-    - "aacstaffnotify {player} in {world} uses Forge"
+      - "aacstaffnotify {player} in {world} uses Forge"
 
   # This covers the latest version of LabyMod.
   # A very popular PvP modification similar to 5zig but with more features and TS3 support
@@ -743,7 +718,7 @@ ClientControl:
       # which is not really affecting the gameplay.
       saturation_bar: false
     commands_on_detection:
-    - "aacstaffnotify {player} in {world} uses LabyMod"
+      - "aacstaffnotify {player} in {world} uses LabyMod"
 
   # LiteLoader is alternative mod-loader to forge.
   # Many ghost clients exist for LiteLoader, therefore I recommend to block it.
@@ -754,7 +729,7 @@ ClientControl:
     # This cannot be blocked; I recommend to kick if desired
     enabled: false
     commands_on_detection:
-    - "aackick {player} LiteLoader"
+      - "aackick {player} LiteLoader"
 
   # This covers outdated versions of LabyMod prior to version 3.0
   # A very popular PvP modification similar to 5zig but with more features and TS3 support
@@ -806,7 +781,7 @@ ClientControl:
     # Do you want to enable PXMod-Control
     enabled: false
     commands_on_detection:
-    - "aackick {player} PXMod"
+      - "aackick {player} PXMod"
 
   # A mod that lets you display (clientside) holograms to improve building, but also has
   # a module to download worlds.
@@ -837,7 +812,7 @@ ClientControl:
     # Do you want to enable Vape-Control
     enabled: false
     commands_on_detection:
-    - "ban {player} Illegal client modification"
+      - "ban {player} Illegal client modification"
 
   # This allows you to control which minecraft versions can join your server IF YOUR SERVER RUNS VIAVERSION.
   # YOU NEED TO ENABLE THIS AND DISALLOW 1.9 CLIENTS IF YOU WANT TO USE THE KILLAURAENTITY CHECK ON A VIAVERSION SERVER
@@ -870,7 +845,7 @@ ClientControl:
     # THIS IS CURRENTLY IN BETA. PLEASE TEST BEFORE USING IT ON A PRODUCTIVE SERVER!
     disable: true
     commands_on_detection:
-    - "aackick {player} WorldDownloader"
+      - "aackick {player} WorldDownloader"
 
 
 # ------------------------------------------------------------------------------------------------------------------- #

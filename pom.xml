@@ -45,7 +45,7 @@
                         <relocation>
                             <pattern>org.tensorflow</pattern>
                             <!-- Replace this with your package! -->
-                            <shadedPattern>de.photon.AACAdditionPro</shadedPattern>
+                            <shadedPattern>de.photon.AACAdditionPro.tensorflow</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.bstats</pattern>

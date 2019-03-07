@@ -4,3 +4,4 @@ target/
 /bin/
 /out/
 *.orig
+dependency-reduced-pom.xml

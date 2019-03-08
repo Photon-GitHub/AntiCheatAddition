@@ -40,7 +40,7 @@ See also the list of [contributors](https://github.com/Photon-GitHub/AACAddition
 
 ## License
 
-This project is licensed under the GPL 3 License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GPL 3 License - see the [LICENSE](https://github.com/Photon-GitHub/AACAdditionPro/blob/master/LICENSE) file for details
 
 ## Acknowledgments
 

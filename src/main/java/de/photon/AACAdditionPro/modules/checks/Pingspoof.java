@@ -13,8 +13,8 @@ import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
 import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerPosition;
+import de.photon.AACAdditionPro.util.server.ServerUtil;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
-import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Bukkit;
 
 public class Pingspoof extends PacketAdapter implements ListenerModule, PacketListenerModule, ViolationModule
@@ -41,8 +41,7 @@ public class Pingspoof extends PacketAdapter implements ListenerModule, PacketLi
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -67,14 +66,13 @@ public class Pingspoof extends PacketAdapter implements ListenerModule, PacketLi
     private void check(final User user)
     {
         final long ping = user.getPingData().passedTime(0);
-        final long nmsPing = AACAPIProvider.getAPI().getPing(user.getPlayer());
+        final long nmsPing = ServerUtil.getPing(user.getPlayer());
 
         /*
             If the measured ping is too high for a sophisticated result or a ping-update is scheduled soon ignore this to
             prevent false positives
         */
-        if (ping > this.max_real_ping || user.getPingData().forceUpdatePing)
-        {
+        if (ping > this.max_real_ping || user.getPingData().forceUpdatePing) {
             return;
         }
 
@@ -97,11 +95,9 @@ public class Pingspoof extends PacketAdapter implements ListenerModule, PacketLi
                 AACAdditionPro.getInstance(),
                 () ->
                 {
-                    for (final User user : UserManager.getUsersUnwrapped())
-                    {
+                    for (final User user : UserManager.getUsersUnwrapped()) {
                         //Took too long to check
-                        if (user.getPingData().isCurrentlyChecking && user.getPingData().recentlyUpdated(0, 1000))
-                        {
+                        if (user.getPingData().isCurrentlyChecking && user.getPingData().recentlyUpdated(0, 1000)) {
                             user.getPingData().teleportLocation = null;
                             user.getPingData().isCurrentlyChecking = false;
                         }
@@ -115,7 +111,7 @@ public class Pingspoof extends PacketAdapter implements ListenerModule, PacketLi
                                 // Player is onGround
                                 user.getPlayer().isOnGround() &&
                                 // The Player has a high ping or the check is scheduled
-                                (user.getPingData().forceUpdatePing || AACAPIProvider.getAPI().getPing(user.getPlayer()) > max_real_ping * ping_offset) &&
+                                (user.getPingData().forceUpdatePing || ServerUtil.getPing(user.getPlayer()) > max_real_ping * ping_offset) &&
                                 // Safe-Time upon login as of fluctuating ping
                                 !user.getLoginData().recentlyUpdated(0, 10000))
                         {

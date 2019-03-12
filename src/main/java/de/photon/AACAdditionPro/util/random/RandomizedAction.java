@@ -8,8 +8,8 @@ public abstract class RandomizedAction
 {
     private int counter;
 
-    private int min;
-    private int boundary;
+    private final int min;
+    private final int boundary;
 
     private int nextAction;
 

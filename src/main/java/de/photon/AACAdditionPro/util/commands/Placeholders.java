@@ -2,7 +2,7 @@ package de.photon.AACAdditionPro.util.commands;
 
 import com.google.common.base.Preconditions;
 import de.photon.AACAdditionPro.util.general.StringUtils;
-import me.konsolas.aac.api.AACAPIProvider;
+import de.photon.AACAdditionPro.util.server.ServerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -31,7 +31,7 @@ public final class Placeholders
         input = applySinglePlaceholder(input, "{player}", player.getName(), (byte) 32);
 
         // Ping
-        input = applySinglePlaceholder(input, "{ping}", String.valueOf(AACAPIProvider.getAPI().getPing(player)), (byte) 5);
+        input = applySinglePlaceholder(input, "{ping}", String.valueOf(ServerUtil.getPing(player)), (byte) 5);
 
         // Global placeholders
         return applyGlobalPlaceholders(input, player.getWorld(), violationInformation);
@@ -61,8 +61,6 @@ public final class Placeholders
      */
     private static String applyGlobalPlaceholders(String input, final World world, final String violationInformation)
     {
-        Preconditions.checkState(AACAPIProvider.isAPILoaded(), "Placeholder-parsing failed because AAC's API is not loaded.");
-
         final LocalDateTime now = LocalDateTime.now();
 
         // Date
@@ -75,7 +73,7 @@ public final class Placeholders
         input = applySinglePlaceholder(input, "{server}", Bukkit.getServerName(), Byte.MAX_VALUE);
 
         // Ticks per second
-        input = applySinglePlaceholder(input, "{tps}", String.valueOf(AACAPIProvider.getAPI().getTPS()), (byte) 5);
+        input = applySinglePlaceholder(input, "{tps}", String.valueOf(ServerUtil.getTPS()), (byte) 5);
 
         if (violationInformation != null) {
             input = applySinglePlaceholder(input, "{vl}", violationInformation, (byte) 5);

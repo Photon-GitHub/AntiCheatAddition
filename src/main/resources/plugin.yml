@@ -5,7 +5,7 @@ author: Photon
 api-version: 1.13
 website: https://www.spigotmc.org/resources/aacadditionpro.33590/
 
-depend: [AAC, ProtocolLib]
+depend: [ProtocolLib]
 softdepend: [LabyModAPI, ViaVersion]
 main: de.photon.AACAdditionPro.AACAdditionPro
 

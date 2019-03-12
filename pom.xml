@@ -73,11 +73,6 @@
             <id>spigot-hub-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
-        <!-- Public AAC API -->
-        <repository>
-            <id>janmm14-public</id>
-            <url>https://repo.janmm14.de/repository/public/</url>
-        </repository>
         <repository>
             <id>sonatype-oss-public</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
@@ -122,11 +117,6 @@
             <artifactId>netty-buffer</artifactId>
             <version>4.0.13.Final</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>de.janmm14</groupId>
-            <artifactId>aac-api</artifactId>
-            <version>3.6.0</version>
         </dependency>
         <dependency>
             <groupId>net.labymod</groupId>

@@ -131,7 +131,7 @@ public final class ByteBufUtil
         int low = buf.readUnsignedShort();
         int high = 0;
         if ((low & 0x8000) != 0) {
-            low = low & 0x7FFF;
+            low &= 0x7FFF;
             high = buf.readUnsignedByte();
         }
         return ((high & 0xFF) << 15) | low;
@@ -142,7 +142,7 @@ public final class ByteBufUtil
         int low = toWrite & 0x7FFF;
         int high = (toWrite & 0x7F8000) >> 15;
         if (high != 0) {
-            low = low | 0x8000;
+            low |= 0x8000;
         }
         buf.writeShort(low);
         if (high != 0) {

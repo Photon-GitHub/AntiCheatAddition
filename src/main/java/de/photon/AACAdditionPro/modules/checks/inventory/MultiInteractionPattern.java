@@ -5,8 +5,8 @@ import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
+import de.photon.AACAdditionPro.util.server.ServerUtil;
 import lombok.Getter;
-import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.GameMode;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -27,9 +27,9 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
         // Creative-clear might trigger this.
         if ((user.getPlayer().getGameMode() == GameMode.SURVIVAL || user.getPlayer().getGameMode() == GameMode.ADVENTURE) &&
             // Minimum TPS before the check is activated as of a huge amount of fps
-            AACAPIProvider.getAPI().getTPS() > min_tps &&
+            ServerUtil.getTPS() > min_tps &&
             // Minimum ping
-            (max_ping < 0 || AACAPIProvider.getAPI().getPing(user.getPlayer()) <= max_ping) &&
+            (max_ping < 0 || ServerUtil.getPing(user.getPlayer()) <= max_ping) &&
             // False positive: Click-spamming on the same slot
             event.getRawSlot() != user.getInventoryData().getLastRawSlot())
         {

@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class Trie
 {
-    private TrieNode root;
+    private final TrieNode root;
 
     public Trie()
     {
@@ -56,7 +56,7 @@ public class Trie
     private class TrieNode
     {
         private TrieNode parent;
-        private TrieNode[] children;
+        private final TrieNode[] children;
         private boolean isLeaf;     //Quick way to check if any children exist
         private boolean isWord;     //Does this node represent the last character of a word
         private char character;     //The character this node represents

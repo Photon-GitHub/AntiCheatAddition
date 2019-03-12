@@ -9,7 +9,7 @@ public class SimpleBuffer<T> implements Buffer<T>
 {
     private final int capacity;
     @Getter
-    private Deque<T> deque;
+    private final Deque<T> deque;
 
     public SimpleBuffer(int capacity)
     {

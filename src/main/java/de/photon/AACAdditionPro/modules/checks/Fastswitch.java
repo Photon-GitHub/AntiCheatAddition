@@ -12,8 +12,8 @@ import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.mathematics.MathUtils;
+import de.photon.AACAdditionPro.util.server.ServerUtil;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
-import me.konsolas.aac.api.AACAPIProvider;
 
 public class Fastswitch extends PacketAdapter implements PacketListenerModule, ViolationModule
 {
@@ -39,24 +39,21 @@ public class Fastswitch extends PacketAdapter implements PacketListenerModule, V
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
         // Tps are high enough
-        if (AACAPIProvider.getAPI().getTPS() > 19 &&
+        if (ServerUtil.getTPS() > 19 &&
             event.getPacket().getBytes().readSafely(0) != null &&
             // Prevent the detection of scrolling
             !canBeLegit(user.getPlayer().getInventory().getHeldItemSlot(), event.getPacket().getBytes().readSafely(0)))
         {
             // Already switched in the given timeframe
-            if (user.getFastSwitchData().recentlyUpdated(0, switch_milliseconds))
-            {
+            if (user.getFastSwitchData().recentlyUpdated(0, switch_milliseconds)) {
 
                 // The ping is valid and in the borders that are set in the config
-                if (max_ping < 0 || AACAPIProvider.getAPI().getPing(user.getPlayer()) < max_ping)
-                {
+                if (max_ping < 0 || ServerUtil.getPing(user.getPlayer()) < max_ping) {
                     vlManager.flag(user.getPlayer(),
                                    cancel_vl,
                                    () -> event.setCancelled(true),

@@ -11,9 +11,9 @@ import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayPosition;
 import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerPosition;
+import de.photon.AACAdditionPro.util.server.ServerUtil;
 import de.photon.AACAdditionPro.util.world.ChunkUtils;
 import lombok.Getter;
-import me.konsolas.aac.api.AACAPIProvider;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
@@ -70,7 +70,7 @@ class MovePattern extends PatternModule.PacketPattern
                                                          Hitbox.SNEAKING_PLAYER :
                                                          Hitbox.PLAYER) &&
             // Auto-Disable if TPS are too low
-            AACAPIProvider.getAPI().getTPS() > min_tps)
+            ServerUtil.getTPS() > min_tps)
         {
             final boolean positiveVelocity = knownPosition.getY() < moveTo.getY();
 

@@ -35,22 +35,18 @@ public final class DisplayInformation
             boolean o2Preferred = preferredTeamNames.contains(o2.getName());
 
             // Preferred team handling
-            if (o1Preferred && !o2Preferred)
-            {
+            if (o1Preferred && !o2Preferred) {
                 return 1;
             }
-            else if (!o1Preferred && o2Preferred)
-            {
+            else if (!o1Preferred && o2Preferred) {
                 return -1;
             }
             return Integer.compare(o1.getSize(), o2.getSize());
         });
 
-        for (Team team : clientsidePlayerEntity.getObservedPlayer().getScoreboard().getTeams())
-        {
+        for (Team team : clientsidePlayerEntity.getObservedPlayer().getScoreboard().getTeams()) {
             // Don't add teams with suffix and the team of the observed player.
-            if (team.getSuffix().isEmpty() && !team.getEntries().contains(clientsidePlayerEntity.getGameProfile().getName()))
-            {
+            if (team.getSuffix().isEmpty() && !team.getEntries().contains(clientsidePlayerEntity.getGameProfile().getName())) {
                 possibleTeams.add(team);
             }
         }
@@ -60,20 +56,16 @@ public final class DisplayInformation
             // The observed player has joined the team of the entity.
             !possibleTeams.contains(clientsidePlayerEntity.getCurrentTeam()))
         {
-            for (Team possibleTeam : possibleTeams)
-            {
-                try
-                {
+            for (Team possibleTeam : possibleTeams) {
+                try {
                     // The Entity will automatically leave its current team, no extra method call required.
                     clientsidePlayerEntity.joinTeam(possibleTeam);
                     // No further team joining.
                     return;
-                } catch (IllegalArgumentException entityIsNull)
-                {
+                } catch (IllegalArgumentException entityIsNull) {
                     // Here the entity is null and thus additional measures are not required.
                     return;
-                } catch (IllegalStateException ignore)
-                {
+                } catch (IllegalStateException ignore) {
                     // Here the team is no longer present -> loop through the other teams.
                 }
             }
@@ -88,7 +80,7 @@ public final class DisplayInformation
      *                       Use {@link WrappedGameProfile#fromPlayer(Player)} in order to get a {@link WrappedGameProfile} from a {@link Player}.
      * @param ping           the new ping of the updated {@link Player}.
      * @param gameMode       the {@link com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode} of the updated {@link Player}.
-     *                       Use {@link me.konsolas.aac.api.AACAPI#getPing(Player)} to get the ping of a {@link Player}.
+     *                       Use {@link de.photon.AACAdditionPro.util.server.ServerUtil#getPing(Player)} to get the ping of a {@link Player}.
      * @param displayName    the new displayName of the updated {@link Player}
      * @param affectedPlayer the {@link Player} who will see the updated information as the packet is sent to him.
      */

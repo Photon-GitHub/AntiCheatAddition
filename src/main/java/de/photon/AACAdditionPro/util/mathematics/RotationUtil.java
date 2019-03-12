@@ -28,7 +28,7 @@ public final class RotationUtil
     {
         final float doubleMinMax = 2 * minMax;
 
-        input = input % doubleMinMax;
+        input %= doubleMinMax;
 
         return reduceAngle(input, minMax, doubleMinMax);
     }
@@ -43,7 +43,7 @@ public final class RotationUtil
     {
         final float doubleMinMax = 2 * minMax;
 
-        input = input % doubleMinMax;
+        input %= doubleMinMax;
 
         return reduceAngle(input, minMax, minMax);
     }

@@ -16,7 +16,7 @@ import java.util.Queue;
 public class VerboseCommand extends InternalPlayerCommand
 {
     @Getter
-    private List<String> tabPossibilities = new ImmutableList.Builder<String>().add("on", "off").addAll(childTabs).build();
+    private final List<String> tabPossibilities = new ImmutableList.Builder<String>().add("on", "off").addAll(childTabs).build();
 
     public VerboseCommand()
     {

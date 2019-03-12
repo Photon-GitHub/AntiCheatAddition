@@ -38,7 +38,6 @@ import de.photon.AACAdditionPro.modules.clientcontrol.WorldDownloaderControl;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.fakeentity.DelegatingKillauraEntityController;
-import de.photon.AACAdditionPro.util.sorting.CompareUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.bstats.bukkit.Metrics;

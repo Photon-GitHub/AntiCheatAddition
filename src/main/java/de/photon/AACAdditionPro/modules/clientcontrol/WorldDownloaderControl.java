@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class WorldDownloaderControl extends ClientControlModule implements PluginMessageListenerModule
 {
-    private static MessageChannel WDL_CONTROL_CHANNEL = new MessageChannel("wdl", "control");
+    private static final MessageChannel WDL_CONTROL_CHANNEL = new MessageChannel("wdl", "control");
 
     @LoadFromConfiguration(configPath = ".disable")
     private boolean disable;

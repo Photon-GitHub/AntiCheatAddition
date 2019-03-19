@@ -397,6 +397,8 @@ PacketAnalysis:
       # Offset analyses the packet order.
       # This part also catches various pingspoof modifications.
       # This part will add 2 to 10 vl, depending on the severity of the violation.
+      #
+      # IF YOU USE BUNGEECORD DISABLE THIS CHECK AS A BUG IN THE NETWORKING STRUCTURE WILL CAUSE FALSE POSITIVES.
       offset:
         # Do you want to enable the packet offset checking
         enabled: true
@@ -406,7 +408,7 @@ PacketAnalysis:
       inject:
         # Do you want to enable KeepAlive packet injection
         enabled: true
-    # This handled illegal position packets which could otherwise be used to bypass parts of the check.
+    # This handles illegal position packets which could otherwise be used to bypass parts of the check.
     # Disabling this will SEVERELY weaken other parts of the check.
     # This part will add 10 vl.
     PositionSpoof:

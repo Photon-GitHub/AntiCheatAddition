@@ -22,13 +22,10 @@ public final class PotionUtil
      */
     public static PotionEffect getPotionEffect(final LivingEntity livingEntity, final PotionEffectType type)
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-                for (final PotionEffect effect : livingEntity.getActivePotionEffects())
-                {
-                    if (effect.getType().equals(type))
-                    {
+                for (final PotionEffect effect : livingEntity.getActivePotionEffects()) {
+                    if (effect.getType().equals(type)) {
                         return effect;
                     }
                 }

@@ -28,11 +28,15 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
 
     private final ComparePattern comparePattern = new ComparePattern();
     private final EqualRotationPattern equalRotationPattern = new EqualRotationPattern();
-    private final PositionSpoofPattern positionSpoofPattern = new PositionSpoofPattern();
+
+    private final IllegalPitchPattern illegalPitchPattern = new IllegalPitchPattern();
+    private final IllegalYawPattern illegalYawPattern = new IllegalYawPattern();
 
     private final KeepAliveOffsetPattern keepAliveOffsetPattern = new KeepAliveOffsetPattern();
     private final KeepAliveIgnoredPattern keepAliveIgnoredPattern = new KeepAliveIgnoredPattern();
     private final KeepAliveInjectPattern keepAliveInjectPattern = new KeepAliveInjectPattern();
+
+    private final PositionSpoofPattern positionSpoofPattern = new PositionSpoofPattern();
 
     public PacketAnalysis()
     {
@@ -83,6 +87,8 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         // --------------------------------------------- EqualRotation ---------------------------------------------- //
 
         vlManager.flag(user.getPlayer(), this.equalRotationPattern.apply(user, event), -1, () -> {}, () -> {});
+        vlManager.flag(user.getPlayer(), this.illegalPitchPattern.apply(user, event), -1, () -> {}, () -> {});
+        vlManager.flag(user.getPlayer(), this.illegalYawPattern.apply(user, event), -1, () -> {}, () -> {});
 
         if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
             // --------------------------------------------- KeepAlive ---------------------------------------------- //
@@ -140,7 +146,14 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     @Override
     public Set<Pattern> getPatterns()
     {
-        return ImmutableSet.of(comparePattern, equalRotationPattern, positionSpoofPattern, keepAliveOffsetPattern, keepAliveIgnoredPattern, keepAliveInjectPattern);
+        return ImmutableSet.of(comparePattern,
+                               equalRotationPattern,
+                               illegalPitchPattern,
+                               illegalYawPattern,
+                               keepAliveOffsetPattern,
+                               keepAliveIgnoredPattern,
+                               keepAliveInjectPattern,
+                               positionSpoofPattern);
     }
 
     @Override

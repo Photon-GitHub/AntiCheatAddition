@@ -33,7 +33,6 @@ public class VelocityChangeData extends TimeData
      */
     private static class VelocityChangeDataUpdater extends PacketAdapter
     {
-        // Beacon handling
         private VelocityChangeDataUpdater()
         {
             super(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.POSITION, PacketType.Play.Client.POSITION_LOOK);

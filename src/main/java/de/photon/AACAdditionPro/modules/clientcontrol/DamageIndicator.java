@@ -80,7 +80,6 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
                     }
                     break;
 
-                case MC111:
                 case MC112:
                 case MC113:
                     // index 7 in 1.11+

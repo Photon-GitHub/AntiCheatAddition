@@ -26,7 +26,6 @@ public abstract class WrapperPlayKeepAlive extends AbstractPacket
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC111:
                 return handle.getIntegers().read(0);
             case MC112:
             case MC113:
@@ -45,7 +44,6 @@ public abstract class WrapperPlayKeepAlive extends AbstractPacket
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC111:
                 handle.getIntegers().write(0, (int) value);
                 break;
             case MC112:

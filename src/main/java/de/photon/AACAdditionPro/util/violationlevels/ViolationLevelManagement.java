@@ -50,7 +50,6 @@ public class ViolationLevelManagement
         // Load the thresholds and sort them.
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC111:
                 final List<Threshold> temp = Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds");
                 Collections.sort(temp);
                 thresholds = ImmutableList.copyOf(temp);

@@ -60,7 +60,6 @@ public class KillauraEntity implements ListenerModule, ViolationModule
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC111:
             case MC112:
                 this.tabListener = new LegacyTabListener();
                 break;

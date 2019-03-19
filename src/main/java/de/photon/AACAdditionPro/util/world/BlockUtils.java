@@ -33,7 +33,6 @@ public final class BlockUtils
                                                                  Material.getMaterial("STATIONARY_WATER"),
                                                                  Material.getMaterial("STATIONARY_LAVA")));
                 break;
-            case MC111:
             case MC112:
                 CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
                                                                     Material.TRAPPED_CHEST,

@@ -30,7 +30,6 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     private final EqualRotationPattern equalRotationPattern = new EqualRotationPattern();
 
     private final IllegalPitchPattern illegalPitchPattern = new IllegalPitchPattern();
-    private final IllegalYawPattern illegalYawPattern = new IllegalYawPattern();
 
     private final KeepAliveOffsetPattern keepAliveOffsetPattern = new KeepAliveOffsetPattern();
     private final KeepAliveIgnoredPattern keepAliveIgnoredPattern = new KeepAliveIgnoredPattern();
@@ -41,15 +40,17 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     public PacketAnalysis()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.LOW,
-              // Compare
-              PacketType.Play.Server.POSITION,
+              // --------------- Server --------------- //
               // KeepAlive analysis
               PacketType.Play.Server.KEEP_ALIVE,
+              // Compare
+              PacketType.Play.Server.POSITION,
+              // --------------- Client --------------- //
               PacketType.Play.Client.KEEP_ALIVE,
-              // EqualRotation + Compare
-              PacketType.Play.Client.POSITION_LOOK,
               // EqualRotation
-              PacketType.Play.Client.LOOK);
+              PacketType.Play.Client.LOOK,
+              // EqualRotation + Compare
+              PacketType.Play.Client.POSITION_LOOK);
     }
 
     @Override
@@ -88,7 +89,6 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
 
         vlManager.flag(user.getPlayer(), this.equalRotationPattern.apply(user, event), -1, () -> {}, () -> {});
         vlManager.flag(user.getPlayer(), this.illegalPitchPattern.apply(user, event), -1, () -> {}, () -> {});
-        vlManager.flag(user.getPlayer(), this.illegalYawPattern.apply(user, event), -1, () -> {}, () -> {});
 
         if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
             // --------------------------------------------- KeepAlive ---------------------------------------------- //
@@ -149,7 +149,6 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         return ImmutableSet.of(comparePattern,
                                equalRotationPattern,
                                illegalPitchPattern,
-                               illegalYawPattern,
                                keepAliveOffsetPattern,
                                keepAliveIgnoredPattern,
                                keepAliveInjectPattern,

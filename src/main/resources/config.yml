@@ -388,11 +388,6 @@ PacketAnalysis:
     IllegalPitch:
       # Do you want to enable IllegalPitch
       enabled: true
-    # This checks for illegal yaws that a legit client is not able to send.
-    # This part will add 10 vl.
-    IllegalYaw:
-      # Do you want to enable IllegalYaw
-      enabled: true
     # This part analyses KeepAlive packets.
     #
     # NOTE: Even with all subparts turned off a basic unregistered subpart is always active to prevent crash clients.

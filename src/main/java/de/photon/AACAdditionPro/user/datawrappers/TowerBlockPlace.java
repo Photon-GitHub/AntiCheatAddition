@@ -20,7 +20,7 @@ public class TowerBlockPlace extends BlockPlace
      * This {@link java.util.List} provides usually used and tested values to speed up performance and possibly low-
      * quality simulation results.
      */
-    private static final List<Double> AMPLIFIER_CHACHE = ImmutableList.of(
+    private static final List<Double> AMPLIFIER_CACHE = ImmutableList.of(
             // 478.4 * 0.925
             442.52D,
             // 578.4 * 0.925
@@ -53,7 +53,7 @@ public class TowerBlockPlace extends BlockPlace
 
         // No JUMP_BOOST
         if (jumpBoostLevel == null) {
-            return AMPLIFIER_CHACHE.get(0);
+            return AMPLIFIER_CACHE.get(0);
         }
 
         // Player has JUMP_BOOST
@@ -62,8 +62,8 @@ public class TowerBlockPlace extends BlockPlace
             return 1500;
         }
 
-        if (jumpBoostLevel + 1 < AMPLIFIER_CHACHE.size()) {
-            return AMPLIFIER_CHACHE.get(jumpBoostLevel + 1);
+        if (jumpBoostLevel + 1 < AMPLIFIER_CACHE.size()) {
+            return AMPLIFIER_CACHE.get(jumpBoostLevel + 1);
         }
 
         // The velocity in the beginning

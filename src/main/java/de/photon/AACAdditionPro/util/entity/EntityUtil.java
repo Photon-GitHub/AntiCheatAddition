@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,6 +16,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 public final class EntityUtil
 {
@@ -60,10 +62,8 @@ public final class EntityUtil
         // nearbyLivingEntities must be smaller or equal to nearbyEntities in the end.
         final List<LivingEntity> nearbyLivingEntities = new ArrayList<>(nearbyEntities.size());
 
-        for (Entity nearbyEntity : nearbyEntities)
-        {
-            if (nearbyEntity instanceof LivingEntity)
-            {
+        for (Entity nearbyEntity : nearbyEntities) {
+            if (nearbyEntity instanceof LivingEntity) {
                 nearbyLivingEntities.add((LivingEntity) nearbyEntity);
             }
         }
@@ -79,27 +79,10 @@ public final class EntityUtil
     {
         final Set<Material> materials = new HashSet<>();
 
-        final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
-        int xMin = (int) axisAlignedBB.getMinX();
-        int yMin = (int) axisAlignedBB.getMinY();
-        int zMin = (int) axisAlignedBB.getMinZ();
-
-        // Add 1 to ceil the value as the cast to int floors it.
-        int xMax = ((int) axisAlignedBB.getMaxX()) + 1;
-        int yMax = ((int) axisAlignedBB.getMaxY()) + 1;
-        int zMax = ((int) axisAlignedBB.getMaxZ()) + 1;
-
-
-        for (; xMin <= xMax; xMin++)
-        {
-            for (; yMin <= yMax; yMin++)
-            {
-                for (; zMin <= zMax; zMin++)
-                {
-                    materials.add(location.getWorld().getBlockAt(xMin, yMin, zMin).getType());
-                }
-            }
-        }
+        iterateThroughHitbox(location, hitbox, block -> {
+            materials.add(block.getType());
+            return false;
+        });
 
         return materials;
     }
@@ -124,11 +107,21 @@ public final class EntityUtil
      */
     public static boolean isHitboxInMaterials(final Location location, final Hitbox hitbox, final Collection<Material> materials)
     {
-        if (materials.isEmpty())
-        {
-            return false;
-        }
+        return !materials.isEmpty() && iterateThroughHitbox(location, hitbox, (block -> materials.contains(block.getType())));
+    }
 
+    /**
+     * This method iterates through all blocks that are (partially or totally) inside a given {@link Hitbox}.
+     *
+     * @param location the {@link Location} to base the {@link Hitbox} on.
+     * @param hitbox   the type of {@link Hitbox} that should be constructed.
+     * @param function the {@link Function} which defines what to do with each {@link Block}. If the {@link Function}
+     *                 returns true the iteration will be stopped and the method returns true.
+     *
+     * @return true if the {@link Function} stopped the iteration by returning true, false otherwise.
+     */
+    public static boolean iterateThroughHitbox(final Location location, final Hitbox hitbox, final Function<Block, Boolean> function)
+    {
         final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
         int xMin = (int) axisAlignedBB.getMinX();
         int yMin = (int) axisAlignedBB.getMinY();
@@ -139,15 +132,10 @@ public final class EntityUtil
         int yMax = ((int) axisAlignedBB.getMaxY()) + 1;
         int zMax = ((int) axisAlignedBB.getMaxZ()) + 1;
 
-
-        for (; xMin <= xMax; xMin++)
-        {
-            for (; yMin <= yMax; yMin++)
-            {
-                for (; zMin <= zMax; zMin++)
-                {
-                    if (materials.contains(location.getWorld().getBlockAt(xMin, yMin, zMin).getType()))
-                    {
+        for (; xMin <= xMax; xMin++) {
+            for (; yMin <= yMax; yMin++) {
+                for (; zMin <= zMax; zMin++) {
+                    if (function.apply(location.getWorld().getBlockAt(xMin, yMin, zMin))) {
                         return true;
                     }
                 }

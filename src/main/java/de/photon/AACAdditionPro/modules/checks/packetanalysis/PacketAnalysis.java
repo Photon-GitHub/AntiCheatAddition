@@ -28,24 +28,29 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
 
     private final ComparePattern comparePattern = new ComparePattern();
     private final EqualRotationPattern equalRotationPattern = new EqualRotationPattern();
-    private final PositionSpoofPattern positionSpoofPattern = new PositionSpoofPattern();
+
+    private final IllegalPitchPattern illegalPitchPattern = new IllegalPitchPattern();
 
     private final KeepAliveOffsetPattern keepAliveOffsetPattern = new KeepAliveOffsetPattern();
     private final KeepAliveIgnoredPattern keepAliveIgnoredPattern = new KeepAliveIgnoredPattern();
     private final KeepAliveInjectPattern keepAliveInjectPattern = new KeepAliveInjectPattern();
 
+    private final PositionSpoofPattern positionSpoofPattern = new PositionSpoofPattern();
+
     public PacketAnalysis()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.LOW,
-              // Compare
-              PacketType.Play.Server.POSITION,
+              // --------------- Server --------------- //
               // KeepAlive analysis
               PacketType.Play.Server.KEEP_ALIVE,
+              // Compare
+              PacketType.Play.Server.POSITION,
+              // --------------- Client --------------- //
               PacketType.Play.Client.KEEP_ALIVE,
-              // EqualRotation + Compare
-              PacketType.Play.Client.POSITION_LOOK,
               // EqualRotation
-              PacketType.Play.Client.LOOK);
+              PacketType.Play.Client.LOOK,
+              // EqualRotation + Compare
+              PacketType.Play.Client.POSITION_LOOK);
     }
 
     @Override
@@ -83,6 +88,7 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         // --------------------------------------------- EqualRotation ---------------------------------------------- //
 
         vlManager.flag(user.getPlayer(), this.equalRotationPattern.apply(user, event), -1, () -> {}, () -> {});
+        vlManager.flag(user.getPlayer(), this.illegalPitchPattern.apply(user, event), -1, () -> {}, () -> {});
 
         if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
             // --------------------------------------------- KeepAlive ---------------------------------------------- //
@@ -140,7 +146,13 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     @Override
     public Set<Pattern> getPatterns()
     {
-        return ImmutableSet.of(comparePattern, equalRotationPattern, positionSpoofPattern, keepAliveOffsetPattern, keepAliveIgnoredPattern, keepAliveInjectPattern);
+        return ImmutableSet.of(comparePattern,
+                               equalRotationPattern,
+                               illegalPitchPattern,
+                               keepAliveOffsetPattern,
+                               keepAliveIgnoredPattern,
+                               keepAliveInjectPattern,
+                               positionSpoofPattern);
     }
 
     @Override

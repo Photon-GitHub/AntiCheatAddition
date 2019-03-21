@@ -1,8 +1,5 @@
 package de.photon.AACAdditionPro.util.mathematics;
 
-
-import java.util.function.DoublePredicate;
-
 public final class MathUtils
 {
     /**
@@ -17,29 +14,6 @@ public final class MathUtils
     public static boolean roughlyEquals(final double a, final double b, final double range)
     {
         return offset(a, b) <= range;
-    }
-
-    /**
-     * Calculates the sum of the offsets in the array based on a value.
-     *
-     * @param inputs     the array of which the offset sum should be calculated
-     * @param offsetBase the reference point for the single offsets
-     * @param predicate  whether or not a certain offset should be added.
-     *
-     * @return the sum of the offsets in the array.
-     */
-    public static double offsetSum(final double[] inputs, final double offsetBase, final DoublePredicate predicate)
-    {
-        double offsetSum = 0;
-        for (double input : inputs)
-        {
-            final double offset = MathUtils.offset(input, offsetBase);
-            if (predicate.test(offset))
-            {
-                offsetSum += offset;
-            }
-        }
-        return offsetSum;
     }
 
     /**

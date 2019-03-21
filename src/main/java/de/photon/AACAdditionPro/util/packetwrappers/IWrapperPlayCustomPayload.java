@@ -19,7 +19,6 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC111:
             case MC112:
                 return new MessageChannel("minecraft", "placeholder", getHandle().getStrings().read(0));
             case MC113:
@@ -37,7 +36,6 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC111:
             case MC112:
                 getHandle().getStrings().write(0, value.getChannel());
                 break;

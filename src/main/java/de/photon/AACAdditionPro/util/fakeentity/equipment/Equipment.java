@@ -86,7 +86,6 @@ public class Equipment extends EnumMap<EnumWrappers.ItemSlot, Material>
         switch (ServerVersion.getActiveServerVersion())
         {
             case MC188:
-            case MC111:
             case MC112:
                 this.put(itemSlot, LegacyEquipmentDatabase.INSTANCE.getRandomEquipment(this.entity.getObservedPlayer(), itemSlot));
                 break;

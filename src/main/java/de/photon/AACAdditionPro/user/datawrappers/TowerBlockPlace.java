@@ -9,6 +9,8 @@ import lombok.Getter;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
+import java.util.List;
+
 public class TowerBlockPlace extends BlockPlace
 {
     private static final double TOWER_LENIENCY = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.TOWER.getConfigString() + ".tower_leniency");
@@ -18,7 +20,7 @@ public class TowerBlockPlace extends BlockPlace
      * This {@link java.util.List} provides usually used and tested values to speed up performance and possibly low-
      * quality simulation results.
      */
-    private static final ImmutableList<Double> AMPLIFIER_CHACHE = ImmutableList.of(
+    private static final List<Double> AMPLIFIER_CHACHE = ImmutableList.of(
             // 478.4 * 0.925
             442.52D,
             // 578.4 * 0.925

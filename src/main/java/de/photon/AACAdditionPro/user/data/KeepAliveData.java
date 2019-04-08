@@ -160,7 +160,7 @@ public class KeepAliveData extends Data
         }
 
         @Override
-        public void onPacketReceiving(PacketEvent event)
+        public void onPacketSending(PacketEvent event)
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 

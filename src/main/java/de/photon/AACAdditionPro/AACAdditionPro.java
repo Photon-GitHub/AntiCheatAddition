@@ -21,6 +21,7 @@ import de.photon.AACAdditionPro.modules.checks.Teaming;
 import de.photon.AACAdditionPro.modules.checks.Tower;
 import de.photon.AACAdditionPro.modules.checks.autofish.AutoFish;
 import de.photon.AACAdditionPro.modules.checks.inventory.Inventory;
+import de.photon.AACAdditionPro.modules.checks.keepalive.KeepAlive;
 import de.photon.AACAdditionPro.modules.checks.packetanalysis.PacketAnalysis;
 import de.photon.AACAdditionPro.modules.checks.scaffold.Scaffold;
 import de.photon.AACAdditionPro.modules.clientcontrol.BetterSprintingControl;
@@ -202,6 +203,7 @@ public class AACAdditionPro extends JavaPlugin
                     new Fastswitch(),
                     new ImpossibleChat(),
                     new Inventory(),
+                    new KeepAlive(),
                     new KillauraEntity(),
                     new PacketAnalysis(),
                     new Pingspoof(),

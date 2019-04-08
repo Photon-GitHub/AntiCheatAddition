@@ -7,6 +7,7 @@ import de.photon.AACAdditionPro.user.data.ClientSideEntityData;
 import de.photon.AACAdditionPro.user.data.ConsumeData;
 import de.photon.AACAdditionPro.user.data.FishingData;
 import de.photon.AACAdditionPro.user.data.InventoryData;
+import de.photon.AACAdditionPro.user.data.KeepAliveData;
 import de.photon.AACAdditionPro.user.data.LookPacketData;
 import de.photon.AACAdditionPro.user.data.PacketAnalysisData;
 import de.photon.AACAdditionPro.user.data.PingData;
@@ -31,9 +32,10 @@ public class User
     private TimeData fastSwitchData = new TimeData(this);
     private FishingData fishingData = new FishingData(this);
     private InventoryData inventoryData = new InventoryData(this);
-    private PacketAnalysisData packetAnalysisData = new PacketAnalysisData(this);
+    private KeepAliveData keepAliveData = new KeepAliveData(this);
     private TimeData loginData;
     private LookPacketData lookPacketData = new LookPacketData(this);
+    private PacketAnalysisData packetAnalysisData = new PacketAnalysisData(this);
     private PingData pingData = new PingData(this);
     private PositionData positionData = new PositionData(this);
     private ScaffoldData scaffoldData = new ScaffoldData(this);
@@ -85,14 +87,17 @@ public class User
         inventoryData.unregister();
         inventoryData = null;
 
-        packetAnalysisData.unregister();
-        packetAnalysisData = null;
+        keepAliveData.unregister();
+        keepAliveData = null;
 
         loginData.unregister();
         loginData = null;
 
         lookPacketData.unregister();
         lookPacketData = null;
+
+        packetAnalysisData.unregister();
+        packetAnalysisData = null;
 
         pingData.unregister();
         pingData = null;

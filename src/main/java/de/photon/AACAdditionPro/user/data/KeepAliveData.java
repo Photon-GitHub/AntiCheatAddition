@@ -1,8 +1,16 @@
 package de.photon.AACAdditionPro.user.data;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.base.Preconditions;
+import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.user.Data;
 import de.photon.AACAdditionPro.user.User;
+import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
 import lombok.Getter;
 
 import java.util.ArrayDeque;
@@ -14,6 +22,10 @@ public class KeepAliveData extends Data
 {
     // This needs to be so high to prevent flagging during TimeOuts.
     public static final byte KEEPALIVE_QUEUE_SIZE = 20;
+
+    static {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new KeepAliveDataUpdater());
+    }
 
     @Getter
     /* The central Deque of the KeepAlive packet handling.
@@ -97,6 +109,32 @@ public class KeepAliveData extends Data
         public int hashCode()
         {
             return Objects.hash(keepAliveID);
+        }
+    }
+
+    /**
+     * A singleton class to reduce the reqired {@link com.comphenix.protocol.events.PacketListener}s to a minimum.
+     */
+    private static class KeepAliveDataUpdater extends PacketAdapter
+    {
+        private KeepAliveDataUpdater()
+        {
+            super(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Server.KEEP_ALIVE);
+        }
+
+        @Override
+        public void onPacketReceiving(PacketEvent event)
+        {
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user == null) {
+                return;
+            }
+
+            // Register the KeepAlive
+            synchronized (user.getKeepAliveData().getKeepAlives()) {
+                user.getKeepAliveData().getKeepAlives().add(new KeepAliveData.KeepAlivePacketData(new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId()));
+            }
         }
     }
 }

@@ -36,7 +36,7 @@ class ComparePattern extends PatternModule.PacketPattern
         final double offset;
         try {
             offset = MathUtils.offset(
-                    user.getPacketAnalysisData().recentKeepAliveResponseTime(),
+                    user.getKeepAliveData().recentKeepAliveResponseTime(),
                     user.getPacketAnalysisData().lastPositionForceData.timeDifference()) - allowedOffset;
             // recentKeepAliveResponseTime() might throw an IllegalStateException if there are not enough answered
             // KeepAlive packets in the queue.

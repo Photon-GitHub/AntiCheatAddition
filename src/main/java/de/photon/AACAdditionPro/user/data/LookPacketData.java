@@ -25,8 +25,7 @@ public class LookPacketData extends TimeData
     private static final byte QUEUE_CAPACITY = 20;
 
     static {
-        LookPacketData.LookPacketDataUpdater dataUpdater = new LookPacketData.LookPacketDataUpdater();
-        ProtocolLibrary.getProtocolManager().addPacketListener(dataUpdater);
+        ProtocolLibrary.getProtocolManager().addPacketListener(new LookPacketData.LookPacketDataUpdater());
     }
 
     // PacketAnalysisData
@@ -130,7 +129,6 @@ public class LookPacketData extends TimeData
      */
     private static class LookPacketDataUpdater extends PacketAdapter
     {
-        // Beacon handling
         public LookPacketDataUpdater()
         {
             super(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK);
@@ -139,12 +137,8 @@ public class LookPacketData extends TimeData
         @Override
         public void onPacketReceiving(PacketEvent event)
         {
-            // Correct packets
-            if ((event.getPacketType() == PacketType.Play.Client.LOOK ||
-                 event.getPacketType() == PacketType.Play.Client.POSITION_LOOK) &&
-                // Not cancelled
-                !event.isCancelled())
-            {
+            // Not cancelled
+            if (!event.isCancelled()) {
                 final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
                 if (user == null) {

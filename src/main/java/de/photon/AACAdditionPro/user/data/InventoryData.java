@@ -15,6 +15,8 @@ import de.photon.AACAdditionPro.util.packetwrappers.client.WrapperPlayClientCust
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -124,7 +126,13 @@ public class InventoryData extends TimeData
 
             if (user != null &&
                 event.getAction() == Action.RIGHT_CLICK_BLOCK &&
-                BlockUtils.CONTAINERS.contains(event.getClickedBlock().getType()))
+                BlockUtils.CONTAINERS.contains(event.getClickedBlock().getType()) &&
+                // Make sure that obstructed containers are handled correctly.
+                !(BlockUtils.FREE_SPACE_CONTAINERS.contains(event.getClickedBlock().getType()) &&
+                  // False positive with unopenable containers due to blocks...
+                  (event.getClickedBlock().getRelative(BlockFace.UP).getType().isOccluding() ||
+                   // ... and cats.
+                   !event.getClickedBlock().getWorld().getNearbyEntities(event.getClickedBlock().getRelative(BlockFace.UP).getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty())))
             {
                 // Make sure that the container is opened and the player doesn't just place a block next to it.
                 boolean sneakingRequiredToPlaceBlock = false;

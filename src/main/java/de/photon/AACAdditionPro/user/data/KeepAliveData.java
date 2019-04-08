@@ -32,7 +32,7 @@ public class KeepAliveData extends Data
      *  Synchronized access to the Deque is a must.
      *
      *  KEEPALIVE_QUEUE_SIZE + 1 because there might always be one more element in the queue before the first one is deleted.*/
-    private final Deque<KeepAlivePacketData> keepAlives = new ArrayDeque<>(KEEPALIVE_QUEUE_SIZE + 1);
+    private final Deque<KeepAlivePacketData> keepAlives = new KeepAliveDeque(KEEPALIVE_QUEUE_SIZE + 1);
 
     public KeepAliveData(User user)
     {
@@ -74,6 +74,43 @@ public class KeepAliveData extends Data
     {
         this.keepAlives.clear();
         super.unregister();
+    }
+
+    /**
+     * Custom queue for {@link KeepAlivePacketData}s that has limit checks to prevent crash cheats built-in.
+     */
+    private static class KeepAliveDeque extends ArrayDeque<KeepAlivePacketData>
+    {
+        private KeepAliveDeque(int numElements)
+        {
+            super(numElements);
+        }
+
+        @Override
+        public void addFirst(KeepAlivePacketData keepAlivePacketData)
+        {
+            this.limitSize();
+            super.addFirst(keepAlivePacketData);
+        }
+
+        @Override
+        public void addLast(KeepAlivePacketData keepAlivePacketData)
+        {
+            this.limitSize();
+            super.addLast(keepAlivePacketData);
+        }
+
+        /**
+         * Crash prevention method to limit the recorded KeepAlive packets to some maximum.
+         */
+        private void limitSize()
+        {
+            // When the queue reaches a size that is more than quadruple the expected queue size start deleting entries.
+            while (this.size() > KEEPALIVE_QUEUE_SIZE << 2) {
+                // Remove the elements to prevent crash cheats.
+                this.pollFirst();
+            }
+        }
     }
 
     public static class KeepAlivePacketData

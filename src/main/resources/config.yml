@@ -404,6 +404,12 @@ PacketAnalysis:
   enabled: true
   # Control the different parts of PacketAnalysis
   parts:
+    # This part checks if after an attack the client sends an arm animation packet.
+    # This only flags the worst killauras.
+    # This part will add 20 vl.
+    Animation:
+      # Do you want to enabled PacketOrder
+      enabled: true
     # This parts compares interactions of the client with different packet types to gain insight whether or not
     # the client purposefully delays some packets (pingspoof and freecam).
     # This part will add 1 to 9 vl, depending on the severity of the violation.
@@ -426,12 +432,6 @@ PacketAnalysis:
     # This part will add 20 vl.
     IllegalPitch:
       # Do you want to enable IllegalPitch
-      enabled: true
-    # This part checks if the packets of the client are sent in the right order by comparing them to hardcoded patterns
-    # of the client code.
-    # This part will add 10 vl.
-    PacketOrder:
-      # Do you want to enabled PacketOrder
       enabled: true
     # This handles illegal position packets which could otherwise be used to bypass parts of the check.
     # Disabling this will SEVERELY weaken other parts of the check.

@@ -22,7 +22,7 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 200);
 
-    private final PacketOrderPattern combatOrderPattern = new PacketOrderPattern();
+    private final AnimationPattern animationPattern = new AnimationPattern();
 
     private final ComparePattern comparePattern = new ComparePattern();
     private final EqualRotationPattern equalRotationPattern = new EqualRotationPattern();
@@ -41,10 +41,6 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
               // CombatOrder
               PacketType.Play.Client.USE_ENTITY,
               PacketType.Play.Client.ARM_ANIMATION,
-              PacketType.Play.Client.ENTITY_ACTION,
-              PacketType.Play.Client.USE_ITEM,
-              PacketType.Play.Client.POSITION,
-              PacketType.Play.Client.FLYING,
               // EqualRotation
               PacketType.Play.Client.LOOK,
               // EqualRotation + Compare
@@ -79,7 +75,7 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
 
         // --------------------------------------------- CombatOrder ---------------------------------------------- //
 
-        vlManager.flag(user.getPlayer(), this.combatOrderPattern.apply(user, event), -1, () -> {}, () -> {});
+        vlManager.flag(user.getPlayer(), this.animationPattern.apply(user, event), -1, () -> {}, () -> {});
 
         // --------------------------------------------- EqualRotation ---------------------------------------------- //
 
@@ -106,7 +102,7 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     @Override
     public Set<Pattern> getPatterns()
     {
-        return ImmutableSet.of(combatOrderPattern,
+        return ImmutableSet.of(animationPattern,
                                comparePattern,
                                equalRotationPattern,
                                illegalPitchPattern,

@@ -231,6 +231,45 @@ Inventory:
     80: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats."
     100: "aackick {player} Inventory cheats."
 
+# This check processes KeepAlive packets to detect Pingspoof and similar modifications.
+KeepAlive:
+  # Do you want to enabled the KeepAlive check
+  enabled: true
+  # Control the different parts of KeepAlive
+  #
+  # NOTE: Even with all subparts turned off a basic unregistered subpart is always active to prevent crash clients.
+  # This particular subpart cannot have false positives and must be set off deliberately by modifying the protocol.
+  #
+  # PLEASE NOTE THAT DUE TO CURRENTLY UNFIXED BUGS IN BUNGEECORD'S KEEPALIVE HANDLING ALL SUBPARTS SHOULD BE DISABLED
+  # IF YOU USE BUNGEECORD OR A FORK OF IT. THE UNREGISTERED SUBPART (WHICH CANNOT BE TOGGLED HERE) IS NOT AFFECTED BY
+  # THIS BUG.
+  parts:
+    # Ignored checks for KeepAlive packets the client has not responded to, which is illegal in the minecraft
+    # protocol.
+    # This part will add 10 vl.
+    ignored:
+      # Do you want to enable the ignored KeepAlive packet checking
+      enabled: true
+    # Offset analyses the packet order.
+    # This part also catches various pingspoof modifications.
+    # This part will add 2 to 10 vl, depending on the severity of the violation.
+    #
+    # IF YOU USE BUNGEECORD DISABLE THIS CHECK AS A BUG IN THE NETWORKING STRUCTURE WILL CAUSE FALSE POSITIVES.
+    offset:
+      # Do you want to enable the packet offset checking
+      enabled: true
+    # This injects additional KeepAlive packets in order to improve detection of some modules.
+    # Legit players won't notice this.
+    # This subpart is not compatible with versions higher than 1.8.8 and will autodisable accordingly.
+    inject:
+      # Do you want to enable KeepAlive packet injection
+      enabled: true
+  # Map of violation levels to command
+  thresholds:
+    11: "aacstaffnotify {player} in {world} is suspected by KeepAlive"
+    18: "aacstaffnotify {player} in {world} is highly suspected by KeepAlive"
+    28: "aackick {player} Suspicious KeepAlive packets"
+
 # Brings back an entity check of the old AAC 1.9.10 times but much more advanced.
 #
 # This check can cause performance problems as it needs to calculate movement, select equipment and take many more
@@ -365,9 +404,15 @@ PacketAnalysis:
   enabled: true
   # Control the different parts of PacketAnalysis
   parts:
+    # This part checks if after an attack the client sends an arm animation packet.
+    # This only flags the worst killauras.
+    # This part will add 10 vl.
+    Animation:
+      # Do you want to enabled PacketOrder
+      enabled: true
     # This parts compares interactions of the client with different packet types to gain insight whether or not
     # the client purposefully delays some packets (pingspoof and freecam).
-    # This part will add 1 to 12 vl, depending on the severity of the violation.
+    # This part will add 1 to 9 vl, depending on the severity of the violation.
     Compare:
       # Do you want to enable packet time comparison
       enabled: true
@@ -388,31 +433,6 @@ PacketAnalysis:
     IllegalPitch:
       # Do you want to enable IllegalPitch
       enabled: true
-    # This part analyses KeepAlive packets.
-    #
-    # NOTE: Even with all subparts turned off a basic unregistered subpart is always active to prevent crash clients.
-    # This particular subpart cannot have false positives and must be set off deliberately by modifying the protocol.
-    KeepAlive:
-      # Ignored checks for KeepAlive packets the client has not responded to, which is illegal in the minecraft
-      # protocol.
-      # This part will add 10 vl.
-      ignored:
-        # Do you want to enable the ignored KeepAlive packet checking
-        enabled: true
-      # Offset analyses the packet order.
-      # This part also catches various pingspoof modifications.
-      # This part will add 2 to 10 vl, depending on the severity of the violation.
-      #
-      # IF YOU USE BUNGEECORD DISABLE THIS CHECK AS A BUG IN THE NETWORKING STRUCTURE WILL CAUSE FALSE POSITIVES.
-      offset:
-        # Do you want to enable the packet offset checking
-        enabled: true
-      # This injects additional KeepAlive packets in order to improve detection of some modules.
-      # Legit players won't notice this.
-      # This subpart is not compatible with versions higher than 1.8.8 and will autodisable accordingly.
-      inject:
-        # Do you want to enable KeepAlive packet injection
-        enabled: true
     # This handles illegal position packets which could otherwise be used to bypass parts of the check.
     # Disabling this will SEVERELY weaken other parts of the check.
     # This part will add 10 vl.

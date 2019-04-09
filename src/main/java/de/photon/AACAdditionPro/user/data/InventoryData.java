@@ -15,6 +15,9 @@ import de.photon.AACAdditionPro.util.packetwrappers.client.WrapperPlayClientCust
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -122,23 +125,45 @@ public class InventoryData extends TimeData
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            if (user != null &&
-                event.getAction() == Action.RIGHT_CLICK_BLOCK &&
-                BlockUtils.CONTAINERS.contains(event.getClickedBlock().getType()))
-            {
-                // Make sure that the container is opened and the player doesn't just place a block next to it.
-                boolean sneakingRequiredToPlaceBlock = false;
-                for (ItemStack handStack : InventoryUtils.getHandContents(event.getPlayer())) {
-                    // Check if the material is a placable block
-                    if (handStack.getType().isBlock()) {
-                        sneakingRequiredToPlaceBlock = true;
-                        break;
-                    }
-                }
+            if (user != null && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                final Material clickedMaterial = event.getClickedBlock().getType();
 
-                // Not sneaking when the player can place a block that way.
-                if (!(sneakingRequiredToPlaceBlock && event.getPlayer().isSneaking())) {
-                    user.getInventoryData().updateTimeStamp(0);
+                if (BlockUtils.CONTAINERS.contains(clickedMaterial)) {
+                    // Make sure that obstructed containers are handled correctly.
+                    if (BlockUtils.FREE_SPACE_CONTAINERS.contains(clickedMaterial)) {
+                        final Block aboveBlock = event.getClickedBlock().getRelative(BlockFace.UP);
+
+                        // Make sure that the block above is not obstructed by blocks
+                        if (!(aboveBlock.isEmpty() ||
+                              aboveBlock.isPassable() ||
+                              aboveBlock.getType() == Material.CHEST ||
+                              aboveBlock.getType() == Material.TRAPPED_CHEST ||
+                              aboveBlock.getType().name().endsWith("_SLAB") ||
+                              aboveBlock.getType().name().endsWith("_STAIRS")))
+                        {
+                            return;
+                        }
+
+                        // Make sure that the block above is not obstructed by cats
+                        if (!aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty()) {
+                            return;
+                        }
+                    }
+
+                    // Make sure that the container is opened and the player doesn't just place a block next to it.
+                    boolean sneakingRequiredToPlaceBlock = false;
+                    for (ItemStack handStack : InventoryUtils.getHandContents(event.getPlayer())) {
+                        // Check if the material is a placable block
+                        if (handStack.getType().isBlock()) {
+                            sneakingRequiredToPlaceBlock = true;
+                            break;
+                        }
+                    }
+
+                    // Not sneaking when the player can place a block that way.
+                    if (!(sneakingRequiredToPlaceBlock && event.getPlayer().isSneaking())) {
+                        user.getInventoryData().updateTimeStamp(0);
+                    }
                 }
             }
         }

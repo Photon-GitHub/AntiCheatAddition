@@ -14,11 +14,24 @@ import java.util.Set;
 public final class BlockUtils
 {
     public static final Set<Material> LIQUIDS;
+
+    /**
+     * Contains all containers that need a free space of any kind above the container (e.g. chests with a stair above)
+     */
+    public static final Set<Material> FREE_SPACE_CONTAINERS;
+
+    /**
+     * Contains all containers.
+     */
     public static final Set<Material> CONTAINERS;
 
     static {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
+                FREE_SPACE_CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
+                                                                               Material.TRAPPED_CHEST,
+                                                                               Material.ENDER_CHEST));
+
                 CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
                                                                     Material.TRAPPED_CHEST,
                                                                     Material.ENDER_CHEST,
@@ -34,6 +47,26 @@ public final class BlockUtils
                                                                  Material.getMaterial("STATIONARY_LAVA")));
                 break;
             case MC112:
+                FREE_SPACE_CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
+                                                                               Material.TRAPPED_CHEST,
+                                                                               Material.ENDER_CHEST,
+                                                                               Material.BLACK_SHULKER_BOX,
+                                                                               Material.BROWN_SHULKER_BOX,
+                                                                               Material.BLUE_SHULKER_BOX,
+                                                                               Material.CYAN_SHULKER_BOX,
+                                                                               Material.GRAY_SHULKER_BOX,
+                                                                               Material.GREEN_SHULKER_BOX,
+                                                                               Material.LIGHT_BLUE_SHULKER_BOX,
+                                                                               Material.LIME_SHULKER_BOX,
+                                                                               Material.MAGENTA_SHULKER_BOX,
+                                                                               Material.ORANGE_SHULKER_BOX,
+                                                                               Material.PINK_SHULKER_BOX,
+                                                                               Material.PURPLE_SHULKER_BOX,
+                                                                               Material.RED_SHULKER_BOX,
+                                                                               Material.getMaterial("SILVER_SHULKER_BOX"),
+                                                                               Material.WHITE_SHULKER_BOX,
+                                                                               Material.YELLOW_SHULKER_BOX));
+
                 CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
                                                                     Material.TRAPPED_CHEST,
                                                                     Material.ENDER_CHEST,
@@ -65,6 +98,26 @@ public final class BlockUtils
                                                                  Material.getMaterial("STATIONARY_LAVA")));
                 break;
             case MC113:
+                FREE_SPACE_CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
+                                                                               Material.TRAPPED_CHEST,
+                                                                               Material.ENDER_CHEST,
+                                                                               Material.SHULKER_BOX,
+                                                                               Material.BLACK_SHULKER_BOX,
+                                                                               Material.BROWN_SHULKER_BOX,
+                                                                               Material.BLUE_SHULKER_BOX,
+                                                                               Material.CYAN_SHULKER_BOX,
+                                                                               Material.GRAY_SHULKER_BOX,
+                                                                               Material.GREEN_SHULKER_BOX,
+                                                                               Material.LIGHT_BLUE_SHULKER_BOX,
+                                                                               Material.LIME_SHULKER_BOX,
+                                                                               Material.MAGENTA_SHULKER_BOX,
+                                                                               Material.ORANGE_SHULKER_BOX,
+                                                                               Material.PINK_SHULKER_BOX,
+                                                                               Material.PURPLE_SHULKER_BOX,
+                                                                               Material.RED_SHULKER_BOX,
+                                                                               Material.WHITE_SHULKER_BOX,
+                                                                               Material.YELLOW_SHULKER_BOX));
+
                 CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
                                                                     Material.TRAPPED_CHEST,
                                                                     Material.ENDER_CHEST,

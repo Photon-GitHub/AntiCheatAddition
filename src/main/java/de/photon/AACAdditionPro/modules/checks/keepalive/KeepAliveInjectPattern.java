@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.modules.checks.packetanalysis;
+package de.photon.AACAdditionPro.modules.checks.keepalive;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;

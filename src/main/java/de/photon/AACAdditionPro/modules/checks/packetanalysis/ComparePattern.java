@@ -36,7 +36,7 @@ class ComparePattern extends PatternModule.PacketPattern
         final double offset;
         try {
             offset = MathUtils.offset(
-                    user.getPacketAnalysisData().recentKeepAliveResponseTime(),
+                    user.getKeepAliveData().recentKeepAliveResponseTime(),
                     user.getPacketAnalysisData().lastPositionForceData.timeDifference()) - allowedOffset;
             // recentKeepAliveResponseTime() might throw an IllegalStateException if there are not enough answered
             // KeepAlive packets in the queue.
@@ -52,7 +52,7 @@ class ComparePattern extends PatternModule.PacketPattern
                 ++user.getPacketAnalysisData().compareFails >= this.violationThreshold)
             {
                 message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays. Mitigated Offset: " + offset;
-                return Math.min(Math.max(1, (int) (offset / 50)), 12);
+                return Math.min(Math.max(1, (int) (offset / 50)), 9);
             }
         }
         else if (user.getPacketAnalysisData().compareFails > 0) {

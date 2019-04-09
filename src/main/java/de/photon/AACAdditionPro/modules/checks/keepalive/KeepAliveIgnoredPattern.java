@@ -1,4 +1,4 @@
-package de.photon.AACAdditionPro.modules.checks.packetanalysis;
+package de.photon.AACAdditionPro.modules.checks.keepalive;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.user.data.PacketAnalysisData;
+import de.photon.AACAdditionPro.user.data.KeepAliveData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 
 /**
@@ -22,10 +22,10 @@ class KeepAliveIgnoredPattern extends PatternModule.PacketPattern
     @Override
     protected int process(User user, PacketEvent packetEvent)
     {
-        synchronized (user.getPacketAnalysisData().getKeepAlives()) {
+        synchronized (user.getKeepAliveData().getKeepAlives()) {
             // Check on sending to force the client to respond in a certain time-frame.
-            if (user.getPacketAnalysisData().getKeepAlives().size() > PacketAnalysisData.KEEPALIVE_QUEUE_SIZE &&
-                !user.getPacketAnalysisData().getKeepAlives().remove().hasRegisteredResponse())
+            if (user.getKeepAliveData().getKeepAlives().size() > KeepAliveData.KEEPALIVE_QUEUE_SIZE &&
+                !user.getKeepAliveData().getKeepAlives().remove().hasRegisteredResponse())
             {
                 VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " ignored KeepAlive packet.");
                 return 10;

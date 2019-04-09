@@ -406,7 +406,7 @@ PacketAnalysis:
   parts:
     # This part checks if after an attack the client sends an arm animation packet.
     # This only flags the worst killauras.
-    # This part will add 20 vl.
+    # This part will add 10 vl.
     Animation:
       # Do you want to enabled PacketOrder
       enabled: true

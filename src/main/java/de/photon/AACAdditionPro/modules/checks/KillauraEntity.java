@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
@@ -19,6 +20,7 @@ import de.photon.AACAdditionPro.util.fakeentity.ClientsidePlayerEntity;
 import de.photon.AACAdditionPro.util.fakeentity.DelegatingKillauraEntityController;
 import de.photon.AACAdditionPro.util.fakeentity.FakeEntityUtil;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
+import de.photon.AACAdditionPro.util.packetwrappers.client.WrapperPlayClientUseEntity;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -58,6 +60,9 @@ public class KillauraEntity implements ListenerModule, ViolationModule
 
     public KillauraEntity()
     {
+        // Flags the player.
+        ProtocolLibrary.getProtocolManager().addPacketListener(new EntityUsePacketListener());
+
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
             case MC112:
@@ -144,35 +149,6 @@ public class KillauraEntity implements ListenerModule, ViolationModule
             public Movement getMovement()
             {
                 return Movement.BASIC_FOLLOW_MOVEMENT;
-            }
-        });
-
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), PacketType.Play.Client.USE_ENTITY)
-        {
-            @Override
-            public void onPacketReceiving(final PacketEvent event)
-            {
-                final int entityId = event.getPacket().getIntegers().read(0);
-
-                // Add velocity to the bot so the bot does never stand inside or in front of the player
-                final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-                // Not bypassed
-                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY)) {
-                    return;
-                }
-
-                final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
-
-                if (playerEntity != null &&
-                    entityId == playerEntity.getEntityID())
-                {
-                    playerEntity.hurtByObserved();
-                    // To prevent false positives ensure the correct position.
-                    playerEntity.setNeedsTeleport(true);
-                    vlManager.flag(event.getPlayer(), -1, () -> {}, () -> {});
-                    event.setCancelled(true);
-                }
             }
         });
 
@@ -423,6 +399,47 @@ public class KillauraEntity implements ListenerModule, ViolationModule
                 StringUtil.startsWithIgnoreCase(playerEntity.getName(), event.getLastToken()))
             {
                 event.getTabCompletions().add(playerEntity.getName());
+            }
+        }
+    }
+
+    /**
+     * The {@link com.comphenix.protocol.events.PacketListener} that actually flags the player for hitting the entity.
+     */
+    private class EntityUsePacketListener extends PacketAdapter
+    {
+        private EntityUsePacketListener()
+        {
+            super(AACAdditionPro.getInstance(), PacketType.Play.Client.USE_ENTITY);
+        }
+
+        @Override
+        public void onPacketReceiving(final PacketEvent event)
+        {
+            final WrapperPlayClientUseEntity clientUseEntityWrapper = new WrapperPlayClientUseEntity(event.getPacket());
+
+            if (clientUseEntityWrapper.getType() == EnumWrappers.EntityUseAction.ATTACK) {
+                final int entityId = clientUseEntityWrapper.getTargetID();
+
+                // Add velocity to the bot so the bot does never stand inside or in front of the player
+                final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+                // Not bypassed
+                if (User.isUserInvalid(user, ModuleType.KILLAURA_ENTITY)) {
+                    return;
+                }
+
+                final ClientsidePlayerEntity playerEntity = user.getClientSideEntityData().clientSidePlayerEntity;
+
+                if (playerEntity != null &&
+                    entityId == playerEntity.getEntityID())
+                {
+                    playerEntity.hurtByObserved();
+                    // To prevent false positives ensure the correct position.
+                    playerEntity.setNeedsTeleport(true);
+                    vlManager.flag(event.getPlayer(), -1, () -> {}, () -> {});
+                    event.setCancelled(true);
+                }
             }
         }
     }

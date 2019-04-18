@@ -159,7 +159,6 @@ public class InventoryData extends TimeData
                             default:
                                 throw new IllegalStateException("Unknown minecraft version");
                         }
-
                     }
 
                     // Make sure that the container is opened and the player doesn't just place a block next to it.

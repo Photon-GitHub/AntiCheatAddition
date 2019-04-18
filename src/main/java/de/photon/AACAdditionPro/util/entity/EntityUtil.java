@@ -40,9 +40,9 @@ public final class EntityUtil
      *
      * @return a {@link List} of {@link LivingEntity}s which are in range.
      */
-    public static List<LivingEntity> getLivingEntitiesAroundPlayer(final Entity entity, final Hitbox hitbox, final double offset)
+    public static List<LivingEntity> getLivingEntitiesAroundEntity(final Entity entity, final Hitbox hitbox, final double offset)
     {
-        return getLivingEntitiesAroundPlayer(entity, hitbox.getOffsetX() + offset, hitbox.getHeight() + offset, hitbox.getOffsetZ() + offset);
+        return getLivingEntitiesAroundEntity(entity, hitbox.getOffsetX() + offset, hitbox.getHeight() + offset, hitbox.getOffsetZ() + offset);
     }
 
     /**
@@ -55,7 +55,7 @@ public final class EntityUtil
      *
      * @return a {@link List} of {@link LivingEntity}s which are in range.
      */
-    public static List<LivingEntity> getLivingEntitiesAroundPlayer(final Entity entity, final double x, final double y, final double z)
+    public static List<LivingEntity> getLivingEntitiesAroundEntity(final Entity entity, final double x, final double y, final double z)
     {
         final List<Entity> nearbyEntities = entity.getNearbyEntities(x, y, z);
 

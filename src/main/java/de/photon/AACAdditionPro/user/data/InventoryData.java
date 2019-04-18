@@ -145,9 +145,21 @@ public class InventoryData extends TimeData
                         }
 
                         // Make sure that the block above is not obstructed by cats
-                        if (!aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty()) {
-                            return;
+                        switch (ServerVersion.getActiveServerVersion()) {
+                            case MC188:
+                            case MC112:
+                                // Cannot check for cats as the server version doesn't provide the newer methods.
+                                break;
+                            case MC113:
+                                // Make sure that the block above is not obstructed by cats
+                                if (!aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty()) {
+                                    return;
+                                }
+                                break;
+                            default:
+                                throw new IllegalStateException("Unknown minecraft version");
                         }
+
                     }
 
                     // Make sure that the container is opened and the player doesn't just place a block next to it.

@@ -96,7 +96,7 @@ class MovePattern extends PatternModule.PacketPattern
                 user.getInventoryData().notRecentlyOpened(100 + lenience_millis) &&
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
-                EntityUtil.getLivingEntitiesAroundPlayer(user.getPlayer(), Hitbox.PLAYER, 0.1D).isEmpty())
+                EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), Hitbox.PLAYER, 0.1D).isEmpty())
             {
                 message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " moved while having an open inventory.";
                 return 3;

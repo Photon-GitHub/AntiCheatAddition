@@ -20,12 +20,21 @@ public enum ServerVersion
     MC110("1.10", false),
     MC111("1.11.2", false),
     MC112("1.12.2", true),
-    MC113("1.13", true);
+    MC113("1.13", true),
+    MC114("1.14", true);
 
 
-    public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = EnumSet.of(MC188, MC112, MC113);
+    public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS;
     public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = EnumSet.of(MC188, MC112);
-    public static final Set<ServerVersion> NON_188_VERSIONS = EnumSet.of(MC112, MC113);
+    public static final Set<ServerVersion> NON_188_VERSIONS;
+
+    static {
+        ALL_SUPPORTED_VERSIONS = EnumSet.allOf(ServerVersion.class);
+        ALL_SUPPORTED_VERSIONS.removeIf(serverVersion -> !serverVersion.supported);
+
+        NON_188_VERSIONS = EnumSet.copyOf(ALL_SUPPORTED_VERSIONS);
+        NON_188_VERSIONS.remove(MC188);
+    }
 
     private final String versionOutputString;
     private final boolean supported;

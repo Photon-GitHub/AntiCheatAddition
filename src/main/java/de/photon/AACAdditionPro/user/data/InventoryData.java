@@ -135,22 +135,10 @@ public class InventoryData extends TimeData
 
                         switch (ServerVersion.getActiveServerVersion()) {
                             case MC188:
-                                // 1.8.8 doesn't provide isPassable.
-                                // Make sure that the block above is not obstructed by blocks
-                                if (!(aboveBlock.isEmpty() ||
-                                      aboveBlock.getType() == Material.CHEST ||
-                                      aboveBlock.getType() == Material.TRAPPED_CHEST ||
-                                      aboveBlock.getType().name().endsWith("_SLAB") ||
-                                      aboveBlock.getType().name().endsWith("_STAIRS")))
-                                {
-                                    return;
-                                }
-                                // Cannot check for cats as the server version doesn't provide the newer methods.
                             case MC112:
-                                // 1.8.8 doesn't provide isPassable.
+                                // 1.8.8 and 1.12 doesn't provide isPassable.
                                 // Make sure that the block above is not obstructed by blocks
                                 if (!(aboveBlock.isEmpty() ||
-                                      aboveBlock.isPassable() ||
                                       aboveBlock.getType() == Material.CHEST ||
                                       aboveBlock.getType() == Material.TRAPPED_CHEST ||
                                       aboveBlock.getType().name().endsWith("_SLAB") ||

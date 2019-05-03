@@ -18,7 +18,7 @@ public final class CommandUtils
      */
     public static void executeCommandWithPlaceholders(final String command, final Player player, final ModuleType moduleType, final Double newVl)
     {
-        final PlayerAdditionViolationCommandEvent commandEvent = new PlayerAdditionViolationCommandEvent(
+        final PlayerAdditionViolationCommandEvent commandEvent = PlayerAdditionViolationCommandEvent.createAndCallCommandEvent(
                 player,
                 Placeholders.applyPlaceholders(command,
                                                player,
@@ -28,7 +28,6 @@ public final class CommandUtils
                                                String.valueOf(newVl)),
                 moduleType);
 
-        Bukkit.getPluginManager().callEvent(commandEvent);
         if (!commandEvent.isCancelled()) {
             executeCommand(commandEvent.getCommand());
         }

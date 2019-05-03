@@ -44,10 +44,10 @@ public final class Placeholders
         final String[] replacements = new String[PLACEHOLDER_MAP.size()];
 
         // Player
-        replacements[PLACEHOLDER_MAP.get("player").ordinal()] = player.getName();
+        replacements[Placeholder.PLAYER.ordinal()] = player.getName();
 
         // Ping
-        replacements[PLACEHOLDER_MAP.get("ping").ordinal()] = String.valueOf(ServerUtil.getPing(player));
+        replacements[Placeholder.PING.ordinal()] = String.valueOf(ServerUtil.getPing(player));
 
         // Global placeholders
         return applyGlobalPlaceholders(input, replacements, player.getWorld(), violationInformation);
@@ -68,7 +68,7 @@ public final class Placeholders
         final String[] replacements = new String[PLACEHOLDER_MAP.size()];
 
         // Collect to Set to make sure no names are duplicates.
-        replacements[PLACEHOLDER_MAP.get("team").ordinal()] = String.join(", ", players.stream().map(Player::getName).collect(Collectors.toSet()));
+        replacements[Placeholder.TEAM.ordinal()] = String.join(", ", players.stream().map(Player::getName).collect(Collectors.toSet()));
 
         return applyGlobalPlaceholders(input, replacements, players.get(0).getWorld(), violationInformation);
     }
@@ -81,22 +81,22 @@ public final class Placeholders
         final LocalDateTime now = LocalDateTime.now();
 
         // Date
-        replacements[PLACEHOLDER_MAP.get("date").ordinal()] = now.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        replacements[Placeholder.DATE.ordinal()] = now.format(DateTimeFormatter.ISO_LOCAL_DATE);
 
         // Time
-        replacements[PLACEHOLDER_MAP.get("time").ordinal()] = now.format(DateTimeFormatter.ISO_LOCAL_TIME);
+        replacements[Placeholder.TIME.ordinal()] = now.format(DateTimeFormatter.ISO_LOCAL_TIME);
 
         // Server name
-        replacements[PLACEHOLDER_MAP.get("server").ordinal()] = Bukkit.getServerName();
+        replacements[Placeholder.SERVER.ordinal()] = Bukkit.getServerName();
 
         // Ticks per second
-        replacements[PLACEHOLDER_MAP.get("tps").ordinal()] = String.valueOf(ServerUtil.getTPS());
+        replacements[Placeholder.TPS.ordinal()] = String.valueOf(ServerUtil.getTPS());
 
         // VL extra information
-        replacements[PLACEHOLDER_MAP.get("vl").ordinal()] = violationInformation;
+        replacements[Placeholder.VL.ordinal()] = violationInformation;
 
         // World
-        replacements[PLACEHOLDER_MAP.get("world").ordinal()] = world.getName();
+        replacements[Placeholder.WORLD.ordinal()] = world.getName();
         return replacePlaceholders(input, replacements);
     }
 

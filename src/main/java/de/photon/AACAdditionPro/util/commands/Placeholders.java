@@ -1,8 +1,10 @@
 package de.photon.AACAdditionPro.util.commands;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import de.photon.AACAdditionPro.util.general.StringUtils;
 import de.photon.AACAdditionPro.util.server.ServerUtil;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -10,10 +12,23 @@ import org.bukkit.entity.Player;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class Placeholders
 {
+    private static final Map<String, Placeholder> PLACEHOLDER_MAP;
+
+    static {
+        final ImmutableMap.Builder<String, Placeholder> builder = ImmutableMap.builder();
+
+        for (Placeholder placeholder : Placeholder.values()) {
+            builder.put(placeholder.getPlaceholderString(), placeholder);
+        }
+
+        PLACEHOLDER_MAP = builder.build();
+    }
+
     /**
      * This method handles the replacement of the placeholders.
      * Supported placeholders: {player}, {ping}, {tps}
@@ -26,15 +41,16 @@ public final class Placeholders
     public static String applyPlaceholders(String input, final Player player, final String violationInformation)
     {
         Preconditions.checkNotNull(player, "Placeholder-parsing failed because the list of players is null or empty.");
+        final String[] replacements = new String[PLACEHOLDER_MAP.size()];
 
         // Player
-        input = applySinglePlaceholder(input, "{player}", player.getName(), (byte) 32);
+        replacements[Placeholder.PLAYER.ordinal()] = player.getName();
 
         // Ping
-        input = applySinglePlaceholder(input, "{ping}", String.valueOf(ServerUtil.getPing(player)), (byte) 5);
+        replacements[Placeholder.PING.ordinal()] = String.valueOf(ServerUtil.getPing(player));
 
         // Global placeholders
-        return applyGlobalPlaceholders(input, player.getWorld(), violationInformation);
+        return applyGlobalPlaceholders(input, replacements, player.getWorld(), violationInformation);
     }
 
     /**
@@ -49,53 +65,116 @@ public final class Placeholders
     public static String applyPlaceholders(String input, final List<Player> players, final String violationInformation)
     {
         Preconditions.checkArgument(players != null && players.size() > 1, "Placeholder-parsing failed because the list of players is null or too small.");
+        final String[] replacements = new String[PLACEHOLDER_MAP.size()];
 
         // Collect to Set to make sure no names are duplicates.
-        input = applySinglePlaceholder(input, "{team}", String.join(", ", players.stream().map(Player::getName).collect(Collectors.toSet())), Byte.MAX_VALUE);
+        replacements[Placeholder.TEAM.ordinal()] = String.join(", ", players.stream().map(Player::getName).collect(Collectors.toSet()));
 
-        return applyGlobalPlaceholders(input, players.get(0).getWorld(), violationInformation);
+        return applyGlobalPlaceholders(input, replacements, players.get(0).getWorld(), violationInformation);
     }
 
     /**
      * Apply the placeholders which are important for both team and single player violations.
      */
-    private static String applyGlobalPlaceholders(String input, final World world, final String violationInformation)
+    private static String applyGlobalPlaceholders(String input, String[] replacements, final World world, final String violationInformation)
     {
         final LocalDateTime now = LocalDateTime.now();
 
         // Date
-        input = applySinglePlaceholder(input, "{date}", now.format(DateTimeFormatter.ISO_LOCAL_DATE), Byte.MAX_VALUE);
+        replacements[Placeholder.DATE.ordinal()] = now.format(DateTimeFormatter.ISO_LOCAL_DATE);
 
         // Time
-        input = applySinglePlaceholder(input, "{time}", now.format(DateTimeFormatter.ISO_LOCAL_TIME), (byte) 8);
+        replacements[Placeholder.TIME.ordinal()] = now.format(DateTimeFormatter.ISO_LOCAL_TIME);
 
         // Server name
-        input = applySinglePlaceholder(input, "{server}", Bukkit.getServerName(), Byte.MAX_VALUE);
+        replacements[Placeholder.SERVER.ordinal()] = Bukkit.getServerName();
 
         // Ticks per second
-        input = applySinglePlaceholder(input, "{tps}", String.valueOf(ServerUtil.getTPS()), (byte) 5);
+        replacements[Placeholder.TPS.ordinal()] = String.valueOf(ServerUtil.getTPS());
 
-        if (violationInformation != null) {
-            input = applySinglePlaceholder(input, "{vl}", violationInformation, (byte) 5);
-        }
+        // VL extra information
+        replacements[Placeholder.VL.ordinal()] = violationInformation;
 
         // World
-        input = applySinglePlaceholder(input, "{world}", world.getName(), Byte.MAX_VALUE);
-        return input;
+        replacements[Placeholder.WORLD.ordinal()] = world.getName();
+        return replacePlaceholders(input, replacements);
     }
 
     /**
      * Applies a placeholder to a {@link String}.
      *
-     * @param original     the original {@link String} containing all placeholders
-     * @param placeholder  the placeholder pattern
-     * @param replacement  the {@link String} the placeholder should be replaced with
-     * @param maximumChars after how many chars should the replacement be chopped down
+     * @param original the original {@link String} containing all placeholders
      *
      * @return original with the placeholder replaced.
      */
-    private static String applySinglePlaceholder(String original, String placeholder, String replacement, byte maximumChars)
+    private static String replacePlaceholders(String original, String[] replacements)
     {
-        return original.replace(placeholder, StringUtils.limitStringLength(replacement, maximumChars));
+        final StringBuilder placeholderBuilder = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
+        boolean placeholderStarted = false;
+
+        for (char c : original.toCharArray()) {
+            if (c == '{') {
+                // Clear any old placeholder that is still present.
+                placeholderBuilder.delete(0, placeholderBuilder.length());
+                // Start the recording of the placeholder
+                placeholderStarted = true;
+                // Make sure the '{' char is not recorded.
+                continue;
+            }
+
+            if (c == '}') {
+                // End the recording of the placeholder
+                placeholderStarted = false;
+
+                // See if the recorded chars match a placeholder
+                final Placeholder placeholder = PLACEHOLDER_MAP.get(placeholderBuilder.toString());
+
+                // If so, add the placeholder to the result
+                if (placeholder != null) {
+                    result.append(StringUtils.limitStringLength(replacements[placeholder.ordinal()], placeholder.maximumChars));
+                }
+                // Otherwise add the placeholder as plain-string
+                else {
+                    result.append('{').append(placeholderBuilder.toString()).append('}');
+                }
+                // Make sure the '}' char is not recorded.
+                continue;
+            }
+
+            // Record any char in the correct builder.
+            if (placeholderStarted) {
+                placeholderBuilder.append(c);
+            }
+            else {
+                result.append(c);
+            }
+        }
+
+        return result.toString();
+    }
+
+    @RequiredArgsConstructor
+    private enum Placeholder
+    {
+        // Single placeholder
+        PLAYER((byte) 32),
+        PING((byte) 5),
+        // Team placeholders
+        TEAM(Byte.MAX_VALUE),
+        // Global placeholders
+        DATE(Byte.MAX_VALUE),
+        TIME((byte) 8),
+        SERVER(Byte.MAX_VALUE),
+        TPS((byte) 5),
+        VL((byte) 5),
+        WORLD(Byte.MAX_VALUE);
+
+        private final byte maximumChars;
+
+        public String getPlaceholderString()
+        {
+            return this.name().toLowerCase();
+        }
     }
 }

@@ -31,6 +31,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 public class InventoryData extends TimeData
@@ -126,31 +127,38 @@ public class InventoryData extends TimeData
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                final Material clickedMaterial = event.getClickedBlock().getType();
-
-                if (BlockUtils.CONTAINERS.contains(clickedMaterial)) {
+                // The block is a container.
+                if (event.getClickedBlock().getState() instanceof InventoryHolder) {
                     // Make sure that obstructed containers are handled correctly.
-                    if (BlockUtils.FREE_SPACE_CONTAINERS.contains(clickedMaterial)) {
+                    if (BlockUtils.FREE_SPACE_CONTAINERS.contains(event.getClickedBlock().getType())) {
                         final Block aboveBlock = event.getClickedBlock().getRelative(BlockFace.UP);
 
-                        // Make sure that the block above is not obstructed by blocks
-                        if (!(aboveBlock.isEmpty() ||
-                              aboveBlock.isPassable() ||
-                              aboveBlock.getType() == Material.CHEST ||
-                              aboveBlock.getType() == Material.TRAPPED_CHEST ||
-                              aboveBlock.getType().name().endsWith("_SLAB") ||
-                              aboveBlock.getType().name().endsWith("_STAIRS")))
-                        {
-                            return;
-                        }
-
-                        // Make sure that the block above is not obstructed by cats
                         switch (ServerVersion.getActiveServerVersion()) {
                             case MC188:
                             case MC112:
+                                // 1.8.8 and 1.12 doesn't provide isPassable.
+                                // Make sure that the block above is not obstructed by blocks
+                                if (!(aboveBlock.isEmpty() ||
+                                      aboveBlock.getType() == Material.CHEST ||
+                                      aboveBlock.getType() == Material.TRAPPED_CHEST ||
+                                      aboveBlock.getType().name().endsWith("_SLAB") ||
+                                      aboveBlock.getType().name().endsWith("_STAIRS")))
+                                {
+                                    return;
+                                }
                                 // Cannot check for cats as the server version doesn't provide the newer methods.
                                 break;
                             case MC113:
+                                // Make sure that the block above is not obstructed by blocks
+                                if (!(aboveBlock.isEmpty() ||
+                                      aboveBlock.isPassable() ||
+                                      aboveBlock.getType() == Material.CHEST ||
+                                      aboveBlock.getType() == Material.TRAPPED_CHEST ||
+                                      aboveBlock.getType().name().endsWith("_SLAB") ||
+                                      aboveBlock.getType().name().endsWith("_STAIRS")))
+                                {
+                                    return;
+                                }
                                 // Make sure that the block above is not obstructed by cats
                                 if (!aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty()) {
                                     return;

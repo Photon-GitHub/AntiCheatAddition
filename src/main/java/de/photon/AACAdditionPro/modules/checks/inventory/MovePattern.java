@@ -92,8 +92,9 @@ class MovePattern extends PatternModule.PacketPattern
             // No Y change anymore. AAC and the rule above makes sure that people cannot jump again.
             // While falling down people can modify their inventories.
             if (knownPosition.getY() == moveTo.getY() &&
-                // 100 is a little compensation for the "breaking" when sprinting previously
-                user.getInventoryData().notRecentlyOpened(100 + lenience_millis) &&
+                // 230 is a little compensation for the "breaking" when sprinting previously (value has been established
+                // by local tests).
+                user.getInventoryData().notRecentlyOpened(230 + lenience_millis) &&
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
                 EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), Hitbox.PLAYER, 0.1D).isEmpty())
@@ -113,6 +114,9 @@ class MovePattern extends PatternModule.PacketPattern
     {
         //TODO: TEST THIS; THIS MIGHT SEND EMPTY PACKETS ?
         event.setCancelled(true);
+
+        // Cancelling packets will cause an EqualRotation flag.
+        user.getPacketAnalysisData().equalRotationExpected = true;
 
         // Update client
         final WrapperPlayServerPosition packet = new WrapperPlayServerPosition();

@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.events;
 
 import de.photon.AACAdditionPro.modules.ModuleType;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -58,5 +59,19 @@ public class PlayerAdditionViolationCommandEvent extends PlayerEvent implements 
     public HandlerList getHandlers()
     {
         return handlers;
+    }
+
+    /**
+     * This creates and immediately calls a {@link PlayerAdditionViolationCommandEvent}.
+     *
+     * @return true if the command event has been cancelled, else false.
+     *
+     * @see PlayerAdditionViolationCommandEvent#PlayerAdditionViolationCommandEvent(Player, String, ModuleType)
+     */
+    public static PlayerAdditionViolationCommandEvent createAndCallCommandEvent(final Player player, final String command, final ModuleType moduleType)
+    {
+        final PlayerAdditionViolationCommandEvent commandEvent = new PlayerAdditionViolationCommandEvent(player, command, moduleType);
+        Bukkit.getPluginManager().callEvent(commandEvent);
+        return commandEvent;
     }
 }

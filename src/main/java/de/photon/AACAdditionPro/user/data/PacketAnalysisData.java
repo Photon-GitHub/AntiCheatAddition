@@ -12,6 +12,9 @@ public class PacketAnalysisData extends TimeData
 
     public boolean animationExpected = false;
 
+    // After cancelling a move packet one equalRotation is expected.
+    public boolean equalRotationExpected = false;
+
     public PacketAnalysisData(User user)
     {
         // [0] = The last compare flag

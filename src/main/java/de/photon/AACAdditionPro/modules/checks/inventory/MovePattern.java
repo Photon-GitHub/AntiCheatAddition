@@ -115,6 +115,9 @@ class MovePattern extends PatternModule.PacketPattern
         //TODO: TEST THIS; THIS MIGHT SEND EMPTY PACKETS ?
         event.setCancelled(true);
 
+        // Cancelling packets will cause an EqualRotation flag.
+        user.getPacketAnalysisData().equalRotationExpected = true;
+
         // Update client
         final WrapperPlayServerPosition packet = new WrapperPlayServerPosition();
 

@@ -96,6 +96,12 @@ class EqualRotationPattern extends PatternModule.PacketPattern
                                                          Hitbox.SNEAKING_PLAYER :
                                                          Hitbox.PLAYER, CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS))
                 {
+                    // Cancelled packets may cause problems.
+                    if (user.getPacketAnalysisData().equalRotationExpected) {
+                        user.getPacketAnalysisData().equalRotationExpected = false;
+                        return 0;
+                    }
+
                     message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.";
                     return 1;
                 }

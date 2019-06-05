@@ -59,6 +59,7 @@ public final class BlockUtils
                                                                  Material.getMaterial("STATIONARY_LAVA")));
                 break;
             case MC113:
+            case MC114:
                 FREE_SPACE_CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
                                                                                Material.TRAPPED_CHEST,
                                                                                Material.ENDER_CHEST,
@@ -117,7 +118,8 @@ public final class BlockUtils
                // Next to each other.
                && (onlyHorizontal ?
                    HORIZONTAL_FACES.contains(a.getFace(b)) :
-                   ALL_FACES.contains(a.getFace(b)));
+                   ALL_FACES.contains(a.getFace(b))
+               );
     }
 
     /**
@@ -151,7 +153,9 @@ public final class BlockUtils
      */
     public static List<Block> getBlocksAround(final Block block, final boolean onlyHorizontal)
     {
-        final List<Block> blocks = new ArrayList<>(onlyHorizontal ? 4 : 6);
+        final List<Block> blocks = new ArrayList<>(onlyHorizontal ?
+                                                   4 :
+                                                   6);
         for (final BlockFace face : onlyHorizontal ?
                                     HORIZONTAL_FACES :
                                     ALL_FACES) {

@@ -17,6 +17,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 return getHandle().getBytes().read(0) / 32D;
             case MC112:
             case MC113:
+            case MC114:
                 // Integers are ok, even though wiki.vg says short
                 return getHandle().getIntegers().read(1) / 4096D;
             default:
@@ -36,6 +37,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 break;
             case MC112:
             case MC113:
+            case MC114:
                 // Integers are ok, even though wiki.vg says short
                 getHandle().getIntegers().write(1, (int) (value * 4096));
                 break;
@@ -54,6 +56,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 return getHandle().getBytes().read(1) / 32D;
             case MC112:
             case MC113:
+            case MC114:
                 // Integers are ok, even though wiki.vg says short
                 return getHandle().getIntegers().read(2) / 4096D;
             default:
@@ -74,6 +77,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 break;
             case MC112:
             case MC113:
+            case MC114:
                 // Integers are ok, even though wiki.vg says short
                 getHandle().getIntegers().write(2, (int) (value * 4096));
                 break;
@@ -92,6 +96,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 return getHandle().getBytes().read(2) / 32D;
             case MC112:
             case MC113:
+            case MC114:
                 // Integers are ok, even though wiki.vg says short
                 return getHandle().getIntegers().read(3) / 4096D;
             default:
@@ -112,6 +117,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 break;
             case MC112:
             case MC113:
+            case MC114:
                 // Integers are ok, even though wiki.vg says short
                 getHandle().getIntegers().write(3, (int) (value * 4096));
                 break;

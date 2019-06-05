@@ -226,6 +226,7 @@ public abstract class ClientsideLivingEntity
                 break;
             case MC112:
             case MC113:
+            case MC114:
                 teleportThreshold = 8;
                 break;
             default:

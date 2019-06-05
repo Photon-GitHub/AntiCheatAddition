@@ -149,6 +149,7 @@ public class InventoryData extends TimeData
                                 // Cannot check for cats as the server version doesn't provide the newer methods.
                                 break;
                             case MC113:
+                            case MC114:
                                 // Make sure that the block above is not obstructed by blocks
                                 if (!(aboveBlock.isEmpty() ||
                                       aboveBlock.isPassable() ||

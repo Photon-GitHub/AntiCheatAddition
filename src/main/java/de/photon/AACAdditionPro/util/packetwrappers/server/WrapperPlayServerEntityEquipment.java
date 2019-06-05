@@ -48,6 +48,7 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket implements 
                 break;
             case MC112:
             case MC113:
+            case MC114:
                 handle.getItemSlots().write(0, value);
                 break;
             default:

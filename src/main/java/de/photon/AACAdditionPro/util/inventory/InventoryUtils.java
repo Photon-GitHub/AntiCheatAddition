@@ -25,6 +25,7 @@ public final class InventoryUtils
                 return ImmutableList.of(player.getInventory().getItemInHand());
             case MC112:
             case MC113:
+            case MC114:
                 return ImmutableList.of(player.getInventory().getItemInMainHand(),
                                         player.getInventory().getItemInOffHand());
             default:

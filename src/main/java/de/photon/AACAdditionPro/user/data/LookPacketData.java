@@ -18,7 +18,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class LookPacketData extends TimeData
 {
@@ -35,7 +35,7 @@ public class LookPacketData extends TimeData
     private float realLastPitch;
 
     @Getter
-    private final Deque<RotationChange> rotationChangeQueue = new LinkedList<>();
+    private final Deque<RotationChange> rotationChangeQueue = new ConcurrentLinkedDeque<>();
 
     // [0] = Significant rotation changes (scaffold)
     public LookPacketData(final User user)
@@ -71,7 +71,8 @@ public class LookPacketData extends TimeData
 
             short ticks = (short) (MathUtils.offset(elementArray[i].getTime(),
                                                     // Using -1 for the last element is fine as there is always the last element.
-                                                    elementArray[i - 1].getTime()) / 50);
+                                                    elementArray[i - 1].getTime()) / 50
+            );
 
             // The current tick should be ignored, no gap filler.
             if (ticks > 1) {
@@ -152,8 +153,7 @@ public class LookPacketData extends TimeData
                 // Same tick -> merge
                 if (rotationChange.getTime() - user.getLookPacketData().rotationChangeQueue.getLast().getTime() < 55) {
                     user.getLookPacketData().rotationChangeQueue.getLast().merge(rotationChange);
-                }
-                else {
+                } else {
                     user.getLookPacketData().rotationChangeQueue.addLast(rotationChange);
                 }
 

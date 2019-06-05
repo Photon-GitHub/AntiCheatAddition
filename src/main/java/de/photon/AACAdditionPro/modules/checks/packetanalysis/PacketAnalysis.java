@@ -72,7 +72,6 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
             return;
         }
 
-
         // --------------------------------------------- CombatOrder ---------------------------------------------- //
 
         vlManager.flag(user.getPlayer(), this.animationPattern.apply(user, event), -1, () -> {}, () -> {});

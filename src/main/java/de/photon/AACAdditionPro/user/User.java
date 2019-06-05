@@ -68,58 +68,23 @@ public class User
     void unregister()
     {
         this.player = null;
-
         autoPotionData.unregister();
-        autoPotionData = null;
-
         clientSideEntityData.unregister();
-        clientSideEntityData = null;
-
         consumeData.unregister();
-        consumeData = null;
-
         fastSwitchData.unregister();
-        fastSwitchData = null;
-
         fishingData.unregister();
-        fishingData = null;
-
         inventoryData.unregister();
-        inventoryData = null;
-
         keepAliveData.unregister();
-        keepAliveData = null;
-
         loginData.unregister();
-        loginData = null;
-
         lookPacketData.unregister();
-        lookPacketData = null;
-
         packetAnalysisData.unregister();
-        packetAnalysisData = null;
-
         pingData.unregister();
-        pingData = null;
-
         positionData.unregister();
-        positionData = null;
-
         scaffoldData.unregister();
-        scaffoldData = null;
-
         skinData = null;
-
         teamingData.unregister();
-        teamingData = null;
-
         teleportData.unregister();
-        teleportData = null;
-
         towerData.unregister();
-        towerData = null;
-
         velocityChangeData.unregister();
-        velocityChangeData = null;
     }
 }

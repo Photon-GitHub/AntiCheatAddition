@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +28,7 @@ class ViolationLevelMap extends ConcurrentHashMap<UUID, Integer> implements List
     }
 
     @Override
-    public Integer put(UUID key, Integer value)
+    public Integer put(@NotNull UUID key, @NotNull Integer value)
     {
         return value > 0 ? super.put(key, value) : this.remove(key);
     }

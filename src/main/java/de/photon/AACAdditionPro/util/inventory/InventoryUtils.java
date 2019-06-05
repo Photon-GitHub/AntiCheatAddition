@@ -403,7 +403,6 @@ public final class InventoryUtils
                         ((rawSlot / 9) + extraYPlayer)
                 };
             case CREATIVE:
-                break;
             case SHULKER_BOX:
                 break;
             default:

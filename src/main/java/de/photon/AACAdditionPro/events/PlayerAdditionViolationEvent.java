@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.events;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
 public class PlayerAdditionViolationEvent extends ClientControlEvent
@@ -39,6 +40,7 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
         return vl;
     }
 
+    @NotNull
     @Override
     public HandlerList getHandlers()
     {

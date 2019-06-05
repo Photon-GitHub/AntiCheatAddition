@@ -7,6 +7,7 @@ import de.photon.AACAdditionPro.modules.PluginMessageListenerModule;
 import de.photon.AACAdditionPro.modules.RestrictedServerVersion;
 import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -14,7 +15,7 @@ public class ForgeControl extends ClientControlModule implements PluginMessageLi
 {
 
     @Override
-    public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
+    public void onPluginMessageReceived(@NotNull final String channel, @NotNull final Player player, @NotNull final byte[] message)
     {
         // MCBrand channel with flag
         if (this.shouldFlagBrandCheck(channel, player, message, "fml", "forge") ||

@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -40,6 +41,7 @@ public class KillauraEntityEquipmentPrepareEvent extends PlayerEvent
         return handlers;
     }
 
+    @NotNull
     @Override
     public HandlerList getHandlers()
     {

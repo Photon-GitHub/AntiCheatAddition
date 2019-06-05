@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
 public class ClientControlEvent extends PlayerEvent implements Cancellable
@@ -52,6 +53,7 @@ public class ClientControlEvent extends PlayerEvent implements Cancellable
         return message;
     }
 
+    @NotNull
     @Override
     public HandlerList getHandlers()
     {

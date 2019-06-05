@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
 public class PlayerAdditionViolationCommandEvent extends PlayerEvent implements Cancellable
@@ -55,6 +56,7 @@ public class PlayerAdditionViolationCommandEvent extends PlayerEvent implements 
         cancelled = b;
     }
 
+    @NotNull
     @Override
     public HandlerList getHandlers()
     {

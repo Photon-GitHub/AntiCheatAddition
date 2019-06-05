@@ -10,13 +10,13 @@ import java.util.Set;
 
 public class LiteLoaderControl extends ClientControlModule implements PluginMessageListenerModule
 {
-    private static final String[] LITELOADERFLAGS = {"LiteLoader"};
-
     @Override
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message)
     {
-        if (this.shouldFlagBrandCheck(channel, player, message, LITELOADERFLAGS)) {
-            executeCommands(player);
+        final String stringMessage = this.getMCBrandMessage(channel, message);
+
+        if (stringMessage.contains("LiteLoader")) {
+            this.executeCommands(player);
         }
     }
 

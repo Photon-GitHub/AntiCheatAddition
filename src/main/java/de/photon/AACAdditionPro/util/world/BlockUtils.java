@@ -39,7 +39,7 @@ public final class BlockUtils
                         allowedMaterials.add(material);
                     }
 
-                    if (material.name().endsWith("_SHULKER_BOX")) {
+                    if (material.name().endsWith("SHULKER_BOX")) {
                         freeSpaceMaterials.add(material);
                     }
                 }
@@ -57,7 +57,7 @@ public final class BlockUtils
                         allowedMaterials.add(material);
                     }
 
-                    if (material.name().endsWith("_SHULKER_BOX")) {
+                    if (material.name().endsWith("SHULKER_BOX")) {
                         freeSpaceMaterials.add(material);
                     }
                 }
@@ -74,7 +74,7 @@ public final class BlockUtils
                         allowedMaterials.add(material);
                     }
 
-                    if (material.name().endsWith("_SHULKER_BOX")) {
+                    if (material.name().endsWith("SHULKER_BOX")) {
                         freeSpaceMaterials.add(material);
                     }
                 }

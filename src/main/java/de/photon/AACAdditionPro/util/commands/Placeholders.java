@@ -87,7 +87,7 @@ public final class Placeholders
         replacements[Placeholder.TIME.ordinal()] = now.format(DateTimeFormatter.ISO_LOCAL_TIME);
 
         // Server name
-        replacements[Placeholder.SERVER.ordinal()] = Bukkit.getServerName();
+        replacements[Placeholder.SERVER.ordinal()] = Bukkit.getServer().getName();
 
         // Ticks per second
         replacements[Placeholder.TPS.ordinal()] = String.valueOf(ServerUtil.getTPS());
@@ -145,8 +145,7 @@ public final class Placeholders
             // Record any char in the correct builder.
             if (placeholderStarted) {
                 placeholderBuilder.append(c);
-            }
-            else {
+            } else {
                 result.append(c);
             }
         }

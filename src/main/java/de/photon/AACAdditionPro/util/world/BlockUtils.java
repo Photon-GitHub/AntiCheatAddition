@@ -4,6 +4,9 @@ import de.photon.AACAdditionPro.ServerVersion;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -182,5 +185,71 @@ public final class BlockUtils
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
+    }
+
+    /**
+     * This determines if an {@link org.bukkit.inventory.InventoryView} can be opened by interacting with the {@link Block}.
+     */
+    public static boolean isInventoryOpenable(@NotNull final Block block)
+    {
+        // The block actually is holding an inventory (and therefore is not e.g. dirt)
+        if (block.getState() instanceof InventoryHolder) {
+            // Additional checks for cats and occluding blocks necessary?
+            if (FREE_SPACE_CONTAINERS.contains(block.getType())) {
+                final Block aboveBlock = block.getRelative(BlockFace.UP);
+
+                switch (ServerVersion.getActiveServerVersion()) {
+                    case MC188:
+                    case MC112:
+                        // 1.8.8 and 1.12 doesn't provide isPassable.
+                        // Make sure that the block above is not obstructed by blocks
+                        if (!(aboveBlock.isEmpty() ||
+                              aboveBlock.getType() == Material.CHEST ||
+                              aboveBlock.getType() == Material.TRAPPED_CHEST ||
+                              aboveBlock.getType().name().endsWith("_SLAB") ||
+                              aboveBlock.getType().name().endsWith("_STAIRS")
+                        ))
+                        {
+                            return false;
+                        }
+                        // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
+                    case MC113:
+                        // Make sure that the block above is not obstructed by blocks
+                        if (!(aboveBlock.isEmpty() ||
+                              aboveBlock.isPassable() ||
+                              aboveBlock.getType() == Material.CHEST ||
+                              aboveBlock.getType() == Material.TRAPPED_CHEST ||
+                              aboveBlock.getType().name().endsWith("_SLAB") ||
+                              aboveBlock.getType().name().endsWith("_STAIRS")
+                        ))
+                        {
+                            return false;
+                        } else {
+                            // Make sure that the block above is not obstructed by cats
+                            return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty();
+                        }
+                    case MC114:
+                        // Make sure that the block above is not obstructed by blocks
+                        if (!(aboveBlock.isEmpty() ||
+                              aboveBlock.isPassable() ||
+                              aboveBlock.getType() == Material.CHEST ||
+                              aboveBlock.getType() == Material.TRAPPED_CHEST ||
+                              aboveBlock.getType().name().endsWith("_SLAB") ||
+                              aboveBlock.getType().name().endsWith("_SIGN") ||
+                              aboveBlock.getType().name().endsWith("_STAIRS")
+                        ))
+                        {
+                            return false;
+                        } else {
+                            // Make sure that the block above is not obstructed by cats
+                            return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.CAT).isEmpty();
+                        }
+                    default:
+                        throw new IllegalStateException("Unknown minecraft version");
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

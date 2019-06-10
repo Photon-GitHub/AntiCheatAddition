@@ -27,7 +27,7 @@ public final class BlockUtils
 
     static {
         final EnumSet<Material> freeSpaceMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
-        final EnumSet<Material> allowedMaterials = EnumSet.of(Material.AIR, Material.CAVE_AIR, Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
+        final EnumSet<Material> allowedMaterials = EnumSet.of(Material.AIR, Material.CAVE_AIR, Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST, Material.ENCHANTING_TABLE, Material.ANVIL);
 
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:

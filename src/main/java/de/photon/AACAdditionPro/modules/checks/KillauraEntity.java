@@ -388,7 +388,7 @@ public class KillauraEntity implements ListenerModule, ViolationModule, Restrict
     @Override
     public Set<ServerVersion> getSupportedVersions()
     {
-        return ImmutableSet.of(ServerVersion.MC188, ServerVersion.MC19, ServerVersion.MC110, ServerVersion.MC111, ServerVersion.MC112, ServerVersion.MC113);
+        return ImmutableSet.of(ServerVersion.MC188, ServerVersion.MC19, ServerVersion.MC110, ServerVersion.MC111, ServerVersion.MC112);
     }
 
     /**

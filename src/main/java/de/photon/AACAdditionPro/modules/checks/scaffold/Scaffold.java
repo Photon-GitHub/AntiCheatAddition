@@ -104,8 +104,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
                     // Flag the player
                     vl += rotationVl;
                 }
-            }
-            else if (user.getScaffoldData().rotationFails > 0) {
+            } else if (user.getScaffoldData().rotationFails > 0) {
                 user.getScaffoldData().rotationFails--;
             }
 
@@ -114,7 +113,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
             vl += safewalkTypeTwo.apply(user, event);
 
             if (vl > 0) {
-                vlManager.flag(event.getPlayer(), vl, cancel_vl, () ->
+                vlManager.flag(event.getPlayer(), false, vl, cancel_vl, () ->
                 {
                     event.setCancelled(true);
                     user.getScaffoldData().updateTimeStamp(0);

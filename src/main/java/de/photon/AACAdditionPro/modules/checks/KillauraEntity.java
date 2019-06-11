@@ -445,7 +445,7 @@ public class KillauraEntity implements ListenerModule, ViolationModule, Restrict
                     playerEntity.hurtByObserved();
                     // To prevent false positives ensure the correct position.
                     playerEntity.setNeedsTeleport(true);
-                    vlManager.flag(event.getPlayer(), -1, () -> {}, () -> {});
+                    vlManager.flag(event.getPlayer(), true, -1, () -> {}, () -> {});
                     event.setCancelled(true);
                 }
             }

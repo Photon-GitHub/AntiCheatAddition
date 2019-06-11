@@ -36,28 +36,24 @@ public class Tower implements ListenerModule, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
         // To prevent too fast towering -> Timeout
-        if (user.getTowerData().recentlyUpdated(0, timeout))
-        {
+        if (user.getTowerData().recentlyUpdated(0, timeout)) {
             event.setCancelled(true);
             InventoryUtils.syncUpdateInventory(user.getPlayer());
             return;
         }
 
         // Not flying
-        if (!user.getPlayer().isFlying())
-        {
+        if (!user.getPlayer().isFlying()) {
             final Block blockPlaced = event.getBlockPlaced();
 
             // Levitation effect
             final Integer levitation;
-            switch (ServerVersion.getActiveServerVersion())
-            {
+            switch (ServerVersion.getActiveServerVersion()) {
                 case MC188:
                     levitation = null;
                     break;
@@ -92,12 +88,11 @@ public class Tower implements ListenerModule, ViolationModule
                 final double[] results = user.getTowerData().calculateTimes();
 
                 // Real check
-                if (results[1] < results[0])
-                {
+                if (results[1] < results[0]) {
                     final int vlToAdd = (int) Math.min(1 + Math.floor((results[0] - results[1]) / 16), 100);
 
                     // Violation-Level handling
-                    vlManager.flag(event.getPlayer(), vlToAdd, cancel_vl, () ->
+                    vlManager.flag(event.getPlayer(), false, vlToAdd, cancel_vl, () ->
                     {
                         event.setCancelled(true);
                         user.getTowerData().updateTimeStamp(0);

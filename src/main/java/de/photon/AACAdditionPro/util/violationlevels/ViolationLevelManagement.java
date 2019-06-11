@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationEvent;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
@@ -72,9 +73,9 @@ public class ViolationLevelManagement
      * @param onCancel    a {@link Runnable} that is executed if the vl is higher that cancel_vl
      * @param specialCode a {@link Runnable} to define special code such as critical_vl. Contrary to normal code it is only run if the event is not cancelled.
      */
-    public void flag(final Player player, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
+    public void flag(final Player player, final boolean async, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
     {
-        flag(player, 1, cancel_vl, onCancel, specialCode);
+        flag(player, async, 1, cancel_vl, onCancel, specialCode);
     }
 
     /**
@@ -86,9 +87,9 @@ public class ViolationLevelManagement
      * @param onCancel         a {@link Runnable} that is executed if the vl is higher that cancelVl
      * @param runIfEventPassed a {@link Runnable} to define special code such as critical_vl. Contrary to normal code it is only run if the event is not cancelled.
      */
-    public void flag(final Player player, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable runIfEventPassed)
+    public void flag(final Player player, final boolean async, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable runIfEventPassed)
     {
-        flag(player, this.moduleType.getViolationMessage(), vlIncrease, cancelVl, onCancel, runIfEventPassed);
+        flag(player, async, this.moduleType.getViolationMessage(), vlIncrease, cancelVl, onCancel, runIfEventPassed);
     }
 
     /**
@@ -100,7 +101,7 @@ public class ViolationLevelManagement
      * @param onCancel         a {@link Runnable} that is executed if the vl is higher that cancelVl
      * @param runIfEventPassed a {@link Runnable} to define special code such as critical_vl. Contrary to normal code it is only run if the event is not cancelled.
      */
-    public void flag(final Player player, final String message, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable runIfEventPassed)
+    public void flag(final Player player, final boolean async, final String message, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable runIfEventPassed)
     {
         // Prevent unnecessary flagging.
         if (vlIncrease <= 0) {
@@ -108,15 +109,10 @@ public class ViolationLevelManagement
         }
 
         // Only create the event if it should be called.
-        final PlayerAdditionViolationEvent playerAdditionViolationEvent = new PlayerAdditionViolationEvent(
-                player,
-                this.moduleType,
-                this.getVL(player.getUniqueId()) + vlIncrease,
-                message
-        );
+        final PlayerAdditionViolationEvent playerAdditionViolationEvent = PlayerAdditionViolationEvent.build(player, this.moduleType, async, this.getVL(player.getUniqueId()) + vlIncrease, message);
 
         // Call the event
-        AACAdditionPro.getInstance().getServer().getPluginManager().callEvent(playerAdditionViolationEvent);
+        Bukkit.getServer().getPluginManager().callEvent(playerAdditionViolationEvent);
 
         if (!playerAdditionViolationEvent.isCancelled()) {
             this.addVL(player, vlIncrease);

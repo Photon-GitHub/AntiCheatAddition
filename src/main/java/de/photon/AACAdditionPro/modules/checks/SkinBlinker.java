@@ -29,29 +29,24 @@ public class SkinBlinker extends PacketAdapter implements PacketListenerModule, 
          * -> he can move, especially in MC 1.9 and upward because of entity-collision, etc.
          * -> As of the render-debug-cycle which can be done in the game (F3 + F) I need to check for the change of the skin.
          */
-        try
-        {
+        try {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             // Not bypassed
-            if (User.isUserInvalid(user, this.getModuleType()))
-            {
+            if (User.isUserInvalid(user, this.getModuleType())) {
                 return;
             }
 
             // Sprinting or sneaking (detection)
-            if ((event.getPlayer().isSprinting() || event.getPlayer().isSneaking()))
-            {
+            if ((event.getPlayer().isSprinting() || event.getPlayer().isSneaking())) {
                 final int newSkinComponents = event.getPacket().getIntegers().readSafely(1);
 
                 // updateSkinComponents returns true if the skin has changed.
-                if (user.getSkinData().updateSkinComponents(newSkinComponents))
-                {
-                    vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
+                if (user.getSkinData().updateSkinComponents(newSkinComponents)) {
+                    vlManager.flag(user.getPlayer(), true, -1, () -> {}, () -> {});
                 }
             }
-        } catch (UnsupportedOperationException ignore)
-        {
+        } catch (UnsupportedOperationException ignore) {
             // This will catch problems with ProtocolLib's temporary players.
         }
     }

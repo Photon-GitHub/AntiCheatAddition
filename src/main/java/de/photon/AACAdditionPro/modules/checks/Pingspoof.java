@@ -82,7 +82,7 @@ public class Pingspoof extends PacketAdapter implements ListenerModule, PacketLi
                 nmsPing > ping * this.ping_offset)
         {
             // Use the cancel-system as a refresh system here (cancel has no use regarding pings).
-            vlManager.flag(user.getPlayer(), refresh_at_vl, () -> user.getPingData().forceUpdatePing = true, () -> {});
+            vlManager.flag(user.getPlayer(), true, refresh_at_vl, () -> user.getPingData().forceUpdatePing = true, () -> {});
             //VerboseSender.sendVerboseMessage("NMS: " + nmsPing + " | Measured: " + ping);
         }
     }

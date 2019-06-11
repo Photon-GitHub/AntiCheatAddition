@@ -27,10 +27,7 @@ abstract class ClientControlModule implements Module
     void executeCommands(final Player player)
     {
         // Call the event
-        final ClientControlEvent clientControlEvent = new ClientControlEvent(
-                player,
-                this.getModuleType()
-        );
+        final ClientControlEvent clientControlEvent = ClientControlEvent.build(player, this.getModuleType(), false);
 
         Bukkit.getPluginManager().callEvent(clientControlEvent);
 
@@ -61,7 +58,9 @@ abstract class ClientControlModule implements Module
      */
     String getMCBrandMessage(final String channel, final byte[] message)
     {
-        return isBrandChannel(channel) ? StringUtils.fromUTF8Bytes(message) : null;
+        return isBrandChannel(channel) ?
+               StringUtils.fromUTF8Bytes(message) :
+               null;
     }
 
     /**

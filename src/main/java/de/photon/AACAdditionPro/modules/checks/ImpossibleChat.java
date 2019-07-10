@@ -23,8 +23,7 @@ public class ImpossibleChat implements ListenerModule, ViolationModule
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -35,9 +34,10 @@ public class ImpossibleChat implements ListenerModule, ViolationModule
             user.getPlayer().isDead() ||
             (user.getInventoryData().hasOpenInventory() &&
              // Have the inventory opened for some time
-             user.getInventoryData().notRecentlyOpened(1000)))
+             user.getInventoryData().notRecentlyOpened(1000)
+            ))
         {
-            vlManager.flag(user.getPlayer(), cancel_vl, () -> event.setCancelled(true), () -> {});
+            vlManager.flag(user.getPlayer(), true, cancel_vl, () -> event.setCancelled(true), () -> {});
         }
     }
 

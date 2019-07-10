@@ -90,6 +90,7 @@ public class Equipment extends EnumMap<EnumWrappers.ItemSlot, Material>
                 this.put(itemSlot, LegacyEquipmentDatabase.INSTANCE.getRandomEquipment(this.entity.getObservedPlayer(), itemSlot));
                 break;
             case MC113:
+            case MC114:
                 this.put(itemSlot, EquipmentDatabase.INSTANCE.getRandomEquipment(this.entity.getObservedPlayer(), itemSlot));
                 break;
             default:

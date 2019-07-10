@@ -1,29 +1,80 @@
 package de.photon.AACAdditionPro.events;
 
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ModuleType;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
-public class ClientControlEvent extends PlayerEvent implements Cancellable
+public class ClientControlEvent extends Event implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();
+
+    @Getter
+    protected final Player player;
+
     private final ModuleType moduleType;
     private final String message;
     private boolean cancelled = false;
 
-    public ClientControlEvent(final Player p, final ModuleType moduleType, final String message)
+    public static ClientControlEvent build(final Player p, final ModuleType moduleType, boolean async, final String message)
     {
-        super(p);
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC188:
+            case MC19:
+            case MC110:
+            case MC111:
+            case MC112:
+            case MC113:
+                return new ClientControlEvent(p, moduleType, async, message, true);
+            case MC114:
+                return new ClientControlEvent(p, moduleType, async, message);
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
+    }
+
+    public static ClientControlEvent build(final Player p, final ModuleType moduleType, boolean async)
+    {
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC188:
+            case MC19:
+            case MC110:
+            case MC111:
+            case MC112:
+            case MC113:
+                return new ClientControlEvent(p, moduleType, async, moduleType.getViolationMessage(), true);
+            case MC114:
+                return new ClientControlEvent(p, moduleType, async, moduleType.getViolationMessage());
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
+    }
+
+    /**
+     * Constructor for 1.14 and onwards.
+     */
+    protected ClientControlEvent(final Player p, final ModuleType moduleType, boolean async, final String message)
+    {
+        super(async);
+        this.player = p;
         this.moduleType = moduleType;
         this.message = message;
     }
 
-    public ClientControlEvent(final Player p, final ModuleType moduleType)
+    /**
+     * Dummy constructor for legacy minecraft versions before 1.14.
+     */
+    protected ClientControlEvent(final Player p, final ModuleType moduleType, boolean async, final String message, boolean legacy)
     {
-        this(p, moduleType, moduleType.getViolationMessage());
+        super();
+        this.player = p;
+        this.moduleType = moduleType;
+        this.message = message;
     }
 
     //Needed for 1.8.8
@@ -52,6 +103,7 @@ public class ClientControlEvent extends PlayerEvent implements Cancellable
         return message;
     }
 
+    @NotNull
     @Override
     public HandlerList getHandlers()
     {

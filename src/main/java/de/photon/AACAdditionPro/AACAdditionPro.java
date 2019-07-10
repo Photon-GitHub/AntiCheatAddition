@@ -48,6 +48,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import us.myles.ViaVersion.api.Via;
 import us.myles.ViaVersion.api.ViaAPI;
 
@@ -112,6 +113,7 @@ public class AACAdditionPro extends JavaPlugin
         this.getServer().getPluginManager().registerEvents(listener, this);
     }
 
+    @NotNull
     @Override
     public FileConfiguration getConfig()
     {

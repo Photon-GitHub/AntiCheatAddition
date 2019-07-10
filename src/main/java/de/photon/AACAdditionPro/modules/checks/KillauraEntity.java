@@ -6,12 +6,14 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.api.killauraentity.Movement;
 import de.photon.AACAdditionPro.modules.ListenerModule;
 import de.photon.AACAdditionPro.modules.ModuleType;
+import de.photon.AACAdditionPro.modules.RestrictedServerVersion;
 import de.photon.AACAdditionPro.modules.ViolationModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
@@ -39,10 +41,11 @@ import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.StringUtil;
 
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class KillauraEntity implements ListenerModule, ViolationModule
+public class KillauraEntity implements ListenerModule, ViolationModule, RestrictedServerVersion
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 55);
 
@@ -69,6 +72,7 @@ public class KillauraEntity implements ListenerModule, ViolationModule
                 this.tabListener = new LegacyTabListener();
                 break;
             case MC113:
+            case MC114:
                 this.tabListener = new TabListener();
                 break;
             default:
@@ -114,8 +118,7 @@ public class KillauraEntity implements ListenerModule, ViolationModule
 
                 if (clientSidePlayerEntity.isSpawned()) {
                     clientSidePlayerEntity.despawn();
-                }
-                else {
+                } else {
                     clientSidePlayerEntity.spawn(clientSidePlayerEntity.calculateTeleportLocation());
                 }
                 return true;
@@ -136,8 +139,7 @@ public class KillauraEntity implements ListenerModule, ViolationModule
 
                 if (clientSidePlayerEntity.isSpawned()) {
                     clientSidePlayerEntity.despawn();
-                }
-                else {
+                } else {
                     //Manual location copy to prevent users from inserting locations with a bad copy method
                     Location location = new Location(spawnLocation.getWorld(), spawnLocation.getX(), spawnLocation.getY(), spawnLocation.getZ(), spawnLocation.getYaw(), spawnLocation.getPitch());
                     clientSidePlayerEntity.spawn(location);
@@ -383,6 +385,12 @@ public class KillauraEntity implements ListenerModule, ViolationModule
         return ModuleType.KILLAURA_ENTITY;
     }
 
+    @Override
+    public Set<ServerVersion> getSupportedVersions()
+    {
+        return ImmutableSet.of(ServerVersion.MC188, ServerVersion.MC19, ServerVersion.MC110, ServerVersion.MC111, ServerVersion.MC112);
+    }
+
     /**
      * Tab {@link Listener} for minecraft 1.12.2 and below.
      */
@@ -437,7 +445,7 @@ public class KillauraEntity implements ListenerModule, ViolationModule
                     playerEntity.hurtByObserved();
                     // To prevent false positives ensure the correct position.
                     playerEntity.setNeedsTeleport(true);
-                    vlManager.flag(event.getPlayer(), -1, () -> {}, () -> {});
+                    vlManager.flag(event.getPlayer(), true, -1, () -> {}, () -> {});
                     event.setCancelled(true);
                 }
             }

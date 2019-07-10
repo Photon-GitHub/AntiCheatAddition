@@ -49,14 +49,12 @@ public class Teaming implements ListenerModule, ViolationModule
         proximity_range_squared *= proximity_range_squared;
 
         // Enabled worlds init
-        for (final String nameOfWorld : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".enabled_worlds"))
-        {
+        for (final String nameOfWorld : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".enabled_worlds")) {
             enabledWorlds.add(Objects.requireNonNull(Bukkit.getWorld(nameOfWorld), "Config loading error: Unable to get world " + nameOfWorld + " for the teaming check."));
         }
 
         // Safe zone init
-        for (final String safeZone : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".safe_zones"))
-        {
+        for (final String safeZone : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".safe_zones")) {
             safeZones.add(Region.parseRegion(safeZone));
         }
 
@@ -65,14 +63,12 @@ public class Teaming implements ListenerModule, ViolationModule
                 () -> {
                     // Have the same LinkedList for all worlds in order to boost performance
                     final LinkedList<User> usersOfWorld = new LinkedList<>();
-                    for (final World world : enabledWorlds)
-                    {
+                    for (final World world : enabledWorlds) {
                         // Clear the old world's data.
                         usersOfWorld.clear();
 
                         // Add the users of the world.
-                        for (final Player player : world.getPlayers())
-                        {
+                        for (final Player player : world.getPlayers()) {
                             final User user = UserManager.getUser(player.getUniqueId());
 
                             // Only add users if they meet the preconditions
@@ -90,8 +86,7 @@ public class Teaming implements ListenerModule, ViolationModule
                             }
                         }
 
-                        while (!usersOfWorld.isEmpty())
-                        {
+                        while (!usersOfWorld.isEmpty()) {
                             // More than 8 players usually don't team.
                             final List<User> teamingList = new ArrayList<>(8);
                             final User currentUser = usersOfWorld.removeFirst();
@@ -99,27 +94,23 @@ public class Teaming implements ListenerModule, ViolationModule
                             // Add the user himself
                             teamingList.add(currentUser);
 
-                            for (final User possibleTeamUser : usersOfWorld)
-                            {
-                                if (LocationUtils.areLocationsInRange(currentUser.getPlayer().getLocation(), possibleTeamUser.getPlayer().getLocation(), proximity_range_squared))
-                                {
+                            for (final User possibleTeamUser : usersOfWorld) {
+                                if (LocationUtils.areLocationsInRange(currentUser.getPlayer().getLocation(), possibleTeamUser.getPlayer().getLocation(), proximity_range_squared)) {
                                     usersOfWorld.remove(possibleTeamUser);
                                     teamingList.add(possibleTeamUser);
                                 }
                             }
 
                             // Team is too big
-                            if (teamingList.size() > this.allowed_size)
-                            {
+                            if (teamingList.size() > this.allowed_size) {
                                 final List<Player> playersOfTeam = new ArrayList<>(teamingList.size());
 
-                                for (final User teamUser : teamingList)
-                                {
+                                for (final User teamUser : teamingList) {
                                     playersOfTeam.add(teamUser.getPlayer());
                                 }
 
                                 // Flag the team
-                                vlManager.flagTeam(playersOfTeam, -1, () -> {}, () -> {});
+                                vlManager.flagTeam(playersOfTeam, false, -1, () -> {}, () -> {});
                             }
                         }
                     }
@@ -131,10 +122,8 @@ public class Teaming implements ListenerModule, ViolationModule
      */
     private boolean isPlayerRegionalBypassed(final Player player)
     {
-        for (final Region safe_zone : safeZones)
-        {
-            if (safe_zone.isInsideRegion(player.getLocation()))
-            {
+        for (final Region safe_zone : safeZones) {
+            if (safe_zone.isInsideRegion(player.getLocation())) {
                 return true;
             }
         }

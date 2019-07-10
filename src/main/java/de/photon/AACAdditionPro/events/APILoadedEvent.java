@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.events;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 public class APILoadedEvent extends Event
 {
@@ -13,6 +14,7 @@ public class APILoadedEvent extends Event
         return handlers;
     }
 
+    @NotNull
     @Override
     public HandlerList getHandlers()
     {

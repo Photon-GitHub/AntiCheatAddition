@@ -4,6 +4,9 @@ import de.photon.AACAdditionPro.ServerVersion;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,38 +23,26 @@ public final class BlockUtils
      */
     public static final Set<Material> FREE_SPACE_CONTAINERS;
 
+    public static final Set<Material> FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS;
+
     static {
+        final EnumSet<Material> freeSpaceMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
+        final EnumSet<Material> allowedMaterials = EnumSet.of(Material.AIR, Material.CAVE_AIR, Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST, Material.ENCHANTING_TABLE, Material.ANVIL);
+
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-                FREE_SPACE_CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
-                                                                               Material.TRAPPED_CHEST,
-                                                                               Material.ENDER_CHEST));
-
-                LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
-                                                                 Material.LAVA,
-                                                                 Material.getMaterial("STATIONARY_WATER"),
-                                                                 Material.getMaterial("STATIONARY_LAVA")));
-                break;
             case MC112:
-                FREE_SPACE_CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
-                                                                               Material.TRAPPED_CHEST,
-                                                                               Material.ENDER_CHEST,
-                                                                               Material.BLACK_SHULKER_BOX,
-                                                                               Material.BROWN_SHULKER_BOX,
-                                                                               Material.BLUE_SHULKER_BOX,
-                                                                               Material.CYAN_SHULKER_BOX,
-                                                                               Material.GRAY_SHULKER_BOX,
-                                                                               Material.GREEN_SHULKER_BOX,
-                                                                               Material.LIGHT_BLUE_SHULKER_BOX,
-                                                                               Material.LIME_SHULKER_BOX,
-                                                                               Material.MAGENTA_SHULKER_BOX,
-                                                                               Material.ORANGE_SHULKER_BOX,
-                                                                               Material.PINK_SHULKER_BOX,
-                                                                               Material.PURPLE_SHULKER_BOX,
-                                                                               Material.RED_SHULKER_BOX,
-                                                                               Material.getMaterial("SILVER_SHULKER_BOX"),
-                                                                               Material.WHITE_SHULKER_BOX,
-                                                                               Material.YELLOW_SHULKER_BOX));
+                for (Material material : Material.values()) {
+                    if (material.name().endsWith("_SLAB") ||
+                        material.name().endsWith("_STAIRS"))
+                    {
+                        allowedMaterials.add(material);
+                    }
+
+                    if (material.name().endsWith("SHULKER_BOX")) {
+                        freeSpaceMaterials.add(material);
+                    }
+                }
 
                 LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
                                                                  Material.LAVA,
@@ -59,25 +50,34 @@ public final class BlockUtils
                                                                  Material.getMaterial("STATIONARY_LAVA")));
                 break;
             case MC113:
-                FREE_SPACE_CONTAINERS = Collections.unmodifiableSet(EnumSet.of(Material.CHEST,
-                                                                               Material.TRAPPED_CHEST,
-                                                                               Material.ENDER_CHEST,
-                                                                               Material.SHULKER_BOX,
-                                                                               Material.BLACK_SHULKER_BOX,
-                                                                               Material.BROWN_SHULKER_BOX,
-                                                                               Material.BLUE_SHULKER_BOX,
-                                                                               Material.CYAN_SHULKER_BOX,
-                                                                               Material.GRAY_SHULKER_BOX,
-                                                                               Material.GREEN_SHULKER_BOX,
-                                                                               Material.LIGHT_BLUE_SHULKER_BOX,
-                                                                               Material.LIME_SHULKER_BOX,
-                                                                               Material.MAGENTA_SHULKER_BOX,
-                                                                               Material.ORANGE_SHULKER_BOX,
-                                                                               Material.PINK_SHULKER_BOX,
-                                                                               Material.PURPLE_SHULKER_BOX,
-                                                                               Material.RED_SHULKER_BOX,
-                                                                               Material.WHITE_SHULKER_BOX,
-                                                                               Material.YELLOW_SHULKER_BOX));
+                for (Material material : Material.values()) {
+                    if (material.name().endsWith("_SLAB") ||
+                        material.name().endsWith("_STAIRS"))
+                    {
+                        allowedMaterials.add(material);
+                    }
+
+                    if (material.name().endsWith("SHULKER_BOX")) {
+                        freeSpaceMaterials.add(material);
+                    }
+                }
+
+                LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
+                                                                 Material.LAVA));
+                break;
+            case MC114:
+                for (Material material : Material.values()) {
+                    if (material.name().endsWith("_SLAB") ||
+                        material.name().endsWith("_SIGN") ||
+                        material.name().endsWith("_STAIRS"))
+                    {
+                        allowedMaterials.add(material);
+                    }
+
+                    if (material.name().endsWith("SHULKER_BOX")) {
+                        freeSpaceMaterials.add(material);
+                    }
+                }
 
                 LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
                                                                  Material.LAVA));
@@ -85,6 +85,9 @@ public final class BlockUtils
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
+
+        FREE_SPACE_CONTAINERS = Collections.unmodifiableSet(freeSpaceMaterials);
+        FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS = Collections.unmodifiableSet(allowedMaterials);
     }
 
     public static final Set<BlockFace> HORIZONTAL_FACES = Collections.unmodifiableSet(EnumSet.of(
@@ -117,7 +120,8 @@ public final class BlockUtils
                // Next to each other.
                && (onlyHorizontal ?
                    HORIZONTAL_FACES.contains(a.getFace(b)) :
-                   ALL_FACES.contains(a.getFace(b)));
+                   ALL_FACES.contains(a.getFace(b))
+               );
     }
 
     /**
@@ -151,7 +155,9 @@ public final class BlockUtils
      */
     public static List<Block> getBlocksAround(final Block block, final boolean onlyHorizontal)
     {
-        final List<Block> blocks = new ArrayList<>(onlyHorizontal ? 4 : 6);
+        final List<Block> blocks = new ArrayList<>(onlyHorizontal ?
+                                                   4 :
+                                                   6);
         for (final BlockFace face : onlyHorizontal ?
                                     HORIZONTAL_FACES :
                                     ALL_FACES) {
@@ -178,5 +184,56 @@ public final class BlockUtils
             default:
                 throw new IllegalStateException("Unknown minecraft version");
         }
+    }
+
+    /**
+     * This determines if an {@link org.bukkit.inventory.InventoryView} can be opened by interacting with the {@link Block}.
+     */
+    public static boolean isInventoryOpenable(@NotNull final Block block)
+    {
+        // The block actually is holding an inventory (and therefore is not e.g. dirt)
+        if (block.getState() instanceof InventoryHolder) {
+            // Additional checks for cats and occluding blocks necessary?
+            if (FREE_SPACE_CONTAINERS.contains(block.getType())) {
+                final Block aboveBlock = block.getRelative(BlockFace.UP);
+
+                switch (ServerVersion.getActiveServerVersion()) {
+                    case MC188:
+                    case MC112:
+                        // 1.8.8 and 1.12 doesn't provide isPassable.
+                        // Make sure that the block above is not obstructed by blocks
+                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()))) {
+                            return false;
+                        }
+                        // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
+                    case MC113:
+                        // Make sure that the block above is not obstructed by blocks
+                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) ||
+                              aboveBlock.isPassable()
+                        ))
+                        {
+                            return false;
+                        } else {
+                            // Make sure that the block above is not obstructed by cats
+                            return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty();
+                        }
+                    case MC114:
+                        // Make sure that the block above is not obstructed by blocks
+                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) ||
+                              aboveBlock.isPassable()
+                        ))
+                        {
+                            return false;
+                        } else {
+                            // Make sure that the block above is not obstructed by cats
+                            return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.CAT).isEmpty();
+                        }
+                    default:
+                        throw new IllegalStateException("Unknown minecraft version");
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

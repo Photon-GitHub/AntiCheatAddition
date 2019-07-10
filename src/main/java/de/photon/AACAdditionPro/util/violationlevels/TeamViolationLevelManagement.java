@@ -27,8 +27,7 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
     public int getTeamVl(final List<UUID> uuids)
     {
         int vlSum = 0;
-        for (final UUID uuid : uuids)
-        {
+        for (final UUID uuid : uuids) {
             vlSum += this.getVL(uuid);
         }
         return vlSum;
@@ -43,9 +42,9 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
      * @param specialCode a {@link Runnable} to define special code such as critical_vl
      */
 
-    public void flagTeam(final List<Player> players, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
+    public void flagTeam(final List<Player> players, final boolean async, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
     {
-        this.flagTeam(players, 1, cancel_vl, onCancel, specialCode);
+        this.flagTeam(players, async, 1, cancel_vl, onCancel, specialCode);
     }
 
     /**
@@ -58,14 +57,13 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
      * @param specialCode a {@link Runnable} to define special code such as critical_vl
      */
 
-    public void flagTeam(final List<Player> players, final int vl_increase, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
+    public void flagTeam(final List<Player> players, final boolean async, final int vl_increase, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
     {
         final List<UUID> uuids = new ArrayList<>(players.size());
 
-        for (final Player player : players)
-        {
+        for (final Player player : players) {
             uuids.add(player.getUniqueId());
-            this.flag(player, vl_increase, cancel_vl, onCancel, specialCode);
+            this.flag(player, async, vl_increase, cancel_vl, onCancel, specialCode);
         }
 
         punishTeam(players, this.getTeamVl(uuids));
@@ -86,16 +84,12 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
     private void punishTeam(final List<Player> playersOfTeam, final Integer teamVL)
     {
         // Only schedule the command execution if the plugin is loaded
-        if (AACAdditionPro.getInstance().isLoaded())
-        {
+        if (AACAdditionPro.getInstance().isLoaded()) {
             // Find the biggest element below teamVL
-            for (int i = this.thresholds.size() - 1; i >= 0; i--)
-            {
-                if (this.thresholds.get(i).getVl() <= teamVL)
-                {
+            for (int i = this.thresholds.size() - 1; i >= 0; i--) {
+                if (this.thresholds.get(i).getVl() <= teamVL) {
                     // Execute the commands
-                    for (final String command : this.thresholds.get(i).getCommandList())
-                    {
+                    for (final String command : this.thresholds.get(i).getCommandList()) {
                         // Sync command execution
                         CommandUtils.executeCommand(Placeholders.applyPlaceholders(command, playersOfTeam, null));
                     }

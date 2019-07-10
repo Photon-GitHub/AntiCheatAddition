@@ -1,8 +1,10 @@
 package de.photon.AACAdditionPro.events;
 
+import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
 public class PlayerAdditionViolationEvent extends ClientControlEvent
@@ -17,15 +19,55 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
 
     private final int vl;
 
-    public PlayerAdditionViolationEvent(final Player p, final ModuleType moduleType, final int i, final String message)
+    public static PlayerAdditionViolationEvent build(final Player p, final ModuleType moduleType, final boolean async, final int i, final String message)
     {
-        super(p, moduleType, message);
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC188:
+            case MC19:
+            case MC110:
+            case MC111:
+            case MC112:
+            case MC113:
+                return new PlayerAdditionViolationEvent(p, moduleType, async, i, message, true);
+            case MC114:
+                return new PlayerAdditionViolationEvent(p, moduleType, async, i, message);
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
+    }
+
+    public static PlayerAdditionViolationEvent build(final Player p, final ModuleType moduleType, final boolean async, final int i)
+    {
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC188:
+            case MC19:
+            case MC110:
+            case MC111:
+            case MC112:
+            case MC113:
+                return new PlayerAdditionViolationEvent(p, moduleType, async, i, moduleType.getViolationMessage(), true);
+            case MC114:
+                return new PlayerAdditionViolationEvent(p, moduleType, async, i, moduleType.getViolationMessage());
+            default:
+                throw new IllegalStateException("Unknown minecraft version");
+        }
+    }
+
+    /**
+     * Constructor for 1.14 and onwards.
+     */
+    public PlayerAdditionViolationEvent(final Player p, final ModuleType moduleType, final boolean async, final int i, final String message)
+    {
+        super(p, moduleType, async, message);
         this.vl = i;
     }
 
-    public PlayerAdditionViolationEvent(final Player p, final ModuleType moduleType, final int i)
+    /**
+     * Dummy constructor for legacy minecraft versions before 1.14.
+     */
+    public PlayerAdditionViolationEvent(final Player p, final ModuleType moduleType, final boolean async, final int i, final String message, final boolean legacy)
     {
-        super(p, moduleType);
+        super(p, moduleType, async, message, legacy);
         this.vl = i;
     }
 
@@ -39,6 +81,7 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
         return vl;
     }
 
+    @NotNull
     @Override
     public HandlerList getHandlers()
     {

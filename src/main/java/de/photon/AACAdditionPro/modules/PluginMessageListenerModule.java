@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.modules;
 import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Set;
@@ -32,7 +33,7 @@ public interface PluginMessageListenerModule extends Module, PluginMessageListen
 
     // Don't make this method necessary to override (e.g. for sending only modules)
     @Override
-    default void onPluginMessageReceived(String s, Player player, byte[] bytes) {}
+    default void onPluginMessageReceived(@NotNull String s, @NotNull Player player, @NotNull byte[] bytes) {}
 
     /**
      * This returns the incoming channels the {@link PluginMessageListener} should listen to.

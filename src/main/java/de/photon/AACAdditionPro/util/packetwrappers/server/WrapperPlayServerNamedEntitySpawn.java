@@ -78,6 +78,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 return handle.getIntegers().read(1) / 32.0D;
             case MC112:
             case MC113:
+            case MC114:
                 return handle.getDoubles().read(0);
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -93,6 +94,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 break;
             case MC112:
             case MC113:
+            case MC114:
                 handle.getDoubles().write(0, value);
                 break;
             default:
@@ -108,6 +110,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 return handle.getIntegers().read(2) / 32.0D;
             case MC112:
             case MC113:
+            case MC114:
                 return handle.getDoubles().read(1);
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -123,6 +126,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 break;
             case MC112:
             case MC113:
+            case MC114:
                 handle.getDoubles().write(1, value);
                 break;
             default:
@@ -138,6 +142,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 return handle.getIntegers().read(3) / 32.0D;
             case MC112:
             case MC113:
+            case MC114:
                 return handle.getDoubles().read(2);
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -153,6 +158,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 break;
             case MC112:
             case MC113:
+            case MC114:
                 handle.getDoubles().write(2, value);
                 break;
             default:

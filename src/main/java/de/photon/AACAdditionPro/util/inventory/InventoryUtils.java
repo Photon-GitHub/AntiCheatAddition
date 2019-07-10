@@ -25,6 +25,7 @@ public final class InventoryUtils
                 return ImmutableList.of(player.getInventory().getItemInHand());
             case MC112:
             case MC113:
+            case MC114:
                 return ImmutableList.of(player.getInventory().getItemInMainHand(),
                                         player.getInventory().getItemInOffHand());
             default:
@@ -402,7 +403,6 @@ public final class InventoryUtils
                         ((rawSlot / 9) + extraYPlayer)
                 };
             case CREATIVE:
-                break;
             case SHULKER_BOX:
                 break;
             default:

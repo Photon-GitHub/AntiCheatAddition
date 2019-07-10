@@ -15,9 +15,6 @@ import de.photon.AACAdditionPro.util.packetwrappers.client.WrapperPlayClientCust
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -31,7 +28,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 public class InventoryData extends TimeData
@@ -126,63 +122,23 @@ public class InventoryData extends TimeData
         {
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            if (user != null && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                // The block is a container.
-                if (event.getClickedBlock().getState() instanceof InventoryHolder) {
-                    // Make sure that obstructed containers are handled correctly.
-                    if (BlockUtils.FREE_SPACE_CONTAINERS.contains(event.getClickedBlock().getType())) {
-                        final Block aboveBlock = event.getClickedBlock().getRelative(BlockFace.UP);
-
-                        switch (ServerVersion.getActiveServerVersion()) {
-                            case MC188:
-                            case MC112:
-                                // 1.8.8 and 1.12 doesn't provide isPassable.
-                                // Make sure that the block above is not obstructed by blocks
-                                if (!(aboveBlock.isEmpty() ||
-                                      aboveBlock.getType() == Material.CHEST ||
-                                      aboveBlock.getType() == Material.TRAPPED_CHEST ||
-                                      aboveBlock.getType().name().endsWith("_SLAB") ||
-                                      aboveBlock.getType().name().endsWith("_STAIRS")))
-                                {
-                                    return;
-                                }
-                                // Cannot check for cats as the server version doesn't provide the newer methods.
-                                break;
-                            case MC113:
-                                // Make sure that the block above is not obstructed by blocks
-                                if (!(aboveBlock.isEmpty() ||
-                                      aboveBlock.isPassable() ||
-                                      aboveBlock.getType() == Material.CHEST ||
-                                      aboveBlock.getType() == Material.TRAPPED_CHEST ||
-                                      aboveBlock.getType().name().endsWith("_SLAB") ||
-                                      aboveBlock.getType().name().endsWith("_STAIRS")))
-                                {
-                                    return;
-                                }
-                                // Make sure that the block above is not obstructed by cats
-                                if (!aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty()) {
-                                    return;
-                                }
-                                break;
-                            default:
-                                throw new IllegalStateException("Unknown minecraft version");
-                        }
+            if ((user != null) && (event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
+                // Make sure that the block can open an InventoryView.
+                BlockUtils.isInventoryOpenable(event.getClickedBlock()))
+            {
+                // Make sure that the container is opened and the player doesn't just place a block next to it.
+                boolean sneakingRequiredToPlaceBlock = false;
+                for (ItemStack handStack : InventoryUtils.getHandContents(event.getPlayer())) {
+                    // Check if the material is a placable block
+                    if (handStack.getType().isBlock()) {
+                        sneakingRequiredToPlaceBlock = true;
+                        break;
                     }
+                }
 
-                    // Make sure that the container is opened and the player doesn't just place a block next to it.
-                    boolean sneakingRequiredToPlaceBlock = false;
-                    for (ItemStack handStack : InventoryUtils.getHandContents(event.getPlayer())) {
-                        // Check if the material is a placable block
-                        if (handStack.getType().isBlock()) {
-                            sneakingRequiredToPlaceBlock = true;
-                            break;
-                        }
-                    }
-
-                    // Not sneaking when the player can place a block that way.
-                    if (!(sneakingRequiredToPlaceBlock && event.getPlayer().isSneaking())) {
-                        user.getInventoryData().updateTimeStamp(0);
-                    }
+                // Not sneaking when the player can place a block that way.
+                if (!(sneakingRequiredToPlaceBlock && event.getPlayer().isSneaking())) {
+                    user.getInventoryData().updateTimeStamp(0);
                 }
             }
         }

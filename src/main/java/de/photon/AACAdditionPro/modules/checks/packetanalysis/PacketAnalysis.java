@@ -72,21 +72,20 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
             return;
         }
 
-
         // --------------------------------------------- CombatOrder ---------------------------------------------- //
 
-        vlManager.flag(user.getPlayer(), this.animationPattern.apply(user, event), -1, () -> {}, () -> {});
+        vlManager.flag(user.getPlayer(), true, this.animationPattern.apply(user, event), -1, () -> {}, () -> {});
 
         // --------------------------------------------- EqualRotation ---------------------------------------------- //
 
-        vlManager.flag(user.getPlayer(), this.equalRotationPattern.apply(user, event), -1, () -> {}, () -> {});
-        vlManager.flag(user.getPlayer(), this.illegalPitchPattern.apply(user, event), -1, () -> {}, () -> {});
+        vlManager.flag(user.getPlayer(), true, this.equalRotationPattern.apply(user, event), -1, () -> {}, () -> {});
+        vlManager.flag(user.getPlayer(), true, this.illegalPitchPattern.apply(user, event), -1, () -> {}, () -> {});
 
         // ----------------------------------------- Compare + PositionSpoof ---------------------------------------- //
         if (user.getPacketAnalysisData().lastPositionForceData != null) {
             // Special code to update the timestamp of the last compare flag.
-            vlManager.flag(user.getPlayer(), this.comparePattern.apply(user, event), -1, () -> {}, () -> user.getPacketAnalysisData().updateTimeStamp(0));
-            vlManager.flag(user.getPlayer(), this.positionSpoofPattern.apply(user, event), -1, () -> {}, () -> {});
+            vlManager.flag(user.getPlayer(), true, this.comparePattern.apply(user, event), -1, () -> {}, () -> user.getPacketAnalysisData().updateTimeStamp(0));
+            vlManager.flag(user.getPlayer(), true, this.positionSpoofPattern.apply(user, event), -1, () -> {}, () -> {});
 
             // No continuous flagging.
             user.getPacketAnalysisData().lastPositionForceData = null;

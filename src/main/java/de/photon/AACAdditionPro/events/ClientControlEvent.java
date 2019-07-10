@@ -2,16 +2,21 @@ package de.photon.AACAdditionPro.events;
 
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ModuleType;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
-public class ClientControlEvent extends PlayerEvent implements Cancellable
+public class ClientControlEvent extends Event implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();
+
+    @Getter
+    protected final Player player;
+
     private final ModuleType moduleType;
     private final String message;
     private boolean cancelled = false;
@@ -55,7 +60,8 @@ public class ClientControlEvent extends PlayerEvent implements Cancellable
      */
     protected ClientControlEvent(final Player p, final ModuleType moduleType, boolean async, final String message)
     {
-        super(p, async);
+        super(async);
+        this.player = p;
         this.moduleType = moduleType;
         this.message = message;
     }
@@ -65,7 +71,8 @@ public class ClientControlEvent extends PlayerEvent implements Cancellable
      */
     protected ClientControlEvent(final Player p, final ModuleType moduleType, boolean async, final String message, boolean legacy)
     {
-        super(p);
+        super();
+        this.player = p;
         this.moduleType = moduleType;
         this.message = message;
     }

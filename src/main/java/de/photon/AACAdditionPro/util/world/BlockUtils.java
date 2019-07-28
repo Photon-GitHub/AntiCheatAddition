@@ -27,7 +27,7 @@ public final class BlockUtils
 
     static {
         final EnumSet<Material> freeSpaceMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
-        final EnumSet<Material> allowedMaterials = EnumSet.of(Material.AIR, Material.CAVE_AIR, Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST, Material.ENCHANTING_TABLE, Material.ANVIL);
+        final EnumSet<Material> allowedMaterials = EnumSet.of(Material.AIR, Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST, Material.ANVIL);
 
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
@@ -43,6 +43,8 @@ public final class BlockUtils
                         freeSpaceMaterials.add(material);
                     }
                 }
+
+                allowedMaterials.add(Material.getMaterial("ENCHANTMENT_TABLE"));
 
                 LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
                                                                  Material.LAVA,
@@ -62,6 +64,10 @@ public final class BlockUtils
                     }
                 }
 
+                allowedMaterials.add(Material.CAVE_AIR);
+                // The enchantment table was renamed as well.
+                allowedMaterials.add(Material.ENCHANTING_TABLE);
+
                 LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
                                                                  Material.LAVA));
                 break;
@@ -78,6 +84,10 @@ public final class BlockUtils
                         freeSpaceMaterials.add(material);
                     }
                 }
+
+                allowedMaterials.add(Material.CAVE_AIR);
+                // The enchantment table was renamed as well.
+                allowedMaterials.add(Material.ENCHANTING_TABLE);
 
                 LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
                                                                  Material.LAVA));
@@ -202,10 +212,8 @@ public final class BlockUtils
                     case MC112:
                         // 1.8.8 and 1.12 doesn't provide isPassable.
                         // Make sure that the block above is not obstructed by blocks
-                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()))) {
-                            return false;
-                        }
-                        // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
+                        return FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType());
+                    // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
                     case MC113:
                         // Make sure that the block above is not obstructed by blocks
                         if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) ||
@@ -213,10 +221,10 @@ public final class BlockUtils
                         ))
                         {
                             return false;
-                        } else {
-                            // Make sure that the block above is not obstructed by cats
-                            return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty();
                         }
+
+                        // Make sure that the block above is not obstructed by cats
+                        return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty();
                     case MC114:
                         // Make sure that the block above is not obstructed by blocks
                         if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) ||
@@ -224,10 +232,10 @@ public final class BlockUtils
                         ))
                         {
                             return false;
-                        } else {
-                            // Make sure that the block above is not obstructed by cats
-                            return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.CAT).isEmpty();
                         }
+
+                        // Make sure that the block above is not obstructed by cats
+                        return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.CAT).isEmpty();
                     default:
                         throw new IllegalStateException("Unknown minecraft version");
                 }

@@ -27,7 +27,7 @@ public final class BlockUtils
 
     static {
         final EnumSet<Material> freeSpaceMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
-        final EnumSet<Material> allowedMaterials = EnumSet.of(Material.AIR, Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST, Material.ENCHANTING_TABLE, Material.ANVIL);
+        final EnumSet<Material> allowedMaterials = EnumSet.of(Material.AIR, Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST, Material.ANVIL);
 
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
@@ -43,6 +43,8 @@ public final class BlockUtils
                         freeSpaceMaterials.add(material);
                     }
                 }
+
+                allowedMaterials.add(Material.getMaterial("ENCHANTMENT_TABLE"));
 
                 LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
                                                                  Material.LAVA,
@@ -63,6 +65,9 @@ public final class BlockUtils
                 }
 
                 allowedMaterials.add(Material.CAVE_AIR);
+                // The enchantment table was renamed as well.
+                allowedMaterials.add(Material.ENCHANTING_TABLE);
+
                 LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
                                                                  Material.LAVA));
                 break;
@@ -81,6 +86,9 @@ public final class BlockUtils
                 }
 
                 allowedMaterials.add(Material.CAVE_AIR);
+                // The enchantment table was renamed as well.
+                allowedMaterials.add(Material.ENCHANTING_TABLE);
+
                 LIQUIDS = Collections.unmodifiableSet(EnumSet.of(Material.WATER,
                                                                  Material.LAVA));
                 break;

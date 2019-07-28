@@ -213,7 +213,7 @@ public final class BlockUtils
                         // 1.8.8 and 1.12 doesn't provide isPassable.
                         // Make sure that the block above is not obstructed by blocks
                         return FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType());
-                        // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
+                    // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
                     case MC113:
                         // Make sure that the block above is not obstructed by blocks
                         if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) ||
@@ -221,10 +221,10 @@ public final class BlockUtils
                         ))
                         {
                             return false;
-                        } else {
-                            // Make sure that the block above is not obstructed by cats
-                            return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty();
                         }
+
+                        // Make sure that the block above is not obstructed by cats
+                        return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty();
                     case MC114:
                         // Make sure that the block above is not obstructed by blocks
                         if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) ||
@@ -232,10 +232,10 @@ public final class BlockUtils
                         ))
                         {
                             return false;
-                        } else {
-                            // Make sure that the block above is not obstructed by cats
-                            return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.CAT).isEmpty();
                         }
+
+                        // Make sure that the block above is not obstructed by cats
+                        return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.CAT).isEmpty();
                     default:
                         throw new IllegalStateException("Unknown minecraft version");
                 }

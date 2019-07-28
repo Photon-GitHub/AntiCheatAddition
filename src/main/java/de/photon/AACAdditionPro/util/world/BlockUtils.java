@@ -212,9 +212,7 @@ public final class BlockUtils
                     case MC112:
                         // 1.8.8 and 1.12 doesn't provide isPassable.
                         // Make sure that the block above is not obstructed by blocks
-                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()))) {
-                            return false;
-                        }
+                        return FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType());
                         // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
                     case MC113:
                         // Make sure that the block above is not obstructed by blocks

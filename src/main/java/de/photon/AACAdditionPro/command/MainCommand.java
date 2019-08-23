@@ -1,7 +1,6 @@
 package de.photon.AACAdditionPro.command;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.command.subcommands.EntityCheckCommand;
 import de.photon.AACAdditionPro.command.subcommands.InfoCommand;
 import de.photon.AACAdditionPro.command.subcommands.TabListRemoveCommand;
 import de.photon.AACAdditionPro.command.subcommands.VerboseCommand;
@@ -28,7 +27,6 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     {
         super("aacadditionpro",
               null,
-              new EntityCheckCommand(),
               new InfoCommand(),
               new TabListRemoveCommand(),
               new VerboseCommand());

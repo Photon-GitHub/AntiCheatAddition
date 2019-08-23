@@ -1,14 +1,16 @@
 package de.photon.AACAdditionPro.api;
 
 import de.photon.AACAdditionPro.AACAdditionPro;
-import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.modules.Module;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.additions.BrandHider;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.entity.Player;
 
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({
+        "unused",
+        "WeakerAccess"
+})
 public final class AACAdditionProApi
 {
     /**
@@ -70,15 +72,6 @@ public final class AACAdditionProApi
     public static void setStateOfModule(final ModuleType moduleType, final boolean state)
     {
         AACAdditionPro.getInstance().getModuleManager().setStateOfModule(moduleType, state);
-    }
-
-    /**
-     * Sets an optional {@link KillauraEntityAddon} to improve and customize your KillauraEntity check.
-     * The {@link KillauraEntityAddon} which has been set most recently is the active one.
-     */
-    public static void setKillauraEntityAddon(KillauraEntityAddon addon)
-    {
-        AACAdditionPro.getInstance().setKillauraEntityAddon(addon);
     }
 
     /**

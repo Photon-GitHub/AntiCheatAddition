@@ -1,6 +1,5 @@
 package de.photon.AACAdditionPro.util.mathematics;
 
-import de.photon.AACAdditionPro.util.fakeentity.ClientsideLivingEntity;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 

@@ -41,14 +41,13 @@ public class VelocityChangeData extends TimeData
         @Override
         public void onPacketReceiving(final PacketEvent event)
         {
-            if (event.isPlayerTemporary()) {
+            if (event.getPlayer() == null || event.isPlayerTemporary()) {
                 return;
             }
 
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
-
                 // The player wasn't hurt and got velocity for that.
                 if (user.getPlayer().getNoDamageTicks() == 0 &&
                     // Recent teleports can cause bugs

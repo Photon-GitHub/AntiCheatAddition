@@ -1,9 +1,7 @@
 package de.photon.AACAdditionPro;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import de.photon.AACAdditionPro.api.killauraentity.KillauraEntityAddon;
 import de.photon.AACAdditionPro.command.MainCommand;
 import de.photon.AACAdditionPro.events.APILoadedEvent;
 import de.photon.AACAdditionPro.modules.ModuleManager;
@@ -36,7 +34,6 @@ import de.photon.AACAdditionPro.modules.clientcontrol.VersionControl;
 import de.photon.AACAdditionPro.modules.clientcontrol.WorldDownloaderControl;
 import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.util.VerboseSender;
-import de.photon.AACAdditionPro.util.fakeentity.DelegatingKillauraEntityController;
 import lombok.Getter;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -51,7 +48,6 @@ import us.myles.ViaVersion.api.ViaAPI;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class AACAdditionPro extends JavaPlugin
 {

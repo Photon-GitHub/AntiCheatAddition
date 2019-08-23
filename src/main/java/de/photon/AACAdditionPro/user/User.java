@@ -3,7 +3,6 @@ package de.photon.AACAdditionPro.user;
 import de.photon.AACAdditionPro.InternalPermission;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.user.data.AutoPotionData;
-import de.photon.AACAdditionPro.user.data.ClientSideEntityData;
 import de.photon.AACAdditionPro.user.data.ConsumeData;
 import de.photon.AACAdditionPro.user.data.FishingData;
 import de.photon.AACAdditionPro.user.data.InventoryData;
@@ -27,7 +26,6 @@ public class User
     private Player player;
 
     private AutoPotionData autoPotionData = new AutoPotionData(this);
-    private ClientSideEntityData clientSideEntityData = new ClientSideEntityData(this);
     private ConsumeData consumeData = new ConsumeData(this);
     private TimeData fastSwitchData = new TimeData(this);
     private FishingData fishingData = new FishingData(this);
@@ -69,7 +67,6 @@ public class User
     {
         this.player = null;
         autoPotionData.unregister();
-        clientSideEntityData.unregister();
         consumeData.unregister();
         fastSwitchData.unregister();
         fishingData.unregister();

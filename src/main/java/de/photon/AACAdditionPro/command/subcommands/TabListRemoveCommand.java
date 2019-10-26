@@ -49,7 +49,7 @@ public class TabListRemoveCommand extends InternalCommand
             return;
         }
 
-        long ticks = arguments.isEmpty() ? 0 : Long.valueOf(arguments.remove());
+        long ticks = arguments.isEmpty() ? 0 : Long.parseLong(arguments.remove());
         sender.sendMessage(ChatColor.GOLD + "Removed player " + ChatColor.RED + players[1].getName() + ChatColor.GOLD + " from " + ChatColor.RED + players[0].getName() + ChatColor.GOLD + "'s tablist for " + ChatColor.RED + ticks + ChatColor.GOLD + " ticks.");
 
         updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, players[0], players[1]);

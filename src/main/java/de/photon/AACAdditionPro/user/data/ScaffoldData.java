@@ -9,8 +9,6 @@ import de.photon.AACAdditionPro.util.datastructures.buffer.ConditionalCleanBuffe
 import de.photon.AACAdditionPro.util.datastructures.buffer.DequeBuffer;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
 
 public class ScaffoldData extends TimeData
 {
@@ -56,16 +54,17 @@ public class ScaffoldData extends TimeData
     @Getter
     private final DequeBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces;
 
-    public ScaffoldData(final Player player, final User user)
+    public ScaffoldData(final User user)
     {
         super(user, 0);
 
-        scaffoldBlockPlaces = new ConditionalCleanBuffer<ScaffoldBlockPlace>(BUFFER_SIZE, new ScaffoldBlockPlace(player.getLocation().getBlock(), BlockFace.NORTH, 0, 0, false))
+        scaffoldBlockPlaces = new ConditionalCleanBuffer<ScaffoldBlockPlace>(BUFFER_SIZE)
         {
             @Override
             protected boolean verifyObject(ScaffoldBlockPlace object)
             {
-                return BlockUtils.isNext(this.getDeque().peek().getBlock(), object.getBlock(), true);
+                final ScaffoldBlockPlace last = this.getDeque().peek();
+                return last == null || BlockUtils.isNext(last.getBlock(), object.getBlock(), true);
             }
         };
     }
@@ -85,7 +84,7 @@ public class ScaffoldData extends TimeData
         // -1 because there is one pop to fill the "last" variable in the beginning.
         final int divisor = this.scaffoldBlockPlaces.getDeque().size() - 1;
 
-        final boolean moonwalk = this.scaffoldBlockPlaces.getDeque().stream().filter((blockPlace) -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
+        final boolean moonwalk = this.scaffoldBlockPlaces.getDeque().stream().filter(blockPlace -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
 
         this.scaffoldBlockPlaces.clearLastTwoObjectsIteration(
                 (last, current) ->

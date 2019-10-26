@@ -10,12 +10,6 @@ public abstract class ConditionalCleanBuffer<T> extends SimpleBuffer<T>
         super(capacity);
     }
 
-    public ConditionalCleanBuffer(int capacity, T firstObject)
-    {
-        this(capacity);
-        super.bufferObject(firstObject);
-    }
-
     /**
      * This is used to verify an object before it gets added to the buffer,
      * and therefore useful for checking e.g. adjacency of blocks or similar.

@@ -28,7 +28,7 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
     public ContinuousArrayBuffer(int maxSize)
     {
         this.maxSize = maxSize;
-        array = new Object[maxSize];
+        this.array = new Object[maxSize];
     }
 
     @Override
@@ -146,8 +146,8 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
             @Override
             public T next()
             {
-                T returnedObject = (T) array[currentIndex];
                 currentIndex = decrementIndexSafely(currentIndex);
+                T returnedObject = (T) array[currentIndex];
                 return returnedObject;
             }
         };

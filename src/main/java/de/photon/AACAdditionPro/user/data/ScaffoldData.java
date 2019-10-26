@@ -5,10 +5,11 @@ import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.datawrappers.ScaffoldBlockPlace;
-import de.photon.AACAdditionPro.util.datastructures.Buffer;
-import de.photon.AACAdditionPro.util.datastructures.ConditionalBuffer;
+import de.photon.AACAdditionPro.util.datastructures.buffer.ConditionalCleanBuffer;
+import de.photon.AACAdditionPro.util.datastructures.buffer.DequeBuffer;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
+import org.bukkit.block.BlockFace;
 
 public class ScaffoldData extends TimeData
 {
@@ -50,13 +51,14 @@ public class ScaffoldData extends TimeData
      */
     public long sprintingFails = 0;
 
+    // Add a dummy block to start with in order to make sure that the queue is never empty.
     @Getter
-    private final Buffer<ScaffoldBlockPlace> scaffoldBlockPlaces = new ConditionalBuffer<ScaffoldBlockPlace>(BUFFER_SIZE)
+    private final DequeBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces = new ConditionalCleanBuffer<ScaffoldBlockPlace>(BUFFER_SIZE, new ScaffoldBlockPlace(this.getUser().getPlayer().getLocation().getBlock(), BlockFace.NORTH, 0, 0, false))
     {
         @Override
         protected boolean verifyObject(ScaffoldBlockPlace object)
         {
-            return this.getDeque().isEmpty() || BlockUtils.isNext(this.getDeque().peek().getBlock(), object.getBlock(), true);
+            return BlockUtils.isNext(this.getDeque().peek().getBlock(), object.getBlock(), true);
         }
     };
 
@@ -92,8 +94,7 @@ public class ScaffoldData extends TimeData
                         if (!moonwalk && last.isSneaked() && current.isSneaked()) {
                             delay += SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2 * current.getYaw())));
                         }
-                    }
-                    else {
+                    } else {
                         delay = DELAY_DIAGONAL;
                     }
 

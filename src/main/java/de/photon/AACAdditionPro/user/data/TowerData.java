@@ -8,6 +8,7 @@ import de.photon.AACAdditionPro.util.datastructures.buffer.ConditionalCleanBuffe
 import de.photon.AACAdditionPro.util.datastructures.buffer.DequeBuffer;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
+import org.bukkit.entity.Player;
 
 /**
  * Used to store {@link BlockPlace}s. The {@link TimeData} is used for timeouts.
@@ -21,11 +22,11 @@ public class TowerData extends TimeData
     @Getter
     private final DequeBuffer<TowerBlockPlace> blockPlaces;
 
-    public TowerData(final User user)
+    public TowerData(final Player player, final User user)
     {
         super(user, 0);
 
-        blockPlaces = new ConditionalCleanBuffer<TowerBlockPlace>(BUFFER_SIZE, new TowerBlockPlace(user.getPlayer().getLocation().getBlock(), 0, 0))
+        blockPlaces = new ConditionalCleanBuffer<TowerBlockPlace>(BUFFER_SIZE, new TowerBlockPlace(player.getLocation().getBlock(), 0, 0))
         {
             @Override
             protected boolean verifyObject(TowerBlockPlace object)

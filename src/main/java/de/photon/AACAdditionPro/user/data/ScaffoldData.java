@@ -10,6 +10,7 @@ import de.photon.AACAdditionPro.util.datastructures.buffer.DequeBuffer;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 
 public class ScaffoldData extends TimeData
 {
@@ -55,11 +56,11 @@ public class ScaffoldData extends TimeData
     @Getter
     private final DequeBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces;
 
-    public ScaffoldData(User user)
+    public ScaffoldData(final Player player, final User user)
     {
         super(user, 0);
 
-        scaffoldBlockPlaces = new ConditionalCleanBuffer<ScaffoldBlockPlace>(BUFFER_SIZE, new ScaffoldBlockPlace(user.getPlayer().getLocation().getBlock(), BlockFace.NORTH, 0, 0, false))
+        scaffoldBlockPlaces = new ConditionalCleanBuffer<ScaffoldBlockPlace>(BUFFER_SIZE, new ScaffoldBlockPlace(player.getLocation().getBlock(), BlockFace.NORTH, 0, 0, false))
         {
             @Override
             protected boolean verifyObject(ScaffoldBlockPlace object)

@@ -36,11 +36,11 @@ public class User
     private PacketAnalysisData packetAnalysisData = new PacketAnalysisData(this);
     private PingData pingData = new PingData(this);
     private PositionData positionData = new PositionData(this);
-    private ScaffoldData scaffoldData = new ScaffoldData(this);
+    private ScaffoldData scaffoldData = new ScaffoldData(this.getPlayer(), this);
     private SkinData skinData = new SkinData();
     private TeamingData teamingData = new TeamingData(this);
     private TeleportData teleportData = new TeleportData(this);
-    private TowerData towerData = new TowerData(this);
+    private TowerData towerData = new TowerData(this.getPlayer(), this);
     private VelocityChangeData velocityChangeData = new VelocityChangeData(this);
 
     public User(final Player player)

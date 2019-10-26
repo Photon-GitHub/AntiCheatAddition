@@ -19,6 +19,12 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
     private int tail = 0;
     private int size = 0;
 
+    /**
+     * Create a new {@link ContinuousArrayBuffer}.
+     *
+     * @param maxSize the size of the internal array to store the data. Once it is full, the oldest element will be
+     *                overwritten.
+     */
     public ContinuousArrayBuffer(int maxSize)
     {
         this.maxSize = maxSize;

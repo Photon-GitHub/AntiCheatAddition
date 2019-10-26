@@ -19,18 +19,20 @@ public class TowerData extends TimeData
 
     // Add a dummy block to start with in order to make sure that the queue is never empty.
     @Getter
-    private final DequeBuffer<TowerBlockPlace> blockPlaces = new ConditionalCleanBuffer<TowerBlockPlace>(BUFFER_SIZE, new TowerBlockPlace(this.getUser().getPlayer().getLocation().getBlock(), 0, 0))
-    {
-        @Override
-        protected boolean verifyObject(TowerBlockPlace object)
-        {
-            return BlockUtils.isNext(this.getDeque().peek().getBlock(), object.getBlock(), false);
-        }
-    };
+    private final DequeBuffer<TowerBlockPlace> blockPlaces;
 
     public TowerData(final User user)
     {
         super(user, 0);
+
+        blockPlaces = new ConditionalCleanBuffer<TowerBlockPlace>(BUFFER_SIZE, new TowerBlockPlace(user.getPlayer().getLocation().getBlock(), 0, 0))
+        {
+            @Override
+            protected boolean verifyObject(TowerBlockPlace object)
+            {
+                return BlockUtils.isNext(this.getDeque().peek().getBlock(), object.getBlock(), false);
+            }
+        };
     }
 
     /**

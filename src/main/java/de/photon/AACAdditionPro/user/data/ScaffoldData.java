@@ -53,18 +53,20 @@ public class ScaffoldData extends TimeData
 
     // Add a dummy block to start with in order to make sure that the queue is never empty.
     @Getter
-    private final DequeBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces = new ConditionalCleanBuffer<ScaffoldBlockPlace>(BUFFER_SIZE, new ScaffoldBlockPlace(this.getUser().getPlayer().getLocation().getBlock(), BlockFace.NORTH, 0, 0, false))
-    {
-        @Override
-        protected boolean verifyObject(ScaffoldBlockPlace object)
-        {
-            return BlockUtils.isNext(this.getDeque().peek().getBlock(), object.getBlock(), true);
-        }
-    };
+    private final DequeBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces;
 
     public ScaffoldData(User user)
     {
         super(user, 0);
+
+        scaffoldBlockPlaces = new ConditionalCleanBuffer<ScaffoldBlockPlace>(BUFFER_SIZE, new ScaffoldBlockPlace(user.getPlayer().getLocation().getBlock(), BlockFace.NORTH, 0, 0, false))
+        {
+            @Override
+            protected boolean verifyObject(ScaffoldBlockPlace object)
+            {
+                return BlockUtils.isNext(this.getDeque().peek().getBlock(), object.getBlock(), true);
+            }
+        };
     }
 
     /**

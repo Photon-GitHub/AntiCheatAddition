@@ -8,12 +8,20 @@ public interface DequeBuffer<T> extends Buffer<T>
 {
     Deque<T> getDeque();
 
+    /**
+     * Determines whether the {@link Deque} has at least one element.
+     */
+    default boolean dequeHasAnElement()
+    {
+        return !this.getDeque().isEmpty();
+    }
+
     @Override
     default void clearIteration(final Consumer<T> consumer)
     {
         // We use .push as buffer method, which is equal to addFirst. Therefore removeLast correctly returns the least
         // recently added element here.
-        while (!this.getDeque().isEmpty()) {
+        while (this.dequeHasAnElement()) {
             consumer.accept(this.getDeque().removeLast());
         }
     }
@@ -23,7 +31,7 @@ public interface DequeBuffer<T> extends Buffer<T>
     {
         // We use .push as buffer method, which is equal to addFirst. Therefore removeFirst correctly returns the most
         // recently added element here.
-        while (!this.getDeque().isEmpty()) {
+        while (this.dequeHasAnElement()) {
             consumer.accept(this.getDeque().removeFirst());
         }
     }
@@ -37,7 +45,7 @@ public interface DequeBuffer<T> extends Buffer<T>
      */
     default void clearLastTwoObjectsIteration(final BiConsumer<T, T> lastObjectsConsumer)
     {
-        if (!this.getDeque().isEmpty()) {
+        if (this.dequeHasAnElement()) {
             T last = this.getDeque().pop();
             T current;
             while (!this.getDeque().isEmpty()) {

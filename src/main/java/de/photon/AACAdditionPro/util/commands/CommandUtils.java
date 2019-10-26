@@ -10,6 +10,9 @@ import org.bukkit.entity.Player;
 
 public final class CommandUtils
 {
+    private CommandUtils()
+    { }
+
     /**
      * Applies all the {@link Placeholders} to the given command and invokes executeCommand afterwards.
      *
@@ -28,7 +31,8 @@ public final class CommandUtils
                                                String.valueOf(newVl)),
                 moduleType);
 
-        if (!commandEvent.isCancelled()) {
+        if (!commandEvent.isCancelled())
+        {
             executeCommand(commandEvent.getCommand());
         }
     }
@@ -45,10 +49,12 @@ public final class CommandUtils
                 AACAdditionPro.getInstance(),
                 () -> {
                     //Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
-                    try {
+                    try
+                    {
                         Bukkit.dispatchCommand(AACAdditionPro.getInstance().getServer().getConsoleSender(), command);
                         VerboseSender.getInstance().sendVerboseMessage(ChatColor.GOLD + "Executed command: " + command);
-                    } catch (final Exception e) {
+                    } catch (final Exception e)
+                    {
                         VerboseSender.getInstance().sendVerboseMessage("Could not execute command /" + command, true, true);
                     }
                 });

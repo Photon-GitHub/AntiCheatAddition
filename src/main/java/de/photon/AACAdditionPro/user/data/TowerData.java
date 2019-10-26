@@ -4,7 +4,8 @@ import de.photon.AACAdditionPro.user.TimeData;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.datawrappers.BlockPlace;
 import de.photon.AACAdditionPro.user.datawrappers.TowerBlockPlace;
-import de.photon.AACAdditionPro.util.datastructures.ConditionalBuffer;
+import de.photon.AACAdditionPro.util.datastructures.buffer.ConditionalCleanBuffer;
+import de.photon.AACAdditionPro.util.datastructures.buffer.DequeBuffer;
 import de.photon.AACAdditionPro.util.world.BlockUtils;
 import lombok.Getter;
 
@@ -16,19 +17,23 @@ public class TowerData extends TimeData
     // Default buffer size is 6, being well tested.
     private static final int BUFFER_SIZE = 6;
 
+    // Add a dummy block to start with in order to make sure that the queue is never empty.
     @Getter
-    private final ConditionalBuffer<TowerBlockPlace> blockPlaces = new ConditionalBuffer<TowerBlockPlace>(BUFFER_SIZE)
-    {
-        @Override
-        protected boolean verifyObject(TowerBlockPlace object)
-        {
-            return this.getDeque().isEmpty() || BlockUtils.isNext(this.getDeque().peek().getBlock(), object.getBlock(), false);
-        }
-    };
+    private final DequeBuffer<TowerBlockPlace> blockPlaces;
 
     public TowerData(final User user)
     {
         super(user, 0);
+
+        blockPlaces = new ConditionalCleanBuffer<TowerBlockPlace>(BUFFER_SIZE)
+        {
+            @Override
+            protected boolean verifyObject(TowerBlockPlace object)
+            {
+                final TowerBlockPlace last = this.getDeque().peek();
+                return last == null || BlockUtils.isNext(last.getBlock(), object.getBlock(), false);
+            }
+        };
     }
 
     /**

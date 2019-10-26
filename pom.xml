@@ -6,7 +6,7 @@
 
     <groupId>de.photon</groupId>
     <artifactId>AACAdditionPro</artifactId>
-    <version>5.2.2</version>
+    <version>5.2.3</version>
 
     <name>AACAdditionPro</name>
     <description>This plugin provides niche checks for cheats which are not covered by AAC</description>
@@ -84,8 +84,8 @@
         </repository>
         <!-- BStats Metrics -->
         <repository>
-            <id>bstats-repo</id>
-            <url>http://repo.bstats.org/content/repositories/releases/</url>
+            <id>CodeMC</id>
+            <url>https://repo.codemc.org/repository/maven-public</url>
         </repository>
         <!-- Lombok -->
         <repository>
@@ -135,7 +135,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.2</version>
+            <version>1.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

@@ -26,7 +26,7 @@ public abstract class MetadataPacket extends AbstractPacket
         return new MetadataBuilder();
     }
 
-    public class MetadataBuilder
+    public static class MetadataBuilder
     {
         final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
 

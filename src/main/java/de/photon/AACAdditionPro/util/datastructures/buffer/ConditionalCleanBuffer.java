@@ -1,8 +1,11 @@
-package de.photon.AACAdditionPro.util.datastructures;
+package de.photon.AACAdditionPro.util.datastructures.buffer;
 
-public abstract class ConditionalBuffer<T> extends SimpleBuffer<T>
+/**
+ * This describes a buffer that is cleaned when a new element does not fulfill certain conditions.
+ */
+public abstract class ConditionalCleanBuffer<T> extends SimpleBuffer<T>
 {
-    public ConditionalBuffer(int capacity)
+    public ConditionalCleanBuffer(int capacity)
     {
         super(capacity);
     }
@@ -18,11 +21,9 @@ public abstract class ConditionalBuffer<T> extends SimpleBuffer<T>
     @Override
     public boolean bufferObject(T object)
     {
-        if (this.verifyObject(object)) {
-            return super.bufferObject(object);
+        if (!this.verifyObject(object)) {
+            this.getDeque().clear();
         }
-
-        this.getDeque().clear();
-        return false;
+        return super.bufferObject(object);
     }
 }

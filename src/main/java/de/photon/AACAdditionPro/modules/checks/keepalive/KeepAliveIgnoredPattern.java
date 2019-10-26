@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableSet;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
-import de.photon.AACAdditionPro.user.data.KeepAliveData;
 import de.photon.AACAdditionPro.util.VerboseSender;
 
 /**
@@ -22,16 +21,14 @@ class KeepAliveIgnoredPattern extends PatternModule.PacketPattern
     @Override
     protected int process(User user, PacketEvent packetEvent)
     {
-        synchronized (user.getKeepAliveData().getKeepAlives()) {
-            // Check on sending to force the client to respond in a certain time-frame.
-            if (user.getKeepAliveData().getKeepAlives().size() > KeepAliveData.KEEPALIVE_QUEUE_SIZE &&
-                !user.getKeepAliveData().getKeepAlives().remove().hasRegisteredResponse())
-            {
-                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " ignored KeepAlive packet.");
-                return 10;
-            }
+        final int ignored = user.getKeepAliveData().getIgnoredKeepAlives().getAndSet(0);
+
+        // Only send message on violation.
+        if (ignored != 0) {
+            VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " ignored " + ignored + "KeepAlive packets");
         }
-        return 0;
+
+        return ignored * 10;
     }
 
     @Override

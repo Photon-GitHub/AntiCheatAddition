@@ -52,7 +52,7 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
 
         // Register the KeepAlive
         synchronized (user.getKeepAliveData().getKeepAlives()) {
-            user.getKeepAliveData().getKeepAlives().add(new KeepAliveData.KeepAlivePacketData(new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId()));
+            user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId()));
         }
         vlManager.flag(user.getPlayer(), true, keepAliveIgnoredPattern.apply(user, event), -1, () -> {}, () -> {});
     }

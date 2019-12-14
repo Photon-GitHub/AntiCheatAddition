@@ -25,10 +25,6 @@ public class ClientControlEvent extends Event implements Cancellable
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC19:
-            case MC110:
-            case MC111:
-            case MC112:
             case MC113:
                 return new ClientControlEvent(p, moduleType, async, message, true);
             case MC114:
@@ -42,10 +38,6 @@ public class ClientControlEvent extends Event implements Cancellable
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC19:
-            case MC110:
-            case MC111:
-            case MC112:
             case MC113:
                 return new ClientControlEvent(p, moduleType, async, moduleType.getViolationMessage(), true);
             case MC114:

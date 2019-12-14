@@ -41,7 +41,6 @@ public abstract class MetadataPacket extends AbstractPacket
                 case MC188:
                     dataWatcher.setObject(index, value);
                     break;
-                case MC112:
                 case MC113:
                 case MC114:
                     dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(classOfValue)), value);
@@ -76,7 +75,6 @@ public abstract class MetadataPacket extends AbstractPacket
             switch (ServerVersion.getActiveServerVersion()) {
                 case MC188:
                     return this.setMetadata(6, Float.class, health);
-                case MC112:
                 case MC113:
                 case MC114:
                     return this.setMetadata(7, Float.class, health);
@@ -96,7 +94,6 @@ public abstract class MetadataPacket extends AbstractPacket
                 case MC188:
                     // IN 1.8.8 THIS IS A BYTE, NOT AN INTEGER!
                     return this.setMetadata(10, Byte.class, (byte) arrows);
-                case MC112:
                 case MC113:
                 case MC114:
                     // IN 1.12.2 THIS IS AN INTEGER!
@@ -118,7 +115,6 @@ public abstract class MetadataPacket extends AbstractPacket
             switch (ServerVersion.getActiveServerVersion()) {
                 case MC188:
                     return this.setMetadata(10, Byte.class, skinParts);
-                case MC112:
                 case MC113:
                 case MC114:
                     return this.setMetadata(13, Byte.class, skinParts);

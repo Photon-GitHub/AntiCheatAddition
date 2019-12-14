@@ -19,13 +19,14 @@ public enum ServerVersion
     MC19("1.9", false),
     MC110("1.10", false),
     MC111("1.11.2", false),
-    MC112("1.12.2", true),
+    MC112("1.12.2", false),
     MC113("1.13", true),
-    MC114("1.14", true);
+    MC114("1.14", true),
+    MC115("1.15", true);
 
 
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS;
-    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = EnumSet.of(MC188, MC112);
+    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = EnumSet.of(MC188);
     public static final Set<ServerVersion> NON_188_VERSIONS;
 
     static {

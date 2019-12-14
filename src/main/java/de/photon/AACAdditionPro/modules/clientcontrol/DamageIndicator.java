@@ -43,8 +43,7 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -68,46 +67,41 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
             final int index;
 
             // Passenger problems
-            switch (ServerVersion.getActiveServerVersion())
-            {
+            switch (ServerVersion.getActiveServerVersion()) {
                 case MC188:
                     // index 6 in 1.8
                     index = 6;
 
-                    if (entity.getPassenger() != null)
-                    {
+                    if (entity.getPassenger() != null) {
                         return;
                     }
                     break;
 
-                case MC112:
                 case MC113:
-                case MC114:
                     // index 7 in 1.11+
                     index = 7;
-
-                    if (!entity.getPassengers().isEmpty())
-                    {
-                        return;
-                    }
+                    break;
+                case MC114:
+                    // index 7 in 1.14.4+
+                    index = 8;
                     break;
                 default:
                     throw new IllegalStateException("Unknown minecraft version");
+            }
+
+            if (!entity.getPassengers().isEmpty()) {
+                return;
             }
 
             // Clone the packet to prevent a serversided connection of the health.
             event.setPacket(event.getPacket().deepClone());
 
             final StructureModifier<List<WrappedWatchableObject>> watcher = event.getPacket().getWatchableCollectionModifier();
-            if (watcher != null)
-            {
+            if (watcher != null) {
                 final List<WrappedWatchableObject> read = watcher.read(0);
-                if (read != null)
-                {
-                    for (WrappedWatchableObject watch : read)
-                    {
-                        if ((watch.getIndex() == index) && ((Float) watch.getValue() > 0.0F))
-                        {
+                if (read != null) {
+                    for (WrappedWatchableObject watch : read) {
+                        if ((watch.getIndex() == index) && ((Float) watch.getValue() > 0.0F)) {
                             watch.setValue(entity instanceof Villager ? 20 : Float.NaN);
                         }
                     }

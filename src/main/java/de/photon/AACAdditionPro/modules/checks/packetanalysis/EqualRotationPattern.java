@@ -42,7 +42,6 @@ class EqualRotationPattern extends PatternModule.PacketPattern
                                                                                   Material.CHEST,
                                                                                   Material.ANVIL));
                 break;
-            case MC112:
             case MC113:
             case MC114:
                 // Hitbox bugs are fixed in higher versions.

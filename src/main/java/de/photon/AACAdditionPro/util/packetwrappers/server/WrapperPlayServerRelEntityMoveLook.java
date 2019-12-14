@@ -25,7 +25,6 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return 3;
-            case MC112:
             case MC113:
             case MC114:
                 return 0;

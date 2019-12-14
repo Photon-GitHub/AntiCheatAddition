@@ -48,6 +48,7 @@ import us.myles.ViaVersion.api.ViaAPI;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class AACAdditionPro extends JavaPlugin
 {
@@ -90,8 +91,7 @@ public class AACAdditionPro extends JavaPlugin
     @Override
     public FileConfiguration getConfig()
     {
-        if (cachedConfig == null)
-        {
+        if (cachedConfig == null) {
             this.saveDefaultConfig();
             cachedConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
         }
@@ -102,8 +102,7 @@ public class AACAdditionPro extends JavaPlugin
     @Override
     public void onEnable()
     {
-        try
-        {
+        try {
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
@@ -115,12 +114,7 @@ public class AACAdditionPro extends JavaPlugin
 
                 // Print the complete message
                 VerboseSender.getInstance().sendVerboseMessage(
-                        "Supported versions:" +
-                        String.join(
-                                // Versions should be divided by commas.
-                                ", ",
-                                // Create a List of all the possible server versions
-                                Arrays.stream(ServerVersion.values()).filter(ServerVersion::isSupported).map(ServerVersion::getVersionOutputString).toArray(String[]::new)),
+                        "Supported versions:" + Arrays.stream(ServerVersion.values()).filter(ServerVersion::isSupported).map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
                         true, true);
                 return;
             }
@@ -138,14 +132,11 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Call is correct here as Bukkit always has a player api.
-            if (this.getServer().getPluginManager().getPlugin("ViaVersion") != null)
-            {
+            if (this.getServer().getPluginManager().getPlugin("ViaVersion") != null) {
                 //noinspection unchecked
                 viaAPI = Via.getAPI();
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Used"));
-            }
-            else
-            {
+            } else {
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Not used"));
             }
 
@@ -203,8 +194,7 @@ public class AACAdditionPro extends JavaPlugin
             this.loaded = true;
             this.getServer().getPluginManager().callEvent(new APILoadedEvent());
 
-        } catch (final Exception e)
-        {
+        } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //
             // ------------------------------------------------------------------------------------------------------ //

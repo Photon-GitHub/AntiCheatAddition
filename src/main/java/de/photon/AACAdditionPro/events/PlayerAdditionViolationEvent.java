@@ -23,10 +23,6 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC19:
-            case MC110:
-            case MC111:
-            case MC112:
             case MC113:
                 return new PlayerAdditionViolationEvent(p, moduleType, async, i, message, true);
             case MC114:
@@ -40,10 +36,6 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC19:
-            case MC110:
-            case MC111:
-            case MC112:
             case MC113:
                 return new PlayerAdditionViolationEvent(p, moduleType, async, i, moduleType.getViolationMessage(), true);
             case MC114:

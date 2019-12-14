@@ -76,7 +76,6 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(1) / 32.0D;
-            case MC112:
             case MC113:
             case MC114:
                 return handle.getDoubles().read(0);
@@ -92,7 +91,6 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             case MC188:
                 handle.getIntegers().write(1, (int) (value * 32));
                 break;
-            case MC112:
             case MC113:
             case MC114:
                 handle.getDoubles().write(0, value);
@@ -108,7 +106,6 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(2) / 32.0D;
-            case MC112:
             case MC113:
             case MC114:
                 return handle.getDoubles().read(1);
@@ -124,7 +121,6 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             case MC188:
                 handle.getIntegers().write(2, (int) (value * 32));
                 break;
-            case MC112:
             case MC113:
             case MC114:
                 handle.getDoubles().write(1, value);
@@ -140,7 +136,6 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(3) / 32.0D;
-            case MC112:
             case MC113:
             case MC114:
                 return handle.getDoubles().read(2);
@@ -156,7 +151,6 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             case MC188:
                 handle.getIntegers().write(3, (int) (value * 32));
                 break;
-            case MC112:
             case MC113:
             case MC114:
                 handle.getDoubles().write(2, value);

@@ -28,7 +28,8 @@ public class VersionControl implements Module, Dependency
             new ProtocolVersion("1.11", ServerVersion.MC111, 315, 316),
             new ProtocolVersion("1.12", ServerVersion.MC112, 335, 338, 340),
             new ProtocolVersion("1.13", ServerVersion.MC113, 393, 401, 404),
-            new ProtocolVersion("1.14", ServerVersion.MC114, 477, 480, 485));
+            new ProtocolVersion("1.14", ServerVersion.MC114, 477, 480, 485, 490, 498),
+            new ProtocolVersion("1.15", ServerVersion.MC115, 573));
 
     /**
      * Method used to get the {@link ServerVersion} from the protocol version number.
@@ -56,8 +57,7 @@ public class VersionControl implements Module, Dependency
         for (ProtocolVersion protocolVersion : PROTOCOL_VERSIONS) {
             if (protocolVersion.allowed) {
                 versionStrings.add(protocolVersion.name);
-            }
-            else {
+            } else {
                 // Set the blocked versions
                 blockedProtocolNumbers.addAll(protocolVersion.versionNumbers);
             }

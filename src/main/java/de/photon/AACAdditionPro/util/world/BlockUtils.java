@@ -31,7 +31,6 @@ public final class BlockUtils
 
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC112:
                 for (Material material : Material.values()) {
                     if (material.name().endsWith("_SLAB") ||
                         material.name().endsWith("_STAIRS"))
@@ -186,8 +185,6 @@ public final class BlockUtils
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC111:
-            case MC112:
                 return material != Material.BARRIER && material != Material.getMaterial("MOB_SPAWNER") && material.isOccluding();
             case MC113:
                 return material != Material.BARRIER && material != Material.SPAWNER && material.isOccluding();
@@ -209,7 +206,6 @@ public final class BlockUtils
 
                 switch (ServerVersion.getActiveServerVersion()) {
                     case MC188:
-                    case MC112:
                         // 1.8.8 and 1.12 doesn't provide isPassable.
                         // Make sure that the block above is not obstructed by blocks
                         return FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType());

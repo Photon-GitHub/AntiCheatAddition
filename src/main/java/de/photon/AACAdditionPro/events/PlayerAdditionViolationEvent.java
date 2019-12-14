@@ -26,6 +26,7 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
             case MC113:
                 return new PlayerAdditionViolationEvent(p, moduleType, async, i, message, true);
             case MC114:
+            case MC115:
                 return new PlayerAdditionViolationEvent(p, moduleType, async, i, message);
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -39,6 +40,7 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
             case MC113:
                 return new PlayerAdditionViolationEvent(p, moduleType, async, i, moduleType.getViolationMessage(), true);
             case MC114:
+            case MC115:
                 return new PlayerAdditionViolationEvent(p, moduleType, async, i, moduleType.getViolationMessage());
             default:
                 throw new IllegalStateException("Unknown minecraft version");

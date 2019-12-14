@@ -93,6 +93,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 break;
             case MC113:
             case MC114:
+            case MC115:
                 handle.getDoubles().write(0, value);
                 break;
             default:
@@ -108,6 +109,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 return handle.getIntegers().read(2) / 32.0D;
             case MC113:
             case MC114:
+            case MC115:
                 return handle.getDoubles().read(1);
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -123,6 +125,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 break;
             case MC113:
             case MC114:
+            case MC115:
                 handle.getDoubles().write(1, value);
                 break;
             default:
@@ -138,6 +141,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 return handle.getIntegers().read(3) / 32.0D;
             case MC113:
             case MC114:
+            case MC115:
                 return handle.getDoubles().read(2);
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -153,6 +157,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 break;
             case MC113:
             case MC114:
+            case MC115:
                 handle.getDoubles().write(2, value);
                 break;
             default:

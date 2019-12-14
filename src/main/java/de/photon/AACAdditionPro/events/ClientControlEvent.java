@@ -28,6 +28,7 @@ public class ClientControlEvent extends Event implements Cancellable
             case MC113:
                 return new ClientControlEvent(p, moduleType, async, message, true);
             case MC114:
+            case MC115:
                 return new ClientControlEvent(p, moduleType, async, message);
             default:
                 throw new IllegalStateException("Unknown minecraft version");
@@ -41,6 +42,7 @@ public class ClientControlEvent extends Event implements Cancellable
             case MC113:
                 return new ClientControlEvent(p, moduleType, async, moduleType.getViolationMessage(), true);
             case MC114:
+            case MC115:
                 return new ClientControlEvent(p, moduleType, async, moduleType.getViolationMessage());
             default:
                 throw new IllegalStateException("Unknown minecraft version");

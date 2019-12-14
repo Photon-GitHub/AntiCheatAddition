@@ -57,6 +57,7 @@ public class ViolationLevelManagement
                 break;
             case MC113:
             case MC114:
+            case MC115:
                 thresholds = ImmutableList.sortedCopyOf(Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds"));
                 break;
             default:

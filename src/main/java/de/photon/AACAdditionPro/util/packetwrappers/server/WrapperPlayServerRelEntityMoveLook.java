@@ -27,6 +27,7 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
                 return 3;
             case MC113:
             case MC114:
+            case MC115:
                 return 0;
             default:
                 throw new IllegalStateException("Unknown minecraft version");

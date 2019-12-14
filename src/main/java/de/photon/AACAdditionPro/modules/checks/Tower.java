@@ -59,6 +59,7 @@ public class Tower implements ListenerModule, ViolationModule
                     break;
                 case MC113:
                 case MC114:
+                case MC115:
                     levitation = PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.LEVITATION));
                     break;
                 default:

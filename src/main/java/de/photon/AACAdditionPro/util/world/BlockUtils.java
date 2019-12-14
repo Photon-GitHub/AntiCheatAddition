@@ -71,6 +71,7 @@ public final class BlockUtils
                                                                  Material.LAVA));
                 break;
             case MC114:
+            case MC115:
                 for (Material material : Material.values()) {
                     if (material.name().endsWith("_SLAB") ||
                         material.name().endsWith("_SIGN") ||

@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.modules.checks.inventory;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
+import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
@@ -14,8 +15,11 @@ import de.photon.AACAdditionPro.util.packetwrappers.server.WrapperPlayServerPosi
 import de.photon.AACAdditionPro.util.server.ServerUtil;
 import de.photon.AACAdditionPro.util.world.ChunkUtils;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
+
+import java.util.concurrent.ExecutionException;
 
 class MovePattern extends PatternModule.PacketPattern
 {
@@ -94,16 +98,21 @@ class MovePattern extends PatternModule.PacketPattern
             if (knownPosition.getY() == moveTo.getY() &&
                 // 230 is a little compensation for the "breaking" when sprinting previously (value has been established
                 // by local tests).
-                user.getInventoryData().notRecentlyOpened(230 + lenience_millis) &&
+                user.getInventoryData().notRecentlyOpened(230L + lenience_millis))
+            {
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
-                EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), Hitbox.PLAYER, 0.1D).isEmpty())
-            {
-                message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " moved while having an open inventory.";
-                return 3;
+                try {
+                    // Needs to be called synchronously.
+                    if (Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), Hitbox.PLAYER, 0.1D).isEmpty()).get()) {
+                        message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " moved while having an open inventory.";
+                        return 3;
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    return 0;
+                }
             }
-        }
-        else {
+        } else {
             user.getPositionData().allowedToJump = true;
         }
         return 0;

@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 
 import com.comphenix.protocol.utility.MinecraftReflection;
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.AACAdditionPro.util.pluginmessage.MessageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -25,7 +26,7 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
             case MC115:
                 return new MessageChannel(getHandle().getMinecraftKeys().read(0));
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -45,7 +46,7 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
                 getHandle().getMinecraftKeys().write(0, value);
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 

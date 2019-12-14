@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.events;
 
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ModuleType;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +30,7 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
             case MC115:
                 return new PlayerAdditionViolationEvent(p, moduleType, async, i, message);
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -43,7 +44,7 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
             case MC115:
                 return new PlayerAdditionViolationEvent(p, moduleType, async, i, moduleType.getViolationMessage());
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 

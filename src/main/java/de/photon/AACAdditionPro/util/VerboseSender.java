@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
 
 public final class VerboseSender implements Listener
 {
@@ -27,7 +28,7 @@ public final class VerboseSender implements Listener
     private static final VerboseSender instance = new VerboseSender();
 
     // Message constants
-    private static final String NON_COLORED_PRE_STRING = "[AACAdditionPro] ";
+    private static final String NON_COLORED_PRE_STRING = "[AACAdditionPro] {0}";
     private static final String PRE_STRING = ChatColor.DARK_RED + NON_COLORED_PRE_STRING + ChatColor.GRAY;
     private static final String EVENT_PRE_STRING = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
 
@@ -104,17 +105,14 @@ public final class VerboseSender implements Listener
                 // Log the message
                 Files.write(logFile.toPath(), verboseMessage.toString().getBytes(), StandardOpenOption.APPEND);
             } catch (final IOException e) {
-                e.printStackTrace();
+                AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Something went wrong while trying to write to the log file.", e);
             }
         }
 
         if (writeToConsole || force_console) {
-            if (error) {
-                Bukkit.getLogger().severe(NON_COLORED_PRE_STRING + logMessage);
-            }
-            else {
-                Bukkit.getLogger().info(NON_COLORED_PRE_STRING + logMessage);
-            }
+            AACAdditionPro.getInstance().getLogger().log(error ?
+                                                         Level.SEVERE :
+                                                         Level.INFO, NON_COLORED_PRE_STRING, logMessage);
         }
 
         // Prevent errors on disable as of scheduling

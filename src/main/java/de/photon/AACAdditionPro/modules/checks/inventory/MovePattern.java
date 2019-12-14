@@ -108,7 +108,10 @@ class MovePattern extends PatternModule.PacketPattern
                         message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " moved while having an open inventory.";
                         return 3;
                     }
-                } catch (InterruptedException | ExecutionException e) {
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return 0;
+                } catch (ExecutionException e) {
                     return 0;
                 }
             }

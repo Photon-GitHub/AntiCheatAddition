@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.events;
 
 import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.modules.ModuleType;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -31,7 +32,7 @@ public class ClientControlEvent extends Event implements Cancellable
             case MC115:
                 return new ClientControlEvent(p, moduleType, async, message);
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -45,7 +46,7 @@ public class ClientControlEvent extends Event implements Cancellable
             case MC115:
                 return new ClientControlEvent(p, moduleType, async, moduleType.getViolationMessage());
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 

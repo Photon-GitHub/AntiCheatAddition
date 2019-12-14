@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.util.packetwrappers.server;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.AbstractPacket;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayPosition;
 import org.bukkit.Location;
@@ -44,7 +45,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
             case MC115:
                 return handle.getDoubles().read(0);
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -61,7 +62,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
                 handle.getDoubles().write(0, value);
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -76,7 +77,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
             case MC115:
                 return handle.getDoubles().read(1);
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -93,7 +94,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
                 handle.getDoubles().write(1, value);
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -108,7 +109,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
             case MC115:
                 return handle.getDoubles().read(2);
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -125,7 +126,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
                 handle.getDoubles().write(2, value);
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 }

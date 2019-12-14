@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.util.inventory;
 import com.google.common.collect.ImmutableList;
 import de.photon.AACAdditionPro.AACAdditionPro;
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -29,7 +30,7 @@ public final class InventoryUtils
                 return ImmutableList.of(player.getInventory().getItemInMainHand(),
                                         player.getInventory().getItemInOffHand());
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 

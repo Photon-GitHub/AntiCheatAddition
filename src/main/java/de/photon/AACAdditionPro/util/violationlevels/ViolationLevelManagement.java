@@ -6,6 +6,7 @@ import de.photon.AACAdditionPro.ServerVersion;
 import de.photon.AACAdditionPro.events.PlayerAdditionViolationEvent;
 import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.util.commands.CommandUtils;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -61,7 +62,7 @@ public class ViolationLevelManagement
                 thresholds = ImmutableList.sortedCopyOf(Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds"));
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 

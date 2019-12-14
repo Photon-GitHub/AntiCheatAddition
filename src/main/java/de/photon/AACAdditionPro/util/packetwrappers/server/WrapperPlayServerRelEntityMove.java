@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.base.Preconditions;
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 
 public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity implements IWrapperPlayServerRelEntityMove
 {
@@ -36,7 +37,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 // Integers are ok, even though wiki.vg says short
                 return handle.getIntegers().read(1) / 4096D;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -55,7 +56,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 handle.getIntegers().write(1, (int) (value * 4096));
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -71,7 +72,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 // Integers are ok, even though wiki.vg says short
                 return handle.getIntegers().read(2) / 4096D;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -90,7 +91,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 handle.getIntegers().write(2, (int) (value * 4096));
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -106,7 +107,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 // Integers are ok, even though wiki.vg says short
                 return handle.getIntegers().read(3) / 4096D;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -125,7 +126,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
                 handle.getIntegers().write(3, (int) (value * 4096));
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 }

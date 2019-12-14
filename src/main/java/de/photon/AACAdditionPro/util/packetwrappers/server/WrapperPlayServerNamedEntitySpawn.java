@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayEntity;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayPosition;
 import de.photon.AACAdditionPro.util.packetwrappers.MetadataPacket;
@@ -80,7 +81,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             case MC114:
                 return handle.getDoubles().read(0);
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -97,7 +98,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 handle.getDoubles().write(0, value);
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -112,7 +113,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             case MC115:
                 return handle.getDoubles().read(1);
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -129,7 +130,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 handle.getDoubles().write(1, value);
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -144,7 +145,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             case MC115:
                 return handle.getDoubles().read(2);
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -161,7 +162,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
                 handle.getDoubles().write(2, value);
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 

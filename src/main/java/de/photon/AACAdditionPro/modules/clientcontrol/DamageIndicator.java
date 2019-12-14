@@ -12,6 +12,7 @@ import de.photon.AACAdditionPro.modules.ModuleType;
 import de.photon.AACAdditionPro.modules.PacketListenerModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.UserManager;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EnderDragon;
@@ -87,7 +88,7 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
                     index = 8;
                     break;
                 default:
-                    throw new IllegalStateException("Unknown minecraft version");
+                    throw new UnknownMinecraftVersion();
             }
 
             if (!entity.getPassengers().isEmpty()) {

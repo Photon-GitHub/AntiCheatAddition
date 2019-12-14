@@ -5,6 +5,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 
 import java.util.List;
 
@@ -47,7 +48,7 @@ public abstract class MetadataPacket extends AbstractPacket
                     dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(classOfValue)), value);
                     break;
                 default:
-                    throw new IllegalStateException("Unknown minecraft version");
+                    throw new UnknownMinecraftVersion();
             }
 
             return this;
@@ -81,7 +82,7 @@ public abstract class MetadataPacket extends AbstractPacket
                 case MC115:
                     return this.setMetadata(7, Float.class, health);
                 default:
-                    throw new IllegalStateException("Unknown minecraft version");
+                    throw new UnknownMinecraftVersion();
             }
         }
 
@@ -102,7 +103,7 @@ public abstract class MetadataPacket extends AbstractPacket
                     // IN 1.12.2 THIS IS AN INTEGER!
                     return this.setMetadata(10, Integer.class, arrows);
                 default:
-                    throw new IllegalStateException("Unknown minecraft version");
+                    throw new UnknownMinecraftVersion();
             }
         }
 
@@ -123,7 +124,7 @@ public abstract class MetadataPacket extends AbstractPacket
                 case MC115:
                     return this.setMetadata(13, Byte.class, skinParts);
                 default:
-                    throw new IllegalStateException("Unknown minecraft version");
+                    throw new UnknownMinecraftVersion();
             }
         }
 

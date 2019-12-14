@@ -10,6 +10,7 @@ import de.photon.AACAdditionPro.modules.PatternModule;
 import de.photon.AACAdditionPro.user.User;
 import de.photon.AACAdditionPro.user.data.PositionData;
 import de.photon.AACAdditionPro.util.entity.EntityUtil;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.AACAdditionPro.util.mathematics.Hitbox;
 import de.photon.AACAdditionPro.util.packetwrappers.client.IWrapperPlayClientLook;
 import org.bukkit.Bukkit;
@@ -49,7 +50,7 @@ class EqualRotationPattern extends PatternModule.PacketPattern
                 CHANGED_HITBOX_MATERIALS = Collections.emptySet();
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 

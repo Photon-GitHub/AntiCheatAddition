@@ -9,6 +9,7 @@ import de.photon.AACAdditionPro.user.UserManager;
 import de.photon.AACAdditionPro.user.datawrappers.TowerBlockPlace;
 import de.photon.AACAdditionPro.util.VerboseSender;
 import de.photon.AACAdditionPro.util.entity.PotionUtil;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.AACAdditionPro.util.files.configs.LoadFromConfiguration;
 import de.photon.AACAdditionPro.util.inventory.InventoryUtils;
 import de.photon.AACAdditionPro.util.violationlevels.ViolationLevelManagement;
@@ -63,7 +64,7 @@ public class Tower implements ListenerModule, ViolationModule
                     levitation = PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.LEVITATION));
                     break;
                 default:
-                    throw new IllegalStateException("Unknown minecraft version");
+                    throw new UnknownMinecraftVersion();
             }
 
             // User must stand above the block (placed from above)1

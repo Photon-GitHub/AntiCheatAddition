@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.util.entity;
 
 
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -35,7 +36,7 @@ public final class PotionUtil
             case MC115:
                 return livingEntity.getPotionEffect(type);
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 

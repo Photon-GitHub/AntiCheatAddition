@@ -48,6 +48,7 @@ import us.myles.ViaVersion.api.ViaAPI;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class AACAdditionPro extends JavaPlugin
@@ -74,7 +75,7 @@ public class AACAdditionPro extends JavaPlugin
      */
     public static AACAdditionPro getInstance()
     {
-        return AACAdditionPro.getPlugin(AACAdditionPro.class);
+        return JavaPlugin.getPlugin(AACAdditionPro.class);
     }
 
     /**
@@ -198,8 +199,7 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //
             // ------------------------------------------------------------------------------------------------------ //
-            this.getLogger().severe("Loading failed:");
-            e.printStackTrace();
+            this.getLogger().log(Level.SEVERE, "Loading failed:\n", e);
         }
     }
 

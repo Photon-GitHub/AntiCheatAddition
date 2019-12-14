@@ -1,6 +1,7 @@
 package de.photon.AACAdditionPro.util.world;
 
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -93,7 +94,7 @@ public final class BlockUtils
                                                                  Material.LAVA));
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
 
         FREE_SPACE_CONTAINERS = Collections.unmodifiableSet(freeSpaceMaterials);
@@ -188,9 +189,11 @@ public final class BlockUtils
             case MC188:
                 return material != Material.BARRIER && material != Material.getMaterial("MOB_SPAWNER") && material.isOccluding();
             case MC113:
+            case MC114:
+            case MC115:
                 return material != Material.BARRIER && material != Material.SPAWNER && material.isOccluding();
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -223,6 +226,7 @@ public final class BlockUtils
                         // Make sure that the block above is not obstructed by cats
                         return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty();
                     case MC114:
+                    case MC115:
                         // Make sure that the block above is not obstructed by blocks
                         if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) ||
                               aboveBlock.isPassable()
@@ -234,7 +238,7 @@ public final class BlockUtils
                         // Make sure that the block above is not obstructed by cats
                         return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.CAT).isEmpty();
                     default:
-                        throw new IllegalStateException("Unknown minecraft version");
+                        throw new UnknownMinecraftVersion();
                 }
             }
             return true;

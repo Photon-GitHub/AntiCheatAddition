@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.util.packetwrappers;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 
 public abstract class WrapperPlayKeepAlive extends AbstractPacket
 {
@@ -32,7 +33,7 @@ public abstract class WrapperPlayKeepAlive extends AbstractPacket
             case MC115:
                 return handle.getLongs().read(0);
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -53,7 +54,7 @@ public abstract class WrapperPlayKeepAlive extends AbstractPacket
                 handle.getLongs().write(0, value);
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 }

@@ -5,6 +5,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.AbstractPacket;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayEntity;
 import org.bukkit.Material;
@@ -52,7 +53,7 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket implements 
                 handle.getItemSlots().write(0, value);
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 

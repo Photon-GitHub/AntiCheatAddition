@@ -2,6 +2,7 @@ package de.photon.AACAdditionPro.util.packetwrappers.server;
 
 import com.google.common.base.Preconditions;
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.AACAdditionPro.util.packetwrappers.IWrapperPlayOnGround;
 import org.bukkit.util.Vector;
 
@@ -21,7 +22,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 // Integers are ok, even though wiki.vg says short
                 return getHandle().getIntegers().read(1) / 4096D;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -42,7 +43,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 getHandle().getIntegers().write(1, (int) (value * 4096));
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -60,7 +61,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 // Integers are ok, even though wiki.vg says short
                 return getHandle().getIntegers().read(2) / 4096D;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -82,7 +83,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 getHandle().getIntegers().write(2, (int) (value * 4096));
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -100,7 +101,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 // Integers are ok, even though wiki.vg says short
                 return getHandle().getIntegers().read(3) / 4096D;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 
@@ -122,7 +123,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 getHandle().getIntegers().write(3, (int) (value * 4096));
                 break;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 

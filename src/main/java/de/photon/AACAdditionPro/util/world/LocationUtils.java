@@ -30,7 +30,7 @@ public final class LocationUtils
      */
     public static boolean areLocationsInRange(final Location firstLocation, final Location secondLocation, final double squaredDistance)
     {
-        return firstLocation.getWorld().getName().equals(secondLocation.getWorld().getName()) &&
+        return firstLocation.getWorld().getUID().equals(secondLocation.getWorld().getUID()) &&
                firstLocation.distanceSquared(secondLocation) <= squaredDistance;
     }
 }

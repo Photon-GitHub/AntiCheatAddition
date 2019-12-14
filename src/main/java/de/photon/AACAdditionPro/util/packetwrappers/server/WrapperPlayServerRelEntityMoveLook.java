@@ -3,6 +3,7 @@ package de.photon.AACAdditionPro.util.packetwrappers.server;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import de.photon.AACAdditionPro.ServerVersion;
+import de.photon.AACAdditionPro.util.exceptions.UnknownMinecraftVersion;
 
 public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEntityMove implements IWrapperPlayServerLook
 {
@@ -30,7 +31,7 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
             case MC115:
                 return 0;
             default:
-                throw new IllegalStateException("Unknown minecraft version");
+                throw new UnknownMinecraftVersion();
         }
     }
 

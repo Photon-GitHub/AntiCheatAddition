@@ -10,6 +10,8 @@ import org.bukkit.util.Vector;
 
 public final class VectorUtils
 {
+    private VectorUtils() {}
+
     // The camera offset for 3rd person
     private static final double THIRD_PERSON_OFFSET = 5D;
 
@@ -25,24 +27,19 @@ public final class VectorUtils
     public static double getDistanceToFirstIntersectionWithBlock(final Location start, final Vector direction)
     {
         final int length = (int) Math.floor(direction.length());
-        if (length >= 1)
-        {
-            try
-            {
+        if (length >= 1) {
+            try {
                 final BlockIterator blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
                 Block block;
-                while (blockIterator.hasNext())
-                {
+                while (blockIterator.hasNext()) {
                     block = blockIterator.next();
                     // Account for a Spigot bug: BARRIER and MOB_SPAWNER are not occluding blocks
-                    if (BlockUtils.isReallyOccluding(block.getType()))
-                    {
+                    if (BlockUtils.isReallyOccluding(block.getType())) {
                         // Use the middle location of the Block instead of the simple location.
                         return block.getLocation().clone().add(0.5, 0.5, 0.5).distance(start);
                     }
                 }
-            } catch (IllegalStateException exception)
-            {
+            } catch (IllegalStateException exception) {
                 // Just in case the start block could not be found for some reason or a chunk is loaded async.
                 return 0;
             }
@@ -90,11 +87,9 @@ public final class VectorUtils
                 VectorUtils.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[2])
         };
 
-        for (int i = 0; i < intersections.length; i++)
-        {
+        for (int i = 0; i < intersections.length; i++) {
             // There is an intersection
-            if (intersections[i] != 0)
-            {
+            if (intersections[i] != 0) {
                 // Now we need to make sure the vectors are not inside of blocks as the method above returns.
                 // The 0.05 factor makes sure that we are outside of the block and not on the edge.
                 intersections[i] -= 0.05 +

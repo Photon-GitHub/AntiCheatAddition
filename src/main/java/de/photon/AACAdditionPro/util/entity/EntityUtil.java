@@ -17,9 +17,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public final class EntityUtil
 {
+    private EntityUtil() {}
+
     /**
      * Determines if a {@link LivingEntity} is gliding (i.e. flying with an elytra)
      */
@@ -120,7 +123,7 @@ public final class EntityUtil
      *
      * @return true if the {@link Function} stopped the iteration by returning true, false otherwise.
      */
-    public static boolean iterateThroughHitbox(final Location location, final Hitbox hitbox, final Function<Block, Boolean> function)
+    public static boolean iterateThroughHitbox(final Location location, final Hitbox hitbox, final Predicate<Block> function)
     {
         final AxisAlignedBB axisAlignedBB = hitbox.constructBoundingBox(location);
         int xMin = (int) axisAlignedBB.getMinX();
@@ -135,7 +138,7 @@ public final class EntityUtil
         for (; xMin <= xMax; xMin++) {
             for (; yMin <= yMax; yMin++) {
                 for (; zMin <= zMax; zMin++) {
-                    if (function.apply(location.getWorld().getBlockAt(xMin, yMin, zMin))) {
+                    if (function.test(location.getWorld().getBlockAt(xMin, yMin, zMin))) {
                         return true;
                     }
                 }

@@ -12,6 +12,8 @@ import org.bukkit.potion.PotionEffectType;
  */
 public final class PotionUtil
 {
+    private PotionUtil() {}
+
     /**
      * Gets a {@link PotionEffect} of a {@link LivingEntity}.
      *

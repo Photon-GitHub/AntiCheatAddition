@@ -5,6 +5,8 @@ import org.bukkit.util.Vector;
 
 public final class RotationUtil
 {
+    private RotationUtil() {}
+
     private static final float FIX_CONVERT_FACTOR = 256.0F / 360.0F;
     private static final float FIX_INVERSE_CONVERT_FACTOR = 360.0F / 256.0F;
 
@@ -55,8 +57,7 @@ public final class RotationUtil
     {
         if (input >= minMax) {
             input -= step;
-        }
-        else if (input < -minMax) {
+        } else if (input < -minMax) {
             input += step;
         }
 

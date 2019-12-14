@@ -13,9 +13,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Level;
 
 public final class ConfigUtils
 {
+    private ConfigUtils() {}
+
     /**
      * This will process the {@link LoadFromConfiguration} annotation to load all config values.
      *
@@ -56,27 +59,21 @@ public final class ConfigUtils
                 // Numbers
                 else if (type == double.class || type == Double.class) {
                     field.setDouble(object, AACAdditionPro.getInstance().getConfig().getDouble(path));
-                }
-                else if (type == int.class || type == Integer.class) {
+                } else if (type == int.class || type == Integer.class) {
                     field.setInt(object, AACAdditionPro.getInstance().getConfig().getInt(path));
-                }
-                else if (type == long.class || type == Long.class) {
+                } else if (type == long.class || type == Long.class) {
                     field.setLong(object, AACAdditionPro.getInstance().getConfig().getLong(path));
-                }
-                else if (type == String.class) {
+                } else if (type == String.class) {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getString(path));
                 }
                 // Special stuff
                 else if (type == ItemStack.class) {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getItemStack(path));
-                }
-                else if (type == Color.class) {
+                } else if (type == Color.class) {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getColor(path));
-                }
-                else if (type == OfflinePlayer.class) {
+                } else if (type == OfflinePlayer.class) {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getOfflinePlayer(path));
-                }
-                else if (type == Vector.class) {
+                } else if (type == Vector.class) {
                     field.set(object, AACAdditionPro.getInstance().getConfig().getVector(path));
                 }
                 // Lists
@@ -86,8 +83,7 @@ public final class ConfigUtils
                         field.set(object, ConfigUtils.loadStringOrStringList(path));
 
                         // Unknown type
-                    }
-                    else {
+                    } else {
                         field.set(object, AACAdditionPro.getInstance().getConfig().getList(path));
                     }
 
@@ -97,7 +93,7 @@ public final class ConfigUtils
                     field.set(object, AACAdditionPro.getInstance().getConfig().get(path));
                 }
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to load config value due to unknown type.", e);
             }
         }
     }

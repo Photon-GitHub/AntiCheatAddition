@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 
 public final class StringUtils
 {
+    private StringUtils() {}
+
     /**
      * Constructs a new {@link String} from a byte array according to the {@link StandardCharsets#UTF_8}.
      * This is used in various plugin messages.

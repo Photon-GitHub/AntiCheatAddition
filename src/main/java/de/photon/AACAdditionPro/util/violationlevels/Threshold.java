@@ -3,10 +3,9 @@ package de.photon.AACAdditionPro.util.violationlevels;
 import de.photon.AACAdditionPro.util.files.configs.ConfigUtils;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 class Threshold implements Comparable<Threshold>
 {
@@ -36,16 +35,12 @@ class Threshold implements Comparable<Threshold>
      */
     public static List<Threshold> loadThresholds(final String thresholdSectionPath)
     {
-        final Set<String> keys = Objects.requireNonNull(ConfigUtils.loadKeys(thresholdSectionPath), "Severe loading error: Keys are null when loading: " + thresholdSectionPath);
-
-        final List<Threshold> builder = new ArrayList<>();
-
-        for (final String key : keys)
-        {
-            //Put the command into thresholds
-            builder.add(new Threshold(Integer.parseInt(key), ConfigUtils.loadStringOrStringList(thresholdSectionPath + "." + key)));
-        }
-
-        return builder;
+        // Make sure that the keys exist.
+        return Objects.requireNonNull(ConfigUtils.loadKeys(thresholdSectionPath), "Severe loading error: Keys are null when loading: " + thresholdSectionPath)
+                      .stream()
+                      // Create a new Threshold for every key.
+                      .map(key -> new Threshold(Integer.parseInt(key), ConfigUtils.loadStringOrStringList(thresholdSectionPath + '.' + key)))
+                      // Collect the keys.
+                      .collect(Collectors.toList());
     }
 }

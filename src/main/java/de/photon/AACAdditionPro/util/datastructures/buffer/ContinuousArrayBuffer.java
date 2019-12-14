@@ -147,8 +147,7 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
             public T next()
             {
                 currentIndex = decrementIndexSafely(currentIndex);
-                T returnedObject = (T) array[currentIndex];
-                return returnedObject;
+                return (T) array[currentIndex];
             }
         };
     }

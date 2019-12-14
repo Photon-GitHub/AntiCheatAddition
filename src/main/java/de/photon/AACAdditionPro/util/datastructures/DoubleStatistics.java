@@ -20,7 +20,7 @@ public class DoubleStatistics implements DoubleConsumer
      * {@code Double.POSITIVE_INFINITY} min, {@code Double.NEGATIVE_INFINITY}
      * max and zero average.
      */
-    public DoubleStatistics() { }
+    public DoubleStatistics() {}
 
     /**
      * Records another value into the summary information.

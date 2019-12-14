@@ -2,6 +2,8 @@ package de.photon.AACAdditionPro.util.mathematics;
 
 public final class MathUtils
 {
+    private MathUtils() {}
+
     /**
      * Simple method to know if a number is close to another number
      *

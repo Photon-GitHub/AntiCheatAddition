@@ -79,7 +79,7 @@ public class MessageChannel extends MinecraftKey
     /**
      * Registers the outgoing channel for a certain {@link PluginMessageListener}
      */
-    public void registerOutgoingChannel(final PluginMessageListener listener)
+    public void registerOutgoingChannel()
     {
         Bukkit.getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
     }
@@ -87,7 +87,7 @@ public class MessageChannel extends MinecraftKey
     /**
      * Unregisters the outgoing channel for a certain {@link PluginMessageListener}
      */
-    public void unregisterOutgoingChannel(final PluginMessageListener listener)
+    public void unregisterOutgoingChannel()
     {
         Bukkit.getMessenger().unregisterOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
     }

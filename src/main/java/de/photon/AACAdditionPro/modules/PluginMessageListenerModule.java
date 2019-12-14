@@ -19,7 +19,7 @@ public interface PluginMessageListenerModule extends Module, PluginMessageListen
     static void enable(final PluginMessageListenerModule module)
     {
         module.getIncomingChannels().forEach(messageChannel -> messageChannel.registerIncomingChannel(module));
-        module.getOutgoingChannels().forEach(messageChannel -> messageChannel.registerOutgoingChannel(module));
+        module.getOutgoingChannels().forEach(messageChannel -> messageChannel.registerOutgoingChannel());
     }
 
     /**
@@ -28,7 +28,7 @@ public interface PluginMessageListenerModule extends Module, PluginMessageListen
     static void disable(final PluginMessageListenerModule module)
     {
         module.getIncomingChannels().forEach(messageChannel -> messageChannel.unregisterIncomingChannel(module));
-        module.getOutgoingChannels().forEach(messageChannel -> messageChannel.unregisterOutgoingChannel(module));
+        module.getOutgoingChannels().forEach(messageChannel -> messageChannel.unregisterOutgoingChannel());
     }
 
     // Don't make this method necessary to override (e.g. for sending only modules)

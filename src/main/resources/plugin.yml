@@ -7,7 +7,7 @@ website: https://www.spigotmc.org/resources/aacadditionpro.33590/
 
 depend: [ProtocolLib]
 softdepend: [LabyModAPI, ViaVersion]
-main: de.photon.AACAdditionPro.AACAdditionPro
+main: de.photon.aacadditionpro.AACAdditionPro
 
 commands:
   aacadditionpro:

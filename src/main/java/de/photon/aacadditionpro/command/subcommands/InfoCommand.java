@@ -1,14 +1,18 @@
 package de.photon.aacadditionpro.command.subcommands;
 
+import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.command.InternalCommand;
+import de.photon.aacadditionpro.command.TabCompleteSupplier;
 import de.photon.aacadditionpro.modules.ModuleType;
+import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
@@ -18,7 +22,10 @@ public class InfoCommand extends InternalCommand
     {
         super("info",
               InternalPermission.INFO,
-              (byte) 1);
+              (byte) 1,
+              ImmutableList.of("Display all violation levels of a player."),
+              Collections.emptySet(),
+              TabCompleteSupplier.builder().allPlayers());
     }
 
     @Override
@@ -28,7 +35,7 @@ public class InfoCommand extends InternalCommand
         final Player player = AACAdditionPro.getInstance().getServer().getPlayer(arguments.peek());
 
         if (player == null) {
-            sendPlayerNotFoundMessage(sender);
+            ChatMessage.sendPlayerNotFoundMessage(sender);
             return;
         }
 
@@ -41,27 +48,14 @@ public class InfoCommand extends InternalCommand
             }
         }
 
-        sender.sendMessage(PREFIX + ChatColor.GOLD + player.getName());
+        ChatMessage.sendInfoMessage(sender, ChatColor.GOLD, player.getName());
 
         if (messages.isEmpty()) {
-            sender.sendMessage(PREFIX + ChatColor.GOLD + "The player has no violations.");
-        }
-        else {
+            ChatMessage.sendInfoMessage(sender, ChatColor.GOLD, "The player has no violations.");
+        } else {
             messages.sort(ModuleVl::compareTo);
-            messages.forEach((moduleVl) -> sender.sendMessage(ChatColor.GOLD + moduleVl.getDisplayMessage()));
+            messages.forEach(moduleVl -> ChatMessage.sendInfoMessage(sender, ChatColor.GOLD, moduleVl.getDisplayMessage()));
         }
-    }
-
-    @Override
-    protected String[] getCommandHelp()
-    {
-        return new String[]{"Display all violation levels of a player."};
-    }
-
-    @Override
-    protected List<String> getTabPossibilities()
-    {
-        return getPlayerNameTabs();
     }
 
     private static class ModuleVl implements Comparable<ModuleVl>

@@ -1,27 +1,29 @@
 package de.photon.aacadditionpro.command;
 
 import de.photon.aacadditionpro.InternalPermission;
-import org.bukkit.ChatColor;
+import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 public abstract class InternalPlayerCommand extends InternalCommand
 {
-    public InternalPlayerCommand(String name, InternalPermission permission, InternalCommand... childCommands)
+    public InternalPlayerCommand(String name, InternalPermission permission, List<String> commandHelp, Set<InternalCommand> childCommands, TabCompleteSupplier.Builder tabCompleteSupplier)
     {
-        super(name, permission, childCommands);
+        super(name, permission, commandHelp, childCommands, tabCompleteSupplier);
     }
 
-    public InternalPlayerCommand(String name, InternalPermission permission, byte minArguments, InternalCommand... childCommands)
+    public InternalPlayerCommand(String name, InternalPermission permission, int minArguments, List<String> commandHelp, Set<InternalCommand> childCommands, TabCompleteSupplier.Builder tabCompleteSupplier)
     {
-        super(name, permission, minArguments, childCommands);
+        super(name, permission, minArguments, commandHelp, childCommands, tabCompleteSupplier);
     }
 
-    public InternalPlayerCommand(String name, InternalPermission permission, byte minArguments, byte maxArguments, InternalCommand... childCommands)
+    public InternalPlayerCommand(String name, InternalPermission permission, int minArguments, int maxArguments, List<String> commandHelp, Set<InternalCommand> childCommands, TabCompleteSupplier.Builder tabCompleteSupplier)
     {
-        super(name, permission, minArguments, maxArguments, childCommands);
+        super(name, permission, minArguments, maxArguments, commandHelp, childCommands, tabCompleteSupplier);
     }
 
     @Override
@@ -29,7 +31,7 @@ public abstract class InternalPlayerCommand extends InternalCommand
     {
         // Only players
         if (!(sender instanceof Player)) {
-            sender.sendMessage(PREFIX + ChatColor.RED + "Only a player can use this command.");
+            ChatMessage.sendErrorMessage(sender, "Only a player can use this command.");
             return;
         }
 

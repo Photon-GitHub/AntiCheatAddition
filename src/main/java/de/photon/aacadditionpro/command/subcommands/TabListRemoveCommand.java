@@ -2,17 +2,20 @@ package de.photon.aacadditionpro.command.subcommands;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.command.InternalCommand;
+import de.photon.aacadditionpro.command.TabCompleteSupplier;
 import de.photon.aacadditionpro.util.fakeentity.displayinformation.DisplayInformation;
+import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import de.photon.aacadditionpro.util.server.ServerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Queue;
 
 public class TabListRemoveCommand extends InternalCommand
@@ -22,7 +25,12 @@ public class TabListRemoveCommand extends InternalCommand
         super("tablistremove",
               InternalPermission.TABLISTREMOVE,
               (byte) 2,
-              (byte) 3);
+              (byte) 3,
+              ImmutableList.of("Removes a player from the tablist of a player and readds him after a certain time.",
+                               "Without a provided timeframe the command will add the player back to the tablist immediately.",
+                               "Syntax: /aacadditionpro tablistremove <player whose tablist is affected> <player that will be removed> [<ticks>]"),
+              Collections.emptySet(),
+              TabCompleteSupplier.builder().allPlayers());
     }
 
     @Override
@@ -38,14 +46,14 @@ public class TabListRemoveCommand extends InternalCommand
             players[i] = AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove());
 
             if (players[i] == null) {
-                InternalCommand.sendPlayerNotFoundMessage(sender);
+                ChatMessage.sendPlayerNotFoundMessage(sender);
                 return;
             }
         }
 
         // This prevents the crashing of the player.
         if (players[0].getUniqueId().equals(players[1].getUniqueId())) {
-            sender.sendMessage(PREFIX + ChatColor.RED + "The affected player must not be the removed player.");
+            ChatMessage.sendErrorMessage(sender, "The affected player must not be the removed player.");
             return;
         }
 
@@ -55,8 +63,7 @@ public class TabListRemoveCommand extends InternalCommand
         updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, players[0], players[1]);
         if (ticks == 0) {
             updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, players[0], players[1]);
-        }
-        else {
+        } else {
             Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, players[0], players[1]), ticks);
         }
     }
@@ -69,21 +76,5 @@ public class TabListRemoveCommand extends InternalCommand
                                                    EnumWrappers.NativeGameMode.fromBukkit(modifiedPlayer.getGameMode()),
                                                    null,
                                                    affectedPlayer);
-    }
-
-    @Override
-    protected String[] getCommandHelp()
-    {
-        return new String[]{
-                "Removes a player from the tablist of a player and readds him after a certain time.",
-                "Without a provided timeframe the command will add the player back to the tablist immediately.",
-                "Syntax: /aacadditionpro tablistremove <player whose tablist is affected> <player that will be removed> [<ticks>]"
-        };
-    }
-
-    @Override
-    protected List<String> getTabPossibilities()
-    {
-        return getPlayerNameTabs();
     }
 }

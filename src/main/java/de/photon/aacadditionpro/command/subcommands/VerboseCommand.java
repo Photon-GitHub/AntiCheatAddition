@@ -3,24 +3,25 @@ package de.photon.aacadditionpro.command.subcommands;
 import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.command.InternalPlayerCommand;
+import de.photon.aacadditionpro.command.TabCompleteSupplier;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import lombok.Getter;
+import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Queue;
 
 public class VerboseCommand extends InternalPlayerCommand
 {
-    @Getter
-    private final List<String> tabPossibilities = new ImmutableList.Builder<String>().add("on", "off").addAll(childTabs).build();
-
     public VerboseCommand()
     {
-        super("verbose", InternalPermission.VERBOSE, (byte) 0, (byte) 1);
+        super("verbose", InternalPermission.VERBOSE, (byte) 0, (byte) 1,
+              ImmutableList.of("Used to toggle the verbose messages on and off for oneself."),
+              Collections.emptySet(),
+              TabCompleteSupplier.builder().constants("on", "off"));
     }
 
     @Override
@@ -28,16 +29,13 @@ public class VerboseCommand extends InternalPlayerCommand
     {
         final User user = UserManager.getUser(sender.getUniqueId());
 
-        if (user == null)
-        {
+        if (user == null) {
             return;
         }
 
         boolean toggleTo = !UserManager.isVerbose(user);
-        if (arguments.peek() != null)
-        {
-            switch (arguments.peek().toLowerCase())
-            {
+        if (arguments.peek() != null) {
+            switch (arguments.peek().toLowerCase()) {
                 case "on":
                     toggleTo = true;
                     break;
@@ -62,15 +60,8 @@ public class VerboseCommand extends InternalPlayerCommand
      */
     private static void sendToggleMessage(final CommandSender sender, final boolean enabled)
     {
-        sender.sendMessage(PREFIX + ChatColor.GOLD + "Verbose " + (enabled ?
-                                                                   (ChatColor.DARK_GREEN + "enabled") :
-                                                                   (ChatColor.RED + "disabled")
-        ));
-    }
-
-    @Override
-    protected String[] getCommandHelp()
-    {
-        return new String[]{"Used to toggle the verbose messages on and off for oneself."};
+        ChatMessage.sendInfoMessage(sender, ChatColor.GOLD, "Verbose " + (enabled ?
+                                                                          (ChatColor.DARK_GREEN + "enabled") :
+                                                                          (ChatColor.RED + "disabled")));
     }
 }

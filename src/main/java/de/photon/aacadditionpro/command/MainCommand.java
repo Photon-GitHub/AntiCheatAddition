@@ -1,5 +1,7 @@
 package de.photon.aacadditionpro.command;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.command.subcommands.InfoCommand;
 import de.photon.aacadditionpro.command.subcommands.TabListRemoveCommand;
@@ -13,9 +15,9 @@ import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Queue;
 
 public class MainCommand extends InternalCommand implements CommandExecutor, TabCompleter
@@ -27,9 +29,12 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     {
         super("aacadditionpro",
               null,
-              new InfoCommand(),
-              new TabListRemoveCommand(),
-              new VerboseCommand());
+              // CommandHelp
+              ImmutableList.of("The main command of AACAdditionPro"),
+              ImmutableSet.of(new InfoCommand(),
+                              new TabListRemoveCommand(),
+                              new VerboseCommand()),
+              TabCompleteSupplier.builder());
     }
 
     public String getMainCommandName()
@@ -52,7 +57,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
         InternalCommand potentialChildCommand;
         int currentArgumentIndex = 0;
         while (currentArgumentIndex < args.length) {
-            potentialChildCommand = currentCommand.getChildCommandByNameIgnoreCase(args[currentArgumentIndex]);
+            potentialChildCommand = currentCommand.childCommands.get(args[currentArgumentIndex].toLowerCase(Locale.ENGLISH));
 
             if (potentialChildCommand == null) {
                 // Stop looping once no child command was found.
@@ -61,36 +66,19 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
 
             currentCommand = potentialChildCommand;
             currentArgumentIndex++;
-
         }
 
-        final List<String> tabs = currentCommand.getTabPossibilities();
 
-        // No tab filtering as the player has not started typing
-        if (currentArgumentIndex == args.length) {
-            return tabs;
-        }
-
-        // If arguments are still left try to choose the correct tab possibilities from them.
-        final List<String> tabPossibilities = new ArrayList<>(tabs.size());
-        for (String tabPossibility : tabs) {
-            if (tabPossibility.startsWith(args[currentArgumentIndex])) {
-                tabPossibilities.add(tabPossibility);
-            }
-        }
-        return tabPossibilities;
-
+        return currentArgumentIndex == args.length ?
+               // No tab filtering as the player has not started typing
+               currentCommand.getTabCompleteSupplier().getTabPossibilities() :
+               // Player has started typing.
+               currentCommand.getTabCompleteSupplier().getTabPossibilities(args[currentArgumentIndex]);
     }
 
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
         sender.sendMessage(ChatColor.GOLD + AACAdditionPro.getInstance().getName() + " " + ChatColor.DARK_GRAY + AACAdditionPro.getInstance().getDescription().getVersion());
-    }
-
-    @Override
-    protected String[] getCommandHelp()
-    {
-        return new String[]{"The main command of AACAdditionPro"};
     }
 }

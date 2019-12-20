@@ -37,7 +37,6 @@ public class AutoFish implements ListenerModule, PatternModule, ViolationModule,
         }
 
         vlManager.flag(event.getPlayer(),
-                       false,
                        this.consistencyPattern.apply(user, event) + this.inhumanReactionPattern.apply(user, event),
                        cancel_vl,
                        () -> event.setCancelled(true), () -> {});

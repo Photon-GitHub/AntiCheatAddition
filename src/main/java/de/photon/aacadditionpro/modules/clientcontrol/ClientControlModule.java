@@ -27,7 +27,7 @@ abstract class ClientControlModule implements Module
     void executeCommands(final Player player)
     {
         // Call the event
-        final ClientControlEvent clientControlEvent = ClientControlEvent.build(player, this.getModuleType(), false);
+        final ClientControlEvent clientControlEvent = ClientControlEvent.build(player, this.getModuleType());
 
         Bukkit.getPluginManager().callEvent(clientControlEvent);
 

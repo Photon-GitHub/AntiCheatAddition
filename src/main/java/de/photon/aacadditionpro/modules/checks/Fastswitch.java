@@ -55,7 +55,6 @@ public class Fastswitch extends PacketAdapter implements PacketListenerModule, V
                 // The ping is valid and in the borders that are set in the config
                 if (max_ping < 0 || ServerUtil.getPing(user.getPlayer()) < max_ping) {
                     vlManager.flag(user.getPlayer(),
-                                   true,
                                    cancel_vl,
                                    () -> event.setCancelled(true),
                                    () -> InventoryUtils.syncUpdateInventory(user.getPlayer()));

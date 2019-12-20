@@ -4,6 +4,8 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
 
+import java.util.logging.Level;
+
 public interface Module
 {
     /**
@@ -59,7 +61,7 @@ public interface Module
             sendNotice(module, module.getConfigString() + " has been enabled.");
         } catch (final Exception e) {
             VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be enabled.", true, true);
-            e.printStackTrace();
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, module.getConfigString() + " could not be enabled. ", e);
         }
     }
 
@@ -95,7 +97,7 @@ public interface Module
             sendNotice(module, module.getConfigString() + " has been disabled.");
         } catch (final Exception e) {
             VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be disabled.", true, true);
-            e.printStackTrace();
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, module.getConfigString() + " could not be disabled. ", e);
         }
     }
 

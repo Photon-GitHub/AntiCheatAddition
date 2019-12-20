@@ -4,6 +4,7 @@ import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -22,29 +23,29 @@ public class ClientControlEvent extends Event implements Cancellable
     private final String message;
     private boolean cancelled = false;
 
-    public static ClientControlEvent build(final Player p, final ModuleType moduleType, boolean async, final String message)
+    public static ClientControlEvent build(final Player p, final ModuleType moduleType, final String message)
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
             case MC113:
-                return new ClientControlEvent(p, moduleType, async, message, true);
+                return new ClientControlEvent(p, moduleType, message, true);
             case MC114:
             case MC115:
-                return new ClientControlEvent(p, moduleType, async, message);
+                return new ClientControlEvent(p, moduleType, message);
             default:
                 throw new UnknownMinecraftVersion();
         }
     }
 
-    public static ClientControlEvent build(final Player p, final ModuleType moduleType, boolean async)
+    public static ClientControlEvent build(final Player p, final ModuleType moduleType)
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
             case MC113:
-                return new ClientControlEvent(p, moduleType, async, moduleType.getViolationMessage(), true);
+                return new ClientControlEvent(p, moduleType, moduleType.getViolationMessage(), true);
             case MC114:
             case MC115:
-                return new ClientControlEvent(p, moduleType, async, moduleType.getViolationMessage());
+                return new ClientControlEvent(p, moduleType, moduleType.getViolationMessage());
             default:
                 throw new UnknownMinecraftVersion();
         }
@@ -53,9 +54,9 @@ public class ClientControlEvent extends Event implements Cancellable
     /**
      * Constructor for 1.14 and onwards.
      */
-    protected ClientControlEvent(final Player p, final ModuleType moduleType, boolean async, final String message)
+    protected ClientControlEvent(final Player p, final ModuleType moduleType, final String message)
     {
-        super(async);
+        super(!Bukkit.isPrimaryThread());
         this.player = p;
         this.moduleType = moduleType;
         this.message = message;
@@ -64,7 +65,7 @@ public class ClientControlEvent extends Event implements Cancellable
     /**
      * Dummy constructor for legacy minecraft versions before 1.14.
      */
-    protected ClientControlEvent(final Player p, final ModuleType moduleType, boolean async, final String message, boolean legacy)
+    protected ClientControlEvent(final Player p, final ModuleType moduleType, final String message, boolean legacy)
     {
         super();
         this.player = p;

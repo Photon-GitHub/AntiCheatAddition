@@ -93,7 +93,7 @@ public class Tower implements ListenerModule, ViolationModule
                     final int vlToAdd = (int) Math.min(1 + Math.floor((results[0] - results[1]) / 16), 100);
 
                     // Violation-Level handling
-                    vlManager.flag(event.getPlayer(), false, vlToAdd, cancel_vl, () ->
+                    vlManager.flag(event.getPlayer(), vlToAdd, cancel_vl, () ->
                     {
                         event.setCancelled(true);
                         user.getTowerData().updateTimeStamp(0);

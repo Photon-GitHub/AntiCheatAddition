@@ -42,9 +42,9 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
      * @param specialCode a {@link Runnable} to define special code such as critical_vl
      */
 
-    public void flagTeam(final List<Player> players, final boolean async, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
+    public void flagTeam(final List<Player> players, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
     {
-        this.flagTeam(players, async, 1, cancel_vl, onCancel, specialCode);
+        this.flagTeam(players, 1, cancel_vl, onCancel, specialCode);
     }
 
     /**
@@ -57,13 +57,13 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
      * @param specialCode a {@link Runnable} to define special code such as critical_vl
      */
 
-    public void flagTeam(final List<Player> players, final boolean async, final int vl_increase, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
+    public void flagTeam(final List<Player> players, final int vl_increase, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
     {
         final List<UUID> uuids = new ArrayList<>(players.size());
 
         for (final Player player : players) {
             uuids.add(player.getUniqueId());
-            this.flag(player, async, vl_increase, cancel_vl, onCancel, specialCode);
+            this.flag(player, vl_increase, cancel_vl, onCancel, specialCode);
         }
 
         punishTeam(players, this.getTeamVl(uuids));

@@ -54,7 +54,7 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
         synchronized (user.getKeepAliveData().getKeepAlives()) {
             user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId()));
         }
-        vlManager.flag(user.getPlayer(), true, keepAliveIgnoredPattern.apply(user, event), -1, () -> {}, () -> {});
+        vlManager.flag(user.getPlayer(), keepAliveIgnoredPattern.apply(user, event), -1, () -> {}, () -> {});
     }
 
     @Override
@@ -92,10 +92,10 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
             keepAlivePacketData.hasRegisteredResponse())
         {
             VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
-            vlManager.flag(user.getPlayer(), true, 20, -1, () -> {}, () -> {});
+            vlManager.flag(user.getPlayer(), 20, -1, () -> {}, () -> {});
         } else {
             keepAlivePacketData.registerResponse();
-            vlManager.flag(user.getPlayer(), true, keepAliveOffsetPattern.apply(user, offset), -1, () -> {}, () -> {});
+            vlManager.flag(user.getPlayer(), keepAliveOffsetPattern.apply(user, offset), -1, () -> {}, () -> {});
         }
     }
 

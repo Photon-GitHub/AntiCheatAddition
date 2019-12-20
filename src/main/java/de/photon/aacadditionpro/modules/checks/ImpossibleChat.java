@@ -37,7 +37,7 @@ public class ImpossibleChat implements ListenerModule, ViolationModule
              user.getInventoryData().notRecentlyOpened(1000)
             ))
         {
-            vlManager.flag(user.getPlayer(), true, cancel_vl, () -> event.setCancelled(true), () -> {});
+            vlManager.flag(user.getPlayer(), cancel_vl, () -> event.setCancelled(true), () -> {});
         }
     }
 

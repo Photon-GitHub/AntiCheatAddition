@@ -57,8 +57,8 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
         }
 
 
-        vlManager.flag(user.getPlayer(), true, movePattern.apply(user, event), movePattern.getCancelVl(), () -> movePattern.cancelAction(user, event), () -> {});
-        vlManager.flag(user.getPlayer(), true, rotationPattern.apply(user, event), -1, () -> {}, () -> {});
+        vlManager.flag(user.getPlayer(), movePattern.apply(user, event), movePattern.getCancelVl(), () -> movePattern.cancelAction(user, event), () -> {});
+        vlManager.flag(user.getPlayer(), rotationPattern.apply(user, event), -1, () -> {}, () -> {});
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -72,7 +72,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
                 return;
             }
 
-            vlManager.flag(user.getPlayer(), false, hitPattern.apply(user, event), hitPattern.getCancelVl(), () -> hitPattern.cancelAction(user, event), () -> {});
+            vlManager.flag(user.getPlayer(), hitPattern.apply(user, event), hitPattern.getCancelVl(), () -> hitPattern.cancelAction(user, event), () -> {});
         }
     }
 
@@ -86,8 +86,8 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
             return;
         }
 
-        vlManager.flag(user.getPlayer(), false, sprintingPattern.apply(user, event), sprintingPattern.getCancelVl(), () -> sprintingPattern.cancelAction(user, event), () -> {});
-        vlManager.flag(user.getPlayer(), false, multiInteractionPattern.apply(user, event), multiInteractionPattern.getCancelVl(), () -> multiInteractionPattern.cancelAction(user, event), () -> {});
+        vlManager.flag(user.getPlayer(), sprintingPattern.apply(user, event), sprintingPattern.getCancelVl(), () -> sprintingPattern.cancelAction(user, event), () -> {});
+        vlManager.flag(user.getPlayer(), multiInteractionPattern.apply(user, event), multiInteractionPattern.getCancelVl(), () -> multiInteractionPattern.cancelAction(user, event), () -> {});
     }
 
     @Override

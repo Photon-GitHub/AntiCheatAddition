@@ -110,7 +110,7 @@ public class Teaming implements ListenerModule, ViolationModule
                                 }
 
                                 // Flag the team
-                                vlManager.flagTeam(playersOfTeam, false, -1, () -> {}, () -> {});
+                                vlManager.flagTeam(playersOfTeam, -1, () -> {}, () -> {});
                             }
                         }
                     }

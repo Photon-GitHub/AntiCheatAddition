@@ -20,29 +20,29 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
 
     private final int vl;
 
-    public static PlayerAdditionViolationEvent build(final Player p, final ModuleType moduleType, final boolean async, final int i, final String message)
+    public static PlayerAdditionViolationEvent build(final Player p, final ModuleType moduleType, final int i, final String message)
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
             case MC113:
-                return new PlayerAdditionViolationEvent(p, moduleType, async, i, message, true);
+                return new PlayerAdditionViolationEvent(p, moduleType, i, message, true);
             case MC114:
             case MC115:
-                return new PlayerAdditionViolationEvent(p, moduleType, async, i, message);
+                return new PlayerAdditionViolationEvent(p, moduleType, i, message);
             default:
                 throw new UnknownMinecraftVersion();
         }
     }
 
-    public static PlayerAdditionViolationEvent build(final Player p, final ModuleType moduleType, final boolean async, final int i)
+    public static PlayerAdditionViolationEvent build(final Player p, final ModuleType moduleType, final int i)
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
             case MC113:
-                return new PlayerAdditionViolationEvent(p, moduleType, async, i, moduleType.getViolationMessage(), true);
+                return new PlayerAdditionViolationEvent(p, moduleType, i, moduleType.getViolationMessage(), true);
             case MC114:
             case MC115:
-                return new PlayerAdditionViolationEvent(p, moduleType, async, i, moduleType.getViolationMessage());
+                return new PlayerAdditionViolationEvent(p, moduleType, i, moduleType.getViolationMessage());
             default:
                 throw new UnknownMinecraftVersion();
         }
@@ -51,18 +51,18 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
     /**
      * Constructor for 1.14 and onwards.
      */
-    public PlayerAdditionViolationEvent(final Player p, final ModuleType moduleType, final boolean async, final int i, final String message)
+    public PlayerAdditionViolationEvent(final Player p, final ModuleType moduleType, final int i, final String message)
     {
-        super(p, moduleType, async, message);
+        super(p, moduleType, message);
         this.vl = i;
     }
 
     /**
      * Dummy constructor for legacy minecraft versions before 1.14.
      */
-    public PlayerAdditionViolationEvent(final Player p, final ModuleType moduleType, final boolean async, final int i, final String message, final boolean legacy)
+    public PlayerAdditionViolationEvent(final Player p, final ModuleType moduleType, final int i, final String message, final boolean legacy)
     {
-        super(p, moduleType, async, message, legacy);
+        super(p, moduleType, message, legacy);
         this.vl = i;
     }
 

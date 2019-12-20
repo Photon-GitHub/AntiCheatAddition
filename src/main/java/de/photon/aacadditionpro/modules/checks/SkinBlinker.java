@@ -43,7 +43,7 @@ public class SkinBlinker extends PacketAdapter implements PacketListenerModule, 
 
                 // updateSkinComponents returns true if the skin has changed.
                 if (user.getSkinData().updateSkinComponents(newSkinComponents)) {
-                    vlManager.flag(user.getPlayer(), true, -1, () -> {}, () -> {});
+                    vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
                 }
             }
         } catch (UnsupportedOperationException ignore) {

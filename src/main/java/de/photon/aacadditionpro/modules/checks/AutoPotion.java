@@ -73,7 +73,7 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
                 user.getAutoPotionData().recentlyUpdated(0, time_offset))
             {
                 // Flag
-                vlManager.flag(user.getPlayer(), false, cancel_vl, () -> {
+                vlManager.flag(user.getPlayer(), cancel_vl, () -> {
                     // Enable timeout when cancel_vl is crossed
                     user.getAutoPotionData().updateTimeStamp(1);
                 }, () -> user.getAutoPotionData().nullifyTimeStamp(0));

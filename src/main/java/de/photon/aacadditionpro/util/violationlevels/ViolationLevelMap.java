@@ -34,7 +34,7 @@ class ViolationLevelMap extends ConcurrentHashMap<UUID, Integer> implements List
     }
 
     @EventHandler
-    public void on(final PlayerQuitEvent event)
+    public void onQuit(final PlayerQuitEvent event)
     {
         this.remove(event.getPlayer().getUniqueId());
     }

@@ -40,7 +40,7 @@ public abstract class PlayerInformationModifier
             AACAdditionPro.getInstance().registerListener(new Listener()
             {
                 @EventHandler
-                public void on(final EntityDeathEvent event)
+                public void onEntityDeath(final EntityDeathEvent event)
                 {
                     Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
                         removeEntity(event.getEntity());
@@ -49,7 +49,7 @@ public abstract class PlayerInformationModifier
                 }
 
                 @EventHandler
-                public void on(final ChunkUnloadEvent event)
+                public void onChunkUnload(final ChunkUnloadEvent event)
                 {
                     // Cache entities for performance reasons so the server doesn't need to load them again when the
                     // task is executed.
@@ -63,7 +63,7 @@ public abstract class PlayerInformationModifier
                 }
 
                 @EventHandler
-                public void on(final PlayerQuitEvent event)
+                public void onQuit(final PlayerQuitEvent event)
                 {
                     removePlayer(event.getPlayer());
                 }
@@ -211,21 +211,4 @@ public abstract class PlayerInformationModifier
      * @param entity   - the entity to hide.
      */
     public abstract void modifyInformation(Player observer, Entity entity);
-
-// --Commented out by Inspection START (28.02.2017 21:25):
-//    /**
-//     * Determine if the given entity has been hidden from an observer.
-//     * <p>
-//     * Note that the entity may very well be occluded or out of range from the perspective
-//     * of the observer. This method simply checks if an entity has been completely hidden
-//     * for that observer.
-//     * @param observer - the observer.
-//     * @param entity - the entity that may be hidden.
-//     * @return TRUE if the player may see the entity, FALSE if the entity has been hidden.
-//     */
-//    public final boolean isInformationUnModified(Player observer, Entity entity) {
-//        validate(observer, entity);
-//        return isInformationUnmodified(observer, entity.getEntityId());
-//    }
-// --Commented out by Inspection STOP (28.02.2017 21:25)
 }

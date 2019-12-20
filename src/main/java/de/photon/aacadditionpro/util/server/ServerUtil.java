@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.logging.Level;
 
 /**
  * This util provides methods to get information from the server that is usually hidden.
@@ -31,7 +32,7 @@ public final class ServerUtil
         try {
             return craftPlayer.getClass().getDeclaredField("ping").getInt(craftPlayer);
         } catch (IllegalAccessException | NoSuchFieldException e) {
-            e.printStackTrace();
+            AACAdditionPro.getInstance().getLogger().log(Level.WARNING, "Failed to retrieve ping of a player: ", e);
             return 0;
         }
     }

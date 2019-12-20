@@ -79,6 +79,6 @@ public final class AACAdditionProApi
      */
     public static void setBrandHiderBrand(final String string)
     {
-        BrandHider.setBRAND(string);
+        BrandHider.setBrand(string);
     }
 }

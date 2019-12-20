@@ -2,9 +2,9 @@ package de.photon.aacadditionpro.command.subcommands;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.InternalPermission;
+import de.photon.aacadditionpro.command.CommandAttributes;
 import de.photon.aacadditionpro.command.InternalCommand;
 import de.photon.aacadditionpro.command.TabCompleteSupplier;
 import de.photon.aacadditionpro.util.fakeentity.displayinformation.DisplayInformation;
@@ -24,11 +24,13 @@ public class TabListRemoveCommand extends InternalCommand
     {
         super("tablistremove",
               InternalPermission.TABLISTREMOVE,
-              (byte) 2,
-              (byte) 3,
-              ImmutableList.of("Removes a player from the tablist of a player and readds him after a certain time.",
-                               "Without a provided timeframe the command will add the player back to the tablist immediately.",
-                               "Syntax: /aacadditionpro tablistremove <player whose tablist is affected> <player that will be removed> [<ticks>]"),
+              CommandAttributes.builder()
+                               .minArguments(2)
+                               .maxArguments(3)
+                               .setCommandHelp("Removes a player from the tablist of a player and readds him after a certain time.",
+                                               "Without a provided timeframe the command will add the player back to the tablist immediately.",
+                                               "Syntax: /aacadditionpro tablistremove <player whose tablist is affected> <player that will be removed> [<ticks>]")
+                               .build(),
               Collections.emptySet(),
               TabCompleteSupplier.builder().allPlayers());
     }

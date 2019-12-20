@@ -5,25 +5,14 @@ import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
 public abstract class InternalPlayerCommand extends InternalCommand
 {
-    public InternalPlayerCommand(String name, InternalPermission permission, List<String> commandHelp, Set<InternalCommand> childCommands, TabCompleteSupplier.Builder tabCompleteSupplier)
+    public InternalPlayerCommand(String name, InternalPermission permission, CommandAttributes commandAttributes, Set<InternalCommand> childCommands, TabCompleteSupplier.Builder tabCompleteSupplier)
     {
-        super(name, permission, commandHelp, childCommands, tabCompleteSupplier);
-    }
-
-    public InternalPlayerCommand(String name, InternalPermission permission, int minArguments, List<String> commandHelp, Set<InternalCommand> childCommands, TabCompleteSupplier.Builder tabCompleteSupplier)
-    {
-        super(name, permission, minArguments, commandHelp, childCommands, tabCompleteSupplier);
-    }
-
-    public InternalPlayerCommand(String name, InternalPermission permission, int minArguments, int maxArguments, List<String> commandHelp, Set<InternalCommand> childCommands, TabCompleteSupplier.Builder tabCompleteSupplier)
-    {
-        super(name, permission, minArguments, maxArguments, commandHelp, childCommands, tabCompleteSupplier);
+        super(name, permission, commandAttributes, childCommands, tabCompleteSupplier);
     }
 
     @Override

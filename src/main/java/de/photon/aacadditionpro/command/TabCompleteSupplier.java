@@ -1,6 +1,8 @@
 package de.photon.aacadditionpro.command;
 
 import com.google.common.collect.ImmutableList;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -12,14 +14,10 @@ import java.util.function.Supplier;
 /**
  * Creates a TabCompleter which computes the tab possibilities of a command.
  */
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TabCompleteSupplier
 {
     private final List<Supplier<List<String>>> tabPossibilities;
-
-    private TabCompleteSupplier(List<Supplier<List<String>>> tabPossibilities)
-    {
-        this.tabPossibilities = tabPossibilities;
-    }
 
     /**
      * Calculates the currently possible tabs while accounting for the partialArgument.

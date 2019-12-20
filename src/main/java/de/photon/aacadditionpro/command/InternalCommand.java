@@ -2,13 +2,11 @@ package de.photon.aacadditionpro.command;
 
 import com.google.common.collect.ImmutableMap;
 import de.photon.aacadditionpro.InternalPermission;
-import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -17,31 +15,17 @@ public abstract class InternalCommand
 {
     protected final String name;
     private final InternalPermission permission;
-    private final int minArguments;
-    private final int maxArguments;
 
-    private final List<String> commandHelp;
+    private final CommandAttributes commandAttributes;
     final Map<String, InternalCommand> childCommands;
     @Getter
     private final TabCompleteSupplier tabCompleteSupplier;
 
-    public InternalCommand(String name, InternalPermission permission, List<String> commandHelp, Set<InternalCommand> childCommands, TabCompleteSupplier.Builder tabCompleteSupplier)
-    {
-        this(name, permission, (byte) 0, commandHelp, childCommands, tabCompleteSupplier);
-    }
-
-    public InternalCommand(String name, InternalPermission permission, int minArguments, List<String> commandHelp, Set<InternalCommand> childCommands, TabCompleteSupplier.Builder tabCompleteSupplier)
-    {
-        this(name, permission, minArguments, Byte.MAX_VALUE, commandHelp, childCommands, tabCompleteSupplier);
-    }
-
-    public InternalCommand(String name, InternalPermission permission, int minArguments, int maxArguments, List<String> commandHelp, Set<InternalCommand> childCommands, TabCompleteSupplier.Builder tabCompleteSupplier)
+    public InternalCommand(String name, InternalPermission permission, CommandAttributes commandAttributes, Set<InternalCommand> childCommands, TabCompleteSupplier.Builder tabCompleteSupplier)
     {
         this.name = name;
         this.permission = permission;
-        this.minArguments = minArguments;
-        this.maxArguments = maxArguments;
-        this.commandHelp = commandHelp;
+        this.commandAttributes = commandAttributes;
 
         final ImmutableMap.Builder<String, InternalCommand> builder = ImmutableMap.builder();
 
@@ -89,8 +73,8 @@ public abstract class InternalCommand
         // ------- Normal command procedure or childCommands is null or no fitting child commands were found. ------- //
 
         // Correct amount of arguments
-        if (!MathUtils.inRange(minArguments, maxArguments, arguments.size())) {
-            ChatMessage.sendErrorMessage(sender, "Wrong amount of arguments: " + arguments.size() + " expected: " + minArguments + " to " + maxArguments);
+        if (!this.commandAttributes.argumentsInRange(arguments.size())) {
+            ChatMessage.sendErrorMessage(sender, "Wrong amount of arguments: " + arguments.size() + " expected: " + this.commandAttributes.getMinArguments() + " to " + this.commandAttributes.getMaxArguments());
             return;
         }
 
@@ -104,7 +88,7 @@ public abstract class InternalCommand
 
     private void sendCommandHelp(CommandSender sender)
     {
-        for (final String help : this.commandHelp) {
+        for (final String help : this.commandAttributes.getCommandHelp()) {
             ChatMessage.sendInfoMessage(sender, ChatColor.GOLD, help);
         }
     }

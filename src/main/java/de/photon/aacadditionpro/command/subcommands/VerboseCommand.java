@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.command.subcommands;
 
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.InternalPermission;
+import de.photon.aacadditionpro.command.CommandAttributes;
 import de.photon.aacadditionpro.command.InternalPlayerCommand;
 import de.photon.aacadditionpro.command.TabCompleteSupplier;
 import de.photon.aacadditionpro.user.User;
@@ -18,8 +18,12 @@ public class VerboseCommand extends InternalPlayerCommand
 {
     public VerboseCommand()
     {
-        super("verbose", InternalPermission.VERBOSE, (byte) 0, (byte) 1,
-              ImmutableList.of("Used to toggle the verbose messages on and off for oneself."),
+        super("verbose", InternalPermission.VERBOSE,
+              CommandAttributes.builder()
+                               .minArguments(0)
+                               .maxArguments(1)
+                               .addCommandHelpLine("Used to toggle the verbose messages on and off for oneself.")
+                               .build(),
               Collections.emptySet(),
               TabCompleteSupplier.builder().constants("on", "off"));
     }

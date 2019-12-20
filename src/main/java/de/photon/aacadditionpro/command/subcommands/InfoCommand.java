@@ -1,8 +1,8 @@
 package de.photon.aacadditionpro.command.subcommands;
 
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.InternalPermission;
+import de.photon.aacadditionpro.command.CommandAttributes;
 import de.photon.aacadditionpro.command.InternalCommand;
 import de.photon.aacadditionpro.command.TabCompleteSupplier;
 import de.photon.aacadditionpro.modules.ModuleType;
@@ -22,8 +22,10 @@ public class InfoCommand extends InternalCommand
     {
         super("info",
               InternalPermission.INFO,
-              (byte) 1,
-              ImmutableList.of("Display all violation levels of a player."),
+              CommandAttributes.builder()
+                               .exactArguments(1)
+                               .addCommandHelpLine("Display all violation levels of a player.")
+                               .build(),
               Collections.emptySet(),
               TabCompleteSupplier.builder().allPlayers());
     }

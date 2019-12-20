@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.command;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.command.subcommands.InfoCommand;
@@ -29,8 +28,9 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     {
         super("aacadditionpro",
               null,
-              // CommandHelp
-              ImmutableList.of("The main command of AACAdditionPro"),
+              CommandAttributes.builder()
+                               .addCommandHelpLine("The main command of AACAdditionPro")
+                               .build(),
               ImmutableSet.of(new InfoCommand(),
                               new TabListRemoveCommand(),
                               new VerboseCommand()),

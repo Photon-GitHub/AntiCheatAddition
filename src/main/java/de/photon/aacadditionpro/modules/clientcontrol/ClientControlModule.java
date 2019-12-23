@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.util.commands.CommandUtils;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
 import de.photon.aacadditionpro.util.general.StringUtils;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -26,16 +25,15 @@ abstract class ClientControlModule implements Module
      */
     void executeCommands(final Player player)
     {
-        // Call the event
-        final ClientControlEvent clientControlEvent = ClientControlEvent.build(player, this.getModuleType());
-
-        Bukkit.getPluginManager().callEvent(clientControlEvent);
-
-        // The event must not be cancelled
-        if (!clientControlEvent.isCancelled()) {
-            // Execution of the commands
-            this.commandsOnDetection.forEach(rawCommand -> CommandUtils.executeCommandWithPlaceholders(rawCommand, player, this.getModuleType()));
-        }
+        ClientControlEvent.build(player, this.getModuleType())
+                          // Call the event
+                          .call()
+                          // Execution of the commands if the event is not cancelled.
+                          .runIfUncancelled(event -> {
+                              for (String rawCommand : this.commandsOnDetection) {
+                                  CommandUtils.executeCommandWithPlaceholders(rawCommand, player, this.getModuleType());
+                              }
+                          });
     }
 
     /**

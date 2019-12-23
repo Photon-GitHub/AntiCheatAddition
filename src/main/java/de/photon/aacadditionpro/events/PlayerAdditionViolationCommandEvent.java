@@ -8,6 +8,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Consumer;
+
 @SuppressWarnings("unused")
 public class PlayerAdditionViolationCommandEvent extends PlayerEvent implements Cancellable
 {
@@ -63,6 +65,19 @@ public class PlayerAdditionViolationCommandEvent extends PlayerEvent implements 
         return handlers;
     }
 
+    public PlayerAdditionViolationCommandEvent call()
+    {
+        Bukkit.getPluginManager().callEvent(this);
+        return this;
+    }
+
+    public void runIfUncancelled(Consumer<PlayerAdditionViolationCommandEvent> consumer)
+    {
+        if (!this.isCancelled()) {
+            consumer.accept(this);
+        }
+    }
+
     /**
      * This creates and immediately calls a {@link PlayerAdditionViolationCommandEvent}.
      *
@@ -72,8 +87,6 @@ public class PlayerAdditionViolationCommandEvent extends PlayerEvent implements 
      */
     public static PlayerAdditionViolationCommandEvent createAndCallCommandEvent(final Player player, final String command, final ModuleType moduleType)
     {
-        final PlayerAdditionViolationCommandEvent commandEvent = new PlayerAdditionViolationCommandEvent(player, command, moduleType);
-        Bukkit.getPluginManager().callEvent(commandEvent);
-        return commandEvent;
+        return new PlayerAdditionViolationCommandEvent(player, command, moduleType).call();
     }
 }

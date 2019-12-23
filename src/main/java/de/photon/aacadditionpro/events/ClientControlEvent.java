@@ -11,6 +11,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Consumer;
+
 @SuppressWarnings("unused")
 public class ClientControlEvent extends Event implements Cancellable
 {
@@ -77,6 +79,19 @@ public class ClientControlEvent extends Event implements Cancellable
     public static HandlerList getHandlerList()
     {
         return handlers;
+    }
+
+    public ClientControlEvent call()
+    {
+        Bukkit.getPluginManager().callEvent(this);
+        return this;
+    }
+
+    public void runIfUncancelled(Consumer<ClientControlEvent> consumer)
+    {
+        if (!this.isCancelled()) {
+            consumer.accept(this);
+        }
     }
 
     /**

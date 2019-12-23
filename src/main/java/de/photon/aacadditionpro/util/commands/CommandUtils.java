@@ -20,11 +20,8 @@ public final class CommandUtils
      */
     public static void executeCommandWithPlaceholders(final String command, final Player player, final ModuleType moduleType)
     {
-        final PlayerAdditionViolationCommandEvent commandEvent = PlayerAdditionViolationCommandEvent.createAndCallCommandEvent(player, Placeholders.replacePlaceholders(command, player), moduleType);
-
-        if (!commandEvent.isCancelled()) {
-            executeCommand(commandEvent.getCommand());
-        }
+        PlayerAdditionViolationCommandEvent.createAndCallCommandEvent(player, Placeholders.replacePlaceholders(command, player), moduleType)
+                                           .runIfUncancelled(commandEvent -> executeCommand(commandEvent.getCommand()));
     }
 
     /**

@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.files.configs;
 
+import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
 import org.bukkit.Color;
@@ -104,7 +105,7 @@ public final class ConfigUtils
      *
      * @param path the path which should be loaded
      *
-     * @return a {@link List} of {@link String}s with the path as entries.
+     * @return an {@link ImmutableList} of {@link String}s with the path as entries.
      */
     public static List<String> loadStringOrStringList(final String path)
     {
@@ -117,8 +118,8 @@ public final class ConfigUtils
 
             // No-command indicator or null
             return possibleCommand == null || "{}".equals(possibleCommand) ?
-                   Collections.emptyList() :
-                   Collections.singletonList(possibleCommand);
+                   ImmutableList.of() :
+                   ImmutableList.of(possibleCommand);
         }
 
         // Input is not empty
@@ -127,7 +128,7 @@ public final class ConfigUtils
             return Collections.emptyList();
         }
 
-        return input;
+        return ImmutableList.copyOf(input);
     }
 
     /**

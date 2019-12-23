@@ -7,7 +7,6 @@ import de.photon.aacadditionpro.events.PlayerAdditionViolationEvent;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.util.commands.CommandUtils;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
@@ -109,11 +108,8 @@ public class ViolationLevelManagement
             return;
         }
 
-        // Only create the event if it should be called.
-        final PlayerAdditionViolationEvent playerAdditionViolationEvent = PlayerAdditionViolationEvent.build(player, this.moduleType, this.getVL(player.getUniqueId()) + vlIncrease, message);
-
-        // Call the event
-        Bukkit.getServer().getPluginManager().callEvent(playerAdditionViolationEvent);
+        // Create and call the event.
+        final PlayerAdditionViolationEvent playerAdditionViolationEvent = PlayerAdditionViolationEvent.build(player, this.moduleType, this.getVL(player.getUniqueId()) + vlIncrease, message).call();
 
         if (!playerAdditionViolationEvent.isCancelled()) {
             this.addVL(player, vlIncrease);

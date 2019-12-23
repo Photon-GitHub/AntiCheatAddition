@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.events;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -46,6 +47,13 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
             default:
                 throw new UnknownMinecraftVersion();
         }
+    }
+
+    @Override
+    public PlayerAdditionViolationEvent call()
+    {
+        Bukkit.getPluginManager().callEvent(this);
+        return this;
     }
 
     /**

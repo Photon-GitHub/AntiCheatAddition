@@ -30,11 +30,11 @@ public class Teaming implements ListenerModule, ViolationModule
 
     // Config
     @LoadFromConfiguration(configPath = ".proximity_range")
-    private double proximity_range_squared;
+    private double proximityRangeSquared;
     @LoadFromConfiguration(configPath = ".no_pvp_time")
-    private int no_pvp_time;
+    private int noPvpTime;
     @LoadFromConfiguration(configPath = ".allowed_size")
-    private int allowed_size;
+    private int allowedSize;
 
     // Region handling
     private final Set<World> enabledWorlds = new HashSet<>(3);
@@ -46,7 +46,7 @@ public class Teaming implements ListenerModule, ViolationModule
         final long period = (AACAdditionPro.getInstance().getConfig().getInt(this.getModuleType().getConfigString() + ".delay") * 20) / 1000;
 
         // Square it
-        proximity_range_squared *= proximity_range_squared;
+        proximityRangeSquared *= proximityRangeSquared;
 
         // Enabled worlds init
         for (final String nameOfWorld : ConfigUtils.loadStringOrStringList(this.getModuleType().getConfigString() + ".enabled_worlds")) {
@@ -76,9 +76,9 @@ public class Teaming implements ListenerModule, ViolationModule
                             if (!User.isUserInvalid(user, this.getModuleType()) &&
                                 // Correct gamemodes
                                 user.getPlayer().getGameMode() != GameMode.CREATIVE &&
-                                user.getPlayer().getGameMode() != GameMode.CREATIVE &&
+                                user.getPlayer().getGameMode() != GameMode.SPECTATOR &&
                                 // Not engaged in pvp
-                                !user.getTeamingData().recentlyUpdated(0, no_pvp_time) &&
+                                !user.getTeamingData().recentlyUpdated(0, noPvpTime) &&
                                 // Not in a bypassed region
                                 !this.isPlayerRegionalBypassed(user.getPlayer()))
                             {
@@ -95,14 +95,14 @@ public class Teaming implements ListenerModule, ViolationModule
                             teamingList.add(currentUser);
 
                             for (final User possibleTeamUser : usersOfWorld) {
-                                if (LocationUtils.areLocationsInRange(currentUser.getPlayer().getLocation(), possibleTeamUser.getPlayer().getLocation(), proximity_range_squared)) {
+                                if (LocationUtils.areLocationsInRange(currentUser.getPlayer().getLocation(), possibleTeamUser.getPlayer().getLocation(), proximityRangeSquared)) {
                                     usersOfWorld.remove(possibleTeamUser);
                                     teamingList.add(possibleTeamUser);
                                 }
                             }
 
                             // Team is too big
-                            if (teamingList.size() > this.allowed_size) {
+                            if (teamingList.size() > this.allowedSize) {
                                 final List<Player> playersOfTeam = new ArrayList<>(teamingList.size());
 
                                 for (final User teamUser : teamingList) {

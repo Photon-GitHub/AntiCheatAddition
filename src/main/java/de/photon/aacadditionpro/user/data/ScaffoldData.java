@@ -94,7 +94,7 @@ public class ScaffoldData extends TimeData
                         delay = DELAY_NORMAL;
 
                         if (!moonwalk && last.isSneaked() && current.isSneaked()) {
-                            delay += SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2 * current.getYaw())));
+                            delay += SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2D * current.getYaw())));
                         }
                     } else {
                         delay = DELAY_DIAGONAL;

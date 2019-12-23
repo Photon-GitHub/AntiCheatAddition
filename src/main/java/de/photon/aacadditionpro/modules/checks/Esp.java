@@ -43,11 +43,8 @@ import java.util.logging.Level;
 public class Esp implements ListenerModule
 {
     // The auto-config-data
-    private static int DEFAULT_TRACKING_RANGE;
-    private Map<UUID, Integer> playerTrackingRanges;
+    private int defaultTrackingRange;
     private boolean hideAfterRenderDistance = true;
-
-    private int updateMillis;
 
     // The real MAX_FOV is 110 (quake pro), which results in 150° according to tests.
     // 150° + 15° (compensation) = 165°
@@ -67,7 +64,7 @@ public class Esp implements ListenerModule
     {
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
         final int updateTicks = AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".update_ticks");
-        updateMillis = 50 * updateTicks;
+        final int updateMillis = 50 * updateTicks;
 
         final ConfigurationSection worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
 
@@ -88,7 +85,7 @@ public class Esp implements ListenerModule
             }
 
             if ("default".equals(worldName)) {
-                DEFAULT_TRACKING_RANGE = currentPlayerTrackingRange;
+                defaultTrackingRange = currentPlayerTrackingRange;
             } else {
                 final World correspondingWorld = Bukkit.getWorld(worldName);
 
@@ -98,7 +95,7 @@ public class Esp implements ListenerModule
             }
         }
 
-        this.playerTrackingRanges = rangeBuilder.build();
+        final Map<UUID, Integer> playerTrackingRanges = rangeBuilder.build();
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
@@ -139,7 +136,7 @@ public class Esp implements ListenerModule
                                         return;
                                     }
 
-                                    if (pairDistanceSquared > this.playerTrackingRanges.getOrDefault(observingUser.getPlayer().getWorld().getUID(), DEFAULT_TRACKING_RANGE)) {
+                                    if (pairDistanceSquared > playerTrackingRanges.getOrDefault(observingUser.getPlayer().getWorld().getUID(), defaultTrackingRange)) {
                                         updatePairHideMode(observingUser, watched, hideAfterRenderDistance ?
                                                                                    HideMode.FULL :
                                                                                    HideMode.NONE);
@@ -206,7 +203,6 @@ public class Esp implements ListenerModule
 
         // ----------------------------------- Calculation ---------------------------------- //
 
-        //canSee = observer.hasLineOfSight(watched);
         final Vector[] cameraVectors = VectorUtils.getCameraVectors(observer);
 
         // Get the Vectors of the hitbox to check.

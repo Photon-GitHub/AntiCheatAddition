@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class WorldDownloaderControl extends ClientControlModule implements PluginMessageListenerModule
 {
@@ -39,7 +40,7 @@ public class WorldDownloaderControl extends ClientControlModule implements Plugi
 
                 player.sendPluginMessage(AACAdditionPro.getInstance(), WDL_CONTROL_CHANNEL.getChannel(), bytes.toByteArray());
             } catch (IOException e) {
-                e.printStackTrace();
+                AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Could not write the WorldDownloader packet.", e);
             }
         }
 

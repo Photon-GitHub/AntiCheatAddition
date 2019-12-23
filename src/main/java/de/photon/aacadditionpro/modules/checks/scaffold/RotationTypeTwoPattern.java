@@ -10,7 +10,7 @@ import de.photon.aacadditionpro.user.User;
  */
 class RotationTypeTwoPattern extends PatternModule.Pattern<User, Float>
 {
-    private final static double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
+    private static final double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
 
     @Override
     protected int process(User user, Float angleInformation)

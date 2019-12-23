@@ -47,20 +47,19 @@ public class VelocityChangeData extends TimeData
 
             final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            if (user != null) {
-                // The player wasn't hurt and got velocity for that.
-                if (user.getPlayer().getNoDamageTicks() == 0 &&
-                    // Recent teleports can cause bugs
-                    !user.getTeleportData().recentlyUpdated(0, 1000))
-                {
-                    final IWrapperPlayPosition position = event::getPacket;
+            // The player wasn't hurt and got velocity for that.
+            if (user != null
+                && user.getPlayer().getNoDamageTicks() == 0
+                // Recent teleports can cause bugs
+                && !user.getTeleportData().recentlyUpdated(0, 1000))
+            {
+                final IWrapperPlayPosition position = event::getPacket;
 
-                    final boolean updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
+                final boolean updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
 
-                    if (updatedPositiveVelocity != user.getVelocityChangeData().positiveVelocity) {
-                        user.getVelocityChangeData().positiveVelocity = updatedPositiveVelocity;
-                        user.getVelocityChangeData().updateTimeStamp(0);
-                    }
+                if (updatedPositiveVelocity != user.getVelocityChangeData().positiveVelocity) {
+                    user.getVelocityChangeData().positiveVelocity = updatedPositiveVelocity;
+                    user.getVelocityChangeData().updateTimeStamp(0);
                 }
             }
         }

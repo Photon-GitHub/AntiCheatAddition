@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 class InhumanReactionPattern extends PatternModule.Pattern<User, PlayerFishEvent>
 {
     @LoadFromConfiguration(configPath = ".fishing_milliseconds")
-    private int fishing_milliseconds;
+    private int fishingMilliseconds;
 
     @Override
     protected int process(User user, PlayerFishEvent event)
@@ -17,14 +17,14 @@ class InhumanReactionPattern extends PatternModule.Pattern<User, PlayerFishEvent
         switch (event.getState()) {
             case CAUGHT_FISH:
                 // Too few time has passed since the fish bit.
-                if (user.getFishingData().recentlyUpdated(0, fishing_milliseconds)) {
+                if (user.getFishingData().recentlyUpdated(0, fishingMilliseconds)) {
 
                     // Get the correct amount of vl.
                     // vl 6 is the maximum.
                     // Points = {{0, 1}, {8, 0}}
                     // Function: 1 - 0.125x
                     for (byte b = 5; b > 0; b--) {
-                        if (user.getFishingData().recentlyUpdated(0, (long) (1 - 0.125 * b) * fishing_milliseconds)) {
+                        if (user.getFishingData().recentlyUpdated(0, (long) (1 - 0.125 * b) * fishingMilliseconds)) {
                             // Flag for vl = b + 1 because there would otherwise be a "0-vl"
                             message = "AutoFish-Verbose | Player " + user.getPlayer().getName() + " failed inhuman reaction";
                             return b + 1;

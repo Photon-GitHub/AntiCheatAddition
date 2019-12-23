@@ -23,7 +23,7 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancel_vl;
+    private int cancelVl;
 
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
@@ -35,25 +35,25 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
      * so that the check is NOT failed
      */
     @LoadFromConfiguration(configPath = ".time_offset")
-    private int time_offset;
+    private int timeOffset;
 
     /**
      * How much offset is allowed when comparing the previous angle to the angle of the back-rotation to continue the check
      */
     @LoadFromConfiguration(configPath = ".angle_offset")
-    private double angle_offset;
+    private double angleOffset;
 
     /**
      * The initial pitch-difference, measured in degrees, to start the check
      */
     @LoadFromConfiguration(configPath = ".angle_start_threshold")
-    private double angle_start_threshold;
+    private double angleStartThreshold;
 
     /**
      * The minimum angle that is counted as looking down
      */
     @LoadFromConfiguration(configPath = ".look_down_angle")
-    private double look_down_angle;
+    private double lookDownAngle;
 
     @EventHandler
     public void on(final PlayerMoveEvent event)
@@ -67,24 +67,23 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
 
         if (user.getAutoPotionData().alreadyThrown) {
             // The pitch and yaw values are nearly the same as before
-            if (MathUtils.roughlyEquals(event.getTo().getPitch(), user.getAutoPotionData().lastSuddenPitch, angle_offset) &&
-                MathUtils.roughlyEquals(event.getTo().getYaw(), user.getAutoPotionData().lastSuddenYaw, angle_offset) &&
+            if (MathUtils.roughlyEquals(event.getTo().getPitch(), user.getAutoPotionData().lastSuddenPitch, angleOffset) &&
+                MathUtils.roughlyEquals(event.getTo().getYaw(), user.getAutoPotionData().lastSuddenYaw, angleOffset) &&
                 // Happened in a short time frame
-                user.getAutoPotionData().recentlyUpdated(0, time_offset))
+                user.getAutoPotionData().recentlyUpdated(0, timeOffset))
             {
                 // Flag
-                vlManager.flag(user.getPlayer(), cancel_vl, () -> {
-                    // Enable timeout when cancel_vl is crossed
-                    user.getAutoPotionData().updateTimeStamp(1);
-                }, () -> user.getAutoPotionData().nullifyTimeStamp(0));
+                vlManager.flag(user.getPlayer(), cancelVl, () ->
+                        // Enable timeout when cancel_vl is crossed
+                        user.getAutoPotionData().updateTimeStamp(1), () -> user.getAutoPotionData().nullifyTimeStamp(0));
             }
         } else {
             // The angle_start_threshold is reached
-            if (event.getTo().getPitch() - event.getFrom().getPitch() > this.angle_start_threshold &&
+            if (event.getTo().getPitch() - event.getFrom().getPitch() > this.angleStartThreshold &&
                 // The previous pitch is not representing looking down
-                event.getFrom().getPitch() < look_down_angle &&
+                event.getFrom().getPitch() < lookDownAngle &&
                 // The pitch is beyond the lookdown angle
-                event.getTo().getPitch() >= look_down_angle)
+                event.getTo().getPitch() >= lookDownAngle)
             {
                 user.getAutoPotionData().lastSuddenPitch = event.getFrom().getPitch();
                 user.getAutoPotionData().lastSuddenYaw = event.getFrom().getYaw();
@@ -118,7 +117,7 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
             event.getItem() != null &&
             event.getMaterial() == Material.SPLASH_POTION &&
             // The last sudden movement was not long ago
-            user.getAutoPotionData().recentlyUpdated(0, time_offset))
+            user.getAutoPotionData().recentlyUpdated(0, timeOffset))
         {
             user.getAutoPotionData().alreadyThrown = true;
             // Here the timestamp is used to contain the data of the last splash

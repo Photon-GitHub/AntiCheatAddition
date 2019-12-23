@@ -26,7 +26,7 @@ public class Tower implements ListenerModule, ViolationModule
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancel_vl;
+    private int cancelVl;
 
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
@@ -93,7 +93,7 @@ public class Tower implements ListenerModule, ViolationModule
                     final int vlToAdd = (int) Math.min(1 + Math.floor((results[0] - results[1]) / 16), 100);
 
                     // Violation-Level handling
-                    vlManager.flag(event.getPlayer(), vlToAdd, cancel_vl, () ->
+                    vlManager.flag(event.getPlayer(), vlToAdd, cancelVl, () ->
                     {
                         event.setCancelled(true);
                         user.getTowerData().updateTimeStamp(0);

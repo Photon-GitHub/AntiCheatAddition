@@ -28,9 +28,9 @@ class MovePattern extends PatternModule.PacketPattern
     private int cancelVl;
 
     @LoadFromConfiguration(configPath = ".min_tps")
-    private double min_tps;
+    private double minTps;
     @LoadFromConfiguration(configPath = ".lenience_millis")
-    private int lenience_millis;
+    private int lenienceMillis;
 
     protected MovePattern()
     {
@@ -74,7 +74,7 @@ class MovePattern extends PatternModule.PacketPattern
                                                          Hitbox.SNEAKING_PLAYER :
                                                          Hitbox.PLAYER) &&
             // Auto-Disable if TPS are too low
-            ServerUtil.getTPS() > min_tps)
+            ServerUtil.getTPS() > minTps)
         {
             final boolean positiveVelocity = knownPosition.getY() < moveTo.getY();
 
@@ -98,7 +98,7 @@ class MovePattern extends PatternModule.PacketPattern
             if (knownPosition.getY() == moveTo.getY() &&
                 // 230 is a little compensation for the "breaking" when sprinting previously (value has been established
                 // by local tests).
-                user.getInventoryData().notRecentlyOpened(230L + lenience_millis))
+                user.getInventoryData().notRecentlyOpened(230L + lenienceMillis))
             {
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player

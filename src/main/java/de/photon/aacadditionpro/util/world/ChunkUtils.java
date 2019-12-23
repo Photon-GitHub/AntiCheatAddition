@@ -5,6 +5,8 @@ import org.bukkit.World;
 
 public final class ChunkUtils
 {
+    private ChunkUtils() {}
+
     /**
      * Checks if the chunk of a certain {@link Location} is loaded.
      *

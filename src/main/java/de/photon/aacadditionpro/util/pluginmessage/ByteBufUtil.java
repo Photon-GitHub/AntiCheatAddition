@@ -1,9 +1,9 @@
 package de.photon.aacadditionpro.util.pluginmessage;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +19,7 @@ public final class ByteBufUtil
         Preconditions.checkArgument(s.length() <= Short.MAX_VALUE,
                                     "Cannot send string longer than Short.MAX_VALUE (got " + s.length() + " characters)");
 
-        byte[] b = s.getBytes(Charsets.UTF_8);
+        byte[] b = s.getBytes(StandardCharsets.UTF_8);
         writeVarInt(b.length, buf);
         buf.writeBytes(b);
     }
@@ -34,7 +34,7 @@ public final class ByteBufUtil
         byte[] b = new byte[len];
         buf.readBytes(b);
 
-        return new String(b, Charsets.UTF_8);
+        return new String(b, StandardCharsets.UTF_8);
     }
 
     public static void writeArray(byte[] b, ByteBuf buf)

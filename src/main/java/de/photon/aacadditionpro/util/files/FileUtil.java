@@ -5,6 +5,8 @@ import java.io.IOException;
 
 public final class FileUtil
 {
+    private FileUtil() {}
+
     /**
      * Creates a new {@link File} and all missing parent directories.
      *

@@ -4,6 +4,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public final class RandomUtil
 {
+    private RandomUtil() {}
+
     /**
      * Generates a new random integer.
      *

@@ -44,7 +44,7 @@ public enum ModuleType
     VERSION_CONTROL("ClientControl.VersionControl"),
     WORLDDOWNLOAD_CONTROL("ClientControl.WorldDownloader", "uses WorldDownloader");
 
-    public final static Set<ModuleType> VL_MODULETYPES = EnumSet.noneOf(ModuleType.class);
+    public static final Set<ModuleType> VL_MODULETYPES = EnumSet.noneOf(ModuleType.class);
 
     @Getter
     @Setter(AccessLevel.PACKAGE)

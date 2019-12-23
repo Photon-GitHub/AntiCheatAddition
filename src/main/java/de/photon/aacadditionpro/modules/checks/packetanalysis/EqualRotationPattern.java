@@ -24,6 +24,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static java.util.logging.Level.SEVERE;
+
 /**
  * This {@link de.photon.aacadditionpro.modules.PatternModule.PacketPattern} checks for rotation packets which have
  * exactly the same yaw/pitch values as the last packet. When moving these values are never equal to each other when
@@ -108,9 +110,10 @@ class EqualRotationPattern extends PatternModule.PacketPattern
                     return 1;
                 }
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                AACAdditionPro.getInstance().getLogger().log(SEVERE, "Unable to complete the EqualRotation calculations.", e);
+                Thread.currentThread().interrupt();
             } catch (TimeoutException e) {
-                System.out.println("Discard packet check due to high server load. If this message appears frequently please consider upgrading your server.");
+                AACAdditionPro.getInstance().getLogger().log(SEVERE, "Discard packet check due to high server load. If this message appears frequently please consider upgrading your server.");
             }
         }
         return 0;

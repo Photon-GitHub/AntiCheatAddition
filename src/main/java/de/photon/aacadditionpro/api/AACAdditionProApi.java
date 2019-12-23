@@ -8,11 +8,13 @@ import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings({
-        "unused",
-        "WeakerAccess"
-})
+                          "unused",
+                          "WeakerAccess"
+                  })
 public final class AACAdditionProApi
 {
+    private AACAdditionProApi() {}
+
     /**
      * This should be used prior to any operation with the api.
      *

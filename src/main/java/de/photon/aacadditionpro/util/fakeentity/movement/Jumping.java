@@ -2,6 +2,8 @@ package de.photon.aacadditionpro.util.fakeentity.movement;
 
 public final class Jumping
 {
+    private Jumping() {}
+
     /**
      * Client-Copy for exact values.
      * This gets the y-Motion of a {@link org.bukkit.entity.Player} for every JumpBoost effect.

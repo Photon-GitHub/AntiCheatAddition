@@ -34,7 +34,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
     private final SafewalkTypeTwoPattern safewalkTypeTwo = new SafewalkTypeTwoPattern();
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancel_vl;
+    private int cancelVl;
 
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
@@ -113,7 +113,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
             vl += safewalkTypeTwo.apply(user, event);
 
             if (vl > 0) {
-                vlManager.flag(event.getPlayer(), vl, cancel_vl, () ->
+                vlManager.flag(event.getPlayer(), vl, cancelVl, () ->
                 {
                     event.setCancelled(true);
                     user.getScaffoldData().updateTimeStamp(0);

@@ -20,13 +20,13 @@ public class Fastswitch extends PacketAdapter implements PacketListenerModule, V
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancel_vl;
+    private int cancelVl;
 
     @LoadFromConfiguration(configPath = "max_ping")
-    private double max_ping;
+    private double maxPing;
 
     @LoadFromConfiguration(configPath = "switch_milliseconds")
-    private int switch_milliseconds;
+    private int switchMilliseconds;
 
     public Fastswitch()
     {
@@ -50,15 +50,14 @@ public class Fastswitch extends PacketAdapter implements PacketListenerModule, V
             !canBeLegit(user.getPlayer().getInventory().getHeldItemSlot(), event.getPacket().getBytes().readSafely(0)))
         {
             // Already switched in the given timeframe
-            if (user.getFastSwitchData().recentlyUpdated(0, switch_milliseconds)) {
-
+            if (user.getFastSwitchData().recentlyUpdated(0, switchMilliseconds)
                 // The ping is valid and in the borders that are set in the config
-                if (max_ping < 0 || ServerUtil.getPing(user.getPlayer()) < max_ping) {
-                    vlManager.flag(user.getPlayer(),
-                                   cancel_vl,
-                                   () -> event.setCancelled(true),
-                                   () -> InventoryUtils.syncUpdateInventory(user.getPlayer()));
-                }
+                && (maxPing < 0 || ServerUtil.getPing(user.getPlayer()) < maxPing))
+            {
+                vlManager.flag(user.getPlayer(),
+                               cancelVl,
+                               () -> event.setCancelled(true),
+                               () -> InventoryUtils.syncUpdateInventory(user.getPlayer()));
             }
 
             user.getFastSwitchData().updateTimeStamp(0);

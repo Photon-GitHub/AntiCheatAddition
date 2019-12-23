@@ -17,6 +17,8 @@ import java.util.Set;
 
 public final class BlockUtils
 {
+    private BlockUtils() {}
+
     public static final Set<Material> LIQUIDS;
 
     /**

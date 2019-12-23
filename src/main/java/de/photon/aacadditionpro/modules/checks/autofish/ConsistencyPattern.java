@@ -12,10 +12,10 @@ import org.bukkit.event.player.PlayerFishEvent;
 class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
 {
     @LoadFromConfiguration(configPath = ".violation_offset")
-    private int violation_offset;
+    private int violationOffset;
 
     @LoadFromConfiguration(configPath = ".maximum_fails")
-    private int maximum_fails;
+    private int maximumFails;
 
     @Override
     protected int process(User user, PlayerFishEvent event)
@@ -24,7 +24,7 @@ class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
             case FISHING:
                 // Not too many failed attempts in between (afk fish farm false positives)
                 // Negative maximum_fails indicate not allowing afk fishing farms.
-                if ((maximum_fails < 0 || user.getFishingData().failedCounter <= maximum_fails) &&
+                if ((maximumFails < 0 || user.getFishingData().failedCounter <= maximumFails) &&
                     // If the last attempt was a fail do not check (false positives)
                     user.getFishingData().getTimeStamp(1) != 0 &&
                     // Add the delta to the consistencyBuffer of the user.
@@ -37,7 +37,7 @@ class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
                     final double maxOffset = Math.max(MathUtils.offset(consistencyStatistics.getMin(), consistencyStatistics.getAverage()), MathUtils.offset(consistencyStatistics.getMax(), consistencyStatistics.getAverage()));
 
                     // Ceil in order to make sure that the result is at least 1
-                    final double flagOffset = Math.ceil((violation_offset - maxOffset) * 0.5D);
+                    final double flagOffset = Math.ceil((violationOffset - maxOffset) * 0.5D);
 
                     message = "AutoFish-Verbose | Player " +
                               user.getPlayer().getName() +

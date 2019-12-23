@@ -9,7 +9,7 @@ import de.photon.aacadditionpro.user.User;
  */
 class RotationTypeThreePattern extends PatternModule.Pattern<User, Float>
 {
-    private final static double ANGLE_OFFSET_SUM_THRESHOLD = 5.2D;
+    private static final double ANGLE_OFFSET_SUM_THRESHOLD = 5.2D;
 
     @Override
     protected int process(User user, Float angleInformation)

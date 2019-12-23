@@ -17,9 +17,9 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
     private int cancelVl;
 
     @LoadFromConfiguration(configPath = ".max_ping")
-    private double max_ping;
+    private double maxPing;
     @LoadFromConfiguration(configPath = ".min_tps")
-    private double min_tps;
+    private double minTps;
 
     @Override
     protected int process(User user, InventoryClickEvent event)
@@ -27,9 +27,9 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
         // Creative-clear might trigger this.
         if ((user.getPlayer().getGameMode() == GameMode.SURVIVAL || user.getPlayer().getGameMode() == GameMode.ADVENTURE) &&
             // Minimum TPS before the check is activated as of a huge amount of fps
-            ServerUtil.getTPS() > min_tps &&
+            ServerUtil.getTPS() > minTps &&
             // Minimum ping
-            (max_ping < 0 || ServerUtil.getPing(user.getPlayer()) <= max_ping) &&
+            (maxPing < 0 || ServerUtil.getPing(user.getPlayer()) <= maxPing) &&
             // False positive: Click-spamming on the same slot
             event.getRawSlot() != user.getInventoryData().getLastRawSlot())
         {

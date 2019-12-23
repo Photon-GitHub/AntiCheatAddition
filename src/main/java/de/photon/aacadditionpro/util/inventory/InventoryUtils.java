@@ -13,6 +13,8 @@ import java.util.List;
 
 public final class InventoryUtils
 {
+    private InventoryUtils() {}
+
     /**
      * Gets the content of the main hand for version 1.8.8 or the content of both hands in higher versions.
      *

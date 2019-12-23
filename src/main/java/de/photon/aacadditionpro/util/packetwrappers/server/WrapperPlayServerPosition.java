@@ -85,21 +85,13 @@ public class WrapperPlayServerPosition extends AbstractPacket implements IWrappe
         Y_ROT,
         X_ROT;
 
-        private final static Set<PlayerTeleportFlag> ALL_FLAGS = ImmutableSet.copyOf(PlayerTeleportFlag.values());
+        private static final Set<PlayerTeleportFlag> ALL_FLAGS = ImmutableSet.copyOf(PlayerTeleportFlag.values());
     }
 
     private StructureModifier<Set<PlayerTeleportFlag>> getFlagsModifier()
     {
         return handle.getSets(EnumWrappers.getGenericConverter(FLAGS_CLASS, PlayerTeleportFlag.class));
     }
-
-   /* private StructureModifier<Set<PlayerTeleportFlag>> getFlagsModifier()
-    {
-        return handle.getModifier().withType(
-                Set.class,
-                BukkitConverters.getSetConverter(FLAGS_CLASS, EnumWrappers
-                        .getGenericConverter(PlayerTeleportFlag.class)));
-    }*/
 
     public Set<PlayerTeleportFlag> getFlags()
     {

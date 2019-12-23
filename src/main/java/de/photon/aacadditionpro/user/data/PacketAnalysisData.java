@@ -21,12 +21,6 @@ public class PacketAnalysisData extends TimeData
         super(user, 0);
     }
 
-    @Override
-    public void unregister()
-    {
-        super.unregister();
-    }
-
     public static class PositionForceData
     {
         private final long timestamp = System.currentTimeMillis();

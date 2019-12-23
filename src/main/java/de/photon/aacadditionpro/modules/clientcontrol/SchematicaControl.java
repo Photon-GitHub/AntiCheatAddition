@@ -18,6 +18,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class SchematicaControl extends ClientControlModule implements ListenerModule, PluginMessageListenerModule, RestrictedServerVersion
 {
@@ -59,7 +60,7 @@ public class SchematicaControl extends ClientControlModule implements ListenerMo
                                                SCHEMATICA_CHANNEL.getChannel(),
                                                Objects.requireNonNull(byteArrayOutputStream.toByteArray(), "Schematica plugin message is null"));
         } catch (final IOException e) {
-            e.printStackTrace();
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Could not write the Schematica packet.", e);
         }
     }
 

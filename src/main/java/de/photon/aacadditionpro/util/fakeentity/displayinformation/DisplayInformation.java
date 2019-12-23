@@ -11,6 +11,8 @@ import java.util.Collections;
 
 public final class DisplayInformation
 {
+    private DisplayInformation() {}
+
     /**
      * This method updates the player information, and thus the tablist of a player.
      *

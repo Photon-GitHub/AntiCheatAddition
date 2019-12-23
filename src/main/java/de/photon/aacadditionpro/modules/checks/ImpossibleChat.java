@@ -15,7 +15,7 @@ public class ImpossibleChat implements ListenerModule, ViolationModule
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 600);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancel_vl;
+    private int cancelVl;
 
     @EventHandler
     public void on(final AsyncPlayerChatEvent event)
@@ -37,7 +37,7 @@ public class ImpossibleChat implements ListenerModule, ViolationModule
              user.getInventoryData().notRecentlyOpened(1000)
             ))
         {
-            vlManager.flag(user.getPlayer(), cancel_vl, () -> event.setCancelled(true), () -> {});
+            vlManager.flag(user.getPlayer(), cancelVl, () -> event.setCancelled(true), () -> {});
         }
     }
 

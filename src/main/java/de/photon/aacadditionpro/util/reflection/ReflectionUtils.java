@@ -8,6 +8,8 @@ import java.util.List;
 
 public final class ReflectionUtils
 {
+    private ReflectionUtils() {}
+
     private static final String versionNumber = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 
     /**
@@ -52,8 +54,7 @@ public final class ReflectionUtils
         final AxisAlignedBB[] boxes = new AxisAlignedBB[boxList.size()];
         int index = 0;
 
-        for (Object nmsAABB : boxList)
-        {
+        for (Object nmsAABB : boxList) {
             // nmsAABB is a NMS AxisAlignedBB
             boxes[index++] = (AxisAlignedBB.fromNms(nmsAABB));
         }

@@ -7,6 +7,8 @@ import org.bukkit.Location;
  */
 public final class LocationUtils
 {
+    private LocationUtils() {}
+
     /**
      * Gets the squared distance of two {@link Location}s, correctly handling cross-world requests.
      *

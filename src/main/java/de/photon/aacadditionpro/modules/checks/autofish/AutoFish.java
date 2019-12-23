@@ -24,7 +24,7 @@ public class AutoFish implements ListenerModule, PatternModule, ViolationModule,
     private final Pattern<User, PlayerFishEvent> inhumanReactionPattern = new InhumanReactionPattern();
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancel_vl;
+    private int cancelVl;
 
     @EventHandler
     public void on(final PlayerFishEvent event)
@@ -38,7 +38,7 @@ public class AutoFish implements ListenerModule, PatternModule, ViolationModule,
 
         vlManager.flag(event.getPlayer(),
                        this.consistencyPattern.apply(user, event) + this.inhumanReactionPattern.apply(user, event),
-                       cancel_vl,
+                       cancelVl,
                        () -> event.setCancelled(true), () -> {});
     }
 

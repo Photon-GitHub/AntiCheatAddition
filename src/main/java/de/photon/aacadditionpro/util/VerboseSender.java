@@ -128,12 +128,12 @@ public final class VerboseSender implements Listener
     @EventHandler
     public void onAdditionViolation(final PlayerAdditionViolationEvent event)
     {
-        this.sendVerboseMessage(Placeholders.applyPlaceholders(EVENT_PRE_STRING + event.getMessage() + " | Vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer(), null));
+        this.sendVerboseMessage(Placeholders.replacePlaceholders(EVENT_PRE_STRING + event.getMessage() + " | Vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer()));
     }
 
     @EventHandler
     public void onClientControl(final ClientControlEvent event)
     {
-        this.sendVerboseMessage(Placeholders.applyPlaceholders(EVENT_PRE_STRING + event.getMessage(), event.getPlayer(), null));
+        this.sendVerboseMessage(Placeholders.replacePlaceholders(EVENT_PRE_STRING + event.getMessage(), event.getPlayer()));
     }
 }

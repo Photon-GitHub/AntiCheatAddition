@@ -91,7 +91,7 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
                     // Execute the commands
                     for (final String command : this.thresholds.get(i).getCommandList()) {
                         // Sync command execution
-                        CommandUtils.executeCommand(Placeholders.applyPlaceholders(command, playersOfTeam, null));
+                        CommandUtils.executeCommand(Placeholders.replacePlaceholders(command, playersOfTeam, playersOfTeam.get(0).getWorld()));
                     }
                     // Due to the sorting of the commands (and the fact that only one command should be executed) we can
                     // break here.

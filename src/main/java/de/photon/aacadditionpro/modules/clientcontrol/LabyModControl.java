@@ -13,19 +13,18 @@ import net.labymod.serverapi.bukkit.event.LabyModPlayerJoinEvent;
 import net.labymod.serverapi.bukkit.event.PermissionsSendEvent;
 import org.bukkit.event.EventHandler;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
 public class LabyModControl extends ClientControlModule implements ListenerModule, Dependency
 {
-    private final Map<Permission, Boolean> featureMap = new HashMap<>();
+    private final Map<Permission, Boolean> featureMap = new EnumMap<>(Permission.class);
 
     @Override
     public void enable()
     {
-        for (String key : ConfigUtils.loadKeys(this.getModuleType().getConfigString() + ".disable"))
-        {
+        for (String key : ConfigUtils.loadKeys(this.getModuleType().getConfigString() + ".disable")) {
             featureMap.put(Permission.valueOf(key.toUpperCase()),
                            !AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable." + key));
         }
@@ -36,8 +35,7 @@ public class LabyModControl extends ClientControlModule implements ListenerModul
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -49,14 +47,12 @@ public class LabyModControl extends ClientControlModule implements ListenerModul
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (User.isUserInvalid(user, this.getModuleType()))
-        {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
         // Iterating through all permissions
-        for (Map.Entry<Permission, Boolean> permissionEntry : event.getPermissions().entrySet())
-        {
+        for (Map.Entry<Permission, Boolean> permissionEntry : event.getPermissions().entrySet()) {
             // Allow by default.
             permissionEntry.setValue(featureMap.getOrDefault(permissionEntry.getKey(), true));
         }

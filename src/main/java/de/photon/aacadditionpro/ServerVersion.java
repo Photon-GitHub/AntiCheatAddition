@@ -22,7 +22,7 @@ public enum ServerVersion
     MC112("1.12.2", false),
     MC113("1.13.2", true),
     MC114("1.14.4", true),
-    MC115("1.15", true);
+    MC115("1.15.1", true);
 
 
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS;

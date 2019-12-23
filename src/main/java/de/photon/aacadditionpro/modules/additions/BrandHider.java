@@ -59,7 +59,7 @@ public class BrandHider implements ListenerModule
     private static void updateBrand(final Player player)
     {
         ByteBuf byteBuf = Unpooled.buffer();
-        final String sentBrand = Placeholders.applyPlaceholders(brand, player, null);
+        final String sentBrand = Placeholders.replacePlaceholders(brand, player);
         ByteBufUtil.writeString(sentBrand, byteBuf);
         player.sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel(), ByteBufUtil.toArray(byteBuf));
         byteBuf.release();

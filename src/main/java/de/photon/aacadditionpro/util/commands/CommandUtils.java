@@ -10,8 +10,7 @@ import org.bukkit.entity.Player;
 
 public final class CommandUtils
 {
-    private CommandUtils()
-    { }
+    private CommandUtils() {}
 
     /**
      * Applies all the {@link Placeholders} to the given command and invokes executeCommand afterwards.
@@ -19,7 +18,7 @@ public final class CommandUtils
      * @param player  the player that should be used for the {@link Placeholders}
      * @param command the command with placeholders that should be executed
      */
-    public static void executeCommandWithPlaceholders(final String command, final Player player, final ModuleType moduleType, final Double newVl)
+    public static void executeCommandWithPlaceholders(final String command, final Player player, final ModuleType moduleType)
     {
         final PlayerAdditionViolationCommandEvent commandEvent = PlayerAdditionViolationCommandEvent.createAndCallCommandEvent(player, Placeholders.replacePlaceholders(command, player), moduleType);
 

@@ -34,7 +34,7 @@ abstract class ClientControlModule implements Module
         // The event must not be cancelled
         if (!clientControlEvent.isCancelled()) {
             // Execution of the commands
-            this.commandsOnDetection.forEach(rawCommand -> CommandUtils.executeCommandWithPlaceholders(rawCommand, player, this.getModuleType(), null));
+            this.commandsOnDetection.forEach(rawCommand -> CommandUtils.executeCommandWithPlaceholders(rawCommand, player, this.getModuleType()));
         }
     }
 

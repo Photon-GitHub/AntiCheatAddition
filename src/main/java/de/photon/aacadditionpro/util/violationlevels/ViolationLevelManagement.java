@@ -188,7 +188,7 @@ public class ViolationLevelManagement
                     // Iterate through all the commands that are presented in the threshold of key
                     for (final String command : threshold.getCommandList()) {
                         // Calling of the event + Sync command execution
-                        CommandUtils.executeCommandWithPlaceholders(command, player, this.moduleType, (double) toVl);
+                        CommandUtils.executeCommandWithPlaceholders(command, player, this.moduleType);
                     }
                 }
             }

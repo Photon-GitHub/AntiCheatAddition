@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -27,7 +26,7 @@ public class Placeholders
         return replacePlaceholders(original, player, null, player.getWorld());
     }
 
-    public static String replacePlaceholders(String original, List<Player> players, World world)
+    public static String replacePlaceholders(String original, Collection<Player> players, World world)
     {
         return replacePlaceholders(original, null, players, world);
     }

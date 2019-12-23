@@ -38,6 +38,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 public class Esp implements ListenerModule
 {
@@ -73,8 +74,8 @@ public class Esp implements ListenerModule
         final ImmutableMap.Builder<UUID, Integer> rangeBuilder = ImmutableMap.builder();
 
         int currentPlayerTrackingRange;
-        for (final String world : worlds.getKeys(false)) {
-            currentPlayerTrackingRange = worlds.getInt(world + ".entity-tracking-range.players");
+        for (final String worldName : worlds.getKeys(false)) {
+            currentPlayerTrackingRange = worlds.getInt(worldName + ".entity-tracking-range.players");
 
             // Square
             currentPlayerTrackingRange *= currentPlayerTrackingRange;
@@ -86,11 +87,10 @@ public class Esp implements ListenerModule
                 currentPlayerTrackingRange = 19321;
             }
 
-            if (world.equals("default")) {
+            if ("default".equals(worldName)) {
                 DEFAULT_TRACKING_RANGE = currentPlayerTrackingRange;
-            }
-            else {
-                final World correspondingWorld = Bukkit.getWorld(world);
+            } else {
+                final World correspondingWorld = Bukkit.getWorld(worldName);
 
                 if (correspondingWorld != null) {
                     rangeBuilder.put(correspondingWorld.getUID(), currentPlayerTrackingRange);
@@ -176,7 +176,8 @@ public class Esp implements ListenerModule
                             VerboseSender.getInstance().sendVerboseMessage("Could not finish ESP cycle. Please consider upgrading your hardware or increasing the update_ticks option in the config if this message appears in large quantities.", false, true);
                         }
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Thread.currentThread().interrupt();
+                        AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "ESP Threads have been interrupted.", e);
                     }
                     // Update_Ticks: the refresh-rate of the check.
                 }, 0L, updateTicks);

@@ -166,12 +166,8 @@ public final class BlockUtils
      */
     public static List<Block> getBlocksAround(final Block block, final boolean onlyHorizontal)
     {
-        final List<Block> blocks = new ArrayList<>(onlyHorizontal ?
-                                                   4 :
-                                                   6);
-        for (final BlockFace face : onlyHorizontal ?
-                                    HORIZONTAL_FACES :
-                                    ALL_FACES) {
+        final List<Block> blocks = new ArrayList<>(onlyHorizontal ? 4 : 6);
+        for (final BlockFace face : onlyHorizontal ? HORIZONTAL_FACES : ALL_FACES) {
             final Block relative = block.getRelative(face);
             if (!relative.isEmpty()) {
                 blocks.add(relative);

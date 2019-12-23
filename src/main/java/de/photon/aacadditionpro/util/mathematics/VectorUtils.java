@@ -1,11 +1,17 @@
 package de.photon.aacadditionpro.util.mathematics;
 
+import com.google.common.base.Preconditions;
+import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.aacadditionpro.util.world.BlockUtils;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 public final class VectorUtils
@@ -27,21 +33,39 @@ public final class VectorUtils
     public static double getDistanceToFirstIntersectionWithBlock(final Location start, final Vector direction)
     {
         final int length = (int) Math.floor(direction.length());
+        Preconditions.checkNotNull(start.getWorld(), "RayTrace: Unknown start world.");
+
         if (length >= 1) {
-            try {
-                final BlockIterator blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
-                Block block;
-                while (blockIterator.hasNext()) {
-                    block = blockIterator.next();
-                    // Account for a Spigot bug: BARRIER and MOB_SPAWNER are not occluding blocks
-                    if (BlockUtils.isReallyOccluding(block.getType())) {
-                        // Use the middle location of the Block instead of the simple location.
-                        return block.getLocation().clone().add(0.5, 0.5, 0.5).distance(start);
+            switch (ServerVersion.getActiveServerVersion()) {
+                case MC188:
+                    try {
+                        final BlockIterator blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
+                        Block block;
+                        while (blockIterator.hasNext()) {
+                            block = blockIterator.next();
+                            // Account for a Spigot bug: BARRIER and MOB_SPAWNER are not occluding blocks
+                            if (BlockUtils.isReallyOccluding(block.getType())) {
+                                // Use the middle location of the Block instead of the simple location.
+                                return block.getLocation().clone().add(0.5, 0.5, 0.5).distance(start);
+                            }
+                        }
+                    } catch (IllegalStateException exception) {
+                        // Just in case the start block could not be found for some reason or a chunk is loaded async.
+                        return 0;
                     }
-                }
-            } catch (IllegalStateException exception) {
-                // Just in case the start block could not be found for some reason or a chunk is loaded async.
-                return 0;
+                    break;
+                case MC113:
+                case MC114:
+                case MC115:
+                    RayTraceResult result = start.getWorld().rayTrace(start, direction, length, FluidCollisionMode.NEVER, true, 1, entity -> entity.getType() == EntityType.PLAYER);
+                    // Hit nothing or the other player
+                    if (result == null || result.getHitEntity() != null) {
+                        return 0;
+                    }
+
+                    return start.toVector().distance(result.getHitPosition());
+                default:
+                    throw new UnknownMinecraftVersion();
             }
         }
         return 0;

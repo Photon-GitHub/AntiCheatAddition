@@ -65,7 +65,7 @@ public final class RotationUtil
     }
 
     /**
-     * Fixes the rotation for the {@link ClientsideLivingEntity}s
+     * Fixes the rotation for the ClientsideLivingEntities
      */
     public static byte getFixRotation(final float yawpitch)
     {

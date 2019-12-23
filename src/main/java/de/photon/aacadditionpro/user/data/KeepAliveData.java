@@ -25,7 +25,7 @@ public class KeepAliveData extends Data
     public static final byte KEEPALIVE_QUEUE_SIZE = 20;
 
     @Getter
-    private AtomicInteger ignoredKeepAlives = new AtomicInteger(0);
+    private final AtomicInteger ignoredKeepAlives = new AtomicInteger(0);
 
     static {
         ProtocolLibrary.getProtocolManager().addPacketListener(new KeepAliveDataUpdater());

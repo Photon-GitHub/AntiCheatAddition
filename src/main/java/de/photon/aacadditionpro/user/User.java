@@ -25,23 +25,23 @@ public class User
 {
     private Player player;
 
-    private AutoPotionData autoPotionData = new AutoPotionData(this);
-    private ConsumeData consumeData = new ConsumeData(this);
-    private TimeData fastSwitchData = new TimeData(this);
-    private FishingData fishingData = new FishingData(this);
-    private InventoryData inventoryData = new InventoryData(this);
-    private KeepAliveData keepAliveData = new KeepAliveData(this);
-    private TimeData loginData;
-    private LookPacketData lookPacketData = new LookPacketData(this);
-    private PacketAnalysisData packetAnalysisData = new PacketAnalysisData(this);
-    private PingData pingData = new PingData(this);
-    private PositionData positionData = new PositionData(this);
-    private ScaffoldData scaffoldData = new ScaffoldData(this);
+    private final AutoPotionData autoPotionData = new AutoPotionData(this);
+    private final ConsumeData consumeData = new ConsumeData(this);
+    private final TimeData fastSwitchData = new TimeData(this);
+    private final FishingData fishingData = new FishingData(this);
+    private final InventoryData inventoryData = new InventoryData(this);
+    private final KeepAliveData keepAliveData = new KeepAliveData(this);
+    private final TimeData loginData;
+    private final LookPacketData lookPacketData = new LookPacketData(this);
+    private final PacketAnalysisData packetAnalysisData = new PacketAnalysisData(this);
+    private final PingData pingData = new PingData(this);
+    private final PositionData positionData = new PositionData(this);
+    private final ScaffoldData scaffoldData = new ScaffoldData(this);
     private SkinData skinData = new SkinData();
-    private TeamingData teamingData = new TeamingData(this);
-    private TeleportData teleportData = new TeleportData(this);
-    private TowerData towerData = new TowerData(this);
-    private VelocityChangeData velocityChangeData = new VelocityChangeData(this);
+    private final TeamingData teamingData = new TeamingData(this);
+    private final TeleportData teleportData = new TeleportData(this);
+    private final TowerData towerData = new TowerData(this);
+    private final VelocityChangeData velocityChangeData = new VelocityChangeData(this);
 
     public User(final Player player)
     {

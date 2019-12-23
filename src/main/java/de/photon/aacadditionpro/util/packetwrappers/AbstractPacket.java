@@ -12,7 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 public abstract class AbstractPacket implements IWrapperPlay
 {
     // The packet we will be modifying
-    protected PacketContainer handle;
+    protected final PacketContainer handle;
 
     /**
      * Constructs a new strongly typed wrapper for the given packet.

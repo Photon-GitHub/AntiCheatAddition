@@ -42,7 +42,7 @@ public class CommandAttributes
     {
         private int minArguments = 0;
         private int maxArguments = Byte.MAX_VALUE;
-        private List<String> commandHelp = new ArrayList<>();
+        private final List<String> commandHelp = new ArrayList<>();
 
         /**
          * The minimum arguments of the command that should be enforced.

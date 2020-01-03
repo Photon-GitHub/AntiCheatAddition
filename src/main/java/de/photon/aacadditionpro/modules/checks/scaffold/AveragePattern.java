@@ -5,6 +5,7 @@ import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.datawrappers.ScaffoldBlockPlace;
 import de.photon.aacadditionpro.util.entity.PotionUtil;
+import org.bukkit.Material;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.potion.PotionEffectType;
 
@@ -16,9 +17,13 @@ class AveragePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
     @Override
     public int process(User user, BlockPlaceEvent event)
     {
-        // Should check average?
-        // Buffer the ScaffoldBlockPlace
-        if (user.getScaffoldData().getScaffoldBlockPlaces().bufferObject(new ScaffoldBlockPlace(
+        // Ladders are prone to false positives as they can be used to place blocks immediately after placing them,
+        // therefore almost doubling the placement speed. However they can only be placed one at a time, which allows
+        // simply ignoring them.
+        if (event.getBlockPlaced().getType() != Material.LADDER
+            // Should check average?
+            // Buffer the ScaffoldBlockPlace
+            && user.getScaffoldData().getScaffoldBlockPlaces().bufferObject(new ScaffoldBlockPlace(
                 event.getBlockPlaced(),
                 event.getBlockPlaced().getFace(event.getBlockAgainst()),
                 // Speed-Effect

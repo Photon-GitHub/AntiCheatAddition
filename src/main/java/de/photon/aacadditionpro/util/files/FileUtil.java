@@ -1,0 +1,22 @@
+package de.photon.aacadditionpro.util.files;
+
+import java.io.File;
+import java.io.IOException;
+
+public final class FileUtil
+{
+    private FileUtil() {}
+
+    /**
+     * Creates a new {@link File} and all missing parent directories.
+     *
+     * @param file the {@link File} which should be created.
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static File createFile(final File file) throws IOException
+    {
+        file.getParentFile().mkdirs();
+        file.createNewFile();
+        return file;
+    }
+}

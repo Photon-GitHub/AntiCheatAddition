@@ -170,10 +170,6 @@ Inventory:
   enabled: true
   # Control the different parts of Inventory
   parts:
-    # This part uses pre-trained TensorFlow models to check for common bot-like clicking.
-    AutomatedClickHeuristic:
-      # Do you want to enable the automated click heuristic part
-      enabled: true
     # This part flags hitting while the inventory is open.
     # This part will add 10 vl.
     Hit:
@@ -346,8 +342,8 @@ Scaffold:
   # Violation before AACAdditionPro starts to cancel the block-places.
   # Set this to 0 to never cancel block-places.
   cancel_vl: 20
-  # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
-  # to prevent further scaffolding (measured in ms)
+  # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to place a block in the given
+  # time window to prevent further scaffolding (measured in ms)
   timeout: 1000
   # Control the different solutions of Scaffold
   parts:
@@ -537,14 +533,18 @@ ClientControl:
       - "aacstaffnotify {player} in {world} uses 5zig"
 
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
-  #
-  # NOT COMPATIBLE WITH MINECRAFT 1.13 YET -> CLIENTCONTROL WILL AUTODISABLE ON 1.13.2
   BetterSprinting:
     # Do you want to enable BetterSprinting-Control
     enabled: false
-    # This mod provides a method to disable it.
-    # Do you want to disable this mod
-    disable: true
+    # This mod provides a method to disable parts of it.
+    # Disabling all subparts listed here will a BetterSprinting client behave like a vanilla client.
+    disable:
+      # This gives players a configurable speed boost when flying in creative or survival mode.
+      survival_fly_boost: true
+      enable_all_dirs: true
+    # The mod provides a method to disable it.
+    # If you want to completely disable the mod set this to true.
+    disable_mod: false
     commands_on_detection:
       - "aacstaffnotify {player} in {world} uses BetterSprinting"
 
@@ -715,8 +715,6 @@ ClientControl:
       - "ban {player} Illegal client modification"
 
   # This allows you to control which minecraft versions can join your server IF YOUR SERVER RUNS VIAVERSION.
-  # YOU NEED TO ENABLE THIS AND DISALLOW 1.9 CLIENTS IF YOU WANT TO USE THE KILLAURAENTITY CHECK ON A VIAVERSION SERVER
-  #
   # You might need to restart your server TWICE for some changes to take effect.
   VersionControl:
     # Do you want to enable VersionControl
@@ -728,13 +726,14 @@ ClientControl:
     # THIS WILL OVERRIDE THE block-protocols OPTION IN THE VIAVERSION CONFIG!
     allowedVersions:
       '1.8': true
-      # 1.9 is not officially supported by this plugin. Issues can occur.
+      # Versions 1.9 - 1.12 are not officially supported by this plugin. Issues can occur.
       '1.9': false
-      # 1.10 is not officially supported by this plugin. Issues can occur.
       '1.10': false
-      '1.11': true
-      '1.12': true
+      '1.11': false
+      '1.12': false
       '1.13': true
+      '1.14': true
+      '1.15': true
 
   # WorldDownloader is a popular modification to get the maps of a server
   WorldDownloader:

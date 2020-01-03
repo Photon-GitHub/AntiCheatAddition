@@ -6,7 +6,7 @@
 
     <groupId>de.photon</groupId>
     <artifactId>AACAdditionPro</artifactId>
-    <version>5.2.3</version>
+    <version>6.0.0</version>
 
     <name>AACAdditionPro</name>
     <description>This plugin provides niche checks for cheats which are not covered by AAC</description>
@@ -46,7 +46,7 @@
                         <relocation>
                             <pattern>org.bstats</pattern>
                             <!-- Replace this with your package! -->
-                            <shadedPattern>de.photon.AACAdditionPro</shadedPattern>
+                            <shadedPattern>de.photon.aacadditionpro</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -98,7 +98,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.14.2-R0.1-SNAPSHOT</version>
+            <version>1.15.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -137,12 +137,6 @@
             <artifactId>bstats-bukkit</artifactId>
             <version>1.5</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.tensorflow</groupId>
-            <artifactId>tensorflow</artifactId>
-            <version>1.12.0</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>

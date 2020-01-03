@@ -25,7 +25,13 @@ import java.util.logging.Level;
 public final class VerboseSender implements Listener
 {
     @Getter
-    private static final VerboseSender instance = new VerboseSender();
+    private static final VerboseSender instance;
+
+    static {
+        instance = new VerboseSender();
+        AACAdditionPro.getInstance().registerListener(instance);
+
+    }
 
     // Message constants
     private static final String NON_COLORED_PRE_STRING = "[AACAdditionPro] {0}";
@@ -44,10 +50,8 @@ public final class VerboseSender implements Listener
     private final boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console");
     private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players");
 
-    private VerboseSender()
-    {
+    private VerboseSender() {
         allowedToRegisterTasks = true;
-        AACAdditionPro.getInstance().registerListener(this);
     }
 
     /**

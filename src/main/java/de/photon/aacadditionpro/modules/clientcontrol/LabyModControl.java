@@ -19,7 +19,7 @@ import java.util.Set;
 
 public class LabyModControl extends ClientControlModule implements ListenerModule, Dependency
 {
-    // Do not init here as that will cause errors.
+    // Do not init here as that will cause errors as Permission cannot be found.
     private Map<Permission, Boolean> featureMap;
 
     @Override

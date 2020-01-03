@@ -19,11 +19,13 @@ import java.util.Set;
 
 public class LabyModControl extends ClientControlModule implements ListenerModule, Dependency
 {
-    private final Map<Permission, Boolean> featureMap = new EnumMap<>(Permission.class);
+    // Do not init here as that will cause errors.
+    private Map<Permission, Boolean> featureMap;
 
     @Override
     public void enable()
     {
+        featureMap = new EnumMap<>(Permission.class);
         for (String key : ConfigUtils.loadKeys(this.getModuleType().getConfigString() + ".disable")) {
             featureMap.put(Permission.valueOf(key.toUpperCase()),
                            !AACAdditionPro.getInstance().getConfig().getBoolean(this.getModuleType().getConfigString() + ".disable." + key));

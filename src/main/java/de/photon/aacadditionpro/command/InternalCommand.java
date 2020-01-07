@@ -47,7 +47,7 @@ public abstract class InternalCommand
     void invokeCommand(final CommandSender sender, final Queue<String> arguments)
     {
         // No permission is set or the sender has the permission
-        if (!this.permission.hasPermission(sender)) {
+        if (!InternalPermission.hasPermission(sender, this.permission)) {
             ChatMessage.sendNoPermissionMessage(sender);
             return;
         }

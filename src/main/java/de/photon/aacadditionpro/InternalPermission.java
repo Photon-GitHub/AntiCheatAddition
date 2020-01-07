@@ -42,4 +42,17 @@ public enum InternalPermission
     {
         return permission == null || permissible.isOp() || permissible.hasPermission(permission);
     }
+
+    /**
+     * This checks if a {@link Permissible} has a certain permission.
+     *
+     * @param permissible the {@link Permissible} who should be checked
+     * @param permission  the permission that he should be checked for
+     *
+     * @return true if the player has the permission or is op, otherwise false
+     */
+    public static boolean hasPermission(final Permissible permissible, final InternalPermission permission)
+    {
+        return permission == null || permissible.isOp() || permission.hasPermission(permissible);
+    }
 }

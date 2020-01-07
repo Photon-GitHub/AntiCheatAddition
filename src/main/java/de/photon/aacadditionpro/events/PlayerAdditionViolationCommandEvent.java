@@ -1,34 +1,59 @@
 package de.photon.aacadditionpro.events;
 
+import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleType;
+import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
-public class PlayerAdditionViolationCommandEvent extends PlayerEvent implements Cancellable
+public class PlayerAdditionViolationCommandEvent extends Event implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();
-    private final ModuleType moduleType;
-    private boolean cancelled;
-    private String command;
-
-    public PlayerAdditionViolationCommandEvent(final Player player, final String command, final ModuleType moduleType)
-    {
-        super(player);
-        this.command = command;
-        this.moduleType = moduleType;
-    }
 
     //Needed for 1.8.8
     public static HandlerList getHandlerList()
     {
         return handlers;
+    }
+
+    @NotNull
+    @Override
+    public HandlerList getHandlers()
+    {
+        return handlers;
+    }
+
+    private final ModuleType moduleType;
+    private boolean cancelled;
+    private String command;
+
+    @Getter
+    protected final Player player;
+
+    // Legacy constructor
+    public PlayerAdditionViolationCommandEvent(final Player player, final String command, final ModuleType moduleType, boolean legacy)
+    {
+        super();
+        this.player = player;
+        this.command = command;
+        this.moduleType = moduleType;
+    }
+
+    // Current constructor
+    public PlayerAdditionViolationCommandEvent(final Player player, final String command, final ModuleType moduleType)
+    {
+        super(Bukkit.isPrimaryThread());
+        this.player = player;
+        this.command = command;
+        this.moduleType = moduleType;
     }
 
     public ModuleType getModuleType()
@@ -58,11 +83,21 @@ public class PlayerAdditionViolationCommandEvent extends PlayerEvent implements 
         cancelled = b;
     }
 
-    @NotNull
-    @Override
-    public HandlerList getHandlers()
+    /**
+     * Handles the spigot api version differences.
+     */
+    public static PlayerAdditionViolationCommandEvent build(final Player p, final String command, final ModuleType moduleType)
     {
-        return handlers;
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC188:
+            case MC113:
+                return new PlayerAdditionViolationCommandEvent(p, command, moduleType, true);
+            case MC114:
+            case MC115:
+                return new PlayerAdditionViolationCommandEvent(p, command, moduleType);
+            default:
+                throw new UnknownMinecraftVersion();
+        }
     }
 
     public PlayerAdditionViolationCommandEvent call()
@@ -87,6 +122,6 @@ public class PlayerAdditionViolationCommandEvent extends PlayerEvent implements 
      */
     public static PlayerAdditionViolationCommandEvent createAndCallCommandEvent(final Player player, final String command, final ModuleType moduleType)
     {
-        return new PlayerAdditionViolationCommandEvent(player, command, moduleType).call();
+        return PlayerAdditionViolationCommandEvent.build(player, command, moduleType).call();
     }
 }

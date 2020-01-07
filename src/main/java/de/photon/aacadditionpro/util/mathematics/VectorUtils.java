@@ -8,7 +8,6 @@ import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.RayTraceResult;
@@ -57,9 +56,9 @@ public final class VectorUtils
                 case MC113:
                 case MC114:
                 case MC115:
-                    RayTraceResult result = start.getWorld().rayTrace(start, direction, length, FluidCollisionMode.NEVER, true, 1, entity -> entity.getType() == EntityType.PLAYER);
+                    RayTraceResult result = start.getWorld().rayTraceBlocks(start, direction, length, FluidCollisionMode.NEVER, true);
                     // Hit nothing or the other player
-                    if (result == null || result.getHitEntity() != null) {
+                    if (result == null || result.getHitBlock() == null) {
                         return 0;
                     }
 

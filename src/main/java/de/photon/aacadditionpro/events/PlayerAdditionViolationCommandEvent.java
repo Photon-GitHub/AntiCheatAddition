@@ -50,7 +50,7 @@ public class PlayerAdditionViolationCommandEvent extends Event implements Cancel
     // Current constructor
     public PlayerAdditionViolationCommandEvent(final Player player, final String command, final ModuleType moduleType)
     {
-        super(Bukkit.isPrimaryThread());
+        super(!Bukkit.isPrimaryThread());
         this.player = player;
         this.command = command;
         this.moduleType = moduleType;

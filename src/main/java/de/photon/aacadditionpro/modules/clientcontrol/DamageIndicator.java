@@ -14,15 +14,17 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
-import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wither;
 
 import java.util.List;
+import java.util.Objects;
 
 public class DamageIndicator extends PacketAdapter implements PacketListenerModule
 {
@@ -98,13 +100,29 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
             // Clone the packet to prevent a serversided connection of the health.
             event.setPacket(event.getPacket().deepClone());
 
+            float spoofedHealth;
+
+
+            switch (ServerVersion.getActiveServerVersion()) {
+                case MC188:
+                    spoofedHealth = Float.NaN;
+                    break;
+                case MC113:
+                case MC114:
+                case MC115:
+                    spoofedHealth = (float) Objects.requireNonNull(((LivingEntity) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH), "Tried to get max health of an entity without health.").getValue();
+                    break;
+                default:
+                    throw new UnknownMinecraftVersion();
+            }
+
             final StructureModifier<List<WrappedWatchableObject>> watcher = event.getPacket().getWatchableCollectionModifier();
             if (watcher != null) {
                 final List<WrappedWatchableObject> read = watcher.read(0);
                 if (read != null) {
                     for (WrappedWatchableObject watch : read) {
                         if ((watch.getIndex() == index) && ((Float) watch.getValue() > 0.0F)) {
-                            watch.setValue(entity instanceof Villager ? 20 : Float.NaN);
+                            watch.setValue(spoofedHealth);
                         }
                     }
                 }

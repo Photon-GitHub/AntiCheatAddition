@@ -12,16 +12,16 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Animals;
-import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Boss;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
-import org.bukkit.entity.Wither;
 
 import java.util.List;
 import java.util.Objects;
@@ -59,8 +59,7 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
             // Offline mode servers have name-based UUIDs, so that should be no problem.
             event.getPlayer().getEntityId() != entity.getEntityId() &&
             // Bossbar problems
-            !(entity instanceof Wither) &&
-            !(entity instanceof EnderDragon) &&
+            !(entity instanceof Boss) &&
             // Entity must be living to have health; all categories extend LivingEntity.
             ((entity instanceof HumanEntity && spoofPlayers) ||
              (entity instanceof Monster && spoofMonsters) ||
@@ -74,12 +73,7 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
                 case MC188:
                     // index 6 in 1.8
                     index = 6;
-
-                    if (entity.getPassenger() != null) {
-                        return;
-                    }
                     break;
-
                 case MC113:
                     // index 7 in 1.11+
                     index = 7;
@@ -93,7 +87,8 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
                     throw new UnknownMinecraftVersion();
             }
 
-            if (!entity.getPassengers().isEmpty()) {
+            // No passengers.
+            if (!EntityUtil.getPassengers(entity).isEmpty()) {
                 return;
             }
 
@@ -101,8 +96,6 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
             event.setPacket(event.getPacket().deepClone());
 
             float spoofedHealth;
-
-
             switch (ServerVersion.getActiveServerVersion()) {
                 case MC188:
                     spoofedHealth = Float.NaN;

@@ -7,6 +7,7 @@ import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -17,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -74,6 +76,23 @@ public final class EntityUtil
         }
 
         return nearbyLivingEntities;
+    }
+
+    /**
+     * Gets the maximum health of an {@link LivingEntity}.
+     */
+    public static double getMaxHealth(LivingEntity livingEntity)
+    {
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC188:
+                return livingEntity.getMaxHealth();
+            case MC113:
+            case MC114:
+            case MC115:
+                return Objects.requireNonNull((livingEntity).getAttribute(Attribute.GENERIC_MAX_HEALTH), "Tried to get max health of an entity without health.").getValue();
+            default:
+                throw new UnknownMinecraftVersion();
+        }
     }
 
     /**

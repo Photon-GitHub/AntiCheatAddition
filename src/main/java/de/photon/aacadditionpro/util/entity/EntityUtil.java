@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.util.entity;
 
 import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.aacadditionpro.util.mathematics.AxisAlignedBB;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.world.BlockUtils;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,6 +74,27 @@ public final class EntityUtil
         }
 
         return nearbyLivingEntities;
+    }
+
+    /**
+     * Gets the passengers of an entity.
+     * This method solves the compatibility issues of the newer APIs with server version 1.8.8
+     */
+    public static List<Entity> getPassengers(final Entity entity)
+    {
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC188:
+                Entity passenger = entity.getPassenger();
+                return passenger == null ?
+                       Collections.emptyList() :
+                       Collections.singletonList(passenger);
+            case MC113:
+            case MC114:
+            case MC115:
+                return entity.getPassengers();
+            default:
+                throw new UnknownMinecraftVersion();
+        }
     }
 
     /**

@@ -99,8 +99,6 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
             event.setPacket(event.getPacket().deepClone());
 
             float spoofedHealth;
-
-
             switch (ServerVersion.getActiveServerVersion()) {
                 case MC188:
                     spoofedHealth = Float.NaN;

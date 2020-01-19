@@ -4,7 +4,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
@@ -15,6 +14,8 @@ import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
+import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerEntityMetadata;
+import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerNamedEntitySpawn;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EnderDragon;
@@ -112,14 +113,20 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
                     throw new UnknownMinecraftVersion();
             }
 
-            final StructureModifier<List<WrappedWatchableObject>> watcher = event.getPacket().getWatchableCollectionModifier();
-            if (watcher != null) {
-                final List<WrappedWatchableObject> read = watcher.read(0);
-                if (read != null) {
-                    for (WrappedWatchableObject watch : read) {
-                        if ((watch.getIndex() == index) && ((Float) watch.getValue() > 0.0F)) {
-                            watch.setValue(spoofedHealth);
-                        }
+            List<WrappedWatchableObject> read = null;
+
+            if (event.getPacket().getType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
+                WrapperPlayServerNamedEntitySpawn wrapper = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
+                read = wrapper.getMetadata().getWatchableObjects();
+            } else if (event.getPacket().getType() == PacketType.Play.Server.ENTITY_METADATA) {
+                WrapperPlayServerEntityMetadata wrapper = new WrapperPlayServerEntityMetadata(event.getPacket());
+                read = wrapper.getMetadata();
+            }
+
+            if (read != null) {
+                for (WrappedWatchableObject watch : read) {
+                    if ((watch.getIndex() == index) && ((Float) watch.getValue() > 0.0F)) {
+                        watch.setValue(spoofedHealth);
                     }
                 }
             }

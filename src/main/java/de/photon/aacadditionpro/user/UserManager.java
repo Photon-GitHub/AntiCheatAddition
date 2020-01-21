@@ -17,9 +17,9 @@ import java.util.concurrent.ConcurrentMap;
 public class UserManager implements Listener
 {
     // Concurrency to tackle some ConcurrentModificationExceptions
-    private static final ConcurrentMap<UUID, User> users = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<UUID, User> users = new ConcurrentHashMap<>(1000);
     @Getter
-    private static final Set<User> verboseUsers = ConcurrentHashMap.newKeySet();
+    private static final Set<User> verboseUsers = ConcurrentHashMap.newKeySet(50);
 
     public static User getUser(final UUID uuid)
     {
@@ -58,8 +58,7 @@ public class UserManager implements Listener
     {
         if (verbose) {
             verboseUsers.add(user);
-        }
-        else {
+        } else {
             verboseUsers.remove(user);
         }
     }

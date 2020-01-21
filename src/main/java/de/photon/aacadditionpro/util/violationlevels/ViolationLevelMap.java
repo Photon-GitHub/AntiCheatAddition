@@ -14,11 +14,10 @@ class ViolationLevelMap extends ConcurrentHashMap<UUID, Integer> implements List
 {
     ViolationLevelMap(final long decayTicks)
     {
-        super();
+        super(1000);
 
         // Might need to have a vl manager without vl decrease
-        if (decayTicks > 0)
-        {
+        if (decayTicks > 0) {
             //The vl-decrease
             Bukkit.getScheduler().scheduleSyncRepeatingTask(
                     AACAdditionPro.getInstance(),

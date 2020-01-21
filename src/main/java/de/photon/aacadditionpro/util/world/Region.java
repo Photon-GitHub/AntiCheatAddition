@@ -6,6 +6,8 @@ import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import java.util.Objects;
+
 public class Region
 {
     /**
@@ -34,24 +36,18 @@ public class Region
         double[] minCoords = new double[2];
         double[] maxCoords = new double[2];
 
-        if (x1 < x2)
-        {
+        if (x1 < x2) {
             minCoords[0] = x1;
             maxCoords[0] = x2;
-        }
-        else
-        {
+        } else {
             minCoords[0] = x2;
             maxCoords[0] = x1;
         }
 
-        if (z1 < z2)
-        {
+        if (z1 < z2) {
             minCoords[1] = z1;
             maxCoords[1] = z2;
-        }
-        else
-        {
+        } else {
             minCoords[1] = z2;
             maxCoords[1] = z1;
         }
@@ -85,5 +81,24 @@ public class Region
                           Double.parseDouble(parts[2]),
                           Double.parseDouble(parts[3]),
                           Double.parseDouble(parts[4]));
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Region region = (Region) o;
+        return Objects.equals(world, region.world) &&
+               Objects.equals(regionBox, region.regionBox);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        if (this.regionBox == null) {
+            return Objects.hash(world, regionBox);
+        }
+        return world.getUID().hashCode() + 17 * regionBox.hashCode();
     }
 }

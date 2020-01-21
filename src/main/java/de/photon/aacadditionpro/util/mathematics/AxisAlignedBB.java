@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.ToString;
 import org.bukkit.util.Vector;
 
+import java.util.Objects;
+
 @Getter
 @ToString
 public class AxisAlignedBB implements Cloneable
@@ -411,5 +413,25 @@ public class AxisAlignedBB implements Cloneable
         } catch (CloneNotSupportedException e) {
             return new AxisAlignedBB(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
         }
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AxisAlignedBB that = (AxisAlignedBB) o;
+        return Double.compare(that.minX, minX) == 0 &&
+               Double.compare(that.minY, minY) == 0 &&
+               Double.compare(that.minZ, minZ) == 0 &&
+               Double.compare(that.maxX, maxX) == 0 &&
+               Double.compare(that.maxY, maxY) == 0 &&
+               Double.compare(that.maxZ, maxZ) == 0;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(minX, minY, minZ, maxX, maxY, maxZ);
     }
 }

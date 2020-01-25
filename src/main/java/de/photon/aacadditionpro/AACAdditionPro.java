@@ -115,7 +115,7 @@ public class AACAdditionPro extends JavaPlugin
 
                 // Print the complete message
                 VerboseSender.getInstance().sendVerboseMessage(
-                        "Supported versions:" + Arrays.stream(ServerVersion.values()).filter(ServerVersion::isSupported).map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
+                        "Supported versions: " + Arrays.stream(ServerVersion.values()).filter(ServerVersion::isSupported).map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
                         true, true);
                 return;
             }

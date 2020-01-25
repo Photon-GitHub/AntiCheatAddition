@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -122,7 +122,7 @@ public final class EntityUtil
      */
     public static Set<Material> getMaterialsInHitbox(final Location location, final Hitbox hitbox)
     {
-        final Set<Material> materials = new HashSet<>();
+        final Set<Material> materials = EnumSet.noneOf(Material.class);
 
         iterateThroughHitbox(location, hitbox, block -> {
             materials.add(block.getType());

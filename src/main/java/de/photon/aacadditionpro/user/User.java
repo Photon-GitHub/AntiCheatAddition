@@ -84,4 +84,18 @@ public class User
         towerData.unregister();
         velocityChangeData.unregister();
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return this.player.getUniqueId().equals(((User) o).player.getUniqueId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return 47 + (this.player == null ? 0 : player.getUniqueId().hashCode());
+    }
 }

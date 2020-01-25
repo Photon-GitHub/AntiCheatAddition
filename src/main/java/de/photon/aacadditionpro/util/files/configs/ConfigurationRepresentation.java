@@ -41,20 +41,17 @@ public class ConfigurationRepresentation
     public void save() throws IOException
     {
         // Directly inject changes.
-        if (requestedChanges.isEmpty())
-        {
+        if (requestedChanges.isEmpty()) {
             return;
         }
 
         // Load the whole config.
         // Use LinkedList for fast mid-config tampering.
         final LinkedList<String> configLines = new LinkedList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(this.configFile)))
-        {
+        try (BufferedReader br = new BufferedReader(new FileReader(this.configFile))) {
             String line = br.readLine();
 
-            while (line != null)
-            {
+            while (line != null) {
                 configLines.add(line);
                 line = br.readLine();
             }
@@ -65,8 +62,7 @@ public class ConfigurationRepresentation
             int affectedLines = affectedLines(configLines, initialLineIndex, line -> isComment(line) || line.indexOf(':') != -1);
 
             // Remove old values
-            for (int lines = affectedLines; lines > 0; lines--)
-            {
+            for (int lines = affectedLines; lines > 0; lines--) {
                 configLines.remove(initialLineIndex + 1);
             }
 
@@ -87,53 +83,40 @@ public class ConfigurationRepresentation
             {
                 initialLine += ' ';
                 initialLine += value.toString();
-            }
-            else if (value instanceof String)
-            {
+            } else if (value instanceof String) {
                 initialLine += ' ';
                 initialLine += '\"';
                 initialLine += ((String) value);
                 initialLine += '\"';
-            }
-            else if (value instanceof List)
-            {
+            } else if (value instanceof List) {
                 List list = (List) value;
 
-                if (list.isEmpty())
-                {
+                if (list.isEmpty()) {
                     initialLine += " []";
-                }
-                else
-                {
+                } else {
                     short entryDepth = depth(initialLine);
                     final StringBuilder preStringBuilder = new StringBuilder();
 
-                    while (entryDepth-- > 0)
-                    {
+                    while (entryDepth-- > 0) {
                         preStringBuilder.append(' ');
                     }
                     preStringBuilder.append("- ");
 
                     final String preString = preStringBuilder.toString();
 
-                    for (Object o : list)
-                    {
+                    for (Object o : list) {
                         configLines.add(initialLineIndex + 1, preString + o.toString());
                     }
                 }
-            }
-            else if (value instanceof ConfigActions)
-            {
-                switch ((ConfigActions) value)
-                {
+            } else if (value instanceof ConfigActions) {
+                switch ((ConfigActions) value) {
                     case DELETE_KEYS:
                         initialLine += " {}";
                         final short initialLineDepth = depth(initialLine);
                         int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> depth(line) <= initialLineDepth);
 
                         // Remove old values
-                        for (int lines = affectedKeyLines; lines > 0; lines--)
-                        {
+                        for (int lines = affectedKeyLines; lines > 0; lines--) {
                             configLines.remove(initialLineIndex + 1);
                         }
                         break;
@@ -142,20 +125,16 @@ public class ConfigurationRepresentation
             configLines.set(initialLineIndex, initialLine);
         });
 
-        if (!this.configFile.delete())
-        {
+        if (!this.configFile.delete()) {
             throw new IOException("Unable to delete old file " + this.configFile.getName());
         }
 
-        if (!this.configFile.createNewFile())
-        {
+        if (!this.configFile.createNewFile()) {
             throw new IOException("Unable to create new file " + this.configFile.getName());
         }
 
-        try (FileWriter fileWriter = new FileWriter(this.configFile))
-        {
-            while (!configLines.isEmpty())
-            {
+        try (FileWriter fileWriter = new FileWriter(this.configFile)) {
+            while (!configLines.isEmpty()) {
                 fileWriter.write(configLines.removeFirst());
                 fileWriter.write('\n');
             }
@@ -174,24 +153,20 @@ public class ConfigurationRepresentation
         short minDepth = 0;
         int currentLineIndex = 0;
 
-        for (String configLine : configLines)
-        {
+        for (String configLine : configLines) {
             final short currentDepth = depth(configLine);
 
             // Value could not be found as not all parts are existing.
-            if (minDepth > currentDepth)
-            {
+            if (minDepth > currentDepth) {
                 throw new IllegalArgumentException("Path " + path + " could not be found.");
             }
 
-            if (!isComment(configLine) && configLine.contains(pathParts[currentPart]))
-            {
+            if (!isComment(configLine) && configLine.contains(pathParts[currentPart])) {
                 // Update depth
                 minDepth = currentDepth;
 
                 // Found the whole path?
-                if (++currentPart >= pathParts.length)
-                {
+                if (++currentPart >= pathParts.length) {
                     return currentLineIndex;
                 }
             }
@@ -210,13 +185,11 @@ public class ConfigurationRepresentation
         // + 1 as the initial line should not be iterated over.
         final ListIterator<String> listIterator = configLines.listIterator(initialLine + 1);
         String configLine;
-        while (listIterator.hasNext())
-        {
+        while (listIterator.hasNext()) {
             configLine = listIterator.next();
 
             // ":" is the indicator of a new value
-            if (loopBreak.test(configLine))
-            {
+            if (loopBreak.test(configLine)) {
                 break;
             }
 
@@ -232,10 +205,8 @@ public class ConfigurationRepresentation
      */
     private static short depth(final String string)
     {
-        for (short i = 0; i < string.length(); i++)
-        {
-            if (string.charAt(i) != ' ')
-            {
+        for (short i = 0; i < string.length(); i++) {
+            if (string.charAt(i) != ' ') {
                 return i;
             }
         }

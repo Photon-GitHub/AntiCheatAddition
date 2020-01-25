@@ -30,9 +30,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -51,7 +51,7 @@ public class Esp implements ListenerModule
     private static final double MAX_FOV = Math.toRadians(165D);
 
     // Use a LinkedList design for optimal storage usage as the amount of bypassed / spectator players cannot be estimated.
-    private final Queue<User> users = new ArrayDeque<>();
+    private final Deque<User> users = new ArrayDeque<>();
 
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
@@ -111,7 +111,8 @@ public class Esp implements ListenerModule
                     while (!users.isEmpty()) {
                         // Remove the finished player to reduce the amount of added entries.
                         // This makes sure the player won't have a connection with himself.
-                        final User observingUser = users.remove();
+                        // Remove the last object for better array performance.
+                        final User observingUser = users.removeLast();
 
                         // Do not process spectators.
                         if (observingUser.getPlayer().getGameMode() == GameMode.SPECTATOR) {

@@ -56,8 +56,6 @@ permissions:
     description: Allows a player to bypass the ImpossibleChat check
   aacadditionpro.bypass.inventory:
     description: Allows a player to bypass the Inventory check
-  aacadditionpro.bypass.killauraentity:
-    description: Allows a player to bypass the KillauraEntity check
   aacadditionpro.bypass.packetanalysis:
     description: Allows a player to bypass the PacketAnalysis check
   aacadditionpro.bypass.pingspoof:

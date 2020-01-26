@@ -36,7 +36,6 @@ permissions:
       aacadditionpro.bypass.fastswitch: true
       aacadditionpro.bypass.impossiblechat: true
       aacadditionpro.bypass.inventory: true
-      aacadditionpro.bypass.killauraentity: true
       aacadditionpro.bypass.packetanalysis: true
       aacadditionpro.bypass.pingspoof: true
       aacadditionpro.bypass.scaffold: true

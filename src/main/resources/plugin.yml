@@ -36,7 +36,6 @@ permissions:
       aacadditionpro.bypass.fastswitch: true
       aacadditionpro.bypass.impossiblechat: true
       aacadditionpro.bypass.inventory: true
-      aacadditionpro.bypass.killauraentity: true
       aacadditionpro.bypass.packetanalysis: true
       aacadditionpro.bypass.pingspoof: true
       aacadditionpro.bypass.scaffold: true
@@ -56,8 +55,6 @@ permissions:
     description: Allows a player to bypass the ImpossibleChat check
   aacadditionpro.bypass.inventory:
     description: Allows a player to bypass the Inventory check
-  aacadditionpro.bypass.killauraentity:
-    description: Allows a player to bypass the KillauraEntity check
   aacadditionpro.bypass.packetanalysis:
     description: Allows a player to bypass the PacketAnalysis check
   aacadditionpro.bypass.pingspoof:

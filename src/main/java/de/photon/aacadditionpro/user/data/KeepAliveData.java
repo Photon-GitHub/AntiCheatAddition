@@ -1,18 +1,10 @@
 package de.photon.aacadditionpro.user.data;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.user.Data;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.datastructures.buffer.ContinuousArrayBuffer;
 import de.photon.aacadditionpro.util.datastructures.buffer.ContinuousBuffer;
-import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
 import lombok.Getter;
 
 import java.util.Iterator;
@@ -26,10 +18,6 @@ public class KeepAliveData extends Data
 
     @Getter
     private final AtomicInteger ignoredKeepAlives = new AtomicInteger(0);
-
-    static {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new KeepAliveDataUpdater());
-    }
 
     @Getter
     /* The central Deque of the KeepAlive packet handling.
@@ -126,32 +114,6 @@ public class KeepAliveData extends Data
         public int hashCode()
         {
             return Objects.hash(keepAliveID);
-        }
-    }
-
-    /**
-     * A singleton class to reduce the reqired {@link com.comphenix.protocol.events.PacketListener}s to a minimum.
-     */
-    private static class KeepAliveDataUpdater extends PacketAdapter
-    {
-        private KeepAliveDataUpdater()
-        {
-            super(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Server.KEEP_ALIVE);
-        }
-
-        @Override
-        public void onPacketSending(PacketEvent event)
-        {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-            if (user == null) {
-                return;
-            }
-
-            // Register the KeepAlive
-            synchronized (user.getKeepAliveData().getKeepAlives()) {
-                user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId()));
-            }
         }
     }
 }

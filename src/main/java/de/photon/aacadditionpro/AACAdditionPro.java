@@ -195,6 +195,7 @@ public class AACAdditionPro extends JavaPlugin
             this.loaded = true;
             this.getServer().getPluginManager().callEvent(new APILoadedEvent());
 
+            VerboseSender.getInstance().sendVerboseMessage("AACAdditionPro initialization completed.");
         } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //

@@ -30,7 +30,6 @@ public final class VerboseSender implements Listener
     static {
         instance = new VerboseSender();
         AACAdditionPro.getInstance().registerListener(instance);
-
     }
 
     // Message constants
@@ -50,7 +49,8 @@ public final class VerboseSender implements Listener
     private final boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console");
     private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players");
 
-    private VerboseSender() {
+    private VerboseSender()
+    {
         allowedToRegisterTasks = true;
     }
 

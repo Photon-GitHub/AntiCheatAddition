@@ -14,6 +14,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.user.data.KeepAliveData;
 import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.packetwrappers.WrapperPlayKeepAlive;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientKeepAlive;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -50,9 +51,13 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
             return;
         }
 
+        final WrapperPlayKeepAlive wrapper = new WrapperPlayServerKeepAlive(event.getPacket());
+
+        System.out.println("OUT ID: " + wrapper.getKeepAliveId());
+
         // Register the KeepAlive
         synchronized (user.getKeepAliveData().getKeepAlives()) {
-            user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId()));
+            user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(wrapper.getKeepAliveId()));
         }
         vlManager.flag(user.getPlayer(), keepAliveIgnoredPattern.apply(user, event), -1, () -> {}, () -> {});
     }
@@ -67,11 +72,18 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
             return;
         }
 
-        final long keepAliveId = new WrapperPlayClientKeepAlive(event.getPacket()).getKeepAliveId();
+        final WrapperPlayKeepAlive wrapper = new WrapperPlayClientKeepAlive(event.getPacket());
+        System.out.println("IN: " + wrapper.getKeepAliveId());
+
+        final long keepAliveId = wrapper.getKeepAliveId();
         KeepAliveData.KeepAlivePacketData keepAlivePacketData = null;
 
         int offset = 0;
         synchronized (user.getKeepAliveData().getKeepAlives()) {
+            for (KeepAliveData.KeepAlivePacketData keepAlive : user.getKeepAliveData().getKeepAlives()) {
+                System.out.println("EXIST: " + keepAlive.getKeepAliveID());
+            }
+
             final Iterator<KeepAliveData.KeepAlivePacketData> iterator = user.getKeepAliveData().getKeepAlives().descendingIterator();
             KeepAliveData.KeepAlivePacketData current;
             while (iterator.hasNext()) {
@@ -91,9 +103,11 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
             // If the packet already has a response something is off.
             keepAlivePacketData.hasRegisteredResponse())
         {
+            System.out.println("IN FAIL: " + wrapper.getKeepAliveId());
             VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
             vlManager.flag(user.getPlayer(), 20, -1, () -> {}, () -> {});
         } else {
+            System.out.println("IN CORRECT: " + wrapper.getKeepAliveId());
             keepAlivePacketData.registerResponse();
             vlManager.flag(user.getPlayer(), keepAliveOffsetPattern.apply(user, offset), -1, () -> {}, () -> {});
         }

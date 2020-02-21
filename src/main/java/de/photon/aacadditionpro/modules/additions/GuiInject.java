@@ -9,6 +9,7 @@ import de.photon.aacadditionpro.modules.RestrictedServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -26,7 +27,7 @@ public class GuiInject implements ListenerModule, RestrictedServerVersion
 {
     private static final ItemStack AACADDITIONPRO_ITEMSTACK;
     private static final ItemStack BACK_ITEMSTACK;
-    private static final String AACADDITIONPRO_TITLE = ChatColor.GOLD + "AACAdditionPro " + ChatColor.DARK_GRAY + " GUI | Checks";
+    private static final String AACADDITIONPRO_TITLE = ChatColor.GOLD + "AACAdditionPro " + ChatColor.DARK_GRAY + "GUI | Checks";
 
     static {
         AACADDITIONPRO_ITEMSTACK = new ItemStack(Material.DIAMOND);
@@ -122,34 +123,41 @@ public class GuiInject implements ListenerModule, RestrictedServerVersion
             if (event.getView().getTitle().equals(AACADDITIONPRO_TITLE)) {
                 event.setCancelled(true);
 
-                if (BACK_ITEMSTACK.equals(event.getCurrentItem())) {
-                    Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-                        event.getWhoClicked().closeInventory();
-                        Bukkit.getServer().dispatchCommand(event.getWhoClicked(), "aac manage");
-                    });
-                }
+                if (event.getWhoClicked() instanceof Player) {
+                    final Player player = (Player) event.getWhoClicked();
 
-                if (event.getCurrentItem() != null
-                    && event.getCurrentItem().getType() == Material.GREEN_TERRACOTTA
-                    && event.getCurrentItem().getType() == Material.GRAY_TERRACOTTA)
-                {
-                    ItemStack clicked = event.getCurrentItem();
-
-                    ModuleType toToggle = null;
-                    for (ModuleType moduleType : ModuleType.values()) {
-                        if (moduleType.getConfigString().equals(clicked.getItemMeta().getDisplayName())) {
-                            toToggle = moduleType;
-                            break;
-                        }
+                    if (BACK_ITEMSTACK.equals(event.getCurrentItem())) {
+                        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
+                            player.closeInventory();
+                            Bukkit.getServer().dispatchCommand(player, "aac manage");
+                        });
                     }
 
-                    if (toToggle != null) {
-                        if (clicked.getType() == Material.GREEN_TERRACOTTA) {
-                            clicked.setType(Material.GRAY_TERRACOTTA);
-                            AACAdditionPro.getInstance().getModuleManager().setStateOfModule(toToggle, false);
-                        } else {
-                            clicked.setType(Material.GREEN_TERRACOTTA);
-                            AACAdditionPro.getInstance().getModuleManager().setStateOfModule(toToggle, true);
+                    if (event.getCurrentItem() != null
+                        && (event.getCurrentItem().getType() == Material.GREEN_TERRACOTTA || event.getCurrentItem().getType() == Material.GRAY_TERRACOTTA))
+                    {
+                        final ItemStack clicked = event.getCurrentItem();
+                        final String configPath = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
+
+                        ModuleType toToggle = null;
+                        for (ModuleType moduleType : ModuleType.values()) {
+                            if (moduleType.getConfigString().equals(configPath)) {
+                                toToggle = moduleType;
+                                break;
+                            }
+                        }
+
+                        if (toToggle != null) {
+                            if (clicked.getType() == Material.GREEN_TERRACOTTA) {
+                                clicked.setType(Material.GRAY_TERRACOTTA);
+                                AACAdditionPro.getInstance().getModuleManager().setStateOfModule(toToggle, false);
+                            } else {
+                                clicked.setType(Material.GREEN_TERRACOTTA);
+                                AACAdditionPro.getInstance().getModuleManager().setStateOfModule(toToggle, true);
+                            }
+
+                            event.getInventory().setItem(event.getRawSlot(), clicked);
+                            player.updateInventory();
                         }
                     }
                 }

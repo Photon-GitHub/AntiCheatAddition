@@ -53,8 +53,6 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
 
         final WrapperPlayKeepAlive wrapper = new WrapperPlayServerKeepAlive(event.getPacket());
 
-        System.out.println("OUT ID: " + wrapper.getKeepAliveId());
-
         // Register the KeepAlive
         synchronized (user.getKeepAliveData().getKeepAlives()) {
             user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(wrapper.getKeepAliveId()));
@@ -73,7 +71,6 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
         }
 
         final WrapperPlayKeepAlive wrapper = new WrapperPlayClientKeepAlive(event.getPacket());
-        System.out.println("IN: " + wrapper.getKeepAliveId());
 
         final long keepAliveId = wrapper.getKeepAliveId();
         KeepAliveData.KeepAlivePacketData keepAlivePacketData = null;
@@ -81,7 +78,6 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
         int offset = 0;
         synchronized (user.getKeepAliveData().getKeepAlives()) {
             for (KeepAliveData.KeepAlivePacketData keepAlive : user.getKeepAliveData().getKeepAlives()) {
-                System.out.println("EXIST: " + keepAlive.getKeepAliveID());
             }
 
             final Iterator<KeepAliveData.KeepAlivePacketData> iterator = user.getKeepAliveData().getKeepAlives().descendingIterator();
@@ -103,11 +99,9 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
             // If the packet already has a response something is off.
             keepAlivePacketData.hasRegisteredResponse())
         {
-            System.out.println("IN FAIL: " + wrapper.getKeepAliveId());
             VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
             vlManager.flag(user.getPlayer(), 20, -1, () -> {}, () -> {});
         } else {
-            System.out.println("IN CORRECT: " + wrapper.getKeepAliveId());
             keepAlivePacketData.registerResponse();
             vlManager.flag(user.getPlayer(), keepAliveOffsetPattern.apply(user, offset), -1, () -> {}, () -> {});
         }

@@ -65,8 +65,6 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
             tail = incrementIndexSafely(tail);
         }
         array[head] = object;
-
-        System.out.println("HEAD: " + head + " TAIL " + tail);
         return false;
     }
 
@@ -120,8 +118,6 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
     @Override
     public Iterator<T> iterator()
     {
-        System.out.println("ITERATOR HEAD: " + head + " TAIL " + tail);
-
         return new Iterator<T>()
         {
             // Start makes sure that we can start the iteration even when the incremented head is the tail.

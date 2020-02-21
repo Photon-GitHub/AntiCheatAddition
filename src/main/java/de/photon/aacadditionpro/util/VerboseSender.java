@@ -32,9 +32,7 @@ public final class VerboseSender implements Listener
         AACAdditionPro.getInstance().registerListener(instance);
     }
 
-    // Message constants
-    private static final String NON_COLORED_PRE_STRING = "[AACAdditionPro] {0}";
-    private static final String PRE_STRING = ChatColor.DARK_RED + NON_COLORED_PRE_STRING + ChatColor.GRAY;
+    private static final String PRE_STRING = ChatColor.DARK_RED + "[AACAdditionPro] {0}" + ChatColor.GRAY;
     private static final String EVENT_PRE_STRING = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
 
     @Setter
@@ -116,7 +114,7 @@ public final class VerboseSender implements Listener
         if (writeToConsole || force_console) {
             AACAdditionPro.getInstance().getLogger().log(error ?
                                                          Level.SEVERE :
-                                                         Level.INFO, NON_COLORED_PRE_STRING, logMessage);
+                                                         Level.INFO, logMessage);
         }
 
         // Prevent errors on disable as of scheduling

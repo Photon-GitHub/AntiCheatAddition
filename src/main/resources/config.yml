@@ -774,6 +774,11 @@ BrandHider:
   # Measured in ticks
   refresh_rate: 0
 
+# This will make AACAdditionPro hook AAC and inject its own checks into the GUI
+GUI:
+  # Do you want to enable the GUI inject
+  enabled: false
+
 # This automatically deletes old log files of both AAC and AACAdditionPro
 # It activates automatically on restart and after that in a 12 hour cycle.
 LogBot:

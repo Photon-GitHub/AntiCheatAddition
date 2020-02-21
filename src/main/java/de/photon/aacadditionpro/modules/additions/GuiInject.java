@@ -1,8 +1,10 @@
 package de.photon.aacadditionpro.modules.additions;
 
+import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.modules.Dependency;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.RestrictedServerVersion;
@@ -23,7 +25,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class GuiInject implements ListenerModule, RestrictedServerVersion
+public class GuiInject implements ListenerModule, RestrictedServerVersion, Dependency
 {
     private static final ItemStack AACADDITIONPRO_ITEMSTACK;
     private static final ItemStack BACK_ITEMSTACK;
@@ -174,5 +176,11 @@ public class GuiInject implements ListenerModule, RestrictedServerVersion
     public Set<ServerVersion> getSupportedVersions()
     {
         return EnumSet.of(ServerVersion.MC113, ServerVersion.MC114, ServerVersion.MC115);
+    }
+
+    @Override
+    public Set<String> getDependencies()
+    {
+        return ImmutableSet.of("AAC");
     }
 }

@@ -45,6 +45,10 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
     @Override
     public void onPacketSending(PacketEvent event)
     {
+        if (event.isPlayerTemporary()) {
+            return;
+        }
+
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
@@ -78,6 +82,7 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
                     // index 6 in 1.8
                     index = 6;
                     break;
+                case MC112:
                 case MC113:
                     // index 7 in 1.11+
                     index = 7;
@@ -98,12 +103,21 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
 
             // Clone the packet to prevent a serversided connection of the health.
             event.setPacket(event.getPacket().deepClone());
+            List<WrappedWatchableObject> read = null;
 
             float spoofedHealth;
             switch (ServerVersion.getActiveServerVersion()) {
                 case MC188:
                     spoofedHealth = Float.NaN;
+
+                    // Only set it on 1.8.8, otherwise it will just be at the max health.
+                    // This packetwrapper doesn't currently work with 1.15+.
+                    if (event.getPacket().getType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
+                        WrapperPlayServerNamedEntitySpawn wrapper = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
+                        read = wrapper.getMetadata().getWatchableObjects();
+                    }
                     break;
+                case MC112:
                 case MC113:
                 case MC114:
                 case MC115:
@@ -113,12 +127,7 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
                     throw new UnknownMinecraftVersion();
             }
 
-            List<WrappedWatchableObject> read = null;
-
-            if (event.getPacket().getType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
-                WrapperPlayServerNamedEntitySpawn wrapper = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
-                read = wrapper.getMetadata().getWatchableObjects();
-            } else if (event.getPacket().getType() == PacketType.Play.Server.ENTITY_METADATA) {
+            if (event.getPacket().getType() == PacketType.Play.Server.ENTITY_METADATA) {
                 WrapperPlayServerEntityMetadata wrapper = new WrapperPlayServerEntityMetadata(event.getPacket());
                 read = wrapper.getMetadata();
             }

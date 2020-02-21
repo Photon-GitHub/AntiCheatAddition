@@ -50,6 +50,10 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     @Override
     public void onPacketSending(PacketEvent event)
     {
+        if (event.isPlayerTemporary()) {
+            return;
+        }
+
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
@@ -65,6 +69,10 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
+        if (event.isPlayerTemporary()) {
+            return;
+        }
+
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed

@@ -15,7 +15,14 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
     private final Object[] array;
 
     // These values save the current elements.
+    /**
+     * Newest element
+     */
     private int head = 0;
+
+    /**
+     * Oldest element
+     */
     private int tail = 0;
     private int size = 0;
 
@@ -40,19 +47,24 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
     @Override
     public boolean bufferObject(T object)
     {
+        // Initial state
+        if (this.size == 0) {
+            this.size++;
+        }
         // First run through
-        if (this.size < maxSize) {
+        else if (this.size < maxSize) {
+            head = incrementIndexSafely(head);
             this.size++;
         }
         // Now the array is already full.
         // This means we need to handle the tail.
         else {
+            head = incrementIndexSafely(head);
+
             this.onForget((T) array[tail]);
             tail = incrementIndexSafely(tail);
         }
-
         array[head] = object;
-        head = incrementIndexSafely(head);
         return false;
     }
 
@@ -91,7 +103,6 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
         this.clear();
     }
 
-
     @Override
     public void clearDescendingIteration(Consumer<T> consumer)
     {
@@ -109,18 +120,21 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
     {
         return new Iterator<T>()
         {
-            // Start one before tail so next will return tail.
+            // Start makes sure that we can start the iteration even when the incremented head is the tail.
+            private boolean start = true;
             private int currentIndex = tail;
 
             @Override
             public boolean hasNext()
             {
-                return currentIndex != head;
+                // + 1 to make sure the last element will be included in the iteration.
+                return start || currentIndex != incrementIndexSafely(head);
             }
 
             @Override
             public T next()
             {
+                start = false;
                 T returnedObject = (T) array[currentIndex];
                 currentIndex = incrementIndexSafely(currentIndex);
                 return returnedObject;
@@ -134,20 +148,24 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
     {
         return new Iterator<T>()
         {
-            // Start one before tail so next will return tail.
+            // Start makes sure that we can start the iteration even when the decremented tail is the head.
+            private boolean start = true;
             private int currentIndex = head;
 
             @Override
             public boolean hasNext()
             {
-                return currentIndex != tail;
+                // - 1 to make sure the last element will be included in the iteration.
+                return start || currentIndex != decrementIndexSafely(tail);
             }
 
             @Override
             public T next()
             {
+                start = false;
+                T returnedObject = (T) array[currentIndex];
                 currentIndex = decrementIndexSafely(currentIndex);
-                return (T) array[currentIndex];
+                return returnedObject;
             }
         };
     }
@@ -158,10 +176,7 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
      */
     private int incrementIndexSafely(int index)
     {
-        if (++index >= maxSize) {
-            index = 0;
-        }
-        return index;
+        return (index + 1) % maxSize;
     }
 
     /**
@@ -170,9 +185,6 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
      */
     private int decrementIndexSafely(int index)
     {
-        if (--index < 0) {
-            index = maxSize - 1;
-        }
-        return index;
+        return index == 0 ? maxSize - 1 : index - 1;
     }
 }

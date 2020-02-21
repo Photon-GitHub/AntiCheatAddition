@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.user;
 
 import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.modules.ModuleType;
+import de.photon.aacadditionpro.user.data.AutoEatData;
 import de.photon.aacadditionpro.user.data.AutoPotionData;
 import de.photon.aacadditionpro.user.data.ConsumeData;
 import de.photon.aacadditionpro.user.data.FishingData;
@@ -25,6 +26,7 @@ public class User
 {
     private Player player;
 
+    private final AutoEatData autoEatData = new AutoEatData(this);
     private final AutoPotionData autoPotionData = new AutoPotionData(this);
     private final ConsumeData consumeData = new ConsumeData(this);
     private final TimeData fastSwitchData = new TimeData(this);
@@ -47,7 +49,7 @@ public class User
     {
         this.player = player;
         this.loginData = new TimeData(this, System.currentTimeMillis());
-        UserManager.setVerbose(this, InternalPermission.VERBOSE.hasPermission(player));
+        UserManager.setVerbose(this, InternalPermission.AAC_VERBOSE.hasPermission(player));
     }
 
     public boolean isBypassed(ModuleType moduleType)
@@ -66,6 +68,7 @@ public class User
     void unregister()
     {
         this.player = null;
+        autoEatData.unregister();
         autoPotionData.unregister();
         consumeData.unregister();
         fastSwitchData.unregister();

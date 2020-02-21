@@ -45,6 +45,7 @@ class EqualRotationPattern extends PatternModule.PacketPattern
                                                                                   Material.CHEST,
                                                                                   Material.ANVIL));
                 break;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -85,7 +86,7 @@ class EqualRotationPattern extends PatternModule.PacketPattern
             // the last false positives.
             // Sync call because the isHitboxInLiquids method will load chunks (prevent errors).
             try {
-                if (Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () ->
+                if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () ->
                         // False positive when jumping from great heights into a pool with slime blocks on the bottom.
                         !(EntityUtil.isHitboxInLiquids(user.getPlayer().getLocation(),
                                                        user.getPlayer().isSneaking() ?
@@ -98,7 +99,7 @@ class EqualRotationPattern extends PatternModule.PacketPattern
                           EntityUtil.isHitboxInMaterials(user.getPlayer().getLocation(),
                                                          user.getPlayer().isSneaking() ?
                                                          Hitbox.SNEAKING_PLAYER :
-                                                         Hitbox.PLAYER, CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS))
+                                                         Hitbox.PLAYER, CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS)))
                 {
                     // Cancelled packets may cause problems.
                     if (user.getPacketAnalysisData().equalRotationExpected) {

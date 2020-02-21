@@ -77,7 +77,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void on(final InventoryClickEvent event)
+    public void onClick(final InventoryClickEvent event)
     {
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 

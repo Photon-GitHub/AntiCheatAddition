@@ -76,11 +76,13 @@ public final class ModuleManager
      */
     public void setStateOfModule(final ModuleType moduleType, final boolean state)
     {
-        if (state) {
-            Module.enableModule(this.getModule(moduleType));
-        }
-        else {
-            Module.disableModule(this.getModule(moduleType));
+        // This will prevent bugs with registering modules multiple times
+        if (state != getStateOfModule(moduleType)) {
+            if (state) {
+                Module.enableModule(this.getModule(moduleType));
+            } else {
+                Module.disableModule(this.getModule(moduleType));
+            }
         }
     }
 }

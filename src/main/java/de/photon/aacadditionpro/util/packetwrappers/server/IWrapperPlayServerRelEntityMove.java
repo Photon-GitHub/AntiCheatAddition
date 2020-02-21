@@ -16,6 +16,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return getHandle().getBytes().read(0) / 32D;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -36,6 +37,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
             case MC188:
                 getHandle().getBytes().write(0, (byte) (value * 32));
                 break;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -55,6 +57,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return getHandle().getBytes().read(1) / 32D;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -76,6 +79,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
             case MC188:
                 getHandle().getBytes().write(1, (byte) (value * 32));
                 break;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -95,6 +99,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return getHandle().getBytes().read(2) / 32D;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -116,6 +121,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
             case MC188:
                 getHandle().getBytes().write(2, (byte) (value * 32));
                 break;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:

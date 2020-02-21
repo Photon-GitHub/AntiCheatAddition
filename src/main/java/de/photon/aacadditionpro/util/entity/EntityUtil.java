@@ -86,6 +86,7 @@ public final class EntityUtil
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return livingEntity.getMaxHealth();
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -107,6 +108,7 @@ public final class EntityUtil
                 return passenger == null ?
                        Collections.emptyList() :
                        Collections.singletonList(passenger);
+            case MC112:
             case MC113:
             case MC114:
             case MC115:

@@ -38,6 +38,10 @@ public class Pingspoof extends PacketAdapter implements ListenerModule, PacketLi
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
+        if (event.isPlayerTemporary()) {
+            return;
+        }
+
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed

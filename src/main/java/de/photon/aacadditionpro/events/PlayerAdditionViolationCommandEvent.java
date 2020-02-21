@@ -90,6 +90,7 @@ public class PlayerAdditionViolationCommandEvent extends Event implements Cancel
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
+            case MC112:
             case MC113:
                 return new PlayerAdditionViolationCommandEvent(p, command, moduleType, true);
             case MC114:

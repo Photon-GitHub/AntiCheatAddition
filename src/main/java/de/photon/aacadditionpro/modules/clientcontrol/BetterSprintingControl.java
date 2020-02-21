@@ -59,6 +59,7 @@ public class BetterSprintingControl extends ClientControlModule implements Plugi
 
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
+            case MC112:
                 // Bypassed players are already filtered out.
                 // The mod provides a method to disable it
                 if (disable) {

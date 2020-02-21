@@ -55,6 +55,7 @@ public class ViolationLevelManagement
                 Collections.sort(temp);
                 thresholds = ImmutableList.copyOf(temp);
                 break;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:

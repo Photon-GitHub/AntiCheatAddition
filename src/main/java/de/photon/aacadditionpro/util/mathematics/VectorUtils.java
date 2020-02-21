@@ -1,8 +1,8 @@
 package de.photon.aacadditionpro.util.mathematics;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
+import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -20,6 +20,8 @@ public final class VectorUtils
     // The camera offset for 3rd person
     private static final double THIRD_PERSON_OFFSET = 5D;
 
+    private static final boolean RAY_TRACING = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.ESP.getConfigString() + ".ray_tracing", false);
+
     /**
      * Get to know where the {@link Vector} intersects with a {@link org.bukkit.block.Block}.
      * Non-Occluding {@link Block}s as defined in {@link BlockUtils#isReallyOccluding(Material)} are ignored.
@@ -35,36 +37,30 @@ public final class VectorUtils
         Preconditions.checkNotNull(start.getWorld(), "RayTrace: Unknown start world.");
 
         if (length >= 1) {
-            switch (ServerVersion.getActiveServerVersion()) {
-                case MC188:
-                    try {
-                        final BlockIterator blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
-                        Block block;
-                        while (blockIterator.hasNext()) {
-                            block = blockIterator.next();
-                            // Account for a Spigot bug: BARRIER and MOB_SPAWNER are not occluding blocks
-                            if (BlockUtils.isReallyOccluding(block.getType())) {
-                                // Use the middle location of the Block instead of the simple location.
-                                return block.getLocation().clone().add(0.5, 0.5, 0.5).distance(start);
-                            }
-                        }
-                    } catch (IllegalStateException exception) {
-                        // Just in case the start block could not be found for some reason or a chunk is loaded async.
-                        return 0;
-                    }
-                    break;
-                case MC113:
-                case MC114:
-                case MC115:
-                    RayTraceResult result = start.getWorld().rayTraceBlocks(start, direction, length, FluidCollisionMode.NEVER, true);
-                    // Hit nothing or the other player
-                    if (result == null || result.getHitBlock() == null) {
-                        return 0;
-                    }
+            if (RAY_TRACING) {
+                RayTraceResult result = start.getWorld().rayTraceBlocks(start, direction, length, FluidCollisionMode.NEVER, true);
+                // Hit nothing or the other player
+                if (result == null || result.getHitBlock() == null) {
+                    return 0;
+                }
 
-                    return start.toVector().distance(result.getHitPosition());
-                default:
-                    throw new UnknownMinecraftVersion();
+                return start.toVector().distance(result.getHitPosition());
+            } else {
+                try {
+                    final BlockIterator blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
+                    Block block;
+                    while (blockIterator.hasNext()) {
+                        block = blockIterator.next();
+                        // Account for a Spigot bug: BARRIER and MOB_SPAWNER are not occluding blocks
+                        if (BlockUtils.isReallyOccluding(block.getType())) {
+                            // Use the middle location of the Block instead of the simple location.
+                            return block.getLocation().clone().add(0.5, 0.5, 0.5).distance(start);
+                        }
+                    }
+                } catch (IllegalStateException exception) {
+                    // Just in case the start block could not be found for some reason or a chunk is loaded async.
+                    return 0;
+                }
             }
         }
         return 0;

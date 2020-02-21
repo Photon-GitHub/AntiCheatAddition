@@ -32,6 +32,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getBytes().read(0) / 32D;
+            case MC112:
             case MC113:
             case MC114:
                 // Integers are ok, even though wiki.vg says short
@@ -49,6 +50,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
             case MC188:
                 handle.getBytes().write(0, (byte) (value * 32));
                 break;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -66,6 +68,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getBytes().read(1) / 32D;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -84,6 +87,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
             case MC188:
                 handle.getBytes().write(1, (byte) (value * 32));
                 break;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -101,6 +105,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getBytes().read(2) / 32D;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -119,6 +124,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
             case MC188:
                 handle.getBytes().write(2, (byte) (value * 32));
                 break;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:

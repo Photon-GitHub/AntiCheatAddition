@@ -14,6 +14,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.user.data.KeepAliveData;
 import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.packetwrappers.WrapperPlayKeepAlive;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientKeepAlive;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -43,6 +44,10 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
     @Override
     public void onPacketSending(PacketEvent event)
     {
+        if (event.isPlayerTemporary()) {
+            return;
+        }
+
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
@@ -50,9 +55,11 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
             return;
         }
 
+        final WrapperPlayKeepAlive wrapper = new WrapperPlayServerKeepAlive(event.getPacket());
+
         // Register the KeepAlive
         synchronized (user.getKeepAliveData().getKeepAlives()) {
-            user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(new WrapperPlayServerKeepAlive(event.getPacket()).getKeepAliveId()));
+            user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(wrapper.getKeepAliveId()));
         }
         vlManager.flag(user.getPlayer(), keepAliveIgnoredPattern.apply(user, event), -1, () -> {}, () -> {});
     }
@@ -60,6 +67,10 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
+        if (event.isPlayerTemporary()) {
+            return;
+        }
+
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
@@ -67,7 +78,9 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
             return;
         }
 
-        final long keepAliveId = new WrapperPlayClientKeepAlive(event.getPacket()).getKeepAliveId();
+        final WrapperPlayKeepAlive wrapper = new WrapperPlayClientKeepAlive(event.getPacket());
+
+        final long keepAliveId = wrapper.getKeepAliveId();
         KeepAliveData.KeepAlivePacketData keepAlivePacketData = null;
 
         int offset = 0;

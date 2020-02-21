@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 public class AutoEat implements ListenerModule, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 3600L);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 6000L);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancelVl;

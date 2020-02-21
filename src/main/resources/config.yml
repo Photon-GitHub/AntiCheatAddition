@@ -131,7 +131,7 @@ Esp:
   # This will make AACAdditionPro use the new ray tracing of Spigot 1.13 and upwards.
   # Only activate if your Spigot is version 1.13 and upwards.
   #
-  # !!! THIS MAY DEVESTATE PERFORMANCE, USE WITH CAUTION !!!
+  # !!! THIS MAY DEVASTATE PERFORMANCE, USE WITH CAUTION !!!
   ray_tracing: false
 
 # The Fastswitch check prevents players from switching their hotbar-selection too quickly

@@ -40,6 +40,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(1) / 32.0;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -56,6 +57,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
             case MC188:
                 handle.getIntegers().write(1, (int) value * 32);
                 break;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -72,6 +74,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(2) / 32.0;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -88,6 +91,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
             case MC188:
                 handle.getIntegers().write(2, (int) value * 32);
                 break;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -104,6 +108,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return handle.getIntegers().read(3) / 32.0;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:
@@ -120,6 +125,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
             case MC188:
                 handle.getIntegers().write(3, (int) value * 32);
                 break;
+            case MC112:
             case MC113:
             case MC114:
             case MC115:

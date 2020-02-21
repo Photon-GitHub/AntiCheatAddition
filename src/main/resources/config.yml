@@ -35,8 +35,8 @@ AutoEat:
   timeout: 5000
   # Map of violation levels to command
   thresholds:
-    1: "aacstaffnotify {player} in {world} is suspected for AutoEat"
-    2: "aacstaffnotify {player} in {world} is highly suspected for AutoEat"
+    1: "aac notify {player} in {world} is suspected for AutoEat"
+    2: "aac notify {player} in {world} is highly suspected for AutoEat"
     4: "aackick {player} AutoEat"
 
 # If you have modified fishing time and/or behaviour please test if this check is compatible with your setup.
@@ -80,8 +80,8 @@ AutoFish:
       maximum_fails: 12
   # Map of violation levels to command
   thresholds:
-    8: "aacstaffnotify {player} in {world} is suspected for AutoFish"
-    12: "aacstaffnotify {player} in {world} is highly suspected for AutoFish"
+    8: "aac notify {player} in {world} is suspected for AutoFish"
+    12: "aac notify {player} in {world} is highly suspected for AutoFish"
     18: "aackick {player} AutoFish"
 
 # AutoPotion detects automated bots which splash the player with potions that have positive effects
@@ -111,8 +111,8 @@ AutoPotion:
   look_down_angle: 80
   # Map of violation levels to command
   thresholds:
-    1: "aacstaffnotify {player} in {world} is suspected for AutoPotion"
-    2: "aacstaffnotify {player} in {world} is highly suspected for AutoPotion"
+    1: "aac notify {player} in {world} is suspected for AutoPotion"
+    2: "aac notify {player} in {world} is highly suspected for AutoPotion"
     4: "aackick {player} AutoPotion"
 
 # This module uses advanced mathematics to determine if players can see each other.
@@ -167,8 +167,8 @@ Fastswitch:
   switch_milliseconds: 50
   # Map of violation levels to command
   thresholds:
-    3: "aacstaffnotify {player} in {world} is suspected for Fastswitch"
-    5: "aacstaffnotify {player} in {world} is highly suspected for Fastswitch"
+    3: "aac notify {player} in {world} is suspected for Fastswitch"
+    5: "aac notify {player} in {world} is highly suspected for Fastswitch"
     9: "aackick {player} Fastswitch"
 
 # ImpossibleChat check detects sending chat messages while being in an inventory, blocking, sprinting and other illegal
@@ -182,8 +182,8 @@ ImpossibleChat:
   cancel_vl: 2
   # Map of violation levels to command
   thresholds:
-    2: "aacstaffnotify {player} in {world} is suspected for ImpossibleChat"
-    5: "aacstaffnotify {player} in {world} is highly suspected for ImpossibleChat"
+    2: "aac notify {player} in {world} is suspected for ImpossibleChat"
+    5: "aac notify {player} in {world} is highly suspected for ImpossibleChat"
     8: "aackick {player} ImpossibleChat"
 
 # This check contains a lot of parts covering all aspects of inventory interaction.
@@ -245,8 +245,8 @@ Inventory:
       cancel_vl: 20
   # Map of violation levels to command
   thresholds:
-    55: "aacstaffnotify {player} in {world} is suspected for inventory cheats."
-    80: "aacstaffnotify {player} in {world} is highly suspected for inventory cheats."
+    55: "aac notify {player} in {world} is suspected for inventory cheats."
+    80: "aac notify {player} in {world} is highly suspected for inventory cheats."
     100: "aackick {player} Inventory cheats."
 
 # This check processes KeepAlive packets to detect Pingspoof and similar modifications.
@@ -284,8 +284,8 @@ KeepAlive:
       enabled: true
   # Map of violation levels to command
   thresholds:
-    11: "aacstaffnotify {player} in {world} is suspected by KeepAlive"
-    18: "aacstaffnotify {player} in {world} is highly suspected by KeepAlive"
+    11: "aac notify {player} in {world} is suspected by KeepAlive"
+    18: "aac notify {player} in {world} is highly suspected by KeepAlive"
     28: "aackick {player} Suspicious KeepAlive packets"
 
 # PacketAnalysis is a general check which aims to detect modifications that are closely linked to interfering with the
@@ -332,8 +332,8 @@ PacketAnalysis:
       enabled: true
   # Map of violation levels to command
   thresholds:
-    11: "aacstaffnotify {player} in {world} is suspected by PacketAnalysis"
-    18: "aacstaffnotify {player} in {world} is highly suspected by PacketAnalysis"
+    11: "aac notify {player} in {world} is suspected by PacketAnalysis"
+    18: "aac notify {player} in {world} is highly suspected by PacketAnalysis"
     28: "aackick {player} Suspicious packets"
 
 # The Pingspoof check tries to identify cheaters who try to intentionally increase their ping to bypass
@@ -353,8 +353,8 @@ Pingspoof:
   refresh_at_vl: 5
   # Map of violation levels to command
   thresholds:
-    4: "aacstaffnotify {player} in {world} is suspected for Pingspoofer"
-    8: "aacstaffnotify {player} in {world} is highly suspected for Pingspoofer"
+    4: "aac notify {player} in {world} is suspected for Pingspoofer"
+    8: "aac notify {player} in {world} is highly suspected for Pingspoofer"
     12: "aackick {player} Pingspoofer"
 
 # The Scaffold check detects Scaffold cheats
@@ -444,8 +444,8 @@ Scaffold:
       violation_threshold: 4
   # Map of violation levels to command
   thresholds:
-    16: "aacstaffnotify {player} in {world} is suspected for Scaffold"
-    24: "aacstaffnotify {player} in {world} is highly suspected for Scaffold"
+    16: "aac notify {player} in {world} is suspected for Scaffold"
+    24: "aac notify {player} in {world} is highly suspected for Scaffold"
     36: "aackick {player} Scaffold"
 
 # The Skinblinker check detects Skinblinker cheats when the player sprints/sneaks.
@@ -454,7 +454,7 @@ Skinblinker:
   enabled: true
   # Map of violation levels to command
   thresholds:
-    1: "aacstaffnotify {player} in {world} is suspected for Skinblinker"
+    1: "aac notify {player} in {world} is suspected for Skinblinker"
     5: "aackick {player} Skinblinker"
 
 # This check tries to alert you of teamers
@@ -487,9 +487,9 @@ Teaming:
   # These ViolationLevel are cumulative for a team.
   # E.g. a potential team of 6 members will generate 6 vl after every delay.
   thresholds:
-    4: "aacstaffnotify {team} in {world} may be Teaming"
-    10: "aacstaffnotify {team} in {world} are suspected for Teaming"
-    15: "aacstaffnotify {team} in {world} are highly suspected for Teaming"
+    4: "aac notify {team} in {world} may be Teaming"
+    10: "aac notify {team} in {world} are suspected for Teaming"
+    15: "aac notify {team} in {world} are highly suspected for Teaming"
 
 # The Tower check detects Tower cheats
 Tower:
@@ -509,7 +509,7 @@ Tower:
   timeout: 5500
   # Map of violation levels to command
   thresholds:
-    5: "aacstaffnotify {player} in {world} is suspected for Tower"
+    5: "aac notify {player} in {world} is suspected for Tower"
     12: "aackick {player} Tower"
 
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -552,7 +552,7 @@ ClientControl:
       # A feature of 5zig to automatically reconnect to a server
       auto_reconnect: false
     commands_on_detection:
-      - "aacstaffnotify {player} in {world} uses 5zig"
+      - "aac notify {player} in {world} uses 5zig"
 
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   BetterSprinting:
@@ -568,7 +568,7 @@ ClientControl:
     # If you want to completely disable the mod set this to true.
     disable_mod: false
     commands_on_detection:
-      - "aacstaffnotify {player} in {world} uses BetterSprinting"
+      - "aac notify {player} in {world} uses BetterSprinting"
 
   # This will spoof the health of all players on your server so that DamageIndicators (and any other mod to that tries
   # to show other players' health, like HealthTags and ESP) becomes useless.
@@ -590,7 +590,7 @@ ClientControl:
     # This cannot be blocked; I recommend to kick if desired
     enabled: false
     commands_on_detection:
-      - "aacstaffnotify {player} in {world} uses Forge"
+      - "aac notify {player} in {world} uses Forge"
 
   # This covers the latest version of LabyMod.
   # A very popular PvP modification similar to 5zig but with more features and TS3 support
@@ -640,7 +640,7 @@ ClientControl:
       # which is not really affecting the gameplay.
       saturation_bar: false
     commands_on_detection:
-      - "aacstaffnotify {player} in {world} uses LabyMod"
+      - "aac notify {player} in {world} uses LabyMod"
 
   # LiteLoader is alternative mod-loader to forge.
   # Many ghost clients exist for LiteLoader, therefore I recommend to block it.

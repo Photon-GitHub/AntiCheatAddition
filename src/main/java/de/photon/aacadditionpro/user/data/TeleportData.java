@@ -42,8 +42,8 @@ public class TeleportData extends TimeData
 
             if (user != null)
             {
-                user.getTeleportData().nullifyTimeStamp(0);
-                user.getTeleportData().nullifyTimeStamp(2);
+                user.getTeleportData().updateTimeStamp(0);
+                user.getTeleportData().updateTimeStamp(2);
             }
         }
 
@@ -54,7 +54,7 @@ public class TeleportData extends TimeData
 
             if (user != null)
             {
-                user.getTeleportData().nullifyTimeStamp(0);
+                user.getTeleportData().updateTimeStamp(0);
             }
         }
 
@@ -65,8 +65,8 @@ public class TeleportData extends TimeData
 
             if (user != null)
             {
-                user.getTeleportData().nullifyTimeStamp(0);
-                user.getTeleportData().nullifyTimeStamp(1);
+                user.getTeleportData().updateTimeStamp(0);
+                user.getTeleportData().updateTimeStamp(1);
             }
         }
     }

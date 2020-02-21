@@ -77,9 +77,6 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
 
         int offset = 0;
         synchronized (user.getKeepAliveData().getKeepAlives()) {
-            for (KeepAliveData.KeepAlivePacketData keepAlive : user.getKeepAliveData().getKeepAlives()) {
-            }
-
             final Iterator<KeepAliveData.KeepAlivePacketData> iterator = user.getKeepAliveData().getKeepAlives().descendingIterator();
             KeepAliveData.KeepAlivePacketData current;
             while (iterator.hasNext()) {

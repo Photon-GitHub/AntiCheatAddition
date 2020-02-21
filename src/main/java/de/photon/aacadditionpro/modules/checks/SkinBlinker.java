@@ -23,31 +23,31 @@ public class SkinBlinker extends PacketAdapter implements PacketListenerModule, 
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
+        if (event.isPlayerTemporary()) {
+            return;
+        }
+
         /*
          * A unmodified client can only send such packets if the player is in the menu
          * -> he obviously cannot Sprint or Sneak when doing this.
          * -> he can move, especially in MC 1.9 and upward because of entity-collision, etc.
          * -> As of the render-debug-cycle which can be done in the game (F3 + F) I need to check for the change of the skin.
          */
-        try {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-            // Not bypassed
-            if (User.isUserInvalid(user, this.getModuleType())) {
-                return;
+        // Not bypassed
+        if (User.isUserInvalid(user, this.getModuleType())) {
+            return;
+        }
+
+        // Sprinting or sneaking (detection)
+        if ((event.getPlayer().isSprinting() || event.getPlayer().isSneaking())) {
+            final int newSkinComponents = event.getPacket().getIntegers().readSafely(1);
+
+            // updateSkinComponents returns true if the skin has changed.
+            if (user.getSkinData().updateSkinComponents(newSkinComponents)) {
+                vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
             }
-
-            // Sprinting or sneaking (detection)
-            if ((event.getPlayer().isSprinting() || event.getPlayer().isSneaking())) {
-                final int newSkinComponents = event.getPacket().getIntegers().readSafely(1);
-
-                // updateSkinComponents returns true if the skin has changed.
-                if (user.getSkinData().updateSkinComponents(newSkinComponents)) {
-                    vlManager.flag(user.getPlayer(), -1, () -> {}, () -> {});
-                }
-            }
-        } catch (UnsupportedOperationException ignore) {
-            // This will catch problems with ProtocolLib's temporary players.
         }
     }
 

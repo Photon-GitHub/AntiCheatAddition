@@ -45,6 +45,10 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
     @Override
     public void onPacketSending(PacketEvent event)
     {
+        if (event.isPlayerTemporary()) {
+            return;
+        }
+
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed

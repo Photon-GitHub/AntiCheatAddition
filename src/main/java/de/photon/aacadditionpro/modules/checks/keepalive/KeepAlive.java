@@ -44,6 +44,10 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
     @Override
     public void onPacketSending(PacketEvent event)
     {
+        if (event.isPlayerTemporary()) {
+            return;
+        }
+
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
@@ -63,6 +67,10 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
+        if (event.isPlayerTemporary()) {
+            return;
+        }
+
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed

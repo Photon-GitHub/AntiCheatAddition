@@ -128,6 +128,31 @@ public class GuiInject implements ListenerModule, RestrictedServerVersion
                         Bukkit.getServer().dispatchCommand(event.getWhoClicked(), "aac manage");
                     });
                 }
+
+                if (event.getCurrentItem() != null
+                    && event.getCurrentItem().getType() == Material.GREEN_TERRACOTTA
+                    && event.getCurrentItem().getType() == Material.GRAY_TERRACOTTA)
+                {
+                    ItemStack clicked = event.getCurrentItem();
+
+                    ModuleType toToggle = null;
+                    for (ModuleType moduleType : ModuleType.values()) {
+                        if (moduleType.getConfigString().equals(clicked.getItemMeta().getDisplayName())) {
+                            toToggle = moduleType;
+                            break;
+                        }
+                    }
+
+                    if (toToggle != null) {
+                        if (clicked.getType() == Material.GREEN_TERRACOTTA) {
+                            clicked.setType(Material.GRAY_TERRACOTTA);
+                            AACAdditionPro.getInstance().getModuleManager().setStateOfModule(toToggle, false);
+                        } else {
+                            clicked.setType(Material.GREEN_TERRACOTTA);
+                            AACAdditionPro.getInstance().getModuleManager().setStateOfModule(toToggle, true);
+                        }
+                    }
+                }
             }
         }
     }

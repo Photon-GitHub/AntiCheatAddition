@@ -792,7 +792,8 @@ BrandHider:
   # Measured in ticks
   refresh_rate: 0
 
-# This will make AACAdditionPro hook AAC and inject its own checks into the GUI
+# This will make AACAdditionPro hook AAC and inject its own checks into the AAC GUI
+# Please note that currently only the management gui is supported
 GuiInject:
   # Do you want to enable the GUI inject
   enabled: true

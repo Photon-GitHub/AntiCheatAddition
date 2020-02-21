@@ -28,6 +28,7 @@ public class BetterSprintingControl extends ClientControlModule implements Plugi
 
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
+            case MC112:
                 CHANNELS = ImmutableSet.of(new MessageChannel("minecraft", "bsm", "BSM"),
                                            new MessageChannel("minecraft", "bsprint", "BSprint"));
                 break;

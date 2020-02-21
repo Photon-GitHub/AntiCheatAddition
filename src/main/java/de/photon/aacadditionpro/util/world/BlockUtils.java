@@ -186,7 +186,6 @@ public final class BlockUtils
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
-            case MC111:
             case MC112:
                 return material != Material.BARRIER && material != Material.getMaterial("MOB_SPAWNER") && material.isOccluding();
             case MC113:

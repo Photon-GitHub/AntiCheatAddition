@@ -18,7 +18,7 @@ public class VerboseCommand extends InternalPlayerCommand
 {
     public VerboseCommand()
     {
-        super("verbose", InternalPermission.VERBOSE,
+        super("verbose", InternalPermission.AAC_VERBOSE,
               CommandAttributes.builder()
                                .minArguments(0)
                                .maxArguments(1)

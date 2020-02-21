@@ -6,6 +6,7 @@ import de.photon.aacadditionpro.command.MainCommand;
 import de.photon.aacadditionpro.events.APILoadedEvent;
 import de.photon.aacadditionpro.modules.ModuleManager;
 import de.photon.aacadditionpro.modules.additions.BrandHider;
+import de.photon.aacadditionpro.modules.additions.GuiInject;
 import de.photon.aacadditionpro.modules.additions.LogBot;
 import de.photon.aacadditionpro.modules.checks.AutoPotion;
 import de.photon.aacadditionpro.modules.checks.Esp;
@@ -151,6 +152,7 @@ public class AACAdditionPro extends JavaPlugin
             this.moduleManager = new ModuleManager(ImmutableSet.of(
                     // Additions
                     new BrandHider(),
+                    new GuiInject(),
                     new LogBot(),
 
                     // ClientControl

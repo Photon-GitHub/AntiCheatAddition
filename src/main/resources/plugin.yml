@@ -6,7 +6,7 @@ api-version: 1.13
 website: https://www.spigotmc.org/resources/aacadditionpro.33590/
 
 depend: [ProtocolLib]
-softdepend: [LabyModAPI, ViaVersion]
+softdepend: [AAC, LabyModAPI, ViaVersion]
 main: de.photon.aacadditionpro.AACAdditionPro
 
 commands:

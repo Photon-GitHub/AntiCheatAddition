@@ -567,7 +567,7 @@ ClientControl:
 
   # A very popular mod-loader.
   #
-  # NOT COMPATIBLE WITH MINECRAFT 1.13 YET -> CLIENTCONTROL WILL AUTODISABLE ON 1.13.2
+  # ONLY COMPATIBLE WITH MINECRAFT 1.8 SO FAR
   Forge:
     # Do you want to enable Forge-Control
     # This cannot be blocked; I recommend to kick if desired
@@ -691,7 +691,7 @@ ClientControl:
   # A mod that lets you display (clientside) holograms to improve building, but also has
   # a module to download worlds.
   #
-  # NOT COMPATIBLE WITH MINECRAFT 1.13 YET -> CLIENTCONTROL WILL AUTODISABLE ON 1.13.2
+  # ONLY COMPATIBLE WITH MINECRAFT 1.8 SO FAR
   Schematica:
     # Do you want to enable Schematica-Control
     enabled: false
@@ -775,9 +775,9 @@ BrandHider:
   refresh_rate: 0
 
 # This will make AACAdditionPro hook AAC and inject its own checks into the GUI
-GUI:
+GuiInject:
   # Do you want to enable the GUI inject
-  enabled: false
+  enabled: true
 
 # This automatically deletes old log files of both AAC and AACAdditionPro
 # It activates automatically on restart and after that in a 12 hour cycle.

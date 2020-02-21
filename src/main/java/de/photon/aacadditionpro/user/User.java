@@ -47,7 +47,7 @@ public class User
     {
         this.player = player;
         this.loginData = new TimeData(this, System.currentTimeMillis());
-        UserManager.setVerbose(this, InternalPermission.VERBOSE.hasPermission(player));
+        UserManager.setVerbose(this, InternalPermission.AAC_VERBOSE.hasPermission(player));
     }
 
     public boolean isBypassed(ModuleType moduleType)

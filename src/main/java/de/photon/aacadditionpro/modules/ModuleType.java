@@ -12,6 +12,7 @@ public enum ModuleType
 {
     // Additions
     BRAND_HIDER("BrandHider"),
+    GUI_INJECT("GuiInject"),
     LOG_BOT("LogBot"),
 
     // Normal checks
@@ -22,7 +23,6 @@ public enum ModuleType
     IMPOSSIBLE_CHAT("ImpossibleChat", "sent illegal chat message (ImpossibleChat)"),
     INVENTORY("Inventory", "has suspicious inventory interactions."),
     KEEPALIVE("KeepAlive"),
-    KILLAURA_ENTITY("KillauraEntity", "failed KillauraEntity (hit the Killaura-Bot)"),
     PACKET_ANALYSIS("PacketAnalysis"),
     PINGSPOOF("Pingspoof"),
     SCAFFOLD("Scaffold"),

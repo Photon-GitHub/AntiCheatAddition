@@ -16,16 +16,13 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 public class AutoEat implements ListenerModule, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 300L);
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 3600L);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancelVl;
 
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
-
-    @LoadFromConfiguration(configPath = ".additional_millis")
-    private int additionalMillis;
 
     @EventHandler
     public void onItemInteract(PlayerInteractEvent event)
@@ -56,7 +53,7 @@ public class AutoEat implements ListenerModule, ViolationModule
 
         // After half a second check if it was the last interaction ticks check if this
         Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> {
-            if (user.getAutoEatData().getTimeStamp(0) < (user.getConsumeData().getTimeStamp(0) + additionalMillis)) {
+            if (user.getAutoEatData().getTimeStamp(0) < user.getConsumeData().getTimeStamp(0)) {
                 vlManager.flag(user.getPlayer(), cancelVl, () -> user.getAutoEatData().updateTimeStamp(1), () -> {});
             }
         }, 10);

@@ -23,21 +23,21 @@
 # ------------------------------------------------------------------------------------------------------------------- #
 
 # This detects AutoEat bots that will automatically eat for a player with perfect timing.
+# Please note that one VL from AutoEat decays only every 5 minutes to make sure that cheats can be detected even if
+# eating sessions are several minutes apart.
 AutoEat:
   # Do you want to enable the AutoEat check
   enabled: true
   # Violation before AACAdditionPro starts to cancel the consume events.
-  cancel_vl: 2
-  # If the last interaction happened just so many milliseconds after the last consume it will still flag.
-  additional_millis: 60
+  cancel_vl: 6
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to consume an item for the
   # duration of timeout.
   timeout: 5000
   # Map of violation levels to command
   thresholds:
-    1: "aac notify {player} in {world} is suspected for AutoEat"
-    2: "aac notify {player} in {world} is highly suspected for AutoEat"
-    4: "aackick {player} AutoEat"
+    3: "aac notify {player} in {world} is suspected for AutoEat"
+    6: "aac notify {player} in {world} is highly suspected for AutoEat"
+    10: "aackick {player} AutoEat"
 
 # If you have modified fishing time and/or behaviour please test if this check is compatible with your setup.
 # This check does only work on minecraft versions 1.11 and beyond and auto-disables itself on other versions.

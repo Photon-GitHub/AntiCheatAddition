@@ -8,6 +8,7 @@ import de.photon.aacadditionpro.modules.ModuleManager;
 import de.photon.aacadditionpro.modules.additions.BrandHider;
 import de.photon.aacadditionpro.modules.additions.GuiInject;
 import de.photon.aacadditionpro.modules.additions.LogBot;
+import de.photon.aacadditionpro.modules.checks.AutoEat;
 import de.photon.aacadditionpro.modules.checks.AutoPotion;
 import de.photon.aacadditionpro.modules.checks.Esp;
 import de.photon.aacadditionpro.modules.checks.Fastswitch;
@@ -170,6 +171,7 @@ public class AACAdditionPro extends JavaPlugin
                     new WorldDownloaderControl(),
 
                     // Normal checks
+                    new AutoEat(),
                     new AutoFish(),
                     new AutoPotion(),
                     new Esp(),

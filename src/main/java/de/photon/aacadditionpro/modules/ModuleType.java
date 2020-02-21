@@ -16,6 +16,7 @@ public enum ModuleType
     LOG_BOT("LogBot"),
 
     // Normal checks
+    AUTO_EAT("AutoEat"),
     AUTO_FISH("AutoFish"),
     AUTO_POTION("AutoPotion"),
     ESP("Esp"),

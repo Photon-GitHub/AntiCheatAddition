@@ -1,57 +1,36 @@
 package de.photon.aacadditionpro.user;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
+@Getter
 @RequiredArgsConstructor
 public enum DataKey
 {
-    AUTOEAT_TIMEOUT(true),
+    AUTOFISH_FAIL_COUNTER(Long.class),
 
-    AUTOFISH_DETECTION(true),
-    AUTOFISH_FAIL_COUNTER(false),
+    LAST_CONSUMED_ITEM_STACK(ItemStack.class),
 
-    AUTOPOTION_DETECTION(true),
-    AUTOPOTION_LAST_SUDDEN_PITCH(true),
-    AUTOPOTION_LAST_SUDDEN_YAW(true),
-    AUTOPOTION_TIMEOUT(true),
+    /**
+     * The last slot a person clicked.<br>
+     * This variable is used to prevent false positives based on spam-clicking one slot.
+     */
+    LAST_MATERIAL_CLICKED(Material.class),
+    LAST_RAW_SLOT_CLICKED(Integer.class),
 
-    INVENTORY_OPENED(true),
+    PACKET_ANALYSIS_COMPARE_FAILS(Long.class),
+    PACKET_ANALYSIS_REAL_LAST_YAW(Float.class),
+    PACKET_ANALYSIS_REAL_LAST_PITCH(Float.class),
 
-    LAST_COMBAT(true),
-    LAST_CONSUME_EVENT(true),
-    LAST_FISH_BITE(true),
-    LAST_HEAD_MOVEMENT(true),
-    LAST_INVENTORY_CLICK(true),
-    LAST_RESPAWN(true),
-    LAST_RIGHT_CLICK_CONSUMABLE_ITEM_EVENT(true),
-    LAST_RIGHT_CLICK_EVENT(true),
-    LAST_SLOT_CLICKED(true),
-    LAST_SNEAK(true),
-    LAST_SNEAK_DURATION(true),
-    LAST_SPRINT(true),
-    LAST_SPRINT_DURATION(true),
-    LAST_TELEPORT(true),
-    LAST_VELOCITY_CHANGE(true),
-    LAST_WORLD_CHANGE(true),
-    LAST_XYZ_MOVEMENT(true),
-    LAST_XZ_MOVEMENT(true),
+    SCAFFOLD_ANGLE_FAILS(Long.class),
+    SCAFFOLD_ROTATION_FAILS(Long.class),
+    SCAFFOLD_SAFEWALK_1_FAILS(Long.class),
+    SCAFFOLD_SAFEWALK_2_FAILS(Long.class),
+    SCAFFOLD_SPRINTING_FAILS(Long.class),
 
-    LOGIN_TIME(true),
+    SKIN_COMPONENTS(Long.class);
 
-    PACKET_ANALYSIS_COMPARE_FAILS(false),
-    PACKET_ANALYSIS_LAST_COMPARE_FLAG(true),
-
-    PINGSPOOF_DETECTION(true),
-
-    SCAFFOLD_ANGLE_FAILS(false),
-    SCAFFOLD_ROTATION_FAILS(false),
-    SCAFFOLD_SAFEWALK_1_FAILS(false),
-    SCAFFOLD_SAFEWALK_2_FAILS(false),
-    SCAFFOLD_SPRINTING_FAILS(false),
-
-    SKIN_COMPONENTS(false),
-
-    TOWER_TIMEOUT(true);
-
-    final boolean isTimeStamp;
+    private final Class clazz;
 }

@@ -3,7 +3,6 @@ package de.photon.aacadditionpro.user;
 import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.olduser.UserManager;
-import de.photon.aacadditionpro.user.subdata.ConsumeData;
 import de.photon.aacadditionpro.user.subdata.FishingData;
 import de.photon.aacadditionpro.user.subdata.InventoryData;
 import lombok.Getter;
@@ -13,9 +12,9 @@ import org.bukkit.entity.Player;
 public class User
 {
     private Player player;
-    private LongDataMap<DataKey> dataMap = new LongDataMap<>(DataKey.class, dk -> dk.isTimeStamp);
+    private TimestampMap<TimestampKey> timestampMap = new TimestampMap<>(TimestampKey.class);
+    private ObjectDataMap<DataKey> dataMap = new ObjectDataMap<>(DataKey.class, (key, value) -> key.getClazz().isAssignableFrom(value.getClass()));
 
-    private ConsumeData consumeData = new ConsumeData(this);
     private FishingData fishingData = new FishingData(this);
     private InventoryData inventoryData = new InventoryData(this);
 
@@ -53,6 +52,8 @@ public class User
     public void unregister()
     {
         this.player = null;
+        this.timestampMap.clear();
+        this.timestampMap = null;
         this.dataMap.clear();
         this.dataMap = null;
     }

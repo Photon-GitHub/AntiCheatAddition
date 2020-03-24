@@ -7,7 +7,6 @@ import de.photon.aacadditionpro.util.datastructures.buffer.ContinuousBuffer;
 import lombok.Getter;
 
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class KeepAliveData extends SubData
@@ -90,22 +89,17 @@ public class KeepAliveData extends SubData
         }
 
         @Override
-        public boolean equals(Object o)
+        public boolean equals(Object other)
         {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            KeepAlivePacketData that = (KeepAlivePacketData) o;
-            return keepAliveID == that.keepAliveID;
+            return this == other ||
+                   other != null && getClass() == other.getClass() && keepAliveID == ((KeepAlivePacketData) other).keepAliveID;
+
         }
 
         @Override
         public int hashCode()
         {
-            return Objects.hash(keepAliveID);
+            return (int) keepAliveID;
         }
     }
 }

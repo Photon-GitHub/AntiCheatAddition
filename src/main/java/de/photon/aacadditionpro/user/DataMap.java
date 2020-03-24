@@ -6,25 +6,25 @@ import java.util.Map;
 
 public class DataMap<T extends Enum<T>, V>
 {
-    protected final Map<T, V> longMap;
+    protected final Map<T, V> map;
 
     public DataMap(Class<T> enumeration)
     {
-        this.longMap = Collections.synchronizedMap(new EnumMap<>(enumeration));
+        this.map = Collections.synchronizedMap(new EnumMap<>(enumeration));
     }
 
     public V getValue(T key)
     {
-        return this.longMap.get(key);
+        return this.map.get(key);
     }
 
     public void setValue(T key, V value)
     {
-        this.longMap.put(key, value);
+        this.map.put(key, value);
     }
 
     public void clear()
     {
-        this.longMap.clear();
+        this.map.clear();
     }
 }

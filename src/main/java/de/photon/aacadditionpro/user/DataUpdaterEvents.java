@@ -33,10 +33,10 @@ public class DataUpdaterEvents implements Listener
         }
 
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
-            user.getDataMap().updateTimeStamp(DataKey.LAST_RIGHT_CLICK_EVENT);
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_RIGHT_CLICK_EVENT);
 
             if (event.getMaterial().isEdible()) {
-                user.getDataMap().updateTimeStamp(DataKey.LAST_RIGHT_CLICK_CONSUMABLE_ITEM_EVENT);
+                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_RIGHT_CLICK_CONSUMABLE_ITEM_EVENT);
             }
         }
     }
@@ -47,8 +47,8 @@ public class DataUpdaterEvents implements Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         if (user != null) {
-            user.getDataMap().updateTimeStamp(DataKey.LAST_CONSUME_EVENT);
-            user.getConsumeData().setLastConsumedItemStack(event.getItem());
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_CONSUME_EVENT);
+            user.getDataMap().setValue(DataKey.LAST_CONSUMED_ITEM_STACK, event.getItem());
         }
     }
 
@@ -58,7 +58,7 @@ public class DataUpdaterEvents implements Listener
         final User user = UserManager.getUser(event.getEntity().getUniqueId());
 
         if (user != null) {
-            user.getDataMap().nullifyTimeStamp(DataKey.INVENTORY_OPENED);
+            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
         }
     }
 
@@ -83,7 +83,7 @@ public class DataUpdaterEvents implements Listener
 
             // Not sneaking when the player can place a block that way.
             if (!(sneakingRequiredToPlaceBlock && event.getPlayer().isSneaking())) {
-                user.getDataMap().updateTimeStamp(DataKey.INVENTORY_OPENED);
+                user.getTimestampMap().updateTimeStamp(TimestampKey.INVENTORY_OPENED);
             }
         }
     }
@@ -100,14 +100,14 @@ public class DataUpdaterEvents implements Listener
         {
             // Only update if the inventory is currently closed to not interfere with opening time checks.
             if (!user.getInventoryData().hasOpenInventory()) {
-                user.getDataMap().updateTimeStamp(DataKey.INVENTORY_OPENED);
+                user.getTimestampMap().updateTimeStamp(TimestampKey.INVENTORY_OPENED);
             }
 
-            user.getDataMap().updateTimeStamp(DataKey.LAST_INVENTORY_CLICK);
-            user.getInventoryData().setLastRawSlot(event.getRawSlot());
-            user.getInventoryData().setLastMaterial(event.getCurrentItem() == null ?
-                                                    Material.AIR :
-                                                    event.getCurrentItem().getType());
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_INVENTORY_CLICK);
+            user.getDataMap().setValue(DataKey.LAST_RAW_SLOT_CLICKED, event.getRawSlot());
+            user.getDataMap().setValue(DataKey.LAST_MATERIAL_CLICKED, event.getCurrentItem() == null ?
+                                                                      Material.AIR :
+                                                                      event.getCurrentItem().getType());
         }
     }
 
@@ -117,7 +117,7 @@ public class DataUpdaterEvents implements Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         if (user != null) {
-            user.getDataMap().nullifyTimeStamp(DataKey.INVENTORY_OPENED);
+            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
         }
     }
 
@@ -128,7 +128,7 @@ public class DataUpdaterEvents implements Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         if (user != null) {
-            user.getDataMap().updateTimeStamp(DataKey.INVENTORY_OPENED);
+            user.getTimestampMap().updateTimeStamp(TimestampKey.INVENTORY_OPENED);
         }
     }
 
@@ -138,7 +138,7 @@ public class DataUpdaterEvents implements Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         if (user != null) {
-            user.getDataMap().nullifyTimeStamp(DataKey.INVENTORY_OPENED);
+            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
         }
     }
 
@@ -148,7 +148,7 @@ public class DataUpdaterEvents implements Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         if (user != null) {
-            user.getDataMap().nullifyTimeStamp(DataKey.INVENTORY_OPENED);
+            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
         }
     }
 
@@ -158,7 +158,7 @@ public class DataUpdaterEvents implements Listener
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         if (user != null) {
-            user.getDataMap().nullifyTimeStamp(DataKey.INVENTORY_OPENED);
+            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
         }
     }
 }

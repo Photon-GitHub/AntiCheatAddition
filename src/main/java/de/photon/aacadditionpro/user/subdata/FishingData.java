@@ -2,7 +2,7 @@ package de.photon.aacadditionpro.user.subdata;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.user.DataKey;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructures.DoubleStatistics;
 import lombok.Getter;
@@ -27,7 +27,7 @@ public class FishingData extends SubData
      */
     public boolean bufferConsistencyData()
     {
-        this.statistics.accept((double) this.user.getDataMap().passedTime(DataKey.AUTOFISH_DETECTION));
+        this.statistics.accept((double) this.user.getTimestampMap().passedTime(TimestampKey.AUTOFISH_DETECTION));
         return this.statistics.getCount() >= CONSISTENCY_EVENTS;
     }
 }

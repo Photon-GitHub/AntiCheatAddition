@@ -1,7 +1,6 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.user.subdata;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.user.Data;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructures.buffer.ContinuousArrayBuffer;
 import de.photon.aacadditionpro.util.datastructures.buffer.ContinuousBuffer;
@@ -11,7 +10,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class KeepAliveData extends Data
+public class KeepAliveData extends SubData
 {
     // This needs to be so high to prevent flagging during TimeOuts.
     public static final byte KEEPALIVE_QUEUE_SIZE = 20;
@@ -68,13 +67,6 @@ public class KeepAliveData extends Data
             Preconditions.checkState(datapoints > 0, "No answered KeepAlive packets found.");
             return sum / datapoints;
         }
-    }
-
-    @Override
-    public void unregister()
-    {
-        this.keepAlives.clear();
-        super.unregister();
     }
 
     public static class KeepAlivePacketData

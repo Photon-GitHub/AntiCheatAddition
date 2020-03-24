@@ -1,11 +1,11 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.olduser.data;
 
-import de.photon.aacadditionpro.user.TimeData;
-import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.olduser.TimeDataOld;
+import de.photon.aacadditionpro.olduser.UserOld;
 import lombok.Getter;
 import org.bukkit.Location;
 
-public class PacketAnalysisData extends TimeData
+public class PacketAnalysisDataOld extends TimeDataOld
 {
     public PositionForceData lastPositionForceData = null;
     public long compareFails = 0;
@@ -15,7 +15,7 @@ public class PacketAnalysisData extends TimeData
     // After cancelling a move packet one equalRotation is expected.
     public boolean equalRotationExpected = false;
 
-    public PacketAnalysisData(User user)
+    public PacketAnalysisDataOld(UserOld user)
     {
         // [0] = The last compare flag
         super(user, 0);

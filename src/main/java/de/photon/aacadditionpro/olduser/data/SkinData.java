@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.olduser.data;
 
 public class SkinData
 {

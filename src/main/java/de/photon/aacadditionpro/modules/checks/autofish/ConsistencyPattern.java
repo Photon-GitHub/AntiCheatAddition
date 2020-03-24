@@ -2,14 +2,14 @@ package de.photon.aacadditionpro.modules.checks.autofish;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.datastructures.DoubleStatistics;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.general.StringUtils;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import org.bukkit.event.player.PlayerFishEvent;
 
-class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
+class ConsistencyPattern extends PatternModule.Pattern<UserOld, PlayerFishEvent>
 {
     @LoadFromConfiguration(configPath = ".violation_offset")
     private int violationOffset;
@@ -18,7 +18,7 @@ class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
     private int maximumFails;
 
     @Override
-    protected int process(User user, PlayerFishEvent event)
+    protected int process(UserOld user, PlayerFishEvent event)
     {
         switch (event.getState()) {
             case FISHING:

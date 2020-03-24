@@ -7,8 +7,8 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.data.PositionData;
+import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.olduser.data.PositionDataOld;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
@@ -63,7 +63,7 @@ class EqualRotationPattern extends PatternModule.PacketPattern
     }
 
     @Override
-    protected int process(User user, PacketEvent packetEvent)
+    protected int process(UserOld user, PacketEvent packetEvent)
     {
         // Get the packet.
         final IWrapperPlayClientLook lookWrapper = packetEvent::getPacket;
@@ -80,7 +80,7 @@ class EqualRotationPattern extends PatternModule.PacketPattern
             currentYaw == user.getLookPacketData().getRealLastYaw() &&
             currentPitch == user.getLookPacketData().getRealLastPitch() &&
             // Labymod fp when standing still / hit in corner fp
-            user.getPositionData().hasPlayerMovedRecently(100, PositionData.MovementType.XZONLY))
+            user.getPositionData().hasPlayerMovedRecently(100, PositionDataOld.MovementType.XZONLY))
         {
             // Not a big performance deal as most packets have already been filtered out, now we just account for
             // the last false positives.

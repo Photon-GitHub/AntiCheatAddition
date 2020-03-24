@@ -1,9 +1,9 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.olduser.data;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.user.TimeData;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.olduser.TimeDataOld;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
 import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,10 +14,10 @@ import org.bukkit.event.player.PlayerToggleSprintEvent;
 
 /**
  * Used to store when a player moved.
- * The first index of this {@link TimeData} represents the last time a player moved,
+ * The first index of this {@link TimeDataOld} represents the last time a player moved,
  * the second index represents the last time a player moved when ignoring head movement
  */
-public class PositionData extends TimeData
+public class PositionDataOld extends TimeDataOld
 {
     static {
         AACAdditionPro.getInstance().registerListener(new PositionDataUpdater());
@@ -32,7 +32,7 @@ public class PositionData extends TimeData
     @Getter
     private long lastSneakTime = Long.MAX_VALUE;
 
-    public PositionData(final User user)
+    public PositionDataOld(final UserOld user)
     {
         /*
          * [0]  head movement
@@ -68,7 +68,7 @@ public class PositionData extends TimeData
     }
 
     /**
-     * Determines what index should be checkd in the {@link PositionData}.
+     * Determines what index should be checkd in the {@link PositionDataOld}.
      */
     public enum MovementType
     {
@@ -86,7 +86,7 @@ public class PositionData extends TimeData
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
         public void onMove(final PlayerMoveEvent event)
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
                 // Head + normal movement
@@ -109,7 +109,7 @@ public class PositionData extends TimeData
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
         public void onToggleSneak(final PlayerToggleSneakEvent event)
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
                 user.getPositionData().currentlySneaking = event.isSneaking();
@@ -123,7 +123,7 @@ public class PositionData extends TimeData
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
         public void onToggleSpring(final PlayerToggleSprintEvent event)
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
                 user.getPositionData().currentlySprinting = event.isSprinting();

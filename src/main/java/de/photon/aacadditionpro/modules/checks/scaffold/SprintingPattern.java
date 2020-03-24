@@ -2,7 +2,7 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import org.bukkit.event.block.BlockPlaceEvent;
 
@@ -10,13 +10,13 @@ import org.bukkit.event.block.BlockPlaceEvent;
  * This pattern detects bursts of sprinting while scaffolding. No legit is able to properly utilize sprinting so far
  * because of the direction limitations.
  */
-class SprintingPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class SprintingPattern extends PatternModule.Pattern<UserOld, BlockPlaceEvent>
 {
     @LoadFromConfiguration(configPath = ".violation_threshold")
     private int violationThreshold;
 
     @Override
-    public int process(User user, BlockPlaceEvent event)
+    public int process(UserOld user, BlockPlaceEvent event)
     {
         if (user.getPositionData().hasPlayerSprintedRecently(400)) {
             if (++user.getScaffoldData().sprintingFails >= this.violationThreshold) {

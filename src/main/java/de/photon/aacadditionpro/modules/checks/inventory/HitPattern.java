@@ -2,20 +2,20 @@ package de.photon.aacadditionpro.modules.checks.inventory;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import lombok.Getter;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-class HitPattern extends PatternModule.Pattern<User, EntityDamageByEntityEvent>
+class HitPattern extends PatternModule.Pattern<UserOld, EntityDamageByEntityEvent>
 {
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
     private int cancelVl;
 
     @Override
-    protected int process(User user, EntityDamageByEntityEvent event)
+    protected int process(UserOld user, EntityDamageByEntityEvent event)
     {
         // Is in Inventory (Detection)
         if (user.getInventoryData().hasOpenInventory() &&
@@ -31,7 +31,7 @@ class HitPattern extends PatternModule.Pattern<User, EntityDamageByEntityEvent>
     }
 
     @Override
-    public void cancelAction(User user, EntityDamageByEntityEvent event)
+    public void cancelAction(UserOld user, EntityDamageByEntityEvent event)
     {
         event.setCancelled(true);
     }

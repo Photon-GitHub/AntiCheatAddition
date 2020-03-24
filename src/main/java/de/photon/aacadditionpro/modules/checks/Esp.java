@@ -5,8 +5,8 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.files.configs.Configs;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
@@ -51,7 +51,7 @@ public class Esp implements ListenerModule
     private static final double MAX_FOV = Math.toRadians(165D);
 
     // Use a LinkedList design for optimal storage usage as the amount of bypassed / spectator players cannot be estimated.
-    private final Deque<User> users = new ArrayDeque<>();
+    private final Deque<UserOld> users = new ArrayDeque<>();
 
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
@@ -112,7 +112,7 @@ public class Esp implements ListenerModule
                         // Remove the finished player to reduce the amount of added entries.
                         // This makes sure the player won't have a connection with himself.
                         // Remove the last object for better array performance.
-                        final User observingUser = users.removeLast();
+                        final UserOld observingUser = users.removeLast();
 
                         // Do not process spectators.
                         if (observingUser.getPlayer().getGameMode() == GameMode.SPECTATOR) {
@@ -120,7 +120,7 @@ public class Esp implements ListenerModule
                         }
 
                         // All users can potentially be seen
-                        for (final User watched : users) {
+                        for (final UserOld watched : users) {
                             // The watched player is also not in Spectator mode
                             if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR &&
                                 // The players are in the same world
@@ -182,9 +182,9 @@ public class Esp implements ListenerModule
     }
 
     /**
-     * Determines if two {@link User}s can see each other.
+     * Determines if two {@link UserOld}s can see each other.
      */
-    private boolean canSee(final User observerUser, final User watchedUser)
+    private boolean canSee(final UserOld observerUser, final UserOld watchedUser)
     {
         final Player observer = observerUser.getPlayer();
         final Player watched = watchedUser.getPlayer();
@@ -285,28 +285,28 @@ public class Esp implements ListenerModule
     public void onGameModeChange(PlayerGameModeChangeEvent event)
     {
         if (event.getNewGameMode() == GameMode.SPECTATOR) {
-            final User spectator = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld spectator = UserManager.getUser(event.getPlayer().getUniqueId());
 
             // Not bypassed
-            if (User.isUserInvalid(spectator, this.getModuleType())) {
+            if (UserOld.isUserInvalid(spectator, this.getModuleType())) {
                 return;
             }
 
             // Spectators can see everyone and can be seen by everyone (let vanilla handle this)
-            for (User user : UserManager.getUsersUnwrapped()) {
+            for (UserOld user : UserManager.getUsersUnwrapped()) {
                 updatePairHideMode(spectator, user, HideMode.NONE);
             }
         }
     }
 
-    private void updatePairHideMode(final User first, final User second, final HideMode hideMode)
+    private void updatePairHideMode(final UserOld first, final UserOld second, final HideMode hideMode)
     {
         updateHideMode(first, second.getPlayer(), hideMode);
         updateHideMode(second, first.getPlayer(), hideMode);
     }
 
     // No need to synchronize hiddenPlayers as it is accessed in a synchronized task.
-    private void updateHideMode(final User observer, final Player watched, final HideMode hideMode)
+    private void updateHideMode(final UserOld observer, final Player watched, final HideMode hideMode)
     {
         final Player observingPlayer = observer.getPlayer();
 

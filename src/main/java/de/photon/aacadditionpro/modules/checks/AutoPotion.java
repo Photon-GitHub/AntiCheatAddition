@@ -5,8 +5,8 @@ import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.RestrictedServerVersion;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -58,10 +58,10 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
     @EventHandler
     public void on(final PlayerMoveEvent event)
     {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
+        if (UserOld.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -98,10 +98,10 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
     @EventHandler
     public void on(final PlayerInteractEvent event)
     {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
+        if (UserOld.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 

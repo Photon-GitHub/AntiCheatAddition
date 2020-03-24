@@ -2,22 +2,22 @@ package de.photon.aacadditionpro.modules.checks.inventory;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.data.PositionData;
+import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.olduser.data.PositionDataOld;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import lombok.Getter;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-class SprintingPattern extends PatternModule.Pattern<User, InventoryClickEvent>
+class SprintingPattern extends PatternModule.Pattern<UserOld, InventoryClickEvent>
 {
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
     private int cancelVl;
 
     @Override
-    protected int process(User user, InventoryClickEvent event)
+    protected int process(UserOld user, InventoryClickEvent event)
     {
         // Flight may trigger this
         if (!user.getPlayer().getAllowFlight() &&
@@ -28,7 +28,7 @@ class SprintingPattern extends PatternModule.Pattern<User, InventoryClickEvent>
             // The player opened the inventory at least a quarter second ago
             user.getInventoryData().notRecentlyOpened(250) &&
             // Is the player moving
-            user.getPositionData().hasPlayerMovedRecently(1000, PositionData.MovementType.ANY))
+            user.getPositionData().hasPlayerMovedRecently(1000, PositionDataOld.MovementType.ANY))
         {
             message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " interacted with an inventory while sprinting or sneaking.";
             return 20;
@@ -37,7 +37,7 @@ class SprintingPattern extends PatternModule.Pattern<User, InventoryClickEvent>
     }
 
     @Override
-    public void cancelAction(User user, InventoryClickEvent event)
+    public void cancelAction(UserOld user, InventoryClickEvent event)
     {
         event.setCancelled(true);
         InventoryUtils.syncUpdateInventory(user.getPlayer());

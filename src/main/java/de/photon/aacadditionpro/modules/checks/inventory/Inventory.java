@@ -11,8 +11,8 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,10 +49,10 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
             return;
         }
 
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
+        if (UserOld.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -65,10 +65,10 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event)
     {
         if (event.getDamager() instanceof Player) {
-            final User user = UserManager.getUser(event.getDamager().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getDamager().getUniqueId());
 
             // Not bypassed
-            if (User.isUserInvalid(user, this.getModuleType())) {
+            if (UserOld.isUserInvalid(user, this.getModuleType())) {
                 return;
             }
 
@@ -79,10 +79,10 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     @EventHandler(priority = EventPriority.LOWEST)
     public void onClick(final InventoryClickEvent event)
     {
-        final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
+        final UserOld user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
+        if (UserOld.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 

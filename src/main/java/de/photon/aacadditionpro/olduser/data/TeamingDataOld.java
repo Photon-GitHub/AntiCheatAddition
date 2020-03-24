@@ -1,16 +1,16 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.olduser.data;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.user.TimeData;
-import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.olduser.TimeDataOld;
+import de.photon.aacadditionpro.olduser.UserOld;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-public class TeamingData extends TimeData implements Listener
+public class TeamingDataOld extends TimeDataOld implements Listener
 {
-    public TeamingData(final User user)
+    public TeamingDataOld(final UserOld user)
     {
         super(user, 0);
         AACAdditionPro.getInstance().registerListener(this);

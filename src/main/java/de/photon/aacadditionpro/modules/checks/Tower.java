@@ -4,9 +4,9 @@ import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.user.datawrappers.TowerBlockPlace;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.olduser.datawrappers.TowerBlockPlace;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.entity.PotionUtil;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
@@ -34,10 +34,10 @@ public class Tower implements ListenerModule, ViolationModule
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void on(final BlockPlaceEvent event)
     {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
+        if (UserOld.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 

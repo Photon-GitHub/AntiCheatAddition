@@ -2,17 +2,17 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.olduser.UserOld;
 
 /**
  * This patterns detects very random rotations that some randomized scaffold modules might use.
  */
-class RotationTypeThreePattern extends PatternModule.Pattern<User, Float>
+class RotationTypeThreePattern extends PatternModule.Pattern<UserOld, Float>
 {
     private static final double ANGLE_OFFSET_SUM_THRESHOLD = 5.2D;
 
     @Override
-    protected int process(User user, Float angleInformation)
+    protected int process(UserOld user, Float angleInformation)
     {
         if (angleInformation > ANGLE_OFFSET_SUM_THRESHOLD) {
             message = "Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3";

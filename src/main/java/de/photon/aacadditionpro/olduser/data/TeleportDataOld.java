@@ -1,9 +1,9 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.olduser.data;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.user.TimeData;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.olduser.TimeDataOld;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -13,16 +13,16 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 /**
  * Used to store a player was teleported
- * The first index of this {@link TimeData} represents the last time a player was teleported.
+ * The first index of this {@link TimeDataOld} represents the last time a player was teleported.
  */
-public class TeleportData extends TimeData
+public class TeleportDataOld extends TimeDataOld
 {
     static
     {
         AACAdditionPro.getInstance().registerListener(new TeleportDataUpdater());
     }
 
-    public TeleportData(final User user)
+    public TeleportDataOld(final UserOld user)
     {
         // [0] = Teleport
         // [1] = World change
@@ -38,7 +38,7 @@ public class TeleportData extends TimeData
         @EventHandler(priority = EventPriority.MONITOR)
         public void onRespawn(final PlayerRespawnEvent event)
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null)
             {
@@ -50,7 +50,7 @@ public class TeleportData extends TimeData
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
         public void onTeleport(final PlayerTeleportEvent event)
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null)
             {
@@ -61,7 +61,7 @@ public class TeleportData extends TimeData
         @EventHandler(priority = EventPriority.MONITOR)
         public void onWorldChange(final PlayerChangedWorldEvent event)
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null)
             {

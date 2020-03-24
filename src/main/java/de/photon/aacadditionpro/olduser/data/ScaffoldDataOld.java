@@ -1,16 +1,16 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.olduser.data;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.user.TimeData;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.datawrappers.ScaffoldBlockPlace;
+import de.photon.aacadditionpro.olduser.TimeDataOld;
+import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.olduser.datawrappers.ScaffoldBlockPlace;
 import de.photon.aacadditionpro.util.datastructures.buffer.ConditionalCleanBuffer;
 import de.photon.aacadditionpro.util.datastructures.buffer.DequeBuffer;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import lombok.Getter;
 
-public class ScaffoldData extends TimeData
+public class ScaffoldDataOld extends TimeDataOld
 {
     // Default buffer size is 6, being well tested.
     private static final int BUFFER_SIZE = 6;
@@ -54,7 +54,7 @@ public class ScaffoldData extends TimeData
     @Getter
     private final DequeBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces;
 
-    public ScaffoldData(final User user)
+    public ScaffoldDataOld(final UserOld user)
     {
         super(user, 0);
 

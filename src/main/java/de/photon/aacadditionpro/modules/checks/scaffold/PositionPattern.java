@@ -2,17 +2,17 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
  * This pattern checks for suspicious positions when placing a block to prevent extend scaffolds.
  */
-class PositionPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class PositionPattern extends PatternModule.Pattern<UserOld, BlockPlaceEvent>
 {
     @Override
-    public int process(User user, BlockPlaceEvent event)
+    public int process(UserOld user, BlockPlaceEvent event)
     {
         final double xOffset = MathUtils.offset(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
         final double zOffset = MathUtils.offset(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());

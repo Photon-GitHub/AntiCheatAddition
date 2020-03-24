@@ -2,8 +2,8 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.data.PositionData;
+import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.olduser.data.PositionDataOld;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -12,16 +12,16 @@ import org.bukkit.event.block.BlockPlaceEvent;
  * This {@link de.photon.aacadditionpro.modules.PatternModule.Pattern} detects suspicious stops right before the edges
  * of {@link org.bukkit.block.Block}s.
  */
-class SafewalkTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class SafewalkTypeOnePattern extends PatternModule.Pattern<UserOld, BlockPlaceEvent>
 {
     @LoadFromConfiguration(configPath = ".violation_threshold")
     private int violationThreshold;
 
     @Override
-    protected int process(User user, BlockPlaceEvent event)
+    protected int process(UserOld user, BlockPlaceEvent event)
     {
         // Moved to the edge of the block
-        if (user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
+        if (user.getPositionData().hasPlayerMovedRecently(175, PositionDataOld.MovementType.XZONLY) &&
             // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
             !(user.getPositionData().hasPlayerSneakedRecently(125) && user.getPositionData().getLastSneakTime() > 148))
         {

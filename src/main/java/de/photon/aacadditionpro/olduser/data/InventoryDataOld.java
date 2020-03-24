@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.olduser.data;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -7,9 +7,10 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.user.TimeData;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.olduser.DataOld;
+import de.photon.aacadditionpro.olduser.TimeDataOld;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientCustomPayload;
 import de.photon.aacadditionpro.util.world.BlockUtils;
@@ -30,7 +31,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class InventoryData extends TimeData
+public class InventoryDataOld extends TimeDataOld
 {
     static {
         new InventoryDataUpdater();
@@ -46,7 +47,7 @@ public class InventoryData extends TimeData
     @Getter
     private Material lastMaterial = Material.BEDROCK;
 
-    public InventoryData(final User user)
+    public InventoryDataOld(final UserOld user)
     {
         // [0] = Time of opening the inventory (or first click)
         // [1] = Latest click
@@ -64,7 +65,7 @@ public class InventoryData extends TimeData
     }
 
     /**
-     * Determines whether the {@link User} of this {@link de.photon.aacadditionpro.user.Data} currently has an open inventory.
+     * Determines whether the {@link UserOld} of this {@link DataOld} currently has an open inventory.
      */
     public boolean hasOpenInventory()
     {
@@ -94,7 +95,7 @@ public class InventoryData extends TimeData
                             // No longer needed in 1.13.2, thus only legacy handling
                             "MC|Beacon".equals(customPayloadWrapper.getChannel().getLegacyName()))
                         {
-                            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+                            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
                             if (user != null) {
                                 // User has made a beacon action/transaction so the inventory must internally be closed this way as
                                 // no InventoryCloseEvent is fired.
@@ -110,7 +111,7 @@ public class InventoryData extends TimeData
         @EventHandler(priority = EventPriority.MONITOR)
         public void onDeath(final PlayerDeathEvent event)
         {
-            final User user = UserManager.getUser(event.getEntity().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getEntity().getUniqueId());
 
             if (user != null) {
                 user.getInventoryData().nullifyTimeStamp(0);
@@ -120,7 +121,7 @@ public class InventoryData extends TimeData
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
         public void onInteract(final PlayerInteractEvent event)
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if ((user != null) && (event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
                 // Make sure that the block can open an InventoryView.
@@ -147,7 +148,7 @@ public class InventoryData extends TimeData
         @EventHandler(priority = EventPriority.LOW)
         public void onInventoryClick(final InventoryClickEvent event)
         {
-            final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
             if (user != null &&
                 // Quickbar actions can be performed outside the inventory.
@@ -169,7 +170,7 @@ public class InventoryData extends TimeData
         @EventHandler(priority = EventPriority.MONITOR)
         public void onInventoryClose(final InventoryCloseEvent event)
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
                 user.getInventoryData().nullifyTimeStamp(0);
@@ -180,7 +181,7 @@ public class InventoryData extends TimeData
         public void onInventoryOpen(final InventoryOpenEvent event)
         {
             // Removed theUser.getPlayer().getOpenInventory().getType() != InventoryType.CRAFTING.
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
                 user.getInventoryData().updateTimeStamp(0);
@@ -190,7 +191,7 @@ public class InventoryData extends TimeData
         @EventHandler(priority = EventPriority.MONITOR)
         public void onRespawn(final PlayerRespawnEvent event)
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
                 user.getInventoryData().nullifyTimeStamp(0);
@@ -200,7 +201,7 @@ public class InventoryData extends TimeData
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
         public void onTeleport(final PlayerTeleportEvent event)
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
                 user.getInventoryData().nullifyTimeStamp(0);
@@ -210,7 +211,7 @@ public class InventoryData extends TimeData
         @EventHandler
         public void onWorldChange(final PlayerChangedWorldEvent event)
         {
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
                 user.getInventoryData().nullifyTimeStamp(0);

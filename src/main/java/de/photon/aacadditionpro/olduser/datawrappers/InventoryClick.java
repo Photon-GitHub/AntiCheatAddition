@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.user.datawrappers;
+package de.photon.aacadditionpro.olduser.datawrappers;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.event.inventory.ClickType;

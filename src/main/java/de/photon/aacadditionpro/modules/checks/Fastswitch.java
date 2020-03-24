@@ -7,8 +7,8 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
@@ -40,10 +40,10 @@ public class Fastswitch extends PacketAdapter implements PacketListenerModule, V
             return;
         }
 
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
+        if (UserOld.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 

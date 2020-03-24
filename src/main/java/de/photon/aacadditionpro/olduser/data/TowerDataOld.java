@@ -1,18 +1,18 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.olduser.data;
 
-import de.photon.aacadditionpro.user.TimeData;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.datawrappers.BlockPlace;
-import de.photon.aacadditionpro.user.datawrappers.TowerBlockPlace;
+import de.photon.aacadditionpro.olduser.TimeDataOld;
+import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.olduser.datawrappers.BlockPlace;
+import de.photon.aacadditionpro.olduser.datawrappers.TowerBlockPlace;
 import de.photon.aacadditionpro.util.datastructures.buffer.ConditionalCleanBuffer;
 import de.photon.aacadditionpro.util.datastructures.buffer.DequeBuffer;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import lombok.Getter;
 
 /**
- * Used to store {@link BlockPlace}s. The {@link TimeData} is used for timeouts.
+ * Used to store {@link BlockPlace}s. The {@link TimeDataOld} is used for timeouts.
  */
-public class TowerData extends TimeData
+public class TowerDataOld extends TimeDataOld
 {
     // Default buffer size is 6, being well tested.
     private static final int BUFFER_SIZE = 6;
@@ -21,7 +21,7 @@ public class TowerData extends TimeData
     @Getter
     private final DequeBuffer<TowerBlockPlace> blockPlaces;
 
-    public TowerData(final User user)
+    public TowerDataOld(final UserOld user)
     {
         super(user, 0);
 

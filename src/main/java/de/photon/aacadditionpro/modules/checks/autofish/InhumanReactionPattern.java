@@ -2,17 +2,17 @@ package de.photon.aacadditionpro.modules.checks.autofish;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import org.bukkit.event.player.PlayerFishEvent;
 
-class InhumanReactionPattern extends PatternModule.Pattern<User, PlayerFishEvent>
+class InhumanReactionPattern extends PatternModule.Pattern<UserOld, PlayerFishEvent>
 {
     @LoadFromConfiguration(configPath = ".fishing_milliseconds")
     private int fishingMilliseconds;
 
     @Override
-    protected int process(User user, PlayerFishEvent event)
+    protected int process(UserOld user, PlayerFishEvent event)
     {
         switch (event.getState()) {
             case CAUGHT_FISH:

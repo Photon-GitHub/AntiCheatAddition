@@ -7,8 +7,8 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 
 public class SkinBlinker extends PacketAdapter implements PacketListenerModule, ViolationModule
@@ -33,10 +33,10 @@ public class SkinBlinker extends PacketAdapter implements PacketListenerModule, 
          * -> he can move, especially in MC 1.9 and upward because of entity-collision, etc.
          * -> As of the render-debug-cycle which can be done in the game (F3 + F) I need to check for the change of the skin.
          */
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
+        if (UserOld.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 

@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.olduser.data;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -6,9 +6,9 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.user.TimeData;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.olduser.TimeDataOld;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.mathematics.RotationUtil;
 import de.photon.aacadditionpro.util.packetwrappers.client.IWrapperPlayClientLook;
@@ -20,12 +20,12 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 
-public class LookPacketData extends TimeData
+public class LookPacketDataOld extends TimeDataOld
 {
     private static final byte QUEUE_CAPACITY = 20;
 
     static {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new LookPacketData.LookPacketDataUpdater());
+        ProtocolLibrary.getProtocolManager().addPacketListener(new LookPacketDataOld.LookPacketDataUpdater());
     }
 
     // PacketAnalysisData
@@ -38,7 +38,7 @@ public class LookPacketData extends TimeData
     private final Deque<RotationChange> rotationChangeQueue = new LinkedList<>();
 
     // [0] = Significant rotation changes (scaffold)
-    public LookPacketData(final User user)
+    public LookPacketDataOld(final UserOld user)
     {
         super(user, 0);
 
@@ -143,7 +143,7 @@ public class LookPacketData extends TimeData
         {
             // Not cancelled
             if (!event.isCancelled()) {
-                final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+                final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
                 if (user == null) {
                     return;

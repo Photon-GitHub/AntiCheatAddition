@@ -1,5 +1,6 @@
-package de.photon.aacadditionpro.user;
+package de.photon.aacadditionpro.olduser;
 
+import de.photon.aacadditionpro.user.User;
 import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

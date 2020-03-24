@@ -2,7 +2,7 @@ package de.photon.aacadditionpro.modules.checks.inventory;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.server.ServerUtil;
@@ -10,7 +10,7 @@ import lombok.Getter;
 import org.bukkit.GameMode;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClickEvent>
+class MultiInteractionPattern extends PatternModule.Pattern<UserOld, InventoryClickEvent>
 {
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
@@ -22,7 +22,7 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
     private double minTps;
 
     @Override
-    protected int process(User user, InventoryClickEvent event)
+    protected int process(UserOld user, InventoryClickEvent event)
     {
         // Creative-clear might trigger this.
         if ((user.getPlayer().getGameMode() == GameMode.SURVIVAL || user.getPlayer().getGameMode() == GameMode.ADVENTURE) &&
@@ -126,7 +126,7 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
     }
 
     @Override
-    public void cancelAction(User user, InventoryClickEvent event)
+    public void cancelAction(UserOld user, InventoryClickEvent event)
     {
         event.setCancelled(true);
         InventoryUtils.syncUpdateInventory(user.getPlayer());

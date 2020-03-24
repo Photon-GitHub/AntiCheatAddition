@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.olduser.data;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -6,13 +6,13 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.user.TimeData;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.olduser.TimeDataOld;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
 import org.bukkit.event.Listener;
 
-public class VelocityChangeData extends TimeData
+public class VelocityChangeDataOld extends TimeDataOld
 {
     static {
         VelocityChangeDataUpdater velocityChangeDataUpdater = new VelocityChangeDataUpdater();
@@ -21,7 +21,7 @@ public class VelocityChangeData extends TimeData
 
     public boolean positiveVelocity;
 
-    public VelocityChangeData(final User user)
+    public VelocityChangeDataOld(final UserOld user)
     {
         // [0] last velocity change
         super(user, 0);
@@ -45,7 +45,7 @@ public class VelocityChangeData extends TimeData
                 return;
             }
 
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             // The player wasn't hurt and got velocity for that.
             if (user != null

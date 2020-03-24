@@ -8,8 +8,8 @@ import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPosition;
@@ -42,10 +42,10 @@ public class Pingspoof extends PacketAdapter implements ListenerModule, PacketLi
             return;
         }
 
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
+        if (UserOld.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -67,7 +67,7 @@ public class Pingspoof extends PacketAdapter implements ListenerModule, PacketLi
         }
     }
 
-    private void check(final User user)
+    private void check(final UserOld user)
     {
         final long ping = user.getPingData().passedTime(0);
         final long nmsPing = ServerUtil.getPing(user.getPlayer());
@@ -99,7 +99,7 @@ public class Pingspoof extends PacketAdapter implements ListenerModule, PacketLi
                 AACAdditionPro.getInstance(),
                 () ->
                 {
-                    for (final User user : UserManager.getUsersUnwrapped()) {
+                    for (final UserOld user : UserManager.getUsersUnwrapped()) {
                         //Took too long to check
                         if (user.getPingData().isCurrentlyChecking && user.getPingData().recentlyUpdated(0, 1000)) {
                             user.getPingData().teleportLocation = null;

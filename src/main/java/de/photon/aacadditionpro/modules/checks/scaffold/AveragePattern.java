@@ -2,8 +2,8 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.datawrappers.ScaffoldBlockPlace;
+import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.olduser.datawrappers.ScaffoldBlockPlace;
 import de.photon.aacadditionpro.util.entity.PotionUtil;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -12,10 +12,10 @@ import org.bukkit.potion.PotionEffectType;
 /**
  * This {@link de.photon.aacadditionpro.modules.PatternModule.Pattern} checks the average time between block places.
  */
-class AveragePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class AveragePattern extends PatternModule.Pattern<UserOld, BlockPlaceEvent>
 {
     @Override
-    public int process(User user, BlockPlaceEvent event)
+    public int process(UserOld user, BlockPlaceEvent event)
     {
         // Ladders are prone to false positives as they can be used to place blocks immediately after placing them,
         // therefore almost doubling the placement speed. However they can only be placed one at a time, which allows

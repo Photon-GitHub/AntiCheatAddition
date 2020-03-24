@@ -2,18 +2,18 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.olduser.UserOld;
 
 /**
  * This {@link de.photon.aacadditionpro.modules.PatternModule.Pattern} detects huge angle changes while scaffolding that
  * do not reflect legit behaviour.
  */
-class RotationTypeTwoPattern extends PatternModule.Pattern<User, Float>
+class RotationTypeTwoPattern extends PatternModule.Pattern<UserOld, Float>
 {
     private static final double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
 
     @Override
-    protected int process(User user, Float angleInformation)
+    protected int process(UserOld user, Float angleInformation)
     {
         if (angleInformation > ANGLE_CHANGE_SUM_THRESHOLD) {
             message = "Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2";

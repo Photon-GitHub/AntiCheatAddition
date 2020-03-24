@@ -1,10 +1,10 @@
-package de.photon.aacadditionpro.user;
+package de.photon.aacadditionpro.olduser;
 
-public class TimeData extends Data
+public class TimeDataOld extends DataOld
 {
     private final long[] timeStamps;
 
-    public TimeData(final User user, long... timeStamps)
+    public TimeDataOld(final UserOld user, long... timeStamps)
     {
         super(user);
         this.timeStamps = timeStamps;

@@ -10,9 +10,9 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.user.data.PacketAnalysisData;
+import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.olduser.data.PacketAnalysisDataOld;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPosition;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 
@@ -54,15 +54,15 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
             return;
         }
 
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
+        if (UserOld.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
         if (event.getPacketType() == PacketType.Play.Server.POSITION) {
-            user.getPacketAnalysisData().lastPositionForceData = new PacketAnalysisData.PositionForceData(new WrapperPlayServerPosition(event.getPacket()).getLocation(user.getPlayer().getWorld()));
+            user.getPacketAnalysisData().lastPositionForceData = new PacketAnalysisDataOld.PositionForceData(new WrapperPlayServerPosition(event.getPacket()).getLocation(user.getPlayer().getWorld()));
         }
     }
 
@@ -73,10 +73,10 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
             return;
         }
 
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
+        if (UserOld.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 

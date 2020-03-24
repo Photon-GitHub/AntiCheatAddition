@@ -6,7 +6,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientUseEntity;
 
 public class AnimationPattern extends PatternModule.PacketPattern
@@ -20,7 +20,7 @@ public class AnimationPattern extends PatternModule.PacketPattern
     }
 
     @Override
-    protected int process(User user, PacketEvent packetEvent)
+    protected int process(UserOld user, PacketEvent packetEvent)
     {
         if (packetEvent.getPacketType() == PacketType.Play.Client.ARM_ANIMATION) {
             user.getPacketAnalysisData().animationExpected = false;

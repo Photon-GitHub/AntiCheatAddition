@@ -2,26 +2,26 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.data.PositionData;
+import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.olduser.data.PositionDataOld;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
  * This detects safe-walk behaviour (stopping when not sneaking)
  */
-class SafewalkTypeTwoPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class SafewalkTypeTwoPattern extends PatternModule.Pattern<UserOld, BlockPlaceEvent>
 {
     @LoadFromConfiguration(configPath = ".violation_threshold")
     private int violationThreshold;
 
     @Override
-    protected int process(User user, BlockPlaceEvent event)
+    protected int process(UserOld user, BlockPlaceEvent event)
     {
         // Moved recently
-        if (user.getPositionData().hasPlayerMovedRecently(355, PositionData.MovementType.XZONLY) &&
+        if (user.getPositionData().hasPlayerMovedRecently(355, PositionDataOld.MovementType.XZONLY) &&
             // Suddenly stopped
-            !user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
+            !user.getPositionData().hasPlayerMovedRecently(175, PositionDataOld.MovementType.XZONLY) &&
             // Has not sneaked recently
             !(user.getPositionData().hasPlayerSneakedRecently(175) && user.getPositionData().getLastSneakTime() > 148))
         {

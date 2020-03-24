@@ -4,14 +4,12 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.olduser.UserManager;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 public class AutoEat implements ListenerModule, ViolationModule
@@ -23,23 +21,6 @@ public class AutoEat implements ListenerModule, ViolationModule
 
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
-
-    @EventHandler
-    public void onItemInteract(PlayerInteractEvent event)
-    {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
-            return;
-        }
-
-        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)
-            && event.getMaterial().isEdible())
-        {
-            user.getAutoEatData().updateTimeStamp(0);
-        }
-    }
 
     @EventHandler
     public void onConsume(PlayerItemConsumeEvent event)

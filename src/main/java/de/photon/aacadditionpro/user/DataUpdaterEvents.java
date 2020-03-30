@@ -1,11 +1,13 @@
 package de.photon.aacadditionpro.user;
 
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.olduser.UserManager;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -20,8 +22,25 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class DataUpdaterEvents implements Listener
+/**
+ * A singleton to update the data in {@link de.photon.aacadditionpro.AACAdditionPro}s internal data storage.
+ */
+public final class DataUpdaterEvents implements Listener
 {
+    public static final DataUpdaterEvents INSTANCE = new DataUpdaterEvents();
+
+    private DataUpdaterEvents() {}
+
+    public void register()
+    {
+        AACAdditionPro.getInstance().registerListener(this);
+    }
+
+    public void unregister()
+    {
+        HandlerList.unregisterAll(this);
+    }
+
     @EventHandler
     public void onItemInteract(PlayerInteractEvent event)
     {
@@ -99,7 +118,7 @@ public class DataUpdaterEvents implements Listener
             event.getSlotType() != InventoryType.SlotType.QUICKBAR)
         {
             // Only update if the inventory is currently closed to not interfere with opening time checks.
-            if (!user.getInventoryData().hasOpenInventory()) {
+            if (!user.hasOpenInventory()) {
                 user.getTimestampMap().updateTimeStamp(TimestampKey.INVENTORY_OPENED);
             }
 

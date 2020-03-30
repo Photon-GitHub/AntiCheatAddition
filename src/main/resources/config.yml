@@ -337,27 +337,6 @@ PacketAnalysis:
     18: "aac notify {player} in {world} is highly suspected by PacketAnalysis"
     28: "aackick {player} Suspicious packets"
 
-# The Pingspoof check tries to identify cheaters who try to intentionally increase their ping to bypass
-# AntiCheat-setups. It is a longtime check and will detect cheaters very slowly.
-Pingspoof:
-  # Do you want to enable the Pingspoof check
-  # Disabled by default as this is a legacy check that will be replaced by PacketAnalysis.
-  enabled: false
-  # This is the ping-offset. Increase if you have false positives.
-  ping_offset: 3.0
-  # If the measured real-ping of a player is higher than this, he will be ignored
-  # (A real high-ping player)
-  max_real_ping: 100
-  # In order to minimize possible false positives with temporarily bad connections a player's ping will be refreshed
-  # once this threshold is reached.
-  # Set to 0 to disable (not recommended)
-  refresh_at_vl: 5
-  # Map of violation levels to command
-  thresholds:
-    4: "aac notify {player} in {world} is suspected for Pingspoofer"
-    8: "aac notify {player} in {world} is highly suspected for Pingspoofer"
-    12: "aackick {player} Pingspoofer"
-
 # The Scaffold check detects Scaffold cheats
 Scaffold:
   # Do you want to enable the Scaffold check

@@ -24,4 +24,47 @@ public class ObjectDataMap<T extends Enum<T>> extends DataMap<T, Object>
         Preconditions.checkArgument(checkType.test(key, value), "Tried to insert wrong type for key " + key);
         super.setValue(key, value);
     }
+
+    // Casting for primitives:
+    public boolean getBoolean(T key)
+    {
+        Preconditions.checkArgument(checkType.test(key, true), "Tried to get wrong type for key " + key);
+        return (boolean) this.getValue(key);
+    }
+
+    public byte getByte(T key)
+    {
+        Preconditions.checkArgument(checkType.test(key, Byte.MAX_VALUE), "Tried to get wrong type for key " + key);
+        return (byte) this.getValue(key);
+    }
+
+    public short getShort(T key)
+    {
+        Preconditions.checkArgument(checkType.test(key, Short.MAX_VALUE), "Tried to get wrong type for key " + key);
+        return (short) this.getValue(key);
+    }
+
+    public int getInt(T key)
+    {
+        Preconditions.checkArgument(checkType.test(key, Integer.MAX_VALUE), "Tried to get wrong type for key " + key);
+        return (int) this.getValue(key);
+    }
+
+    public int getLong(T key)
+    {
+        Preconditions.checkArgument(checkType.test(key, Long.MAX_VALUE), "Tried to get wrong type for key " + key);
+        return (int) this.getValue(key);
+    }
+
+    public int getFloat(T key)
+    {
+        Preconditions.checkArgument(checkType.test(key, Float.MAX_VALUE), "Tried to get wrong type for key " + key);
+        return (int) this.getValue(key);
+    }
+
+    public int getDouble(T key)
+    {
+        Preconditions.checkArgument(checkType.test(key, Double.MAX_VALUE), "Tried to get wrong type for key " + key);
+        return (int) this.getValue(key);
+    }
 }

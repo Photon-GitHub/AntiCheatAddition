@@ -26,9 +26,7 @@ public class User
 
         // Timestamps
         this.timestampMap = new TimestampMap<>(TimestampKey.class);
-        for (TimestampKey value : TimestampKey.values()) {
-            this.timestampMap.nullifyTimeStamp(value);
-        }
+        this.timestampMap.nullifyTimeStamps(TimestampKey.values());
 
         // Login time
         this.getTimestampMap().updateTimeStamp(TimestampKey.LOGIN_TIME);
@@ -108,12 +106,12 @@ public class User
     /**
      * Checks if this {@link User} has moved recently.
      *
-     * @param milliseconds the amount of time in milliseconds that should be considered.
      * @param movementType what movement should be checked
      *
+     * @param milliseconds the amount of time in milliseconds that should be considered.
      * @return true if the player has moved in the specified time frame.
      */
-    public boolean hasPlayerMovedRecently(final long milliseconds, final TimestampKey movementType)
+    public boolean hasPlayerMovedRecently(final TimestampKey movementType, final long milliseconds)
     {
         switch (movementType) {
             case LAST_HEAD_OR_OTHER_MOVEMENT:

@@ -7,7 +7,8 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.olduser.data.PositionDataOld;
+import de.photon.aacadditionpro.user.DataKey;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
@@ -74,13 +75,13 @@ class EqualRotationPattern extends PatternModule.PacketPattern
         // Boat false positive (usually worse cheats in vehicles as well)
         if (!user.getPlayer().isInsideVehicle() &&
             // Not recently teleported
-            !user.getTeleportData().recentlyUpdated(0, 5000) &&
+            !user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_TELEPORT, 5000) &&
             // Same rotation values
             // LookPacketData automatically updates its values.
-            currentYaw == user.getLookPacketData().getRealLastYaw() &&
-            currentPitch == user.getLookPacketData().getRealLastPitch() &&
+            currentYaw == user.getDataMap().getFloat(DataKey.PACKET_ANALYSIS_REAL_LAST_YAW) &&
+            currentPitch == user.getDataMap().getFloat(DataKey.PACKET_ANALYSIS_REAL_LAST_PITCH) &&
             // Labymod fp when standing still / hit in corner fp
-            user.getPositionData().hasPlayerMovedRecently(100, PositionDataOld.MovementType.XZONLY))
+            user.hasPlayerMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 100))
         {
             // Not a big performance deal as most packets have already been filtered out, now we just account for
             // the last false positives.
@@ -102,8 +103,8 @@ class EqualRotationPattern extends PatternModule.PacketPattern
                                                          Hitbox.PLAYER, CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS)))
                 {
                     // Cancelled packets may cause problems.
-                    if (user.getPacketAnalysisData().equalRotationExpected) {
-                        user.getPacketAnalysisData().equalRotationExpected = false;
+                    if (user.getDataMap().getBoolean(DataKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED)) {
+                        user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED, false);
                         return 0;
                     }
 

@@ -28,7 +28,7 @@ class SprintingPattern extends PatternModule.Pattern<User, InventoryClickEvent>
             // The player opened the inventory at least a quarter second ago
             user.notRecentlyOpenedInventory(250) &&
             // Is the player moving
-            user.hasPlayerMovedRecently(1000, TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT))
+            user.hasPlayerMovedRecently(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT, 1000))
         {
             message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " interacted with an inventory while sprinting or sneaking.";
             return 20;

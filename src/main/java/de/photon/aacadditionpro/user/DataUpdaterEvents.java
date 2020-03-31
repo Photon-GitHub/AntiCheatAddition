@@ -203,8 +203,7 @@ public final class DataUpdaterEvents implements Listener
             if (event.getFrom().getX() != event.getTo().getX() ||
                 event.getFrom().getZ() != event.getTo().getZ())
             {
-                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XYZ_MOVEMENT);
-                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XZ_MOVEMENT);
+                user.getTimestampMap().updateTimeStamps(TimestampKey.LAST_XYZ_MOVEMENT, TimestampKey.LAST_XZ_MOVEMENT);
             }
             // Any non-head movement.
             else if (event.getFrom().getY() != event.getTo().getY()) {
@@ -220,8 +219,7 @@ public final class DataUpdaterEvents implements Listener
 
         if (user != null) {
             user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
-            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_TELEPORT);
-            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_RESPAWN);
+            user.getTimestampMap().updateTimeStamps(TimestampKey.LAST_RESPAWN, TimestampKey.LAST_TELEPORT);
         }
     }
 
@@ -271,8 +269,7 @@ public final class DataUpdaterEvents implements Listener
 
         if (user != null) {
             user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
-            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_TELEPORT);
-            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_WORLD_CHANGE);
+            user.getTimestampMap().updateTimeStamps(TimestampKey.LAST_TELEPORT, TimestampKey.LAST_WORLD_CHANGE);
         }
     }
 

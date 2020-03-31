@@ -10,9 +10,10 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.user.DataKey;
+import de.photon.aacadditionpro.user.TimestampKey;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.olduser.UserOld;
-import de.photon.aacadditionpro.olduser.data.PacketAnalysisDataOld;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPosition;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 
@@ -54,15 +55,16 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
             return;
         }
 
-        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (UserOld.isUserInvalid(user, this.getModuleType())) {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
         if (event.getPacketType() == PacketType.Play.Server.POSITION) {
-            user.getPacketAnalysisData().lastPositionForceData = new PacketAnalysisDataOld.PositionForceData(new WrapperPlayServerPosition(event.getPacket()).getLocation(user.getPlayer().getWorld()));
+            user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION, new WrapperPlayServerPosition(event.getPacket()).getLocation(user.getPlayer().getWorld()));
+            user.getTimestampMap().updateTimeStamp(TimestampKey.PACKET_ANALYSIS_LAST_POSITION_FORCE);
         }
     }
 
@@ -73,10 +75,10 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
             return;
         }
 
-        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (UserOld.isUserInvalid(user, this.getModuleType())) {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -90,13 +92,13 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         vlManager.flag(user.getPlayer(), this.illegalPitchPattern.apply(user, event), -1, () -> {}, () -> {});
 
         // ----------------------------------------- Compare + PositionSpoof ---------------------------------------- //
-        if (user.getPacketAnalysisData().lastPositionForceData != null) {
+        if (user.getDataMap().getValue(DataKey.PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION) != null) {
             // Special code to update the timestamp of the last compare flag.
-            vlManager.flag(user.getPlayer(), this.comparePattern.apply(user, event), -1, () -> {}, () -> user.getPacketAnalysisData().updateTimeStamp(0));
+            vlManager.flag(user.getPlayer(), this.comparePattern.apply(user, event), -1, () -> {}, () -> user.getTimestampMap().updateTimeStamp(TimestampKey.PACKET_ANALYSIS_LAST_COMPARE_FLAG));
             vlManager.flag(user.getPlayer(), this.positionSpoofPattern.apply(user, event), -1, () -> {}, () -> {});
 
             // No continuous flagging.
-            user.getPacketAnalysisData().lastPositionForceData = null;
+            user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION, null);
         }
     }
 

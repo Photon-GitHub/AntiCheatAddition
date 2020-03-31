@@ -151,6 +151,30 @@ public class User
         return this.dataMap.getBoolean(DataKey.SNEAKING) || this.timestampMap.recentlyUpdated(TimestampKey.LAST_SNEAK_TOGGLE, milliseconds);
     }
 
+    // Skin
+
+    /**
+     * Updates the saved skin components.
+     *
+     * @return true if the skinComponents changed and there have already been some skin components beforehand.
+     */
+    public boolean updateSkinComponents(int newSkinComponents)
+    {
+        Integer oldSkin = (Integer) this.getDataMap().getValue(DataKey.SKIN_COMPONENTS);
+
+        if (oldSkin == null) {
+            this.getDataMap().setValue(DataKey.SKIN_COMPONENTS, newSkinComponents);
+            return false;
+        }
+
+        if (oldSkin == newSkinComponents) {
+            return false;
+        }
+
+        this.getDataMap().setValue(DataKey.SKIN_COMPONENTS, newSkinComponents);
+        return true;
+    }
+
 
     // Disabling, equals() and hashCode()
 

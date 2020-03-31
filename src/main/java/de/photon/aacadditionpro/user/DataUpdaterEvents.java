@@ -1,14 +1,22 @@
 package de.photon.aacadditionpro.user;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
+import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -31,7 +39,13 @@ public final class DataUpdaterEvents implements Listener
 {
     public static final DataUpdaterEvents INSTANCE = new DataUpdaterEvents();
 
-    private DataUpdaterEvents() {}
+    private final VelocityChangeDataUpdater velocityChangeDataUpdater;
+
+    private DataUpdaterEvents()
+    {
+        this.velocityChangeDataUpdater = new VelocityChangeDataUpdater();
+        ProtocolLibrary.getProtocolManager().addPacketListener(this.velocityChangeDataUpdater);
+    }
 
     public void register()
     {
@@ -41,25 +55,6 @@ public final class DataUpdaterEvents implements Listener
     public void unregister()
     {
         HandlerList.unregisterAll(this);
-    }
-
-    @EventHandler
-    public void onItemInteract(PlayerInteractEvent event)
-    {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        // Not bypassed
-        if (user == null) {
-            return;
-        }
-
-        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
-            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_RIGHT_CLICK_EVENT);
-
-            if (event.getMaterial().isEdible()) {
-                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_RIGHT_CLICK_CONSUMABLE_ITEM_EVENT);
-            }
-        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -82,6 +77,29 @@ public final class DataUpdaterEvents implements Listener
             user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
         }
     }
+
+    @EventHandler
+    public void onEntityDamageByEntity(final EntityDamageByEntityEvent event)
+    {
+        // Was hit
+        if (event.getEntity() instanceof HumanEntity) {
+            final User user = UserManager.getUser(event.getEntity().getUniqueId());
+
+            if (user != null) {
+                user.getTimestampMap().updateTimeStamp(TimestampKey.TEAMING_COMBAT_TAG);
+            }
+        }
+
+        // Hit somebody else
+        if (event.getDamager() instanceof HumanEntity) {
+            final User user = UserManager.getUser(event.getEntity().getUniqueId());
+
+            if (user != null) {
+                user.getTimestampMap().updateTimeStamp(TimestampKey.TEAMING_COMBAT_TAG);
+            }
+        }
+    }
+
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onInteract(final PlayerInteractEvent event)
@@ -153,33 +171,22 @@ public final class DataUpdaterEvents implements Listener
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onRespawn(final PlayerRespawnEvent event)
-    {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        if (user != null) {
-            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onTeleport(final PlayerTeleportEvent event)
-    {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        if (user != null) {
-            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
-        }
-    }
-
     @EventHandler
-    public void onWorldChange(final PlayerChangedWorldEvent event)
+    public void onItemInteract(PlayerInteractEvent event)
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (user != null) {
-            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
+        // Not bypassed
+        if (user == null) {
+            return;
+        }
+
+        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_RIGHT_CLICK_EVENT);
+
+            if (event.getMaterial().isEdible()) {
+                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_RIGHT_CLICK_CONSUMABLE_ITEM_EVENT);
+            }
         }
     }
 
@@ -203,6 +210,29 @@ public final class DataUpdaterEvents implements Listener
             else if (event.getFrom().getY() != event.getTo().getY()) {
                 user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XYZ_MOVEMENT);
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onRespawn(final PlayerRespawnEvent event)
+    {
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        if (user != null) {
+            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_TELEPORT);
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_RESPAWN);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onTeleport(final PlayerTeleportEvent event)
+    {
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        if (user != null) {
+            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_TELEPORT);
         }
     }
 
@@ -231,6 +261,58 @@ public final class DataUpdaterEvents implements Listener
                 user.getDataMap().setValue(DataKey.LAST_SPRINT_DURATION, user.getTimestampMap().passedTime(TimestampKey.LAST_SPRINT_TOGGLE));
             }
             user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_SPRINT_TOGGLE);
+        }
+    }
+
+    @EventHandler
+    public void onWorldChange(final PlayerChangedWorldEvent event)
+    {
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        if (user != null) {
+            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_TELEPORT);
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_WORLD_CHANGE);
+        }
+    }
+
+    /**
+     * A singleton class to reduce the reqired {@link Listener}s to a minimum.
+     */
+    private static class VelocityChangeDataUpdater extends PacketAdapter
+    {
+        private VelocityChangeDataUpdater()
+        {
+            super(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.POSITION, PacketType.Play.Client.POSITION_LOOK);
+        }
+
+        @Override
+        public void onPacketReceiving(final PacketEvent event)
+        {
+            if (event.getPlayer() == null || event.isPlayerTemporary()) {
+                return;
+            }
+
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user != null) {
+                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_VELOCITY_CHANGE);
+
+                // The player wasn't hurt and got velocity for that.
+                if (user.getPlayer().getNoDamageTicks() == 0
+                    // Recent teleports can cause bugs
+                    && !user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_TELEPORT, 1000))
+                {
+                    final IWrapperPlayPosition position = event::getPacket;
+
+                    final boolean updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
+
+                    if (updatedPositiveVelocity != user.getDataMap().getBoolean(DataKey.POSITIVE_VELOCITY)) {
+                        user.getDataMap().setValue(DataKey.POSITIVE_VELOCITY, updatedPositiveVelocity);
+                        user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES);
+                    }
+                }
+            }
         }
     }
 }

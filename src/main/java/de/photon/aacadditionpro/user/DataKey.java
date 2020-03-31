@@ -33,11 +33,7 @@ public enum DataKey
     PACKET_ANALYSIS_REAL_LAST_PITCH(Float.class, -1),
     PACKET_ANALYSIS_REAL_LAST_YAW(Float.class, -1),
 
-    SCAFFOLD_ANGLE_FAILS(Long.class, 0),
-    SCAFFOLD_ROTATION_FAILS(Long.class, 0),
-    SCAFFOLD_SAFEWALK_1_FAILS(Long.class, 0),
-    SCAFFOLD_SAFEWALK_2_FAILS(Long.class, 0),
-    SCAFFOLD_SPRINTING_FAILS(Long.class, 0),
+    POSITIVE_VELOCITY(Boolean.class, false),
 
     SKIN_COMPONENTS(Integer.class, null),
 

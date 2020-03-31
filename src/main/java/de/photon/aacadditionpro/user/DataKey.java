@@ -12,8 +12,6 @@ public enum DataKey
 {
     ALLOWED_TO_JUMP(Boolean.class, true),
 
-    AUTOFISH_FAIL_COUNTER(Long.class, 0),
-
     LAST_CONSUMED_ITEM_STACK(ItemStack.class, null),
 
     /**

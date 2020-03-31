@@ -14,6 +14,12 @@ public class FishingData extends SubData
     @Getter
     private final DoubleStatistics statistics = new DoubleStatistics();
 
+    /**
+     * This represents the amount of fails between two successful fishing times.
+     * If this is too high an explanation attempt of an afk fish farm is more sensible than a bot.
+     */
+    public int failedCounter = 0;
+
     public FishingData(User user)
     {
         super(user);

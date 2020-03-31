@@ -5,8 +5,8 @@ import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.modules.RestrictedServerVersion;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
 import de.photon.aacadditionpro.util.random.RandomUtil;
 import org.bukkit.Bukkit;
@@ -31,11 +31,9 @@ class KeepAliveInjectPattern extends PatternModule.Pattern<Object, Object> imple
                 () ->
                 {
                     long time = System.nanoTime() / 1000000L;
-                    for (final UserOld user : UserManager.getUsersUnwrapped())
-                    {
+                    for (final User user : UserManager.getUsersUnwrapped()) {
                         // Not bypassed
-                        if (!user.isBypassed(this.getModuleType()))
-                        {
+                        if (!user.isBypassed(this.getModuleType())) {
                             final WrapperPlayServerKeepAlive wrapperPlayServerKeepAlive = new WrapperPlayServerKeepAlive();
                             wrapperPlayServerKeepAlive.setKeepAliveId(time);
                             wrapperPlayServerKeepAlive.sendPacket(user.getPlayer());
@@ -57,8 +55,7 @@ class KeepAliveInjectPattern extends PatternModule.Pattern<Object, Object> imple
     {
         super.disable();
 
-        if (injectTask != null)
-        {
+        if (injectTask != null) {
             injectTask.cancel();
         }
     }

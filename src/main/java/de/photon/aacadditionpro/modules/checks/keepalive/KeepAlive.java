@@ -10,9 +10,9 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.olduser.UserOld;
-import de.photon.aacadditionpro.olduser.data.KeepAliveDataOld;
+import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.WrapperPlayKeepAlive;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientKeepAlive;
@@ -48,10 +48,10 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
             return;
         }
 
-        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (UserOld.isUserInvalid(user, this.getModuleType())) {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -59,7 +59,7 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
 
         // Register the KeepAlive
         synchronized (user.getKeepAliveData().getKeepAlives()) {
-            user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveDataOld.KeepAlivePacketData(wrapper.getKeepAliveId()));
+            user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(wrapper.getKeepAliveId()));
         }
         vlManager.flag(user.getPlayer(), keepAliveIgnoredPattern.apply(user, event), -1, () -> {}, () -> {});
     }
@@ -71,22 +71,22 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
             return;
         }
 
-        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (UserOld.isUserInvalid(user, this.getModuleType())) {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
         final WrapperPlayKeepAlive wrapper = new WrapperPlayClientKeepAlive(event.getPacket());
 
         final long keepAliveId = wrapper.getKeepAliveId();
-        KeepAliveDataOld.KeepAlivePacketData keepAlivePacketData = null;
+        KeepAliveData.KeepAlivePacketData keepAlivePacketData = null;
 
         int offset = 0;
         synchronized (user.getKeepAliveData().getKeepAlives()) {
-            final Iterator<KeepAliveDataOld.KeepAlivePacketData> iterator = user.getKeepAliveData().getKeepAlives().descendingIterator();
-            KeepAliveDataOld.KeepAlivePacketData current;
+            final Iterator<KeepAliveData.KeepAlivePacketData> iterator = user.getKeepAliveData().getKeepAlives().descendingIterator();
+            KeepAliveData.KeepAlivePacketData current;
             while (iterator.hasNext()) {
                 current = iterator.next();
 

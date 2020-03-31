@@ -7,8 +7,8 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.olduser.data.PositionDataOld;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
@@ -63,7 +63,7 @@ class EqualRotationPattern extends PatternModule.PacketPattern
     }
 
     @Override
-    protected int process(UserOld user, PacketEvent packetEvent)
+    protected int process(User user, PacketEvent packetEvent)
     {
         // Get the packet.
         final IWrapperPlayClientLook lookWrapper = packetEvent::getPacket;

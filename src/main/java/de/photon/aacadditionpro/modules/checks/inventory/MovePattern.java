@@ -6,7 +6,9 @@ import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.user.DataKey;
+import de.photon.aacadditionpro.user.TimestampKey;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
@@ -38,7 +40,7 @@ class MovePattern extends PatternModule.PacketPattern
     }
 
     @Override
-    protected int process(UserOld user, PacketEvent packetEvent)
+    protected int process(User user, PacketEvent packetEvent)
     {
 
         final IWrapperPlayPosition positionWrapper = packetEvent::getPacket;
@@ -59,11 +61,11 @@ class MovePattern extends PatternModule.PacketPattern
             // Not using an Elytra
             !EntityUtil.isFlyingWithElytra(user.getPlayer()) &&
             // Player is in an inventory
-            user.getInventoryData().hasOpenInventory() &&
+            user.hasOpenInventory() &&
             // Player has not been hit recently
             user.getPlayer().getNoDamageTicks() == 0 &&
             // Recent teleports can cause bugs
-            !user.getTeleportData().recentlyUpdated(0, 1000) &&
+            !user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_TELEPORT, 1000) &&
             // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
             // world add errors.
             // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load
@@ -78,9 +80,9 @@ class MovePattern extends PatternModule.PacketPattern
         {
             final boolean positiveVelocity = knownPosition.getY() < moveTo.getY();
 
-            if (positiveVelocity != user.getVelocityChangeData().positiveVelocity) {
-                if (user.getPositionData().allowedToJump) {
-                    user.getPositionData().allowedToJump = false;
+            if (positiveVelocity != user.getDataMap().getBoolean(DataKey.POSITIVE_VELOCITY)) {
+                if (user.getDataMap().getBoolean(DataKey.ALLOWED_TO_JUMP)) {
+                    user.getDataMap().setValue(DataKey.ALLOWED_TO_JUMP, false);
                     return 0;
                 }
 
@@ -89,7 +91,7 @@ class MovePattern extends PatternModule.PacketPattern
             }
 
             // Make sure that the last jump is a little bit ago (same "breaking" effect that needs compensation.)
-            if (user.getVelocityChangeData().recentlyUpdated(0, 1750)) {
+            if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES, 1750)) {
                 return 0;
             }
 
@@ -98,7 +100,7 @@ class MovePattern extends PatternModule.PacketPattern
             if (knownPosition.getY() == moveTo.getY() &&
                 // 230 is a little compensation for the "breaking" when sprinting previously (value has been established
                 // by local tests).
-                user.getInventoryData().notRecentlyOpened(230L + lenienceMillis))
+                user.notRecentlyOpenedInventory(230L + lenienceMillis))
             {
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
@@ -116,19 +118,19 @@ class MovePattern extends PatternModule.PacketPattern
                 }
             }
         } else {
-            user.getPositionData().allowedToJump = true;
+            user.getDataMap().setValue(DataKey.ALLOWED_TO_JUMP, true);
         }
         return 0;
     }
 
     @Override
-    public void cancelAction(UserOld user, PacketEvent event)
+    public void cancelAction(User user, PacketEvent event)
     {
         //TODO: TEST THIS; THIS MIGHT SEND EMPTY PACKETS ?
         event.setCancelled(true);
 
         // Cancelling packets will cause an EqualRotation flag.
-        user.getPacketAnalysisData().equalRotationExpected = true;
+        user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED, true);
 
         // Update client
         final WrapperPlayServerPosition packet = new WrapperPlayServerPosition();

@@ -2,18 +2,18 @@ package de.photon.aacadditionpro.modules.checks.keepalive;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.olduser.data.KeepAliveDataOld;
+import de.photon.aacadditionpro.user.User;
 
 /**
  * This {@link de.photon.aacadditionpro.modules.PatternModule.Pattern} detects responses to KeepAlive packets which are
  * out of order.
  */
-public class KeepAliveOffsetPattern extends PatternModule.Pattern<UserOld, Integer>
+public class KeepAliveOffsetPattern extends PatternModule.Pattern<User, Integer>
 {
 
     @Override
-    protected int process(UserOld user, Integer offset)
+    protected int process(User user, Integer offset)
     {
         synchronized (user.getKeepAliveData().getKeepAlives()) {
             if (user.getKeepAliveData().getKeepAlives().size() == KeepAliveDataOld.KEEPALIVE_QUEUE_SIZE

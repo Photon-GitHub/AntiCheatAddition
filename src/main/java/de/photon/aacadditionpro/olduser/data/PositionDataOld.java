@@ -2,8 +2,9 @@ package de.photon.aacadditionpro.olduser.data;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.olduser.TimeDataOld;
-import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
 import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -86,7 +87,7 @@ public class PositionDataOld extends TimeDataOld
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
         public void onMove(final PlayerMoveEvent event)
         {
-            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
                 // Head + normal movement
@@ -109,7 +110,7 @@ public class PositionDataOld extends TimeDataOld
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
         public void onToggleSneak(final PlayerToggleSneakEvent event)
         {
-            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
                 user.getPositionData().currentlySneaking = event.isSneaking();
@@ -121,9 +122,9 @@ public class PositionDataOld extends TimeDataOld
         }
 
         @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-        public void onToggleSpring(final PlayerToggleSprintEvent event)
+        public void onToggleSprint(final PlayerToggleSprintEvent event)
         {
-            final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
                 user.getPositionData().currentlySprinting = event.isSprinting();

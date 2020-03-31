@@ -17,8 +17,11 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -177,6 +180,57 @@ public final class DataUpdaterEvents implements Listener
 
         if (user != null) {
             user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onMove(final PlayerMoveEvent event)
+    {
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        if (user != null) {
+            // Head + normal movement
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT);
+
+            // xz movement only
+            if (event.getFrom().getX() != event.getTo().getX() ||
+                event.getFrom().getZ() != event.getTo().getZ())
+            {
+                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XYZ_MOVEMENT);
+                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XZ_MOVEMENT);
+            }
+            // Any non-head movement.
+            else if (event.getFrom().getY() != event.getTo().getY()) {
+                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XYZ_MOVEMENT);
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onToggleSneak(final PlayerToggleSneakEvent event)
+    {
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        if (user != null) {
+            user.getDataMap().setValue(DataKey.SNEAKING, event.isSneaking());
+            if (!event.isSneaking()) {
+                user.getDataMap().setValue(DataKey.LAST_SNEAK_DURATION, user.getTimestampMap().passedTime(TimestampKey.LAST_SNEAK_TOGGLE));
+            }
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_SNEAK_TOGGLE);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onToggleSprint(final PlayerToggleSprintEvent event)
+    {
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        if (user != null) {
+            user.getDataMap().setValue(DataKey.SPRINTING, event.isSprinting());
+            if (!event.isSprinting()) {
+                user.getDataMap().setValue(DataKey.LAST_SPRINT_DURATION, user.getTimestampMap().passedTime(TimestampKey.LAST_SPRINT_TOGGLE));
+            }
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_SPRINT_TOGGLE);
         }
     }
 }

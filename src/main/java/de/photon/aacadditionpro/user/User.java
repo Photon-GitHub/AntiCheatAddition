@@ -32,6 +32,10 @@ public class User
 
         // Login time
         this.getTimestampMap().updateTimeStamp(TimestampKey.LOGIN_TIME);
+        // Login should count as movement.
+        this.getTimestampMap().updateTimeStamp(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT);
+        this.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XYZ_MOVEMENT);
+        this.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XZ_MOVEMENT);
 
         // Data
         this.dataMap = new ObjectDataMap<>(DataKey.class, (key, value) -> key.getClazz().isAssignableFrom(value.getClass()));
@@ -39,6 +43,9 @@ public class User
             this.dataMap.setValue(value, value.getDefaultValue());
         }
     }
+
+
+    // Basics
 
     /**
      * This checks if this {@link User} still exists and should be checked.
@@ -60,6 +67,9 @@ public class User
     {
         return InternalPermission.hasPermission(this.player, InternalPermission.BYPASS.getRealPermission() + '.' + moduleType.getConfigString().toLowerCase());
     }
+
+
+    // Inventory
 
     /**
      * Determines whether the {@link User} has a currently opened {@link org.bukkit.inventory.Inventory} according to
@@ -91,6 +101,58 @@ public class User
     {
         return this.getTimestampMap().recentlyUpdated(TimestampKey.LAST_INVENTORY_CLICK, milliseconds);
     }
+
+
+    // Movement
+
+    /**
+     * Checks if this {@link User} has moved recently.
+     *
+     * @param milliseconds the amount of time in milliseconds that should be considered.
+     * @param movementType what movement should be checked
+     *
+     * @return true if the player has moved in the specified time frame.
+     */
+    public boolean hasPlayerMovedRecently(final long milliseconds, final TimestampKey movementType)
+    {
+        switch (movementType) {
+            case LAST_HEAD_OR_OTHER_MOVEMENT:
+                return this.timestampMap.recentlyUpdated(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT, milliseconds);
+            case LAST_XYZ_MOVEMENT:
+                return this.timestampMap.recentlyUpdated(TimestampKey.LAST_XYZ_MOVEMENT, milliseconds);
+            case LAST_XZ_MOVEMENT:
+                return this.timestampMap.recentlyUpdated(TimestampKey.LAST_XZ_MOVEMENT, milliseconds);
+            default:
+                throw new IllegalStateException("Unexpected MovementType: " + movementType);
+        }
+    }
+
+    /**
+     * Checks if this {@link User} has sprinted recently
+     *
+     * @param milliseconds the amount of time in milliseconds that should be considered.
+     *
+     * @return true if the player has sprinted in the specified time frame.
+     */
+    public boolean hasPlayerSprintedRecently(final long milliseconds)
+    {
+        return this.dataMap.getBoolean(DataKey.SPRINTING) || this.timestampMap.recentlyUpdated(TimestampKey.LAST_SPRINT_TOGGLE, milliseconds);
+    }
+
+    /**
+     * Checks if this {@link User} has sneaked recently
+     *
+     * @param milliseconds the amount of time in milliseconds that should be considered.
+     *
+     * @return true if the player has sneaked in the specified time frame.
+     */
+    public boolean hasPlayerSneakedRecently(final long milliseconds)
+    {
+        return this.dataMap.getBoolean(DataKey.SNEAKING) || this.timestampMap.recentlyUpdated(TimestampKey.LAST_SNEAK_TOGGLE, milliseconds);
+    }
+
+
+    // Disabling, equals() and hashCode()
 
     /**
      * This method unregisters the {@link User} to make sure that memory leaks will not happen, and if they do,

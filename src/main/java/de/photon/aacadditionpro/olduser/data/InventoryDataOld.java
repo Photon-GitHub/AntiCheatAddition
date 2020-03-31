@@ -9,7 +9,7 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.olduser.DataOld;
 import de.photon.aacadditionpro.olduser.TimeDataOld;
-import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientCustomPayload;

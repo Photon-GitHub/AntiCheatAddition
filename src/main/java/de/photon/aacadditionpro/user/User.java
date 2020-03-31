@@ -2,7 +2,6 @@ package de.photon.aacadditionpro.user;
 
 import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.olduser.UserManager;
 import de.photon.aacadditionpro.user.subdata.FishingData;
 import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 import de.photon.aacadditionpro.user.subdata.LookPacketData;
@@ -13,8 +12,8 @@ import org.bukkit.entity.Player;
 public class User
 {
     private Player player;
-    private TimestampMap<TimestampKey> timestampMap = new TimestampMap<>(TimestampKey.class);
-    private ObjectDataMap<DataKey> dataMap = new ObjectDataMap<>(DataKey.class, (key, value) -> key.getClazz().isAssignableFrom(value.getClass()));
+    private TimestampMap<TimestampKey> timestampMap;
+    private ObjectDataMap<DataKey> dataMap;
 
     private FishingData fishingData = new FishingData(this);
     private KeepAliveData keepAliveData = new KeepAliveData(this);
@@ -24,6 +23,21 @@ public class User
     {
         this.player = player;
         UserManager.setVerbose(this, InternalPermission.AAC_VERBOSE.hasPermission(player));
+
+        // Timestamps
+        this.timestampMap = new TimestampMap<>(TimestampKey.class);
+        for (TimestampKey value : TimestampKey.values()) {
+            this.timestampMap.nullifyTimeStamp(value);
+        }
+
+        // Login time
+        this.getTimestampMap().updateTimeStamp(TimestampKey.LOGIN_TIME);
+
+        // Data
+        this.dataMap = new ObjectDataMap<>(DataKey.class, (key, value) -> key.getClazz().isAssignableFrom(value.getClass()));
+        for (DataKey value : DataKey.values()) {
+            this.dataMap.setValue(value, value.getDefaultValue());
+        }
     }
 
     /**

@@ -7,7 +7,7 @@ import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PluginMessageListenerModule;
 import de.photon.aacadditionpro.modules.RestrictedServerVersion;
-import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import org.bukkit.event.EventHandler;

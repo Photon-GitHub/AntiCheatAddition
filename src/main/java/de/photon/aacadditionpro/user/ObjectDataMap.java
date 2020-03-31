@@ -50,21 +50,21 @@ public class ObjectDataMap<T extends Enum<T>> extends DataMap<T, Object>
         return (int) this.getValue(key);
     }
 
-    public int getLong(T key)
+    public long getLong(T key)
     {
         Preconditions.checkArgument(checkType.test(key, Long.MAX_VALUE), "Tried to get wrong type for key " + key);
-        return (int) this.getValue(key);
+        return (long) this.getValue(key);
     }
 
-    public int getFloat(T key)
+    public float getFloat(T key)
     {
         Preconditions.checkArgument(checkType.test(key, Float.MAX_VALUE), "Tried to get wrong type for key " + key);
-        return (int) this.getValue(key);
+        return (float) this.getValue(key);
     }
 
-    public int getDouble(T key)
+    public double getDouble(T key)
     {
         Preconditions.checkArgument(checkType.test(key, Double.MAX_VALUE), "Tried to get wrong type for key " + key);
-        return (int) this.getValue(key);
+        return (double) this.getValue(key);
     }
 }

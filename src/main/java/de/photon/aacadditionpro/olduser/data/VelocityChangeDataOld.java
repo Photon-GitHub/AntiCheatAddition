@@ -7,7 +7,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.olduser.TimeDataOld;
-import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
 import org.bukkit.event.Listener;

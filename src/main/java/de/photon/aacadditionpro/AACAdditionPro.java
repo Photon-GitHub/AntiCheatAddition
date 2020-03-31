@@ -33,7 +33,7 @@ import de.photon.aacadditionpro.modules.clientcontrol.SchematicaControl;
 import de.photon.aacadditionpro.modules.clientcontrol.VapeControl;
 import de.photon.aacadditionpro.modules.clientcontrol.VersionControl;
 import de.photon.aacadditionpro.modules.clientcontrol.WorldDownloaderControl;
-import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.user.DataUpdaterEvents;
 import de.photon.aacadditionpro.util.VerboseSender;
 import lombok.Getter;

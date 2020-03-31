@@ -2,7 +2,7 @@ package de.photon.aacadditionpro.modules.clientcontrol;
 
 import de.photon.aacadditionpro.events.ClientControlEvent;
 import de.photon.aacadditionpro.modules.Module;
-import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.commands.CommandUtils;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;

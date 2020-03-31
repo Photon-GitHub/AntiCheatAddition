@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.util;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.events.ClientControlEvent;
 import de.photon.aacadditionpro.events.PlayerAdditionViolationEvent;
-import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.commands.Placeholders;
 import de.photon.aacadditionpro.util.files.FileUtil;

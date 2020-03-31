@@ -6,7 +6,7 @@ import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.RestrictedServerVersion;
-import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerCustomPayload;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;

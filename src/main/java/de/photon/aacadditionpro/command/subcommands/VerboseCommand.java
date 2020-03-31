@@ -4,7 +4,7 @@ import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.command.CommandAttributes;
 import de.photon.aacadditionpro.command.InternalPlayerCommand;
 import de.photon.aacadditionpro.command.TabCompleteSupplier;
-import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import org.bukkit.ChatColor;

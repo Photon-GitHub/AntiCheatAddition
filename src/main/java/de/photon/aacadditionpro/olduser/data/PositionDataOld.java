@@ -2,7 +2,7 @@ package de.photon.aacadditionpro.olduser.data;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.olduser.TimeDataOld;
-import de.photon.aacadditionpro.olduser.UserManager;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.olduser.UserOld;
 import lombok.Getter;
 import org.bukkit.event.EventHandler;

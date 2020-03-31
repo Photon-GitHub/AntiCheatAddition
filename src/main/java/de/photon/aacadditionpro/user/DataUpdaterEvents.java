@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.user;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.olduser.UserManager;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import org.bukkit.Material;

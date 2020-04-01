@@ -4,13 +4,17 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.modules.RestrictedServerVersion;
 import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientUseEntity;
 
-public class AnimationPattern extends PatternModule.PacketPattern
+import java.util.Set;
+
+public class AnimationPattern extends PatternModule.PacketPattern implements RestrictedServerVersion
 {
 
     AnimationPattern()
@@ -43,6 +47,12 @@ public class AnimationPattern extends PatternModule.PacketPattern
             return 0;
         }
         return 0;
+    }
+
+    @Override
+    public Set<ServerVersion> getSupportedVersions()
+    {
+        return ServerVersion.NON_188_VERSIONS;
     }
 
     @Override

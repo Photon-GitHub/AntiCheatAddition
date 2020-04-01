@@ -13,8 +13,8 @@ public enum DataKey
     ALLOWED_TO_JUMP(Boolean.class, true),
 
     AUTOPOTION_ALREADY_THROWN(Boolean.class, false),
-    AUTOPOTION_LAST_SUDDEN_PITCH(Float.class, 0),
-    AUTOPOTION_LAST_SUDDEN_YAW(Float.class, 0),
+    AUTOPOTION_LAST_SUDDEN_PITCH(Float.class, 0F),
+    AUTOPOTION_LAST_SUDDEN_YAW(Float.class, 0F),
 
     LAST_CONSUMED_ITEM_STACK(ItemStack.class, null),
 
@@ -29,11 +29,11 @@ public enum DataKey
     LAST_SPRINT_DURATION(Long.class, Long.MAX_VALUE),
 
     PACKET_ANALYSIS_ANIMATION_EXPECTED(Boolean.class, false),
-    PACKET_ANALYSIS_COMPARE_FAILS(Long.class, 0),
+    PACKET_ANALYSIS_COMPARE_FAILS(Long.class, 0L),
     PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED(Boolean.class, false),
     PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION(Location.class, null),
-    PACKET_ANALYSIS_REAL_LAST_PITCH(Float.class, -1),
-    PACKET_ANALYSIS_REAL_LAST_YAW(Float.class, -1),
+    PACKET_ANALYSIS_REAL_LAST_PITCH(Float.class, -1F),
+    PACKET_ANALYSIS_REAL_LAST_YAW(Float.class, -1F),
 
     POSITIVE_VELOCITY(Boolean.class, false),
 

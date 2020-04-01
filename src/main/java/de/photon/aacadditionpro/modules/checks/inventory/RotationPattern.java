@@ -6,10 +6,14 @@ import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.packetwrappers.client.IWrapperPlayClientLook;
 
 class RotationPattern extends PatternModule.PacketPattern
 {
+    @LoadFromConfiguration(configPath = ".teleport_time")
+    private int teleportTime;
+
     protected RotationPattern()
     {
         super(ImmutableSet.of(PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK));
@@ -28,7 +32,7 @@ class RotationPattern extends PatternModule.PacketPattern
             (user.getPlayer().getLocation().getYaw() != lookWrapper.getYaw() ||
              user.getPlayer().getLocation().getPitch() != lookWrapper.getPitch()) &&
             // No recently tp
-            !user.hasTeleportedRecently(1000) &&
+            !user.hasTeleportedRecently(this.teleportTime) &&
             // The player has opened his inventory for at least one second.
             user.notRecentlyOpenedInventory(1000))
         {

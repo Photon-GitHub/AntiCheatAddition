@@ -5,8 +5,9 @@ import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.RestrictedServerVersion;
 import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.user.DataKey;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -56,16 +57,16 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
     private double lookDownAngle;
 
     @EventHandler
-    public void on(final PlayerMoveEvent event)
+    public void onMove(final PlayerMoveEvent event)
     {
-        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (UserOld.isUserInvalid(user, this.getModuleType())) {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
-        if (user.getAutoPotionData().alreadyThrown) {
+        if (user.getDataMap().getBoolean(DataKey.AUTOPOTION_ALREADY_THROWN)) {
             // The pitch and yaw values are nearly the same as before
             if (MathUtils.roughlyEquals(event.getTo().getPitch(), user.getAutoPotionData().lastSuddenPitch, angleOffset) &&
                 MathUtils.roughlyEquals(event.getTo().getYaw(), user.getAutoPotionData().lastSuddenYaw, angleOffset) &&
@@ -98,10 +99,10 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
     @EventHandler
     public void on(final PlayerInteractEvent event)
     {
-        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (UserOld.isUserInvalid(user, this.getModuleType())) {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 

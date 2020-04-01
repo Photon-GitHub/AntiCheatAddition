@@ -12,6 +12,10 @@ public enum DataKey
 {
     ALLOWED_TO_JUMP(Boolean.class, true),
 
+    AUTOPOTION_ALREADY_THROWN(Boolean.class, false),
+    AUTOPOTION_LAST_SUDDEN_PITCH(Float.class, 0),
+    AUTOPOTION_LAST_SUDDEN_YAW(Float.class, 0),
+
     LAST_CONSUMED_ITEM_STACK(ItemStack.class, null),
 
     /**

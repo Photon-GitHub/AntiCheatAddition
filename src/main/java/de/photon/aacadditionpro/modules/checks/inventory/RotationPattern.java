@@ -13,6 +13,8 @@ class RotationPattern extends PatternModule.PacketPattern
 {
     @LoadFromConfiguration(configPath = ".teleport_time")
     private int teleportTime;
+    @LoadFromConfiguration(configPath = ".world_change_time")
+    private int worldChangeTime;
 
     protected RotationPattern()
     {
@@ -33,6 +35,7 @@ class RotationPattern extends PatternModule.PacketPattern
              user.getPlayer().getLocation().getPitch() != lookWrapper.getPitch()) &&
             // No recently tp
             !user.hasTeleportedRecently(this.teleportTime) &&
+            !user.hasChangedWorldsRecently(this.worldChangeTime) &&
             // The player has opened his inventory for at least one second.
             user.notRecentlyOpenedInventory(1000))
         {

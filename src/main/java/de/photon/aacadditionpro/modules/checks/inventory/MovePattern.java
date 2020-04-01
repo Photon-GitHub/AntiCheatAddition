@@ -34,6 +34,8 @@ class MovePattern extends PatternModule.PacketPattern
     private int lenienceMillis;
     @LoadFromConfiguration(configPath = ".teleport_time")
     private int teleportTime;
+    @LoadFromConfiguration(configPath = ".world_change_time")
+    private int worldChangeTime;
 
     protected MovePattern()
     {
@@ -67,6 +69,7 @@ class MovePattern extends PatternModule.PacketPattern
             user.getPlayer().getNoDamageTicks() == 0 &&
             // Recent teleports can cause bugs
             !user.hasTeleportedRecently(this.teleportTime) &&
+            !user.hasChangedWorldsRecently(this.worldChangeTime) &&
             // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
             // world add errors.
             // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load

@@ -214,7 +214,11 @@ Inventory:
       min_tps: 19.5
       # This is the time in milliseconds in which AACAdditionPro will not check a player after a teleport.
       # Increase this if you have false positive with high-ping players after teleports.
-      teleport_time: 1100
+      # Please note that the definition of teleport is quite broad, including e.g. ender pearls, teleport commands,
+      # respawns, etc.
+      teleport_time: 900
+      # Analogous to the option above this only applies to world changes which usually take more time to process.
+      world_change_time: 2000
       # This allows to add more lenience on servers with very high-ping players by stretching the no-punish time after
       # opening an inventory.
       # Normal connections are already covered by the default values.
@@ -241,7 +245,11 @@ Inventory:
       enabled: true
       # This is the time in milliseconds in which AACAdditionPro will not check a player after a teleport.
       # Increase this if you have false positive with high-ping players after teleports.
-      teleport_time: 1100
+      # Please note that the definition of teleport is quite broad, including e.g. ender pearls, teleport commands,
+      # respawns, etc.
+      teleport_time: 900
+      # Analogous to the option above this only applies to world changes which usually take more time to process.
+      world_change_time: 2000
     # This part detects inventory interactions while a player is sprinting or sneaking.
     # This part will add 20 vl.
     Sprinting:

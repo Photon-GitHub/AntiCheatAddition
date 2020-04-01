@@ -5,8 +5,9 @@ import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.user.TimestampKey;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -47,15 +48,15 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPreBlockPlace(final BlockPlaceEvent event)
     {
-        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (UserOld.isUserInvalid(user, this.getModuleType())) {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
         // To prevent too fast scaffolding -> Timeout
-        if (user.getScaffoldData().recentlyUpdated(0, timeout)) {
+        if (user.getTimestampMap().recentlyUpdated(TimestampKey.SCAFFOLD_TIMEOUT, timeout)) {
             event.setCancelled(true);
             InventoryUtils.syncUpdateInventory(user.getPlayer());
         }
@@ -64,10 +65,10 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(final BlockPlaceEvent event)
     {
-        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (UserOld.isUserInvalid(user, this.getModuleType())) {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -116,7 +117,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
                 vlManager.flag(event.getPlayer(), vl, cancelVl, () ->
                 {
                     event.setCancelled(true);
-                    user.getScaffoldData().updateTimeStamp(0);
+                    user.getTimestampMap().updateTimeStamp(TimestampKey.SCAFFOLD_TIMEOUT);
                     InventoryUtils.syncUpdateInventory(user.getPlayer());
                 }, () -> {});
             }

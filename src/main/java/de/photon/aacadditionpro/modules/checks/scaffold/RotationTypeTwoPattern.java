@@ -2,7 +2,6 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.user.User;
 
 /**
@@ -14,7 +13,7 @@ class RotationTypeTwoPattern extends PatternModule.Pattern<User, Float>
     private static final double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
 
     @Override
-    protected int process(UserOld user, Float angleInformation)
+    protected int process(User user, Float angleInformation)
     {
         if (angleInformation > ANGLE_CHANGE_SUM_THRESHOLD) {
             message = "Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2";

@@ -2,18 +2,19 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.user.TimestampKey;
+import de.photon.aacadditionpro.user.User;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
  * This pattern detects significant rotation "jumps" in the last two ticks.
  */
-class RotationTypeOnePattern extends PatternModule.Pattern<UserOld, BlockPlaceEvent>
+class RotationTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
     @Override
-    protected int process(UserOld user, BlockPlaceEvent event)
+    protected int process(User user, BlockPlaceEvent event)
     {
-        if (user.getLookPacketData().recentlyUpdated(0, 125)) {
+        if (user.getTimestampMap().recentlyUpdated(TimestampKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE, 125)) {
             message = "Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1";
             return 3;
         }

@@ -2,7 +2,6 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import org.bukkit.block.BlockFace;
@@ -17,7 +16,7 @@ class AnglePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
     private int violationThreshold;
 
     @Override
-    protected int process(UserOld user, BlockPlaceEvent event)
+    protected int process(User user, BlockPlaceEvent event)
     {
         final BlockFace placedFace = event.getBlock().getFace(event.getBlockAgainst());
         final Vector placedVector = new Vector(placedFace.getModX(), placedFace.getModY(), placedFace.getModZ());

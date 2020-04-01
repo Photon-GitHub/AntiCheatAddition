@@ -5,6 +5,8 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.user.subdata.FishingData;
 import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 import de.photon.aacadditionpro.user.subdata.LookPacketData;
+import de.photon.aacadditionpro.user.subdata.ScaffoldData;
+import de.photon.aacadditionpro.user.subdata.TowerData;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
@@ -18,6 +20,8 @@ public class User
     private FishingData fishingData = new FishingData(this);
     private KeepAliveData keepAliveData = new KeepAliveData(this);
     private LookPacketData lookPacketData = new LookPacketData(this);
+    private ScaffoldData scaffoldData = new ScaffoldData(this);
+    private TowerData towerData = new TowerData(this);
 
     public User(final Player player)
     {

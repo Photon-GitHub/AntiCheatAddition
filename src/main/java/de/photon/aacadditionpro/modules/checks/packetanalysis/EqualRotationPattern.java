@@ -81,7 +81,7 @@ class EqualRotationPattern extends PatternModule.PacketPattern
             currentYaw == user.getDataMap().getFloat(DataKey.PACKET_ANALYSIS_REAL_LAST_YAW) &&
             currentPitch == user.getDataMap().getFloat(DataKey.PACKET_ANALYSIS_REAL_LAST_PITCH) &&
             // Labymod fp when standing still / hit in corner fp
-            user.hasPlayerMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 100))
+            user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 100))
         {
             // Not a big performance deal as most packets have already been filtered out, now we just account for
             // the last false positives.

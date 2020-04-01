@@ -3,12 +3,13 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.user.User;
 
 /**
  * This {@link de.photon.aacadditionpro.modules.PatternModule.Pattern} detects huge angle changes while scaffolding that
  * do not reflect legit behaviour.
  */
-class RotationTypeTwoPattern extends PatternModule.Pattern<UserOld, Float>
+class RotationTypeTwoPattern extends PatternModule.Pattern<User, Float>
 {
     private static final double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
 

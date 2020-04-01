@@ -3,12 +3,13 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.olduser.UserOld;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.Vector;
 
-class AnglePattern extends PatternModule.Pattern<UserOld, BlockPlaceEvent>
+class AnglePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
     private static final double MAX_ANGLE = Math.toRadians(90);
 

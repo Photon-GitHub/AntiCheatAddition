@@ -4,8 +4,9 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import org.bukkit.Bukkit;
@@ -39,7 +40,7 @@ public class AutoEat implements ListenerModule, ViolationModule
             }
         }, 10);
 
-        if (user.getAutoEatData().recentlyUpdated(1, timeout)) {
+        if (user.getTimestampMap().recentlyUpdated(TimestampKey.AUTOEAT_TIMEOUT, timeout)) {
             event.setCancelled(true);
         }
     }

@@ -118,7 +118,7 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
 
             // Convert ticks to millis.
             // 25 to account for server lag.
-            if (user.recentlyClickedInventory(25 + (enforcedTicks * 50))) {
+            if (user.hasClickedInventoryRecently(25 + (enforcedTicks * 50))) {
                 message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " moved items too quickly.";
                 return addedVl;
             }

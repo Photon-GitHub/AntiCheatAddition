@@ -95,7 +95,7 @@ public class User
      * @param milliseconds the amount of time in milliseconds in which the {@link User} should be checked for
      *                     interactions with an {@link org.bukkit.inventory.Inventory}.
      */
-    public boolean recentlyClickedInventory(final long milliseconds)
+    public boolean hasClickedInventoryRecently(final long milliseconds)
     {
         return this.getTimestampMap().recentlyUpdated(TimestampKey.LAST_INVENTORY_CLICK, milliseconds);
     }
@@ -107,11 +107,11 @@ public class User
      * Checks if this {@link User} has moved recently.
      *
      * @param movementType what movement should be checked
-     *
      * @param milliseconds the amount of time in milliseconds that should be considered.
+     *
      * @return true if the player has moved in the specified time frame.
      */
-    public boolean hasPlayerMovedRecently(final TimestampKey movementType, final long milliseconds)
+    public boolean hasMovedRecently(final TimestampKey movementType, final long milliseconds)
     {
         switch (movementType) {
             case LAST_HEAD_OR_OTHER_MOVEMENT:
@@ -132,7 +132,7 @@ public class User
      *
      * @return true if the player has sprinted in the specified time frame.
      */
-    public boolean hasPlayerSprintedRecently(final long milliseconds)
+    public boolean hasSprintedRecently(final long milliseconds)
     {
         return this.dataMap.getBoolean(DataKey.SPRINTING) || this.timestampMap.recentlyUpdated(TimestampKey.LAST_SPRINT_TOGGLE, milliseconds);
     }
@@ -144,10 +144,55 @@ public class User
      *
      * @return true if the player has sneaked in the specified time frame.
      */
-    public boolean hasPlayerSneakedRecently(final long milliseconds)
+    public boolean hasSneakedRecently(final long milliseconds)
     {
         return this.dataMap.getBoolean(DataKey.SNEAKING) || this.timestampMap.recentlyUpdated(TimestampKey.LAST_SNEAK_TOGGLE, milliseconds);
     }
+
+
+    // Convenience methods for much used timestamps
+
+    /**
+     * Determines if this {@link User} has recently teleported.
+     * This includes ender pearls as well as respawns, world changes and ordinary teleports.
+     *
+     * @param milliseconds the amount of time in milliseconds that should be considered.
+     */
+    public boolean hasTeleportedRecently(final long milliseconds)
+    {
+        return this.getTimestampMap().recentlyUpdated(TimestampKey.LAST_TELEPORT, milliseconds);
+    }
+
+    /**
+     * Determines if this {@link User} has recently respawned.
+     *
+     * @param milliseconds the amount of time in milliseconds that should be considered.
+     */
+    public boolean hasRespawnedRecently(final long milliseconds)
+    {
+        return this.getTimestampMap().recentlyUpdated(TimestampKey.LAST_RESPAWN, milliseconds);
+    }
+
+    /**
+     * Determines if this {@link User} has recently changed worlds.
+     *
+     * @param milliseconds the amount of time in milliseconds that should be considered.
+     */
+    public boolean hasChangedWorldsRecently(final long milliseconds)
+    {
+        return this.getTimestampMap().recentlyUpdated(TimestampKey.LAST_WORLD_CHANGE, milliseconds);
+    }
+
+    /**
+     * Determines if this {@link User} has recently logged in.
+     *
+     * @param milliseconds the amount of time in milliseconds that should be considered.
+     */
+    public boolean hasLoggedInRecently(final long milliseconds)
+    {
+        return this.getTimestampMap().recentlyUpdated(TimestampKey.LOGIN_TIME, milliseconds);
+    }
+
 
     // Skin
 

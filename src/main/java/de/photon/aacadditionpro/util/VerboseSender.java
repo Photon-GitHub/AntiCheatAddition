@@ -3,8 +3,8 @@ package de.photon.aacadditionpro.util;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.events.ClientControlEvent;
 import de.photon.aacadditionpro.events.PlayerAdditionViolationEvent;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.commands.Placeholders;
 import de.photon.aacadditionpro.util.files.FileUtil;
 import lombok.Getter;
@@ -26,26 +26,23 @@ public final class VerboseSender implements Listener
 {
     @Getter
     private static final VerboseSender instance;
+    private static final String PRE_STRING = ChatColor.DARK_RED + "[AACAdditionPro] {0}" + ChatColor.GRAY;
+    private static final String EVENT_PRE_STRING = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
 
     static {
         instance = new VerboseSender();
         AACAdditionPro.getInstance().registerListener(instance);
     }
 
-    private static final String PRE_STRING = ChatColor.DARK_RED + "[AACAdditionPro] {0}" + ChatColor.GRAY;
-    private static final String EVENT_PRE_STRING = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
-
+    private final boolean writeToFile = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.file");
+    private final boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console");
+    private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players");
     @Setter
     private boolean allowedToRegisterTasks;
-
     // The File the verbose messages are written to.
     private File logFile = null;
     // Set to an impossible day of the year to make sure the logFile will be initialized.
     private int currentDayOfYear = -1;
-
-    private final boolean writeToFile = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.file");
-    private final boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console");
-    private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players");
 
     private VerboseSender()
     {
@@ -120,7 +117,7 @@ public final class VerboseSender implements Listener
         // Prevent errors on disable as of scheduling
         if (allowedToRegisterTasks && writeToPlayers) {
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-                for (UserOld user : UserManager.getVerboseUsers()) {
+                for (User user : UserManager.getVerboseUsers()) {
                     user.getPlayer().sendMessage(PRE_STRING + s);
                 }
             });

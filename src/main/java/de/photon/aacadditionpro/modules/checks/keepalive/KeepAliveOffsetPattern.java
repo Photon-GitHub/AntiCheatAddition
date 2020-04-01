@@ -2,8 +2,8 @@ package de.photon.aacadditionpro.modules.checks.keepalive;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.olduser.data.KeepAliveDataOld;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 
 /**
  * This {@link de.photon.aacadditionpro.modules.PatternModule.Pattern} detects responses to KeepAlive packets which are
@@ -16,7 +16,7 @@ public class KeepAliveOffsetPattern extends PatternModule.Pattern<User, Integer>
     protected int process(User user, Integer offset)
     {
         synchronized (user.getKeepAliveData().getKeepAlives()) {
-            if (user.getKeepAliveData().getKeepAlives().size() == KeepAliveDataOld.KEEPALIVE_QUEUE_SIZE
+            if (user.getKeepAliveData().getKeepAlives().size() == KeepAliveData.KEEPALIVE_QUEUE_SIZE
                 // -1 because of size -> index conversion
                 && offset > 0)
             {

@@ -2,8 +2,8 @@ package de.photon.aacadditionpro.user.subdata;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.olduser.datawrappers.ScaffoldBlockPlace;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.subdata.datawrappers.ScaffoldBlockPlace;
 import de.photon.aacadditionpro.util.datastructures.buffer.ConditionalCleanBuffer;
 import de.photon.aacadditionpro.util.datastructures.buffer.DequeBuffer;
 import de.photon.aacadditionpro.util.world.BlockUtils;

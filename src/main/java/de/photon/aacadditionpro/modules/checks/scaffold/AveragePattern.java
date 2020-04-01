@@ -2,8 +2,8 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
-import de.photon.aacadditionpro.olduser.datawrappers.ScaffoldBlockPlace;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.subdata.datawrappers.ScaffoldBlockPlace;
 import de.photon.aacadditionpro.util.entity.PotionUtil;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockPlaceEvent;

@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.user.subdata;
 
-import de.photon.aacadditionpro.olduser.datawrappers.TowerBlockPlace;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.subdata.datawrappers.TowerBlockPlace;
 import de.photon.aacadditionpro.util.datastructures.buffer.ConditionalCleanBuffer;
 import de.photon.aacadditionpro.util.datastructures.buffer.DequeBuffer;
 import de.photon.aacadditionpro.util.world.BlockUtils;

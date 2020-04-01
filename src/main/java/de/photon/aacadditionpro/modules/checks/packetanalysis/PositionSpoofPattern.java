@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.DataKey;
-import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientPositionLook;
@@ -30,12 +29,12 @@ class PositionSpoofPattern extends PatternModule.PacketPattern
         final WrapperPlayClientPositionLook clientPositionLookWrapper = new WrapperPlayClientPositionLook(packetEvent.getPacket());
 
         // Only check if the player has been teleported recently
-        if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_TELEPORT, 1000) &&
+        if (user.hasTeleportedRecently(1000) &&
             // World changes and respawns are exempted
-            !user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_RESPAWN, 2500) &&
-            !user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_WORLD_CHANGE, 2500) &&
+            !user.hasRespawnedRecently(2500) &&
+            !user.hasChangedWorldsRecently(2500) &&
             // Lag occurrences after login.
-            !user.getTimestampMap().recentlyUpdated(TimestampKey.LOGIN_TIME, 10000))
+            !user.hasLoggedInRecently(10000))
         {
             // The position packet might not be exactly the same position.
             // Squared values of 10, 5 and 3

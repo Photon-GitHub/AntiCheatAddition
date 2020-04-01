@@ -119,11 +119,9 @@ public class User
     {
         switch (movementType) {
             case LAST_HEAD_OR_OTHER_MOVEMENT:
-                return this.timestampMap.recentlyUpdated(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT, milliseconds);
             case LAST_XYZ_MOVEMENT:
-                return this.timestampMap.recentlyUpdated(TimestampKey.LAST_XYZ_MOVEMENT, milliseconds);
             case LAST_XZ_MOVEMENT:
-                return this.timestampMap.recentlyUpdated(TimestampKey.LAST_XZ_MOVEMENT, milliseconds);
+                return this.timestampMap.recentlyUpdated(movementType, milliseconds);
             default:
                 throw new IllegalStateException("Unexpected MovementType: " + movementType);
         }

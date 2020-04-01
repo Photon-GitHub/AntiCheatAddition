@@ -75,7 +75,7 @@ class EqualRotationPattern extends PatternModule.PacketPattern
         // Boat false positive (usually worse cheats in vehicles as well)
         if (!user.getPlayer().isInsideVehicle() &&
             // Not recently teleported
-            !user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_TELEPORT, 5000) &&
+            !user.hasTeleportedRecently(5000) &&
             // Same rotation values
             // LookPacketData automatically updates its values.
             currentYaw == user.getDataMap().getFloat(DataKey.PACKET_ANALYSIS_REAL_LAST_YAW) &&

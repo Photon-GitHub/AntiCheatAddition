@@ -65,7 +65,7 @@ class MovePattern extends PatternModule.PacketPattern
             // Player has not been hit recently
             user.getPlayer().getNoDamageTicks() == 0 &&
             // Recent teleports can cause bugs
-            !user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_TELEPORT, 1000) &&
+            !user.hasTeleportedRecently(1000) &&
             // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
             // world add errors.
             // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load

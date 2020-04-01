@@ -298,7 +298,7 @@ public final class DataUpdaterEvents implements Listener
                 // The player wasn't hurt and got velocity for that.
                 if (user.getPlayer().getNoDamageTicks() == 0
                     // Recent teleports can cause bugs
-                    && !user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_TELEPORT, 1000))
+                    && !user.hasTeleportedRecently(1000))
                 {
                     final IWrapperPlayPosition position = event::getPacket;
 

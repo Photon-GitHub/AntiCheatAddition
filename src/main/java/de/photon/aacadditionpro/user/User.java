@@ -42,7 +42,9 @@ public class User
         // Data
         this.dataMap = new ObjectDataMap<>(DataKey.class, (key, value) -> key.getClazz().isAssignableFrom(value.getClass()));
         for (DataKey value : DataKey.values()) {
-            this.dataMap.setValue(value, value.getDefaultValue());
+            if (value.getDefaultValue() != null) {
+                this.dataMap.setValue(value, value.getDefaultValue());
+            }
         }
     }
 

@@ -7,6 +7,7 @@ import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 import de.photon.aacadditionpro.user.subdata.LookPacketData;
 import de.photon.aacadditionpro.user.subdata.ScaffoldData;
 import de.photon.aacadditionpro.user.subdata.TowerData;
+import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
@@ -68,6 +69,18 @@ public class User
     public boolean isBypassed(ModuleType moduleType)
     {
         return InternalPermission.hasPermission(this.player, InternalPermission.BYPASS.getRealPermission() + '.' + moduleType.getConfigString().toLowerCase());
+    }
+
+    /**
+     * This determines and returnes the correct {@link Hitbox} for this {@link User}.
+     *
+     * @return {@link Hitbox#SNEAKING_PLAYER} or {@link Hitbox#PLAYER}.
+     */
+    public Hitbox getHitbox()
+    {
+        return this.player.isSneaking() ?
+               Hitbox.SNEAKING_PLAYER :
+               Hitbox.PLAYER;
     }
 
 

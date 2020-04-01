@@ -12,7 +12,6 @@ import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
-import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.packetwrappers.client.IWrapperPlayClientLook;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -89,18 +88,12 @@ class EqualRotationPattern extends PatternModule.PacketPattern
             try {
                 if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () ->
                         // False positive when jumping from great heights into a pool with slime blocks on the bottom.
-                        !(EntityUtil.isHitboxInLiquids(user.getPlayer().getLocation(),
-                                                       user.getPlayer().isSneaking() ?
-                                                       Hitbox.SNEAKING_PLAYER :
-                                                       Hitbox.PLAYER) &&
+                        !(EntityUtil.isHitboxInLiquids(user.getPlayer().getLocation(), user.getHitbox()) &&
                           user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SLIME_BLOCK) &&
                         // Fixes false positives on versions 1.9+ because of changed hitboxes
                         !(ServerVersion.getActiveServerVersion() == ServerVersion.MC188 &&
                           ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC188 &&
-                          EntityUtil.isHitboxInMaterials(user.getPlayer().getLocation(),
-                                                         user.getPlayer().isSneaking() ?
-                                                         Hitbox.SNEAKING_PLAYER :
-                                                         Hitbox.PLAYER, CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS)))
+                          EntityUtil.isHitboxInMaterials(user.getPlayer().getLocation(), user.getHitbox(), CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS)))
                 {
                     // Cancelled packets may cause problems.
                     if (user.getDataMap().getBoolean(DataKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED)) {

@@ -11,7 +11,6 @@ import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPosition;
 import de.photon.aacadditionpro.util.server.ServerUtil;
@@ -72,9 +71,7 @@ class MovePattern extends PatternModule.PacketPattern
             // errors.
             ChunkUtils.isChunkLoaded(user.getPlayer().getLocation()) &&
             // The player is currently not in a liquid (liquids push)
-            !EntityUtil.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
-                                                         Hitbox.SNEAKING_PLAYER :
-                                                         Hitbox.PLAYER) &&
+            !EntityUtil.isHitboxInLiquids(knownPosition, user.getHitbox()) &&
             // Auto-Disable if TPS are too low
             ServerUtil.getTPS() > minTps)
         {
@@ -106,7 +103,7 @@ class MovePattern extends PatternModule.PacketPattern
                 // No nearby entities that could push the player
                 try {
                     // Needs to be called synchronously.
-                    if (Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), Hitbox.PLAYER, 0.1D).isEmpty()).get()) {
+                    if (Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()).get()) {
                         message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " moved while having an open inventory.";
                         return 3;
                     }

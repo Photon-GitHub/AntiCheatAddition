@@ -35,8 +35,8 @@ public class AutoEat implements ListenerModule, ViolationModule
 
         // After half a second check if it was the last interaction ticks check if this
         Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> {
-            if (user.getAutoEatData().getTimeStamp(0) < user.getConsumeData().getTimeStamp(0)) {
-                vlManager.flag(user.getPlayer(), cancelVl, () -> user.getAutoEatData().updateTimeStamp(1), () -> {});
+            if (user.getTimestampMap().getTimeStamp(TimestampKey.LAST_RIGHT_CLICK_CONSUMABLE_ITEM_EVENT) < user.getTimestampMap().getTimeStamp(TimestampKey.LAST_CONSUME_EVENT)) {
+                vlManager.flag(user.getPlayer(), cancelVl, () -> user.getTimestampMap().updateTimeStamp(TimestampKey.AUTOEAT_TIMEOUT), () -> {});
             }
         }, 10);
 

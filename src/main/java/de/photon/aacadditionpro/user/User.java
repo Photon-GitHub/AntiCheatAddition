@@ -234,6 +234,12 @@ public class User
         this.timestampMap = null;
         this.dataMap.clear();
         this.dataMap = null;
+
+        this.fishingData = null;
+        this.keepAliveData = null;
+        this.lookPacketData = null;
+        this.scaffoldData = null;
+        this.towerData = null;
     }
 
     @Override

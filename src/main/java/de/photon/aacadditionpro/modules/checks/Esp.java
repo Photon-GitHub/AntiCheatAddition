@@ -118,9 +118,9 @@ public class Esp implements ListenerModule
                         // All users can potentially be seen
                         for (final User watched : users) {
                             // The watched player is also not in Spectator mode
-                            if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR &&
+                            if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR
                                 // The players are in the same world
-                                observingUser.getPlayer().getWorld().getUID().equals(watched.getPlayer().getWorld().getUID()))
+                                && observingUser.getPlayer().getWorld().getUID().equals(watched.getPlayer().getWorld().getUID()))
                             {
                                 // The users are always in the same world (see above)
                                 final double pairDistanceSquared = observingUser.getPlayer().getLocation().distanceSquared(watched.getPlayer().getLocation());

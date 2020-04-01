@@ -5,8 +5,8 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Dependency;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
 import net.labymod.serverapi.Permission;
 import net.labymod.serverapi.bukkit.event.LabyModPlayerJoinEvent;
@@ -35,9 +35,9 @@ public class LabyModControl extends ClientControlModule implements ListenerModul
     @EventHandler
     public void onLabyModPlayerJoinEvent(LabyModPlayerJoinEvent event)
     {
-        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (UserOld.isUserInvalid(user, this.getModuleType())) {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
@@ -47,9 +47,9 @@ public class LabyModControl extends ClientControlModule implements ListenerModul
     @EventHandler
     public void onPermissionsSend(PermissionsSendEvent event)
     {
-        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
-        if (UserOld.isUserInvalid(user, this.getModuleType())) {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 

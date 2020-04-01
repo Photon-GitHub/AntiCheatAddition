@@ -2,8 +2,8 @@ package de.photon.aacadditionpro.modules.clientcontrol;
 
 import de.photon.aacadditionpro.events.ClientControlEvent;
 import de.photon.aacadditionpro.modules.Module;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.commands.CommandUtils;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
 import de.photon.aacadditionpro.util.general.StringUtils;
@@ -75,9 +75,9 @@ abstract class ClientControlModule implements Module
 
     boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String... flags)
     {
-        final UserOld user = UserManager.getUser(player.getUniqueId());
+        final User user = UserManager.getUser(player.getUniqueId());
 
-        return !UserOld.isUserInvalid(user, this.getModuleType()) &&
+        return !User.isUserInvalid(user, this.getModuleType()) &&
                this.isBrandChannel(channel) &&
                this.mcBrandMessageContains(channel, message, flags);
     }

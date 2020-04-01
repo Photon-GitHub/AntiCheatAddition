@@ -6,8 +6,8 @@ import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PluginMessageListenerModule;
 import de.photon.aacadditionpro.modules.RestrictedServerVersion;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
@@ -28,9 +28,9 @@ public class VapeControl extends ClientControlModule implements ListenerModule, 
     @Override
     public void onPluginMessageReceived(@NotNull final String channel, final Player player, @NotNull final byte[] message)
     {
-        final UserOld user = UserManager.getUser(player.getUniqueId());
+        final User user = UserManager.getUser(player.getUniqueId());
 
-        if (UserOld.isUserInvalid(user, this.getModuleType())) {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 

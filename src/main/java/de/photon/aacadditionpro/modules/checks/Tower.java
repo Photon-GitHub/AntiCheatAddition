@@ -4,9 +4,10 @@ import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.olduser.datawrappers.TowerBlockPlace;
+import de.photon.aacadditionpro.user.TimestampKey;
+import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.entity.PotionUtil;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
@@ -32,17 +33,17 @@ public class Tower implements ListenerModule, ViolationModule
     private int timeout;
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void on(final BlockPlaceEvent event)
+    public void onBlockPlace(final BlockPlaceEvent event)
     {
-        final UserOld user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
         // Not bypassed
-        if (UserOld.isUserInvalid(user, this.getModuleType())) {
+        if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }
 
         // To prevent too fast towering -> Timeout
-        if (user.getTowerData().recentlyUpdated(0, timeout)) {
+        if (user.getTimestampMap().recentlyUpdated(TimestampKey.TOWER_TIMEOUT, timeout)) {
             event.setCancelled(true);
             InventoryUtils.syncUpdateInventory(user.getPlayer());
             return;
@@ -97,7 +98,7 @@ public class Tower implements ListenerModule, ViolationModule
                     vlManager.flag(event.getPlayer(), vlToAdd, cancelVl, () ->
                     {
                         event.setCancelled(true);
-                        user.getTowerData().updateTimeStamp(0);
+                        user.getTimestampMap().updateTimeStamp(TimestampKey.TOWER_TIMEOUT);
                         InventoryUtils.syncUpdateInventory(user.getPlayer());
                         // If not cancelled run the verbose message with additional data
                     }, () -> VerboseSender.getInstance().sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + results[0] + " | real: " + results[1]));

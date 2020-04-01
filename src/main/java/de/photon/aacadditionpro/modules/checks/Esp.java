@@ -309,7 +309,7 @@ public class Esp implements ListenerModule
         // unModifyInformation and modifyInformation are not thread-safe.
         Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
             // Observer might have left by now.
-            if (observingPlayer != null) {
+            if (observingPlayer != null && watched != null) {
                 // There is no need to manually check if something has changed as the PlayerInformationModifiers already
                 // do that.
                 switch (hideMode) {

@@ -40,11 +40,9 @@ public class User
         this.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XZ_MOVEMENT);
 
         // Data
-        this.dataMap = new ObjectDataMap<>(DataKey.class, (key, value) -> key.getClazz().isAssignableFrom(value.getClass()));
+        this.dataMap = new ObjectDataMap<>(DataKey.class, (key, value) -> value == null || key.getClazz().isAssignableFrom(value.getClass()));
         for (DataKey value : DataKey.values()) {
-            if (value.getDefaultValue() != null) {
-                this.dataMap.setValue(value, value.getDefaultValue());
-            }
+            this.dataMap.setValue(value, value.getDefaultValue());
         }
     }
 

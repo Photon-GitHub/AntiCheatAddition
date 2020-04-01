@@ -4,8 +4,9 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.user.TimestampKey;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.olduser.UserOld;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.violationlevels.TeamViolationLevelManagement;
@@ -27,7 +28,9 @@ import java.util.Set;
 public class Teaming implements ListenerModule, ViolationModule
 {
     private final TeamViolationLevelManagement vlManager = new TeamViolationLevelManagement(this.getModuleType(), 300);
-
+    // Region handling
+    private final Set<World> enabledWorlds = new HashSet<>(3);
+    private final Set<Region> safeZones = new HashSet<>(3);
     // Config
     @LoadFromConfiguration(configPath = ".proximity_range")
     private double proximityRangeSquared;
@@ -35,10 +38,6 @@ public class Teaming implements ListenerModule, ViolationModule
     private int noPvpTime;
     @LoadFromConfiguration(configPath = ".allowed_size")
     private int allowedSize;
-
-    // Region handling
-    private final Set<World> enabledWorlds = new HashSet<>(3);
-    private final Set<Region> safeZones = new HashSet<>(3);
 
     @Override
     public void enable()
@@ -62,23 +61,23 @@ public class Teaming implements ListenerModule, ViolationModule
                 AACAdditionPro.getInstance(),
                 () -> {
                     // Have the same LinkedList for all worlds in order to boost performance
-                    final LinkedList<UserOld> usersOfWorld = new LinkedList<>();
+                    final LinkedList<User> usersOfWorld = new LinkedList<>();
                     for (final World world : enabledWorlds) {
                         // Clear the old world's data.
                         usersOfWorld.clear();
 
                         // Add the users of the world.
                         for (final Player player : world.getPlayers()) {
-                            final UserOld user = UserManager.getUser(player.getUniqueId());
+                            final User user = UserManager.getUser(player.getUniqueId());
 
                             // Only add users if they meet the preconditions
                             // User has to be online and not bypassed
-                            if (!UserOld.isUserInvalid(user, this.getModuleType()) &&
+                            if (!User.isUserInvalid(user, this.getModuleType()) &&
                                 // Correct gamemodes
                                 user.getPlayer().getGameMode() != GameMode.CREATIVE &&
                                 user.getPlayer().getGameMode() != GameMode.SPECTATOR &&
                                 // Not engaged in pvp
-                                !user.getTeamingData().recentlyUpdated(0, noPvpTime) &&
+                                !user.getTimestampMap().recentlyUpdated(TimestampKey.TEAMING_COMBAT_TAG, noPvpTime) &&
                                 // Not in a bypassed region
                                 !this.isPlayerRegionalBypassed(user.getPlayer()))
                             {
@@ -88,13 +87,13 @@ public class Teaming implements ListenerModule, ViolationModule
 
                         while (!usersOfWorld.isEmpty()) {
                             // More than 8 players usually don't team.
-                            final List<UserOld> teamingList = new ArrayList<>(8);
-                            final UserOld currentUser = usersOfWorld.removeFirst();
+                            final List<User> teamingList = new ArrayList<>(8);
+                            final User currentUser = usersOfWorld.removeFirst();
 
                             // Add the user himself
                             teamingList.add(currentUser);
 
-                            for (final UserOld possibleTeamUser : usersOfWorld) {
+                            for (final User possibleTeamUser : usersOfWorld) {
                                 if (LocationUtils.areLocationsInRange(currentUser.getPlayer().getLocation(), possibleTeamUser.getPlayer().getLocation(), proximityRangeSquared)) {
                                     usersOfWorld.remove(possibleTeamUser);
                                     teamingList.add(possibleTeamUser);
@@ -105,7 +104,7 @@ public class Teaming implements ListenerModule, ViolationModule
                             if (teamingList.size() > this.allowedSize) {
                                 final List<Player> playersOfTeam = new ArrayList<>(teamingList.size());
 
-                                for (final UserOld teamUser : teamingList) {
+                                for (final User teamUser : teamingList) {
                                     playersOfTeam.add(teamUser.getPlayer());
                                 }
 

@@ -26,6 +26,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 80L);
 
+    private final AverageHeuristicPattern averageHeuristicPattern = new AverageHeuristicPattern();
     private final HitPattern hitPattern = new HitPattern();
     private final MovePattern movePattern = new MovePattern();
     private final MultiInteractionPattern multiInteractionPattern = new MultiInteractionPattern();
@@ -92,7 +93,8 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     @Override
     public Set<Pattern> getPatterns()
     {
-        return ImmutableSet.of(hitPattern,
+        return ImmutableSet.of(averageHeuristicPattern,
+                               hitPattern,
                                movePattern,
                                multiInteractionPattern,
                                rotationPattern,

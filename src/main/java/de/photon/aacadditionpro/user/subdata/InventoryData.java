@@ -9,7 +9,7 @@ import lombok.Getter;
 public class InventoryData extends SubData
 {
     @Getter
-    private final DequeBuffer<InventoryClick> averageHeuristicClicks = new SimpleBuffer<>(10);
+    private final DequeBuffer<InventoryClick> averageHeuristicClicks = new SimpleBuffer<>(15);
     public int averageHeuristicMisclicks = 0;
 
     public InventoryData(User user)

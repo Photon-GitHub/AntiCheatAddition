@@ -197,7 +197,7 @@ Inventory:
     # This is supposed to detect simple chest stealer bots which do not randomize the click delays.
     # Note: If you allow inventory sorting mods of any kind make sure to disable this.
     #
-    # This part will add 15-40 vl (this check is quite slow and is only processed every 11 clicks on items) depending on
+    # This part will add 10-35 vl (this check is quite slow and is only processed every 16 clicks on items) depending on
     # the amount of misclicks and the time between. This will ensure that players which click excessively fast - e.g. in
     # the beginning of SurvivalGames will not get as many vls as they click on a lot of empty slots just like slow
     # clickers as having a bot with a slow click rate does not give you a huge advantage and is likely a false positive.

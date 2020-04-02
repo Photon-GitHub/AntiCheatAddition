@@ -37,6 +37,26 @@ public final class MathUtils
     }
 
     /**
+     * Bounds a value between two bonds.
+     *
+     * @return a value of at least min and at most max. If value is smaller than max and greater than min, it is
+     * returned unchanged, otherwise either min (value smaller than min) or max (valler greater than max) is returned.
+     */
+    public static double bound(final double min, final double max, final double value)
+    {
+        return Math.min(Math.max(min, value), max);
+    }
+
+    /**
+     * Shortcut for calculating the squared error of a certain value.
+     */
+    public static double squaredError(final double reference, final double value)
+    {
+        double error = value - reference;
+        return error * error;
+    }
+
+    /**
      * Shortcut for number >= min && number <= max
      */
     public static boolean inRange(final double min, final double max, final double number)

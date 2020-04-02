@@ -1,7 +1,9 @@
 package de.photon.aacadditionpro.user.subdata.datawrappers;
 
+import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.Arrays;
 
@@ -11,6 +13,19 @@ public class InventoryClick
     public final long timeStamp = System.currentTimeMillis();
     public final double[] slotLocation;
     public final ClickType clickType;
+
+    /**
+     * Creates a dummy {@link InventoryClick} to use as a starting data point.
+     */
+    public static InventoryClick dummyClick()
+    {
+        return new InventoryClick(new double[]{0, 0}, ClickType.CREATIVE);
+    }
+
+    public static InventoryClick fromClickEvent(final InventoryClickEvent event)
+    {
+        return new InventoryClick(InventoryUtils.locateSlot(event.getRawSlot(), event.getClickedInventory().getType()), event.getClick());
+    }
 
     @Override
     public String toString()

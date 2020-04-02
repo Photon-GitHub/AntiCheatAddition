@@ -193,6 +193,25 @@ Inventory:
   enabled: true
   # Control the different parts of Inventory
   parts:
+    # This part detects bot-like behaviour with constant times between inventory clicks.
+    # This is supposed to detect simple chest stealer bots which do not randomize the click delays.
+    # Note: If you allow inventory sorting mods of any kind make sure to disable this.
+    #
+    # This part will add 15-40 vl (this check is quite slow and is only processed every 11 clicks on items) depending on
+    # the amount of misclicks and the time between. This will ensure that players which click excessively fast - e.g. in
+    # the beginning of SurvivalGames will not get as many vls as they click on a lot of empty slots just like slow
+    # clickers as having a bot with a slow click rate does not give you a huge advantage and is likely a false positive.
+    AverageHeuristic:
+      # Do you want to enable the AverageHeuristic part
+      enabled: true
+    # This part is designed to detect illogical click times (similar duration but totally different distances covered).
+    # This is supposed to detect auto-equip mods which automatically manage your inventory.
+    # Note: If you allow inventory sorting mods of any kind make sure to disable this.
+    #
+    # This part will add 10 vl (this check is quite slow and is only processed every 10 clicks).
+    ConstantClickDelay:
+      # Do you want to enable the ConstantClickDelay part
+      enabled: true
     # This part flags hitting while the inventory is open.
     # This part will add 10 vl.
     Hit:

@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.user;
 import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.user.subdata.FishingData;
+import de.photon.aacadditionpro.user.subdata.InventoryData;
 import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 import de.photon.aacadditionpro.user.subdata.LookPacketData;
 import de.photon.aacadditionpro.user.subdata.ScaffoldData;
@@ -19,6 +20,7 @@ public class User
     private ObjectDataMap<DataKey> dataMap;
 
     private FishingData fishingData = new FishingData(this);
+    private InventoryData inventoryData = new InventoryData(this);
     private KeepAliveData keepAliveData = new KeepAliveData(this);
     private LookPacketData lookPacketData = new LookPacketData(this);
     private ScaffoldData scaffoldData = new ScaffoldData(this);
@@ -249,6 +251,7 @@ public class User
         this.dataMap = null;
 
         this.fishingData = null;
+        this.inventoryData = null;
         this.keepAliveData = null;
         this.lookPacketData = null;
         this.scaffoldData = null;

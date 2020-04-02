@@ -204,6 +204,13 @@ Inventory:
     AverageHeuristic:
       # Do you want to enable the AverageHeuristic part
       enabled: true
+      # If a player has a ping higher than that value he bypasses the check
+      # Please make sure that you have some pingspoofer protection enabled if you use this feature
+      # Set this to -1 to disable
+      max_ping: 400
+      # The minimum TPS the server must have to activate this check
+      # Low TPS will cause an extreme amount of false positives.
+      min_tps: 18.5
     # This part is designed to detect illogical click times (similar duration but totally different distances covered).
     # This is supposed to detect auto-equip mods which automatically manage your inventory.
     # Note: If you allow inventory sorting mods of any kind make sure to disable this.

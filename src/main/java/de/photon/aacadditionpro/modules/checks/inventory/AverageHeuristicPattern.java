@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.util.datastructures.DoubleStatistics;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.server.ServerUtil;
-import lombok.Getter;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -19,13 +18,6 @@ import java.util.List;
 
 public class AverageHeuristicPattern extends PatternModule.Pattern<User, InventoryClickEvent>
 {
-    @LoadFromConfiguration(configPath = ".cancel_vl")
-    @Getter
-    private int cancelVl;
-    @LoadFromConfiguration(configPath = ".timeout")
-    @Getter
-    private int timeout;
-
     @LoadFromConfiguration(configPath = ".max_ping")
     private double maxPing;
     @LoadFromConfiguration(configPath = ".min_tps")
@@ -74,7 +66,7 @@ public class AverageHeuristicPattern extends PatternModule.Pattern<User, Invento
                 vl /= (user.getInventoryData().averageHeuristicMisclicks + 1);
                 user.getInventoryData().averageHeuristicMisclicks = 0;
                 System.out.println("VLMisclicks: " + vl);
-                return (int) MathUtils.bound(15, 40, vl);
+                return vl < 15 ? 0 : (int) Math.min(vl, 40);
             }
         }
         return 0;

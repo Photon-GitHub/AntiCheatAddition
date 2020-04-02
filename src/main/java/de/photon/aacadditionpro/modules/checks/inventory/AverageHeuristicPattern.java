@@ -67,13 +67,13 @@ public class AverageHeuristicPattern extends PatternModule.Pattern<User, Invento
                 // +1 to avoid division by 0
                 double vl = 196875 / (squaredErrorsSum + 1);
                 System.out.println("SquaredErrors: " + squaredErrorsSum + " | vl: " + vl);
+                // Average below 1 tick is considered unhuman and increases vl.
+                vl *= average / 50;
+                System.out.println("Average: " + average + " | vl: " + vl);
                 // Make sure that misclicks are applied correctly.
                 vl /= (user.getInventoryData().averageHeuristicMisclicks + 1);
                 user.getInventoryData().averageHeuristicMisclicks = 0;
                 System.out.println("VLMisclicks: " + vl);
-                // Average below 1 tick is considered unhuman and increases vl.
-                vl *= average / 50;
-                System.out.println("Average: " + average + " | vl: " + vl);
                 return (int) MathUtils.bound(15, 40, vl);
             }
         }

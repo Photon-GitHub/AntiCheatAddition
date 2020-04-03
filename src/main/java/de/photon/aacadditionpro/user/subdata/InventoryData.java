@@ -12,6 +12,8 @@ public class InventoryData extends SubData
     private final DequeBuffer<InventoryClick> averageHeuristicClicks = new SimpleBuffer<>(15);
     public int averageHeuristicMisclicks = 0;
 
+    public long perfectExitFails = 0;
+
     public InventoryData(User user)
     {
         super(user);

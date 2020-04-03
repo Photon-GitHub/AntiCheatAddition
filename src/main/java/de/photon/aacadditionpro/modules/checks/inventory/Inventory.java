@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import java.util.Set;
 
@@ -30,6 +31,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     private final HitPattern hitPattern = new HitPattern();
     private final MovePattern movePattern = new MovePattern();
     private final MultiInteractionPattern multiInteractionPattern = new MultiInteractionPattern();
+    private final PerfectExitPattern perfectExitPattern = new PerfectExitPattern();
     private final RotationPattern rotationPattern = new RotationPattern();
     private final SprintingPattern sprintingPattern = new SprintingPattern();
 
@@ -77,7 +79,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onClick(final InventoryClickEvent event)
+    public void onInventoryClick(final InventoryClickEvent event)
     {
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
@@ -91,6 +93,19 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
         vlManager.flag(user.getPlayer(), averageHeuristicPattern.apply(user, event), 0, () -> {}, () -> {});
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInventoryClose(final InventoryCloseEvent event)
+    {
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        // Not bypassed
+        if (User.isUserInvalid(user, this.getModuleType())) {
+            return;
+        }
+
+        vlManager.flag(user.getPlayer(), perfectExitPattern.apply(user, event), 0, () -> {}, () -> {});
+    }
+
     @Override
     public Set<Pattern> getPatterns()
     {
@@ -98,6 +113,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
                                hitPattern,
                                movePattern,
                                multiInteractionPattern,
+                               perfectExitPattern,
                                rotationPattern,
                                sprintingPattern);
     }

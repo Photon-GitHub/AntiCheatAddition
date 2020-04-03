@@ -143,6 +143,10 @@ public final class DataUpdaterEvents implements Listener
             }
 
             user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_INVENTORY_CLICK);
+            if (event.getCurrentItem() != null) {
+                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_INVENTORY_CLICK_ON_ITEM);
+            }
+
             user.getDataMap().setValue(DataKey.LAST_RAW_SLOT_CLICKED, event.getRawSlot());
             user.getDataMap().setValue(DataKey.LAST_MATERIAL_CLICKED, event.getCurrentItem() == null ?
                                                                       Material.AIR :

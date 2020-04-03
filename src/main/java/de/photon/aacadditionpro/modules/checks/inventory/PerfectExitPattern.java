@@ -24,19 +24,18 @@ public class PerfectExitPattern extends PatternModule.Pattern<User, InventoryClo
         // Creative-clear might trigger this.
         if ((user.getPlayer().getGameMode() == GameMode.SURVIVAL || user.getPlayer().getGameMode() == GameMode.ADVENTURE) &&
             // Minimum TPS before the check is activated as of a huge amount of fps
-            ServerUtil.getTPS() > minTps)
-        {
+            ServerUtil.getTPS() > minTps &&
             // Inventory is empty
-            if (InventoryUtils.isInventoryEmpty(event.getInventory())) {
-                final long passedTime = user.getTimestampMap().passedTime(TimestampKey.LAST_INVENTORY_CLICK_ON_ITEM);
-                if (passedTime <= 70) {
-                    if (++user.getInventoryData().perfectExitFails >= this.violationThreshold) {
-                        this.message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')';
-                        return 10;
-                    }
-                } else if (user.getInventoryData().perfectExitFails > 0) {
-                    user.getInventoryData().perfectExitFails--;
+            InventoryUtils.isInventoryEmpty(event.getInventory()))
+        {
+            final long passedTime = user.getTimestampMap().passedTime(TimestampKey.LAST_INVENTORY_CLICK_ON_ITEM);
+            if (passedTime <= 70) {
+                if (++user.getInventoryData().perfectExitFails >= this.violationThreshold) {
+                    this.message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')';
+                    return 10;
                 }
+            } else if (user.getInventoryData().perfectExitFails > 0) {
+                user.getInventoryData().perfectExitFails--;
             }
         }
         return 0;

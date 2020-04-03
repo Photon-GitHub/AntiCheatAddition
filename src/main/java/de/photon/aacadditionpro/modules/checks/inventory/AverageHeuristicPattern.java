@@ -70,21 +70,19 @@ public class AverageHeuristicPattern extends PatternModule.Pattern<User, Invento
                 // 2500 error sum is legit achievable.
                 // +1 to avoid division by 0
                 double vl = 40000 / (squaredErrorsSum + 1);
-                System.out.println("SquaredErrors: " + squaredErrorsSum + " | vl: " + vl);
 
                 // Average below 1 tick is considered unhuman and increases vl.
                 double ticks = average / 50;
                 double averageMultiplier = 1.65 + ticks * (-0.171127 + (0.00709709 - 0.000102881 * ticks) * ticks);
                 vl *= Math.max(averageMultiplier, 0.5);
-                System.out.println("Average: " + average + " | vl: " + vl);
 
                 // Make sure that misclicks are applied correctly.
                 vl /= (user.getInventoryData().averageHeuristicMisclicks + 1);
-                user.getInventoryData().averageHeuristicMisclicks = 0;
-                System.out.println("VLMisclicks: " + vl);
 
                 // Mitigation for possibly better players.
                 vl -= 10;
+                message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + average + " | MC: " + user.getInventoryData().averageHeuristicMisclicks + " | VLU: " + vl + ")";
+                user.getInventoryData().averageHeuristicMisclicks = 0;
                 return vl < 10 ? 0 : (int) Math.min(vl, 35);
             }
         }

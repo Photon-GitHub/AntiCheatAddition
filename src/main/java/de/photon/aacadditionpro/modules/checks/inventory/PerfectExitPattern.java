@@ -32,7 +32,7 @@ public class PerfectExitPattern extends PatternModule.Pattern<User, InventoryClo
             if (passedTime <= 70) {
                 if (++user.getInventoryData().perfectExitFails >= this.violationThreshold) {
                     this.message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')';
-                    return 10;
+                    return passedTime <= 50 ? 10 : 5;
                 }
             } else if (user.getInventoryData().perfectExitFails > 0) {
                 user.getInventoryData().perfectExitFails--;

@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.modules.checks.autofish;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructures.DoubleStatistics;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
@@ -26,7 +27,7 @@ class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
                 // Negative maximum_fails indicate not allowing afk fishing farms.
                 if ((maximumFails < 0 || user.getFishingData().failedCounter <= maximumFails) &&
                     // If the last attempt was a fail do not check (false positives)
-                    user.getFishingData().getTimeStamp(1) != 0 &&
+                    user.getTimestampMap().getTimeStamp(TimestampKey.AUTOFISH_DETECTION) != 0 &&
                     // Add the delta to the consistencyBuffer of the user.
                     user.getFishingData().bufferConsistencyData())
                 {
@@ -60,12 +61,12 @@ class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
             // No consistency when not fishing / failed fishing
             case IN_GROUND:
             case FAILED_ATTEMPT:
-                user.getFishingData().nullifyTimeStamp(1);
+                user.getTimestampMap().nullifyTimeStamp(TimestampKey.AUTOFISH_DETECTION);
                 user.getFishingData().failedCounter++;
                 break;
             case CAUGHT_FISH:
                 // CAUGHT_FISH covers all forms of items from the water.
-                user.getFishingData().updateTimeStamp(1);
+                user.getTimestampMap().updateTimeStamp(TimestampKey.AUTOFISH_DETECTION);
                 break;
             default:
                 break;

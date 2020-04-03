@@ -4,6 +4,7 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
@@ -27,7 +28,9 @@ import java.util.Set;
 public class Teaming implements ListenerModule, ViolationModule
 {
     private final TeamViolationLevelManagement vlManager = new TeamViolationLevelManagement(this.getModuleType(), 300);
-
+    // Region handling
+    private final Set<World> enabledWorlds = new HashSet<>(3);
+    private final Set<Region> safeZones = new HashSet<>(3);
     // Config
     @LoadFromConfiguration(configPath = ".proximity_range")
     private double proximityRangeSquared;
@@ -35,10 +38,6 @@ public class Teaming implements ListenerModule, ViolationModule
     private int noPvpTime;
     @LoadFromConfiguration(configPath = ".allowed_size")
     private int allowedSize;
-
-    // Region handling
-    private final Set<World> enabledWorlds = new HashSet<>(3);
-    private final Set<Region> safeZones = new HashSet<>(3);
 
     @Override
     public void enable()
@@ -78,7 +77,7 @@ public class Teaming implements ListenerModule, ViolationModule
                                 user.getPlayer().getGameMode() != GameMode.CREATIVE &&
                                 user.getPlayer().getGameMode() != GameMode.SPECTATOR &&
                                 // Not engaged in pvp
-                                !user.getTeamingData().recentlyUpdated(0, noPvpTime) &&
+                                !user.getTimestampMap().recentlyUpdated(TimestampKey.TEAMING_COMBAT_TAG, noPvpTime) &&
                                 // Not in a bypassed region
                                 !this.isPlayerRegionalBypassed(user.getPlayer()))
                             {

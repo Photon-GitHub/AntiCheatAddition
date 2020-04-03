@@ -1,15 +1,18 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.user.subdata;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.user.TimeData;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructures.DoubleStatistics;
 import lombok.Getter;
 
-public class FishingData extends TimeData
+public class FishingData extends SubData
 {
     private static final int CONSISTENCY_EVENTS = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.AUTO_FISH.getConfigString() + ".parts.consistency.consistency_events");
+
+    @Getter
+    private final DoubleStatistics statistics = new DoubleStatistics();
 
     /**
      * This represents the amount of fails between two successful fishing times.
@@ -17,14 +20,9 @@ public class FishingData extends TimeData
      */
     public int failedCounter = 0;
 
-    @Getter
-    private final DoubleStatistics statistics = new DoubleStatistics();
-
-    public FishingData(final User user)
+    public FishingData(User user)
     {
-        // [0] = Timestamp of last fish bite (PlayerFishEvent.State.BITE)
-        // [1] = Timestamp used for the time between a caught fish (pull in fishing rod) and a new fishing attempt
-        super(user, 0,0);
+        super(user);
     }
 
     /**
@@ -35,7 +33,7 @@ public class FishingData extends TimeData
      */
     public boolean bufferConsistencyData()
     {
-        this.statistics.accept((double) this.passedTime(1));
+        this.statistics.accept((double) this.user.getTimestampMap().passedTime(TimestampKey.AUTOFISH_DETECTION));
         return this.statistics.getCount() >= CONSISTENCY_EVENTS;
     }
 }

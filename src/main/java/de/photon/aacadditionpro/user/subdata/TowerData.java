@@ -1,18 +1,13 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.user.subdata;
 
-import de.photon.aacadditionpro.user.TimeData;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.datawrappers.BlockPlace;
-import de.photon.aacadditionpro.user.datawrappers.TowerBlockPlace;
+import de.photon.aacadditionpro.user.subdata.datawrappers.TowerBlockPlace;
 import de.photon.aacadditionpro.util.datastructures.buffer.ConditionalCleanBuffer;
 import de.photon.aacadditionpro.util.datastructures.buffer.DequeBuffer;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import lombok.Getter;
 
-/**
- * Used to store {@link BlockPlace}s. The {@link TimeData} is used for timeouts.
- */
-public class TowerData extends TimeData
+public class TowerData extends SubData
 {
     // Default buffer size is 6, being well tested.
     private static final int BUFFER_SIZE = 6;
@@ -23,7 +18,7 @@ public class TowerData extends TimeData
 
     public TowerData(final User user)
     {
-        super(user, 0);
+        super(user);
 
         blockPlaces = new ConditionalCleanBuffer<TowerBlockPlace>(BUFFER_SIZE)
         {
@@ -56,12 +51,5 @@ public class TowerData extends TimeData
         result[0] /= divisor;
         result[1] /= divisor;
         return result;
-    }
-
-    @Override
-    public void unregister()
-    {
-        this.blockPlaces.getDeque().clear();
-        super.unregister();
     }
 }

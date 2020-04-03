@@ -2,8 +2,9 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.user.DataKey;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.data.PositionData;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -21,9 +22,9 @@ class SafewalkTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent
     protected int process(User user, BlockPlaceEvent event)
     {
         // Moved to the edge of the block
-        if (user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
+        if (user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 175) &&
             // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
-            !(user.getPositionData().hasPlayerSneakedRecently(125) && user.getPositionData().getLastSneakTime() > 148))
+            !(user.hasSneakedRecently(125) && user.getDataMap().getLong(DataKey.LAST_SNEAK_DURATION) > 148))
         {
 
             final double xOffset = MathUtils.offset(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
@@ -54,8 +55,7 @@ class SafewalkTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent
                     message = "Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)";
                     return 3;
                 }
-            }
-            else {
+            } else {
                 user.getScaffoldData().safewalkTypeOneFails = 0;
             }
         }

@@ -2,8 +2,9 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.user.DataKey;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.data.PositionData;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import org.bukkit.event.block.BlockPlaceEvent;
 
@@ -19,18 +20,17 @@ class SafewalkTypeTwoPattern extends PatternModule.Pattern<User, BlockPlaceEvent
     protected int process(User user, BlockPlaceEvent event)
     {
         // Moved recently
-        if (user.getPositionData().hasPlayerMovedRecently(355, PositionData.MovementType.XZONLY) &&
+        if (user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 355) &&
             // Suddenly stopped
-            !user.getPositionData().hasPlayerMovedRecently(175, PositionData.MovementType.XZONLY) &&
+            !user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 175) &&
             // Has not sneaked recently
-            !(user.getPositionData().hasPlayerSneakedRecently(175) && user.getPositionData().getLastSneakTime() > 148))
+            !(user.hasSneakedRecently(175) && user.getDataMap().getLong(DataKey.LAST_SNEAK_DURATION) > 148))
         {
             if (++user.getScaffoldData().safewalkTypeTwoFails >= this.violationThreshold) {
                 message = "Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)";
                 return 4;
             }
-        }
-        else if (user.getScaffoldData().safewalkTypeTwoFails > 0) {
+        } else if (user.getScaffoldData().safewalkTypeTwoFails > 0) {
             user.getScaffoldData().safewalkTypeTwoFails--;
         }
         return 0;

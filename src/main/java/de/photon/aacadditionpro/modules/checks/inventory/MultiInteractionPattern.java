@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.modules.checks.inventory;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
@@ -31,7 +32,7 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
             // Minimum ping
             (maxPing < 0 || ServerUtil.getPing(user.getPlayer()) <= maxPing) &&
             // False positive: Click-spamming on the same slot
-            event.getRawSlot() != user.getInventoryData().getLastRawSlot())
+            event.getRawSlot() != user.getDataMap().getInt(DataKey.LAST_RAW_SLOT_CLICKED))
         {
             // Default vl to 3
             int addedVl = 3;
@@ -53,7 +54,7 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
                     addedVl = 1;
                     enforcedTicks = 1;
                     // Enough distance to keep false positives at bay.
-                    if (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) >= 3) {
+                    if (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) >= 3) {
                         return 0;
                     }
                     break;
@@ -74,7 +75,7 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
                     // No false positives to check for.
                     addedVl = 3;
 
-                    enforcedTicks = (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) < 4) ?
+                    enforcedTicks = (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
                                     1 :
                                     5;
                     break;
@@ -88,12 +89,12 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
 
                 case MOVE_TO_OTHER_INVENTORY:
                     // Last material false positive.
-                    if (user.getInventoryData().getLastMaterial() == event.getCurrentItem().getType()) {
+                    if (user.getDataMap().getValue(DataKey.LAST_MATERIAL_CLICKED) == event.getCurrentItem().getType()) {
                         return 0;
                     }
 
                     // Depending on the distance of the clicks.
-                    enforcedTicks = (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getInventoryData().getLastRawSlot(), event.getClickedInventory().getType()) < 4) ?
+                    enforcedTicks = (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
                                     1 :
                                     2;
                     break;
@@ -117,7 +118,7 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
 
             // Convert ticks to millis.
             // 25 to account for server lag.
-            if (user.getInventoryData().recentlyClicked(25 + (enforcedTicks * 50))) {
+            if (user.hasClickedInventoryRecently(25 + (enforcedTicks * 50))) {
                 message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " moved items too quickly.";
                 return addedVl;
             }

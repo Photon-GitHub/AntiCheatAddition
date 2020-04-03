@@ -26,26 +26,23 @@ public final class VerboseSender implements Listener
 {
     @Getter
     private static final VerboseSender instance;
+    private static final String PRE_STRING = ChatColor.DARK_RED + "[AACAdditionPro] {0}" + ChatColor.GRAY;
+    private static final String EVENT_PRE_STRING = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
 
     static {
         instance = new VerboseSender();
         AACAdditionPro.getInstance().registerListener(instance);
     }
 
-    private static final String PRE_STRING = ChatColor.DARK_RED + "[AACAdditionPro] {0}" + ChatColor.GRAY;
-    private static final String EVENT_PRE_STRING = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
-
+    private final boolean writeToFile = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.file");
+    private final boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console");
+    private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players");
     @Setter
     private boolean allowedToRegisterTasks;
-
     // The File the verbose messages are written to.
     private File logFile = null;
     // Set to an impossible day of the year to make sure the logFile will be initialized.
     private int currentDayOfYear = -1;
-
-    private final boolean writeToFile = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.file");
-    private final boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console");
-    private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players");
 
     private VerboseSender()
     {

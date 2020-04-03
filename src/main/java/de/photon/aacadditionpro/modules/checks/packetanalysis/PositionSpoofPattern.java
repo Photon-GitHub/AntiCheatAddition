@@ -5,10 +5,12 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientPositionLook;
 import de.photon.aacadditionpro.util.world.LocationUtils;
+import org.bukkit.Location;
 
 /**
  * This {@link de.photon.aacadditionpro.modules.PatternModule.PacketPattern} detects spoofed positions.
@@ -27,12 +29,12 @@ class PositionSpoofPattern extends PatternModule.PacketPattern
         final WrapperPlayClientPositionLook clientPositionLookWrapper = new WrapperPlayClientPositionLook(packetEvent.getPacket());
 
         // Only check if the player has been teleported recently
-        if (user.getTeleportData().recentlyUpdated(0, 1000) &&
+        if (user.hasTeleportedRecently(1000) &&
             // World changes and respawns are exempted
-            !user.getTeleportData().recentlyUpdated(1, 2500) &&
-            !user.getTeleportData().recentlyUpdated(2, 2500) &&
+            !user.hasRespawnedRecently(2500) &&
+            !user.hasChangedWorldsRecently(2500) &&
             // Lag occurrences after login.
-            !user.getLoginData().recentlyUpdated(0, 10000))
+            !user.hasLoggedInRecently(10000))
         {
             // The position packet might not be exactly the same position.
             // Squared values of 10, 5 and 3
@@ -40,7 +42,7 @@ class PositionSpoofPattern extends PatternModule.PacketPattern
                                            100 :
                                            (user.getPlayer().isSprinting() ? 25 : 9);
 
-            if (!LocationUtils.areLocationsInRange(user.getPacketAnalysisData().lastPositionForceData.getLocation(), clientPositionLookWrapper.getLocation(user.getPlayer().getWorld()), allowedDistance)) {
+            if (!LocationUtils.areLocationsInRange((Location) user.getDataMap().getValue(DataKey.PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION), clientPositionLookWrapper.getLocation(user.getPlayer().getWorld()), allowedDistance)) {
                 VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " tried to spoof position packets.");
                 return 10;
             }

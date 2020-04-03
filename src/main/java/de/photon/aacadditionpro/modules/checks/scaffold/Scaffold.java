@@ -5,6 +5,7 @@ import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
@@ -55,7 +56,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
         }
 
         // To prevent too fast scaffolding -> Timeout
-        if (user.getScaffoldData().recentlyUpdated(0, timeout)) {
+        if (user.getTimestampMap().recentlyUpdated(TimestampKey.SCAFFOLD_TIMEOUT, timeout)) {
             event.setCancelled(true);
             InventoryUtils.syncUpdateInventory(user.getPlayer());
         }
@@ -116,7 +117,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
                 vlManager.flag(event.getPlayer(), vl, cancelVl, () ->
                 {
                     event.setCancelled(true);
-                    user.getScaffoldData().updateTimeStamp(0);
+                    user.getTimestampMap().updateTimeStamp(TimestampKey.SCAFFOLD_TIMEOUT);
                     InventoryUtils.syncUpdateInventory(user.getPlayer());
                 }, () -> {});
             }

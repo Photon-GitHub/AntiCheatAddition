@@ -18,14 +18,13 @@ class SprintingPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
     @Override
     public int process(User user, BlockPlaceEvent event)
     {
-        if (user.getPositionData().hasPlayerSprintedRecently(400)) {
+        if (user.hasSprintedRecently(400)) {
             if (++user.getScaffoldData().sprintingFails >= this.violationThreshold) {
                 message = "Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.";
                 // Flag the player
                 return 8;
             }
-        }
-        else if (user.getScaffoldData().sprintingFails > 0) {
+        } else if (user.getScaffoldData().sprintingFails > 0) {
             user.getScaffoldData().sprintingFails--;
         }
 

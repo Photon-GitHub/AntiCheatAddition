@@ -5,6 +5,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.user.DataKey;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
@@ -37,7 +39,7 @@ class ComparePattern extends PatternModule.PacketPattern
         try {
             offset = MathUtils.offset(
                     user.getKeepAliveData().recentKeepAliveResponseTime(),
-                    user.getPacketAnalysisData().lastPositionForceData.timeDifference()) - allowedOffset;
+                    user.getTimestampMap().passedTime(TimestampKey.PACKET_ANALYSIS_LAST_POSITION_FORCE) - allowedOffset);
             // recentKeepAliveResponseTime() might throw an IllegalStateException if there are not enough answered
             // KeepAlive packets in the queue.
         } catch (IllegalStateException tooFewDataPoints) {
@@ -47,16 +49,21 @@ class ComparePattern extends PatternModule.PacketPattern
         // Should flag
         if (offset > 0) {
             // Minimum time between flags to decrease lag spike effects.
-            if (!user.getPacketAnalysisData().recentlyUpdated(0, violationTime) &&
+            if (!user.getTimestampMap().recentlyUpdated(TimestampKey.PACKET_ANALYSIS_LAST_COMPARE_FLAG, violationTime)) {
+
+                // Increment fails.
+                final long incrementFails = user.getDataMap().getLong(DataKey.PACKET_ANALYSIS_COMPARE_FAILS) + 1;
+                user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_COMPARE_FAILS, incrementFails);
+
                 // Minimum fails to mitigate some fluctuations
-                ++user.getPacketAnalysisData().compareFails >= this.violationThreshold)
-            {
-                message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays. Mitigated Offset: " + offset;
-                return Math.min(Math.max(1, (int) (offset / 50)), 9);
+                if (incrementFails >= this.violationThreshold) {
+                    message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sends packets with different delays. Mitigated Offset: " + offset;
+                    return Math.min(Math.max(1, (int) (offset / 50)), 9);
+                }
             }
-        }
-        else if (user.getPacketAnalysisData().compareFails > 0) {
-            user.getPacketAnalysisData().compareFails--;
+        } else if (user.getDataMap().getLong(DataKey.PACKET_ANALYSIS_COMPARE_FAILS) > 0) {
+            final long decrementFails = user.getDataMap().getLong(DataKey.PACKET_ANALYSIS_COMPARE_FAILS) - 1;
+            user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_COMPARE_FAILS, decrementFails);
         }
         return 0;
     }

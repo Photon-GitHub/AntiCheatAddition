@@ -58,9 +58,6 @@ public interface PatternModule extends Module
             return 0;
         }
 
-        @Override
-        public abstract String getConfigString();
-
         /**
          * Actually process the data.
          *

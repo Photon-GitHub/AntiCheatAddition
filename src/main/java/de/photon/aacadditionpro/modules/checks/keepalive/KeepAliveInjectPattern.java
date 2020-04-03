@@ -31,11 +31,9 @@ class KeepAliveInjectPattern extends PatternModule.Pattern<Object, Object> imple
                 () ->
                 {
                     long time = System.nanoTime() / 1000000L;
-                    for (final User user : UserManager.getUsersUnwrapped())
-                    {
+                    for (final User user : UserManager.getUsersUnwrapped()) {
                         // Not bypassed
-                        if (!user.isBypassed(this.getModuleType()))
-                        {
+                        if (!user.isBypassed(this.getModuleType())) {
                             final WrapperPlayServerKeepAlive wrapperPlayServerKeepAlive = new WrapperPlayServerKeepAlive();
                             wrapperPlayServerKeepAlive.setKeepAliveId(time);
                             wrapperPlayServerKeepAlive.sendPacket(user.getPlayer());
@@ -57,8 +55,7 @@ class KeepAliveInjectPattern extends PatternModule.Pattern<Object, Object> imple
     {
         super.disable();
 
-        if (injectTask != null)
-        {
+        if (injectTask != null) {
             injectTask.cancel();
         }
     }

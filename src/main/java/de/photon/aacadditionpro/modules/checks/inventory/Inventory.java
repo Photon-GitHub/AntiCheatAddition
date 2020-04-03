@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import java.util.Set;
 
@@ -26,9 +27,11 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 80L);
 
+    private final AverageHeuristicPattern averageHeuristicPattern = new AverageHeuristicPattern();
     private final HitPattern hitPattern = new HitPattern();
     private final MovePattern movePattern = new MovePattern();
     private final MultiInteractionPattern multiInteractionPattern = new MultiInteractionPattern();
+    private final PerfectExitPattern perfectExitPattern = new PerfectExitPattern();
     private final RotationPattern rotationPattern = new RotationPattern();
     private final SprintingPattern sprintingPattern = new SprintingPattern();
 
@@ -56,7 +59,6 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
             return;
         }
 
-
         vlManager.flag(user.getPlayer(), movePattern.apply(user, event), movePattern.getCancelVl(), () -> movePattern.cancelAction(user, event), () -> {});
         vlManager.flag(user.getPlayer(), rotationPattern.apply(user, event), -1, () -> {}, () -> {});
     }
@@ -77,7 +79,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onClick(final InventoryClickEvent event)
+    public void onInventoryClick(final InventoryClickEvent event)
     {
         final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
 
@@ -88,14 +90,30 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
 
         vlManager.flag(user.getPlayer(), sprintingPattern.apply(user, event), sprintingPattern.getCancelVl(), () -> sprintingPattern.cancelAction(user, event), () -> {});
         vlManager.flag(user.getPlayer(), multiInteractionPattern.apply(user, event), multiInteractionPattern.getCancelVl(), () -> multiInteractionPattern.cancelAction(user, event), () -> {});
+        vlManager.flag(user.getPlayer(), averageHeuristicPattern.apply(user, event), 0, () -> {}, () -> {});
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInventoryClose(final InventoryCloseEvent event)
+    {
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        // Not bypassed
+        if (User.isUserInvalid(user, this.getModuleType())) {
+            return;
+        }
+
+        vlManager.flag(user.getPlayer(), perfectExitPattern.apply(user, event), 0, () -> {}, () -> {});
     }
 
     @Override
     public Set<Pattern> getPatterns()
     {
-        return ImmutableSet.of(hitPattern,
+        return ImmutableSet.of(averageHeuristicPattern,
+                               hitPattern,
                                movePattern,
                                multiInteractionPattern,
+                               perfectExitPattern,
                                rotationPattern,
                                sprintingPattern);
     }

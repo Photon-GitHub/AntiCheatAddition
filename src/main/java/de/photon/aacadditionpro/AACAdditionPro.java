@@ -13,7 +13,6 @@ import de.photon.aacadditionpro.modules.checks.AutoPotion;
 import de.photon.aacadditionpro.modules.checks.Esp;
 import de.photon.aacadditionpro.modules.checks.Fastswitch;
 import de.photon.aacadditionpro.modules.checks.ImpossibleChat;
-import de.photon.aacadditionpro.modules.checks.Pingspoof;
 import de.photon.aacadditionpro.modules.checks.SkinBlinker;
 import de.photon.aacadditionpro.modules.checks.Teaming;
 import de.photon.aacadditionpro.modules.checks.Tower;
@@ -35,6 +34,7 @@ import de.photon.aacadditionpro.modules.clientcontrol.VapeControl;
 import de.photon.aacadditionpro.modules.clientcontrol.VersionControl;
 import de.photon.aacadditionpro.modules.clientcontrol.WorldDownloaderControl;
 import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.user.DataUpdaterEvents;
 import de.photon.aacadditionpro.util.VerboseSender;
 import lombok.Getter;
 import org.bstats.bukkit.Metrics;
@@ -180,12 +180,14 @@ public class AACAdditionPro extends JavaPlugin
                     new Inventory(),
                     new KeepAlive(),
                     new PacketAnalysis(),
-                    new Pingspoof(),
                     new Scaffold(),
                     new SkinBlinker(),
                     new Teaming(),
                     new Tower())
             );
+
+            // Data storage
+            DataUpdaterEvents.INSTANCE.register();
 
             // Commands
             this.getCommand(MainCommand.getInstance().getMainCommandName()).setExecutor(MainCommand.getInstance());
@@ -217,6 +219,8 @@ public class AACAdditionPro extends JavaPlugin
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
         HandlerList.unregisterAll(AACAdditionPro.getInstance());
+
+        DataUpdaterEvents.INSTANCE.unregister();
 
         VerboseSender.getInstance().sendVerboseMessage("AACAdditionPro disabled.", true, false);
         VerboseSender.getInstance().sendVerboseMessage(" ", true, false);

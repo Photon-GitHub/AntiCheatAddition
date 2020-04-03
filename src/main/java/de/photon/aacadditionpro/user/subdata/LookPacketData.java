@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.user.subdata;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -6,9 +6,10 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.user.TimeData;
-import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.user.DataKey;
+import de.photon.aacadditionpro.user.TimestampKey;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.mathematics.RotationUtil;
 import de.photon.aacadditionpro.util.packetwrappers.client.IWrapperPlayClientLook;
@@ -20,7 +21,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 
-public class LookPacketData extends TimeData
+public class LookPacketData extends SubData
 {
     private static final byte QUEUE_CAPACITY = 20;
 
@@ -28,22 +29,15 @@ public class LookPacketData extends TimeData
         ProtocolLibrary.getProtocolManager().addPacketListener(new LookPacketData.LookPacketDataUpdater());
     }
 
-    // PacketAnalysisData
     @Getter
-    private float realLastYaw;
-    @Getter
-    private float realLastPitch;
+    private final Deque<LookPacketData.RotationChange> rotationChangeQueue = new LinkedList<>();
 
-    @Getter
-    private final Deque<RotationChange> rotationChangeQueue = new LinkedList<>();
-
-    // [0] = Significant rotation changes (scaffold)
-    public LookPacketData(final User user)
+    public LookPacketData(User user)
     {
-        super(user, 0);
+        super(user);
 
         // Prevent initial problems.
-        this.rotationChangeQueue.addLast(new RotationChange(0, 0));
+        this.rotationChangeQueue.addLast(new LookPacketData.RotationChange(0, 0));
     }
 
     /**
@@ -62,7 +56,7 @@ public class LookPacketData extends TimeData
 
         synchronized (this.rotationChangeQueue) {
             final Collection<Float> rotationCache = new ArrayList<>(this.rotationChangeQueue.size());
-            final RotationChange[] elementArray = this.rotationChangeQueue.toArray(new RotationChange[0]);
+            final LookPacketData.RotationChange[] elementArray = this.rotationChangeQueue.toArray(new LookPacketData.RotationChange[0]);
 
 
             // Start at 1 as of the 0 element being the first "last element".
@@ -111,18 +105,18 @@ public class LookPacketData extends TimeData
         private final long time = System.currentTimeMillis();
 
         /**
-         * Merges a {@link RotationChange} with this {@link RotationChange}.
+         * Merges a {@link LookPacketData.RotationChange} with this {@link LookPacketData.RotationChange}.
          */
-        public void merge(final RotationChange rotationChange)
+        public void merge(final LookPacketData.RotationChange rotationChange)
         {
             this.yaw += rotationChange.yaw;
             this.pitch += rotationChange.pitch;
         }
 
         /**
-         * Calculates the total angle between two {@link RotationChange} - directions.
+         * Calculates the total angle between two {@link LookPacketData.RotationChange} - directions.
          */
-        public float angle(final RotationChange rotationChange)
+        public float angle(final LookPacketData.RotationChange rotationChange)
         {
             return RotationUtil.getDirection(this.getYaw(), this.getPitch()).angle(RotationUtil.getDirection(rotationChange.getYaw(), rotationChange.getPitch()));
         }
@@ -151,7 +145,7 @@ public class LookPacketData extends TimeData
 
                 final IWrapperPlayClientLook lookWrapper = event::getPacket;
 
-                final RotationChange rotationChange = new RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
+                final LookPacketData.RotationChange rotationChange = new LookPacketData.RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
 
                 // Same tick -> merge
                 synchronized (user.getLookPacketData().rotationChangeQueue) {
@@ -168,13 +162,15 @@ public class LookPacketData extends TimeData
 
                 // Huge angle change
                 // Use the queue values here to because the other ones are already updated.
-                if (RotationUtil.getDirection(user.getLookPacketData().realLastYaw, user.getLookPacketData().realLastPitch).angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35) {
-                    user.getLookPacketData().updateTimeStamp(0);
+                if (RotationUtil.getDirection(user.getDataMap().getFloat(DataKey.PACKET_ANALYSIS_REAL_LAST_YAW), user.getDataMap().getFloat(DataKey.PACKET_ANALYSIS_REAL_LAST_PITCH))
+                                .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
+                {
+                    user.getTimestampMap().updateTimeStamp(TimestampKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE);
                 }
 
                 // Update the values here so the RotationUtil calculation is functional.
-                user.getLookPacketData().realLastYaw = lookWrapper.getYaw();
-                user.getLookPacketData().realLastPitch = lookWrapper.getPitch();
+                user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_REAL_LAST_YAW, lookWrapper.getYaw());
+                user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_REAL_LAST_PITCH, lookWrapper.getPitch());
             }
         }
     }

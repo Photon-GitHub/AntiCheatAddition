@@ -7,6 +7,7 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
@@ -33,6 +34,17 @@ public class Fastswitch extends PacketAdapter implements PacketListenerModule, V
         super(AACAdditionPro.getInstance(), PacketType.Play.Client.HELD_ITEM_SLOT);
     }
 
+    /**
+     * Used to acknowledge if somebody can be legit.
+     * I.e. that players can scroll very fast, but then the neighbor slot is always the one that gets called next.
+     */
+    private static boolean canBeLegit(final int oldSlot, final int newHeldItemSlot)
+    {
+        return (oldSlot == 0 && newHeldItemSlot == 8) ||
+               (oldSlot == 8 && newHeldItemSlot == 0) ||
+               MathUtils.roughlyEquals(oldSlot, newHeldItemSlot, 1);
+    }
+
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
@@ -54,7 +66,7 @@ public class Fastswitch extends PacketAdapter implements PacketListenerModule, V
             !canBeLegit(user.getPlayer().getInventory().getHeldItemSlot(), event.getPacket().getBytes().readSafely(0)))
         {
             // Already switched in the given timeframe
-            if (user.getFastSwitchData().recentlyUpdated(0, switchMilliseconds)
+            if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_HOTBAR_SWITCH, switchMilliseconds)
                 // The ping is valid and in the borders that are set in the config
                 && (maxPing < 0 || ServerUtil.getPing(user.getPlayer()) < maxPing))
             {
@@ -64,19 +76,8 @@ public class Fastswitch extends PacketAdapter implements PacketListenerModule, V
                                () -> InventoryUtils.syncUpdateInventory(user.getPlayer()));
             }
 
-            user.getFastSwitchData().updateTimeStamp(0);
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_HOTBAR_SWITCH);
         }
-    }
-
-    /**
-     * Used to acknowledge if somebody can be legit.
-     * I.e. that players can scroll very fast, but then the neighbor slot is always the one that gets called next.
-     */
-    private static boolean canBeLegit(final int oldSlot, final int newHeldItemSlot)
-    {
-        return (oldSlot == 0 && newHeldItemSlot == 8) ||
-               (oldSlot == 8 && newHeldItemSlot == 0) ||
-               MathUtils.roughlyEquals(oldSlot, newHeldItemSlot, 1);
     }
 
     @Override

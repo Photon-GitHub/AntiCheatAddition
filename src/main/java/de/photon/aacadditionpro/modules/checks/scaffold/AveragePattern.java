@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.datawrappers.ScaffoldBlockPlace;
+import de.photon.aacadditionpro.user.subdata.datawrappers.ScaffoldBlockPlace;
 import de.photon.aacadditionpro.util.entity.PotionUtil;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -29,7 +29,7 @@ class AveragePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
                 // Speed-Effect
                 PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.SPEED)),
                 user.getPlayer().getLocation().getYaw(),
-                user.getPositionData().hasPlayerSneakedRecently(175))))
+                user.hasSneakedRecently(175))))
         {
             /*
             Indices:

@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.modules.checks.keepalive;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.data.KeepAliveData;
+import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 
 /**
  * This {@link de.photon.aacadditionpro.modules.PatternModule.Pattern} detects responses to KeepAlive packets which are

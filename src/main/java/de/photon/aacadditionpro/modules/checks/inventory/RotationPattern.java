@@ -6,10 +6,16 @@ import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.packetwrappers.client.IWrapperPlayClientLook;
 
 class RotationPattern extends PatternModule.PacketPattern
 {
+    @LoadFromConfiguration(configPath = ".teleport_time")
+    private int teleportTime;
+    @LoadFromConfiguration(configPath = ".world_change_time")
+    private int worldChangeTime;
+
     protected RotationPattern()
     {
         super(ImmutableSet.of(PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK));
@@ -23,14 +29,15 @@ class RotationPattern extends PatternModule.PacketPattern
         // Not flying (may trigger some fps)
         if (!user.getPlayer().getAllowFlight() &&
             // Player is in an inventory
-            user.getInventoryData().hasOpenInventory() &&
+            user.hasOpenInventory() &&
             // Head-Rotation has changed (detection)
             (user.getPlayer().getLocation().getYaw() != lookWrapper.getYaw() ||
              user.getPlayer().getLocation().getPitch() != lookWrapper.getPitch()) &&
             // No recently tp
-            !user.getTeleportData().recentlyUpdated(0, 1000) &&
+            !user.hasTeleportedRecently(this.teleportTime) &&
+            !user.hasChangedWorldsRecently(this.worldChangeTime) &&
             // The player has opened his inventory for at least one second.
-            user.getInventoryData().notRecentlyOpened(1000))
+            user.notRecentlyOpenedInventory(1000))
         {
             message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " sent new rotations while having an open inventory.";
             return 1;

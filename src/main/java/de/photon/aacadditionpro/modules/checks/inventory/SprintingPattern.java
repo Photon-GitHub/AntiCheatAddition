@@ -2,8 +2,8 @@ package de.photon.aacadditionpro.modules.checks.inventory;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.data.PositionData;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
@@ -26,9 +26,9 @@ class SprintingPattern extends PatternModule.Pattern<User, InventoryClickEvent>
             // Sprinting and Sneaking as detection
             (user.getPlayer().isSprinting() || user.getPlayer().isSneaking()) &&
             // The player opened the inventory at least a quarter second ago
-            user.getInventoryData().notRecentlyOpened(250) &&
+            user.notRecentlyOpenedInventory(250) &&
             // Is the player moving
-            user.getPositionData().hasPlayerMovedRecently(1000, PositionData.MovementType.ANY))
+            user.hasMovedRecently(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT, 1000))
         {
             message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " interacted with an inventory while sprinting or sneaking.";
             return 20;

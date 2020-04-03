@@ -7,6 +7,7 @@ import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -22,8 +23,7 @@ public final class InventoryUtils
      */
     public static List<ItemStack> getHandContents(Player player)
     {
-        switch (ServerVersion.getActiveServerVersion())
-        {
+        switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 return ImmutableList.of(player.getInventory().getItemInHand());
             case MC112:
@@ -35,6 +35,19 @@ public final class InventoryUtils
             default:
                 throw new UnknownMinecraftVersion();
         }
+    }
+
+    /**
+     * Checks if an {@link org.bukkit.inventory.Inventory} is empty.
+     */
+    public static boolean isInventoryEmpty(Inventory inventory)
+    {
+        for (ItemStack content : inventory.getContents()) {
+            if (content != null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -51,8 +64,7 @@ public final class InventoryUtils
         double[] locationOfFirstClick = InventoryUtils.locateSlot(rawSlotOne, inventoryType);
         double[] locationOfSecondClick = InventoryUtils.locateSlot(rawSlotTwo, inventoryType);
 
-        if (locationOfFirstClick == null || locationOfSecondClick == null)
-        {
+        if (locationOfFirstClick == null || locationOfSecondClick == null) {
             return -1;
         }
 
@@ -73,15 +85,13 @@ public final class InventoryUtils
     public static double[] locateSlot(int rawSlot, final InventoryType inventoryType) throws IllegalArgumentException
     {
         // Invalid slot (including the -999 outside rawslot constant)
-        if (rawSlot < 0)
-        {
+        if (rawSlot < 0) {
             return null;
         }
 
         // Debug:
         // System.out.println("InventoryLocation: " + rawSlot + " | " + inventoryType);
-        switch (inventoryType)
-        {
+        switch (inventoryType) {
             case CHEST:
             case ENDER_CHEST:
                 // TODO: MAKE SURE THAT THE PLAYER IS NOT RIDING A HORSE, THAT IS ALSO COUNTED AS CHEST.
@@ -136,8 +146,7 @@ public final class InventoryUtils
                  * 36                        -                       44
                  */
                 // In the dispenser - part
-                if (rawSlot < 9)
-                {
+                if (rawSlot < 9) {
                     return new double[]{
                             4 + rawSlot % 3,
                             (rawSlot / 3)
@@ -170,8 +179,7 @@ public final class InventoryUtils
                  * ------------------------------------------------------
                  * 30                        -                       38
                  */
-                switch (rawSlot)
-                {
+                switch (rawSlot) {
                     case 0:
                         return new double[]{
                                 2.5F,
@@ -215,8 +223,7 @@ public final class InventoryUtils
                  * 37                        -                       45
                  */
 
-                switch (rawSlot)
-                {
+                switch (rawSlot) {
                     case 0:
                         return new double[]{
                                 6.5D,
@@ -224,17 +231,14 @@ public final class InventoryUtils
                         };
 
                     default:
-                        if (rawSlot <= 9)
-                        {
+                        if (rawSlot <= 9) {
                             int xTemp = rawSlot % 3;
                             float yTemp = rawSlot / 3F;
                             return new double[]{
                                     (xTemp == 0 ? 3 : xTemp) + 0.25D,
                                     yTemp <= 1 ? 0 : (yTemp <= 2 ? 1 : 2)
                             };
-                        }
-                        else
-                        {
+                        } else {
                             final double extraYWorkbench = rawSlot < 37 ? 2.5D : 2.75D;
                             return new double[]{
                                     (rawSlot - 1) % 9,
@@ -335,8 +339,7 @@ public final class InventoryUtils
                  * 32                        -                       40
                  */
                 // Start at y = 1 as the inventory is smaller
-                if (rawSlot <= 4)
-                {
+                if (rawSlot <= 4) {
                     return new double[]{
                             2D + rawSlot,
                             1D
@@ -370,8 +373,7 @@ public final class InventoryUtils
                  * */
 
                 // Result slot
-                if (rawSlot == 0)
-                {
+                if (rawSlot == 0) {
                     return new double[]{
                             7.5D,
                             1.5D
@@ -379,8 +381,7 @@ public final class InventoryUtils
                 }
 
                 // Crafting slots
-                if (rawSlot <= 4)
-                {
+                if (rawSlot <= 4) {
                     return new double[]{
                             5.5D - (rawSlot % 2),
                             rawSlot <= 2 ? 1D : 2D
@@ -388,8 +389,7 @@ public final class InventoryUtils
                 }
 
                 // Armor slots
-                if (rawSlot <= 8)
-                {
+                if (rawSlot <= 8) {
                     return new double[]{
                             0D,
                             (rawSlot - 5)

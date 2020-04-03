@@ -18,9 +18,9 @@ class HitPattern extends PatternModule.Pattern<User, EntityDamageByEntityEvent>
     protected int process(User user, EntityDamageByEntityEvent event)
     {
         // Is in Inventory (Detection)
-        if (user.getInventoryData().hasOpenInventory() &&
+        if (user.hasOpenInventory() &&
             // Have the inventory opened for some time
-            user.getInventoryData().notRecentlyOpened(1000) &&
+            user.notRecentlyOpenedInventory(1000) &&
             // Is a hit-attack
             event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK)
         {

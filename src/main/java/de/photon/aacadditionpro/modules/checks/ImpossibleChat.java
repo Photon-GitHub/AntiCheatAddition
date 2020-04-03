@@ -18,7 +18,7 @@ public class ImpossibleChat implements ListenerModule, ViolationModule
     private int cancelVl;
 
     @EventHandler
-    public void on(final AsyncPlayerChatEvent event)
+    public void onAsyncChat(final AsyncPlayerChatEvent event)
     {
         final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
@@ -32,9 +32,9 @@ public class ImpossibleChat implements ListenerModule, ViolationModule
             user.getPlayer().isSneaking() ||
             user.getPlayer().isBlocking() ||
             user.getPlayer().isDead() ||
-            (user.getInventoryData().hasOpenInventory() &&
+            (user.hasOpenInventory() &&
              // Have the inventory opened for some time
-             user.getInventoryData().notRecentlyOpened(1000)
+             user.notRecentlyOpenedInventory(1000)
             ))
         {
             vlManager.flag(user.getPlayer(), cancelVl, () -> event.setCancelled(true), () -> {});

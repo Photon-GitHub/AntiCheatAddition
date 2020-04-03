@@ -1,17 +1,15 @@
-package de.photon.aacadditionpro.user.data;
+package de.photon.aacadditionpro.user.subdata;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.user.Data;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructures.buffer.ContinuousArrayBuffer;
 import de.photon.aacadditionpro.util.datastructures.buffer.ContinuousBuffer;
 import lombok.Getter;
 
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class KeepAliveData extends Data
+public class KeepAliveData extends SubData
 {
     // This needs to be so high to prevent flagging during TimeOuts.
     public static final byte KEEPALIVE_QUEUE_SIZE = 20;
@@ -70,13 +68,6 @@ public class KeepAliveData extends Data
         }
     }
 
-    @Override
-    public void unregister()
-    {
-        this.keepAlives.clear();
-        super.unregister();
-    }
-
     public static class KeepAlivePacketData
     {
         private final long timestamp = System.currentTimeMillis();
@@ -98,22 +89,17 @@ public class KeepAliveData extends Data
         }
 
         @Override
-        public boolean equals(Object o)
+        public boolean equals(Object other)
         {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            KeepAlivePacketData that = (KeepAlivePacketData) o;
-            return keepAliveID == that.keepAliveID;
+            return this == other ||
+                   other != null && getClass() == other.getClass() && keepAliveID == ((KeepAlivePacketData) other).keepAliveID;
+
         }
 
         @Override
         public int hashCode()
         {
-            return Objects.hash(keepAliveID);
+            return (int) keepAliveID;
         }
     }
 }

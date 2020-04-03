@@ -42,20 +42,16 @@ import java.util.logging.Level;
 
 public class Esp implements ListenerModule
 {
-    // The auto-config-data
-    private int defaultTrackingRange;
-    private boolean hideAfterRenderDistance = true;
-
     // The real MAX_FOV is 110 (quake pro), which results in 150° according to tests.
     // 150° + 15° (compensation) = 165°
     private static final double MAX_FOV = Math.toRadians(165D);
-
     // Use a LinkedList design for optimal storage usage as the amount of bypassed / spectator players cannot be estimated.
     private final Deque<User> users = new ArrayDeque<>();
-
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
-
+    // The auto-config-data
+    private int defaultTrackingRange;
+    private boolean hideAfterRenderDistance = true;
     // The task number for Bukkit's internal systems
     private int taskNumber;
 
@@ -122,9 +118,9 @@ public class Esp implements ListenerModule
                         // All users can potentially be seen
                         for (final User watched : users) {
                             // The watched player is also not in Spectator mode
-                            if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR &&
+                            if (watched.getPlayer().getGameMode() != GameMode.SPECTATOR
                                 // The players are in the same world
-                                observingUser.getPlayer().getWorld().getUID().equals(watched.getPlayer().getWorld().getUID()))
+                                && observingUser.getPlayer().getWorld().getUID().equals(watched.getPlayer().getWorld().getUID()))
                             {
                                 // The users are always in the same world (see above)
                                 final double pairDistanceSquared = observingUser.getPlayer().getLocation().distanceSquared(watched.getPlayer().getLocation());
@@ -192,7 +188,7 @@ public class Esp implements ListenerModule
         // Not bypassed
         if (observerUser.isBypassed(this.getModuleType()) ||
             // Has not logged in recently to prevent bugs
-            observerUser.getLoginData().recentlyUpdated(0, 3000) ||
+            observerUser.hasLoggedInRecently(3000) ||
             // Glowing handling
             // Glowing does not exist in 1.8.8
             (ServerVersion.getActiveServerVersion() != ServerVersion.MC188 &&
@@ -313,7 +309,7 @@ public class Esp implements ListenerModule
         // unModifyInformation and modifyInformation are not thread-safe.
         Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
             // Observer might have left by now.
-            if (observingPlayer != null) {
+            if (observingPlayer != null && watched != null) {
                 // There is no need to manually check if something has changed as the PlayerInformationModifiers already
                 // do that.
                 switch (hideMode) {

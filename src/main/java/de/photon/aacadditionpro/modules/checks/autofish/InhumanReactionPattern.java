@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.modules.checks.autofish;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -17,14 +18,14 @@ class InhumanReactionPattern extends PatternModule.Pattern<User, PlayerFishEvent
         switch (event.getState()) {
             case CAUGHT_FISH:
                 // Too few time has passed since the fish bit.
-                if (user.getFishingData().recentlyUpdated(0, fishingMilliseconds)) {
+                if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_FISH_BITE, fishingMilliseconds)) {
 
                     // Get the correct amount of vl.
                     // vl 6 is the maximum.
                     // Points = {{0, 1}, {8, 0}}
                     // Function: 1 - 0.125x
                     for (byte b = 5; b > 0; b--) {
-                        if (user.getFishingData().recentlyUpdated(0, (long) (1 - 0.125 * b) * fishingMilliseconds)) {
+                        if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_FISH_BITE, (long) (1 - 0.125 * b) * fishingMilliseconds)) {
                             // Flag for vl = b + 1 because there would otherwise be a "0-vl"
                             message = "AutoFish-Verbose | Player " + user.getPlayer().getName() + " failed inhuman reaction";
                             return b + 1;
@@ -33,10 +34,10 @@ class InhumanReactionPattern extends PatternModule.Pattern<User, PlayerFishEvent
                 }
 
                 // Reset the bite-timestamp to be ready for the next one
-                user.getFishingData().nullifyTimeStamp(0);
+                user.getTimestampMap().nullifyTimeStamp(TimestampKey.LAST_FISH_BITE);
                 break;
             case BITE:
-                user.getFishingData().updateTimeStamp(0);
+                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_FISH_BITE);
                 break;
             default:
                 break;

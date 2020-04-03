@@ -25,7 +25,6 @@ public class BetterSprintingControl extends ClientControlModule implements Plugi
     private static final Set<MessageChannel> CHANNELS;
 
     static {
-
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
             case MC112:

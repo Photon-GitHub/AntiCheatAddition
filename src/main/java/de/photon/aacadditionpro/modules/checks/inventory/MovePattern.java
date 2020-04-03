@@ -6,10 +6,11 @@ import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.user.DataKey;
+import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPosition;
 import de.photon.aacadditionpro.util.server.ServerUtil;
@@ -31,6 +32,10 @@ class MovePattern extends PatternModule.PacketPattern
     private double minTps;
     @LoadFromConfiguration(configPath = ".lenience_millis")
     private int lenienceMillis;
+    @LoadFromConfiguration(configPath = ".teleport_time")
+    private int teleportTime;
+    @LoadFromConfiguration(configPath = ".world_change_time")
+    private int worldChangeTime;
 
     protected MovePattern()
     {
@@ -59,28 +64,27 @@ class MovePattern extends PatternModule.PacketPattern
             // Not using an Elytra
             !EntityUtil.isFlyingWithElytra(user.getPlayer()) &&
             // Player is in an inventory
-            user.getInventoryData().hasOpenInventory() &&
+            user.hasOpenInventory() &&
             // Player has not been hit recently
             user.getPlayer().getNoDamageTicks() == 0 &&
             // Recent teleports can cause bugs
-            !user.getTeleportData().recentlyUpdated(0, 1000) &&
+            !user.hasTeleportedRecently(this.teleportTime) &&
+            !user.hasChangedWorldsRecently(this.worldChangeTime) &&
             // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
             // world add errors.
             // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load
             // errors.
             ChunkUtils.isChunkLoaded(user.getPlayer().getLocation()) &&
             // The player is currently not in a liquid (liquids push)
-            !EntityUtil.isHitboxInLiquids(knownPosition, user.getPlayer().isSneaking() ?
-                                                         Hitbox.SNEAKING_PLAYER :
-                                                         Hitbox.PLAYER) &&
+            !EntityUtil.isHitboxInLiquids(knownPosition, user.getHitbox()) &&
             // Auto-Disable if TPS are too low
             ServerUtil.getTPS() > minTps)
         {
             final boolean positiveVelocity = knownPosition.getY() < moveTo.getY();
 
-            if (positiveVelocity != user.getVelocityChangeData().positiveVelocity) {
-                if (user.getPositionData().allowedToJump) {
-                    user.getPositionData().allowedToJump = false;
+            if (positiveVelocity != user.getDataMap().getBoolean(DataKey.POSITIVE_VELOCITY)) {
+                if (user.getDataMap().getBoolean(DataKey.ALLOWED_TO_JUMP)) {
+                    user.getDataMap().setValue(DataKey.ALLOWED_TO_JUMP, false);
                     return 0;
                 }
 
@@ -89,7 +93,7 @@ class MovePattern extends PatternModule.PacketPattern
             }
 
             // Make sure that the last jump is a little bit ago (same "breaking" effect that needs compensation.)
-            if (user.getVelocityChangeData().recentlyUpdated(0, 1750)) {
+            if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES, 1750)) {
                 return 0;
             }
 
@@ -98,13 +102,13 @@ class MovePattern extends PatternModule.PacketPattern
             if (knownPosition.getY() == moveTo.getY() &&
                 // 230 is a little compensation for the "breaking" when sprinting previously (value has been established
                 // by local tests).
-                user.getInventoryData().notRecentlyOpened(230L + lenienceMillis))
+                user.notRecentlyOpenedInventory(230L + lenienceMillis))
             {
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
                 try {
                     // Needs to be called synchronously.
-                    if (Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), Hitbox.PLAYER, 0.1D).isEmpty()).get()) {
+                    if (Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()).get()) {
                         message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " moved while having an open inventory.";
                         return 3;
                     }
@@ -116,7 +120,7 @@ class MovePattern extends PatternModule.PacketPattern
                 }
             }
         } else {
-            user.getPositionData().allowedToJump = true;
+            user.getDataMap().setValue(DataKey.ALLOWED_TO_JUMP, true);
         }
         return 0;
     }
@@ -128,7 +132,7 @@ class MovePattern extends PatternModule.PacketPattern
         event.setCancelled(true);
 
         // Cancelling packets will cause an EqualRotation flag.
-        user.getPacketAnalysisData().equalRotationExpected = true;
+        user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED, true);
 
         // Update client
         final WrapperPlayServerPosition packet = new WrapperPlayServerPosition();

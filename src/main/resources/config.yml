@@ -277,7 +277,7 @@ Inventory:
     # This part detects inventory interactions while a player is sprinting or sneaking.
     # This part will add 20 vl.
     Sprinting:
-      # Do you want to enable the sprinting part
+      # Do you want to enable the sprinting part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the inventory interactions.
       # Set this to 0 to never cancel inventory interactions.

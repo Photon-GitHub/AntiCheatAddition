@@ -267,7 +267,7 @@ Inventory:
       min_tps: 18.5
       # How many suspicious positions should Inventory count as legit
       # The value must be greater or equal to 0.
-      violation_threshold: 4
+      violation_threshold: 5
     # The rotation part detects head movement while having an open inventory.
     # This part will add 1 vl.
     Rotation:

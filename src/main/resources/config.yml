@@ -258,7 +258,7 @@ Inventory:
       min_tps: 18.5
     # This part will detect perfectly closed inventories to detect chest stealers which automatically close an inventory
     # once it is empty.
-    # This part will add 5 to 10 vl depending on the severity of the violation.
+    # This part will add 7 to 15 vl depending on the severity of the violation.
     PerfectExit:
       # Do you want to disable the PerfectExit part?
       enabled: true

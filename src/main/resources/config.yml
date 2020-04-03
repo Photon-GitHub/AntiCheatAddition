@@ -26,7 +26,7 @@
 # Please note that one VL from AutoEat decays only every 5 minutes to make sure that cheats can be detected even if
 # eating sessions are several minutes apart.
 AutoEat:
-  # Do you want to enable the AutoEat check
+  # Do you want to enable the AutoEat check?
   enabled: true
   # Violation before AACAdditionPro starts to cancel the consume events.
   cancel_vl: 6
@@ -42,7 +42,7 @@ AutoEat:
 # If you have modified fishing time and/or behaviour please test if this check is compatible with your setup.
 # This check does only work on minecraft versions 1.11 and beyond and auto-disables itself on other versions.
 AutoFish:
-  # Do you want to enable the AutoFish check
+  # Do you want to enable the AutoFish check?
   enabled: true
   # Violation before AACAdditionPro starts to cancel the fishing.
   # Set this to 0 to never cancel fishing.
@@ -54,7 +54,7 @@ AutoFish:
     # This might cause some false positives with experienced fishers.
     # This will add up to 6 vl, depending on the reaction speed.
     inhuman_reaction:
-      # Should this part of the check be enabled
+      # Do you want to enable the inhuman_reaction part?
       enabled: true
       # How many milliseconds should have passed before a fishing action counts as legit.
       # This also influences the given vl according to a linear distribution.
@@ -63,7 +63,7 @@ AutoFish:
     # This check has less to none false positives, especially with a high event count
     # Depending on how accurate the consistency is players will receive between 1 and 15 vl
     consistency:
-      # Should this part of the check be enabled
+      # Do you want to enable the consistency part?
       enabled: true
       # How many FishEvents should be checked by the consistency check
       consistency_events: 5
@@ -87,7 +87,7 @@ AutoFish:
 # AutoPotion detects automated bots which splash the player with potions that have positive effects
 # This check does only work on minecraft versions 1.11 and beyond and auto-disables itself on other versions.
 AutoPotion:
-  # Do you want to enable the AutoPotion check
+  # Do you want to enable the AutoPotion check?
   enabled: true
   # Violation before AACAdditionPro starts to cancel throwing potions.
   # Set this to 0 to never cancel throwing potions.
@@ -129,7 +129,7 @@ AutoPotion:
 #                    the combat strength of a player)
 #                    This part will automatically disable itself on servers with MC versions below 1.11.
 Esp:
-  # Do you want to enable the ESP check
+  # Do you want to enable the ESP check?
   #
   # If your server has more a lot of players in one world within its render distance the ESP check will create a
   # medium - high CPU load.
@@ -154,7 +154,7 @@ Esp:
 
 # The Fastswitch check prevents players from switching their hotbar-selection too quickly
 Fastswitch:
-  # Do you want to enable the Fastswitch check
+  # Do you want to enable the Fastswitch check?
   # NOTE: This check will automatically disable itself if the server is lagging.
   enabled: true
   # Violation before AACAdditionPro starts to cancel the interacts.
@@ -175,7 +175,7 @@ Fastswitch:
 # ImpossibleChat check detects sending chat messages while being in an inventory, blocking, sprinting and other illegal
 # situations.
 ImpossibleChat:
-  # Do you want to enable the ImpossibleChat check
+  # Do you want to enable the ImpossibleChat check?
   # Disabled by default as some servers might allow auto-chat modifications.
   enabled: false
   # Violation before AACAdditionPro starts to cancel the messages.
@@ -189,7 +189,7 @@ ImpossibleChat:
 
 # This check contains a lot of parts covering all aspects of inventory interaction.
 Inventory:
-  # Do you want to enable the Inventory check
+  # Do you want to enable the Inventory check?
   enabled: true
   # Control the different parts of Inventory
   parts:
@@ -202,7 +202,7 @@ Inventory:
     # the beginning of SurvivalGames will not get as many vls as they click on a lot of empty slots just like slow
     # clickers as having a bot with a slow click rate does not give you a huge advantage and is likely a false positive.
     AverageHeuristic:
-      # Do you want to enable the AverageHeuristic part
+      # Do you want to enable the AverageHeuristic part?
       enabled: true
       # If a player has a ping higher than that value he bypasses the check
       # Please make sure that you have some pingspoofer protection enabled if you use this feature
@@ -211,18 +211,10 @@ Inventory:
       # The minimum TPS the server must have to activate this check
       # Low TPS will cause an extreme amount of false positives.
       min_tps: 18.5
-    # This part is designed to detect illogical click times (similar duration but totally different distances covered).
-    # This is supposed to detect auto-equip mods which automatically manage your inventory.
-    # Note: If you allow inventory sorting mods of any kind make sure to disable this.
-    #
-    # This part will add 10 vl (this check is quite slow and is only processed every 10 clicks).
-    ConstantClickDelay:
-      # Do you want to enable the ConstantClickDelay part
-      enabled: true
     # This part flags hitting while the inventory is open.
     # This part will add 10 vl.
     Hit:
-      # Do you want to enable the hit part
+      # Do you want to enable the Hit part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the hits.
       # Set this to 0 to never cancel hits.
@@ -230,7 +222,7 @@ Inventory:
     # The move part detects movement when a player is still in his inventory.
     # This part will add 3 vl when a player moves illegally and 10 vl if a player jumps illegally.
     Move:
-      # Do you want to enable the move part
+      # Do you want to enable the Move part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the movements.
       # Set this to 0 to never cancel movement.
@@ -252,7 +244,7 @@ Inventory:
     # The MultiInteraction part prevents players from moving more than one item per tick
     # This part will add 1 to 3 vl, depending on the severity of the violation.
     MultiInteraction:
-      # Do you want to enable the MultiInteraction part
+      # Do you want to enable the MultiInteraction part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the interacts.
       # Set this to 0 to never cancel interacts.
@@ -264,10 +256,16 @@ Inventory:
       # The minimum TPS the server must have to activate this check
       # Low TPS will cause an extreme amount of false positives.
       min_tps: 18.5
+    # This part will detect perfectly closed inventories to detect chest stealers which automatically close an inventory
+    # once it is empty.
+    # This part will add 10 vl.
+    PerfectExit:
+      # Do you want to disable the PerfectExit part?
+      enabled: true
     # The rotation part detects head movement while having an open inventory.
     # This part will add 1 vl.
     Rotation:
-      # Do you want to enable the rotation part
+      # Do you want to enable the Rotation part?
       enabled: true
       # This is the time in milliseconds in which AACAdditionPro will not check a player after a teleport.
       # Increase this if you have false positive with high-ping players after teleports.
@@ -292,7 +290,7 @@ Inventory:
 
 # This check processes KeepAlive packets to detect Pingspoof and similar modifications.
 KeepAlive:
-  # Do you want to enabled the KeepAlive check
+  # Do you want to enable the KeepAlive check?
   enabled: true
   # Control the different parts of KeepAlive
   #
@@ -307,7 +305,7 @@ KeepAlive:
     # protocol.
     # This part will add 10 vl.
     ignored:
-      # Do you want to enable the ignored KeepAlive packet checking
+      # Do you want to enable the ignored KeepAlive packet checking?
       enabled: true
     # Offset analyses the packet order.
     # This part also catches various pingspoof modifications.
@@ -315,13 +313,13 @@ KeepAlive:
     #
     # IF YOU USE BUNGEECORD DISABLE THIS CHECK AS A BUG IN THE NETWORKING STRUCTURE WILL CAUSE FALSE POSITIVES.
     offset:
-      # Do you want to enable the packet offset checking
+      # Do you want to enable the packet offset checking?
       enabled: true
     # This injects additional KeepAlive packets in order to improve detection of some modules.
     # Legit players won't notice this.
     # This subpart is not compatible with versions higher than 1.8.8 and will autodisable accordingly.
     inject:
-      # Do you want to enable KeepAlive packet injection
+      # Do you want to enable KeepAlive packet injection?
       enabled: true
   # Map of violation levels to command
   thresholds:
@@ -332,7 +330,7 @@ KeepAlive:
 # PacketAnalysis is a general check which aims to detect modifications that are closely linked to interfering with the
 # protocol directly, such as pingspoof or freecam, but also various killauras, aimbots and other rotation-based modules.
 PacketAnalysis:
-  # Do you want to enable the PacketAnalysis check
+  # Do you want to enable the PacketAnalysis check?
   enabled: true
   # Control the different parts of PacketAnalysis
   parts:
@@ -340,13 +338,13 @@ PacketAnalysis:
     # This only flags the worst killauras.
     # This part will add 10 vl.
     Animation:
-      # Do you want to enabled PacketOrder
+      # Do you want to enable the Animation part?
       enabled: true
     # This parts compares interactions of the client with different packet types to gain insight whether or not
     # the client purposefully delays some packets (pingspoof and freecam).
     # This part will add 1 to 9 vl, depending on the severity of the violation.
     Compare:
-      # Do you want to enable packet time comparison
+      # Do you want to enable packet time comparison?
       enabled: true
       # How many offset milliseconds are classified as part of naturally fluctuating connections
       allowed_offset: 120
@@ -358,18 +356,18 @@ PacketAnalysis:
     # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
     # This will catch several scaffold, tower, killaura and aimbot modifications.
     EqualRotation:
-      # Do you want to enable EqualRotation
+      # Do you want to enable the EqualRotation part?
       enabled: true
     # This checks for illegal pitches that a legit client is not able to send.
     # This part will add 20 vl.
     IllegalPitch:
-      # Do you want to enable IllegalPitch
+      # Do you want to enable the IllegalPitch part?
       enabled: true
     # This handles illegal position packets which could otherwise be used to bypass parts of the check.
     # Disabling this will SEVERELY weaken other parts of the check.
     # This part will add 10 vl.
     PositionSpoof:
-      # Do you want to enable the position spoof checking
+      # Do you want to enable position spoof checking?
       enabled: true
   # Map of violation levels to command
   thresholds:
@@ -379,7 +377,7 @@ PacketAnalysis:
 
 # The Scaffold check detects Scaffold cheats
 Scaffold:
-  # Do you want to enable the Scaffold check
+  # Do you want to enable the Scaffold check?
   enabled: true
   # Violation before AACAdditionPro starts to cancel the block-places.
   # Set this to 0 to never cancel block-places.
@@ -392,7 +390,7 @@ Scaffold:
     # This part detects suspicious angles when the player places blocks.
     # The angle part will add 3 vl if failed.
     angle:
-      # Should this part of the check be enabled
+      # Do you want to enable the angle part?
       enabled: true
       # How many suspicious angles should Scaffold count as legit
       # The value must be greater or equal to 0.
@@ -401,7 +399,7 @@ Scaffold:
     # This part is always enabled as it provides the basic framework.
     # The average part might add between 4 and 24 violation levels depending on the severity of the violation.
     average:
-      # Should this part of the check be enabled
+      # Do you want to enable the average part?
       enabled: true
       # The minimum delay between blockplaces that will be enforced by AACAdditionPro (measured in ms)
       delays:
@@ -415,7 +413,7 @@ Scaffold:
     # This part detects suspicious placement positions.
     # The position check always adds 5 vl.
     position:
-      # Should this part of the check be enabled
+      # Do you want to enable the position part?
       enabled: true
     # This part analyzes the rotations of a player while scaffolding
     rotation:
@@ -423,15 +421,15 @@ Scaffold:
       # Disabling all types will disable the part.
       # Type1 will add 3 vl
       type1:
-        # Should this part of the check be enabled
+        # Do you want to enable the position type1 part?
         enabled: true
       # Type2 will add 2 vl
       type2:
-        # Should this part of the check be enabled
+        # Do you want to enable the position type2 part?
         enabled: true
       # Type3 will add 1 vl
       type3:
-        # Should this part of the check be enabled
+        # Do you want to enable the position type3 part?
         enabled: true
       # How many suspicious rotations should Scaffold count as legit
       # The value must be greater or equal to 0.
@@ -442,14 +440,14 @@ Scaffold:
       # Disabling all types will disable the part.
       # Type1 will add 3 vl
       type1:
-        # Should this part of the check be enabled
+        # Do you want to enable the safewalk type1 part?
         enabled: true
         # How many suspicious positions should Scaffold count as legit
         # The value must be greater or equal to 0.
         violation_threshold: 2
       # Type2 will add 4 vl
       type2:
-        # Should this part of the check be enabled
+        # Do you want to enable the safewalk type2 part?
         enabled: true
         # How many suspicious positions should Scaffold count as legit
         # The value must be greater or equal to 0.
@@ -457,7 +455,7 @@ Scaffold:
     # This part detects sprinting between blockplaces.
     # The sprinting check always adds 8 vl.
     sprinting:
-      # Should this part of the check be enabled
+      # Do you want to enable the sprinting part?
       enabled: true
       # How many suspicious sprinting periods should Scaffold count as legit
       # The value must be greater or equal to 0.
@@ -470,7 +468,7 @@ Scaffold:
 
 # The Skinblinker check detects Skinblinker cheats when the player sprints/sneaks.
 Skinblinker:
-  # Do you want to enable the Skinblinker check
+  # Do you want to enable the Skinblinker check?
   enabled: true
   # Map of violation levels to command
   thresholds:
@@ -480,7 +478,7 @@ Skinblinker:
 # This check tries to alert you of teamers
 # This is safe to enable, just make sure that you configure this check for your own needs.
 Teaming:
-  # Do you want to enable the Teaming check
+  # Do you want to enable the Teaming check?
   enabled: false
   # How much delay should be between the check-waves
   # This must be below 15000 milliseconds.
@@ -513,7 +511,7 @@ Teaming:
 
 # The Tower check detects Tower cheats
 Tower:
-  # Do you want to enable the Tower check
+  # Do you want to enable the Tower check?
   enabled: true
   # Violation before AACAdditionPro starts to cancel the block-places.
   # Set this to 0 to never cancel block-places.
@@ -549,7 +547,7 @@ ClientControl:
   #
   # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   5zig:
-    # Do you want to enable 5zig-Control
+    # Do you want to enable 5zig-Control?
     enabled: false
     # This mod provides a method to disable parts of it.
     # Set the corresponding value to true if you want to block a part of the mod
@@ -576,7 +574,7 @@ ClientControl:
 
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   BetterSprinting:
-    # Do you want to enable BetterSprinting-Control
+    # Do you want to enable BetterSprinting-Control?
     enabled: false
     # This mod provides a method to disable parts of it.
     # Disabling all subparts listed here will a BetterSprinting client behave like a vanilla client.
@@ -594,7 +592,7 @@ ClientControl:
   # to show other players' health, like HealthTags and ESP) becomes useless.
   # This is a clientsided spoof, meaning that your plugins are able to get the correct health.
   DamageIndicator:
-    # Do you want to enable DamageIndicators - countermeasure
+    # Do you want to enable DamageIndicators - countermeasures?
     enabled: false
     # Spoof the health of the following entity categories.
     spoof:
@@ -606,7 +604,7 @@ ClientControl:
   #
   # ONLY COMPATIBLE WITH MINECRAFT 1.8 SO FAR
   Forge:
-    # Do you want to enable Forge-Control
+    # Do you want to enable Forge-Control?
     # This cannot be blocked; I recommend to kick if desired
     enabled: false
     commands_on_detection:
@@ -620,7 +618,7 @@ ClientControl:
   #
   # If enabled this ClientControl will override the config options of the LabyModAPI plugin.
   LabyMod:
-    # Do you want to enable LabyMod-Control
+    # Do you want to enable LabyMod-Control?
     enabled: false
     # This mod provides a method to disable parts of it.
     # Set the corresponding value to true if you want to block a part of the mod
@@ -667,7 +665,7 @@ ClientControl:
   #
   # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   LiteLoader:
-    # Do you want to enable LiteLoader-Control
+    # Do you want to enable LiteLoader-Control?
     # This cannot be blocked; I recommend to kick if desired
     enabled: false
     commands_on_detection:
@@ -678,7 +676,7 @@ ClientControl:
   #
   # Not compatible with 1.13.2 as this only covers old LabyMod versions.
   OldLabyMod:
-    # Do you want to enable OldLabyMod-Control
+    # Do you want to enable OldLabyMod-Control?
     enabled: false
     # This mod provides a method to disable parts of it.
     # Set the corresponding value to true if you want to block a part of the mod
@@ -720,7 +718,7 @@ ClientControl:
   #
   # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   PXMod:
-    # Do you want to enable PXMod-Control
+    # Do you want to enable PXMod-Control?
     enabled: false
     commands_on_detection:
       - "aackick {player} PXMod"
@@ -730,7 +728,7 @@ ClientControl:
   #
   # ONLY COMPATIBLE WITH MINECRAFT 1.8 SO FAR
   Schematica:
-    # Do you want to enable Schematica-Control
+    # Do you want to enable Schematica-Control?
     enabled: false
     # This mod provides a method to disable parts of it.
     # Set the corresponding value to true if you want to block a part of the mod
@@ -751,7 +749,7 @@ ClientControl:
   #
   # NOT COMPATIBLE WITH MINECRAFT 1.13 AS THE BACKDOOR DEPENDS ON CODE THAT HAS CHANGED DRAMATICALLY IN 1.13
   Vape:
-    # Do you want to enable Vape-Control
+    # Do you want to enable Vape-Control?
     enabled: false
     commands_on_detection:
       - "ban {player} Illegal client modification"
@@ -759,7 +757,7 @@ ClientControl:
   # This allows you to control which minecraft versions can join your server IF YOUR SERVER RUNS VIAVERSION.
   # You might need to restart your server TWICE for some changes to take effect.
   VersionControl:
-    # Do you want to enable VersionControl
+    # Do you want to enable VersionControl?
     enabled: false
     # This option allows you to define a message that will be shown to players which join with a disallowed version
     # THIS WILL OVERRIDE THE block-disconnect-msg OPTION IN THE VIAVERSION CONFIG!
@@ -779,7 +777,7 @@ ClientControl:
 
   # WorldDownloader is a popular modification to get the maps of a server
   WorldDownloader:
-    # Do you want to enable WorldDownloader-Control
+    # Do you want to enable WorldDownloader-Control?
     enabled: false
     # This mod provides a method to disable it.
     # Set the value to true if you want to block the mod
@@ -800,7 +798,7 @@ ClientControl:
 # BrandHider allows you to modify the brand that is shown in the debug screen of minecraft.
 # This can be useful if you want to create a custom message or just hide your actual setup.
 BrandHider:
-  # Do you want to enable the BrandHider
+  # Do you want to enable the BrandHider?
   enabled: false
   # This is the replacement text for the brand.
   # You can use the character & for color codes and all placeholders that are available in normal checks
@@ -816,13 +814,13 @@ BrandHider:
 # supported by your setup and which you have ENABLED IN THE CONFIG. Also, you can not disable GuiInject in the GUI for
 # obvious reasons.
 GuiInject:
-  # Do you want to enable the GUI inject
+  # Do you want to enable the GUI injection?
   enabled: true
 
 # This automatically deletes old log files of both AAC and AACAdditionPro
 # It activates automatically on restart and after that in a 12 hour cycle.
 LogBot:
-  # Do you want to enable the LogBot
+  # Do you want to enable the LogBot?
   enabled: false
   # After how many days should AAC logs be deleted
   # Set to -1 to disable
@@ -844,7 +842,7 @@ LogBot:
 
 # Should players with the aac.verbose permission get the AACAdditionPro verbose messages
 Verbose:
-  # Do you want AACAdditionPro to log into a log-file
+  # Do you want AACAdditionPro to log into a log-file?
   file: true
   # Should players be able to get verbose messages if they have the aac.verbose permission
   # Players can toggle the verbose output with the command /aacadditionpro verbose

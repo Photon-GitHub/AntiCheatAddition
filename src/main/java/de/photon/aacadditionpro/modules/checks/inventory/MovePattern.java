@@ -45,7 +45,6 @@ class MovePattern extends PatternModule.PacketPattern
     @Override
     protected int process(User user, PacketEvent packetEvent)
     {
-
         final IWrapperPlayPosition positionWrapper = packetEvent::getPacket;
 
         final Vector moveTo = new Vector(positionWrapper.getX(),

@@ -43,10 +43,13 @@ public final class DataUpdaterEvents implements Listener
     public static final DataUpdaterEvents INSTANCE = new DataUpdaterEvents();
 
     private final VelocityChangeDataUpdater velocityChangeDataUpdater;
+    private final KeepAliveDataUpdater keepAliveDataUpdater;
 
     private DataUpdaterEvents()
     {
+        this.keepAliveDataUpdater = new KeepAliveDataUpdater();
         this.velocityChangeDataUpdater = new VelocityChangeDataUpdater();
+        ProtocolLibrary.getProtocolManager().addPacketListener(this.keepAliveDataUpdater);
         ProtocolLibrary.getProtocolManager().addPacketListener(this.velocityChangeDataUpdater);
     }
 

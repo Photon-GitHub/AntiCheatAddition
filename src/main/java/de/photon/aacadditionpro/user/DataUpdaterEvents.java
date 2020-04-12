@@ -6,8 +6,11 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
+import de.photon.aacadditionpro.util.packetwrappers.WrapperPlayKeepAlive;
+import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -313,6 +316,36 @@ public final class DataUpdaterEvents implements Listener
                         user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES);
                     }
                 }
+            }
+        }
+    }
+
+    private static class KeepAliveDataUpdater extends PacketAdapter
+    {
+        private KeepAliveDataUpdater()
+        {
+            super(AACAdditionPro.getInstance(), ListenerPriority.LOWEST, PacketType.Play.Server.KEEP_ALIVE);
+        }
+
+        @Override
+        public void onPacketSending(final PacketEvent event)
+        {
+            if (event.isPlayerTemporary()) {
+                return;
+            }
+
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            // Not bypassed
+            if (user == null) {
+                return;
+            }
+
+            final WrapperPlayKeepAlive wrapper = new WrapperPlayServerKeepAlive(event.getPacket());
+
+            // Register the KeepAlive
+            synchronized (user.getKeepAliveData().getKeepAlives()) {
+                user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(wrapper.getKeepAliveId()));
             }
         }
     }

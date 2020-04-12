@@ -12,12 +12,12 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
-import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPosition;
 import de.photon.aacadditionpro.util.server.ServerUtil;
 import de.photon.aacadditionpro.util.world.ChunkUtils;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 
 import java.util.concurrent.ExecutionException;
@@ -93,7 +93,7 @@ class MovePattern extends PatternModule.PacketPattern
             }
 
             // Make sure that the last jump is a little bit ago (same "breaking" effect that needs compensation.)
-            if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES, 1750)) {
+            if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES, 1850)) {
                 return 0;
             }
 
@@ -102,13 +102,13 @@ class MovePattern extends PatternModule.PacketPattern
             if (knownPosition.getY() == moveTo.getY() &&
                 // 230 is a little compensation for the "breaking" when sprinting previously (value has been established
                 // by local tests).
-                user.notRecentlyOpenedInventory(230L + lenienceMillis))
+                user.notRecentlyOpenedInventory(240L + lenienceMillis))
             {
                 // Do the entity pushing stuff here (performance impact)
                 // No nearby entities that could push the player
                 try {
                     // Needs to be called synchronously.
-                    if (Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()).get()) {
+                    if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()).get())) {
                         message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " moved while having an open inventory.";
                         return 3;
                     }
@@ -128,21 +128,11 @@ class MovePattern extends PatternModule.PacketPattern
     @Override
     public void cancelAction(User user, PacketEvent event)
     {
-        //TODO: TEST THIS; THIS MIGHT SEND EMPTY PACKETS ?
         event.setCancelled(true);
 
         // Cancelling packets will cause an EqualRotation flag.
         user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED, true);
-
-        // Update client
-        final WrapperPlayServerPosition packet = new WrapperPlayServerPosition();
-
-        //Init with the known values
-        packet.setWithLocation(user.getPlayer().getLocation());
-
-        // Set no flags as we do not have a relative movement here.
-        packet.setNoFlags();
-        packet.sendPacket(event.getPlayer());
+        user.getPlayer().teleport(user.getPlayer().getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
     @Override

@@ -16,7 +16,6 @@ import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.WrapperPlayKeepAlive;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientKeepAlive;
-import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 
 import java.util.Iterator;
@@ -55,12 +54,7 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
             return;
         }
 
-        final WrapperPlayKeepAlive wrapper = new WrapperPlayServerKeepAlive(event.getPacket());
-
-        // Register the KeepAlive
-        synchronized (user.getKeepAliveData().getKeepAlives()) {
-            user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(wrapper.getKeepAliveId()));
-        }
+        // The actual processing of the KeepAlive packet is done in the DataUpdaterEvents!
         vlManager.flag(user.getPlayer(), keepAliveIgnoredPattern.apply(user, event), -1, () -> {}, () -> {});
     }
 

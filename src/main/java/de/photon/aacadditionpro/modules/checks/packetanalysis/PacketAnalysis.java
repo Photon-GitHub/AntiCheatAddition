@@ -65,7 +65,7 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         if (event.getPacketType() == PacketType.Play.Server.POSITION) {
             final WrapperPlayServerPosition newPositionWrapper = new WrapperPlayServerPosition(event.getPacket());
 
-            // No relative teleports.
+            // Ignore relative teleports.
             if (!newPositionWrapper.getFlags().isEmpty()) {
                 return;
             }

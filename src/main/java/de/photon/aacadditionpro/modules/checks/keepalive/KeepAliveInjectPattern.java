@@ -75,7 +75,7 @@ class KeepAliveInjectPattern extends PatternModule.Pattern<Object, Object> imple
     @Override
     public String getConfigString()
     {
-        return this.getModuleType().getConfigString() + ".parts.KeepAlive.inject";
+        return this.getModuleType().getConfigString() + ".parts.inject";
     }
 
     @Override

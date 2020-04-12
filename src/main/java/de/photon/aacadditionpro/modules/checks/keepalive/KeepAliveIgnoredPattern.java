@@ -34,7 +34,7 @@ class KeepAliveIgnoredPattern extends PatternModule.PacketPattern
     @Override
     public String getConfigString()
     {
-        return this.getModuleType().getConfigString() + ".parts.KeepAlive.ignored";
+        return this.getModuleType().getConfigString() + ".parts.ignored";
     }
 
     @Override

@@ -7,7 +7,6 @@ import de.photon.aacadditionpro.modules.IncompatiblePluginModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.DataKey;
-import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientPositionLook;
@@ -31,8 +30,6 @@ class PositionSpoofPattern extends PatternModule.PacketPattern implements Incomp
     {
         final WrapperPlayClientPositionLook clientPositionLookWrapper = new WrapperPlayClientPositionLook(packetEvent.getPacket());
 
-        VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " PACKET: " + clientPositionLookWrapper.getLocation(user.getPlayer().getWorld()).toVector().toString());
-
         // Only check if the player has been teleported recently
         if (user.hasTeleportedRecently(1000) &&
             // World changes and respawns are exempted
@@ -51,9 +48,6 @@ class PositionSpoofPattern extends PatternModule.PacketPattern implements Incomp
 
             if (forcedLocation.getWorld().getUID().equals(user.getPlayer().getWorld().getUID())) {
                 final double distanceSquared = forcedLocation.distanceSquared(clientPositionLookWrapper.getLocation(user.getPlayer().getWorld()));
-
-                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " Sprint: " + user.getPlayer().isSprinting() + " Fly: " + user.getPlayer().isFlying());
-                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " TP: " + user.getTimestampMap().passedTime(TimestampKey.LAST_TELEPORT) + " RSP: " + user.getTimestampMap().passedTime(TimestampKey.LAST_RESPAWN) + " WC: " + user.getTimestampMap().passedTime(TimestampKey.LAST_WORLD_CHANGE));
 
                 if (distanceSquared > allowedDistanceSquared) {
                     VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " tried to spoof position packets. | DS: " + distanceSquared + " ADS: " + allowedDistanceSquared);

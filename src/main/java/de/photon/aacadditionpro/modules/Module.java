@@ -31,7 +31,7 @@ public interface Module
                 sendNotice(module, module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + IncompatiblePluginModule.listInstalledIncompatiblePlugins((IncompatiblePluginModule) module));
                 return;
             }
-            
+
             // Enabled
             if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled")) {
                 sendNotice(module, module.getConfigString() + " was chosen not to be enabled.");

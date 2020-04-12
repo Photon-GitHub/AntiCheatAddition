@@ -81,6 +81,6 @@ class KeepAliveInjectPattern extends PatternModule.Pattern<Object, Object> imple
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.PACKET_ANALYSIS;
+        return ModuleType.KEEPALIVE;
     }
 }

@@ -36,6 +36,6 @@ public class KeepAliveOffsetPattern extends PatternModule.Pattern<User, Integer>
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.PACKET_ANALYSIS;
+        return ModuleType.KEEPALIVE;
     }
 }

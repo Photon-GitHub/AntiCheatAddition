@@ -40,6 +40,6 @@ class KeepAliveIgnoredPattern extends PatternModule.PacketPattern
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.PACKET_ANALYSIS;
+        return ModuleType.KEEPALIVE;
     }
 }

@@ -374,6 +374,8 @@ PacketAnalysis:
     # This handles illegal position packets which could otherwise be used to bypass parts of the check.
     # Disabling this will SEVERELY weaken other parts of the check.
     # This part will add 10 vl.
+    #
+    # DISABLE THIS IF YOU USE PROTOCOLSUPPORT!
     PositionSpoof:
       # Do you want to enable position spoof checking?
       enabled: true

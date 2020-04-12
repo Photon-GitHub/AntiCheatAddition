@@ -850,6 +850,10 @@ LogBot:
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
+# Enabling this will show the enable messages for every single check and part
+# (very spammy, only recommended for testing purposes)
+FullEnableLog: false
+
 # Should players with the aac.verbose permission get the AACAdditionPro verbose messages
 Verbose:
   # Do you want AACAdditionPro to log into a log-file?

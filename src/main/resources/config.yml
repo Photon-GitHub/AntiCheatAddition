@@ -375,7 +375,7 @@ PacketAnalysis:
     # Disabling this will SEVERELY weaken other parts of the check.
     # This part will add 10 vl.
     #
-    # DISABLE THIS IF YOU USE PROTOCOLSUPPORT!
+    # This part will autodisable if you have ProtocolSupport installed.
     PositionSpoof:
       # Do you want to enable position spoof checking?
       enabled: true

@@ -126,13 +126,21 @@ class MovePattern extends PatternModule.PacketPattern
     }
 
     @Override
-    public void cancelAction(User user, PacketEvent event)
+    public void cancelAction(User user, PacketEvent packetEvent)
     {
-        event.setCancelled(true);
+        final IWrapperPlayPosition positionWrapper = packetEvent::getPacket;
 
-        // Cancelling packets will cause an EqualRotation flag.
-        user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED, true);
-        user.getPlayer().teleport(user.getPlayer().getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+        final Vector moveTo = new Vector(positionWrapper.getX(),
+                                         positionWrapper.getY(),
+                                         positionWrapper.getZ());
+
+        final Location knownPosition = user.getPlayer().getLocation();
+
+        // Not many blocks moved to prevent exploits and world change problems.
+        if (moveTo.distanceSquared(knownPosition.toVector()) < 4) {
+            // Teleport back the next tick.
+            Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> user.getPlayer().teleport(knownPosition, PlayerTeleportEvent.TeleportCause.UNKNOWN));
+        }
     }
 
     @Override

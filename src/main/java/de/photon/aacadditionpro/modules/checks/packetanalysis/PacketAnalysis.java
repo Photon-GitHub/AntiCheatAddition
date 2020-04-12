@@ -63,7 +63,14 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
         }
 
         if (event.getPacketType() == PacketType.Play.Server.POSITION) {
-            user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION, new WrapperPlayServerPosition(event.getPacket()).getLocation(user.getPlayer().getWorld()));
+            final WrapperPlayServerPosition newPositionWrapper = new WrapperPlayServerPosition(event.getPacket());
+
+            // No relative teleports.
+            if (!newPositionWrapper.getFlags().isEmpty()) {
+                return;
+            }
+
+            user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION, newPositionWrapper.getLocation(user.getPlayer().getWorld()));
             user.getTimestampMap().updateTimeStamp(TimestampKey.PACKET_ANALYSIS_LAST_POSITION_FORCE);
         }
     }

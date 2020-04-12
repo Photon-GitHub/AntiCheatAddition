@@ -28,6 +28,8 @@ class PositionSpoofPattern extends PatternModule.PacketPattern
     {
         final WrapperPlayClientPositionLook clientPositionLookWrapper = new WrapperPlayClientPositionLook(packetEvent.getPacket());
 
+        VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " PACKET: " + clientPositionLookWrapper.getLocation(user.getPlayer().getWorld()).toVector().toString());
+
         // Only check if the player has been teleported recently
         if (user.hasTeleportedRecently(1000) &&
             // World changes and respawns are exempted
@@ -54,8 +56,9 @@ class PositionSpoofPattern extends PatternModule.PacketPattern
                     VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " tried to spoof position packets. | DS: " + distanceSquared + " ADS: " + allowedDistanceSquared);
                     return 10;
                 }
+            }else {
+                VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " diff world.");
             }
-            VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " diff world.");
         }
         return 0;
     }

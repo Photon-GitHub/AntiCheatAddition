@@ -7,7 +7,6 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.server.ServerUtil;
-import org.bukkit.GameMode;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public class PerfectExitPattern extends PatternModule.Pattern<User, InventoryCloseEvent>
@@ -22,7 +21,7 @@ public class PerfectExitPattern extends PatternModule.Pattern<User, InventoryClo
     protected int process(User user, InventoryCloseEvent event)
     {
         // Creative-clear might trigger this.
-        if ((user.getPlayer().getGameMode() == GameMode.SURVIVAL || user.getPlayer().getGameMode() == GameMode.ADVENTURE) &&
+        if (user.inAdventureOrSurvivalMode() &&
             // Minimum TPS before the check is activated as of a huge amount of fps
             ServerUtil.getTPS() > minTps &&
             // Inventory is empty

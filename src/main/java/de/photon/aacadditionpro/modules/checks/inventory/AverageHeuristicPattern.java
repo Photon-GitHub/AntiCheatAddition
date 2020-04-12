@@ -2,13 +2,13 @@ package de.photon.aacadditionpro.modules.checks.inventory;
 
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.datawrappers.InventoryClick;
 import de.photon.aacadditionpro.util.datastructures.DoubleStatistics;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.server.ServerUtil;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -29,7 +29,7 @@ public class AverageHeuristicPattern extends PatternModule.Pattern<User, Invento
         // Make sure that we have normal click actions.
         if ((event.getClick() == ClickType.DROP || event.getClick() == ClickType.RIGHT || event.getClick() == ClickType.LEFT || event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) &&
             // Creative-clear might trigger this.
-            (user.getPlayer().getGameMode() == GameMode.SURVIVAL || user.getPlayer().getGameMode() == GameMode.ADVENTURE) &&
+            user.inAdventureOrSurvivalMode() &&
             // Minimum TPS before the check is activated as of a huge amount of fps
             ServerUtil.getTPS() > minTps &&
             // Minimum ping
@@ -38,8 +38,11 @@ public class AverageHeuristicPattern extends PatternModule.Pattern<User, Invento
             if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
                 user.getInventoryData().averageHeuristicMisclicks++;
             }
-            // Buffer the new click
-            else if (user.getInventoryData().getAverageHeuristicClicks().bufferObject(InventoryClick.fromClickEvent(event))) {
+            // Shift - Double - Click shortcut will generate a lot of clicks.
+            else if (user.getDataMap().getValue(DataKey.LAST_MATERIAL_CLICKED) != event.getCurrentItem().getType() &&
+                     // Buffer the new click
+                     user.getInventoryData().getAverageHeuristicClicks().bufferObject(InventoryClick.fromClickEvent(event)))
+            {
                 final List<InventoryClick.BetweenClickInformation> betweenClicks = new ArrayList<>();
                 user.getInventoryData().getAverageHeuristicClicks().clearLastTwoObjectsIteration((youngElement, oldElement) ->
                                                                                                  {

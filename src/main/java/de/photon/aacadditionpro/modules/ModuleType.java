@@ -25,7 +25,6 @@ public enum ModuleType
     INVENTORY("Inventory", "has suspicious inventory interactions."),
     KEEPALIVE("KeepAlive"),
     PACKET_ANALYSIS("PacketAnalysis"),
-    PINGSPOOF("Pingspoof"),
     SCAFFOLD("Scaffold"),
     SKINBLINKER("Skinblinker"),
     TEAMING("Teaming", "could be teaming"),

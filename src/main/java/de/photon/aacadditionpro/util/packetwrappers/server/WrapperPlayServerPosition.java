@@ -18,6 +18,9 @@ import java.util.Set;
 public class WrapperPlayServerPosition extends AbstractPacket implements IWrapperPlayPosition, IWrapperPlayLook
 {
     public static final PacketType TYPE = PacketType.Play.Server.POSITION;
+    private static final Class<?> FLAGS_CLASS = MinecraftReflection.getMinecraftClass(
+            "EnumPlayerTeleportFlags",
+            "PacketPlayOutPosition$EnumPlayerTeleportFlags");
 
     public WrapperPlayServerPosition()
     {
@@ -73,21 +76,6 @@ public class WrapperPlayServerPosition extends AbstractPacket implements IWrappe
         this.setPitch(location.getPitch());
     }
 
-    private static final Class<?> FLAGS_CLASS = MinecraftReflection.getMinecraftClass(
-            "EnumPlayerTeleportFlags",
-            "PacketPlayOutPosition$EnumPlayerTeleportFlags");
-
-    public enum PlayerTeleportFlag
-    {
-        X,
-        Y,
-        Z,
-        Y_ROT,
-        X_ROT;
-
-        private static final Set<PlayerTeleportFlag> ALL_FLAGS = ImmutableSet.copyOf(PlayerTeleportFlag.values());
-    }
-
     private StructureModifier<Set<PlayerTeleportFlag>> getFlagsModifier()
     {
         return handle.getSets(EnumWrappers.getGenericConverter(FLAGS_CLASS, PlayerTeleportFlag.class));
@@ -122,5 +110,19 @@ public class WrapperPlayServerPosition extends AbstractPacket implements IWrappe
     public void setAllFlags()
     {
         this.setFlags(PlayerTeleportFlag.ALL_FLAGS);
+    }
+
+    /**
+     * Setting a flag means relative teleport and not absolute teleport.
+     */
+    public enum PlayerTeleportFlag
+    {
+        X,
+        Y,
+        Z,
+        Y_ROT,
+        X_ROT;
+
+        private static final Set<PlayerTeleportFlag> ALL_FLAGS = ImmutableSet.copyOf(PlayerTeleportFlag.values());
     }
 }

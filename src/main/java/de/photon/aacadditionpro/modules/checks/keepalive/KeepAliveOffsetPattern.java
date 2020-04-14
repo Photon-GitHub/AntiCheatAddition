@@ -30,12 +30,12 @@ public class KeepAliveOffsetPattern extends PatternModule.Pattern<User, Integer>
     @Override
     public String getConfigString()
     {
-        return this.getModuleType().getConfigString() + ".parts.KeepAlive.offset";
+        return this.getModuleType().getConfigString() + ".parts.offset";
     }
 
     @Override
     public ModuleType getModuleType()
     {
-        return ModuleType.PACKET_ANALYSIS;
+        return ModuleType.KEEPALIVE;
     }
 }

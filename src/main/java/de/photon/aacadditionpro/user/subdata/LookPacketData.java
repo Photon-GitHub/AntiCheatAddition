@@ -6,10 +6,10 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.mathematics.RotationUtil;
 import de.photon.aacadditionpro.util.packetwrappers.client.IWrapperPlayClientLook;
@@ -98,11 +98,11 @@ public class LookPacketData extends SubData
     public static class RotationChange
     {
         @Getter
+        private final long time = System.currentTimeMillis();
+        @Getter
         private float yaw;
         @Getter
         private float pitch;
-        @Getter
-        private final long time = System.currentTimeMillis();
 
         /**
          * Merges a {@link LookPacketData.RotationChange} with this {@link LookPacketData.RotationChange}.
@@ -136,42 +136,44 @@ public class LookPacketData extends SubData
         public void onPacketReceiving(PacketEvent event)
         {
             // Not cancelled
-            if (!event.isCancelled()) {
-                final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-                if (user == null) {
-                    return;
-                }
-
-                final IWrapperPlayClientLook lookWrapper = event::getPacket;
-
-                final LookPacketData.RotationChange rotationChange = new LookPacketData.RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
-
-                // Same tick -> merge
-                synchronized (user.getLookPacketData().rotationChangeQueue) {
-                    if (rotationChange.getTime() - user.getLookPacketData().rotationChangeQueue.getLast().getTime() < 55) {
-                        user.getLookPacketData().rotationChangeQueue.getLast().merge(rotationChange);
-                    } else {
-                        user.getLookPacketData().rotationChangeQueue.addLast(rotationChange);
-                    }
-
-                    while (user.getLookPacketData().rotationChangeQueue.size() > QUEUE_CAPACITY) {
-                        user.getLookPacketData().rotationChangeQueue.removeFirst();
-                    }
-                }
-
-                // Huge angle change
-                // Use the queue values here to because the other ones are already updated.
-                if (RotationUtil.getDirection(user.getDataMap().getFloat(DataKey.PACKET_ANALYSIS_REAL_LAST_YAW), user.getDataMap().getFloat(DataKey.PACKET_ANALYSIS_REAL_LAST_PITCH))
-                                .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
-                {
-                    user.getTimestampMap().updateTimeStamp(TimestampKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE);
-                }
-
-                // Update the values here so the RotationUtil calculation is functional.
-                user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_REAL_LAST_YAW, lookWrapper.getYaw());
-                user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_REAL_LAST_PITCH, lookWrapper.getPitch());
+            if (event.isCancelled() || event.isPlayerTemporary()) {
+                return;
             }
+
+            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+            if (user == null) {
+                return;
+            }
+
+            final IWrapperPlayClientLook lookWrapper = event::getPacket;
+
+            final LookPacketData.RotationChange rotationChange = new LookPacketData.RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
+
+            // Same tick -> merge
+            synchronized (user.getLookPacketData().rotationChangeQueue) {
+                if (rotationChange.getTime() - user.getLookPacketData().rotationChangeQueue.getLast().getTime() < 55) {
+                    user.getLookPacketData().rotationChangeQueue.getLast().merge(rotationChange);
+                } else {
+                    user.getLookPacketData().rotationChangeQueue.addLast(rotationChange);
+                }
+
+                while (user.getLookPacketData().rotationChangeQueue.size() > QUEUE_CAPACITY) {
+                    user.getLookPacketData().rotationChangeQueue.removeFirst();
+                }
+            }
+
+            // Huge angle change
+            // Use the queue values here to because the other ones are already updated.
+            if (RotationUtil.getDirection(user.getDataMap().getFloat(DataKey.PACKET_ANALYSIS_REAL_LAST_YAW), user.getDataMap().getFloat(DataKey.PACKET_ANALYSIS_REAL_LAST_PITCH))
+                            .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
+            {
+                user.getTimestampMap().updateTimeStamp(TimestampKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE);
+            }
+
+            // Update the values here so the RotationUtil calculation is functional.
+            user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_REAL_LAST_YAW, lookWrapper.getYaw());
+            user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_REAL_LAST_PITCH, lookWrapper.getPitch());
         }
     }
 }

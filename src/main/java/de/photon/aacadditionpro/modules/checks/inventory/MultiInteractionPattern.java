@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.server.ServerUtil;
 import lombok.Getter;
-import org.bukkit.GameMode;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClickEvent>
@@ -26,7 +25,7 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
     protected int process(User user, InventoryClickEvent event)
     {
         // Creative-clear might trigger this.
-        if ((user.getPlayer().getGameMode() == GameMode.SURVIVAL || user.getPlayer().getGameMode() == GameMode.ADVENTURE) &&
+        if (user.inAdventureOrSurvivalMode() &&
             // Minimum TPS before the check is activated as of a huge amount of fps
             ServerUtil.getTPS() > minTps &&
             // Minimum ping
@@ -88,7 +87,7 @@ class MultiInteractionPattern extends PatternModule.Pattern<User, InventoryClick
                     break;
 
                 case MOVE_TO_OTHER_INVENTORY:
-                    // Last material false positive.
+                    // Last material false positive due to the fast move all items shortcut.
                     if (user.getDataMap().getValue(DataKey.LAST_MATERIAL_CLICKED) == event.getCurrentItem().getType()) {
                         return 0;
                     }

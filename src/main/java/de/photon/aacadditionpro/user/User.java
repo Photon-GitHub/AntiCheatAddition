@@ -10,6 +10,7 @@ import de.photon.aacadditionpro.user.subdata.ScaffoldData;
 import de.photon.aacadditionpro.user.subdata.TowerData;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import lombok.Getter;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 @Getter
@@ -71,6 +72,14 @@ public class User
     public boolean isBypassed(ModuleType moduleType)
     {
         return InternalPermission.hasPermission(this.player, InternalPermission.BYPASS.getRealPermission() + '.' + moduleType.getConfigString().toLowerCase());
+    }
+
+    /**
+     * Checks if the {@link User} is in {@link GameMode#ADVENTURE} or {@link GameMode#SURVIVAL}
+     */
+    public boolean inAdventureOrSurvivalMode()
+    {
+        return this.player.getGameMode() == GameMode.ADVENTURE || this.player.getGameMode() == GameMode.SURVIVAL;
     }
 
     /**

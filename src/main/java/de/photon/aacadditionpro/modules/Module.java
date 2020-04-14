@@ -20,15 +20,21 @@ public interface Module
                 return;
             }
 
-            // Enabled
-            if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled")) {
-                sendNotice(module, module.getConfigString() + " was chosen not to be enabled.");
+            // Dependency check
+            if (module instanceof Dependency && !Dependency.allowedToStart((Dependency) module)) {
+                sendNotice(module, module.getConfigString() + " has been not been enabled as of missing dependencies. Missing: " + Dependency.listMissingDependencies((Dependency) module));
                 return;
             }
 
-            // Dependency check
-            if (module instanceof Dependency && !Dependency.allowedToStart((Dependency) module)) {
-                sendNotice(module, module.getConfigString() + " has been not been enabled as of missing dependencies.");
+            // Incompatibility check
+            if (module instanceof IncompatiblePluginModule && !IncompatiblePluginModule.allowedToStart((IncompatiblePluginModule) module)) {
+                sendNotice(module, module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + IncompatiblePluginModule.listInstalledIncompatiblePlugins((IncompatiblePluginModule) module));
+                return;
+            }
+
+            // Enabled
+            if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled")) {
+                sendNotice(module, module.getConfigString() + " was chosen not to be enabled.");
                 return;
             }
 

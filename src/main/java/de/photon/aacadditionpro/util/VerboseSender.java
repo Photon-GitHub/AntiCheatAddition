@@ -26,7 +26,7 @@ public final class VerboseSender implements Listener
 {
     @Getter
     private static final VerboseSender instance;
-    private static final String PRE_STRING = ChatColor.DARK_RED + "[AACAdditionPro] {0}" + ChatColor.GRAY;
+    private static final String PRE_STRING = ChatColor.DARK_RED + "[AACAdditionPro] " + ChatColor.GRAY;
     private static final String EVENT_PRE_STRING = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
 
     static {

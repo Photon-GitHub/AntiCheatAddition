@@ -14,7 +14,6 @@ import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.world.LocationUtils;
 import de.photon.aacadditionpro.util.world.Region;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -74,8 +73,7 @@ public class Teaming implements ListenerModule, ViolationModule
                             // User has to be online and not bypassed
                             if (!User.isUserInvalid(user, this.getModuleType()) &&
                                 // Correct gamemodes
-                                user.getPlayer().getGameMode() != GameMode.CREATIVE &&
-                                user.getPlayer().getGameMode() != GameMode.SPECTATOR &&
+                                user.inAdventureOrSurvivalMode() &&
                                 // Not engaged in pvp
                                 !user.getTimestampMap().recentlyUpdated(TimestampKey.TEAMING_COMBAT_TAG, noPvpTime) &&
                                 // Not in a bypassed region

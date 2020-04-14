@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.modules;
 import org.bukkit.Bukkit;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public interface Dependency
 {
@@ -14,6 +15,14 @@ public interface Dependency
     static boolean allowedToStart(final Dependency module)
     {
         return module.getDependencies().stream().allMatch(dependency -> Bukkit.getServer().getPluginManager().isPluginEnabled(dependency));
+    }
+
+    /**
+     * Lists all missing dependencies.
+     */
+    static String listMissingDependencies(final Dependency module)
+    {
+        return module.getDependencies().stream().filter(dependency -> !Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)).collect(Collectors.joining());
     }
 
     /**

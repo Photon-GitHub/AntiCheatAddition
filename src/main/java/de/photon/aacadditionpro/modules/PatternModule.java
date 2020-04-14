@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.modules;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.VerboseSender;
 import lombok.AccessLevel;
@@ -15,11 +16,6 @@ import java.util.function.BiFunction;
  */
 public interface PatternModule extends Module
 {
-    /**
-     * @return a {@link Set} of all {@link Pattern}s managed by this {@link PatternModule}
-     */
-    Set<Pattern> getPatterns();
-
     static void enablePatterns(final PatternModule module)
     {
         for (Pattern pattern : module.getPatterns()) {
@@ -35,14 +31,18 @@ public interface PatternModule extends Module
     }
 
     /**
+     * @return a {@link Set} of all {@link Pattern}s managed by this {@link PatternModule}
+     */
+    Set<Pattern> getPatterns();
+
+    /**
      * Represents a single {@link Pattern} that is hold by a {@link PatternModule}
      */
     abstract class Pattern<T, U> implements BiFunction<T, U, Integer>, Module
     {
+        protected String message = null;
         @Getter(AccessLevel.PROTECTED)
         private boolean enabled = false;
-
-        protected String message = null;
 
         @Override
         public Integer apply(T t, U u)
@@ -73,7 +73,7 @@ public interface PatternModule extends Module
         @Override
         public boolean shouldNotify()
         {
-            return false;
+            return AACAdditionPro.getInstance().getConfig().getBoolean("FullEnableLog");
         }
 
         @Override

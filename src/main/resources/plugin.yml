@@ -30,19 +30,22 @@ permissions:
     description: Gives permission to bypass all checks and clientcontrols.
     children:
       aacadditionpro.bypass.clientcontrol.*: true
+      aacadditionpro.bypass.autoeat: true
       aacadditionpro.bypass.autofish: true
       aacadditionpro.bypass.autopotion: true
       aacadditionpro.bypass.esp: true
       aacadditionpro.bypass.fastswitch: true
       aacadditionpro.bypass.impossiblechat: true
       aacadditionpro.bypass.inventory: true
+      aacadditionpro.bypass.keepalive: true
       aacadditionpro.bypass.packetanalysis: true
-      aacadditionpro.bypass.pingspoof: true
       aacadditionpro.bypass.scaffold: true
       aacadditionpro.bypass.skinblinker: true
       aacadditionpro.bypass.teaming: true
       aacadditionpro.bypass.tower: true
 
+  aacadditionpro.bypass.autoeat:
+    description: Allows a player to bypass the AutoEat check
   aacadditionpro.bypass.autofish:
     description: Allows a player to bypass the AutoFish check
   aacadditionpro.bypass.autopotion:
@@ -55,10 +58,10 @@ permissions:
     description: Allows a player to bypass the ImpossibleChat check
   aacadditionpro.bypass.inventory:
     description: Allows a player to bypass the Inventory check
+  aacadditionpro.bypass.keepalive:
+    description: Allows a player to bypass the KeepAlive check
   aacadditionpro.bypass.packetanalysis:
     description: Allows a player to bypass the PacketAnalysis check
-  aacadditionpro.bypass.pingspoof:
-    description: Allows a player to bypass the Pingspoof check
   aacadditionpro.bypass.scaffold:
     description: Allows a player to bypass the Scaffold check
   aacadditionpro.bypass.skinblinker:

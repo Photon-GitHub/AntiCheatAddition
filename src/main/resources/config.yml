@@ -349,6 +349,8 @@ PacketAnalysis:
     # This parts compares interactions of the client with different packet types to gain insight whether or not
     # the client purposefully delays some packets (pingspoof and freecam).
     # This part will add 1 to 9 vl, depending on the severity of the violation.
+    #
+    # DISABLE THIS SUBPART IF YOU USE BUNGEECORD.
     Compare:
       # Do you want to enable packet time comparison?
       enabled: true
@@ -372,6 +374,8 @@ PacketAnalysis:
     # This handles illegal position packets which could otherwise be used to bypass parts of the check.
     # Disabling this will SEVERELY weaken other parts of the check.
     # This part will add 10 vl.
+    #
+    # This part will autodisable if you have ProtocolSupport installed.
     PositionSpoof:
       # Do you want to enable position spoof checking?
       enabled: true
@@ -845,6 +849,10 @@ LogBot:
 #                                             \_/\___|_| |_.__/\___/__/\___|                                          #
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
+
+# Enabling this will show the enable messages for every single check and part
+# (very spammy, only recommended for testing purposes)
+FullEnableLog: false
 
 # Should players with the aac.verbose permission get the AACAdditionPro verbose messages
 Verbose:

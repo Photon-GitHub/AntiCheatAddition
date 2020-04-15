@@ -350,7 +350,7 @@ PacketAnalysis:
     # the client purposefully delays some packets (pingspoof and freecam).
     # This part will add 1 to 9 vl, depending on the severity of the violation.
     #
-    # DISABLE THIS SUBPART IF YOU USE BUNGEECORD.
+    # DISABLE THIS PART IF YOU USE BUNGEECORD!
     Compare:
       # Do you want to enable packet time comparison?
       enabled: true

@@ -265,7 +265,7 @@ Inventory:
       # The minimum TPS the server must have to activate this check
       # Low TPS will cause an extreme amount of false positives.
       min_tps: 18.5
-      # How many suspicious positions should Inventory count as legit
+      # How many suspicious interactions should Inventory count as legit
       # The value must be greater or equal to 0.
       violation_threshold: 5
     # The rotation part detects head movement while having an open inventory.

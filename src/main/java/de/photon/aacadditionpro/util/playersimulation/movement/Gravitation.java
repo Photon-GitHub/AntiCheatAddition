@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.fakeentity.movement;
+package de.photon.aacadditionpro.util.playersimulation.movement;
 
 import lombok.Getter;
 import org.bukkit.util.Vector;

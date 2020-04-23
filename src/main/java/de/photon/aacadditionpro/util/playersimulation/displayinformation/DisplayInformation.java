@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.fakeentity.displayinformation;
+package de.photon.aacadditionpro.util.playersimulation.displayinformation;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;

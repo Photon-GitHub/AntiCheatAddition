@@ -55,18 +55,17 @@ import java.util.stream.Collectors;
 
 public class AACAdditionPro extends JavaPlugin
 {
+    private static final AACAdditionPro instance = JavaPlugin.getPlugin(AACAdditionPro.class);
+
     /**
      * Indicates if the loading process is completed.
      */
     @Getter
     private boolean loaded = false;
-
     // Cache the config for better performance
     private FileConfiguration cachedConfig;
-
     @Getter
     private ModuleManager moduleManager;
-
     @Getter
     private ViaAPI<Player> viaAPI;
 
@@ -77,7 +76,7 @@ public class AACAdditionPro extends JavaPlugin
      */
     public static AACAdditionPro getInstance()
     {
-        return JavaPlugin.getPlugin(AACAdditionPro.class);
+        return instance;
     }
 
     /**

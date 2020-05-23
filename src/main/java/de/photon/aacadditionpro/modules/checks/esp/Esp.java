@@ -166,31 +166,28 @@ public class Esp implements ListenerModule
     {
         final Player observingPlayer = observer.getPlayer();
 
-        // unModifyInformation and modifyInformation are not thread-safe.
-        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-            // Observer might have left by now.
-            if (observingPlayer != null && watched != null) {
-                // There is no need to manually check if something has changed as the PlayerInformationModifiers already
-                // do that.
-                switch (hideMode) {
-                    case FULL:
-                        // FULL: fullHider active, informationOnlyHider inactive
-                        this.informationOnlyHider.unModifyInformation(observingPlayer, watched);
-                        this.fullHider.modifyInformation(observingPlayer, watched);
-                        break;
-                    case INFORMATION_ONLY:
-                        // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
-                        this.fullHider.unModifyInformation(observingPlayer, watched);
-                        this.informationOnlyHider.modifyInformation(observingPlayer, watched);
-                        break;
-                    case NONE:
-                        // NONE: fullHider inactive, informationOnlyHider inactive
-                        this.informationOnlyHider.unModifyInformation(observingPlayer, watched);
-                        this.fullHider.unModifyInformation(observingPlayer, watched);
-                        break;
-                }
+        // Observer might have left by now.
+        if (observingPlayer != null && watched != null) {
+            // There is no need to manually check if something has changed as the PlayerInformationModifiers already
+            // do that.
+            switch (hideMode) {
+                case FULL:
+                    // FULL: fullHider active, informationOnlyHider inactive
+                    this.informationOnlyHider.unModifyInformation(observingPlayer, watched);
+                    this.fullHider.modifyInformation(observingPlayer, watched);
+                    break;
+                case INFORMATION_ONLY:
+                    // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
+                    this.fullHider.unModifyInformation(observingPlayer, watched);
+                    this.informationOnlyHider.modifyInformation(observingPlayer, watched);
+                    break;
+                case NONE:
+                    // NONE: fullHider inactive, informationOnlyHider inactive
+                    this.informationOnlyHider.unModifyInformation(observingPlayer, watched);
+                    this.fullHider.unModifyInformation(observingPlayer, watched);
+                    break;
             }
-        });
+        }
     }
 
     @Override

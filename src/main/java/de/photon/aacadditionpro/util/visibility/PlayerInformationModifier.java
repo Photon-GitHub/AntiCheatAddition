@@ -41,7 +41,7 @@ public abstract class PlayerInformationModifier
                 @EventHandler
                 public void onEntityDeath(final EntityDeathEvent event)
                 {
-                    Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> removeEntity(event.getEntity()));
+                    removeEntity(event.getEntity());
                 }
 
                 @EventHandler
@@ -49,12 +49,9 @@ public abstract class PlayerInformationModifier
                 {
                     // Cache entities for performance reasons so the server doesn't need to load them again when the
                     // task is executed.
-                    final Entity[] entities = event.getChunk().getEntities();
-                    Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-                        for (final Entity entity : entities) {
-                            removeEntity(entity);
-                        }
-                    });
+                    for (final Entity entity : event.getChunk().getEntities()) {
+                        removeEntity(entity);
+                    }
                 }
 
                 @EventHandler
@@ -107,7 +104,9 @@ public abstract class PlayerInformationModifier
      */
     private boolean getMembership(final Player observer, final int entityID)
     {
-        return observerEntityMap.contains(observer.getEntityId(), entityID);
+        synchronized (observerEntityMap) {
+            return observerEntityMap.contains(observer.getEntityId(), entityID);
+        }
     }
 
     /**
@@ -122,9 +121,11 @@ public abstract class PlayerInformationModifier
     // Helper method
     private boolean setMembership(final Player observer, final int entityID, final boolean member)
     {
-        return member ?
-               observerEntityMap.put(observer.getEntityId(), entityID, true) != null :
-               observerEntityMap.remove(observer.getEntityId(), entityID) != null;
+        synchronized (observerEntityMap) {
+            return member ?
+                   observerEntityMap.put(observer.getEntityId(), entityID, true) != null :
+                   observerEntityMap.remove(observer.getEntityId(), entityID) != null;
+        }
     }
 
     /**
@@ -134,10 +135,12 @@ public abstract class PlayerInformationModifier
      */
     private void removeEntity(final Entity entity)
     {
-        final int entityID = entity.getEntityId();
+        synchronized (observerEntityMap) {
+            final int entityID = entity.getEntityId();
 
-        for (final Map<Integer, Boolean> maps : observerEntityMap.rowMap().values()) {
-            maps.remove(entityID);
+            for (final Map<Integer, Boolean> maps : observerEntityMap.rowMap().values()) {
+                maps.remove(entityID);
+            }
         }
     }
 
@@ -148,8 +151,10 @@ public abstract class PlayerInformationModifier
      */
     private void removePlayer(final Player player)
     {
-        // Cleanup
-        observerEntityMap.rowMap().remove(player.getEntityId());
+        synchronized (observerEntityMap) {
+            // Cleanup
+            observerEntityMap.rowMap().remove(player.getEntityId());
+        }
     }
 
     /**
@@ -165,7 +170,7 @@ public abstract class PlayerInformationModifier
 
         // Resend packets
         if (ProtocolLibrary.getProtocolManager() != null && hiddenBefore) {
-            ProtocolLibrary.getProtocolManager().updateEntity(entity, Collections.singletonList(observer));
+            Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> ProtocolLibrary.getProtocolManager().updateEntity(entity, Collections.singletonList(observer)));
         }
     }
 

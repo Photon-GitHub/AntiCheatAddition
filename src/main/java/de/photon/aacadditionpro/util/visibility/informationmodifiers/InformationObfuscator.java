@@ -1,9 +1,11 @@
 package de.photon.aacadditionpro.util.visibility.informationmodifiers;
 
 import com.comphenix.protocol.PacketType;
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerEntityEquipment;
 import de.photon.aacadditionpro.util.visibility.PlayerInformationModifier;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -17,7 +19,7 @@ public class InformationObfuscator extends PlayerInformationModifier
         validate(observer, entity);
 
         if (setModifyInformation(observer, entity.getEntityId(), false)) {
-            WrapperPlayServerEntityEquipment.clearAllSlots(entity.getEntityId(), observer);
+            Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> WrapperPlayServerEntityEquipment.clearAllSlots(entity.getEntityId(), observer));
         }
     }
 

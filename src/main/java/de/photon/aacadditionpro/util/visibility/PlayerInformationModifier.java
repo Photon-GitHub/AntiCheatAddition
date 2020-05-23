@@ -30,7 +30,7 @@ public abstract class PlayerInformationModifier implements Listener
 {
     private final Table<Integer, Integer, Boolean> observerEntityMap = HashBasedTable.create();
 
-    private PacketListener informationPacketListener = new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, this.getAffectedPackets())
+    private final PacketListener informationPacketListener = new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, this.getAffectedPackets())
     {
         @Override
         public void onPacketSending(final PacketEvent event)

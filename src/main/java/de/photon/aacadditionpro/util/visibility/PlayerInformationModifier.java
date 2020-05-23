@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -14,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -24,61 +26,26 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class PlayerInformationModifier
+public abstract class PlayerInformationModifier implements Listener
 {
     private final Table<Integer, Integer, Boolean> observerEntityMap = HashBasedTable.create();
 
-    /**
-     * Construct a new InformationModifier
-     */
-    protected PlayerInformationModifier()
+    private PacketListener informationPacketListener = new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, this.getAffectedPackets())
     {
-        // Only start if the ServerVersion is supported
-        if (ServerVersion.supportsActiveServerVersion(this.getSupportedVersions())) {
-            // Register events and packet listener
-            AACAdditionPro.getInstance().registerListener(new Listener()
+        @Override
+        public void onPacketSending(final PacketEvent event)
+        {
+            final int entityID = event.getPacket().getIntegers().read(0);
+
+            // Make sure that we do not have temporary players who cause problems in the mapping.
+            if (!event.isPlayerTemporary() &&
+                // See if this packet should be cancelled
+                isInformationModified(event.getPlayer(), entityID))
             {
-                @EventHandler
-                public void onEntityDeath(final EntityDeathEvent event)
-                {
-                    removeEntity(event.getEntity());
-                }
-
-                @EventHandler
-                public void onChunkUnload(final ChunkUnloadEvent event)
-                {
-                    // Cache entities for performance reasons so the server doesn't need to load them again when the
-                    // task is executed.
-                    for (final Entity entity : event.getChunk().getEntities()) {
-                        removeEntity(entity);
-                    }
-                }
-
-                @EventHandler
-                public void onQuit(final PlayerQuitEvent event)
-                {
-                    removePlayer(event.getPlayer());
-                }
-            });
-
-            ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, this.getAffectedPackets())
-            {
-                @Override
-                public void onPacketSending(final PacketEvent event)
-                {
-                    final int entityID = event.getPacket().getIntegers().read(0);
-
-                    // Make sure that we do not have temporary players who cause problems in the mapping.
-                    if (!event.isPlayerTemporary() &&
-                        // See if this packet should be cancelled
-                        isInformationModified(event.getPlayer(), entityID))
-                    {
-                        event.setCancelled(true);
-                    }
-                }
-            });
+                event.setCancelled(true);
+            }
         }
-    }
+    };
 
     // For validating the input parameters
     protected static void validate(final Player observer, final Entity entity)
@@ -87,11 +54,56 @@ public abstract class PlayerInformationModifier
         Preconditions.checkNotNull(entity, "entity cannot be NULL.");
     }
 
+    public void registerListeners()
+    {
+        // Only start if the ServerVersion is supported
+        if (ServerVersion.supportsActiveServerVersion(this.getSupportedVersions())) {
+            // Register events and packet listener
+            AACAdditionPro.getInstance().registerListener(this);
+            ProtocolLibrary.getProtocolManager().addPacketListener(this.informationPacketListener);
+        }
+    }
+
+    public void unregisterListeners()
+    {
+        HandlerList.unregisterAll(this);
+        ProtocolLibrary.getProtocolManager().removePacketListener(this.informationPacketListener);
+    }
+
+    public void resetTable()
+    {
+        synchronized (observerEntityMap) {
+            this.observerEntityMap.clear();
+        }
+    }
+
     protected abstract PacketType[] getAffectedPackets();
 
     protected Set<ServerVersion> getSupportedVersions()
     {
         return EnumSet.allOf(ServerVersion.class);
+    }
+
+    @EventHandler
+    public void onEntityDeath(final EntityDeathEvent event)
+    {
+        removeEntity(event.getEntity());
+    }
+
+    @EventHandler
+    public void onChunkUnload(final ChunkUnloadEvent event)
+    {
+        // Cache entities for performance reasons so the server doesn't need to load them again when the
+        // task is executed.
+        for (final Entity entity : event.getChunk().getEntities()) {
+            removeEntity(entity);
+        }
+    }
+
+    @EventHandler
+    public void onQuit(final PlayerQuitEvent event)
+    {
+        removePlayer(event.getPlayer());
     }
 
     /**

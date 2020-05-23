@@ -54,6 +54,9 @@ public class Esp implements ListenerModule
     @Override
     public void enable()
     {
+        fullHider.registerListeners();
+        informationOnlyHider.registerListeners();
+
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
         final int updateTicks = AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".update_ticks");
         final int updateMillis = 50 * updateTicks;
@@ -194,6 +197,12 @@ public class Esp implements ListenerModule
     public void disable()
     {
         Bukkit.getScheduler().cancelTask(taskNumber);
+
+        // Remove all the hiding.
+        fullHider.resetTable();
+        fullHider.unregisterListeners();
+        informationOnlyHider.resetTable();
+        informationOnlyHider.unregisterListeners();
     }
 
     @Override

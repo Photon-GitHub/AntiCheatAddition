@@ -173,7 +173,7 @@ public class AACAdditionPro extends JavaPlugin
                     new AutoEat(),
                     new AutoFish(),
                     new AutoPotion(),
-                    new Esp(),
+                    Esp.getInstance(),
                     new Fastswitch(),
                     new ImpossibleChat(),
                     new Inventory(),

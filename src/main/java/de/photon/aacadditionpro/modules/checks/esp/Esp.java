@@ -13,6 +13,7 @@ import de.photon.aacadditionpro.util.visibility.PlayerInformationModifier;
 import de.photon.aacadditionpro.util.visibility.informationmodifiers.InformationObfuscator;
 import de.photon.aacadditionpro.util.visibility.informationmodifiers.PlayerHider;
 import de.photon.aacadditionpro.util.world.LocationUtils;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.World;
@@ -32,53 +33,22 @@ import java.util.logging.Level;
 
 public class Esp implements ListenerModule
 {
-    private static final PlayerInformationModifier fullHider = new PlayerHider();
-    private static final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
+    @Getter
+    private static final Esp instance = new Esp();
+
+    private final PlayerInformationModifier fullHider = new PlayerHider();
+    private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
+
     // Use ArrayDeque as we can
     private final Deque<User> users = new ArrayDeque<>(1500);
+
     // The auto-config-data
-    private int defaultTrackingRange;
-    private static boolean hideAfterRenderDistance = true;
+    boolean hideAfterRenderDistance = true;
+    int defaultTrackingRange;
+    Map<UUID, Integer> playerTrackingRanges;
+
     // The task number for Bukkit's internal systems
     private int taskNumber;
-
-    static void updatePairHideMode(final User first, final User second, final HideMode hideMode)
-    {
-        updateHideMode(first, second.getPlayer(), hideMode);
-        updateHideMode(second, first.getPlayer(), hideMode);
-    }
-
-    // No need to synchronize hiddenPlayers as it is accessed in a synchronized task.
-    static void updateHideMode(final User observer, final Player watched, final HideMode hideMode)
-    {
-        final Player observingPlayer = observer.getPlayer();
-
-        // unModifyInformation and modifyInformation are not thread-safe.
-        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-            // Observer might have left by now.
-            if (observingPlayer != null && watched != null) {
-                // There is no need to manually check if something has changed as the PlayerInformationModifiers already
-                // do that.
-                switch (hideMode) {
-                    case FULL:
-                        // FULL: fullHider active, informationOnlyHider inactive
-                        informationOnlyHider.unModifyInformation(observingPlayer, watched);
-                        fullHider.modifyInformation(observingPlayer, watched);
-                        break;
-                    case INFORMATION_ONLY:
-                        // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
-                        fullHider.unModifyInformation(observingPlayer, watched);
-                        informationOnlyHider.modifyInformation(observingPlayer, watched);
-                        break;
-                    case NONE:
-                        // NONE: fullHider inactive, informationOnlyHider inactive
-                        informationOnlyHider.unModifyInformation(observingPlayer, watched);
-                        fullHider.unModifyInformation(observingPlayer, watched);
-                        break;
-                }
-            }
-        });
-    }
 
 
     @Override
@@ -117,7 +87,7 @@ public class Esp implements ListenerModule
             }
         }
 
-        final Map<UUID, Integer> playerTrackingRanges = rangeBuilder.build();
+        this.playerTrackingRanges = rangeBuilder.build();
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
@@ -145,7 +115,7 @@ public class Esp implements ListenerModule
                         for (final User watched : users) {
                             // The players are in the same world
                             if (LocationUtils.inSameWorld(observingUser.getPlayer(), watched.getPlayer())) {
-                                pairExecutor.execute(new EspPairRunnable(observingUser, watched, playerTrackingRanges.getOrDefault(observingUser.getPlayer().getWorld().getUID(), this.defaultTrackingRange), this.hideAfterRenderDistance));
+                                pairExecutor.execute(new EspPairRunnable(observingUser, watched));
                             }
                         }
                     }
@@ -180,6 +150,47 @@ public class Esp implements ListenerModule
                 updatePairHideMode(spectator, user, HideMode.NONE);
             }
         }
+    }
+
+    /**
+     * Changes the hide mode for both specified {@link User}s.
+     */
+    void updatePairHideMode(final User first, final User second, final HideMode hideMode)
+    {
+        updateHideMode(first, second.getPlayer(), hideMode);
+        updateHideMode(second, first.getPlayer(), hideMode);
+    }
+
+    // No need to synchronize hiddenPlayers as it is accessed in a synchronized task.
+    void updateHideMode(final User observer, final Player watched, final HideMode hideMode)
+    {
+        final Player observingPlayer = observer.getPlayer();
+
+        // unModifyInformation and modifyInformation are not thread-safe.
+        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
+            // Observer might have left by now.
+            if (observingPlayer != null && watched != null) {
+                // There is no need to manually check if something has changed as the PlayerInformationModifiers already
+                // do that.
+                switch (hideMode) {
+                    case FULL:
+                        // FULL: fullHider active, informationOnlyHider inactive
+                        this.informationOnlyHider.unModifyInformation(observingPlayer, watched);
+                        this.fullHider.modifyInformation(observingPlayer, watched);
+                        break;
+                    case INFORMATION_ONLY:
+                        // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
+                        this.fullHider.unModifyInformation(observingPlayer, watched);
+                        this.informationOnlyHider.modifyInformation(observingPlayer, watched);
+                        break;
+                    case NONE:
+                        // NONE: fullHider inactive, informationOnlyHider inactive
+                        this.informationOnlyHider.unModifyInformation(observingPlayer, watched);
+                        this.fullHider.unModifyInformation(observingPlayer, watched);
+                        break;
+                }
+            }
+        });
     }
 
     @Override

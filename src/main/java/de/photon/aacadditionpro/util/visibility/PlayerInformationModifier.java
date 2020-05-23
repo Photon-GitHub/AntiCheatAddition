@@ -41,10 +41,7 @@ public abstract class PlayerInformationModifier
                 @EventHandler
                 public void onEntityDeath(final EntityDeathEvent event)
                 {
-                    Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
-                        removeEntity(event.getEntity());
-                        return null;
-                    });
+                    Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> removeEntity(event.getEntity()));
                 }
 
                 @EventHandler
@@ -53,11 +50,10 @@ public abstract class PlayerInformationModifier
                     // Cache entities for performance reasons so the server doesn't need to load them again when the
                     // task is executed.
                     final Entity[] entities = event.getChunk().getEntities();
-                    Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
+                    Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
                         for (final Entity entity : entities) {
                             removeEntity(entity);
                         }
-                        return null;
                     });
                 }
 
@@ -85,6 +81,13 @@ public abstract class PlayerInformationModifier
                 }
             });
         }
+    }
+
+    // For validating the input parameters
+    protected static void validate(final Player observer, final Entity entity)
+    {
+        Preconditions.checkNotNull(observer, "observer cannot be NULL.");
+        Preconditions.checkNotNull(entity, "entity cannot be NULL.");
     }
 
     protected abstract PacketType[] getAffectedPackets();
@@ -180,7 +183,6 @@ public abstract class PlayerInformationModifier
         return getMembership(observer, entityID);
     }
 
-
     /**
      * Set the visibility status of a given entity for a particular observer.
      *
@@ -194,13 +196,6 @@ public abstract class PlayerInformationModifier
     {
         // Non-membership means they are visible
         return !setMembership(observer, entityID, !modifyInformation);
-    }
-
-    // For validating the input parameters
-    protected static void validate(final Player observer, final Entity entity)
-    {
-        Preconditions.checkNotNull(observer, "observer cannot be NULL.");
-        Preconditions.checkNotNull(entity, "entity cannot be NULL.");
     }
 
     /**

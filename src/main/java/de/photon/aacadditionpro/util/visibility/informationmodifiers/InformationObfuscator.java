@@ -13,6 +13,9 @@ import java.util.Set;
 
 public class InformationObfuscator extends PlayerInformationModifier
 {
+
+    protected static final PacketType[] AFFECTED_PACKET_TYPES = {PacketType.Play.Server.ENTITY_EQUIPMENT};
+
     @Override
     public void modifyInformation(final Player observer, final Entity entity)
     {
@@ -26,7 +29,7 @@ public class InformationObfuscator extends PlayerInformationModifier
     @Override
     protected PacketType[] getAffectedPackets()
     {
-        return new PacketType[]{PacketType.Play.Server.ENTITY_EQUIPMENT};
+        return AFFECTED_PACKET_TYPES;
     }
 
     @Override

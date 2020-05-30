@@ -17,16 +17,24 @@ import java.util.Set;
 
 public final class BlockUtils
 {
-    private BlockUtils() {}
-
     public static final Set<Material> LIQUIDS;
-
     /**
      * Contains all containers that need a free space of any kind above the container (e.g. chests with a stair above)
      */
     public static final Set<Material> FREE_SPACE_CONTAINERS;
-
     public static final Set<Material> FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS;
+    public static final Set<BlockFace> HORIZONTAL_FACES = Collections.unmodifiableSet(EnumSet.of(
+            BlockFace.NORTH,
+            BlockFace.SOUTH,
+            BlockFace.WEST,
+            BlockFace.EAST));
+    public static final Set<BlockFace> ALL_FACES = Collections.unmodifiableSet(EnumSet.of(
+            BlockFace.UP,
+            BlockFace.DOWN,
+            BlockFace.NORTH,
+            BlockFace.SOUTH,
+            BlockFace.WEST,
+            BlockFace.EAST));
 
     static {
         final EnumSet<Material> freeSpaceMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
@@ -104,19 +112,7 @@ public final class BlockUtils
         FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS = Collections.unmodifiableSet(allowedMaterials);
     }
 
-    public static final Set<BlockFace> HORIZONTAL_FACES = Collections.unmodifiableSet(EnumSet.of(
-            BlockFace.NORTH,
-            BlockFace.SOUTH,
-            BlockFace.WEST,
-            BlockFace.EAST));
-
-    public static final Set<BlockFace> ALL_FACES = Collections.unmodifiableSet(EnumSet.of(
-            BlockFace.UP,
-            BlockFace.DOWN,
-            BlockFace.NORTH,
-            BlockFace.SOUTH,
-            BlockFace.WEST,
-            BlockFace.EAST));
+    private BlockUtils() {}
 
     /**
      * This can be used to know if the {@link Block}s are next to each other.

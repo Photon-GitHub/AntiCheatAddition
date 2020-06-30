@@ -2,18 +2,17 @@ package de.photon.aacadditionpro.util.pluginmessage;
 
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ByteBufUtil
 {
-    private ByteBufUtil()
-    {
-    }
-
     public static void writeString(String s, ByteBuf buf)
     {
         Preconditions.checkArgument(s.length() <= Short.MAX_VALUE,

@@ -2,6 +2,8 @@ package de.photon.aacadditionpro.util.world;
 
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -15,6 +17,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BlockUtils
 {
     public static final Set<Material> LIQUIDS;
@@ -111,8 +114,6 @@ public final class BlockUtils
         FREE_SPACE_CONTAINERS = Collections.unmodifiableSet(freeSpaceMaterials);
         FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS = Collections.unmodifiableSet(allowedMaterials);
     }
-
-    private BlockUtils() {}
 
     /**
      * This can be used to know if the {@link Block}s are next to each other.

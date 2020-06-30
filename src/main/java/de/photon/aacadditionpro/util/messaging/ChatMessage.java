@@ -1,12 +1,13 @@
 package de.photon.aacadditionpro.util.messaging;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ChatMessage
 {
-    private ChatMessage() {}
-
     public static final String AACADDITIONPRO_PREFIX = ChatColor.DARK_RED + "[AACAdditionPro] ";
     private static final String ERROR_PREFIX = AACADDITIONPRO_PREFIX + ChatColor.RED;
 

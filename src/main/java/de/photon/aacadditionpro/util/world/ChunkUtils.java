@@ -1,11 +1,13 @@
 package de.photon.aacadditionpro.util.world;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ChunkUtils
 {
-    private ChunkUtils() {}
 
     /**
      * Checks if the chunk of a certain {@link Location} is loaded.

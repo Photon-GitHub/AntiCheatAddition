@@ -1,16 +1,16 @@
 package de.photon.aacadditionpro.util.world;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
 /**
  * Provides util methods regarding {@link Location}s.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LocationUtils
 {
-    private LocationUtils() {}
-
-
     /**
      * Checks if two Entities are in the same world.
      */

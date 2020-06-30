@@ -143,6 +143,10 @@ Esp:
   # 32 Cores | 250 Players
   # 64 Cores | 350 Players
   enabled: true
+  # This determines whether minecrafts 3rd person modes should be considered for calculation as well.
+  # Disabling this will reduce the reqiured number of raytraces by two thirds.
+  # Especially useful if you have certain gamemodes in which players are not supposed to use the third person mode.
+  calculate_third_person_modes: true
   # After this amount of ticks the positions will be updated again
   update_ticks: 3
   # This will make AACAdditionPro use the new ray tracing of Spigot 1.13 and upwards.

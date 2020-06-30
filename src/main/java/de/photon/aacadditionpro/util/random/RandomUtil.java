@@ -1,11 +1,13 @@
 package de.photon.aacadditionpro.util.random;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.concurrent.ThreadLocalRandom;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RandomUtil
 {
-    private RandomUtil() {}
-
     /**
      * Generates a new random integer.
      *

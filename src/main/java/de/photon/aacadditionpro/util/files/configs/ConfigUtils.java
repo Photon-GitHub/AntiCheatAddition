@@ -3,6 +3,8 @@ package de.photon.aacadditionpro.util.files.configs;
 import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,10 +18,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConfigUtils
 {
-    private ConfigUtils() {}
-
     /**
      * This will process the {@link LoadFromConfiguration} annotation to load all config values.
      *

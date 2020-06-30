@@ -13,7 +13,6 @@ import java.util.Set;
 
 public class InformationObfuscator extends PlayerInformationModifier
 {
-
     protected static final PacketType[] AFFECTED_PACKET_TYPES = {PacketType.Play.Server.ENTITY_EQUIPMENT};
 
     @Override

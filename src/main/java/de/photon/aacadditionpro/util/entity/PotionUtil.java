@@ -3,6 +3,8 @@ package de.photon.aacadditionpro.util.entity;
 
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -10,10 +12,9 @@ import org.bukkit.potion.PotionEffectType;
 /**
  * Contains util methods regarding the {@link org.bukkit.potion.PotionEffect}s and {@link org.bukkit.potion.PotionEffectType}s.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PotionUtil
 {
-    private PotionUtil() {}
-
     /**
      * Gets a {@link PotionEffect} of a {@link LivingEntity}.
      *

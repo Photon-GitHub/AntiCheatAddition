@@ -2,7 +2,9 @@ package de.photon.aacadditionpro.util.commands;
 
 import de.photon.aacadditionpro.util.general.StringUtils;
 import de.photon.aacadditionpro.util.server.ServerUtil;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -14,7 +16,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class Placeholders
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class Placeholders
 {
     public static String replacePlaceholders(String original)
     {

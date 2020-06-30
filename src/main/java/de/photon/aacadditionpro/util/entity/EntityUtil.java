@@ -5,6 +5,8 @@ import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.aacadditionpro.util.mathematics.AxisAlignedBB;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.world.BlockUtils;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -23,10 +25,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EntityUtil
 {
-    private EntityUtil() {}
-
     /**
      * Determines if a {@link LivingEntity} is gliding (i.e. flying with an elytra)
      */

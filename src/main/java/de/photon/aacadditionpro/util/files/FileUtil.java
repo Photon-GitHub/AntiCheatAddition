@@ -1,12 +1,14 @@
 package de.photon.aacadditionpro.util.files;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.io.File;
 import java.io.IOException;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FileUtil
 {
-    private FileUtil() {}
-
     /**
      * Creates a new {@link File} and all missing parent directories.
      *

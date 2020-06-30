@@ -8,6 +8,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.files.configs.Configs;
+import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.visibility.HideMode;
 import de.photon.aacadditionpro.util.visibility.PlayerInformationModifier;
 import de.photon.aacadditionpro.util.visibility.informationmodifiers.InformationObfuscator;
@@ -35,7 +36,6 @@ public class Esp implements ListenerModule
 {
     @Getter
     private static final Esp instance = new Esp();
-
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
 
@@ -46,6 +46,9 @@ public class Esp implements ListenerModule
     boolean hideAfterRenderDistance = true;
     int defaultTrackingRange;
     Map<UUID, Integer> playerTrackingRanges;
+
+    @LoadFromConfiguration(configPath = ".calculate_third_person_modes")
+    private boolean calculateThirdPersonModes;
 
     // The task number for Bukkit's internal systems
     private int taskNumber;

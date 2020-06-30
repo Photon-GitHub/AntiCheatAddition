@@ -3,6 +3,8 @@ package de.photon.aacadditionpro.util.server;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.reflection.ClassReflect;
 import de.photon.aacadditionpro.util.reflection.Reflect;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -15,6 +17,7 @@ import java.util.logging.Level;
 /**
  * This util provides methods to get information from the server that is usually hidden.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ServerUtil
 {
     private static final ClassReflect CRAFTPLAYER_CLASS_REFLECT = Reflect.fromOBC("entity.CraftPlayer");

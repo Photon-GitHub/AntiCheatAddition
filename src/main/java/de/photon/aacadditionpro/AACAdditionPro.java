@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 
 public class AACAdditionPro extends JavaPlugin
 {
-    private static final AACAdditionPro instance = JavaPlugin.getPlugin(AACAdditionPro.class);
+    private static AACAdditionPro instance;
 
     /**
      * Indicates if the loading process is completed.
@@ -105,6 +105,9 @@ public class AACAdditionPro extends JavaPlugin
     public void onEnable()
     {
         try {
+            // Now needs to be done via this ugly way as the original way did lead to a loading error.
+            instance = this;
+
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //

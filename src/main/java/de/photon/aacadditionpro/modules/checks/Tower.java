@@ -62,6 +62,9 @@ public class Tower implements ListenerModule, ViolationModule
                 user.getPlayer().getLocation().getY() - blockPlaced.getY() < 2D &&
                 // Check if this check applies to the block
                 blockPlaced.getType().isSolid() &&
+                //
+                // Custom formula when setting -> Will return negative value when in protected timeframe.
+                user.getTimestampMap().passedTime(TimestampKey.TOWER_SLIME_JUMP) > 0 &&
                 // Check if the block is placed against one block (face) only
                 // Only one block that is not a liquid is allowed (the one which the Block is placed against).
                 BlockUtils.countBlocksAround(blockPlaced, true) == 1 &&

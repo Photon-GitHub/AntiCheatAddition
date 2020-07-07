@@ -14,6 +14,7 @@ import de.photon.aacadditionpro.util.packetwrappers.WrapperPlayKeepAlive;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -219,6 +220,14 @@ public final class DataUpdaterEvents implements Listener
             // Any non-head movement.
             else if (event.getFrom().getY() != event.getTo().getY()) {
                 user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XYZ_MOVEMENT);
+            }
+
+            // Slime block -> Tower slime jump
+            if (event.getFrom().getY() < event.getTo().getY()
+                && event.getFrom().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SLIME_BLOCK)
+            {
+                // Custom formula fitted from test data.
+                user.getTimestampMap().setValue(TimestampKey.TOWER_SLIME_JUMP, System.currentTimeMillis() + (long) (550 * (event.getTo().getY() - event.getFrom().getY()) + 75));
             }
         }
     }

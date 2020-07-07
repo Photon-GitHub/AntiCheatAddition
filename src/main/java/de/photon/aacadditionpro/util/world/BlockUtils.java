@@ -217,10 +217,7 @@ public final class BlockUtils
                     // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
                     case MC113:
                         // Make sure that the block above is not obstructed by blocks
-                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) ||
-                              aboveBlock.isPassable()
-                        ))
-                        {
+                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) || aboveBlock.isPassable())) {
                             return false;
                         }
 
@@ -230,10 +227,7 @@ public final class BlockUtils
                     case MC115:
                     case MC116:
                         // Make sure that the block above is not obstructed by blocks
-                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) ||
-                              aboveBlock.isPassable()
-                        ))
-                        {
+                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) || aboveBlock.isPassable())) {
                             return false;
                         }
 

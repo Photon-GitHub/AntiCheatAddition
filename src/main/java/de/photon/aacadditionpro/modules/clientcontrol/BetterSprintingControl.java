@@ -71,6 +71,7 @@ public class BetterSprintingControl extends ClientControlModule implements Plugi
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 final ByteBuf settingsBuf = Unpooled.buffer();
                 settingsBuf.writeByte(0);
                 for (Boolean enable : featureList) {

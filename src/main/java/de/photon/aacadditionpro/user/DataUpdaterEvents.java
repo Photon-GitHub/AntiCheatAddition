@@ -226,7 +226,8 @@ public final class DataUpdaterEvents implements Listener
             if (event.getFrom().getY() < event.getTo().getY()
                 && event.getFrom().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SLIME_BLOCK)
             {
-                // Custom formula fitted from test data.
+                // Custom formula fitted from test data. Capped to make sure that cheat clients cannot give themselves infinite protection millis.
+                // More than 2000 is already unreasonable, even for very fast block placing.
                 user.getTimestampMap().setValue(TimestampKey.TOWER_SLIME_JUMP, System.currentTimeMillis() + Math.min((long) (550 * (event.getTo().getY() - event.getFrom().getY()) + 75), 2000));
             }
         }

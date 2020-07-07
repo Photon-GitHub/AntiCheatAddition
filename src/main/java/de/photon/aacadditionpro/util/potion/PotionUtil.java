@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.entity;
+package de.photon.aacadditionpro.util.potion;
 
 
 import de.photon.aacadditionpro.ServerVersion;
@@ -24,12 +24,17 @@ public final class PotionUtil
      * @return the {@link PotionEffect} with the provided {@link PotionEffectType} or null if the {@link LivingEntity}
      * doesn't have such a {@link PotionEffect}.
      */
-    public static PotionEffect getPotionEffect(final LivingEntity livingEntity, final PotionEffectType type)
+    public static PotionEffect getPotionEffect(final LivingEntity livingEntity, final InternalPotionEffectType type)
     {
+        if (!type.isAvailable()) {
+            return null;
+        }
+
+        final PotionEffectType mapping = type.getMapping();
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 for (final PotionEffect effect : livingEntity.getActivePotionEffects()) {
-                    if (effect.getType().equals(type)) {
+                    if (effect.getType().equals(mapping)) {
                         return effect;
                     }
                 }
@@ -39,10 +44,23 @@ public final class PotionUtil
             case MC114:
             case MC115:
             case MC116:
-                return livingEntity.getPotionEffect(type);
+                return livingEntity.getPotionEffect(mapping);
             default:
                 throw new UnknownMinecraftVersion();
         }
+    }
+
+    /**
+     * Checks if a {@link LivingEntity} has a certain {@link PotionEffectType}
+     *
+     * @param livingEntity the {@link LivingEntity} which should be tested
+     * @param type         the {@link PotionEffectType} which should be tested for
+     *
+     * @return true if the {@link PotionEffectType} is found, else false.
+     */
+    public static boolean hasPotionEffect(final LivingEntity livingEntity, final InternalPotionEffectType type)
+    {
+        return type.isAvailable() && livingEntity.hasPotionEffect(type.getMapping());
     }
 
     /**

@@ -1,10 +1,11 @@
 package de.photon.aacadditionpro.modules.checks.esp;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
+import de.photon.aacadditionpro.util.potion.InternalPotionEffectType;
+import de.photon.aacadditionpro.util.potion.PotionUtil;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import de.photon.aacadditionpro.util.world.ChunkUtils;
 import lombok.AccessLevel;
@@ -12,7 +13,6 @@ import lombok.NoArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -52,10 +52,7 @@ public class CanSee
             // Has not logged in recently to prevent bugs
             observerUser.hasLoggedInRecently(3000) ||
             // Glowing handling
-            // Glowing does not exist in 1.8.8
-            (ServerVersion.getActiveServerVersion() != ServerVersion.MC188 &&
-             // If an entity is glowing it can always be seen.
-             watched.hasPotionEffect(PotionEffectType.GLOWING)))
+            PotionUtil.hasPotionEffect(watched, InternalPotionEffectType.GLOWING))
         {
             return true;
         }

@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.world;
 
+import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import lombok.AccessLevel;
@@ -26,18 +27,19 @@ public final class BlockUtils
      */
     public static final Set<Material> FREE_SPACE_CONTAINERS;
     public static final Set<Material> FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS;
-    public static final Set<BlockFace> HORIZONTAL_FACES = Collections.unmodifiableSet(EnumSet.of(
+
+    public static final Set<BlockFace> HORIZONTAL_FACES = Sets.immutableEnumSet(
             BlockFace.NORTH,
             BlockFace.SOUTH,
             BlockFace.WEST,
-            BlockFace.EAST));
-    public static final Set<BlockFace> ALL_FACES = Collections.unmodifiableSet(EnumSet.of(
+            BlockFace.EAST);
+    public static final Set<BlockFace> ALL_FACES = Sets.immutableEnumSet(
             BlockFace.UP,
             BlockFace.DOWN,
             BlockFace.NORTH,
             BlockFace.SOUTH,
             BlockFace.WEST,
-            BlockFace.EAST));
+            BlockFace.EAST);
 
     static {
         final EnumSet<Material> freeSpaceMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
@@ -139,18 +141,17 @@ public final class BlockUtils
     /**
      * This counts the {@link Block}s around the given block if they are not air/empty.
      *
-     * @param block          the block that faces should be checked for other {@link Block}s
-     * @param onlyHorizontal whether only the {@link Block}s should be counted that are horizontal around the block or all {@link Block}s (horizontal + vertical)
+     * @param block the block that faces should be checked for other {@link Block}s
      *
      * @return the amount of {@link Block}s which were counted
      */
-    public static byte countBlocksAround(final Block block, final boolean onlyHorizontal)
+    public static byte countBlocksAround(final Block block, final boolean ignoreLiquids)
     {
         byte count = 0;
-        for (final BlockFace f : onlyHorizontal ?
-                                 HORIZONTAL_FACES :
-                                 ALL_FACES) {
-            if (!block.getRelative(f).isEmpty()) {
+        Block relative;
+        for (final BlockFace f : ALL_FACES) {
+            relative = block.getRelative(f);
+            if (!relative.isEmpty() && (!ignoreLiquids || LIQUIDS.contains(relative.getType()))) {
                 count++;
             }
         }

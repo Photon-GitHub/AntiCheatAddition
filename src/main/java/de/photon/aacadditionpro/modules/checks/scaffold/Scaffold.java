@@ -84,7 +84,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
             blockPlaced.getType().isSolid() &&
             // Check if the block is placed against one block face only, also implies no blocks above and below.
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
-            BlockUtils.getBlocksAround(blockPlaced, false).stream().filter(block -> !BlockUtils.LIQUIDS.contains(block.getType())).count() == 1 &&
+            BlockUtils.countBlocksAround(blockPlaced, true) == 1 &&
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
             BlockUtils.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
         {

@@ -64,7 +64,7 @@ public class Tower implements ListenerModule, ViolationModule
                 blockPlaced.getType().isSolid() &&
                 // Check if the block is placed against one block (face) only
                 // Only one block that is not a liquid is allowed (the one which the Block is placed against).
-                BlockUtils.getBlocksAround(blockPlaced, false).stream().filter(block -> !BlockUtils.LIQUIDS.contains(block.getType())).count() == 1 &&
+                BlockUtils.countBlocksAround(blockPlaced, true) == 1 &&
                 // User is not in water which can cause false positives due to faster swimming on newer versions.
                 !EntityUtil.isHitboxInLiquids(user.getPlayer().getLocation(), user.getHitbox()) &&
                 // Buffer the block place, continue the check only when we a certain number of block places in check

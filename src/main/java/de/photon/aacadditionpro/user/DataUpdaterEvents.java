@@ -227,7 +227,7 @@ public final class DataUpdaterEvents implements Listener
                 && event.getFrom().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SLIME_BLOCK)
             {
                 // Custom formula fitted from test data.
-                user.getTimestampMap().setValue(TimestampKey.TOWER_SLIME_JUMP, System.currentTimeMillis() + Math.max((long) (550 * (event.getTo().getY() - event.getFrom().getY()) + 75), 2000));
+                user.getTimestampMap().setValue(TimestampKey.TOWER_SLIME_JUMP, System.currentTimeMillis() + Math.min((long) (550 * (event.getTo().getY() - event.getFrom().getY()) + 75), 2000));
             }
         }
     }

@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.files.configs.Configs;
-import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.visibility.HideMode;
 import de.photon.aacadditionpro.util.visibility.PlayerInformationModifier;
 import de.photon.aacadditionpro.util.visibility.informationmodifiers.InformationObfuscator;
@@ -29,30 +28,22 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Esp implements ListenerModule
 {
     @Getter
     private static final Esp instance = new Esp();
+    final ExecutorService pairExecutor = Executors.newCachedThreadPool();
+    final AtomicLong activeCalculations = new AtomicLong(0);
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
-
-    // Use ArrayDeque as we can
-    private final Deque<User> users = new ArrayDeque<>(1500);
-
     // The auto-config-data
     boolean hideAfterRenderDistance = true;
     int defaultTrackingRange;
     Map<UUID, Integer> playerTrackingRanges;
 
-    @LoadFromConfiguration(configPath = ".calculate_third_person_modes")
-    private boolean calculateThirdPersonModes;
-
-    // The task number for Bukkit's internal systems
-    private int taskNumber;
-
+    private Thread supplierThread;
 
     @Override
     public void enable()
@@ -61,11 +52,9 @@ public class Esp implements ListenerModule
         informationOnlyHider.registerListeners();
 
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
-        final int updateTicks = AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".update_ticks");
-        final int updateMillis = 50 * updateTicks;
-
+        final long updateTicksConfig = AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".update_ticks");
+        final AtomicLong updateTicks = new AtomicLong(updateTicksConfig);
         final ConfigurationSection worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
-
         final ImmutableMap.Builder<UUID, Integer> rangeBuilder = ImmutableMap.builder();
 
         int currentPlayerTrackingRange;
@@ -97,47 +86,62 @@ public class Esp implements ListenerModule
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
-        taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(
-                AACAdditionPro.getInstance(),
-                () -> {
-                    // Put all users in a Queue for fast removal.
-                    // Ignore spectators.
-                    for (User user : UserManager.getUsersUnwrapped()) {
-                        if (user.getPlayer().getGameMode() != GameMode.SPECTATOR) {
-                            this.users.add(user);
-                        }
-                    }
+        // Use ArrayDeque as we can
+        final Deque<User> users = new ArrayDeque<>(1500);
 
-                    final ExecutorService pairExecutor = Executors.newWorkStealingPool();
-
-                    // Iterate through all player-constellations
-                    while (!users.isEmpty()) {
-                        // Remove the finished player to reduce the amount of added entries.
-                        // This makes sure the player won't have a connection with himself.
-                        // Remove the last object for better array performance.
-                        final User observingUser = users.removeLast();
-
-                        // All users can potentially be seen
-                        for (final User watched : users) {
-                            // The players are in the same world
-                            if (LocationUtils.inSameWorld(observingUser.getPlayer(), watched.getPlayer())) {
-                                pairExecutor.execute(new EspPairRunnable(observingUser, watched));
+        class EspSupplierThread extends Thread
+        {
+            @SuppressWarnings({"InfiniteLoopStatement", "BusyWait"})
+            @Override
+            public void run()
+            {
+                try {
+                    while (true) {
+                        if (activeCalculations.get() > 0) {
+                            VerboseSender.getInstance().sendVerboseMessage("Did not finish ESP cycle. Consider upgrading your hardware or increasing update_ticks if this message shows regularly.", false, true);
+                            // Increase updateTicks to not further lag the server.
+                            updateTicks.addAndGet(3);
+                        } else {
+                            // Decrease updateTicks slowly if possible.
+                            if (updateTicks.get() > updateTicksConfig) {
+                                updateTicks.getAndDecrement();
                             }
                         }
-                    }
 
-                    pairExecutor.shutdown();
-
-                    try {
-                        if (!pairExecutor.awaitTermination(updateMillis, TimeUnit.MILLISECONDS)) {
-                            VerboseSender.getInstance().sendVerboseMessage("Could not finish ESP cycle. Please consider upgrading your hardware or increasing the update_ticks option in the config if this message appears in large quantities.", false, true);
+                        // Put all users in a Queue for fast removal.
+                        // Ignore spectators.
+                        for (User user : UserManager.getUsersUnwrapped()) {
+                            if (user.getPlayer().getGameMode() != GameMode.SPECTATOR) {
+                                users.add(user);
+                            }
                         }
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "ESP Threads have been interrupted.", e);
+
+                        // Iterate through all player-constellations
+                        while (!users.isEmpty()) {
+                            // Remove the finished player to reduce the amount of added entries.
+                            // This makes sure the player won't have a connection with himself.
+                            // Remove the last object for better array performance.
+                            final User observingUser = users.removeLast();
+
+                            // All users can potentially be seen
+                            for (final User watched : users) {
+                                // The players are in the same world
+                                if (LocationUtils.inSameWorld(observingUser.getPlayer(), watched.getPlayer())) {
+                                    pairExecutor.submit(new EspPairRunnable(observingUser, watched));
+                                    activeCalculations.incrementAndGet();
+                                }
+                            }
+                        }
+                        Thread.sleep(50 * updateTicks.get());
                     }
-                    // Update_Ticks: the refresh-rate of the check.
-                }, 0L, updateTicks);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+
+        supplierThread = new EspSupplierThread();
+        supplierThread.start();
     }
 
     @EventHandler
@@ -199,7 +203,10 @@ public class Esp implements ListenerModule
     @Override
     public void disable()
     {
-        Bukkit.getScheduler().cancelTask(taskNumber);
+        supplierThread.interrupt();
+
+        // Do not care about all the still running tasks.
+        pairExecutor.shutdownNow();
 
         // Remove all the hiding.
         fullHider.resetTable();

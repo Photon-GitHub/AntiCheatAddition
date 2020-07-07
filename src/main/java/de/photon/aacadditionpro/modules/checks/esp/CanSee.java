@@ -15,8 +15,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -67,11 +67,11 @@ public class CanSee
         // Get the Vectors of the hitbox to check.
         final Vector[] watchedHitboxVectors = (watched.isSneaking() ?
                                                Hitbox.ESP_SNEAKING_PLAYER :
-                                               Hitbox.ESP_PLAYER).getCalculationVectors(watched.getLocation(), true);
+                                               Hitbox.ESP_PLAYER).getCalculationVectors(watched.getLocation());
 
-        // The distance of the intersections in the same block is equal as of the
-        // BlockIterator mechanics.
-        final Set<Double> lastIntersectionsCache = new HashSet<>();
+        // The distance of the intersections in the same block is equal as of the BlockIterator mechanics.
+        // Use ArrayList because we do not cache many values in here and therefore HashSet is more expensive.
+        final List<Double> lastIntersectionsCache = new ArrayList<>(40);
 
         for (Vector cameraVector : cameraVectors) {
             for (final Vector destinationVector : watchedHitboxVectors) {

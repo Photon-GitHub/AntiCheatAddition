@@ -148,6 +148,9 @@ Esp:
   # Especially useful if you have certain gamemodes in which players are not supposed to use the third person mode.
   calculate_third_person_modes: true
   # After this amount of ticks the positions will be updated again
+  #
+  # Note that ESP will detect if it could not finish all tasks and automatically adapts the value. This value is the
+  # minimum value that ESP adaption will not go below.
   update_ticks: 3
   # This will make AACAdditionPro use the new ray tracing of Spigot 1.13 and upwards.
   # This is more accurate than the normal BlockIterator heuristic, but may have a much worse performance.

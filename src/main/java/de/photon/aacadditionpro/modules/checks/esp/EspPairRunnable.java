@@ -55,5 +55,7 @@ class EspPairRunnable implements Runnable
                                          (observingUser.getPlayer().isSneaking() ?
                                           HideMode.FULL :
                                           HideMode.INFORMATION_ONLY));
+
+        Esp.getInstance().activeCalculations.getAndDecrement();
     }
 }

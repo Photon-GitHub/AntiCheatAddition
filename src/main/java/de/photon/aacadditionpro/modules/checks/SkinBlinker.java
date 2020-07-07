@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 
 public class SkinBlinker extends PacketAdapter implements PacketListenerModule, ViolationModule
@@ -23,19 +22,14 @@ public class SkinBlinker extends PacketAdapter implements PacketListenerModule, 
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
-        if (event.isPlayerTemporary()) {
-            return;
-        }
-
         /*
          * A unmodified client can only send such packets if the player is in the menu
          * -> he obviously cannot Sprint or Sneak when doing this.
          * -> he can move, especially in MC 1.9 and upward because of entity-collision, etc.
          * -> As of the render-debug-cycle which can be done in the game (F3 + F) I need to check for the change of the skin.
          */
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = PacketListenerModule.safeGetUserFromEvent(event);
 
-        // Not bypassed
         if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }

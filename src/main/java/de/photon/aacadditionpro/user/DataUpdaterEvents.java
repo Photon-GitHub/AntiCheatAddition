@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
@@ -296,11 +297,11 @@ public final class DataUpdaterEvents implements Listener
         @Override
         public void onPacketReceiving(final PacketEvent event)
         {
-            if (event.getPlayer() == null || event.isPlayerTemporary()) {
+            final User user = PacketListenerModule.safeGetUserFromEvent(event);
+
+            if (user == null) {
                 return;
             }
-
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
 
             if (user != null) {
                 user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_VELOCITY_CHANGE);

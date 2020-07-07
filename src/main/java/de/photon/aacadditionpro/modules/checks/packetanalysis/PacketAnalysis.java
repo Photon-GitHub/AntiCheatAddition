@@ -78,13 +78,8 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
-        if (event.isPlayerTemporary()) {
-            return;
-        }
+        final User user = PacketListenerModule.safeGetUserFromEvent(event);
 
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        // Not bypassed
         if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }

@@ -48,13 +48,8 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     @Override
     public void onPacketReceiving(PacketEvent event)
     {
-        if (event.isPlayerTemporary()) {
-            return;
-        }
+        final User user = PacketListenerModule.safeGetUserFromEvent(event);
 
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        // Not bypassed
         if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }

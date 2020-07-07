@@ -313,22 +313,20 @@ public final class DataUpdaterEvents implements Listener
                 return;
             }
 
-            if (user != null) {
-                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_VELOCITY_CHANGE);
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_VELOCITY_CHANGE);
 
-                // The player wasn't hurt and got velocity for that.
-                if (user.getPlayer().getNoDamageTicks() == 0
-                    // Recent teleports can cause bugs
-                    && !user.hasTeleportedRecently(1000))
-                {
-                    final IWrapperPlayPosition position = event::getPacket;
+            // The player wasn't hurt and got velocity for that.
+            if (user.getPlayer().getNoDamageTicks() == 0
+                // Recent teleports can cause bugs
+                && !user.hasTeleportedRecently(1000))
+            {
+                final IWrapperPlayPosition position = event::getPacket;
 
-                    final boolean updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
+                final boolean updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
 
-                    if (updatedPositiveVelocity != user.getDataMap().getBoolean(DataKey.POSITIVE_VELOCITY)) {
-                        user.getDataMap().setValue(DataKey.POSITIVE_VELOCITY, updatedPositiveVelocity);
-                        user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES);
-                    }
+                if (updatedPositiveVelocity != user.getDataMap().getBoolean(DataKey.POSITIVE_VELOCITY)) {
+                    user.getDataMap().setValue(DataKey.POSITIVE_VELOCITY, updatedPositiveVelocity);
+                    user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES);
                 }
             }
         }

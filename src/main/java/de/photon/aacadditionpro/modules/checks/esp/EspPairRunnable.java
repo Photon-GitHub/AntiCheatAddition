@@ -2,16 +2,20 @@ package de.photon.aacadditionpro.modules.checks.esp;
 
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.visibility.HideMode;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 class EspPairRunnable implements Runnable
 {
-
     private final User observingUser;
     private final User watched;
 
-    private final int playerTrackingRange = Esp.getInstance().playerTrackingRanges.getOrDefault(observingUser.getPlayer().getWorld().getUID(), Esp.getInstance().defaultTrackingRange);
+    private final int playerTrackingRange;
+
+    public EspPairRunnable(User observingUser, User watched)
+    {
+        this.observingUser = observingUser;
+        this.watched = watched;
+        this.playerTrackingRange = Esp.getInstance().playerTrackingRanges.getOrDefault(observingUser.getPlayer().getWorld().getUID(), Esp.getInstance().defaultTrackingRange);
+    }
 
     @Override
     public void run()

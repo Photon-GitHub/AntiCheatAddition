@@ -7,6 +7,7 @@ import de.photon.aacadditionpro.command.InternalCommand;
 import de.photon.aacadditionpro.command.TabCompleteSupplier;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -60,16 +61,11 @@ public class InfoCommand extends InternalCommand
         }
     }
 
+    @RequiredArgsConstructor
     private static class ModuleVl implements Comparable<ModuleVl>
     {
         private final ModuleType moduleType;
         private final int vl;
-
-        public ModuleVl(ModuleType moduleType, int vl)
-        {
-            this.moduleType = moduleType;
-            this.vl = vl;
-        }
 
         public String getDisplayMessage()
         {
@@ -81,6 +77,21 @@ public class InfoCommand extends InternalCommand
         {
             // Reversed to make the top vl appear first.
             return Integer.compare(o.vl, this.vl);
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ModuleVl moduleVl = (ModuleVl) o;
+            return vl == moduleVl.vl && moduleType == moduleVl.moduleType;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return moduleType.ordinal();
         }
     }
 }

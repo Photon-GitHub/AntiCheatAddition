@@ -25,6 +25,7 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 return new MessageChannel(getHandle().getMinecraftKeys().read(0));
             default:
                 throw new UnknownMinecraftVersion();
@@ -45,6 +46,7 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 getHandle().getMinecraftKeys().write(0, value);
                 break;
             default:

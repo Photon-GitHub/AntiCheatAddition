@@ -30,6 +30,7 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
                 return new PlayerAdditionViolationEvent(p, moduleType, i, message, true);
             case MC114:
             case MC115:
+            case MC116:
                 return new PlayerAdditionViolationEvent(p, moduleType, i, message);
             default:
                 throw new UnknownMinecraftVersion();
@@ -45,6 +46,7 @@ public class PlayerAdditionViolationEvent extends ClientControlEvent
                 return new PlayerAdditionViolationEvent(p, moduleType, i, moduleType.getViolationMessage(), true);
             case MC114:
             case MC115:
+            case MC116:
                 return new PlayerAdditionViolationEvent(p, moduleType, i, moduleType.getViolationMessage());
             default:
                 throw new UnknownMinecraftVersion();

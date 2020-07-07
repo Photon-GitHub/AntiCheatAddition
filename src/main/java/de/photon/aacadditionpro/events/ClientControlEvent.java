@@ -34,6 +34,7 @@ public class ClientControlEvent extends Event implements Cancellable
                 return new ClientControlEvent(p, moduleType, message, true);
             case MC114:
             case MC115:
+            case MC116:
                 return new ClientControlEvent(p, moduleType, message);
             default:
                 throw new UnknownMinecraftVersion();
@@ -49,6 +50,7 @@ public class ClientControlEvent extends Event implements Cancellable
                 return new ClientControlEvent(p, moduleType, moduleType.getViolationMessage(), true);
             case MC114:
             case MC115:
+            case MC116:
                 return new ClientControlEvent(p, moduleType, moduleType.getViolationMessage());
             default:
                 throw new UnknownMinecraftVersion();

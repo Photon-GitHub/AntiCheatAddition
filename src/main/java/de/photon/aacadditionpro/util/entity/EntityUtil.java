@@ -91,6 +91,7 @@ public final class EntityUtil
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 return Objects.requireNonNull((livingEntity).getAttribute(Attribute.GENERIC_MAX_HEALTH), "Tried to get max health of an entity without health.").getValue();
             default:
                 throw new UnknownMinecraftVersion();
@@ -113,6 +114,7 @@ public final class EntityUtil
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 return entity.getPassengers();
             default:
                 throw new UnknownMinecraftVersion();

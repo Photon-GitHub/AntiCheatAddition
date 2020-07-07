@@ -54,6 +54,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 // Integers are ok, even though wiki.vg says short
                 handle.getIntegers().write(1, (int) (value * 4096));
                 break;
@@ -72,6 +73,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 // Integers are ok, even though wiki.vg says short
                 return handle.getIntegers().read(2) / 4096D;
             default:
@@ -91,6 +93,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 // Integers are ok, even though wiki.vg says short
                 handle.getIntegers().write(2, (int) (value * 4096));
                 break;
@@ -109,6 +112,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 // Integers are ok, even though wiki.vg says short
                 return handle.getIntegers().read(3) / 4096D;
             default:
@@ -128,6 +132,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 // Integers are ok, even though wiki.vg says short
                 handle.getIntegers().write(3, (int) (value * 4096));
                 break;

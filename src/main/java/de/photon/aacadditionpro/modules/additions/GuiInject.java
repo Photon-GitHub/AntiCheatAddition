@@ -175,7 +175,7 @@ public class GuiInject implements ListenerModule, RestrictedServerVersion, Depen
     @Override
     public Set<ServerVersion> getSupportedVersions()
     {
-        return EnumSet.of(ServerVersion.MC113, ServerVersion.MC114, ServerVersion.MC115);
+        return EnumSet.of(ServerVersion.MC113, ServerVersion.MC114, ServerVersion.MC115, ServerVersion.MC116);
     }
 
     @Override

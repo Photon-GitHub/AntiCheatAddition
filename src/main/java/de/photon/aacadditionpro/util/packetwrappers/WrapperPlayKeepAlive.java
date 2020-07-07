@@ -32,6 +32,7 @@ public abstract class WrapperPlayKeepAlive extends AbstractPacket
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 return handle.getLongs().read(0);
             default:
                 throw new UnknownMinecraftVersion();
@@ -53,6 +54,7 @@ public abstract class WrapperPlayKeepAlive extends AbstractPacket
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 handle.getLongs().write(0, value);
                 break;
             default:

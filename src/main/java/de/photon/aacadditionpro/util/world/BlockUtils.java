@@ -87,6 +87,7 @@ public final class BlockUtils
                 break;
             case MC114:
             case MC115:
+            case MC116:
                 for (Material material : Material.values()) {
                     if (material.name().endsWith("_SLAB") ||
                         material.name().endsWith("_SIGN") ||
@@ -188,6 +189,7 @@ public final class BlockUtils
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 return material != Material.BARRIER && material != Material.SPAWNER && material.isOccluding();
             default:
                 throw new UnknownMinecraftVersion();
@@ -225,6 +227,7 @@ public final class BlockUtils
                         return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty();
                     case MC114:
                     case MC115:
+                    case MC116:
                         // Make sure that the block above is not obstructed by blocks
                         if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) ||
                               aboveBlock.isPassable()

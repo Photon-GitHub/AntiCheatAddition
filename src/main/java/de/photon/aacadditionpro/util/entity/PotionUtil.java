@@ -38,6 +38,7 @@ public final class PotionUtil
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 return livingEntity.getPotionEffect(type);
             default:
                 throw new UnknownMinecraftVersion();

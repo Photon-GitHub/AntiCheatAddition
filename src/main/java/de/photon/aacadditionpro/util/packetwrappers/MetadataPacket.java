@@ -46,6 +46,7 @@ public abstract class MetadataPacket extends AbstractPacket
                 case MC113:
                 case MC114:
                 case MC115:
+                case MC116:
                     dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(classOfValue)), value);
                     break;
                 default:
@@ -82,6 +83,7 @@ public abstract class MetadataPacket extends AbstractPacket
                 case MC113:
                 case MC114:
                 case MC115:
+                case MC116:
                     return this.setMetadata(7, Float.class, health);
                 default:
                     throw new UnknownMinecraftVersion();
@@ -103,6 +105,7 @@ public abstract class MetadataPacket extends AbstractPacket
                 case MC113:
                 case MC114:
                 case MC115:
+                case MC116:
                     // IN 1.12.2 THIS IS AN INTEGER!
                     return this.setMetadata(10, Integer.class, arrows);
                 default:
@@ -126,6 +129,7 @@ public abstract class MetadataPacket extends AbstractPacket
                 case MC113:
                 case MC114:
                 case MC115:
+                case MC116:
                     return this.setMetadata(13, Byte.class, skinParts);
                 default:
                     throw new UnknownMinecraftVersion();

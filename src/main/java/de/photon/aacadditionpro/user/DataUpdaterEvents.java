@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
@@ -13,6 +14,7 @@ import de.photon.aacadditionpro.util.packetwrappers.WrapperPlayKeepAlive;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -219,6 +221,15 @@ public final class DataUpdaterEvents implements Listener
             else if (event.getFrom().getY() != event.getTo().getY()) {
                 user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XYZ_MOVEMENT);
             }
+
+            // Slime block -> Tower slime jump
+            if (event.getFrom().getY() < event.getTo().getY()
+                && event.getFrom().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SLIME_BLOCK)
+            {
+                // Custom formula fitted from test data. Capped to make sure that cheat clients cannot give themselves infinite protection millis.
+                // 2000 is already unreasonable, even for very fast block placing.
+                user.getTimestampMap().setValue(TimestampKey.TOWER_SLIME_JUMP, System.currentTimeMillis() + Math.min((long) (550 * (event.getTo().getY() - event.getFrom().getY()) + 75), 2000));
+            }
         }
     }
 
@@ -296,28 +307,26 @@ public final class DataUpdaterEvents implements Listener
         @Override
         public void onPacketReceiving(final PacketEvent event)
         {
-            if (event.getPlayer() == null || event.isPlayerTemporary()) {
+            final User user = PacketListenerModule.safeGetUserFromEvent(event);
+
+            if (user == null) {
                 return;
             }
 
-            final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+            user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_VELOCITY_CHANGE);
 
-            if (user != null) {
-                user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_VELOCITY_CHANGE);
+            // The player wasn't hurt and got velocity for that.
+            if (user.getPlayer().getNoDamageTicks() == 0
+                // Recent teleports can cause bugs
+                && !user.hasTeleportedRecently(1000))
+            {
+                final IWrapperPlayPosition position = event::getPacket;
 
-                // The player wasn't hurt and got velocity for that.
-                if (user.getPlayer().getNoDamageTicks() == 0
-                    // Recent teleports can cause bugs
-                    && !user.hasTeleportedRecently(1000))
-                {
-                    final IWrapperPlayPosition position = event::getPacket;
+                final boolean updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
 
-                    final boolean updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
-
-                    if (updatedPositiveVelocity != user.getDataMap().getBoolean(DataKey.POSITIVE_VELOCITY)) {
-                        user.getDataMap().setValue(DataKey.POSITIVE_VELOCITY, updatedPositiveVelocity);
-                        user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES);
-                    }
+                if (updatedPositiveVelocity != user.getDataMap().getBoolean(DataKey.POSITIVE_VELOCITY)) {
+                    user.getDataMap().setValue(DataKey.POSITIVE_VELOCITY, updatedPositiveVelocity);
+                    user.getTimestampMap().updateTimeStamp(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES);
                 }
             }
         }

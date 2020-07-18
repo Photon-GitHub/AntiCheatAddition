@@ -89,6 +89,7 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
                     break;
                 case MC114:
                 case MC115:
+                case MC116:
                     // index 7 in 1.14.4+
                     index = 8;
                     break;
@@ -121,6 +122,7 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
                 case MC113:
                 case MC114:
                 case MC115:
+                case MC116:
                     spoofedHealth = (float) Objects.requireNonNull(((LivingEntity) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH), "Tried to get max health of an entity without health.").getValue();
                     break;
                 default:

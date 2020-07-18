@@ -1,11 +1,13 @@
 package de.photon.aacadditionpro.util.general;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.nio.charset.StandardCharsets;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StringUtils
 {
-    private StringUtils() {}
-
     /**
      * Constructs a new {@link String} from a byte array according to the {@link StandardCharsets#UTF_8}.
      * This is used in various plugin messages.

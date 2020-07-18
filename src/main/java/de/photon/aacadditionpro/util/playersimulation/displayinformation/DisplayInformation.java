@@ -1,18 +1,19 @@
-package de.photon.aacadditionpro.util.fakeentity.displayinformation;
+package de.photon.aacadditionpro.util.playersimulation.displayinformation;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPlayerInfo;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DisplayInformation
 {
-    private DisplayInformation() {}
-
     /**
      * This method updates the player information, and thus the tablist of a player.
      *

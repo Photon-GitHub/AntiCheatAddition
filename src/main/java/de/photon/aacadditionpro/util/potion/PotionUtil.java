@@ -1,8 +1,10 @@
-package de.photon.aacadditionpro.util.entity;
+package de.photon.aacadditionpro.util.potion;
 
 
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -10,10 +12,9 @@ import org.bukkit.potion.PotionEffectType;
 /**
  * Contains util methods regarding the {@link org.bukkit.potion.PotionEffect}s and {@link org.bukkit.potion.PotionEffectType}s.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PotionUtil
 {
-    private PotionUtil() {}
-
     /**
      * Gets a {@link PotionEffect} of a {@link LivingEntity}.
      *
@@ -23,12 +24,17 @@ public final class PotionUtil
      * @return the {@link PotionEffect} with the provided {@link PotionEffectType} or null if the {@link LivingEntity}
      * doesn't have such a {@link PotionEffect}.
      */
-    public static PotionEffect getPotionEffect(final LivingEntity livingEntity, final PotionEffectType type)
+    public static PotionEffect getPotionEffect(final LivingEntity livingEntity, final InternalPotionEffectType type)
     {
+        if (!type.isAvailable()) {
+            return null;
+        }
+
+        final PotionEffectType mapping = type.getMapping();
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 for (final PotionEffect effect : livingEntity.getActivePotionEffects()) {
-                    if (effect.getType().equals(type)) {
+                    if (effect.getType().equals(mapping)) {
                         return effect;
                     }
                 }
@@ -37,10 +43,24 @@ public final class PotionUtil
             case MC113:
             case MC114:
             case MC115:
-                return livingEntity.getPotionEffect(type);
+            case MC116:
+                return livingEntity.getPotionEffect(mapping);
             default:
                 throw new UnknownMinecraftVersion();
         }
+    }
+
+    /**
+     * Checks if a {@link LivingEntity} has a certain {@link PotionEffectType}
+     *
+     * @param livingEntity the {@link LivingEntity} which should be tested
+     * @param type         the {@link PotionEffectType} which should be tested for
+     *
+     * @return true if the {@link PotionEffectType} is found, else false.
+     */
+    public static boolean hasPotionEffect(final LivingEntity livingEntity, final InternalPotionEffectType type)
+    {
+        return type.isAvailable() && livingEntity.hasPotionEffect(type.getMapping());
     }
 
     /**

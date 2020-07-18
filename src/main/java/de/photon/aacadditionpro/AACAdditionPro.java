@@ -10,13 +10,13 @@ import de.photon.aacadditionpro.modules.additions.GuiInject;
 import de.photon.aacadditionpro.modules.additions.LogBot;
 import de.photon.aacadditionpro.modules.checks.AutoEat;
 import de.photon.aacadditionpro.modules.checks.AutoPotion;
-import de.photon.aacadditionpro.modules.checks.Esp;
 import de.photon.aacadditionpro.modules.checks.Fastswitch;
 import de.photon.aacadditionpro.modules.checks.ImpossibleChat;
 import de.photon.aacadditionpro.modules.checks.SkinBlinker;
 import de.photon.aacadditionpro.modules.checks.Teaming;
 import de.photon.aacadditionpro.modules.checks.Tower;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFish;
+import de.photon.aacadditionpro.modules.checks.esp.Esp;
 import de.photon.aacadditionpro.modules.checks.inventory.Inventory;
 import de.photon.aacadditionpro.modules.checks.keepalive.KeepAlive;
 import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysis;
@@ -33,8 +33,8 @@ import de.photon.aacadditionpro.modules.clientcontrol.SchematicaControl;
 import de.photon.aacadditionpro.modules.clientcontrol.VapeControl;
 import de.photon.aacadditionpro.modules.clientcontrol.VersionControl;
 import de.photon.aacadditionpro.modules.clientcontrol.WorldDownloaderControl;
-import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.user.DataUpdaterEvents;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.VerboseSender;
 import lombok.Getter;
 import org.bstats.bukkit.Metrics;
@@ -55,18 +55,17 @@ import java.util.stream.Collectors;
 
 public class AACAdditionPro extends JavaPlugin
 {
+    private static AACAdditionPro instance;
+
     /**
      * Indicates if the loading process is completed.
      */
     @Getter
     private boolean loaded = false;
-
     // Cache the config for better performance
     private FileConfiguration cachedConfig;
-
     @Getter
     private ModuleManager moduleManager;
-
     @Getter
     private ViaAPI<Player> viaAPI;
 
@@ -77,7 +76,7 @@ public class AACAdditionPro extends JavaPlugin
      */
     public static AACAdditionPro getInstance()
     {
-        return JavaPlugin.getPlugin(AACAdditionPro.class);
+        return instance;
     }
 
     /**
@@ -106,6 +105,9 @@ public class AACAdditionPro extends JavaPlugin
     public void onEnable()
     {
         try {
+            // Now needs to be done via this ugly way as the original way did lead to a loading error.
+            instance = this;
+
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
@@ -174,7 +176,7 @@ public class AACAdditionPro extends JavaPlugin
                     new AutoEat(),
                     new AutoFish(),
                     new AutoPotion(),
-                    new Esp(),
+                    Esp.getInstance(),
                     new Fastswitch(),
                     new ImpossibleChat(),
                     new Inventory(),

@@ -16,6 +16,8 @@ import java.util.function.BiFunction;
  */
 public interface PatternModule extends Module
 {
+    boolean FULL_ENABLE_LOG = AACAdditionPro.getInstance().getConfig().getBoolean("FullEnableLog");
+
     static void enablePatterns(final PatternModule module)
     {
         for (Pattern pattern : module.getPatterns()) {
@@ -73,7 +75,7 @@ public interface PatternModule extends Module
         @Override
         public boolean shouldNotify()
         {
-            return AACAdditionPro.getInstance().getConfig().getBoolean("FullEnableLog");
+            return FULL_ENABLE_LOG;
         }
 
         @Override

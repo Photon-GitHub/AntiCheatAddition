@@ -4,14 +4,15 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.events.PlayerAdditionViolationCommandEvent;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.util.VerboseSender;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandUtils
 {
-    private CommandUtils() {}
-
     /**
      * Applies all the {@link Placeholders} to the given command and invokes executeCommand afterwards.
      *

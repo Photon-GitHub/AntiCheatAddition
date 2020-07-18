@@ -95,6 +95,7 @@ public class PlayerAdditionViolationCommandEvent extends Event implements Cancel
                 return new PlayerAdditionViolationCommandEvent(p, command, moduleType, true);
             case MC114:
             case MC115:
+            case MC116:
                 return new PlayerAdditionViolationCommandEvent(p, command, moduleType);
             default:
                 throw new UnknownMinecraftVersion();

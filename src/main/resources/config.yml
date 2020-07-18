@@ -143,7 +143,14 @@ Esp:
   # 32 Cores | 250 Players
   # 64 Cores | 350 Players
   enabled: true
+  # This determines whether minecrafts 3rd person modes should be considered for calculation as well.
+  # Disabling this will reduce the reqiured number of raytraces by two thirds.
+  # Especially useful if you have certain gamemodes in which players are not supposed to use the third person mode.
+  calculate_third_person_modes: true
   # After this amount of ticks the positions will be updated again
+  #
+  # Note that ESP will detect if it could not finish all tasks and automatically adapts the value. This value is the
+  # minimum value that ESP adaption will not go below.
   update_ticks: 3
   # This will make AACAdditionPro use the new ray tracing of Spigot 1.13 and upwards.
   # This is more accurate than the normal BlockIterator heuristic, but may have a much worse performance.
@@ -265,7 +272,7 @@ Inventory:
       # The minimum TPS the server must have to activate this check
       # Low TPS will cause an extreme amount of false positives.
       min_tps: 18.5
-      # How many suspicious positions should Inventory count as legit
+      # How many suspicious interactions should Inventory count as legit
       # The value must be greater or equal to 0.
       violation_threshold: 5
     # The rotation part detects head movement while having an open inventory.
@@ -350,7 +357,7 @@ PacketAnalysis:
     # the client purposefully delays some packets (pingspoof and freecam).
     # This part will add 1 to 9 vl, depending on the severity of the violation.
     #
-    # DISABLE THIS SUBPART IF YOU USE BUNGEECORD.
+    # DISABLE THIS PART IF YOU USE BUNGEECORD!
     Compare:
       # Do you want to enable packet time comparison?
       enabled: true

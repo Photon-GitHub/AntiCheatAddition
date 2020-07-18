@@ -37,13 +37,11 @@ public enum Hitbox
      * Creates an array of {@link Vector}s that indicates essential positions of the hitbox which are helpful for
      * raytracing.
      *
-     * @param location         the initial {@link Location} of the {@link org.bukkit.entity.Entity}, thus the basis of the {@link Hitbox}.
-     * @param addCenterVectors whether only the {@link Vector}s of the corners should be returned in the {@link List} or additional {@link Vector}s
-     *                         in the center of the {@link org.bukkit.entity.Entity} (alongside the y-axis) should be added
+     * @param location the initial {@link Location} of the {@link org.bukkit.entity.Entity}, thus the basis of the {@link Hitbox}.
      *
      * @return an array of all the constructed {@link Vector}s.
      */
-    public Vector[] getCalculationVectors(final Location location, final boolean addCenterVectors)
+    public Vector[] getCalculationVectors(final Location location)
     {
         final List<Vector> vectors = new ArrayList<>(13);
 
@@ -62,16 +60,13 @@ public enum Hitbox
         vectors.add(new Vector(location.getX() + this.offsetX, upperY, location.getZ() - this.offsetZ));
         vectors.add(new Vector(location.getX() - this.offsetX, upperY, location.getZ() - this.offsetZ));
 
-        if (addCenterVectors)
-        {
-            Vector start = location.toVector();
-            while (start.getY() < upperY)
-            {
-                vectors.add(start);
-                // 0.47 as a factor as of slabs and other irregular block models.
-                start = start.clone().setY(start.getY() + 0.47);
-            }
+        Vector start = location.toVector();
+        while (start.getY() < upperY) {
+            vectors.add(start);
+            // 0.47 as a factor as of slabs and other irregular block models.
+            start = start.clone().setY(start.getY() + 0.47);
         }
+
         return vectors.toArray(new Vector[0]);
     }
 

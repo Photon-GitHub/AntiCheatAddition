@@ -20,12 +20,6 @@ class Threshold implements Comparable<Threshold>
         this.commandList = commandList;
     }
 
-    @Override
-    public int compareTo(Threshold o)
-    {
-        return Integer.compare(vl, o.vl);
-    }
-
     /**
      * Tries to load all thresholds from the given config key.
      *
@@ -42,5 +36,11 @@ class Threshold implements Comparable<Threshold>
                       .map(key -> new Threshold(Integer.parseInt(key), ConfigUtils.loadStringOrStringList(thresholdSectionPath + '.' + key)))
                       // Collect the keys.
                       .collect(Collectors.toList());
+    }
+
+    @Override
+    public int compareTo(Threshold o)
+    {
+        return Integer.compare(vl, o.vl);
     }
 }

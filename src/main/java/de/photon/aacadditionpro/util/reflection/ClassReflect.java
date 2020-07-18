@@ -37,7 +37,7 @@ public class ClassReflect
                 Field field = this.clazz.getDeclaredField(name);
                 field.setAccessible(true);
                 fieldReflect = new FieldReflect(field);
-                this.cache.put(name, fieldReflect);
+                this.cache.putIfAbsent(name, fieldReflect);
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
                 return null;
@@ -59,7 +59,7 @@ public class ClassReflect
             Field field = fieldArray[index];
             field.setAccessible(true);
             fieldReflect = new FieldReflect(field);
-            this.cacheIndex.put(index, fieldReflect);
+            this.cacheIndex.putIfAbsent(index, fieldReflect);
         }
 
         return fieldReflect;
@@ -83,7 +83,7 @@ public class ClassReflect
                 constructor.setAccessible(true);
 
                 constructorReflect = new ConstructorReflect(constructor);
-                this.constructorCache.put(cacheKey, constructorReflect);
+                this.constructorCache.putIfAbsent(cacheKey, constructorReflect);
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
@@ -102,7 +102,7 @@ public class ClassReflect
                     method.setAccessible(true);
 
                     methodReflect = new MethodReflect(method);
-                    this.methodCache.put(name, methodReflect);
+                    this.methodCache.putIfAbsent(name, methodReflect);
                     return methodReflect;
                 }
             }

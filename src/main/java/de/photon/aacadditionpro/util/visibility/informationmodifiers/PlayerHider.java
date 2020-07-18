@@ -11,6 +11,25 @@ import java.lang.reflect.InvocationTargetException;
 
 public class PlayerHider extends PlayerInformationModifier
 {
+    protected static final PacketType[] AFFECTED_PACKET_TYPES = {
+            PacketType.Play.Server.ENTITY_EQUIPMENT,
+            PacketType.Play.Server.ENTITY_EFFECT,
+            PacketType.Play.Server.ENTITY_HEAD_ROTATION,
+            PacketType.Play.Server.ENTITY_LOOK,
+            PacketType.Play.Server.ENTITY_METADATA,
+            PacketType.Play.Server.ENTITY_STATUS,
+            PacketType.Play.Server.ENTITY_TELEPORT,
+            PacketType.Play.Server.ENTITY_VELOCITY,
+            PacketType.Play.Server.ANIMATION,
+            PacketType.Play.Server.NAMED_ENTITY_SPAWN,
+            PacketType.Play.Server.COLLECT,
+            PacketType.Play.Server.REL_ENTITY_MOVE,
+            PacketType.Play.Server.REL_ENTITY_MOVE_LOOK,
+            PacketType.Play.Server.SPAWN_ENTITY_EXPERIENCE_ORB,
+            PacketType.Play.Server.BLOCK_BREAK_ANIMATION,
+            PacketType.Play.Server.REMOVE_ENTITY_EFFECT
+    };
+
     @Override
     public void modifyInformation(final Player observer, final Entity entity)
     {
@@ -33,23 +52,6 @@ public class PlayerHider extends PlayerInformationModifier
     @Override
     protected PacketType[] getAffectedPackets()
     {
-        return new PacketType[]{
-                PacketType.Play.Server.ENTITY_EQUIPMENT,
-                PacketType.Play.Server.ENTITY_EFFECT,
-                PacketType.Play.Server.ENTITY_HEAD_ROTATION,
-                PacketType.Play.Server.ENTITY_LOOK,
-                PacketType.Play.Server.ENTITY_METADATA,
-                PacketType.Play.Server.ENTITY_STATUS,
-                PacketType.Play.Server.ENTITY_TELEPORT,
-                PacketType.Play.Server.ENTITY_VELOCITY,
-                PacketType.Play.Server.ANIMATION,
-                PacketType.Play.Server.NAMED_ENTITY_SPAWN,
-                PacketType.Play.Server.COLLECT,
-                PacketType.Play.Server.REL_ENTITY_MOVE,
-                PacketType.Play.Server.REL_ENTITY_MOVE_LOOK,
-                PacketType.Play.Server.SPAWN_ENTITY_EXPERIENCE_ORB,
-                PacketType.Play.Server.BLOCK_BREAK_ANIMATION,
-                PacketType.Play.Server.REMOVE_ENTITY_EFFECT
-        };
+        return AFFECTED_PACKET_TYPES;
     }
 }

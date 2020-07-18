@@ -1,9 +1,11 @@
-package de.photon.aacadditionpro.util.fakeentity.movement;
+package de.photon.aacadditionpro.util.playersimulation.movement;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Jumping
 {
-    private Jumping() {}
-
     /**
      * Client-Copy for exact values.
      * This gets the y-Motion of a {@link org.bukkit.entity.Player} for every JumpBoost effect.

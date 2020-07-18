@@ -44,6 +44,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 return handle.getDoubles().read(0);
             default:
                 throw new UnknownMinecraftVersion();
@@ -61,6 +62,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 handle.getDoubles().write(0, value);
                 break;
             default:
@@ -78,6 +80,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 return handle.getDoubles().read(1);
             default:
                 throw new UnknownMinecraftVersion();
@@ -95,6 +98,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 handle.getDoubles().write(1, value);
                 break;
             default:
@@ -112,6 +116,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 return handle.getDoubles().read(2);
             default:
                 throw new UnknownMinecraftVersion();
@@ -129,6 +134,7 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 handle.getDoubles().write(2, value);
                 break;
             default:

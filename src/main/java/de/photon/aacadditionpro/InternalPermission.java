@@ -23,18 +23,6 @@ public enum InternalPermission
      * This checks if a {@link Permissible} has a certain permission.
      *
      * @param permissible the {@link Permissible} who should be checked
-     *
-     * @return true if the player has the permission or is op, otherwise false
-     */
-    public boolean hasPermission(final Permissible permissible)
-    {
-        return hasPermission(permissible, this.realPermission);
-    }
-
-    /**
-     * This checks if a {@link Permissible} has a certain permission.
-     *
-     * @param permissible the {@link Permissible} who should be checked
      * @param permission  the permission that he should be checked for
      *
      * @return true if the player has the permission or is op, otherwise false
@@ -55,5 +43,17 @@ public enum InternalPermission
     public static boolean hasPermission(final Permissible permissible, final InternalPermission permission)
     {
         return permission == null || permissible.isOp() || permission.hasPermission(permissible);
+    }
+
+    /**
+     * This checks if a {@link Permissible} has a certain permission.
+     *
+     * @param permissible the {@link Permissible} who should be checked
+     *
+     * @return true if the player has the permission or is op, otherwise false
+     */
+    public boolean hasPermission(final Permissible permissible)
+    {
+        return hasPermission(permissible, this.realPermission);
     }
 }

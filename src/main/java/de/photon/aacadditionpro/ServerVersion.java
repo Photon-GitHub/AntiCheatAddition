@@ -22,12 +22,18 @@ public enum ServerVersion
     MC112("1.12.2", true),
     MC113("1.13.2", true),
     MC114("1.14.4", true),
-    MC115("1.15", true);
+    MC115("1.15.2", true),
+    MC116("1.16", true);
 
 
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS;
     public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = EnumSet.of(MC188);
     public static final Set<ServerVersion> NON_188_VERSIONS;
+    /**
+     * The server version of the currently running {@link Bukkit} instance.
+     */
+    @Getter
+    private static ServerVersion activeServerVersion;
 
     static {
         ALL_SUPPORTED_VERSIONS = EnumSet.allOf(ServerVersion.class);
@@ -36,15 +42,6 @@ public enum ServerVersion
         NON_188_VERSIONS = EnumSet.copyOf(ALL_SUPPORTED_VERSIONS);
         NON_188_VERSIONS.remove(MC188);
     }
-
-    private final String versionOutputString;
-    private final boolean supported;
-
-    /**
-     * The server version of the currently running {@link Bukkit} instance.
-     */
-    @Getter
-    private static ServerVersion activeServerVersion;
 
     static {
         final String versionOutput = Bukkit.getVersion();
@@ -56,6 +53,9 @@ public enum ServerVersion
             }
         }
     }
+
+    private final String versionOutputString;
+    private final boolean supported;
 
     /**
      * Used to check whether the current server version is included in the supported server versions of a {@link Module}

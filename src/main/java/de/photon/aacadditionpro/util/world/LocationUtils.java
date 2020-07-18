@@ -1,13 +1,23 @@
 package de.photon.aacadditionpro.util.world;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 
 /**
  * Provides util methods regarding {@link Location}s.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LocationUtils
 {
-    private LocationUtils() {}
+    /**
+     * Checks if two Entities are in the same world.
+     */
+    public static boolean inSameWorld(Entity entity1, Entity entity2)
+    {
+        return entity1.getWorld().getUID().equals(entity2.getWorld().getUID());
+    }
 
     /**
      * Gets the squared distance of two {@link Location}s, correctly handling cross-world requests.

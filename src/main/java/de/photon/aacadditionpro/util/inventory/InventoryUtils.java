@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -12,10 +14,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InventoryUtils
 {
-    private InventoryUtils() {}
-
     /**
      * Gets the content of the main hand for version 1.8.8 or the content of both hands in higher versions.
      *
@@ -30,6 +31,7 @@ public final class InventoryUtils
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 return ImmutableList.of(player.getInventory().getItemInMainHand(),
                                         player.getInventory().getItemInOffHand());
             default:

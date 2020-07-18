@@ -9,7 +9,6 @@ import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
@@ -48,13 +47,8 @@ public class Fastswitch extends PacketAdapter implements PacketListenerModule, V
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
-        if (event.isPlayerTemporary()) {
-            return;
-        }
+        final User user = PacketListenerModule.safeGetUserFromEvent(event);
 
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        // Not bypassed
         if (User.isUserInvalid(user, this.getModuleType())) {
             return;
         }

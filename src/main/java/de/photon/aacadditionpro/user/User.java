@@ -16,16 +16,16 @@ import org.bukkit.entity.Player;
 @Getter
 public class User
 {
-    private Player player;
-    private TimestampMap<TimestampKey> timestampMap;
-    private ObjectDataMap<DataKey> dataMap;
+    private final Player player;
+    private final TimestampMap<TimestampKey> timestampMap;
+    private final ObjectDataMap<DataKey> dataMap;
 
-    private FishingData fishingData = new FishingData(this);
-    private InventoryData inventoryData = new InventoryData(this);
-    private KeepAliveData keepAliveData = new KeepAliveData(this);
-    private LookPacketData lookPacketData = new LookPacketData(this);
-    private ScaffoldData scaffoldData = new ScaffoldData(this);
-    private TowerData towerData = new TowerData(this);
+    private final FishingData fishingData = new FishingData(this);
+    private final InventoryData inventoryData = new InventoryData(this);
+    private final KeepAliveData keepAliveData = new KeepAliveData(this);
+    private final LookPacketData lookPacketData = new LookPacketData(this);
+    private final ScaffoldData scaffoldData = new ScaffoldData(this);
+    private final TowerData towerData = new TowerData(this);
 
     public User(final Player player)
     {
@@ -253,18 +253,8 @@ public class User
      */
     public void unregister()
     {
-        this.player = null;
         this.timestampMap.clear();
-        this.timestampMap = null;
         this.dataMap.clear();
-        this.dataMap = null;
-
-        this.fishingData = null;
-        this.inventoryData = null;
-        this.keepAliveData = null;
-        this.lookPacketData = null;
-        this.scaffoldData = null;
-        this.towerData = null;
     }
 
     @Override

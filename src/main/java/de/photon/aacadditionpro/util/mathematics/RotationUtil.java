@@ -1,11 +1,13 @@
 package de.photon.aacadditionpro.util.mathematics;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RotationUtil
 {
-    private RotationUtil() {}
 
     private static final float FIX_CONVERT_FACTOR = 256.0F / 360.0F;
     private static final float FIX_INVERSE_CONVERT_FACTOR = 360.0F / 256.0F;

@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.modules.checks;
 
-import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.ViolationModule;
@@ -10,10 +9,10 @@ import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.user.subdata.datawrappers.TowerBlockPlace;
 import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
-import de.photon.aacadditionpro.util.entity.PotionUtil;
-import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
+import de.photon.aacadditionpro.util.potion.InternalPotionEffectType;
+import de.photon.aacadditionpro.util.potion.PotionUtil;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import org.bukkit.block.Block;
@@ -21,7 +20,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.potion.PotionEffectType;
 
 public class Tower implements ListenerModule, ViolationModule
 {
@@ -55,20 +53,7 @@ public class Tower implements ListenerModule, ViolationModule
             final Block blockPlaced = event.getBlockPlaced();
 
             // Levitation effect
-            final Integer levitation;
-            switch (ServerVersion.getActiveServerVersion()) {
-                case MC188:
-                    levitation = null;
-                    break;
-                case MC112:
-                case MC113:
-                case MC114:
-                case MC115:
-                    levitation = PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.LEVITATION));
-                    break;
-                default:
-                    throw new UnknownMinecraftVersion();
-            }
+            final Integer levitation = PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), InternalPotionEffectType.LEVITATION));
 
             // User must stand above the block (placed from above)1
             // Check if the block is tower-placed (Block belows)
@@ -77,9 +62,12 @@ public class Tower implements ListenerModule, ViolationModule
                 user.getPlayer().getLocation().getY() - blockPlaced.getY() < 2D &&
                 // Check if this check applies to the block
                 blockPlaced.getType().isSolid() &&
+                //
+                // Custom formula when setting -> Will return negative value when in protected timeframe.
+                user.getTimestampMap().passedTime(TimestampKey.TOWER_SLIME_JUMP) > 0 &&
                 // Check if the block is placed against one block (face) only
                 // Only one block that is not a liquid is allowed (the one which the Block is placed against).
-                BlockUtils.getBlocksAround(blockPlaced, false).stream().filter(block -> !BlockUtils.LIQUIDS.contains(block.getType())).count() == 1 &&
+                BlockUtils.countBlocksAround(blockPlaced, true) == 1 &&
                 // User is not in water which can cause false positives due to faster swimming on newer versions.
                 !EntityUtil.isHitboxInLiquids(user.getPlayer().getLocation(), user.getHitbox()) &&
                 // Buffer the block place, continue the check only when we a certain number of block places in check
@@ -87,7 +75,7 @@ public class Tower implements ListenerModule, ViolationModule
                         new TowerBlockPlace(
                                 blockPlaced,
                                 //Jump boost effect is important
-                                PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), PotionEffectType.JUMP)),
+                                PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), InternalPotionEffectType.JUMP)),
                                 levitation)))
             {
                 // [0] = Expected time; [1] = Real time

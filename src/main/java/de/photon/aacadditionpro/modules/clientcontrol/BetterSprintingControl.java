@@ -34,6 +34,7 @@ public class BetterSprintingControl extends ClientControlModule implements Plugi
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 CHANNELS = ImmutableSet.of(new MessageChannel("bsm", "settings"));
                 break;
             default:
@@ -70,6 +71,7 @@ public class BetterSprintingControl extends ClientControlModule implements Plugi
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 final ByteBuf settingsBuf = Unpooled.buffer();
                 settingsBuf.writeByte(0);
                 for (Boolean enable : featureList) {

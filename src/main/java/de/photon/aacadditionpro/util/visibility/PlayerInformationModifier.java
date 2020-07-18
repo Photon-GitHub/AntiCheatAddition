@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -14,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -24,66 +26,54 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class PlayerInformationModifier
+public abstract class PlayerInformationModifier implements Listener
 {
     private final Table<Integer, Integer, Boolean> observerEntityMap = HashBasedTable.create();
 
-    /**
-     * Construct a new InformationModifier
-     */
-    protected PlayerInformationModifier()
+    private final PacketListener informationPacketListener = new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, this.getAffectedPackets())
+    {
+        @Override
+        public void onPacketSending(final PacketEvent event)
+        {
+            final int entityID = event.getPacket().getIntegers().read(0);
+
+            // Make sure that we do not have temporary players who cause problems in the mapping.
+            if (!event.isPlayerTemporary() &&
+                // See if this packet should be cancelled
+                isInformationModified(event.getPlayer(), entityID))
+            {
+                event.setCancelled(true);
+            }
+        }
+    };
+
+    // For validating the input parameters
+    protected static void validate(final Player observer, final Entity entity)
+    {
+        Preconditions.checkNotNull(observer, "observer cannot be NULL.");
+        Preconditions.checkNotNull(entity, "entity cannot be NULL.");
+    }
+
+    public void registerListeners()
     {
         // Only start if the ServerVersion is supported
         if (ServerVersion.supportsActiveServerVersion(this.getSupportedVersions())) {
             // Register events and packet listener
-            AACAdditionPro.getInstance().registerListener(new Listener()
-            {
-                @EventHandler
-                public void onEntityDeath(final EntityDeathEvent event)
-                {
-                    Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
-                        removeEntity(event.getEntity());
-                        return null;
-                    });
-                }
+            AACAdditionPro.getInstance().registerListener(this);
+            ProtocolLibrary.getProtocolManager().addPacketListener(this.informationPacketListener);
+        }
+    }
 
-                @EventHandler
-                public void onChunkUnload(final ChunkUnloadEvent event)
-                {
-                    // Cache entities for performance reasons so the server doesn't need to load them again when the
-                    // task is executed.
-                    final Entity[] entities = event.getChunk().getEntities();
-                    Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> {
-                        for (final Entity entity : entities) {
-                            removeEntity(entity);
-                        }
-                        return null;
-                    });
-                }
+    public void unregisterListeners()
+    {
+        HandlerList.unregisterAll(this);
+        ProtocolLibrary.getProtocolManager().removePacketListener(this.informationPacketListener);
+    }
 
-                @EventHandler
-                public void onQuit(final PlayerQuitEvent event)
-                {
-                    removePlayer(event.getPlayer());
-                }
-            });
-
-            ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, this.getAffectedPackets())
-            {
-                @Override
-                public void onPacketSending(final PacketEvent event)
-                {
-                    final int entityID = event.getPacket().getIntegers().read(0);
-
-                    // Make sure that we do not have temporary players who cause problems in the mapping.
-                    if (!event.isPlayerTemporary() &&
-                        // See if this packet should be cancelled
-                        isInformationModified(event.getPlayer(), entityID))
-                    {
-                        event.setCancelled(true);
-                    }
-                }
-            });
+    public void resetTable()
+    {
+        synchronized (observerEntityMap) {
+            this.observerEntityMap.clear();
         }
     }
 
@@ -92,6 +82,28 @@ public abstract class PlayerInformationModifier
     protected Set<ServerVersion> getSupportedVersions()
     {
         return EnumSet.allOf(ServerVersion.class);
+    }
+
+    @EventHandler
+    public void onEntityDeath(final EntityDeathEvent event)
+    {
+        removeEntity(event.getEntity());
+    }
+
+    @EventHandler
+    public void onChunkUnload(final ChunkUnloadEvent event)
+    {
+        // Cache entities for performance reasons so the server doesn't need to load them again when the
+        // task is executed.
+        for (final Entity entity : event.getChunk().getEntities()) {
+            removeEntity(entity);
+        }
+    }
+
+    @EventHandler
+    public void onQuit(final PlayerQuitEvent event)
+    {
+        removePlayer(event.getPlayer());
     }
 
     /**
@@ -104,7 +116,9 @@ public abstract class PlayerInformationModifier
      */
     private boolean getMembership(final Player observer, final int entityID)
     {
-        return observerEntityMap.contains(observer.getEntityId(), entityID);
+        synchronized (observerEntityMap) {
+            return observerEntityMap.contains(observer.getEntityId(), entityID);
+        }
     }
 
     /**
@@ -119,9 +133,11 @@ public abstract class PlayerInformationModifier
     // Helper method
     private boolean setMembership(final Player observer, final int entityID, final boolean member)
     {
-        return member ?
-               observerEntityMap.put(observer.getEntityId(), entityID, true) != null :
-               observerEntityMap.remove(observer.getEntityId(), entityID) != null;
+        synchronized (observerEntityMap) {
+            return member ?
+                   observerEntityMap.put(observer.getEntityId(), entityID, true) != null :
+                   observerEntityMap.remove(observer.getEntityId(), entityID) != null;
+        }
     }
 
     /**
@@ -131,10 +147,12 @@ public abstract class PlayerInformationModifier
      */
     private void removeEntity(final Entity entity)
     {
-        final int entityID = entity.getEntityId();
+        synchronized (observerEntityMap) {
+            final int entityID = entity.getEntityId();
 
-        for (final Map<Integer, Boolean> maps : observerEntityMap.rowMap().values()) {
-            maps.remove(entityID);
+            for (final Map<Integer, Boolean> maps : observerEntityMap.rowMap().values()) {
+                maps.remove(entityID);
+            }
         }
     }
 
@@ -145,8 +163,10 @@ public abstract class PlayerInformationModifier
      */
     private void removePlayer(final Player player)
     {
-        // Cleanup
-        observerEntityMap.rowMap().remove(player.getEntityId());
+        synchronized (observerEntityMap) {
+            // Cleanup
+            observerEntityMap.rowMap().remove(player.getEntityId());
+        }
     }
 
     /**
@@ -162,7 +182,7 @@ public abstract class PlayerInformationModifier
 
         // Resend packets
         if (ProtocolLibrary.getProtocolManager() != null && hiddenBefore) {
-            ProtocolLibrary.getProtocolManager().updateEntity(entity, Collections.singletonList(observer));
+            Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> ProtocolLibrary.getProtocolManager().updateEntity(entity, Collections.singletonList(observer)));
         }
     }
 
@@ -180,7 +200,6 @@ public abstract class PlayerInformationModifier
         return getMembership(observer, entityID);
     }
 
-
     /**
      * Set the visibility status of a given entity for a particular observer.
      *
@@ -194,13 +213,6 @@ public abstract class PlayerInformationModifier
     {
         // Non-membership means they are visible
         return !setMembership(observer, entityID, !modifyInformation);
-    }
-
-    // For validating the input parameters
-    protected static void validate(final Player observer, final Entity entity)
-    {
-        Preconditions.checkNotNull(observer, "observer cannot be NULL.");
-        Preconditions.checkNotNull(entity, "entity cannot be NULL.");
     }
 
     /**

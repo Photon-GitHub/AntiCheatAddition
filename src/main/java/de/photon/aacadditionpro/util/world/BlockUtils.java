@@ -1,7 +1,10 @@
 package de.photon.aacadditionpro.util.world;
 
+import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -15,18 +18,28 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BlockUtils
 {
-    private BlockUtils() {}
-
     public static final Set<Material> LIQUIDS;
-
     /**
      * Contains all containers that need a free space of any kind above the container (e.g. chests with a stair above)
      */
     public static final Set<Material> FREE_SPACE_CONTAINERS;
-
     public static final Set<Material> FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS;
+
+    public static final Set<BlockFace> HORIZONTAL_FACES = Sets.immutableEnumSet(
+            BlockFace.NORTH,
+            BlockFace.SOUTH,
+            BlockFace.WEST,
+            BlockFace.EAST);
+    public static final Set<BlockFace> ALL_FACES = Sets.immutableEnumSet(
+            BlockFace.UP,
+            BlockFace.DOWN,
+            BlockFace.NORTH,
+            BlockFace.SOUTH,
+            BlockFace.WEST,
+            BlockFace.EAST);
 
     static {
         final EnumSet<Material> freeSpaceMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
@@ -76,6 +89,7 @@ public final class BlockUtils
                 break;
             case MC114:
             case MC115:
+            case MC116:
                 for (Material material : Material.values()) {
                     if (material.name().endsWith("_SLAB") ||
                         material.name().endsWith("_SIGN") ||
@@ -104,20 +118,6 @@ public final class BlockUtils
         FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS = Collections.unmodifiableSet(allowedMaterials);
     }
 
-    public static final Set<BlockFace> HORIZONTAL_FACES = Collections.unmodifiableSet(EnumSet.of(
-            BlockFace.NORTH,
-            BlockFace.SOUTH,
-            BlockFace.WEST,
-            BlockFace.EAST));
-
-    public static final Set<BlockFace> ALL_FACES = Collections.unmodifiableSet(EnumSet.of(
-            BlockFace.UP,
-            BlockFace.DOWN,
-            BlockFace.NORTH,
-            BlockFace.SOUTH,
-            BlockFace.WEST,
-            BlockFace.EAST));
-
     /**
      * This can be used to know if the {@link Block}s are next to each other.
      *
@@ -141,18 +141,17 @@ public final class BlockUtils
     /**
      * This counts the {@link Block}s around the given block if they are not air/empty.
      *
-     * @param block          the block that faces should be checked for other {@link Block}s
-     * @param onlyHorizontal whether only the {@link Block}s should be counted that are horizontal around the block or all {@link Block}s (horizontal + vertical)
+     * @param block the block that faces should be checked for other {@link Block}s
      *
      * @return the amount of {@link Block}s which were counted
      */
-    public static byte countBlocksAround(final Block block, final boolean onlyHorizontal)
+    public static byte countBlocksAround(final Block block, final boolean ignoreLiquids)
     {
         byte count = 0;
-        for (final BlockFace f : onlyHorizontal ?
-                                 HORIZONTAL_FACES :
-                                 ALL_FACES) {
-            if (!block.getRelative(f).isEmpty()) {
+        Block relative;
+        for (final BlockFace f : ALL_FACES) {
+            relative = block.getRelative(f);
+            if (!relative.isEmpty() && (!ignoreLiquids || !LIQUIDS.contains(relative.getType()))) {
                 count++;
             }
         }
@@ -191,6 +190,7 @@ public final class BlockUtils
             case MC113:
             case MC114:
             case MC115:
+            case MC116:
                 return material != Material.BARRIER && material != Material.SPAWNER && material.isOccluding();
             default:
                 throw new UnknownMinecraftVersion();
@@ -217,10 +217,7 @@ public final class BlockUtils
                     // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
                     case MC113:
                         // Make sure that the block above is not obstructed by blocks
-                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) ||
-                              aboveBlock.isPassable()
-                        ))
-                        {
+                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) || aboveBlock.isPassable())) {
                             return false;
                         }
 
@@ -228,11 +225,9 @@ public final class BlockUtils
                         return aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation(), 0.5, 1, 0.5, entity -> entity.getType() == EntityType.OCELOT).isEmpty();
                     case MC114:
                     case MC115:
+                    case MC116:
                         // Make sure that the block above is not obstructed by blocks
-                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) ||
-                              aboveBlock.isPassable()
-                        ))
-                        {
+                        if (!(FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()) || aboveBlock.isPassable())) {
                             return false;
                         }
 

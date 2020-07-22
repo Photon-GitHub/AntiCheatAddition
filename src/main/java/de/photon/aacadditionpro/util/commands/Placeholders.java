@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.util.commands;
 
-import de.photon.aacadditionpro.util.general.StringUtils;
 import de.photon.aacadditionpro.util.server.ServerUtil;
+import de.photon.aacadditionpro.util.strings.StringUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

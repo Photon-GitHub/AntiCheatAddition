@@ -105,7 +105,7 @@ public class Tower implements ListenerModule, ViolationModule
     @Override
     public void disable()
     {
-        towerBatchProcessor.stopProcessing();
+        towerBatchProcessor.killProcessing();
     }
 
     @Override

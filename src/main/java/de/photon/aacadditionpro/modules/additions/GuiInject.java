@@ -167,6 +167,12 @@ public class GuiInject implements ListenerModule, RestrictedServerVersion, Depen
     }
 
     @Override
+    public boolean isSubModule()
+    {
+        return false;
+    }
+
+    @Override
     public ModuleType getModuleType()
     {
         return ModuleType.GUI_INJECT;

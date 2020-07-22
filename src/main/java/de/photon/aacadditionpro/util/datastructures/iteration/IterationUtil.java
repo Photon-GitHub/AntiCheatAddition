@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.datastructures.stream;
+package de.photon.aacadditionpro.util.datastructures.iteration;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

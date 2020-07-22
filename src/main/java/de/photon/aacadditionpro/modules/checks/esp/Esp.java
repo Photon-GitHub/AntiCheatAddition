@@ -6,8 +6,8 @@ import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.files.configs.Configs;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.visibility.HideMode;
 import de.photon.aacadditionpro.util.visibility.PlayerInformationModifier;
 import de.photon.aacadditionpro.util.visibility.informationmodifiers.InformationObfuscator;
@@ -213,6 +213,12 @@ public class Esp implements ListenerModule
         fullHider.unregisterListeners();
         informationOnlyHider.resetTable();
         informationOnlyHider.unregisterListeners();
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

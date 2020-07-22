@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.util.files.configs;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
 
 import java.io.File;

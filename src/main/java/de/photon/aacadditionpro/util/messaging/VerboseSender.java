@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util;
+package de.photon.aacadditionpro.util.messaging;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.events.ClientControlEvent;
@@ -97,9 +97,7 @@ public final class VerboseSender implements Listener
                 }
 
                 // Add the rest of the PREFIX and the message
-                verboseMessage.append("] ");
-                verboseMessage.append(logMessage);
-                verboseMessage.append('\n');
+                verboseMessage.append(']').append(' ').append(logMessage).append('\n');
 
                 // Log the message
                 Files.write(logFile.toPath(), verboseMessage.toString().getBytes(), StandardOpenOption.APPEND);

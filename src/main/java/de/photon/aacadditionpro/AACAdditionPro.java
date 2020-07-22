@@ -35,7 +35,7 @@ import de.photon.aacadditionpro.modules.clientcontrol.VersionControl;
 import de.photon.aacadditionpro.modules.clientcontrol.WorldDownloaderControl;
 import de.photon.aacadditionpro.user.DataUpdaterEvents;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -174,7 +174,7 @@ public class AACAdditionPro extends JavaPlugin
 
                     // Normal checks
                     new AutoEat(),
-                    new AutoFish(),
+                    AutoFish.getInstance(),
                     new AutoPotion(),
                     Esp.getInstance(),
                     new Fastswitch(),

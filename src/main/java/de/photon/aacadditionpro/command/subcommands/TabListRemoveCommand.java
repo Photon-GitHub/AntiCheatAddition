@@ -8,7 +8,7 @@ import de.photon.aacadditionpro.command.CommandAttributes;
 import de.photon.aacadditionpro.command.InternalCommand;
 import de.photon.aacadditionpro.command.TabCompleteSupplier;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
-import de.photon.aacadditionpro.util.playersimulation.displayinformation.DisplayInformation;
+import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPlayerInfo;
 import de.photon.aacadditionpro.util.server.ServerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -80,11 +80,11 @@ public class TabListRemoveCommand extends InternalCommand
 
     private void updatePlayerInfo(final EnumWrappers.PlayerInfoAction action, final Player affectedPlayer, final Player modifiedPlayer)
     {
-        DisplayInformation.updatePlayerInformation(action,
-                                                   WrappedGameProfile.fromPlayer(modifiedPlayer),
-                                                   ServerUtil.getPing(modifiedPlayer),
-                                                   EnumWrappers.NativeGameMode.fromBukkit(modifiedPlayer.getGameMode()),
-                                                   null,
-                                                   affectedPlayer);
+        WrapperPlayServerPlayerInfo.updatePlayerInformation(action,
+                                                            WrappedGameProfile.fromPlayer(modifiedPlayer),
+                                                            ServerUtil.getPing(modifiedPlayer),
+                                                            EnumWrappers.NativeGameMode.fromBukkit(modifiedPlayer.getGameMode()),
+                                                            null,
+                                                            affectedPlayer);
     }
 }

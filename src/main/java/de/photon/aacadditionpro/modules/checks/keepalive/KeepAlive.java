@@ -13,7 +13,7 @@ import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.user.subdata.KeepAliveData;
-import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.WrapperPlayKeepAlive;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientKeepAlive;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;

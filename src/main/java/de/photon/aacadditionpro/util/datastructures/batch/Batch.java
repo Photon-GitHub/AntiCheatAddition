@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.datastructures.batch;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.user.User;
 
@@ -18,10 +19,12 @@ public class Batch<T>
 
     public Batch(User user, int capacity, T dummyLastAdded)
     {
+        Preconditions.checkArgument(capacity > 0, "Invalid batch size specified.");
+
         this.user = user;
         this.capacity = capacity;
         this.values = (T[]) new Object[capacity];
-        this.lastAdded = dummyLastAdded;
+        this.lastAdded = Preconditions.checkNotNull(dummyLastAdded, "Tried to create batch without dummy.");
     }
 
     public synchronized void addDataPoint(T value)

@@ -8,7 +8,7 @@ import de.photon.aacadditionpro.modules.PluginMessageListenerModule;
 import de.photon.aacadditionpro.modules.RestrictedServerVersion;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

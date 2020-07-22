@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.playersimulation.movement;
+package de.photon.aacadditionpro.util.simulation;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

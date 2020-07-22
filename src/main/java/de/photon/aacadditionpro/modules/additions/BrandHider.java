@@ -19,8 +19,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class BrandHider implements ListenerModule
 {
-    private final FieldReflect playerChannelsField = Reflect.fromOBC("entity.CraftPlayer").field("channels");
     private static String brand;
+    private final FieldReflect playerChannelsField = Reflect.fromOBC("entity.CraftPlayer").field("channels");
+    @LoadFromConfiguration(configPath = ".refresh_rate")
+    private long refreshRate;
 
     public static void setBrand(String brand)
     {
@@ -28,8 +30,21 @@ public class BrandHider implements ListenerModule
         updateAllBrands();
     }
 
-    @LoadFromConfiguration(configPath = ".refresh_rate")
-    private long refreshRate;
+    private static void updateAllBrands()
+    {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            updateBrand(onlinePlayer);
+        }
+    }
+
+    private static void updateBrand(final Player player)
+    {
+        ByteBuf byteBuf = Unpooled.buffer();
+        final String sentBrand = Placeholders.replacePlaceholders(brand, player);
+        ByteBufUtil.writeString(sentBrand, byteBuf);
+        player.sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel(), ByteBufUtil.toArray(byteBuf));
+        byteBuf.release();
+    }
 
     @Override
     public void enable()
@@ -49,20 +64,10 @@ public class BrandHider implements ListenerModule
         updateBrand(event.getPlayer());
     }
 
-    private static void updateAllBrands()
+    @Override
+    public boolean isSubModule()
     {
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            updateBrand(onlinePlayer);
-        }
-    }
-
-    private static void updateBrand(final Player player)
-    {
-        ByteBuf byteBuf = Unpooled.buffer();
-        final String sentBrand = Placeholders.replacePlaceholders(brand, player);
-        ByteBufUtil.writeString(sentBrand, byteBuf);
-        player.sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel(), ByteBufUtil.toArray(byteBuf));
-        byteBuf.release();
+        return false;
     }
 
     @Override

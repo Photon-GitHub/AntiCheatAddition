@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 public abstract class BatchProcessor<T>
@@ -23,6 +24,17 @@ public abstract class BatchProcessor<T>
     public abstract void processBatch(User user, List<T> batch);
 
     public void stopProcessing()
+    {
+        this.executor.shutdown();
+
+        try {
+            this.executor.awaitTermination(100, TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            // Ignore.
+        }
+    }
+
+    public void killProcessing()
     {
         this.executor.shutdownNow();
     }

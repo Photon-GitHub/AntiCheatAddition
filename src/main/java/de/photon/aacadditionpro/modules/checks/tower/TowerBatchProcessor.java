@@ -4,10 +4,10 @@ import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.TowerData;
 import de.photon.aacadditionpro.user.subdata.datawrappers.TowerBlockPlace;
-import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.datastructures.batch.BatchProcessor;
-import de.photon.aacadditionpro.util.datastructures.stream.IterationUtil;
+import de.photon.aacadditionpro.util.datastructures.iteration.IterationUtil;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 
 import java.util.List;
 

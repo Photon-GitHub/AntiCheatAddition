@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.util.commands;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.events.PlayerAdditionViolationCommandEvent;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;

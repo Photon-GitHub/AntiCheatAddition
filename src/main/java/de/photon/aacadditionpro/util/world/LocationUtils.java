@@ -20,18 +20,6 @@ public final class LocationUtils
     }
 
     /**
-     * Gets the squared distance of two {@link Location}s, correctly handling cross-world requests.
-     *
-     * @return the squared distance of the two {@link Location}s or {@link Double#POSITIVE_INFINITY} if they are from different worlds.
-     */
-    public static double safeWorldDistanceSquared(final Location firstLocation, final Location secondLocation)
-    {
-        return firstLocation.getWorld().getUID().equals(secondLocation.getWorld().getUID()) ?
-               firstLocation.distanceSquared(secondLocation) :
-               Double.POSITIVE_INFINITY;
-    }
-
-    /**
      * Simple method to know if a {@link Location} is close to another {@link Location}
      *
      * @param firstLocation   the first {@link Location}

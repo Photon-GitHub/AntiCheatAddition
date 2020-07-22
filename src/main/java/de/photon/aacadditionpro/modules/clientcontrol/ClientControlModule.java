@@ -6,8 +6,8 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.commands.CommandUtils;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
-import de.photon.aacadditionpro.util.general.StringUtils;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
+import de.photon.aacadditionpro.util.strings.StringUtils;
 import org.bukkit.entity.Player;
 
 import java.util.List;

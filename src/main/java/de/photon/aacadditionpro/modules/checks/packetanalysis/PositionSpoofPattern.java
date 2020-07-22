@@ -8,7 +8,7 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientPositionLook;
 import org.bukkit.Location;
 

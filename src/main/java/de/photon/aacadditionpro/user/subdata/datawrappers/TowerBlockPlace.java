@@ -3,8 +3,8 @@ package de.photon.aacadditionpro.user.subdata.datawrappers;
 import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.util.playersimulation.movement.Gravitation;
-import de.photon.aacadditionpro.util.playersimulation.movement.Jumping;
+import de.photon.aacadditionpro.util.simulation.Gravitation;
+import de.photon.aacadditionpro.util.simulation.Jumping;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 

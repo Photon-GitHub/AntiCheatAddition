@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 
 /**
  * This {@link de.photon.aacadditionpro.modules.PatternModule.PacketPattern} flags KeepAlive packets that are ignored by the client.

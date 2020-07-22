@@ -5,7 +5,6 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.util.playersimulation.movement.Gravitation;
 import de.photon.aacadditionpro.util.playersimulation.movement.Jumping;
-import lombok.Getter;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
@@ -32,42 +31,43 @@ public class TowerBlockPlace extends BlockPlace
             // 140 * 0.925
             129.5);
 
-    @Getter
-    private final double delay;
+    Integer jumpBoostLevel;
+    Integer levitationLevel;
 
     public TowerBlockPlace(Block block, Integer jumpBoostLevel, Integer levitationLevel)
     {
         super(block);
-        delay = calculateDelay(jumpBoostLevel, levitationLevel);
+        this.jumpBoostLevel = jumpBoostLevel;
+        this.levitationLevel = levitationLevel;
     }
 
     /**
      * Calculates the time needed to place one block.
      */
-    private static double calculateDelay(Integer jumpBoostLevel, Integer levitationLevel)
+    public double calculateDelay()
     {
-        if (levitationLevel != null) {
+        if (this.levitationLevel != null) {
             // 0.9 Blocks per second per levitation level.
-            return 900 / ((levitationLevel + 1D) * TOWER_LENIENCY * LEVITATION_LENIENCY);
+            return 900 / ((this.levitationLevel + 1D) * TOWER_LENIENCY * LEVITATION_LENIENCY);
         }
 
         // No JUMP_BOOST
-        if (jumpBoostLevel == null) {
+        if (this.jumpBoostLevel == null) {
             return AMPLIFIER_CACHE.get(0);
         }
 
         // Player has JUMP_BOOST
-        if (jumpBoostLevel < 0) {
+        if (this.jumpBoostLevel < 0) {
             // Negative JUMP_BOOST -> Not allowed to place blocks -> Very high delay
             return 1500;
         }
 
-        if (jumpBoostLevel + 1 < AMPLIFIER_CACHE.size()) {
-            return AMPLIFIER_CACHE.get(jumpBoostLevel + 1);
+        if (this.jumpBoostLevel + 1 < AMPLIFIER_CACHE.size()) {
+            return AMPLIFIER_CACHE.get(this.jumpBoostLevel + 1);
         }
 
         // The velocity in the beginning
-        Vector currentVelocity = new Vector(0, Jumping.getJumpYMotion(jumpBoostLevel), 0);
+        Vector currentVelocity = new Vector(0, Jumping.getJumpYMotion(this.jumpBoostLevel), 0);
 
         // The first tick (1) happens here
         double currentBlockValue = currentVelocity.getY();

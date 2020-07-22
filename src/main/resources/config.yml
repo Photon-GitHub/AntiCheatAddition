@@ -541,7 +541,7 @@ Tower:
   levitation_leniency: 0.9
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
   # to prevent further towering (measured in ms)
-  timeout: 5500
+  timeout: 6000
   # Map of violation levels to command
   thresholds:
     5: "aac notify {player} in {world} is suspected for Tower"

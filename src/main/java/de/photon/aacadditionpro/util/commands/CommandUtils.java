@@ -33,12 +33,12 @@ public final class CommandUtils
      */
     public static void executeCommand(final String command)
     {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
+        Bukkit.getScheduler().runTask(
                 AACAdditionPro.getInstance(),
                 () -> {
                     //Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
                     try {
-                        Bukkit.dispatchCommand(AACAdditionPro.getInstance().getServer().getConsoleSender(), command);
+                        Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), command);
                         VerboseSender.getInstance().sendVerboseMessage(ChatColor.GOLD + "Executed command: " + command);
                     } catch (final Exception e) {
                         VerboseSender.getInstance().sendVerboseMessage("Could not execute command /" + command, true, true);

@@ -14,13 +14,13 @@ import de.photon.aacadditionpro.modules.checks.Fastswitch;
 import de.photon.aacadditionpro.modules.checks.ImpossibleChat;
 import de.photon.aacadditionpro.modules.checks.SkinBlinker;
 import de.photon.aacadditionpro.modules.checks.Teaming;
-import de.photon.aacadditionpro.modules.checks.Tower;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFish;
 import de.photon.aacadditionpro.modules.checks.esp.Esp;
 import de.photon.aacadditionpro.modules.checks.inventory.Inventory;
 import de.photon.aacadditionpro.modules.checks.keepalive.KeepAlive;
 import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysis;
 import de.photon.aacadditionpro.modules.checks.scaffold.Scaffold;
+import de.photon.aacadditionpro.modules.checks.tower.Tower;
 import de.photon.aacadditionpro.modules.clientcontrol.BetterSprintingControl;
 import de.photon.aacadditionpro.modules.clientcontrol.DamageIndicator;
 import de.photon.aacadditionpro.modules.clientcontrol.FiveZigControl;
@@ -185,7 +185,7 @@ public class AACAdditionPro extends JavaPlugin
                     new Scaffold(),
                     new SkinBlinker(),
                     new Teaming(),
-                    new Tower())
+                    Tower.getInstance())
             );
 
             // Data storage

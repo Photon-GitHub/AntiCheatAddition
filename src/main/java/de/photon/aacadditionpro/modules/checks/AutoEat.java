@@ -17,9 +17,6 @@ public class AutoEat implements ListenerModule, ViolationModule
 {
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 6000L);
 
-    @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancelVl;
-
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
@@ -36,7 +33,7 @@ public class AutoEat implements ListenerModule, ViolationModule
         // After half a second check if it was the last interaction ticks check if this
         Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> {
             if (user.getTimestampMap().getTimeStamp(TimestampKey.LAST_RIGHT_CLICK_CONSUMABLE_ITEM_EVENT) < user.getTimestampMap().getTimeStamp(TimestampKey.LAST_CONSUME_EVENT)) {
-                vlManager.flag(user.getPlayer(), cancelVl, () -> user.getTimestampMap().updateTimeStamp(TimestampKey.AUTOEAT_TIMEOUT), () -> {});
+                vlManager.flag(user.getPlayer(), () -> user.getTimestampMap().updateTimeStamp(TimestampKey.AUTOEAT_TIMEOUT), () -> {});
             }
         }, 10);
 

@@ -21,14 +21,19 @@ public class TowerBlockPlace extends BlockPlace
      */
     private static final List<Double> AMPLIFIER_CACHE = ImmutableList.of(
             // 478.4 * 0.925
+            // No jump boost
             442.52D,
             // 578.4 * 0.925
+            // Jump boost 1
             542.52D,
             // 290 * 0.925
+            // Jump boost 2
             268.25,
             // 190 * 0.925
+            // Jump boost 3
             175.75,
             // 140 * 0.925
+            // Jump boost 4
             129.5);
 
     Integer jumpBoostLevel;
@@ -71,6 +76,7 @@ public class TowerBlockPlace extends BlockPlace
 
         // The first tick (1) happens here
         double currentBlockValue = currentVelocity.getY();
+        Double landingBlock = null;
 
         // Start the tick-loop at 2 due to the one tick outside.
         for (short ticks = 2; ticks < 160; ticks++) {
@@ -78,11 +84,16 @@ public class TowerBlockPlace extends BlockPlace
 
             // Break as the player has already reached the max height (no more blocks to place below).
             if (currentVelocity.getY() <= 0) {
-                // If the result is lower here, the detection is more lenient.
-                // * 50 : Convert ticks to milliseconds
-                // 0.925 is additional leniency
-                // Deliberately ignore the "falling" phase above the last block to increase leniency and code simplicity
-                return ((ticks * 50) / Math.floor(currentBlockValue)) * 0.925 * TOWER_LENIENCY;
+                if (landingBlock == null) {
+                    landingBlock = Math.floor(currentBlockValue);
+                } else if (currentBlockValue <= landingBlock) {
+                    // If the result is lower here, the detection is more lenient.
+                    // * 50 : Convert ticks to milliseconds
+                    // 0.92 is the required simulation leniency I got from testing.
+                    // 0.925 is additional leniency
+                    // -15 is special leniency for high jump boost environments.
+                    return ((((ticks * 50) / landingBlock) * 0.92 * 0.925) - 15) * TOWER_LENIENCY;
+                }
             }
 
             currentBlockValue += currentVelocity.getY();

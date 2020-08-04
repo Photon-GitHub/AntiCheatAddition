@@ -19,6 +19,6 @@ public class TowerData extends SubData
         super(user);
 
         batch = new Batch<>(user, TOWER_BATCH_SIZE, new TowerBlockPlace(user.getPlayer().getEyeLocation().getBlock(), null, null));
-        batch.registerProcessor(Tower.getInstance().getTowerBatchProcessor());
+        batch.registerProcessor(Tower.getInstance().getBatchProcessor());
     }
 }

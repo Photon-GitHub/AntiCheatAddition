@@ -65,11 +65,6 @@ public interface Module
 
             module.enable();
 
-            // Make sure that parts don't change the state of the PatternModule
-            if (!(module instanceof PatternModule.Pattern)) {
-                module.getModuleType().setEnabled(true);
-            }
-
             sendNotice(module, module.getConfigString() + " has been enabled.");
         } catch (final Exception e) {
             VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be enabled.", true, true);
@@ -101,11 +96,6 @@ public interface Module
             }
 
             module.disable();
-
-            // Make sure that parts don't change the state of the PatternModule
-            if (!(module instanceof PatternModule.Pattern)) {
-                module.getModuleType().setEnabled(false);
-            }
 
             sendNotice(module, module.getConfigString() + " has been disabled.");
         } catch (final Exception e) {

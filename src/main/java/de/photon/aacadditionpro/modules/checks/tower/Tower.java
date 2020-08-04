@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.modules.checks.tower;
 
+import de.photon.aacadditionpro.modules.BatchProcessorModule;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.ViolationModule;
@@ -23,14 +24,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 
-public class Tower implements ListenerModule, ViolationModule
+public class Tower implements ListenerModule, ViolationModule, BatchProcessorModule<TowerBlockPlace>
 {
     @Getter
     private static final Tower instance = new Tower();
 
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
-
-    @Getter
     private BatchProcessor<TowerBlockPlace> towerBatchProcessor;
 
     @Getter
@@ -94,6 +93,18 @@ public class Tower implements ListenerModule, ViolationModule
                 }
             }
         }
+    }
+
+    @Override
+    public BatchProcessor<TowerBlockPlace> getBatchProcessor()
+    {
+        return towerBatchProcessor;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

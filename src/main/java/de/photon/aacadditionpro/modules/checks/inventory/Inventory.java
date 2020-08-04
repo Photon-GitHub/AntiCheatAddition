@@ -7,13 +7,17 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ListenerModule;
+import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.modules.checks.autofish.ConsistencyPattern;
+import de.photon.aacadditionpro.modules.checks.autofish.InhumanReactionPattern;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,6 +29,10 @@ import java.util.Set;
 
 public class Inventory extends PacketAdapter implements ListenerModule, PacketListenerModule, PatternModule, ViolationModule
 {
+    @Getter
+    private static final Inventory instance = new Inventory();
+    private static final Set<Module> submodules = ImmutableSet.of(ConsistencyPattern.getInstance(), InhumanReactionPattern.getInstance());
+
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 80L);
 
     private final AverageHeuristicPattern averageHeuristicPattern = new AverageHeuristicPattern();
@@ -102,7 +110,7 @@ public class Inventory extends PacketAdapter implements ListenerModule, PacketLi
     }
 
     @Override
-    public Set<Pattern> getPatterns()
+    public Set<Module> getSubModules()
     {
         return ImmutableSet.of(averageHeuristicPattern,
                                hitPattern,

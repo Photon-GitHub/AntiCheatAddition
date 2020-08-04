@@ -21,7 +21,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AverageHeuristicPattern implements BatchProcessorModule<InventoryClick>, ListenerModule
@@ -112,13 +111,7 @@ public class AverageHeuristicPattern implements BatchProcessorModule<InventoryCl
         @Override
         public void processBatch(User user, List<InventoryClick> batch)
         {
-            final List<InventoryClick.BetweenClickInformation> betweenClicks = new ArrayList<>();
-
-            IterationUtil.twoObjectsIterationToEnd(batch, (old, current) -> {
-                if (old.inventory.equals(current.inventory)) {
-                    betweenClicks.add(new InventoryClick.BetweenClickInformation(old, current));
-                }
-            });
+            final List<InventoryClick.BetweenClickInformation> betweenClicks = IterationUtil.pairCombine(batch, (old, current) -> old.inventory.equals(current.inventory), InventoryClick.BetweenClickInformation::new);
 
             // Not enough data to check as the player opened many different inventories.
             if (betweenClicks.size() < 8) {

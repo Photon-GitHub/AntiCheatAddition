@@ -3,10 +3,13 @@ package de.photon.aacadditionpro.util.datastructures.iteration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.RandomAccess;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 
 /**
  * Provides special iteration methods.
@@ -14,6 +17,35 @@ import java.util.function.BiConsumer;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IterationUtil
 {
+    /**
+     * This uses {@link #twoObjectsIterationToEnd(List, BiConsumer)} to map a {@link List} to a {@link List} of between objects.
+     *
+     * @param iterable  the {@link List} to iterate over.
+     * @param predicate a {@link BiPredicate} to check whether a pair of Ts shall be mapped with the mapping function.
+     * @param mapping   the function that will be called on each pair of Ts via {@link #twoObjectsIterationToEnd(List, BiConsumer)} to create a new object that will be inserted into the result list.
+     */
+    public static <T, V> List<V> pairCombine(List<T> iterable, BiPredicate<T, T> predicate, BiFunction<T, T, V> mapping)
+    {
+        final List<V> result = new ArrayList<>(iterable.size() - 1);
+        twoObjectsIterationToEnd(iterable, (old, current) -> {
+            if (predicate.test(old, current)) {
+                result.add(mapping.apply(old, current));
+            }
+        });
+        return result;
+    }
+
+    /**
+     * This uses {@link #twoObjectsIterationToEnd(List, BiConsumer)} to map a {@link List} to a {@link List} of between objects.
+     *
+     * @param iterable the {@link List} to iterate over.
+     * @param mapping  the function that will be called on each pair of Ts via {@link #twoObjectsIterationToEnd(List, BiConsumer)} to create a new object that will be inserted into the result list.
+     */
+    public static <T, V> List<V> pairCombine(List<T> iterable, BiFunction<T, T, V> mapping)
+    {
+        return pairCombine(iterable, (old, current) -> true, mapping);
+    }
+
     /**
      * Allows for an iteration with two objects present each time.
      * Assumes that the newer objects are added at the end of the list.

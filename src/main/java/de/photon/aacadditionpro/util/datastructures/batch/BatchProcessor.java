@@ -31,6 +31,7 @@ public abstract class BatchProcessor<T>
             this.executor.awaitTermination(100, TimeUnit.DAYS);
         } catch (InterruptedException e) {
             // Ignore.
+            Thread.currentThread().interrupt();
         }
     }
 

@@ -1,9 +1,11 @@
 package de.photon.aacadditionpro.util.reflection;
 
+import de.photon.aacadditionpro.AACAdditionPro;
 import lombok.Getter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
 
 public class MethodReflect
 {
@@ -20,7 +22,7 @@ public class MethodReflect
         try {
             return this.method.invoke(obj, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to invoke field via reflection", e);
         }
 
         return null;

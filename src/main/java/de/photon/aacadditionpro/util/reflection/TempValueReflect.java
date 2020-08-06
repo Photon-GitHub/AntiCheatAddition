@@ -1,8 +1,11 @@
 package de.photon.aacadditionpro.util.reflection;
 
+import de.photon.aacadditionpro.AACAdditionPro;
+
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * @author geNAZt
@@ -24,7 +27,7 @@ public class TempValueReflect
         try {
             return (T) this.field.get(obj);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to get field as custom type via reflection", e);
         }
 
         return null;
@@ -35,7 +38,7 @@ public class TempValueReflect
         try {
             return (byte[]) this.field.get(obj);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to get field as byte array via reflection", e);
         }
 
         return new byte[0];
@@ -46,7 +49,7 @@ public class TempValueReflect
         try {
             return this.field.getDouble(obj);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to get field as double via reflection", e);
         }
 
         return 0;
@@ -57,7 +60,7 @@ public class TempValueReflect
         try {
             return (List<T>) this.field.get(obj);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to get field as list via reflection", e);
         }
 
         return null;
@@ -68,7 +71,7 @@ public class TempValueReflect
         try {
             return (Set<T>) this.field.get(obj);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to get field as set via reflection", e);
         }
 
         return null;

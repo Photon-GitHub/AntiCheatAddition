@@ -1,7 +1,10 @@
 package de.photon.aacadditionpro.util.reflection;
 
+import de.photon.aacadditionpro.AACAdditionPro;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 /**
  * @author geNAZt
@@ -19,12 +22,10 @@ public class Reflect
 
     public static ClassReflect from(String classPath)
     {
-        try
-        {
+        try {
             return from(Reflect.class.getClassLoader().loadClass(classPath));
-        } catch (ClassNotFoundException e)
-        {
-            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to reflect class from path.", e);
         }
 
         return null;

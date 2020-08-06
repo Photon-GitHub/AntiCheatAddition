@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class OldLabyModControl extends ClientControlModule implements ListenerModule, RestrictedServerVersion
 {
@@ -56,8 +57,8 @@ public class OldLabyModControl extends ClientControlModule implements ListenerMo
             out.writeObject(featureMap);
             packetWrapper.setContents(byteOut.toByteArray());
             packetWrapper.sendPacket(user.getPlayer());
-        } catch (final IOException exception) {
-            exception.printStackTrace();
+        } catch (final IOException e) {
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "OldLabyModControl failed to send feature map.", e);
         }
     }
 

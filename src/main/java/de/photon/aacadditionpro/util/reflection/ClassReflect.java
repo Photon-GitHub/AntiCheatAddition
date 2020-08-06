@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.reflection;
 
+import de.photon.aacadditionpro.AACAdditionPro;
 import lombok.Getter;
 
 import java.lang.reflect.Constructor;
@@ -7,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 /**
  * @author geNAZt
@@ -39,7 +41,7 @@ public class ClassReflect
                 fieldReflect = new FieldReflect(field);
                 this.cache.putIfAbsent(name, fieldReflect);
             } catch (NoSuchFieldException e) {
-                e.printStackTrace();
+                AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to find field via reflection", e);
                 return null;
             }
         }
@@ -85,7 +87,7 @@ public class ClassReflect
                 constructorReflect = new ConstructorReflect(constructor);
                 this.constructorCache.putIfAbsent(cacheKey, constructorReflect);
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+                AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to find method via reflection", e);
             }
         }
 

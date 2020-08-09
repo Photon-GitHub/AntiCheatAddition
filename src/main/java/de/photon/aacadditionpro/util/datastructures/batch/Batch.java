@@ -16,10 +16,9 @@ public class Batch<T>
 {
     private final User user;
     private final T[] values;
-    private final int capacity;
     private final Set<BatchProcessor<T>> processors = new HashSet<>();
 
-    private volatile int index = 0;
+    private int index = 0;
     // Volatile is ok here as we do not change the object itself and only care for the reference.
     private T lastAdded;
 
@@ -28,7 +27,6 @@ public class Batch<T>
         Preconditions.checkArgument(capacity > 0, "Invalid batch size specified.");
 
         this.user = user;
-        this.capacity = capacity;
         this.values = (T[]) new Object[capacity];
         this.lastAdded = Preconditions.checkNotNull(dummyLastAdded, "Tried to create batch without dummy.");
     }
@@ -41,7 +39,7 @@ public class Batch<T>
         this.lastAdded = value;
         this.values[this.index++] = value;
 
-        if (this.index >= this.capacity) {
+        if (this.index >= this.values.length) {
             final List<T> list = ImmutableList.copyOf(this.values);
 
             for (BatchProcessor<T> processor : processors) {
@@ -58,7 +56,7 @@ public class Batch<T>
      * value.
      */
     @NotNull
-    public T peekLastAdded()
+    public synchronized T peekLastAdded()
     {
         return lastAdded;
     }
@@ -67,7 +65,7 @@ public class Batch<T>
      * Clears the {@link Batch} by setting the write index to 0.
      * This will make any newly added datapoints overwrite the currently present data.
      */
-    public void clear()
+    public synchronized void clear()
     {
         // No synchronized is needed as we only perform one write operation.
         this.index = 0;

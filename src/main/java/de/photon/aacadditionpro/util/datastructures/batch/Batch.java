@@ -2,10 +2,10 @@ package de.photon.aacadditionpro.util.datastructures.batch;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.user.User;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -16,7 +16,7 @@ public class Batch<T>
 {
     private final User user;
     private final T[] values;
-    private final Set<BatchProcessor<T>> processors = new HashSet<>();
+    private final Set<BatchProcessor<T>> processors = Sets.newCopyOnWriteArraySet();
 
     private int index = 0;
     // Volatile is ok here as we do not change the object itself and only care for the reference.
@@ -42,11 +42,12 @@ public class Batch<T>
         if (this.index >= this.values.length) {
             final List<T> list = ImmutableList.copyOf(this.values);
 
-            for (BatchProcessor<T> processor : processors) {
+            for (BatchProcessor<T> processor : this.processors) {
                 processor.submit(this.user, list);
             }
 
-            this.clear();
+            // Clear the batch.
+            this.index = 0;
         }
     }
 
@@ -75,7 +76,7 @@ public class Batch<T>
      * Register a {@link BatchProcessor} which shall receive a copy of the {@link Batch} data once the {@link Batch}
      * capacity is reached.
      */
-    public synchronized void registerProcessor(@NotNull BatchProcessor<T> processor)
+    public void registerProcessor(@NotNull BatchProcessor<T> processor)
     {
         this.processors.add(processor);
     }
@@ -83,7 +84,7 @@ public class Batch<T>
     /**
      * Unregister a {@link BatchProcessor}.
      */
-    public synchronized void unregisterProcessor(@NotNull BatchProcessor<T> processor)
+    public void unregisterProcessor(@NotNull BatchProcessor<T> processor)
     {
         this.processors.remove(processor);
     }

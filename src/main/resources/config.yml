@@ -134,6 +134,8 @@ Esp:
   # If your server has more a lot of players in one world within its render distance the ESP check will create a
   # medium - high CPU load.
   #
+  # IF YOU NOTICE PLAYERS OR THEIR ARMOR POPPING UP OUT OF NOWHERE YOUR SERVER DOES NOT HAVE THE REQUIRED PERFORMANCE.
+  #
   # Approximate maximum player table for a certain amount of cores to not lag the server:
   # 1 Core   | 40 Players
   # 2 Cores  | 60 Players

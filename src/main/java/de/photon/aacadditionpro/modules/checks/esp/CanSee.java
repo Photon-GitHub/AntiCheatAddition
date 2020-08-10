@@ -42,18 +42,10 @@ public class CanSee
     /**
      * Determines whether a {@link User} can see another {@link User}
      */
-    public static boolean canSee(User observerUser, User watchedUser)
+    public static boolean canSee(Player observer, Player watched)
     {
-        final Player observer = observerUser.getPlayer();
-        final Player watched = watchedUser.getPlayer();
-
-        // Not bypassed
-        if (observerUser.isBypassed(ModuleType.ESP) ||
-            // Has not logged in recently to prevent bugs
-            observerUser.hasLoggedInRecently(3000) ||
-            // Glowing handling
-            PotionUtil.hasPotionEffect(watched, InternalPotionEffectType.GLOWING))
-        {
+        // Glowing.
+        if (PotionUtil.hasPotionEffect(watched, InternalPotionEffectType.GLOWING)) {
             return true;
         }
 

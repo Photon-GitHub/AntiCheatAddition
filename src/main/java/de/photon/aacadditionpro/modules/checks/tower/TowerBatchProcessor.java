@@ -22,6 +22,7 @@ public class TowerBatchProcessor extends BatchProcessor<TowerBlockPlace>
     public void processBatch(User user, List<TowerBlockPlace> batch)
     {
         final double[] results = new double[2];
+
         IterationUtil.twoObjectsIterationToEnd(batch, (old, current) -> {
             // [0] = Expected time; [1] = Real time
             results[0] += current.calculateDelay();

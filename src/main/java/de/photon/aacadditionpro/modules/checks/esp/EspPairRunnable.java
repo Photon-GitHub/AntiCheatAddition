@@ -1,45 +1,45 @@
 package de.photon.aacadditionpro.modules.checks.esp;
 
-import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.visibility.HideMode;
+import org.bukkit.entity.Player;
 
 class EspPairRunnable implements Runnable
 {
-    private final User observingUser;
-    private final User watched;
+    private final Player observer;
+    private final Player watched;
 
     private final int playerTrackingRange;
 
-    public EspPairRunnable(User observingUser, User watched)
+    public EspPairRunnable(Player observer, Player watched)
     {
-        this.observingUser = observingUser;
+        this.observer = observer;
         this.watched = watched;
-        this.playerTrackingRange = Esp.getInstance().playerTrackingRanges.getOrDefault(observingUser.getPlayer().getWorld().getUID(), Esp.getInstance().defaultTrackingRange);
+        this.playerTrackingRange = Esp.getInstance().playerTrackingRanges.getOrDefault(observer.getWorld(), Esp.getInstance().defaultTrackingRange);
     }
 
     @Override
     public void run()
     {
         // The users are always in the same world (see above)
-        final double pairDistanceSquared = observingUser.getPlayer().getLocation().distanceSquared(watched.getPlayer().getLocation());
+        final double pairDistanceSquared = observer.getLocation().distanceSquared(watched.getPlayer().getLocation());
 
         // Less than 1 block distance
         // Everything (smaller than 1)^2 will result in something smaller than 1
         if (pairDistanceSquared < 1) {
-            Esp.getInstance().updatePairHideMode(observingUser, watched, HideMode.NONE);
+            Esp.getInstance().updatePairHideMode(observer, watched, HideMode.NONE);
             return;
         }
 
         if (pairDistanceSquared > this.playerTrackingRange) {
-            Esp.getInstance().updatePairHideMode(observingUser, watched, Esp.getInstance().hideAfterRenderDistance ?
-                                                                         HideMode.FULL :
-                                                                         HideMode.NONE);
+            Esp.getInstance().updatePairHideMode(observer, watched, Esp.getInstance().hideAfterRenderDistance ?
+                                                                    HideMode.FULL :
+                                                                    HideMode.NONE);
             return;
         }
 
         // Update hide mode in both directions.
-        Esp.getInstance().updateHideMode(observingUser, watched.getPlayer(),
-                                         CanSee.canSee(observingUser, watched) ?
+        Esp.getInstance().updateHideMode(observer, watched.getPlayer(),
+                                         CanSee.canSee(observer, watched) ?
                                          // Is the user visible
                                          HideMode.NONE :
                                          // If the observed player is sneaking hide him fully
@@ -47,15 +47,15 @@ class EspPairRunnable implements Runnable
                                           HideMode.FULL :
                                           HideMode.INFORMATION_ONLY));
 
-        Esp.getInstance().updateHideMode(watched, observingUser.getPlayer(),
-                                         CanSee.canSee(watched, observingUser) ?
+        Esp.getInstance().updateHideMode(watched, observer.getPlayer(),
+                                         CanSee.canSee(watched, observer) ?
                                          // Is the user visible
                                          HideMode.NONE :
                                          // If the observed player is sneaking hide him fully
-                                         (observingUser.getPlayer().isSneaking() ?
+                                         (observer.getPlayer().isSneaking() ?
                                           HideMode.FULL :
                                           HideMode.INFORMATION_ONLY));
 
-        Esp.getInstance().activeCalculations.getAndDecrement();
+        Esp.getInstance().cycleSemaphore.release();
     }
 }

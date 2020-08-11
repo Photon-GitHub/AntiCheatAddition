@@ -65,20 +65,22 @@ public class CanSee
         final double[] lastIntersectionsCache = new double[10];
         int cacheIndex = 0;
 
-        for (Vector cameraVector : cameraVectors) {
+        Location start;
+        Vector between;
+        double intersect;
+        for (final Vector cameraVector : cameraVectors) {
             for (final Vector destinationVector : watchedHitboxVectors) {
-                final Location start = cameraVector.toLocation(observer.getWorld());
+                start = cameraVector.toLocation(observer.getWorld());
                 // The resulting Vector
                 // The camera is not blocked by non-solid blocks
                 // Vector is intersecting with some blocks
                 //
                 // Cloning IS needed as we are in a second loop.
-                final Vector between = destinationVector.clone().subtract(cameraVector);
+                between = destinationVector.clone().subtract(cameraVector);
 
                 // ---------------------------------------------- FOV ----------------------------------------------- //
-                final Vector cameraRotation = cameraVector.clone().subtract(observer.getLocation().toVector());
 
-                if (cameraRotation.angle(between) > MAX_FOV) {
+                if (cameraVector.clone().subtract(observer.getLocation().toVector()).angle(between) > MAX_FOV) {
                     continue;
                 }
 
@@ -97,7 +99,7 @@ public class CanSee
 
                 // --------------------------------------- Normal Calculation --------------------------------------- //
 
-                final double intersect = EspUtil.getDistanceToFirstIntersectionWithBlock(start, between);
+                intersect = EspUtil.getDistanceToFirstIntersectionWithBlock(start, between);
 
                 // No intersection found
                 if (intersect == 0) {

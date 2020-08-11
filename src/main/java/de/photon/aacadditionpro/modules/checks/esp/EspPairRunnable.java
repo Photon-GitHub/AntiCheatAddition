@@ -27,6 +27,7 @@ class EspPairRunnable implements Runnable
         // Everything (smaller than 1)^2 will result in something smaller than 1
         if (pairDistanceSquared < 1) {
             Esp.getInstance().updatePairHideMode(observer, watched, HideMode.NONE);
+            Esp.getInstance().cycleSemaphore.release();
             return;
         }
 
@@ -34,6 +35,7 @@ class EspPairRunnable implements Runnable
             Esp.getInstance().updatePairHideMode(observer, watched, Esp.getInstance().hideAfterRenderDistance ?
                                                                     HideMode.FULL :
                                                                     HideMode.NONE);
+            Esp.getInstance().cycleSemaphore.release();
             return;
         }
 

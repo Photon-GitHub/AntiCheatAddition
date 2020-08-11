@@ -6,6 +6,7 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.Configs;
+import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.visibility.HideMode;
 import de.photon.aacadditionpro.util.visibility.PlayerInformationModifier;
 import de.photon.aacadditionpro.util.visibility.informationmodifiers.InformationObfuscator;
@@ -33,16 +34,19 @@ public class Esp implements ListenerModule
     private static final int MAX_BLOCK_ITERATOR_RANGE_SQUARED = 139 * 139;
 
     // Work stealing pool as the pairs can have vastly different execution times.
-    final ExecutorService pairExecutor = Executors.newWorkStealingPool();
+
     // The packet hiders.
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
     Semaphore cycleSemaphore = new Semaphore(0);
+
     // The auto-config-data
     boolean hideAfterRenderDistance;
     int defaultTrackingRange;
     Map<World, Integer> playerTrackingRanges;
 
+    // The execution
+    private ExecutorService pairExecutor;
     private Thread supplierThread;
 
     @Override
@@ -50,6 +54,7 @@ public class Esp implements ListenerModule
     {
         // Make sure the Semaphore has the correct initial value, even if the check is restarted.
         cycleSemaphore = new Semaphore(0);
+        pairExecutor = Executors.newWorkStealingPool();
 
         // Register the packet hiders.
         fullHider.registerListeners();
@@ -105,6 +110,10 @@ public class Esp implements ListenerModule
                                 }
                             }
 
+                            // Every iteration the number of players is reduced by 1. We start with players.size() - 1
+                            // as the first player is removed right away and will not count towards the connections.
+                            startedThreads += MathUtils.gaussianSumFormulaTo(players.size() - 1);
+
                             while (!players.isEmpty()) {
                                 // Remove the finished player to reduce the amount of added entries.
                                 // This makes sure the player won't have a connection with himself.
@@ -113,7 +122,6 @@ public class Esp implements ListenerModule
 
                                 for (Player watched : players) {
                                     pairExecutor.execute(new EspPairRunnable(observer, watched));
-                                    ++startedThreads;
                                 }
                             }
                         }

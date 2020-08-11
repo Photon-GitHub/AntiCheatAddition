@@ -34,8 +34,6 @@ public class Esp implements ListenerModule
     private static final Esp instance = new Esp();
     private static final int MAX_BLOCK_ITERATOR_RANGE_SQUARED = 139 * 139;
 
-    // Work stealing pool as the pairs can have vastly different execution times.
-
     // The packet hiders.
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
@@ -46,7 +44,7 @@ public class Esp implements ListenerModule
     int defaultTrackingRange;
     Map<World, Integer> playerTrackingRanges;
 
-    // The execution
+    // Work stealing pool as the pairs can have vastly different execution times.
     private ExecutorService pairExecutor;
     private Thread supplierThread;
 

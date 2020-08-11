@@ -134,6 +134,8 @@ Esp:
   # If your server has more a lot of players in one world within its render distance the ESP check will create a
   # medium - high CPU load.
   #
+  # If you create new worlds make sure to disable and enable the ESP check once to register the new worlds.
+  #
   # IF YOU NOTICE PLAYERS OR THEIR ARMOR POPPING UP OUT OF NOWHERE YOUR SERVER DOES NOT HAVE THE REQUIRED PERFORMANCE.
   #
   # Approximate maximum player table for a certain amount of cores to not lag the server:

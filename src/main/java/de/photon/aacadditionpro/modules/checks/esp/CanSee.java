@@ -124,26 +124,26 @@ public class CanSee
         final Location tempStart = start.clone();
 
         Location cacheLocation;
-        for (int i = 0; i < lastIntersectionsCache.length; ++i) {
-            // Not yet cached.
-            if (lastIntersectionsCache[i] != 0) {
-                cacheLocation = tempStart.add(tempBetween.normalize().multiply(lastIntersectionsCache[i]));
+        // The lastIntersectionsCache[i] != 0 condition ensures that the cache is filled.
+        // If a 0 is encountered we can assume that the cache just filled until that point, as it is filled from
+        // beginning to end.
+        for (int i = 0; i < lastIntersectionsCache.length && lastIntersectionsCache[i] != 0; ++i) {
+            cacheLocation = tempStart.add(tempBetween.normalize().multiply(lastIntersectionsCache[i]));
 
-                final Material type = cacheLocation.getBlock().getType();
-                if (BlockUtils.isReallyOccluding(type) && type.isSolid()) {
-                    return true;
-                }
-
-                // Reset the tempBetween vector
-                tempBetween.setX(between.getX());
-                tempBetween.setY(between.getY());
-                tempBetween.setZ(between.getZ());
-
-                // Reset the tempStart location
-                tempStart.setX(start.getX());
-                tempStart.setY(start.getY());
-                tempStart.setZ(start.getZ());
+            final Material type = cacheLocation.getBlock().getType();
+            if (BlockUtils.isReallyOccluding(type) && type.isSolid()) {
+                return true;
             }
+
+            // Reset the tempBetween vector
+            tempBetween.setX(between.getX());
+            tempBetween.setY(between.getY());
+            tempBetween.setZ(between.getZ());
+
+            // Reset the tempStart location
+            tempStart.setX(start.getX());
+            tempStart.setY(start.getY());
+            tempStart.setZ(start.getZ());
         }
         return false;
     }

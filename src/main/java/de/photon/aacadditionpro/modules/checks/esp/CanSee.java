@@ -126,7 +126,7 @@ public class CanSee
         for (int i = 0; i < lastIntersectionsCache.length; ++i) {
             // Not yet cached.
             if (lastIntersectionsCache[i] != 0) {
-                cacheLocation = start.add(tempBetween.normalize().multiply(lastIntersectionsCache[i]));
+                cacheLocation = start.clone().add(tempBetween.normalize().multiply(lastIntersectionsCache[i]));
 
                 final Material type = cacheLocation.getBlock().getType();
                 if (BlockUtils.isReallyOccluding(type) && type.isSolid()) {

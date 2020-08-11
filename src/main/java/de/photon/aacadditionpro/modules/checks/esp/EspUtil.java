@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.util.world.BlockUtils;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,12 +14,11 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EspUtil
 {
     // The camera offset for 3rd person
     private static final boolean RAY_TRACING = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.ESP.getConfigString() + ".ray_tracing", false);
-
-    private EspUtil() {}
 
     /**
      * Get to know where the {@link Vector} intersects with a {@link org.bukkit.block.Block}.
@@ -30,12 +31,13 @@ public final class EspUtil
      */
     public static double getDistanceToFirstIntersectionWithBlock(final Location start, final Vector direction)
     {
-        final int length = (int) Math.floor(direction.length());
         Preconditions.checkNotNull(start.getWorld(), "RayTrace: Unknown start world.");
+        final int length = (int) direction.length();
 
         if (length >= 1) {
             if (RAY_TRACING) {
-                RayTraceResult result = start.getWorld().rayTraceBlocks(start, direction, length, FluidCollisionMode.NEVER, true);
+                final RayTraceResult result = start.getWorld().rayTraceBlocks(start, direction, length, FluidCollisionMode.NEVER, true);
+
                 // Hit nothing or the other player
                 if (result == null || result.getHitBlock() == null) {
                     return 0;

@@ -150,7 +150,10 @@ Esp:
   # This determines whether minecrafts 3rd person modes should be considered for calculation as well.
   # Disabling this will reduce the reqiured number of raytraces by two thirds.
   # Especially useful if you have certain gamemodes in which players are not supposed to use the third person mode.
-  calculate_third_person_modes: false
+  calculate_third_person_modes: true
+  # Setting this to true will ESP render players with much less vectors for improved performance.
+  # This might lead to more edge cases where players are hidden even though they are actually visible.
+  low_vector_hitboxes: true
   # This will make AACAdditionPro use the new ray tracing of Spigot 1.13 and upwards.
   # This is more accurate than the normal BlockIterator heuristic, but may have a much worse performance.
   # Only activate if your Spigot is version 1.13 and upwards.

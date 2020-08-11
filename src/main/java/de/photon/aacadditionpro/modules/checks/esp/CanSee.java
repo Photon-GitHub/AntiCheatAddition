@@ -15,8 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -30,13 +29,15 @@ public class CanSee
      * This should supply all necessary camera vectors.
      */
     private static final Function<Player, Vector[]> CAMERA_VECTOR_SUPPLIER;
+    private static final boolean LOW_VECTOR_HITBOXES;
 
     static {
-        if (AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.ESP.getConfigString() + ".calculate_third_person_modes")) {
+        if (AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.ESP.getConfigString() + ".calculate_third_person_modes", true)) {
             CAMERA_VECTOR_SUPPLIER = new CanSeeThirdPerson();
         } else {
             CAMERA_VECTOR_SUPPLIER = new CanSeeNoThirdPerson();
         }
+        LOW_VECTOR_HITBOXES = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.ESP.getConfigString() + ".low_vector_hitboxes", true);
     }
 
     /**
@@ -54,13 +55,15 @@ public class CanSee
         final Vector[] cameraVectors = CAMERA_VECTOR_SUPPLIER.apply(observer);
 
         // Get the Vectors of the hitbox to check.
-        final Vector[] watchedHitboxVectors = (watched.isSneaking() ?
-                                               Hitbox.ESP_SNEAKING_PLAYER :
-                                               Hitbox.ESP_PLAYER).getCalculationVectors(watched.getLocation());
+        final Hitbox hitbox = watched.isSneaking() ? Hitbox.ESP_SNEAKING_PLAYER : Hitbox.ESP_PLAYER;
+        final Vector[] watchedHitboxVectors = LOW_VECTOR_HITBOXES ?
+                                              hitbox.getLowResolutionCalculationVectors(watched.getLocation()) :
+                                              hitbox.getCalculationVectors(watched.getLocation());
 
         // The distance of the intersections in the same block is equal as of the BlockIterator mechanics.
         // Use ArrayList because we do not cache many values in here and therefore HashSet is more expensive.
-        final List<Double> lastIntersectionsCache = new ArrayList<>(40);
+        final double[] lastIntersectionsCache = new double[10];
+        int cacheIndex = 0;
 
         for (Vector cameraVector : cameraVectors) {
             for (final Vector destinationVector : watchedHitboxVectors) {
@@ -87,26 +90,8 @@ public class CanSee
                     return true;
                 }
 
-                boolean cacheHit = false;
-
-                Location cacheLocation;
-                for (Double length : lastIntersectionsCache) {
-                    cacheLocation = start.clone().add(between.clone().normalize().multiply(length));
-
-                    // Not yet cached.
-                    if (length == 0) {
-                        continue;
-                    }
-
-                    final Material type = cacheLocation.getBlock().getType();
-
-                    if (BlockUtils.isReallyOccluding(type) && type.isSolid()) {
-                        cacheHit = true;
-                        break;
-                    }
-                }
-
-                if (cacheHit) {
+                // Check if there is a block on a cached location that obstructs the view.
+                if (checkCache(lastIntersectionsCache, start, between)) {
                     continue;
                 }
 
@@ -119,12 +104,39 @@ public class CanSee
                     return true;
                 }
 
-                lastIntersectionsCache.add(intersect);
+                lastIntersectionsCache[cacheIndex] = intersect;
+                cacheIndex = (cacheIndex + 1) % lastIntersectionsCache.length;
             }
+
+            // Low probability to help after the camera view was changed. -> clearing
+            Arrays.fill(lastIntersectionsCache, 0);
         }
 
-        // Low probability to help after the camera view was changed. -> clearing
-        lastIntersectionsCache.clear();
+        return false;
+    }
+
+    private static boolean checkCache(double[] lastIntersectionsCache, Location start, Vector between)
+    {
+        // Use the tempBetween vector to avoid unnecessary cloning.
+        final Vector tempBetween = between.clone();
+
+        Location cacheLocation;
+        for (int i = 0; i < lastIntersectionsCache.length; ++i) {
+            // Not yet cached.
+            if (lastIntersectionsCache[i] != 0) {
+                cacheLocation = start.add(tempBetween.normalize().multiply(lastIntersectionsCache[i]));
+
+                final Material type = cacheLocation.getBlock().getType();
+                if (BlockUtils.isReallyOccluding(type) && type.isSolid()) {
+                    return true;
+                }
+
+                // Reset the tempBetween vector
+                tempBetween.setX(between.getX());
+                tempBetween.setY(between.getY());
+                tempBetween.setZ(between.getZ());
+            }
+        }
         return false;
     }
 }

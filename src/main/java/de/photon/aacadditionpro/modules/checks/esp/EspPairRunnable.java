@@ -39,6 +39,7 @@ class EspPairRunnable implements Runnable
         Esp.getInstance().updateHideMode(observer, watched.getPlayer(), observerToWatched);
         Esp.getInstance().updateHideMode(watched, observer.getPlayer(), watchedToObserver);
 
+        // Mark this calculation as finished.
         Esp.getInstance().cycleSemaphore.release();
     }
 

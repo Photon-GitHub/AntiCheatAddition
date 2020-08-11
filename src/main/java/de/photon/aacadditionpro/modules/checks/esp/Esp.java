@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.modules.checks.esp;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
@@ -52,16 +53,8 @@ public class Esp implements ListenerModule
     @Override
     public void enable()
     {
-        // Make sure the Semaphore has the correct initial value, even if the check is restarted.
-        cycleSemaphore = new Semaphore(0);
-        pairExecutor = Executors.newWorkStealingPool();
-
-        // Register the packet hiders.
-        fullHider.registerListeners();
-        informationOnlyHider.registerListeners();
-
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
-        final ConfigurationSection worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
+        final ConfigurationSection worlds = Preconditions.checkNotNull(Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings"), "World settings are not present. Aborting ESP enable.");
         final ImmutableMap.Builder<World, Integer> rangeBuilder = ImmutableMap.builder();
 
         int currentPlayerTrackingRange = 0;
@@ -90,6 +83,14 @@ public class Esp implements ListenerModule
         this.playerTrackingRanges = rangeBuilder.build();
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
+
+        // Make sure the Semaphore has the correct initial value, even if the check is restarted.
+        cycleSemaphore = new Semaphore(0);
+        pairExecutor = Executors.newWorkStealingPool();
+
+        // Register the packet hiders.
+        fullHider.registerListeners();
+        informationOnlyHider.registerListeners();
 
         class EspSupplierThread extends Thread
         {

@@ -34,12 +34,10 @@ public class Esp implements ListenerModule
 
     // Work stealing pool as the pairs can have vastly different execution times.
     final ExecutorService pairExecutor = Executors.newWorkStealingPool();
-    final Semaphore cycleSemaphore = new Semaphore(0);
-
     // The packet hiders.
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
-
+    Semaphore cycleSemaphore = new Semaphore(0);
     // The auto-config-data
     boolean hideAfterRenderDistance;
     int defaultTrackingRange;
@@ -50,6 +48,10 @@ public class Esp implements ListenerModule
     @Override
     public void enable()
     {
+        // Make sure the Semaphore has the correct initial value, even if the check is restarted.
+        cycleSemaphore = new Semaphore(0);
+
+        // Register the packet hiders.
         fullHider.registerListeners();
         informationOnlyHider.registerListeners();
 

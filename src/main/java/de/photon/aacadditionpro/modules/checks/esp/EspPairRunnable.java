@@ -11,6 +11,18 @@ class EspPairRunnable implements Runnable
     private final Player observer;
     private final Player watched;
 
+    @NotNull
+    private static HideMode getHideModeCanSee(Player observingPlayer, Player watchedPlayer)
+    {
+        // Is the user visible
+        if (CanSee.canSee(observingPlayer, watchedPlayer)) {
+            return HideMode.NONE;
+        }
+
+        // If the watched player is sneaking hide him fully
+        return watchedPlayer.isSneaking() ? HideMode.FULL : HideMode.INFORMATION_ONLY;
+    }
+
     @Override
     public void run()
     {
@@ -41,17 +53,5 @@ class EspPairRunnable implements Runnable
 
         // Mark this calculation as finished.
         Esp.getInstance().cycleSemaphore.release();
-    }
-
-    @NotNull
-    private HideMode getHideModeCanSee(Player observingPlayer, Player watchedPlayer)
-    {
-        // Is the user visible
-        if (CanSee.canSee(observingPlayer, watchedPlayer)) {
-            return HideMode.NONE;
-        }
-
-        // If the observed player is sneaking hide him fully
-        return observer.isSneaking() ? HideMode.FULL : HideMode.INFORMATION_ONLY;
     }
 }

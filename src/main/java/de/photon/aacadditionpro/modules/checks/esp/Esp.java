@@ -113,13 +113,14 @@ public class Esp implements ListenerModule
 
                                 for (Player watched : players) {
                                     pairExecutor.execute(new EspPairRunnable(observer, watched));
-                                    startedThreads++;
+                                    ++startedThreads;
                                 }
                             }
                         }
 
                         // Wait for all threads to finish.
                         cycleSemaphore.acquire(startedThreads);
+                        startedThreads = 0;
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

@@ -119,14 +119,15 @@ public class CanSee
 
     private static boolean checkCache(double[] lastIntersectionsCache, Location start, Vector between)
     {
-        // Use the tempBetween vector to avoid unnecessary cloning.
+        // Use the tempBetween vector and tempStart location to avoid unnecessary cloning.
         final Vector tempBetween = between.clone();
+        final Location tempStart = start.clone();
 
         Location cacheLocation;
         for (int i = 0; i < lastIntersectionsCache.length; ++i) {
             // Not yet cached.
             if (lastIntersectionsCache[i] != 0) {
-                cacheLocation = start.clone().add(tempBetween.normalize().multiply(lastIntersectionsCache[i]));
+                cacheLocation = tempStart.add(tempBetween.normalize().multiply(lastIntersectionsCache[i]));
 
                 final Material type = cacheLocation.getBlock().getType();
                 if (BlockUtils.isReallyOccluding(type) && type.isSolid()) {
@@ -137,6 +138,11 @@ public class CanSee
                 tempBetween.setX(between.getX());
                 tempBetween.setY(between.getY());
                 tempBetween.setZ(between.getZ());
+
+                // Reset the tempStart location
+                tempStart.setX(start.getX());
+                tempStart.setY(start.getY());
+                tempStart.setZ(start.getZ());
             }
         }
         return false;

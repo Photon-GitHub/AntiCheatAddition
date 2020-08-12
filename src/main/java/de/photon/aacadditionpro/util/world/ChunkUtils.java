@@ -40,7 +40,7 @@ public final class ChunkUtils
      */
     public static boolean areChunksLoadedBetweenLocations(final Location one, final Location two)
     {
-        Preconditions.checkArgument(one.getWorld().getUID().equals(two.getWorld().getUID()), "Tried to check chunks between worlds.");
+        Preconditions.checkArgument(LocationUtils.inSameWorld(one, two), "Tried to check chunks between worlds.");
 
         // Basic starting location check
         if (!isChunkLoaded(one.getWorld(), one.getBlockX(), one.getBlockZ())) {

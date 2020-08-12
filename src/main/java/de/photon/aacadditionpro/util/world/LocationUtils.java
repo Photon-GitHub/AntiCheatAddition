@@ -16,7 +16,12 @@ public final class LocationUtils
      */
     public static boolean inSameWorld(Entity entity1, Entity entity2)
     {
-        return entity1.getWorld().getUID().equals(entity2.getWorld().getUID());
+        return inSameWorld(entity1.getLocation(), entity2.getLocation());
+    }
+
+    public static boolean inSameWorld(Location locationOne, Location locationTwo)
+    {
+        return locationOne.getWorld().getUID().equals(locationTwo.getWorld().getUID());
     }
 
     /**
@@ -30,7 +35,7 @@ public final class LocationUtils
      */
     public static boolean areLocationsInRange(final Location firstLocation, final Location secondLocation, final double squaredDistance)
     {
-        return firstLocation.getWorld().getUID().equals(secondLocation.getWorld().getUID()) &&
+        return inSameWorld(firstLocation, secondLocation) &&
                firstLocation.distanceSquared(secondLocation) <= squaredDistance;
     }
 }

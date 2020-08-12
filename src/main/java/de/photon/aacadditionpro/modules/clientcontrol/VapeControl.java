@@ -10,6 +10,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -19,6 +20,9 @@ import java.util.Set;
 
 public class VapeControl extends ClientControlModule implements ListenerModule, PluginMessageListenerModule, RestrictedServerVersion
 {
+    @Getter
+    private static final VapeControl instance = new VapeControl();
+
     @EventHandler
     public void on(PlayerJoinEvent event)
     {

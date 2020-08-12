@@ -16,11 +16,15 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPosition;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
+import lombok.Getter;
 
 import java.util.Set;
 
 public class PacketAnalysis extends PacketAdapter implements PacketListenerModule, PatternModule, ViolationModule
 {
+    @Getter
+    private static final PacketAnalysis instance = new PacketAnalysis();
+
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 200);
 
     private final AnimationPattern animationPattern = new AnimationPattern();
@@ -78,7 +82,7 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
-        final User user = PacketListenerModule.safeGetUserFromEvent(event);
+        final User user = UserManager.safeGetUserFromPacketEvent(event);
 
         if (User.isUserInvalid(user, this.getModuleType())) {
             return;

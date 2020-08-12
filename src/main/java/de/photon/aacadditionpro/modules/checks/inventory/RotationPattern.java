@@ -8,6 +8,7 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.client.IWrapperPlayClientLook;
@@ -32,7 +33,7 @@ class RotationPattern extends PacketAdapter implements PacketListenerModule
     @Override
     public void onPacketReceiving(PacketEvent packetEvent)
     {
-        final User user = PacketListenerModule.safeGetUserFromEvent(packetEvent);
+        final User user = UserManager.safeGetUserFromPacketEvent(packetEvent);
 
         if (User.isUserInvalid(user, this.getModuleType())) {
             return;

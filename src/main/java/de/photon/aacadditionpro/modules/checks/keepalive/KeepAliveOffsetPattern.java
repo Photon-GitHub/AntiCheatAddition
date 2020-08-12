@@ -4,13 +4,16 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.KeepAliveData;
+import lombok.Getter;
 
 /**
- * This {@link de.photon.aacadditionpro.modules.PatternModule.Pattern} detects responses to KeepAlive packets which are
+ * This {@link de.photon.aacadditionpro.modules.Module} detects responses to KeepAlive packets which are
  * out of order.
  */
 public class KeepAliveOffsetPattern extends PatternModule.Pattern<User, Integer>
 {
+    @Getter
+    private static final KeepAliveOffsetPattern instance = new KeepAliveOffsetPattern();
 
     @Override
     protected int process(User user, Integer offset)

@@ -14,6 +14,7 @@ import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +23,9 @@ import java.util.Set;
 
 public class BetterSprintingControl extends ClientControlModule implements PluginMessageListenerModule, RestrictedServerVersion
 {
+    @Getter
+    private static final BetterSprintingControl instance = new BetterSprintingControl();
+
     private static final Set<MessageChannel> CHANNELS;
 
     static {

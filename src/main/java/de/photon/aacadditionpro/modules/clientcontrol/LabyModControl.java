@@ -8,6 +8,7 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
+import lombok.Getter;
 import net.labymod.serverapi.Permission;
 import net.labymod.serverapi.bukkit.event.LabyModPlayerJoinEvent;
 import net.labymod.serverapi.bukkit.event.PermissionsSendEvent;
@@ -19,6 +20,9 @@ import java.util.Set;
 
 public class LabyModControl extends ClientControlModule implements ListenerModule, Dependency
 {
+    @Getter
+    private static final LabyModControl instance = new LabyModControl();
+
     // Do not init here as that will cause errors as Permission cannot be found.
     private Map<Permission, Boolean> featureMap;
 

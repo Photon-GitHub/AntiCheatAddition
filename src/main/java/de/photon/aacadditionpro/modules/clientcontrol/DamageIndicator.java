@@ -16,6 +16,7 @@ import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerEntityMetadata;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerNamedEntitySpawn;
+import lombok.Getter;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EnderDragon;
@@ -30,6 +31,9 @@ import java.util.Objects;
 
 public class DamageIndicator extends PacketAdapter implements PacketListenerModule
 {
+    @Getter
+    private static final DamageIndicator instance = new DamageIndicator();
+
     @LoadFromConfiguration(configPath = ".spoof.players")
     private boolean spoofPlayers;
     @LoadFromConfiguration(configPath = ".spoof.animals")
@@ -142,6 +146,12 @@ public class DamageIndicator extends PacketAdapter implements PacketListenerModu
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

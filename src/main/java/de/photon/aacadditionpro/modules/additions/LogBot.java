@@ -5,6 +5,7 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -13,6 +14,9 @@ import java.util.concurrent.TimeUnit;
 
 public class LogBot implements Module, Runnable
 {
+    @Getter
+    private static final LogBot instance = new LogBot();
+
     // HashMap's real capacity is always a power of 2
     private final Map<File, Long> logDeletionTimes = ImmutableMap.of(
             // Put the respective times in milliseconds into the map.

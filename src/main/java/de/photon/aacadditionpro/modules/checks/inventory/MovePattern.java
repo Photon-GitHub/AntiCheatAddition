@@ -10,6 +10,7 @@ import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
@@ -55,7 +56,7 @@ class MovePattern extends PacketAdapter implements PacketListenerModule
     @Override
     public void onPacketReceiving(PacketEvent event)
     {
-        final User user = PacketListenerModule.safeGetUserFromEvent(event);
+        final User user = UserManager.safeGetUserFromPacketEvent(event);
 
         if (User.isUserInvalid(user, this.getModuleType())) {
             return;

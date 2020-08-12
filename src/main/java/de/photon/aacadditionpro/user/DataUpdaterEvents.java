@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
@@ -307,7 +306,7 @@ public final class DataUpdaterEvents implements Listener
         @Override
         public void onPacketReceiving(final PacketEvent event)
         {
-            final User user = PacketListenerModule.safeGetUserFromEvent(event);
+            final User user = UserManager.safeGetUserFromPacketEvent(event);
 
             if (user == null) {
                 return;

@@ -13,6 +13,7 @@ import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import de.photon.aacadditionpro.util.world.LocationUtils;
+import lombok.Getter;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,6 +23,9 @@ import java.util.Set;
 
 public class Scaffold implements ListenerModule, PatternModule, ViolationModule
 {
+    @Getter
+    private static final Scaffold instance = new Scaffold();
+
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 80L);
 
     private final AnglePattern anglePattern = new AnglePattern();

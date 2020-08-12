@@ -7,12 +7,16 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
+import lombok.Getter;
 
 /**
  * This {@link de.photon.aacadditionpro.modules.PatternModule.PacketPattern} flags KeepAlive packets that are ignored by the client.
  */
 class KeepAliveIgnoredPattern extends PatternModule.PacketPattern
 {
+    @Getter
+    private static final KeepAliveIgnoredPattern instance = new KeepAliveIgnoredPattern();
+
     KeepAliveIgnoredPattern()
     {
         super(ImmutableSet.of(PacketType.Play.Server.KEEP_ALIVE));

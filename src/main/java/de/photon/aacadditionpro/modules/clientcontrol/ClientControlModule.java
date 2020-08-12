@@ -81,4 +81,10 @@ abstract class ClientControlModule implements Module
                this.isBrandChannel(channel) &&
                this.mcBrandMessageContains(channel, message, flags);
     }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
+    }
 }

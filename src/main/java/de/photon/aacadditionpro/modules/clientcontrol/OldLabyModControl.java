@@ -10,6 +10,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerCustomPayload;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
+import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -22,6 +23,9 @@ import java.util.logging.Level;
 
 public class OldLabyModControl extends ClientControlModule implements ListenerModule, RestrictedServerVersion
 {
+    @Getter
+    private static final OldLabyModControl instance = new OldLabyModControl();
+
     private Map<String, Boolean> featureMap;
 
     @Override

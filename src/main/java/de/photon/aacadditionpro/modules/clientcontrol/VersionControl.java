@@ -19,6 +19,9 @@ import java.util.UUID;
 
 public class VersionControl implements Module, Dependency
 {
+    @Getter
+    private static final VersionControl instance = new VersionControl();
+
     /**
      * Unmodifiable {@link Set} containing all registered {@link ProtocolVersion}s.
      */

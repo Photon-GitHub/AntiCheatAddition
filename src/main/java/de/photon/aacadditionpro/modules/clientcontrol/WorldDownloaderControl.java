@@ -6,6 +6,7 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PluginMessageListenerModule;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,6 +18,9 @@ import java.util.logging.Level;
 
 public class WorldDownloaderControl extends ClientControlModule implements PluginMessageListenerModule
 {
+    @Getter
+    private static final WorldDownloaderControl instance = new WorldDownloaderControl();
+
     private static final MessageChannel WDL_CONTROL_CHANNEL = new MessageChannel("wdl", "control");
 
     @LoadFromConfiguration(configPath = ".disable")

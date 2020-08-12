@@ -8,6 +8,7 @@ import de.photon.aacadditionpro.modules.Dependency;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.RestrictedServerVersion;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -27,10 +28,13 @@ import java.util.Set;
 
 public class GuiInject implements ListenerModule, RestrictedServerVersion, Dependency
 {
+    public static final String AAC_GUI_TITLE = ChatColor.RED + "AAC " + ChatColor.DARK_GRAY + "GUI | Checks";
+    @Getter
+    private static final GuiInject instance = new GuiInject();
+
     private static final ItemStack AACADDITIONPRO_ITEMSTACK;
     private static final ItemStack BACK_ITEMSTACK;
     private static final String AACADDITIONPRO_TITLE = ChatColor.GOLD + "AACAdditionPro " + ChatColor.DARK_GRAY + "GUI | Checks";
-    public static final String AAC_GUI_TITLE = ChatColor.RED + "AAC " + ChatColor.DARK_GRAY + "GUI | Checks";
 
     static {
         AACADDITIONPRO_ITEMSTACK = new ItemStack(Material.DIAMOND);

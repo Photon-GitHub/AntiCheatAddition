@@ -17,12 +17,16 @@ import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.WrapperPlayKeepAlive;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientKeepAlive;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
+import lombok.Getter;
 
 import java.util.Iterator;
 import java.util.Set;
 
 public class KeepAlive extends PacketAdapter implements PacketListenerModule, PatternModule, ViolationModule
 {
+    @Getter
+    private static final KeepAlive instance = new KeepAlive();
+
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 200);
 
     private final KeepAliveIgnoredPattern keepAliveIgnoredPattern = new KeepAliveIgnoredPattern();
@@ -43,11 +47,7 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
     @Override
     public void onPacketSending(PacketEvent event)
     {
-        if (event.isPlayerTemporary()) {
-            return;
-        }
-
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.safeGetUserFromPacketEvent(event);
 
         // Not bypassed
         if (User.isUserInvalid(user, this.getModuleType())) {
@@ -61,7 +61,7 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
-        final User user = PacketListenerModule.safeGetUserFromEvent(event);
+        final User user = UserManager.safeGetUserFromPacketEvent(event);
 
         if (User.isUserInvalid(user, this.getModuleType())) {
             return;

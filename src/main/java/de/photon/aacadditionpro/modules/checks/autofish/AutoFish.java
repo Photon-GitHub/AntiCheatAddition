@@ -16,6 +16,7 @@ public class AutoFish implements ViolationModule, RestrictedServerVersion
 {
     @Getter
     private static final AutoFish instance = new AutoFish();
+
     private static final Set<Module> submodules = ImmutableSet.of(ConsistencyPattern.getInstance(), InhumanReactionPattern.getInstance());
 
     @Getter

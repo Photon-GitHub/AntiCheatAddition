@@ -9,14 +9,19 @@ import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.server.ServerUtil;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
+import lombok.Getter;
 
 public class Fastswitch extends PacketAdapter implements PacketListenerModule, ViolationModule
 {
+    @Getter
+    private static final Fastswitch instance = new Fastswitch();
+
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
@@ -47,7 +52,7 @@ public class Fastswitch extends PacketAdapter implements PacketListenerModule, V
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
-        final User user = PacketListenerModule.safeGetUserFromEvent(event);
+        final User user = UserManager.safeGetUserFromPacketEvent(event);
 
         if (User.isUserInvalid(user, this.getModuleType())) {
             return;
@@ -78,6 +83,12 @@ public class Fastswitch extends PacketAdapter implements PacketListenerModule, V
     public ViolationLevelManagement getViolationLevelManagement()
     {
         return vlManager;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.modules.clientcontrol;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
@@ -68,15 +69,21 @@ public class VersionControl implements Module, Dependency
         Configs.VIAVERSION.getConfigurationRepresentation().requestValueChange(
                 "block-disconnect-msg",
                 // Construct the message.
-                AACAdditionPro.getInstance().getConfig().getString("ClientControl.VersionControl.message")
-                              // Replace the special placeholder
-                              .replace("{supportedVersions}", String.join(", ", versionStrings)));
+                Preconditions.checkNotNull(AACAdditionPro.getInstance().getConfig().getString("ClientControl.VersionControl.message"), "VersionControl message is null. Please fix your config.")
+                             // Replace the special placeholder
+                             .replace("{supportedVersions}", String.join(", ", versionStrings)));
 
         // Make the protocol numbers appear more visually appealing in the ViaVersion config
         blockedProtocolNumbers.sort(Integer::compareTo);
 
         // Block the affected protocol numbers.
         Configs.VIAVERSION.getConfigurationRepresentation().requestValueChange("block-protocols", blockedProtocolNumbers);
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

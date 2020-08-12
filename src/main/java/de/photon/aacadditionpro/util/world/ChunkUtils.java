@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.world;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Location;
@@ -39,9 +40,7 @@ public final class ChunkUtils
      */
     public static boolean areChunksLoadedBetweenLocations(final Location one, final Location two)
     {
-        if (!one.getWorld().getUID().equals(two.getWorld().getUID())) {
-            throw new IllegalArgumentException("Tried to check chunks between worlds.");
-        }
+        Preconditions.checkArgument(one.getWorld().getUID().equals(two.getWorld().getUID()), "Tried to check chunks between worlds.");
 
         // Basic starting location check
         if (!isChunkLoaded(one.getWorld(), one.getBlockX(), one.getBlockZ())) {
@@ -63,8 +62,7 @@ public final class ChunkUtils
             steps = (int) Math.ceil(Math.abs(deltaX));
             xStep = Math.signum(deltaX);
             zStep = deltaZ / steps;
-        }
-        else {
+        } else {
             modifyX = true;
             steps = (int) Math.ceil(Math.abs(deltaZ));
             xStep = deltaX / Math.abs(deltaZ);
@@ -93,8 +91,7 @@ public final class ChunkUtils
                 if (modifyX) {
                     workingModifiedX = workingX + modifier;
                     workingModifiedZ = workingZ;
-                }
-                else {
+                } else {
                     workingModifiedX = workingX;
                     workingModifiedZ = workingZ + modifier;
                 }

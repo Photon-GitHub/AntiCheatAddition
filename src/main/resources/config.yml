@@ -793,6 +793,7 @@ ClientControl:
       '1.13': true
       '1.14': true
       '1.15': true
+      '1.16': true
 
   # WorldDownloader is a popular modification to get the maps of a server
   WorldDownloader:

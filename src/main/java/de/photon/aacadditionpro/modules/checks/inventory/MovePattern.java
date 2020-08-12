@@ -1,16 +1,18 @@
 package de.photon.aacadditionpro.modules.checks.inventory;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
 import de.photon.aacadditionpro.util.server.ServerUtil;
 import de.photon.aacadditionpro.util.world.ChunkUtils;
@@ -22,8 +24,11 @@ import org.bukkit.util.Vector;
 
 import java.util.concurrent.ExecutionException;
 
-class MovePattern extends PatternModule.PacketPattern
+class MovePattern extends PacketAdapter implements PacketListenerModule
 {
+    @Getter
+    private static final MovePattern instance = new MovePattern();
+
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
     private int cancelVl;
@@ -37,15 +42,26 @@ class MovePattern extends PatternModule.PacketPattern
     @LoadFromConfiguration(configPath = ".world_change_time")
     private int worldChangeTime;
 
-    protected MovePattern()
+    public MovePattern()
     {
-        super(ImmutableSet.of(PacketType.Play.Client.POSITION, PacketType.Play.Client.POSITION_LOOK));
+        super(AACAdditionPro.getInstance(), ListenerPriority.LOWEST,
+              // Look
+              PacketType.Play.Client.LOOK,
+              // Move
+              PacketType.Play.Client.POSITION,
+              PacketType.Play.Client.POSITION_LOOK);
     }
 
     @Override
-    protected int process(User user, PacketEvent packetEvent)
+    public void onPacketReceiving(PacketEvent event)
     {
-        final IWrapperPlayPosition positionWrapper = packetEvent::getPacket;
+        final User user = PacketListenerModule.safeGetUserFromEvent(event);
+
+        if (User.isUserInvalid(user, this.getModuleType())) {
+            return;
+        }
+
+        final IWrapperPlayPosition positionWrapper = event::getPacket;
 
         final Vector moveTo = new Vector(positionWrapper.getX(),
                                          positionWrapper.getY(),
@@ -84,16 +100,17 @@ class MovePattern extends PatternModule.PacketPattern
             if (positiveVelocity != user.getDataMap().getBoolean(DataKey.POSITIVE_VELOCITY)) {
                 if (user.getDataMap().getBoolean(DataKey.ALLOWED_TO_JUMP)) {
                     user.getDataMap().setValue(DataKey.ALLOWED_TO_JUMP, false);
-                    return 0;
+                    return;
                 }
 
-                message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " jumped while having an open inventory.";
-                return 10;
+                Inventory.getInstance().getViolationLevelManagement().flag(user.getPlayer(), 10, this.cancelVl, () -> this.cancelAction(user, event),
+                                                                           () -> VerboseSender.getInstance().sendVerboseMessage("Inventory-Verbose | Player: " + user.getPlayer().getName() + " jumped while having an open inventory."));
+                return;
             }
 
             // Make sure that the last jump is a little bit ago (same "breaking" effect that needs compensation.)
             if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES, 1850)) {
-                return 0;
+                return;
             }
 
             // No Y change anymore. AAC and the rule above makes sure that people cannot jump again.
@@ -108,24 +125,21 @@ class MovePattern extends PatternModule.PacketPattern
                 try {
                     // Needs to be called synchronously.
                     if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()).get())) {
-                        message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " moved while having an open inventory.";
-                        return 3;
+                        Inventory.getInstance().getViolationLevelManagement().flag(user.getPlayer(), 3, this.cancelVl, () -> this.cancelAction(user, event),
+                                                                                   () -> VerboseSender.getInstance().sendVerboseMessage("Inventory-Verbose | Player: " + user.getPlayer().getName() + " moved while having an open inventory."));
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    return 0;
                 } catch (ExecutionException e) {
-                    return 0;
+                    // Ignore
                 }
             }
         } else {
             user.getDataMap().setValue(DataKey.ALLOWED_TO_JUMP, true);
         }
-        return 0;
     }
 
-    @Override
-    public void cancelAction(User user, PacketEvent packetEvent)
+    private void cancelAction(User user, PacketEvent packetEvent)
     {
         final IWrapperPlayPosition positionWrapper = packetEvent::getPacket;
 
@@ -140,6 +154,12 @@ class MovePattern extends PatternModule.PacketPattern
             // Teleport back the next tick.
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> user.getPlayer().teleport(knownPosition, PlayerTeleportEvent.TeleportCause.UNKNOWN));
         }
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return true;
     }
 
     @Override

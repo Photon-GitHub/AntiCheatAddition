@@ -14,6 +14,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 class HitPattern implements ListenerModule
 {
+    @Getter
+    private static final HitPattern instance = new HitPattern();
+
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
     private int cancelVl;

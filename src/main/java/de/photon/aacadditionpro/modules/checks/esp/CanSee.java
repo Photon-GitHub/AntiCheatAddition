@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -24,7 +25,7 @@ public class CanSee
 {
     // The real MAX_FOV is 110 (quake pro), which results in 150° according to tests.
     // 150° + 15° (compensation) = 165°
-    protected static final double MAX_FOV = Math.toRadians(165D);
+    public static final double MAX_FOV = Math.toRadians(165D);
 
     /**
      * This should supply all necessary camera vectors.
@@ -33,11 +34,10 @@ public class CanSee
     private static final boolean LOW_VECTOR_HITBOXES;
 
     static {
-        if (AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.ESP.getConfigString() + ".calculate_third_person_modes", true)) {
-            CAMERA_VECTOR_SUPPLIER = new CanSeeThirdPerson();
-        } else {
-            CAMERA_VECTOR_SUPPLIER = new CanSeeNoThirdPerson();
-        }
+        CAMERA_VECTOR_SUPPLIER = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.ESP.getConfigString() + ".calculate_third_person_modes", true) ?
+                                 new CanSeeThirdPerson() :
+                                 new CanSeeNoThirdPerson();
+
         LOW_VECTOR_HITBOXES = AACAdditionPro.getInstance().getConfig().getBoolean(ModuleType.ESP.getConfigString() + ".low_vector_hitboxes", true);
     }
 
@@ -178,6 +178,21 @@ public class CanSee
             this.setZ(baseLocation.getZ());
             return this;
         }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+            return Objects.equals(baseLocation, ((ResetLocation) o).baseLocation);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(super.hashCode(), baseLocation);
+        }
     }
 
     private static class ResetVector extends Vector
@@ -197,6 +212,21 @@ public class CanSee
             this.y = baseVector.getY();
             this.z = baseVector.getZ();
             return this;
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+            return Objects.equals(baseVector, ((ResetVector) o).baseVector);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(super.hashCode(), baseVector);
         }
     }
 }

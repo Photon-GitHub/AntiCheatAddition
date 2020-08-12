@@ -55,6 +55,7 @@ public class Esp implements ListenerModule
         final ConfigurationSection worlds = Preconditions.checkNotNull(Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings"), "World settings are not present. Aborting ESP enable.");
         final ImmutableMap.Builder<World, Integer> rangeBuilder = ImmutableMap.builder();
 
+        defaultTrackingRange = MAX_BLOCK_ITERATOR_RANGE_SQUARED;
         int currentPlayerTrackingRange = 0;
         for (final String worldName : worlds.getKeys(false)) {
             // Squared tracking distance
@@ -97,12 +98,12 @@ public class Esp implements ListenerModule
             public void run()
             {
                 try {
-                    final Deque<Player> players = new ArrayDeque<>();
+                    final Deque<Player> players = new ArrayDeque<>(127);
                     Player observer;
                     int startedThreads = 0;
 
                     while (true) {
-                        for (World world : playerTrackingRanges.keySet()) {
+                        for (World world : Bukkit.getWorlds()) {
                             for (Player player : world.getPlayers()) {
                                 if (!User.isBypassed(player, getModuleType()) && player.getGameMode() != GameMode.SPECTATOR) {
                                     players.add(player);

@@ -128,7 +128,7 @@ public class VersionControl implements Module, Dependency
         private ProtocolVersion(final String name, final ServerVersion equivalentServerVersion, final Integer... versionNumbers)
         {
             this.name = name;
-            this.allowed = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl.allowedVersions." + this.name);
+            this.allowed = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl.allowedVersions." + this.name, true);
             this.equivalentServerVersion = equivalentServerVersion;
             this.versionNumbers = ImmutableSet.copyOf(versionNumbers);
         }

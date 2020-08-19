@@ -77,7 +77,7 @@ public abstract class PlayerInformationModifier implements Listener
         }
     }
 
-    protected abstract PacketType[] getAffectedPackets();
+    protected abstract Set<PacketType> getAffectedPackets();
 
     protected Set<ServerVersion> getSupportedVersions()
     {

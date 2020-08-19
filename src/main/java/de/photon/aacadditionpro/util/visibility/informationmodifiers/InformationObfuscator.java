@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.util.visibility.informationmodifiers;
 
 import com.comphenix.protocol.PacketType;
+import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerEntityEquipment;
@@ -13,7 +14,7 @@ import java.util.Set;
 
 public class InformationObfuscator extends PlayerInformationModifier
 {
-    protected static final PacketType[] AFFECTED_PACKET_TYPES = {PacketType.Play.Server.ENTITY_EQUIPMENT};
+    protected static final Set<PacketType> AFFECTED_PACKET_TYPES = ImmutableSet.of(PacketType.Play.Server.ENTITY_EQUIPMENT);
 
     @Override
     public void modifyInformation(final Player observer, final Entity entity)
@@ -26,7 +27,7 @@ public class InformationObfuscator extends PlayerInformationModifier
     }
 
     @Override
-    protected PacketType[] getAffectedPackets()
+    protected Set<PacketType> getAffectedPackets()
     {
         return AFFECTED_PACKET_TYPES;
     }

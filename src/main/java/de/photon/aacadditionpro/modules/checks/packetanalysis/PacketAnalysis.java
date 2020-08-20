@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
@@ -23,17 +24,14 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
 {
     @Getter
     private static final PacketAnalysis instance = new PacketAnalysis();
+    private static final Set<Module> submodules = ImmutableSet.of(AnimationPattern.getInstance(),
+                                                                  ComparePattern.getInstance(),
+                                                                  EqualRotationPattern.getInstance(),
+                                                                  IllegalPitchPattern.getInstance(),
+                                                                  PositionSpoofPattern.getInstance());
 
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 200);
 
-    private final AnimationPattern animationPattern = new AnimationPattern();
-
-    private final ComparePattern comparePattern = new ComparePattern();
-    private final EqualRotationPattern equalRotationPattern = new EqualRotationPattern();
-
-    private final IllegalPitchPattern illegalPitchPattern = new IllegalPitchPattern();
-
-    private final PositionSpoofPattern positionSpoofPattern = new PositionSpoofPattern();
 
     public PacketAnalysis()
     {
@@ -42,23 +40,14 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
               // Compare
               PacketType.Play.Server.POSITION,
               // --------------- Client --------------- //
-              // CombatOrder
-              PacketType.Play.Client.USE_ENTITY,
-              PacketType.Play.Client.ARM_ANIMATION,
-              // EqualRotation
-              PacketType.Play.Client.LOOK,
-              // EqualRotation + Compare
+              // Compare + PositionSpoof
               PacketType.Play.Client.POSITION_LOOK);
     }
 
     @Override
     public void onPacketSending(PacketEvent event)
     {
-        if (event.isPlayerTemporary()) {
-            return;
-        }
-
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        final User user = UserManager.safeGetUserFromPacketEvent(event);
 
         // Not bypassed
         if (User.isUserInvalid(user, this.getModuleType())) {
@@ -87,20 +76,11 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
             return;
         }
 
-        // --------------------------------------------- CombatOrder ---------------------------------------------- //
-
-        vlManager.flag(user.getPlayer(), this.animationPattern.apply(user, event), -1, () -> {}, () -> {});
-
-        // --------------------------------------------- EqualRotation ---------------------------------------------- //
-
-        vlManager.flag(user.getPlayer(), this.equalRotationPattern.apply(user, event), -1, () -> {}, () -> {});
-        vlManager.flag(user.getPlayer(), this.illegalPitchPattern.apply(user, event), -1, () -> {}, () -> {});
-
         // ----------------------------------------- Compare + PositionSpoof ---------------------------------------- //
         if (user.getDataMap().getValue(DataKey.PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION) != null) {
             // Special code to update the timestamp of the last compare flag.
-            vlManager.flag(user.getPlayer(), this.comparePattern.apply(user, event), -1, () -> {}, () -> user.getTimestampMap().updateTimeStamp(TimestampKey.PACKET_ANALYSIS_LAST_COMPARE_FLAG));
-            vlManager.flag(user.getPlayer(), this.positionSpoofPattern.apply(user, event), -1, () -> {}, () -> {});
+            ComparePattern.getInstance().getApplyingConsumer().accept(user, event);
+            PositionSpoofPattern.getInstance().getApplyingConsumer().accept(user, event);
 
             // No continuous flagging.
             user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION, null);
@@ -114,13 +94,15 @@ public class PacketAnalysis extends PacketAdapter implements PacketListenerModul
     }
 
     @Override
-    public Set<Pattern> getPatterns()
+    public Set<Module> getSubModules()
     {
-        return ImmutableSet.of(animationPattern,
-                               comparePattern,
-                               equalRotationPattern,
-                               illegalPitchPattern,
-                               positionSpoofPattern);
+        return submodules;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

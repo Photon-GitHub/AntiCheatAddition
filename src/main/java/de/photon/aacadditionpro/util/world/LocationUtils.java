@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.world;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Location;
@@ -21,7 +22,8 @@ public final class LocationUtils
 
     public static boolean inSameWorld(Location locationOne, Location locationTwo)
     {
-        return locationOne.getWorld().getUID().equals(locationTwo.getWorld().getUID());
+        return Preconditions.checkNotNull(locationOne.getWorld(), "NULL world in same world comparison (one)").getUID()
+                            .equals(Preconditions.checkNotNull(locationTwo.getWorld(), "NULL world in same world comparison (two)").getUID());
     }
 
     /**

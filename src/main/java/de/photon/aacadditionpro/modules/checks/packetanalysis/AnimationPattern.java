@@ -15,11 +15,15 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientUseEntity;
+import lombok.Getter;
 
 import java.util.Set;
 
 public class AnimationPattern extends PacketAdapter implements PacketListenerModule, RestrictedServerVersion
 {
+    @Getter
+    private static final AnimationPattern instance = new AnimationPattern();
+
     public AnimationPattern()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.LOW,

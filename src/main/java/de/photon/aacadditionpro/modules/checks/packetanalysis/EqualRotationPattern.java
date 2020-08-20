@@ -16,6 +16,7 @@ import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.client.IWrapperPlayClientLook;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -36,6 +37,9 @@ import static java.util.logging.Level.SEVERE;
  */
 class EqualRotationPattern extends PacketAdapter implements PacketListenerModule
 {
+    @Getter
+    private static final EqualRotationPattern instance = new EqualRotationPattern();
+
     // A set of materials which hitboxes changed in minecraft 1.9
     private static final Set<Material> CHANGED_HITBOX_MATERIALS;
 
@@ -64,7 +68,6 @@ class EqualRotationPattern extends PacketAdapter implements PacketListenerModule
     EqualRotationPattern()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.LOW,
-              // THIS IS IN THE ORDER OF HOW THE PACKETS ARE SUPPOSED TO ARRIVE.
               PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK);
     }
 

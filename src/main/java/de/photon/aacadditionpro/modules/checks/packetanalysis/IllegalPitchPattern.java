@@ -12,13 +12,16 @@ import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.client.IWrapperPlayClientLook;
+import lombok.Getter;
 
 public class IllegalPitchPattern extends PacketAdapter implements PacketListenerModule
 {
+    @Getter
+    private static final IllegalPitchPattern instance = new IllegalPitchPattern();
+
     IllegalPitchPattern()
     {
         super(AACAdditionPro.getInstance(), ListenerPriority.LOW,
-              // THIS IS IN THE ORDER OF HOW THE PACKETS ARE SUPPOSED TO ARRIVE.
               PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK);
     }
 

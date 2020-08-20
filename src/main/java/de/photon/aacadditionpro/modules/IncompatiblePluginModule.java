@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public interface IncompatiblePluginModule
+public interface IncompatiblePluginModule extends Module
 {
     /**
      * Looks up all dependencies to know whether they are loaded.

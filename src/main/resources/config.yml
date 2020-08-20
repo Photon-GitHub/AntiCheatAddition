@@ -147,6 +147,9 @@ Esp:
   # 32 Cores | 250 Players
   # 64 Cores | 350 Players
   enabled: true
+  # How many milliseconds shall be waited between two ESP cycles. Setting this too low may result in performance issues,
+  # setting it too high may result in players being hidden too long and popping up.
+  sleep_millis: 50
   # This determines whether minecrafts 3rd person modes should be considered for calculation as well.
   # Disabling this will reduce the reqiured number of raytraces by two thirds.
   # Especially useful if you have certain gamemodes in which players are not supposed to use the third person mode.

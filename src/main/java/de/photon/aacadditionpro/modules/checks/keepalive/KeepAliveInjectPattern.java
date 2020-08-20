@@ -26,7 +26,6 @@ class KeepAliveInjectPattern implements Module, RestrictedServerVersion
     @Getter
     private static final KeepAliveInjectPattern instance = new KeepAliveInjectPattern();
 
-
     private BukkitTask injectTask;
 
     private void recursiveKeepAliveInjection()

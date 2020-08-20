@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.modules.checks.esp;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.user.User;
@@ -37,6 +38,7 @@ public class Esp implements ListenerModule
     // The packet hiders.
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
+    private final int sleepMillis = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.ESP.getConfigString() + ".sleep_millis");
     Semaphore cycleSemaphore = new Semaphore(0);
 
     // The auto-config-data
@@ -93,7 +95,7 @@ public class Esp implements ListenerModule
 
         class EspSupplierThread extends Thread
         {
-            @SuppressWarnings("InfiniteLoopStatement")
+            @SuppressWarnings({"InfiniteLoopStatement", "BusyWait"})
             @Override
             public void run()
             {
@@ -129,6 +131,9 @@ public class Esp implements ListenerModule
                         // Wait for all threads to finish.
                         cycleSemaphore.acquire(startedThreads);
                         startedThreads = 0;
+
+                        // Sleep for some time to make sure not to overload the server.
+                        sleep(sleepMillis);
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

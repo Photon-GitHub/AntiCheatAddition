@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
-import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.TimestampKey;
@@ -20,7 +19,7 @@ import lombok.Getter;
 
 import java.util.Set;
 
-public class PacketAnalysis extends PacketAdapter implements PacketListenerModule, PatternModule, ViolationModule
+public class PacketAnalysis extends PacketAdapter implements PacketListenerModule, ViolationModule
 {
     @Getter
     private static final PacketAnalysis instance = new PacketAnalysis();

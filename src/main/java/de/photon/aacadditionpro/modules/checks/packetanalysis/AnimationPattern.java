@@ -1,39 +1,51 @@
 package de.photon.aacadditionpro.modules.checks.packetanalysis;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.modules.RestrictedServerVersion;
 import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientUseEntity;
 
 import java.util.Set;
 
-public class AnimationPattern extends PatternModule.PacketPattern implements RestrictedServerVersion
+public class AnimationPattern extends PacketAdapter implements PacketListenerModule, RestrictedServerVersion
 {
-
-    AnimationPattern()
+    public AnimationPattern()
     {
-        // THIS IS IN ORDER OF HOW THE PACKETS ARE SUPPOSED TO ARRIVE.
-        super(ImmutableSet.of(PacketType.Play.Client.USE_ENTITY,
-                              PacketType.Play.Client.ARM_ANIMATION));
+        super(AACAdditionPro.getInstance(), ListenerPriority.LOW,
+              // THIS IS IN THE ORDER OF HOW THE PACKETS ARE SUPPOSED TO ARRIVE.
+              PacketType.Play.Client.USE_ENTITY,
+              PacketType.Play.Client.ARM_ANIMATION);
     }
 
+
     @Override
-    protected int process(User user, PacketEvent packetEvent)
+    public void onPacketReceiving(final PacketEvent packetEvent)
     {
+        final User user = UserManager.safeGetUserFromPacketEvent(packetEvent);
+
+        if (User.isUserInvalid(user, this.getModuleType())) {
+            return;
+        }
+
         if (packetEvent.getPacketType() == PacketType.Play.Client.ARM_ANIMATION) {
             user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_ANIMATION_EXPECTED, false);
         } else {
             if (user.getDataMap().getBoolean(DataKey.PACKET_ANALYSIS_ANIMATION_EXPECTED)) {
                 user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_ANIMATION_EXPECTED, false);
-                message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " did not send animation packet after an attack.";
-                return 10;
+                PacketAnalysis.getInstance().getViolationLevelManagement().flag(user.getPlayer(), 10,
+                                                                                -1, () -> {},
+                                                                                () -> VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " did not send animation packet after an attack."));
             }
         }
 
@@ -44,15 +56,19 @@ public class AnimationPattern extends PatternModule.PacketPattern implements Res
             if (useEntityWrapper.getType() == EnumWrappers.EntityUseAction.ATTACK) {
                 user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_ANIMATION_EXPECTED, true);
             }
-            return 0;
         }
-        return 0;
     }
 
     @Override
     public Set<ServerVersion> getSupportedVersions()
     {
         return ServerVersion.NON_188_VERSIONS;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return true;
     }
 
     @Override

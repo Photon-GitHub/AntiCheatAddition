@@ -1,26 +1,49 @@
 package de.photon.aacadditionpro.modules.checks.packetanalysis;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.client.IWrapperPlayClientLook;
 
-public class IllegalPitchPattern extends PatternModule.PacketPattern
+public class IllegalPitchPattern extends PacketAdapter implements PacketListenerModule
 {
-    protected IllegalPitchPattern()
+    IllegalPitchPattern()
     {
-        super(ImmutableSet.of(PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK));
+        super(AACAdditionPro.getInstance(), ListenerPriority.LOW,
+              // THIS IS IN THE ORDER OF HOW THE PACKETS ARE SUPPOSED TO ARRIVE.
+              PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK);
+    }
+
+
+    @Override
+    public void onPacketReceiving(final PacketEvent packetEvent)
+    {
+        final User user = UserManager.safeGetUserFromPacketEvent(packetEvent);
+
+        if (User.isUserInvalid(user, this.getModuleType())) {
+            return;
+        }
+
+        final IWrapperPlayClientLook lookWrapper = packetEvent::getPacket;
+        PacketAnalysis.getInstance().getViolationLevelManagement().flag(user.getPlayer(), MathUtils.inRange(-90, 90, lookWrapper.getPitch()) ?
+                                                                                          0 :
+                                                                                          20,
+                                                                        -1, () -> {},
+                                                                        () -> VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent illegal pitch value."));
     }
 
     @Override
-    protected int process(User user, PacketEvent packetEvent)
+    public boolean isSubModule()
     {
-        final IWrapperPlayClientLook lookWrapper = packetEvent::getPacket;
-        return MathUtils.inRange(-90, 90, lookWrapper.getPitch()) ? 0 : 20;
+        return true;
     }
 
     @Override

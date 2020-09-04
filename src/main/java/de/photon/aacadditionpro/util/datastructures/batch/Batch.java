@@ -76,16 +76,20 @@ public class Batch<T>
      * Register a {@link BatchProcessor} which shall receive a copy of the {@link Batch} data once the {@link Batch}
      * capacity is reached.
      */
-    public void registerProcessor(@NotNull BatchProcessor<T> processor)
+    public void registerProcessor(BatchProcessor<T> processor)
     {
-        this.processors.add(processor);
+        if (processor != null) {
+            this.processors.add(processor);
+        }
     }
 
     /**
      * Unregister a {@link BatchProcessor}.
      */
-    public void unregisterProcessor(@NotNull BatchProcessor<T> processor)
+    public void unregisterProcessor(BatchProcessor<T> processor)
     {
-        this.processors.remove(processor);
+        if (processor != null) {
+            this.processors.remove(processor);
+        }
     }
 }

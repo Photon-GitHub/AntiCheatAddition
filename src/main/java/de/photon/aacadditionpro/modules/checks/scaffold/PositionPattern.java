@@ -1,22 +1,22 @@
 package de.photon.aacadditionpro.modules.checks.scaffold;
 
+import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
  * This pattern checks for suspicious positions when placing a block to prevent extend scaffolds.
  */
-class PositionPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class PositionPattern implements Module
 {
     @Getter
     private static final PositionPattern instance = new PositionPattern();
 
-    @Override
-    public int process(User user, BlockPlaceEvent event)
+    public int apply(User user, BlockPlaceEvent event)
     {
         final double xOffset = MathUtils.offset(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
         final double zOffset = MathUtils.offset(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
@@ -42,11 +42,17 @@ class PositionPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
         }
 
         if (flag) {
-            message = "Scaffold-Verbose | Player: " + event.getPlayer().getName() + " placed from a suspicious location.";
+            VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + event.getPlayer().getName() + " placed from a suspicious location.");
             return 5;
         }
 
         return 0;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return true;
     }
 
     @Override

@@ -4,6 +4,7 @@ import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.TowerData;
 import de.photon.aacadditionpro.user.subdata.datawrappers.TowerBlockPlace;
+import de.photon.aacadditionpro.util.datastructures.batch.Batch;
 import de.photon.aacadditionpro.util.datastructures.batch.BatchProcessor;
 import de.photon.aacadditionpro.util.datastructures.iteration.IterationUtil;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
@@ -44,5 +45,11 @@ public class TowerBatchProcessor extends BatchProcessor<TowerBlockPlace>
                 // If not cancelled run the verbose message with additional data
             }, () -> VerboseSender.getInstance().sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + results[0] + " | real: " + results[1]));
         }
+    }
+
+    @Override
+    public Batch<TowerBlockPlace> getBatchFromUser(User user)
+    {
+        return user.getTowerData().getBatch();
     }
 }

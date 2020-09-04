@@ -94,8 +94,7 @@ public class Scaffold implements ListenerModule, ViolationModule
             BlockUtils.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
         {
             int vl = AnglePattern.getInstance().apply(user, event);
-            vl += averagePattern.apply(user, event);
-            vl += positionPattern.apply(user, event);
+            vl += PositionPattern.getInstance().apply(user, event);
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
 

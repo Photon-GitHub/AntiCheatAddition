@@ -6,8 +6,6 @@ import de.photon.aacadditionpro.modules.checks.scaffold.AveragePattern;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.datawrappers.ScaffoldBlockPlace;
 import de.photon.aacadditionpro.util.datastructures.batch.Batch;
-import de.photon.aacadditionpro.util.datastructures.buffer.ConditionalCleanBuffer;
-import de.photon.aacadditionpro.util.world.BlockUtils;
 import lombok.Getter;
 import org.bukkit.block.BlockFace;
 
@@ -60,56 +58,5 @@ public class ScaffoldData extends SubData
         scaffoldBlockPlaces = new Batch<>(user, BATCH_SIZE, new ScaffoldBlockPlace(user.getPlayer().getEyeLocation().getBlock(), BlockFace.NORTH, 10, 0, false));
         scaffoldBlockPlaces.registerProcessor(AveragePattern.getInstance().getBatchProcessor());
 
-        scaffoldBlockPlaces = new ConditionalCleanBuffer<ScaffoldBlockPlace>(BATCH_SIZE)
-        {
-            @Override
-            protected boolean verifyObject(ScaffoldBlockPlace object)
-            {
-                final ScaffoldBlockPlace last = this.getDeque().peek();
-                return last == null || BlockUtils.isNext(last.getBlock(), object.getBlock(), true);
-            }
-        };
-    }
-
-    /**
-     * Used to calculate the average and expected time span between the {@link ScaffoldBlockPlace}s in the buffer.
-     * Also clears the buffer.
-     *
-     * @return an array with the following contents:<br>
-     * [0] = Expected time <br>
-     * [1] = Real time <br>
-     */
-    public double[] calculateTimes()
-    {
-        final double[] result = new double[2];
-
-        // -1 because there is one pop to fill the "last" variable in the beginning.
-        final int divisor = this.scaffoldBlockPlaces.getDeque().size() - 1;
-
-        final boolean moonwalk = this.scaffoldBlockPlaces.getDeque().stream().filter(blockPlace -> !blockPlace.isSneaked()).count() >= BATCH_SIZE / 2;
-
-        this.scaffoldBlockPlaces.clearLastTwoObjectsIteration(
-                (last, current) ->
-                {
-                    double delay;
-                    if (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace()) {
-                        delay = DELAY_NORMAL;
-
-                        if (!moonwalk && last.isSneaked() && current.isSneaked()) {
-                            delay += SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2D * current.getYaw())));
-                        }
-                    } else {
-                        delay = DELAY_DIAGONAL;
-                    }
-
-                    result[0] += delay;
-
-                    // last - current to calculate the delta as the more recent time is always in last.
-                    result[1] += (last.getTime() - current.getTime()) * current.getSpeedModifier();
-                });
-
-        result[0] /= divisor;
-        result[1] /= divisor;
-        return result;
     }
 }

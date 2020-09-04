@@ -8,6 +8,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.user.subdata.ScaffoldData;
 import de.photon.aacadditionpro.user.subdata.datawrappers.ScaffoldBlockPlace;
+import de.photon.aacadditionpro.util.datastructures.batch.Batch;
 import de.photon.aacadditionpro.util.datastructures.batch.BatchProcessor;
 import de.photon.aacadditionpro.util.datastructures.iteration.IterationUtil;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
@@ -30,6 +31,8 @@ public class AveragePattern implements ListenerModule, BatchProcessorModule<Scaf
 {
     @Getter
     private static final AveragePattern instance = new AveragePattern();
+
+    private AverageBatchProcessor averageBatchProcessor;
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event)
@@ -60,6 +63,18 @@ public class AveragePattern implements ListenerModule, BatchProcessorModule<Scaf
     }
 
     @Override
+    public void enable()
+    {
+        averageBatchProcessor = new AverageBatchProcessor();
+    }
+
+    @Override
+    public void disable()
+    {
+        averageBatchProcessor.killProcessing();
+    }
+
+    @Override
     public boolean isSubModule()
     {
         return true;
@@ -80,13 +95,11 @@ public class AveragePattern implements ListenerModule, BatchProcessorModule<Scaf
     @Override
     public BatchProcessor<ScaffoldBlockPlace> getBatchProcessor()
     {
-        return AverageBatchProcessor.instance;
+        return averageBatchProcessor;
     }
 
     private static class AverageBatchProcessor extends BatchProcessor<ScaffoldBlockPlace>
     {
-        private static final AverageBatchProcessor instance = new AverageBatchProcessor();
-
         public AverageBatchProcessor()
         {
             super(ScaffoldData.BATCH_SIZE);
@@ -140,6 +153,12 @@ public class AveragePattern implements ListenerModule, BatchProcessorModule<Scaf
                     InventoryUtils.syncUpdateInventory(user.getPlayer());
                 }, () -> VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + result[0] + " | real: " + result[1] + " | vl increase: " + vlIncrease));
             }
+        }
+
+        @Override
+        public Batch<ScaffoldBlockPlace> getBatchFromUser(User user)
+        {
+            return user.getScaffoldData().getScaffoldBlockPlaces();
         }
     }
 }

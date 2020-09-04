@@ -30,7 +30,6 @@ public class Tower implements ListenerModule, ViolationModule, BatchProcessorMod
     private static final Tower instance = new Tower();
 
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
-    private BatchProcessor<TowerBlockPlace> towerBatchProcessor;
 
     @Getter
     @LoadFromConfiguration(configPath = ".cancel_vl")
@@ -98,7 +97,7 @@ public class Tower implements ListenerModule, ViolationModule, BatchProcessorMod
     @Override
     public BatchProcessor<TowerBlockPlace> getBatchProcessor()
     {
-        return towerBatchProcessor;
+        return TowerBatchProcessor.getInstance();
     }
 
     @Override
@@ -110,13 +109,13 @@ public class Tower implements ListenerModule, ViolationModule, BatchProcessorMod
     @Override
     public void enable()
     {
-        towerBatchProcessor = new TowerBatchProcessor();
+        TowerBatchProcessor.getInstance().startProcessing();
     }
 
     @Override
     public void disable()
     {
-        towerBatchProcessor.killProcessing();
+        TowerBatchProcessor.getInstance().killProcessing();
     }
 
     @Override

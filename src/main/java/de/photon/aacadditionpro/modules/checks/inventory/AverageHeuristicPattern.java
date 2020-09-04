@@ -28,9 +28,6 @@ public class AverageHeuristicPattern implements BatchProcessorModule<InventoryCl
     @Getter
     private static final AverageHeuristicPattern instance = new AverageHeuristicPattern();
 
-    private BatchProcessor<InventoryClick> averageHeuristicBatchProcessor;
-
-
     @LoadFromConfiguration(configPath = ".max_ping")
     private double maxPing;
     @LoadFromConfiguration(configPath = ".min_tps")
@@ -68,19 +65,19 @@ public class AverageHeuristicPattern implements BatchProcessorModule<InventoryCl
     @Override
     public void enable()
     {
-        averageHeuristicBatchProcessor = new AverageHeuristicBatchProcessor();
+        AverageHeuristicBatchProcessor.getInstance().startProcessing();
     }
 
     @Override
     public void disable()
     {
-        averageHeuristicBatchProcessor.killProcessing();
+        AverageHeuristicBatchProcessor.getInstance().killProcessing();
     }
 
     @Override
     public BatchProcessor<InventoryClick> getBatchProcessor()
     {
-        return averageHeuristicBatchProcessor;
+        return AverageHeuristicBatchProcessor.getInstance();
     }
 
     @Override
@@ -103,7 +100,10 @@ public class AverageHeuristicPattern implements BatchProcessorModule<InventoryCl
 
     private static class AverageHeuristicBatchProcessor extends BatchProcessor<InventoryClick>
     {
-        public AverageHeuristicBatchProcessor()
+        @Getter
+        private static final AverageHeuristicBatchProcessor instance = new AverageHeuristicBatchProcessor();
+
+        private AverageHeuristicBatchProcessor()
         {
             super(InventoryData.AVERAGE_HEURISTICS_BATCH_SIZE);
         }

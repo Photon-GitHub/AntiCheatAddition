@@ -3,12 +3,16 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
+import lombok.Getter;
 
 /**
  * This patterns detects very random rotations that some randomized scaffold modules might use.
  */
 class RotationTypeThreePattern extends PatternModule.Pattern<User, Float>
 {
+    @Getter
+    private static final RotationTypeThreePattern instance = new RotationTypeThreePattern();
+
     private static final double ANGLE_OFFSET_SUM_THRESHOLD = 5.2D;
 
     @Override

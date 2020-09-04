@@ -2,8 +2,8 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.modules.ListenerModule;
+import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
@@ -21,24 +21,25 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.util.Set;
 
-public class Scaffold implements ListenerModule, PatternModule, ViolationModule
+public class Scaffold implements ListenerModule, ViolationModule
 {
     @Getter
     private static final Scaffold instance = new Scaffold();
 
+    private static final Set<Module> submodules = ImmutableSet.of(AnglePattern.getInstance(),
+                                                                  AveragePattern.getInstance(),
+                                                                  PositionPattern.getInstance(),
+                                                                  RotationTypeOnePattern.getInstance(),
+                                                                  RotationTypeTwoPattern.getInstance(),
+                                                                  RotationTypeThreePattern.getInstance(),
+                                                                  SafewalkTypeOnePattern.getInstance(),
+                                                                  SafewalkTypeTwoPattern.getInstance(),
+                                                                  SprintingPattern.getInstance());
+
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 80L);
 
-    private final AnglePattern anglePattern = new AnglePattern();
-    private final AveragePattern averagePattern = new AveragePattern();
-    private final PositionPattern positionPattern = new PositionPattern();
-    private final RotationTypeOnePattern rotationTypeOne = new RotationTypeOnePattern();
-    private final RotationTypeTwoPattern rotationTypeTwo = new RotationTypeTwoPattern();
-    private final RotationTypeThreePattern rotationTypeThree = new RotationTypeThreePattern();
-    private final SprintingPattern sprintingPattern = new SprintingPattern();
-    private final SafewalkTypeOnePattern safewalkTypeOne = new SafewalkTypeOnePattern();
-    private final SafewalkTypeTwoPattern safewalkTypeTwo = new SafewalkTypeTwoPattern();
-
     @LoadFromConfiguration(configPath = ".cancel_vl")
+    @Getter
     private int cancelVl;
 
     @LoadFromConfiguration(configPath = ".timeout")
@@ -92,7 +93,7 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
             BlockUtils.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
         {
-            int vl = anglePattern.apply(user, event);
+            int vl = AnglePattern.getInstance().apply(user, event);
             vl += averagePattern.apply(user, event);
             vl += positionPattern.apply(user, event);
 
@@ -129,23 +130,21 @@ public class Scaffold implements ListenerModule, PatternModule, ViolationModule
     }
 
     @Override
-    public Set<Pattern> getPatterns()
-    {
-        return ImmutableSet.of(anglePattern,
-                               averagePattern,
-                               positionPattern,
-                               rotationTypeOne,
-                               rotationTypeTwo,
-                               rotationTypeThree,
-                               sprintingPattern,
-                               safewalkTypeOne,
-                               safewalkTypeTwo);
-    }
-
-    @Override
     public ViolationLevelManagement getViolationLevelManagement()
     {
         return vlManager;
+    }
+
+    @Override
+    public Set<Module> getSubModules()
+    {
+        return submodules;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

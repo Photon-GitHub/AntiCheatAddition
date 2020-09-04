@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.RandomAccess;
@@ -48,7 +49,7 @@ public final class IterationUtil
 
     /**
      * Allows for an iteration with two objects present each time.
-     * Assumes that the newer objects are added at the end of the list.
+     * Assumes that the newer objects are added at the end of the {@link List}.
      */
     public static <T> void twoObjectsIterationToEnd(List<T> iterable, BiConsumer<T, T> consumer)
     {
@@ -63,11 +64,38 @@ public final class IterationUtil
 
     /**
      * Allows for an iteration with two objects present each time.
-     * Assumes that the newer objects are added at the end of the list.
+     * Assumes that the newer objects are added at the end of the {@link Iterable}.
      */
     public static <T> void twoObjectsIterationToEnd(Iterable<T> iterable, BiConsumer<T, T> consumer)
     {
-        Iterator<T> itr = iterable.iterator();
+        twoObjectsIteration(iterable.iterator(), consumer);
+    }
+
+    /**
+     * Allows for an iteration with two objects present each time.
+     * Assumes that the newer objects are added at the front of the {@link Deque}.
+     */
+    public static <T> void twoObjectsIterationFromEnd(Deque<T> iterable, BiConsumer<T, T> consumer)
+    {
+        twoObjectsIteration(iterable.descendingIterator(), consumer);
+    }
+
+    /**
+     * Allows for an iteration with two objects present each time.
+     * Assumes that the newer objects are added at the front of the {@link List}.
+     */
+    public static <T> void twoObjectsIterationFromEnd(List<T> iterable, BiConsumer<T, T> consumer)
+    {
+        for (int i = iterable.size() - 1; i > 0; --i) {
+            consumer.accept(iterable.get(i), iterable.get(i - 1));
+        }
+    }
+
+    /**
+     * Util method for custom iterator.
+     */
+    private static <T> void twoObjectsIteration(Iterator<T> itr, BiConsumer<T, T> consumer)
+    {
         T old;
         T current;
 

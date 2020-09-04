@@ -4,6 +4,7 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
+import lombok.Getter;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -12,6 +13,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
  */
 class SprintingPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
+    @Getter
+    private static final SprintingPattern instance = new SprintingPattern();
+
     @LoadFromConfiguration(configPath = ".violation_threshold")
     private int violationThreshold;
 

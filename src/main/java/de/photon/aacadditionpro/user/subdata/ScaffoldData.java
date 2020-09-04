@@ -2,26 +2,28 @@ package de.photon.aacadditionpro.user.subdata;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
+import de.photon.aacadditionpro.modules.checks.scaffold.AveragePattern;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.datawrappers.ScaffoldBlockPlace;
+import de.photon.aacadditionpro.util.datastructures.batch.Batch;
 import de.photon.aacadditionpro.util.datastructures.buffer.ConditionalCleanBuffer;
-import de.photon.aacadditionpro.util.datastructures.buffer.DequeBuffer;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import lombok.Getter;
+import org.bukkit.block.BlockFace;
 
 public class ScaffoldData extends SubData
 {
     // Default buffer size is 6, being well tested.
-    private static final int BUFFER_SIZE = 6;
+    public static final int BATCH_SIZE = 6;
     // Use static here as ScaffoldDatas are often created.
-    private static final double DELAY_NORMAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.normal");
-    private static final double SNEAKING_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_addition");
-    private static final double SNEAKING_SLOW_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_slow_addition");
-    private static final double DELAY_DIAGONAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.diagonal");
+    public static final double DELAY_NORMAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.normal");
+    public static final double SNEAKING_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_addition");
+    public static final double SNEAKING_SLOW_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_slow_addition");
+    public static final double DELAY_DIAGONAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.diagonal");
 
     // Add a dummy block to start with in order to make sure that the queue is never empty.
     @Getter
-    private final DequeBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces;
+    private final Batch<ScaffoldBlockPlace> scaffoldBlockPlaces;
     /**
      * This is used to determine wrong angles while scaffolding.
      * One wrong angle might be legit, but more instances are a clear hint.
@@ -55,8 +57,10 @@ public class ScaffoldData extends SubData
     public ScaffoldData(User user)
     {
         super(user);
+        scaffoldBlockPlaces = new Batch<>(user, BATCH_SIZE, new ScaffoldBlockPlace(user.getPlayer().getEyeLocation().getBlock(), BlockFace.NORTH, 10, 0, false));
+        scaffoldBlockPlaces.registerProcessor(AveragePattern.getInstance().getBatchProcessor());
 
-        scaffoldBlockPlaces = new ConditionalCleanBuffer<ScaffoldBlockPlace>(BUFFER_SIZE)
+        scaffoldBlockPlaces = new ConditionalCleanBuffer<ScaffoldBlockPlace>(BATCH_SIZE)
         {
             @Override
             protected boolean verifyObject(ScaffoldBlockPlace object)
@@ -82,7 +86,7 @@ public class ScaffoldData extends SubData
         // -1 because there is one pop to fill the "last" variable in the beginning.
         final int divisor = this.scaffoldBlockPlaces.getDeque().size() - 1;
 
-        final boolean moonwalk = this.scaffoldBlockPlaces.getDeque().stream().filter(blockPlace -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
+        final boolean moonwalk = this.scaffoldBlockPlaces.getDeque().stream().filter(blockPlace -> !blockPlace.isSneaked()).count() >= BATCH_SIZE / 2;
 
         this.scaffoldBlockPlaces.clearLastTwoObjectsIteration(
                 (last, current) ->

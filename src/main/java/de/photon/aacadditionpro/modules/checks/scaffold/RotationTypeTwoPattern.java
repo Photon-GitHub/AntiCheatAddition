@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
+import lombok.Getter;
 
 /**
  * This {@link de.photon.aacadditionpro.modules.PatternModule.Pattern} detects huge angle changes while scaffolding that
@@ -10,6 +11,9 @@ import de.photon.aacadditionpro.user.User;
  */
 class RotationTypeTwoPattern extends PatternModule.Pattern<User, Float>
 {
+    @Getter
+    private static final RotationTypeTwoPattern instance = new RotationTypeTwoPattern();
+
     private static final double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
 
     @Override

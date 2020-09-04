@@ -7,6 +7,7 @@ import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
+import lombok.Getter;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -15,6 +16,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
  */
 class SafewalkTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
+    @Getter
+    private static final SafewalkTypeOnePattern instance = new SafewalkTypeOnePattern();
+
     @LoadFromConfiguration(configPath = ".violation_threshold")
     private int violationThreshold;
 

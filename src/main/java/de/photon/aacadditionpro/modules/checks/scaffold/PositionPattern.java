@@ -4,6 +4,7 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
+import lombok.Getter;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -11,6 +12,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
  */
 class PositionPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
+    @Getter
+    private static final PositionPattern instance = new PositionPattern();
+
     @Override
     public int process(User user, BlockPlaceEvent event)
     {

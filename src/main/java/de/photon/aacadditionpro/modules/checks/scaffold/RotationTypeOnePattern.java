@@ -4,6 +4,7 @@ import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
+import lombok.Getter;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -11,6 +12,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
  */
 class RotationTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
 {
+    @Getter
+    private static final RotationTypeOnePattern instance = new RotationTypeOnePattern();
+
     @Override
     protected int process(User user, BlockPlaceEvent event)
     {

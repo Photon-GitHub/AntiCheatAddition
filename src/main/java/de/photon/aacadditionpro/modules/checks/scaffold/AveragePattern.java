@@ -38,17 +38,17 @@ public class AveragePattern implements ListenerModule, BatchProcessorModule<Scaf
         // them, therefore almost doubling the placement speed. However they can only be placed one at a time, which
         // allows simply ignoring them.
         if (event.getBlockPlaced().getType() != Material.LADDER && event.getBlockPlaced().getType() != Material.VINE) {
-            if (BlockUtils.isNext(user.getScaffoldData().getScaffoldBlockPlaces().peekLastAdded().getBlock(), event.getBlockPlaced(), true)) {
-                user.getScaffoldData().getScaffoldBlockPlaces().addDataPoint(new ScaffoldBlockPlace(
-                        event.getBlockPlaced(),
-                        event.getBlockPlaced().getFace(event.getBlockAgainst()),
-                        // Speed-Effect
-                        PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), InternalPotionEffectType.SPEED)),
-                        user.getPlayer().getLocation().getYaw(),
-                        user.hasSneakedRecently(175)));
-            } else {
+            if (!BlockUtils.isNext(user.getScaffoldData().getScaffoldBlockPlaces().peekLastAdded().getBlock(), event.getBlockPlaced(), true)) {
                 user.getScaffoldData().getScaffoldBlockPlaces().clear();
             }
+
+            user.getScaffoldData().getScaffoldBlockPlaces().addDataPoint(new ScaffoldBlockPlace(
+                    event.getBlockPlaced(),
+                    event.getBlockPlaced().getFace(event.getBlockAgainst()),
+                    // Speed-Effect
+                    PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), InternalPotionEffectType.SPEED)),
+                    user.getPlayer().getLocation().getYaw(),
+                    user.hasSneakedRecently(175)));
         }
     }
 

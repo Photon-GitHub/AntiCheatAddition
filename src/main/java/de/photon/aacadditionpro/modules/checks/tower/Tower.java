@@ -79,17 +79,17 @@ public class Tower implements ListenerModule, ViolationModule, BatchProcessorMod
                 !EntityUtil.isHitboxInLiquids(user.getPlayer().getLocation(), user.getHitbox()))
             {
                 // Make sure that the player is still towering in the same position.
-                if (event.getBlockAgainst().getLocation().equals(user.getTowerData().getBatch().peekLastAdded().getBlock().getLocation())) {
-                    user.getTowerData().getBatch().addDataPoint(
-                            new TowerBlockPlace(
-                                    blockPlaced,
-                                    //Jump boost effect is important
-                                    PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), InternalPotionEffectType.JUMP)),
-                                    levitation));
-                } else {
-                    // Clear the buffer if the player has moved on and is no longer towering in the same position.
+                if (!event.getBlockAgainst().getLocation().equals(user.getTowerData().getBatch().peekLastAdded().getBlock().getLocation())) {
                     user.getTowerData().getBatch().clear();
                 }
+
+                user.getTowerData().getBatch().addDataPoint(
+                        new TowerBlockPlace(
+                                blockPlaced,
+                                //Jump boost effect is important
+                                PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), InternalPotionEffectType.JUMP)),
+                                levitation));
+
             }
         }
     }

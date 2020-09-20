@@ -30,7 +30,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBlockPlace>
         IterationUtil.twoObjectsIterationToEnd(batch, (old, current) -> {
             // [0] = Expected time; [1] = Real time
             results[0] += current.calculateDelay();
-            results[1] += (old.getTime() - current.getTime());
+            results[1] += (current.getTime() - old.getTime());
         });
 
         // Average

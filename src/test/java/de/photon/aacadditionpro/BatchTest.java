@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 class BatchTest
@@ -58,7 +59,7 @@ class BatchTest
     @Test
     void asyncBatchProcessorTest()
     {
-        final List<String> output = new ArrayList<>();
+        final List<String> output = Collections.synchronizedList(new ArrayList<>());
         int batchSize = 3;
 
         final AsyncBatchProcessor<String> batchProcessor = new AsyncBatchProcessor<String>(batchSize)

@@ -135,6 +135,7 @@ public class AACAdditionPro extends JavaPlugin
             //                                                Metrics                                                 //
             // ------------------------------------------------------------------------------------------------------ //
 
+            VerboseSender.getInstance().sendVerboseMessage("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AACAdditionPro/3265", true, false);
             final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // The first getConfig call will automatically saveToFile and cache the config.
@@ -148,8 +149,10 @@ public class AACAdditionPro extends JavaPlugin
                 //noinspection unchecked
                 viaAPI = Via.getAPI();
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Used"));
+                VerboseSender.getInstance().sendVerboseMessage("ViaVersion hooked", true, false);
             } else {
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Not used"));
+                VerboseSender.getInstance().sendVerboseMessage("ViaVersion not found", true, false);
             }
 
 

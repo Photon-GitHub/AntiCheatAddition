@@ -4,7 +4,7 @@ import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.TowerData;
 import de.photon.aacadditionpro.user.subdata.datawrappers.TowerBlockPlace;
-import de.photon.aacadditionpro.util.datastructures.batch.BatchProcessor;
+import de.photon.aacadditionpro.util.datastructures.batch.AsyncBatchProcessor;
 import de.photon.aacadditionpro.util.datastructures.iteration.IterationUtil;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
@@ -12,7 +12,7 @@ import lombok.Getter;
 
 import java.util.List;
 
-public class TowerBatchProcessor extends BatchProcessor<TowerBlockPlace>
+public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBlockPlace>
 {
     @Getter
     private static final TowerBatchProcessor instance = new TowerBatchProcessor();

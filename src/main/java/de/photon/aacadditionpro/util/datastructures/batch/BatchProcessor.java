@@ -4,50 +4,45 @@ import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.user.User;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public abstract class BatchProcessor<T>
 {
     private final int batchSize;
-    private ExecutorService executor;
+    protected boolean enabled = false;
 
     public BatchProcessor(int batchSize)
     {
         this.batchSize = batchSize;
     }
 
-    public void submit(User user, List<T> batch)
+    public final void submit(User user, List<T> batch)
     {
         Preconditions.checkArgument(batch.size() == batchSize, "Batch has wrong size.");
 
-        if (executor != null && !executor.isShutdown()) {
-            executor.execute(() -> processBatch(user, batch));
+        if (this.enabled) {
+            subSubmit(user, batch);
         }
     }
+
+    protected abstract void subSubmit(User user, List<T> batch);
 
     public abstract void processBatch(User user, List<T> batch);
 
-    public void startProcessing()
+    public final void enable()
     {
-        executor = Executors.newCachedThreadPool();
+        Preconditions.checkState(!enabled, "BatchProcessor is already enabled.");
+        this.subEnable();
+        this.enabled = true;
     }
 
-    public void stopProcessing()
-    {
-        this.executor.shutdown();
+    protected abstract void subEnable();
 
-        try {
-            this.executor.awaitTermination(100, TimeUnit.DAYS);
-        } catch (InterruptedException e) {
-            // Ignore.
-            Thread.currentThread().interrupt();
-        }
+    public final void disable()
+    {
+        Preconditions.checkState(enabled, "BatchProcessor is already disabled.");
+        this.enabled = false;
+        this.subDisable();
     }
 
-    public void killProcessing()
-    {
-        this.executor.shutdownNow();
-    }
+    protected abstract void subDisable();
 }

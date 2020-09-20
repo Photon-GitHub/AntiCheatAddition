@@ -55,8 +55,9 @@ import java.util.stream.Collectors;
 
 public class AACAdditionPro extends JavaPlugin
 {
-    private static AACAdditionPro instance;
+    private static final int BSTATS_PLUGIN_ID = 3265;
 
+    private static AACAdditionPro instance;
     /**
      * Indicates if the loading process is completed.
      */
@@ -128,7 +129,7 @@ public class AACAdditionPro extends JavaPlugin
             //                                                Metrics                                                 //
             // ------------------------------------------------------------------------------------------------------ //
 
-            final Metrics metrics = new Metrics(this);
+            final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // The first getConfig call will automatically saveToFile and cache the config.
 

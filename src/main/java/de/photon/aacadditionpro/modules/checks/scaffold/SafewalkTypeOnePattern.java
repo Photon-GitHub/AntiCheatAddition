@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.modules.checks.scaffold;
 
+import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
@@ -11,10 +11,10 @@ import lombok.Getter;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
- * This {@link de.photon.aacadditionpro.modules.PatternModule.Pattern} detects suspicious stops right before the edges
+ * This pattern detects suspicious stops right before the edges
  * of {@link org.bukkit.block.Block}s.
  */
-class SafewalkTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class SafewalkTypeOnePattern implements Module
 {
     @Getter
     private static final SafewalkTypeOnePattern instance = new SafewalkTypeOnePattern();
@@ -64,6 +64,12 @@ class SafewalkTypeOnePattern extends PatternModule.Pattern<User, BlockPlaceEvent
             }
         }
         return 0;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return true;
     }
 
     @Override

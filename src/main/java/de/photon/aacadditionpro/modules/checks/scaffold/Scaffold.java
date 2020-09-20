@@ -100,9 +100,9 @@ public class Scaffold implements ListenerModule, ViolationModule
 
             final float[] angleInformation = user.getLookPacketData().getAngleInformation();
 
-            int rotationVl = rotationTypeOne.apply(user, event) +
-                             rotationTypeTwo.apply(user, angleInformation[0]) +
-                             rotationTypeThree.apply(user, angleInformation[1]);
+            int rotationVl = RotationTypeOnePattern.getInstance().getApplyingConsumer().apply(user) +
+                             RotationTypeTwoPattern.getInstance().getApplyingConsumer().apply(user, angleInformation[0]) +
+                             RotationTypeThreePattern.getInstance().getApplyingConsumer().apply(user, angleInformation[1]);
 
             if (rotationVl > 0) {
                 if (++user.getScaffoldData().rotationFails >= this.rotationThreshold) {

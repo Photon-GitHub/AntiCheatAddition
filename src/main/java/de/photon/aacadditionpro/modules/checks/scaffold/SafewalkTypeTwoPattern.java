@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.modules.checks.scaffold;
 
+import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
@@ -12,7 +12,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 /**
  * This detects safe-walk behaviour (stopping when not sneaking)
  */
-class SafewalkTypeTwoPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class SafewalkTypeTwoPattern implements Module
 {
     @Getter
     private static final SafewalkTypeTwoPattern instance = new SafewalkTypeTwoPattern();
@@ -38,6 +38,12 @@ class SafewalkTypeTwoPattern extends PatternModule.Pattern<User, BlockPlaceEvent
             user.getScaffoldData().safewalkTypeTwoFails--;
         }
         return 0;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return true;
     }
 
     @Override

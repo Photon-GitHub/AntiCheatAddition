@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.modules.checks.scaffold;
 
+import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
  * This pattern detects bursts of sprinting while scaffolding. No legit is able to properly utilize sprinting so far
  * because of the direction limitations.
  */
-class SprintingPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
+class SprintingPattern implements Module
 {
     @Getter
     private static final SprintingPattern instance = new SprintingPattern();
@@ -33,6 +33,12 @@ class SprintingPattern extends PatternModule.Pattern<User, BlockPlaceEvent>
         }
 
         return 0;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return true;
     }
 
     @Override

@@ -2,24 +2,25 @@ package de.photon.aacadditionpro;
 
 import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.util.datastructures.batch.AsyncBatchProcessor;
 import de.photon.aacadditionpro.util.datastructures.batch.Batch;
-import de.photon.aacadditionpro.util.datastructures.batch.BatchProcessor;
+import de.photon.aacadditionpro.util.datastructures.batch.SyncBatchProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BatchTest
+class BatchTest
 {
     @Test
-    public void dummyBatchTest()
+    void dummyBatchTest()
     {
         Assertions.assertThrows(NullPointerException.class, () -> new Batch<String>(null, 1, null));
     }
 
     @Test
-    public void illegalCapacityBatchTest()
+    void illegalCapacityBatchTest()
     {
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(null, 0, ""));
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(null, -1, ""));
@@ -27,12 +28,12 @@ public class BatchTest
     }
 
     @Test
-    public void batchProcessorTest()
+    void syncBatchProcessorTest()
     {
         final List<String> output = new ArrayList<>();
         int batchSize = 3;
 
-        final BatchProcessor<String> batchProcessor = new BatchProcessor<String>(batchSize)
+        final SyncBatchProcessor<String> batchProcessor = new SyncBatchProcessor<String>(batchSize)
         {
             @Override
             public void processBatch(User user, List<String> batch)
@@ -40,6 +41,9 @@ public class BatchTest
                 output.addAll(batch);
             }
         };
+        Assertions.assertThrows(IllegalStateException.class, batchProcessor::disable);
+        batchProcessor.enable();
+        Assertions.assertThrows(IllegalStateException.class, batchProcessor::enable);
 
         Batch<String> batch = new Batch<>(null, batchSize, "");
         batch.registerProcessor(batchProcessor);
@@ -47,7 +51,35 @@ public class BatchTest
         for (int i = 0; i < 6; i++) {
             batch.addDataPoint(String.valueOf(i));
         }
-        batchProcessor.stopProcessing();
+
+        Assertions.assertIterableEquals(output, ImmutableList.of("0", "1", "2", "3", "4", "5"));
+    }
+
+    @Test
+    void asyncBatchProcessorTest()
+    {
+        final List<String> output = new ArrayList<>();
+        int batchSize = 3;
+
+        final AsyncBatchProcessor<String> batchProcessor = new AsyncBatchProcessor<String>(batchSize)
+        {
+            @Override
+            public void processBatch(User user, List<String> batch)
+            {
+                output.addAll(batch);
+            }
+        };
+        Assertions.assertThrows(IllegalStateException.class, batchProcessor::disable);
+        batchProcessor.enable();
+        Assertions.assertThrows(IllegalStateException.class, batchProcessor::enable);
+
+        Batch<String> batch = new Batch<>(null, batchSize, "");
+        batch.registerProcessor(batchProcessor);
+
+        for (int i = 0; i < 6; i++) {
+            batch.addDataPoint(String.valueOf(i));
+        }
+        batchProcessor.controlledShutdown();
 
         Assertions.assertIterableEquals(output, ImmutableList.of("0", "1", "2", "3", "4", "5"));
     }

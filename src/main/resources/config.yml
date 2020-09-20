@@ -421,8 +421,6 @@ Scaffold:
     # This part is always enabled as it provides the basic framework.
     # The average part might add between 4 and 24 violation levels depending on the severity of the violation.
     average:
-      # Do you want to enable the average part?
-      enabled: true
       # The minimum delay between blockplaces that will be enforced by AACAdditionPro (measured in ms)
       delays:
         # This delay applies to all straight building techniques

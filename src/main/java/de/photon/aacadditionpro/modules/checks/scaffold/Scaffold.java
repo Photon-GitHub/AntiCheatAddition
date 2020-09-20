@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionpro.modules.BatchProcessorModule;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
@@ -8,12 +9,17 @@ import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.user.subdata.datawrappers.ScaffoldBlockPlace;
+import de.photon.aacadditionpro.util.datastructures.batch.BatchProcessor;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
+import de.photon.aacadditionpro.util.potion.InternalPotionEffectType;
+import de.photon.aacadditionpro.util.potion.PotionUtil;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.world.BlockUtils;
 import de.photon.aacadditionpro.util.world.LocationUtils;
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,13 +27,12 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.util.Set;
 
-public class Scaffold implements ListenerModule, ViolationModule
+public class Scaffold implements BatchProcessorModule<ScaffoldBlockPlace>, ListenerModule, ViolationModule
 {
     @Getter
     private static final Scaffold instance = new Scaffold();
 
     private static final Set<Module> submodules = ImmutableSet.of(AnglePattern.getInstance(),
-                                                                  AveragePattern.getInstance(),
                                                                   PositionPattern.getInstance(),
                                                                   RotationTypeOnePattern.getInstance(),
                                                                   RotationTypeTwoPattern.getInstance(),
@@ -87,16 +92,35 @@ public class Scaffold implements ListenerModule, ViolationModule
             user.getPlayer().getLocation().getY() > blockPlaced.getY() &&
             // Check if this check applies to the block
             blockPlaced.getType().isSolid() &&
+            // Ladders and Vines are prone to false positives as they can be used to place blocks immediately after placing
+            // them, therefore almost doubling the placement speed. However they can only be placed one at a time, which
+            // allows simply ignoring them.
+            event.getBlockPlaced().getType() != Material.LADDER && event.getBlockPlaced().getType() != Material.VINE &&
             // Check if the block is placed against one block face only, also implies no blocks above and below.
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
             BlockUtils.countBlocksAround(blockPlaced, true) == 1 &&
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
             BlockUtils.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
         {
-            int vl = AnglePattern.getInstance().apply(user, event);
-            vl += PositionPattern.getInstance().apply(user, event);
+            // ---------------------------------------------- Average ---------------------------------------------- //
+
+            final Block lastScaffoldBlock = user.getScaffoldData().getScaffoldBlockPlaces().peekLastAdded().getBlock();
+            if (!lastScaffoldBlock.equals(event.getBlockAgainst()) || !BlockUtils.isNext(lastScaffoldBlock, event.getBlockPlaced(), true)) {
+                user.getScaffoldData().getScaffoldBlockPlaces().clear();
+            }
+
+            user.getScaffoldData().getScaffoldBlockPlaces().addDataPoint(new ScaffoldBlockPlace(
+                    event.getBlockPlaced(),
+                    event.getBlockPlaced().getFace(event.getBlockAgainst()),
+                    // Speed-Effect
+                    PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), InternalPotionEffectType.SPEED)),
+                    user.getPlayer().getLocation().getYaw(),
+                    user.hasSneakedRecently(175)));
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
+
+            int vl = AnglePattern.getInstance().apply(user, event);
+            vl += PositionPattern.getInstance().apply(user, event);
 
             final float[] angleInformation = user.getLookPacketData().getAngleInformation();
 
@@ -113,8 +137,8 @@ public class Scaffold implements ListenerModule, ViolationModule
                 user.getScaffoldData().rotationFails--;
             }
 
-            vl += SprintingPattern.getInstance().getApplyingConsumer().apply(user);
-            vl += SprintingPattern.getInstance().getApplyingConsumer().apply(user);
+            vl += SafewalkTypeOnePattern.getInstance().getApplyingConsumer().apply(user, event);
+            vl += SafewalkTypeTwoPattern.getInstance().getApplyingConsumer().apply(user);
             vl += SprintingPattern.getInstance().getApplyingConsumer().apply(user);
 
             if (vl > 0) {
@@ -150,5 +174,11 @@ public class Scaffold implements ListenerModule, ViolationModule
     public ModuleType getModuleType()
     {
         return ModuleType.SCAFFOLD;
+    }
+
+    @Override
+    public BatchProcessor<ScaffoldBlockPlace> getBatchProcessor()
+    {
+        return AverageBatchProcessor.getInstance();
     }
 }

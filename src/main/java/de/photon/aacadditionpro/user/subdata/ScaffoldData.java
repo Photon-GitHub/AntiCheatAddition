@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.user.subdata;
 
+import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.checks.scaffold.AveragePattern;
@@ -7,6 +8,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.datawrappers.ScaffoldBlockPlace;
 import de.photon.aacadditionpro.util.datastructures.batch.Batch;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.block.BlockFace;
 
 public class ScaffoldData extends SubData
@@ -55,8 +57,8 @@ public class ScaffoldData extends SubData
     public ScaffoldData(User user)
     {
         super(user);
-        scaffoldBlockPlaces = new Batch<>(user, BATCH_SIZE, new ScaffoldBlockPlace(user.getPlayer().getEyeLocation().getBlock(), BlockFace.NORTH, 10, 0, false));
+        // Assume that there is at least one world.
+        scaffoldBlockPlaces = new Batch<>(user, BATCH_SIZE, new ScaffoldBlockPlace(Preconditions.checkNotNull(Bukkit.getWorlds().get(0), "Scaffold-Batch: No world could be found!").getBlockAt(0, 0, 0), BlockFace.NORTH, 10, 0, false));
         scaffoldBlockPlaces.registerProcessor(AveragePattern.getInstance().getBatchProcessor());
-
     }
 }

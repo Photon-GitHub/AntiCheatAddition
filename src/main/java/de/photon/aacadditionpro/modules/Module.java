@@ -58,6 +58,10 @@ public interface Module
                 PluginMessageListenerModule.enable((PluginMessageListenerModule) module);
             }
 
+            if (module instanceof BatchProcessorModule) {
+                BatchProcessorModule.enable((BatchProcessorModule) module);
+            }
+
             // Enable submodules.
             for (Module submodule : module.getSubModules()) {
                 Module.enableModule(submodule);
@@ -88,6 +92,10 @@ public interface Module
 
             if (module instanceof PluginMessageListenerModule) {
                 PluginMessageListenerModule.disable((PluginMessageListenerModule) module);
+            }
+
+            if (module instanceof BatchProcessorModule) {
+                BatchProcessorModule.disable((BatchProcessorModule) module);
             }
 
             // Enable submodules.

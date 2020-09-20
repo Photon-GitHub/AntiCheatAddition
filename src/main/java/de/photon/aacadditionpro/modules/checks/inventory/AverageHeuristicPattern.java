@@ -57,18 +57,6 @@ public class AverageHeuristicPattern implements BatchProcessorModule<InventoryCl
     }
 
     @Override
-    public void enable()
-    {
-        AverageHeuristicBatchProcessor.getInstance().enable();
-    }
-
-    @Override
-    public void disable()
-    {
-        AverageHeuristicBatchProcessor.getInstance().disable();
-    }
-
-    @Override
     public BatchProcessor<InventoryClick> getBatchProcessor()
     {
         return AverageHeuristicBatchProcessor.getInstance();

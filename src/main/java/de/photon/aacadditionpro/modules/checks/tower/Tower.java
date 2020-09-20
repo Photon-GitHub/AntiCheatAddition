@@ -107,18 +107,6 @@ public class Tower implements ListenerModule, ViolationModule, BatchProcessorMod
     }
 
     @Override
-    public void enable()
-    {
-        TowerBatchProcessor.getInstance().enable();
-    }
-
-    @Override
-    public void disable()
-    {
-        TowerBatchProcessor.getInstance().disable();
-    }
-
-    @Override
     public ViolationLevelManagement getViolationLevelManagement()
     {
         return vlManager;

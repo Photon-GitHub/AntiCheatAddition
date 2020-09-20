@@ -36,8 +36,8 @@ public class TowerBlockPlace extends BlockPlace
             // Jump boost 4
             129.5);
 
-    Integer jumpBoostLevel;
-    Integer levitationLevel;
+    final Integer jumpBoostLevel;
+    final Integer levitationLevel;
 
     public TowerBlockPlace(Block block, Integer jumpBoostLevel, Integer levitationLevel)
     {

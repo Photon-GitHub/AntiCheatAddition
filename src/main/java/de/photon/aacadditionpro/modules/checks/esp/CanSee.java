@@ -197,7 +197,6 @@ public class CanSee
 
     private static class ResetVector extends Vector
     {
-        @Setter
         private final Vector baseVector;
 
         public ResetVector(Vector baseVector)

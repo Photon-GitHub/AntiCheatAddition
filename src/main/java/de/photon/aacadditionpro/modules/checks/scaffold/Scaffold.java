@@ -105,7 +105,10 @@ public class Scaffold implements BatchProcessorModule<ScaffoldBlockPlace>, Liste
             // ---------------------------------------------- Average ---------------------------------------------- //
 
             final Block lastScaffoldBlock = user.getScaffoldData().getScaffoldBlockPlaces().peekLastAdded().getBlock();
-            if (!lastScaffoldBlock.equals(event.getBlockAgainst()) || !BlockUtils.isNext(lastScaffoldBlock, event.getBlockPlaced(), true)) {
+            // This checks if the block was placed against the expected block for scaffolding.
+            final boolean newSituation = !lastScaffoldBlock.equals(event.getBlockAgainst()) || !BlockUtils.isNext(lastScaffoldBlock, event.getBlockPlaced(), true);
+
+            if (newSituation) {
                 user.getScaffoldData().getScaffoldBlockPlaces().clear();
             }
 
@@ -122,24 +125,27 @@ public class Scaffold implements BatchProcessorModule<ScaffoldBlockPlace>, Liste
             int vl = AnglePattern.getInstance().apply(user, event);
             vl += PositionPattern.getInstance().apply(user, event);
 
-            final float[] angleInformation = user.getLookPacketData().getAngleInformation();
+            // All these checks may have false positives in new situations.
+            if (!newSituation) {
+                final float[] angleInformation = user.getLookPacketData().getAngleInformation();
 
-            int rotationVl = RotationTypeOnePattern.getInstance().getApplyingConsumer().apply(user) +
-                             RotationTypeTwoPattern.getInstance().getApplyingConsumer().apply(user, angleInformation[0]) +
-                             RotationTypeThreePattern.getInstance().getApplyingConsumer().apply(user, angleInformation[1]);
+                int rotationVl = RotationTypeOnePattern.getInstance().getApplyingConsumer().apply(user) +
+                                 RotationTypeTwoPattern.getInstance().getApplyingConsumer().apply(user, angleInformation[0]) +
+                                 RotationTypeThreePattern.getInstance().getApplyingConsumer().apply(user, angleInformation[1]);
 
-            if (rotationVl > 0) {
-                if (++user.getScaffoldData().rotationFails >= this.rotationThreshold) {
-                    // Flag the player
-                    vl += rotationVl;
+                if (rotationVl > 0) {
+                    if (++user.getScaffoldData().rotationFails >= this.rotationThreshold) {
+                        // Flag the player
+                        vl += rotationVl;
+                    }
+                } else if (user.getScaffoldData().rotationFails > 0) {
+                    user.getScaffoldData().rotationFails--;
                 }
-            } else if (user.getScaffoldData().rotationFails > 0) {
-                user.getScaffoldData().rotationFails--;
-            }
 
-            vl += SafewalkTypeOnePattern.getInstance().getApplyingConsumer().apply(user, event);
-            vl += SafewalkTypeTwoPattern.getInstance().getApplyingConsumer().apply(user);
-            vl += SprintingPattern.getInstance().getApplyingConsumer().apply(user);
+                vl += SafewalkTypeOnePattern.getInstance().getApplyingConsumer().apply(user, event);
+                vl += SafewalkTypeTwoPattern.getInstance().getApplyingConsumer().apply(user);
+                vl += SprintingPattern.getInstance().getApplyingConsumer().apply(user);
+            }
 
             if (vl > 0) {
                 vlManager.flag(event.getPlayer(), vl, cancelVl, () ->

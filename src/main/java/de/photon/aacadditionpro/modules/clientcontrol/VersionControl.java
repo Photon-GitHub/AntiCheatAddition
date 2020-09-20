@@ -34,7 +34,7 @@ public class VersionControl implements Module, Dependency
             new ProtocolVersion("1.13", ServerVersion.MC113, 393, 401, 404),
             new ProtocolVersion("1.14", ServerVersion.MC114, 477, 480, 485, 490, 498),
             new ProtocolVersion("1.15", ServerVersion.MC115, 573, 575),
-            new ProtocolVersion("1.16", ServerVersion.MC116, 735, 736, 751));
+            new ProtocolVersion("1.16", ServerVersion.MC116, 735, 736, 751, 753));
 
     /**
      * Method used to get the {@link ServerVersion} from the protocol version number.

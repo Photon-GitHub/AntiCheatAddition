@@ -47,7 +47,7 @@ public class Batch<T>
             }
 
             // Clear the batch.
-            this.index = 0;
+            this.clear();
         }
     }
 

@@ -52,7 +52,7 @@ class BatchTest
             batch.addDataPoint(String.valueOf(i));
         }
 
-        Assertions.assertIterableEquals(output, ImmutableList.of("0", "1", "2", "3", "4", "5"));
+        Assertions.assertIterableEquals(ImmutableList.of("0", "1", "2", "3", "4", "5"), output);
     }
 
     @Test
@@ -81,6 +81,11 @@ class BatchTest
         }
         batchProcessor.controlledShutdown();
 
-        Assertions.assertIterableEquals(output, ImmutableList.of("0", "1", "2", "3", "4", "5"));
+        // Make sure to respect the race condition.
+        if (output.get(0).equals("0")) {
+            Assertions.assertIterableEquals(ImmutableList.of("0", "1", "2", "3", "4", "5"), output);
+        } else {
+            Assertions.assertIterableEquals(ImmutableList.of("3", "4", "5", "0", "1", "2"), output);
+        }
     }
 }

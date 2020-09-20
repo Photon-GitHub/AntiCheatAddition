@@ -96,7 +96,13 @@ public class AACAdditionPro extends JavaPlugin
     {
         if (cachedConfig == null) {
             this.saveDefaultConfig();
-            cachedConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
+
+            final File configFile = new File(this.getDataFolder(), "config.yml");
+            if (!configFile.exists()) {
+                AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Config file could not be created!");
+            }
+
+            cachedConfig = YamlConfiguration.loadConfiguration(configFile);
         }
 
         return cachedConfig;

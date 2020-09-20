@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 /**
@@ -134,6 +135,10 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
             @Override
             public T next()
             {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
                 start = false;
                 T returnedObject = (T) array[currentIndex];
                 currentIndex = incrementIndexSafely(currentIndex);
@@ -162,6 +167,10 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
             @Override
             public T next()
             {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
                 start = false;
                 T returnedObject = (T) array[currentIndex];
                 currentIndex = decrementIndexSafely(currentIndex);

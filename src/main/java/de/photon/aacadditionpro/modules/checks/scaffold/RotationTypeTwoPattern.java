@@ -37,7 +37,7 @@ class RotationTypeTwoPattern implements Module
     @Override
     public void disable()
     {
-        applyingConsumer = (user, packet) -> 0;
+        applyingConsumer = (user, angleInformation) -> 0;
     }
 
     @Override

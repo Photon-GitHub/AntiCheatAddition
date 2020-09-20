@@ -113,9 +113,9 @@ public class Scaffold implements ListenerModule, ViolationModule
                 user.getScaffoldData().rotationFails--;
             }
 
-            vl += sprintingPattern.apply(user, event);
-            vl += safewalkTypeOne.apply(user, event);
-            vl += safewalkTypeTwo.apply(user, event);
+            vl += SprintingPattern.getInstance().getApplyingConsumer().apply(user);
+            vl += SprintingPattern.getInstance().getApplyingConsumer().apply(user);
+            vl += SprintingPattern.getInstance().getApplyingConsumer().apply(user);
 
             if (vl > 0) {
                 vlManager.flag(event.getPlayer(), vl, cancelVl, () ->

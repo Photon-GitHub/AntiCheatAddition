@@ -4,8 +4,10 @@ import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
-import org.bukkit.event.block.BlockPlaceEvent;
+
+import java.util.function.Function;
 
 /**
  * This pattern detects bursts of sprinting while scaffolding. No legit is able to properly utilize sprinting so far
@@ -19,20 +21,31 @@ class SprintingPattern implements Module
     @LoadFromConfiguration(configPath = ".violation_threshold")
     private int violationThreshold;
 
-    @Override
-    public int process(User user, BlockPlaceEvent event)
-    {
-        if (user.hasSprintedRecently(400)) {
-            if (++user.getScaffoldData().sprintingFails >= this.violationThreshold) {
-                message = "Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.";
-                // Flag the player
-                return 8;
-            }
-        } else if (user.getScaffoldData().sprintingFails > 0) {
-            user.getScaffoldData().sprintingFails--;
-        }
+    @Getter
+    private Function<User, Integer> applyingConsumer = user -> 0;
 
-        return 0;
+    @Override
+    public void enable()
+    {
+        applyingConsumer = user -> {
+            if (user.hasSprintedRecently(400)) {
+                if (++user.getScaffoldData().sprintingFails >= this.violationThreshold) {
+                    VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
+                    // Flag the player
+                    return 8;
+                }
+            } else if (user.getScaffoldData().sprintingFails > 0) {
+                user.getScaffoldData().sprintingFails--;
+            }
+
+            return 0;
+        };
+    }
+
+    @Override
+    public void disable()
+    {
+        applyingConsumer = user -> 0;
     }
 
     @Override

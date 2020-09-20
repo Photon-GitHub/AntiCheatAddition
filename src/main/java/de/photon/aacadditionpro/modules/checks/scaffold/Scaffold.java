@@ -102,11 +102,12 @@ public class Scaffold implements BatchProcessorModule<ScaffoldBlockPlace>, Liste
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
             BlockUtils.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
         {
-            // ---------------------------------------------- Average ---------------------------------------------- //
 
             final Block lastScaffoldBlock = user.getScaffoldData().getScaffoldBlockPlaces().peekLastAdded().getBlock();
             // This checks if the block was placed against the expected block for scaffolding.
             final boolean newSituation = !lastScaffoldBlock.equals(event.getBlockAgainst()) || !BlockUtils.isNext(lastScaffoldBlock, event.getBlockPlaced(), true);
+
+            // ---------------------------------------------- Average ---------------------------------------------- //
 
             if (newSituation) {
                 user.getScaffoldData().getScaffoldBlockPlaces().clear();

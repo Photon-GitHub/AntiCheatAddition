@@ -9,6 +9,7 @@ import de.photon.aacadditionpro.modules.RestrictedServerVersion;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,6 +18,9 @@ import java.util.Set;
 
 public class FiveZigControl extends ClientControlModule implements PluginMessageListenerModule, RestrictedServerVersion
 {
+    @Getter
+    private static final FiveZigControl instance = new FiveZigControl();
+
     // Backup: Channel name has to be EXACTLY "5zig_Set"
     private static final MessageChannel FIVEZIGCHANNEL = new MessageChannel("5zig", "set", "5zig_Set");
 
@@ -48,8 +52,8 @@ public class FiveZigControl extends ClientControlModule implements PluginMessage
         final BitSet disableBitSet = new BitSet();
 
         // Set the according bits
-        for (byte b = 0; b < features.length; b++) {
-            disableBitSet.set(b, features[b]);
+        for (int i = 0; i < features.length; ++i) {
+            disableBitSet.set(i, features[i]);
         }
 
         user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), FIVEZIGCHANNEL.getChannel(), disableBitSet.toByteArray());

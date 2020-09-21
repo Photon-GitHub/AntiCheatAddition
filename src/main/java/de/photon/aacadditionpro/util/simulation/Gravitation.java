@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.playersimulation.movement;
+package de.photon.aacadditionpro.util.simulation;
 
 import lombok.Getter;
 import org.bukkit.util.Vector;
@@ -10,8 +10,7 @@ public enum Gravitation
     /**
      * The gravitation that is applied to that type of entity
      */
-    @Getter
-    final double gravitationPerTick;
+    @Getter final double gravitationPerTick;
 
     Gravitation(double gravitationPerTick)
     {
@@ -36,7 +35,7 @@ public enum Gravitation
      */
     private static Vector applyAirResistance(Vector input)
     {
-        return input.multiply(0.98D);
+        return input.multiply((double) 0.98F);
     }
 
     /**

@@ -10,6 +10,7 @@ import de.photon.aacadditionpro.modules.RestrictedServerVersion;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
+import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -22,6 +23,9 @@ import java.util.logging.Level;
 
 public class SchematicaControl extends ClientControlModule implements ListenerModule, PluginMessageListenerModule, RestrictedServerVersion
 {
+    @Getter
+    private static final SchematicaControl instance = new SchematicaControl();
+
     private static final MessageChannel SCHEMATICA_CHANNEL = new MessageChannel("minecraft", "schematica", "schematica");
 
     /**

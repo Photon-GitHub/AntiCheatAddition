@@ -33,6 +33,69 @@ public class ConfigurationRepresentation
         yamlConfiguration = YamlConfiguration.loadConfiguration(this.configFile);
     }
 
+    /**
+     * @return the line number of a path.
+     */
+    private static int searchForPath(List<String> configLines, String path)
+    {
+        // Special handling for paths without a '.'
+        final String[] pathParts = path.split("\\.");
+
+        int currentPart = 0;
+        int currentPathPartDepth = 0;
+        int currentLineIndex = 0;
+        int currentDepth;
+
+        for (String configLine : configLines) {
+            currentDepth = StringUtil.depth(configLine);
+
+            // Value could not be found as not all parts are existing.
+            if (currentPathPartDepth > currentDepth) {
+                throw new IllegalArgumentException("Path " + path + " could not be found.");
+            }
+
+            if (!isComment(configLine) && configLine.contains(pathParts[currentPart])) {
+                // Update depth
+                currentPathPartDepth = currentDepth;
+
+                // Found the whole path?
+                if (++currentPart >= pathParts.length) {
+                    return currentLineIndex;
+                }
+            }
+
+            ++currentLineIndex;
+        }
+
+        throw new IllegalArgumentException("Path " + path + " could not be found (full iteration).");
+    }
+
+    // Start at 1 because the initial line is always affected.
+    private static int affectedLines(final List<String> configLines, final int initialLine, final Predicate<String> loopBreak)
+    {
+        int affectedLines = 0;
+
+        // + 1 as the initial line should not be iterated over.
+        final ListIterator<String> listIterator = configLines.listIterator(initialLine + 1);
+        String configLine;
+        while (listIterator.hasNext()) {
+            configLine = listIterator.next();
+
+            // ":" is the indicator of a new value
+            if (loopBreak.test(configLine)) {
+                break;
+            }
+
+            ++affectedLines;
+        }
+        return affectedLines;
+    }
+
+    private static boolean isComment(final String string)
+    {
+        return string != null && (string.isEmpty() || string.contains("#"));
+    }
+
     public void requestValueChange(final String path, final Object value)
     {
         this.requestedChanges.put(path, value);
@@ -94,7 +157,7 @@ public class ConfigurationRepresentation
                 if (list.isEmpty()) {
                     initialLine += " []";
                 } else {
-                    short entryDepth = depth(initialLine);
+                    int entryDepth = StringUtil.depth(initialLine);
                     final StringBuilder preStringBuilder = new StringBuilder();
 
                     while (entryDepth-- > 0) {
@@ -112,8 +175,8 @@ public class ConfigurationRepresentation
                 switch ((ConfigActions) value) {
                     case DELETE_KEYS:
                         initialLine += " {}";
-                        final short initialLineDepth = depth(initialLine);
-                        int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> depth(line) <= initialLineDepth);
+                        final int initialLineDepth = StringUtil.depth(initialLine);
+                        int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> StringUtil.depth(line) <= initialLineDepth);
 
                         // Remove old values
                         for (int lines = affectedKeyLines; lines > 0; lines--) {
@@ -139,83 +202,6 @@ public class ConfigurationRepresentation
                 fileWriter.write('\n');
             }
         }
-    }
-
-    /**
-     * @return the line number of a path.
-     */
-    private static int searchForPath(List<String> configLines, String path)
-    {
-        // Special handling for paths without a '.'
-        final String[] pathParts = path.split("\\.");
-
-        int currentPart = 0;
-        short minDepth = 0;
-        int currentLineIndex = 0;
-
-        for (String configLine : configLines) {
-            final short currentDepth = depth(configLine);
-
-            // Value could not be found as not all parts are existing.
-            if (minDepth > currentDepth) {
-                throw new IllegalArgumentException("Path " + path + " could not be found.");
-            }
-
-            if (!isComment(configLine) && configLine.contains(pathParts[currentPart])) {
-                // Update depth
-                minDepth = currentDepth;
-
-                // Found the whole path?
-                if (++currentPart >= pathParts.length) {
-                    return currentLineIndex;
-                }
-            }
-
-            currentLineIndex++;
-        }
-
-        throw new IllegalArgumentException("Path " + path + " could not be found (full iteration).");
-    }
-
-    // Start at 1 because the initial line is always affected.
-    private static int affectedLines(final List<String> configLines, final int initialLine, final Predicate<String> loopBreak)
-    {
-        int affectedLines = 0;
-
-        // + 1 as the initial line should not be iterated over.
-        final ListIterator<String> listIterator = configLines.listIterator(initialLine + 1);
-        String configLine;
-        while (listIterator.hasNext()) {
-            configLine = listIterator.next();
-
-            // ":" is the indicator of a new value
-            if (loopBreak.test(configLine)) {
-                break;
-            }
-
-            affectedLines++;
-        }
-        return affectedLines;
-    }
-
-    /**
-     * Counts the leading whitespaces of a {@link String}
-     *
-     * @return the amount of leading whitespaces.
-     */
-    private static short depth(final String string)
-    {
-        for (short i = 0; i < string.length(); i++) {
-            if (string.charAt(i) != ' ') {
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    private static boolean isComment(final String string)
-    {
-        return string != null && (string.isEmpty() || string.contains("#"));
     }
 
     public enum ConfigActions

@@ -10,6 +10,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerCustomPayload;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
+import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -18,9 +19,13 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class OldLabyModControl extends ClientControlModule implements ListenerModule, RestrictedServerVersion
 {
+    @Getter
+    private static final OldLabyModControl instance = new OldLabyModControl();
+
     private Map<String, Boolean> featureMap;
 
     @Override
@@ -56,8 +61,8 @@ public class OldLabyModControl extends ClientControlModule implements ListenerMo
             out.writeObject(featureMap);
             packetWrapper.setContents(byteOut.toByteArray());
             packetWrapper.sendPacket(user.getPlayer());
-        } catch (final IOException exception) {
-            exception.printStackTrace();
+        } catch (final IOException e) {
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "OldLabyModControl failed to send feature map.", e);
         }
     }
 

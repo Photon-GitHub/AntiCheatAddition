@@ -4,7 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -13,6 +14,9 @@ import java.util.concurrent.TimeUnit;
 
 public class LogBot implements Module, Runnable
 {
+    @Getter
+    private static final LogBot instance = new LogBot();
+
     // HashMap's real capacity is always a power of 2
     private final Map<File, Long> logDeletionTimes = ImmutableMap.of(
             // Put the respective times in milliseconds into the map.
@@ -31,15 +35,12 @@ public class LogBot implements Module, Runnable
                 (logFolder, timeToDelete) ->
                 {
                     // If the logFolder exists
-                    if (logFolder.exists())
-                    {
+                    if (logFolder.exists()) {
                         final File[] files = logFolder.listFiles();
 
-                        if (files != null)
-                        {
+                        if (files != null) {
                             // The folder is not empty
-                            for (final File file : files)
-                            {
+                            for (final File file : files) {
                                 final String nameOfFile = file.getName();
                                 // Be sure it is a log file of AAC or AACAdditionPro (.log) or a log file of the server (.log.gz)
                                 if ((nameOfFile.endsWith(".log") || nameOfFile.endsWith(".log.gz")) &&
@@ -55,9 +56,7 @@ public class LogBot implements Module, Runnable
                                 }
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
                         VerboseSender.getInstance().sendVerboseMessage("Could not find log folder " + logFolder.getName(), true, true);
                     }
                 });
@@ -68,6 +67,12 @@ public class LogBot implements Module, Runnable
     {
         // Start a daily executed task to clean up the logs.
         task_number = Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this, 1, TimeUnit.DAYS.toMillis(1));
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

@@ -13,6 +13,7 @@ import de.photon.aacadditionpro.util.violationlevels.TeamViolationLevelManagemen
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.world.LocationUtils;
 import de.photon.aacadditionpro.util.world.Region;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -26,6 +27,9 @@ import java.util.Set;
 
 public class Teaming implements ListenerModule, ViolationModule
 {
+    @Getter
+    private static final Teaming instance = new Teaming();
+
     private final TeamViolationLevelManagement vlManager = new TeamViolationLevelManagement(this.getModuleType(), 300);
     // Region handling
     private final Set<World> enabledWorlds = new HashSet<>(3);
@@ -124,6 +128,13 @@ public class Teaming implements ListenerModule, ViolationModule
                 return true;
             }
         }
+        return false;
+    }
+
+
+    @Override
+    public boolean isSubModule()
+    {
         return false;
     }
 

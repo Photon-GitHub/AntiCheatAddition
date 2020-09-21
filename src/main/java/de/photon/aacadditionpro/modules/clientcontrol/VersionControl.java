@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.modules.clientcontrol;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
@@ -18,6 +19,9 @@ import java.util.UUID;
 
 public class VersionControl implements Module, Dependency
 {
+    @Getter
+    private static final VersionControl instance = new VersionControl();
+
     /**
      * Unmodifiable {@link Set} containing all registered {@link ProtocolVersion}s.
      */
@@ -30,7 +34,7 @@ public class VersionControl implements Module, Dependency
             new ProtocolVersion("1.13", ServerVersion.MC113, 393, 401, 404),
             new ProtocolVersion("1.14", ServerVersion.MC114, 477, 480, 485, 490, 498),
             new ProtocolVersion("1.15", ServerVersion.MC115, 573, 575),
-            new ProtocolVersion("1.16", ServerVersion.MC116, 735, 736));
+            new ProtocolVersion("1.16", ServerVersion.MC116, 735, 736, 751, 753));
 
     /**
      * Method used to get the {@link ServerVersion} from the protocol version number.
@@ -68,15 +72,21 @@ public class VersionControl implements Module, Dependency
         Configs.VIAVERSION.getConfigurationRepresentation().requestValueChange(
                 "block-disconnect-msg",
                 // Construct the message.
-                AACAdditionPro.getInstance().getConfig().getString("ClientControl.VersionControl.message")
-                              // Replace the special placeholder
-                              .replace("{supportedVersions}", String.join(", ", versionStrings)));
+                Preconditions.checkNotNull(AACAdditionPro.getInstance().getConfig().getString("ClientControl.VersionControl.message"), "VersionControl message is null. Please fix your config.")
+                             // Replace the special placeholder
+                             .replace("{supportedVersions}", String.join(", ", versionStrings)));
 
         // Make the protocol numbers appear more visually appealing in the ViaVersion config
         blockedProtocolNumbers.sort(Integer::compareTo);
 
         // Block the affected protocol numbers.
         Configs.VIAVERSION.getConfigurationRepresentation().requestValueChange("block-protocols", blockedProtocolNumbers);
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override
@@ -121,7 +131,7 @@ public class VersionControl implements Module, Dependency
         private ProtocolVersion(final String name, final ServerVersion equivalentServerVersion, final Integer... versionNumbers)
         {
             this.name = name;
-            this.allowed = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl.allowedVersions." + this.name);
+            this.allowed = AACAdditionPro.getInstance().getConfig().getBoolean("ClientControl.VersionControl.allowedVersions." + this.name, true);
             this.equivalentServerVersion = equivalentServerVersion;
             this.versionNumbers = ImmutableSet.copyOf(versionNumbers);
         }

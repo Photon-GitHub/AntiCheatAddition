@@ -182,9 +182,9 @@ public final class EntityUtil
         int yMax = ((int) axisAlignedBB.getMaxY()) + 1;
         int zMax = ((int) axisAlignedBB.getMaxZ()) + 1;
 
-        for (; xMin <= xMax; xMin++) {
-            for (; yMin <= yMax; yMin++) {
-                for (; zMin <= zMax; zMin++) {
+        for (; xMin <= xMax; ++xMin) {
+            for (; yMin <= yMax; ++yMin) {
+                for (; zMin <= zMax; ++zMin) {
                     if (function.test(location.getWorld().getBlockAt(xMin, yMin, zMin))) {
                         return true;
                     }

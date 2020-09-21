@@ -1,5 +1,6 @@
-package de.photon.aacadditionpro.modules.checks;
+package de.photon.aacadditionpro.modules.checks.tower;
 
+import de.photon.aacadditionpro.modules.BatchProcessorModule;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.ViolationModule;
@@ -7,7 +8,7 @@ import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.user.subdata.datawrappers.TowerBlockPlace;
-import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.datastructures.batch.BatchProcessor;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
@@ -15,16 +16,22 @@ import de.photon.aacadditionpro.util.potion.InternalPotionEffectType;
 import de.photon.aacadditionpro.util.potion.PotionUtil;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.world.BlockUtils;
+import lombok.Getter;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-public class Tower implements ListenerModule, ViolationModule
+
+public class Tower implements ListenerModule, ViolationModule, BatchProcessorModule<TowerBlockPlace>
 {
+    @Getter
+    private static final Tower instance = new Tower();
+
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
 
+    @Getter
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancelVl;
 
@@ -69,33 +76,34 @@ public class Tower implements ListenerModule, ViolationModule
                 // Only one block that is not a liquid is allowed (the one which the Block is placed against).
                 BlockUtils.countBlocksAround(blockPlaced, true) == 1 &&
                 // User is not in water which can cause false positives due to faster swimming on newer versions.
-                !EntityUtil.isHitboxInLiquids(user.getPlayer().getLocation(), user.getHitbox()) &&
-                // Buffer the block place, continue the check only when we a certain number of block places in check
-                user.getTowerData().getBlockPlaces().bufferObject(
+                !EntityUtil.isHitboxInLiquids(user.getPlayer().getLocation(), user.getHitbox()))
+            {
+                // Make sure that the player is still towering in the same position.
+                if (!event.getBlockAgainst().getLocation().equals(user.getTowerData().getBatch().peekLastAdded().getBlock().getLocation())) {
+                    user.getTowerData().getBatch().clear();
+                }
+
+                user.getTowerData().getBatch().addDataPoint(
                         new TowerBlockPlace(
                                 blockPlaced,
                                 //Jump boost effect is important
                                 PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), InternalPotionEffectType.JUMP)),
-                                levitation)))
-            {
-                // [0] = Expected time; [1] = Real time
-                final double[] results = user.getTowerData().calculateTimes();
+                                levitation));
 
-                // Real check
-                if (results[1] < results[0]) {
-                    final int vlToAdd = (int) Math.min(1 + Math.floor((results[0] - results[1]) / 16), 100);
-
-                    // Violation-Level handling
-                    vlManager.flag(event.getPlayer(), vlToAdd, cancelVl, () ->
-                    {
-                        event.setCancelled(true);
-                        user.getTimestampMap().updateTimeStamp(TimestampKey.TOWER_TIMEOUT);
-                        InventoryUtils.syncUpdateInventory(user.getPlayer());
-                        // If not cancelled run the verbose message with additional data
-                    }, () -> VerboseSender.getInstance().sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + results[0] + " | real: " + results[1]));
-                }
             }
         }
+    }
+
+    @Override
+    public BatchProcessor<TowerBlockPlace> getBatchProcessor()
+    {
+        return TowerBatchProcessor.getInstance();
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.playersimulation.movement;
+package de.photon.aacadditionpro.util.simulation;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -12,6 +12,7 @@ public final class Jumping
      *
      * @param amplifier the amplifier of the Jump_Boost effect. If no effect should be applied this should be null
      */
+    @SuppressWarnings("RedundantCast")
     public static double getJumpYMotion(final Integer amplifier)
     {
         double motionY = (double) 0.42F;

@@ -1,18 +1,22 @@
 package de.photon.aacadditionpro.modules.checks.packetanalysis;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.modules.PatternModule;
+import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.client.IWrapperPlayClientLook;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -27,12 +31,15 @@ import java.util.concurrent.TimeoutException;
 import static java.util.logging.Level.SEVERE;
 
 /**
- * This {@link de.photon.aacadditionpro.modules.PatternModule.PacketPattern} checks for rotation packets which have
+ * This {@link PacketListenerModule} checks for rotation packets which have
  * exactly the same yaw/pitch values as the last packet. When moving these values are never equal to each other when
  * sent by a vanilla client.
  */
-class EqualRotationPattern extends PatternModule.PacketPattern
+class EqualRotationPattern extends PacketAdapter implements PacketListenerModule
 {
+    @Getter
+    private static final EqualRotationPattern instance = new EqualRotationPattern();
+
     // A set of materials which hitboxes changed in minecraft 1.9
     private static final Set<Material> CHANGED_HITBOX_MATERIALS;
 
@@ -60,12 +67,20 @@ class EqualRotationPattern extends PatternModule.PacketPattern
 
     EqualRotationPattern()
     {
-        super(ImmutableSet.of(PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK));
+        super(AACAdditionPro.getInstance(), ListenerPriority.LOW,
+              PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK);
     }
 
+
     @Override
-    protected int process(User user, PacketEvent packetEvent)
+    public void onPacketReceiving(final PacketEvent packetEvent)
     {
+        final User user = UserManager.safeGetUserFromPacketEvent(packetEvent);
+
+        if (User.isUserInvalid(user, this.getModuleType())) {
+            return;
+        }
+
         // Get the packet.
         final IWrapperPlayClientLook lookWrapper = packetEvent::getPacket;
 
@@ -99,11 +114,12 @@ class EqualRotationPattern extends PatternModule.PacketPattern
                     // Cancelled packets may cause problems.
                     if (user.getDataMap().getBoolean(DataKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED)) {
                         user.getDataMap().setValue(DataKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED, false);
-                        return 0;
+                        return;
                     }
 
-                    message = "PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations.";
-                    return 1;
+                    PacketAnalysis.getInstance().getViolationLevelManagement().flag(user.getPlayer(),
+                                                                                    -1, () -> {},
+                                                                                    () -> VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent equal rotations."));
                 }
             } catch (InterruptedException | ExecutionException e) {
                 AACAdditionPro.getInstance().getLogger().log(SEVERE, "Unable to complete the EqualRotation calculations.", e);
@@ -112,7 +128,12 @@ class EqualRotationPattern extends PatternModule.PacketPattern
                 AACAdditionPro.getInstance().getLogger().log(SEVERE, "Discard packet check due to high server load. If this message appears frequently please consider upgrading your server.");
             }
         }
-        return 0;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return true;
     }
 
     @Override

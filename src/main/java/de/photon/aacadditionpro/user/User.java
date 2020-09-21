@@ -67,11 +67,19 @@ public class User
     }
 
     /**
+     * Determines whether a {@link Player} bypasses a certain {@link ModuleType}.
+     */
+    public static boolean isBypassed(Player player, ModuleType moduleType)
+    {
+        return InternalPermission.hasPermission(player, InternalPermission.BYPASS.getRealPermission() + '.' + moduleType.getConfigString().toLowerCase());
+    }
+
+    /**
      * Determines whether a {@link User} bypasses a certain {@link ModuleType}.
      */
     public boolean isBypassed(ModuleType moduleType)
     {
-        return InternalPermission.hasPermission(this.player, InternalPermission.BYPASS.getRealPermission() + '.' + moduleType.getConfigString().toLowerCase());
+        return isBypassed(this.player, moduleType);
     }
 
     /**

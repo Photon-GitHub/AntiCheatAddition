@@ -9,17 +9,20 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 public class AutoEat implements ListenerModule, ViolationModule
 {
+    @Getter
+    private static final AutoEat instance = new AutoEat();
+
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 6000L);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancelVl;
-
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
@@ -43,6 +46,12 @@ public class AutoEat implements ListenerModule, ViolationModule
         if (user.getTimestampMap().recentlyUpdated(TimestampKey.AUTOEAT_TIMEOUT, timeout)) {
             event.setCancelled(true);
         }
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

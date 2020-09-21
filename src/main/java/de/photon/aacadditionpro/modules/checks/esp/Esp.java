@@ -1,18 +1,18 @@
 package de.photon.aacadditionpro.modules.checks.esp;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.files.configs.Configs;
+import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.visibility.HideMode;
 import de.photon.aacadditionpro.util.visibility.PlayerInformationModifier;
 import de.photon.aacadditionpro.util.visibility.informationmodifiers.InformationObfuscator;
 import de.photon.aacadditionpro.util.visibility.informationmodifiers.PlayerHider;
-import de.photon.aacadditionpro.util.world.LocationUtils;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -25,50 +25,48 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.Semaphore;
 
 public class Esp implements ListenerModule
 {
     @Getter
     private static final Esp instance = new Esp();
-    final ExecutorService pairExecutor = Executors.newCachedThreadPool();
-    final AtomicLong activeCalculations = new AtomicLong(0);
+    private static final int MAX_BLOCK_ITERATOR_RANGE_SQUARED = 139 * 139;
+
+    // The packet hiders.
     private final PlayerInformationModifier fullHider = new PlayerHider();
     private final PlayerInformationModifier informationOnlyHider = new InformationObfuscator();
-    // The auto-config-data
-    boolean hideAfterRenderDistance = true;
-    int defaultTrackingRange;
-    Map<UUID, Integer> playerTrackingRanges;
+    private final int sleepMillis = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.ESP.getConfigString() + ".sleep_millis");
+    Semaphore cycleSemaphore = new Semaphore(0);
 
+    // The auto-config-data
+    boolean hideAfterRenderDistance;
+    int defaultTrackingRange;
+    Map<World, Integer> playerTrackingRanges;
+
+    // Work stealing pool as the pairs can have vastly different execution times.
+    private ExecutorService pairExecutor;
     private Thread supplierThread;
 
     @Override
     public void enable()
     {
-        fullHider.registerListeners();
-        informationOnlyHider.registerListeners();
-
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
-        final long updateTicksConfig = AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".update_ticks");
-        final AtomicLong updateTicks = new AtomicLong(updateTicksConfig);
-        final ConfigurationSection worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
-        final ImmutableMap.Builder<UUID, Integer> rangeBuilder = ImmutableMap.builder();
+        final ConfigurationSection worlds = Preconditions.checkNotNull(Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings"), "World settings are not present. Aborting ESP enable.");
+        final ImmutableMap.Builder<World, Integer> rangeBuilder = ImmutableMap.builder();
 
-        int currentPlayerTrackingRange;
+        defaultTrackingRange = MAX_BLOCK_ITERATOR_RANGE_SQUARED;
+        int currentPlayerTrackingRange = 0;
         for (final String worldName : worlds.getKeys(false)) {
+            // Squared tracking distance
             currentPlayerTrackingRange = worlds.getInt(worldName + ".entity-tracking-range.players");
-
-            // Square
             currentPlayerTrackingRange *= currentPlayerTrackingRange;
 
-            // Do the maths inside here as reading from a file takes longer than calculating this.
-            // 19321 == 139^2 as of the maximum range of the block-iterator
-            if (currentPlayerTrackingRange > 19321) {
-                hideAfterRenderDistance = false;
-                currentPlayerTrackingRange = 19321;
+            // Check if we are over the block iterator range
+            if (currentPlayerTrackingRange > MAX_BLOCK_ITERATOR_RANGE_SQUARED) {
+                currentPlayerTrackingRange = MAX_BLOCK_ITERATOR_RANGE_SQUARED;
             }
 
             if ("default".equals(worldName)) {
@@ -77,17 +75,23 @@ public class Esp implements ListenerModule
                 final World correspondingWorld = Bukkit.getWorld(worldName);
 
                 if (correspondingWorld != null) {
-                    rangeBuilder.put(correspondingWorld.getUID(), currentPlayerTrackingRange);
+                    rangeBuilder.put(correspondingWorld, currentPlayerTrackingRange);
                 }
             }
         }
 
+        this.hideAfterRenderDistance = currentPlayerTrackingRange != MAX_BLOCK_ITERATOR_RANGE_SQUARED;
         this.playerTrackingRanges = rangeBuilder.build();
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
-        // Use ArrayDeque as we can
-        final Deque<User> users = new ArrayDeque<>(1500);
+        // Make sure the Semaphore has the correct initial value, even if the check is restarted.
+        cycleSemaphore = new Semaphore(0);
+        pairExecutor = Executors.newWorkStealingPool();
+
+        // Register the packet hiders.
+        fullHider.registerListeners();
+        informationOnlyHider.registerListeners();
 
         class EspSupplierThread extends Thread
         {
@@ -96,43 +100,40 @@ public class Esp implements ListenerModule
             public void run()
             {
                 try {
+                    final Deque<Player> players = new ArrayDeque<>(127);
+                    Player observer;
+                    int startedThreads = 0;
+
                     while (true) {
-                        if (activeCalculations.get() > 0) {
-                            VerboseSender.getInstance().sendVerboseMessage("Did not finish ESP cycle. Consider upgrading your hardware or increasing update_ticks if this message shows regularly.", false, true);
-                            // Increase updateTicks to not further lag the server.
-                            updateTicks.addAndGet(3);
-                        } else {
-                            // Decrease updateTicks slowly if possible.
-                            if (updateTicks.get() > updateTicksConfig) {
-                                updateTicks.getAndDecrement();
+                        for (World world : Bukkit.getWorlds()) {
+                            for (Player player : world.getPlayers()) {
+                                if (!User.isBypassed(player, getModuleType()) && player.getGameMode() != GameMode.SPECTATOR) {
+                                    players.add(player);
+                                }
                             }
-                        }
 
-                        // Put all users in a Queue for fast removal.
-                        // Ignore spectators.
-                        for (User user : UserManager.getUsersUnwrapped()) {
-                            if (user.getPlayer().getGameMode() != GameMode.SPECTATOR) {
-                                users.add(user);
-                            }
-                        }
+                            // Every iteration the number of players is reduced by 1. We start with players.size() - 1
+                            // as the first player is removed right away and will not count towards the connections.
+                            startedThreads += MathUtils.gaussianSumFormulaTo(players.size() - 1);
 
-                        // Iterate through all player-constellations
-                        while (!users.isEmpty()) {
-                            // Remove the finished player to reduce the amount of added entries.
-                            // This makes sure the player won't have a connection with himself.
-                            // Remove the last object for better array performance.
-                            final User observingUser = users.removeLast();
+                            while (!players.isEmpty()) {
+                                // Remove the finished player to reduce the amount of added entries.
+                                // This makes sure the player won't have a connection with himself.
+                                // Remove the last object for better array performance.
+                                observer = players.removeLast();
 
-                            // All users can potentially be seen
-                            for (final User watched : users) {
-                                // The players are in the same world
-                                if (LocationUtils.inSameWorld(observingUser.getPlayer(), watched.getPlayer())) {
-                                    pairExecutor.submit(new EspPairRunnable(observingUser, watched));
-                                    activeCalculations.incrementAndGet();
+                                for (Player watched : players) {
+                                    pairExecutor.execute(new EspPairRunnable(observer, watched));
                                 }
                             }
                         }
-                        Thread.sleep(50 * updateTicks.get());
+
+                        // Wait for all threads to finish.
+                        cycleSemaphore.acquire(startedThreads);
+                        startedThreads = 0;
+
+                        // Sleep for some time to make sure not to overload the server.
+                        sleep(sleepMillis);
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -157,7 +158,7 @@ public class Esp implements ListenerModule
 
             // Spectators can see everyone and can be seen by everyone (let vanilla handle this)
             for (User user : UserManager.getUsersUnwrapped()) {
-                updatePairHideMode(spectator, user, HideMode.NONE);
+                updatePairHideMode(spectator.getPlayer(), user.getPlayer(), HideMode.NONE);
             }
         }
     }
@@ -165,37 +166,37 @@ public class Esp implements ListenerModule
     /**
      * Changes the hide mode for both specified {@link User}s.
      */
-    void updatePairHideMode(final User first, final User second, final HideMode hideMode)
+    void updatePairHideMode(final Player first, final Player second, final HideMode hideMode)
     {
-        updateHideMode(first, second.getPlayer(), hideMode);
-        updateHideMode(second, first.getPlayer(), hideMode);
+        updateHideMode(first, second, hideMode);
+        updateHideMode(second, first, hideMode);
     }
 
     // No need to synchronize hiddenPlayers as it is accessed in a synchronized task.
-    void updateHideMode(final User observer, final Player watched, final HideMode hideMode)
+    void updateHideMode(final Player observer, final Player watched, final HideMode hideMode)
     {
-        final Player observingPlayer = observer.getPlayer();
-
         // Observer might have left by now.
-        if (observingPlayer != null && watched != null) {
+        if (observer != null && watched != null) {
             // There is no need to manually check if something has changed as the PlayerInformationModifiers already
             // do that.
             switch (hideMode) {
                 case FULL:
                     // FULL: fullHider active, informationOnlyHider inactive
-                    this.informationOnlyHider.unModifyInformation(observingPlayer, watched);
-                    this.fullHider.modifyInformation(observingPlayer, watched);
+                    this.informationOnlyHider.unModifyInformation(observer, watched);
+                    this.fullHider.modifyInformation(observer, watched);
                     break;
                 case INFORMATION_ONLY:
                     // INFORMATION_ONLY: fullHider inactive, informationOnlyHider active
-                    this.fullHider.unModifyInformation(observingPlayer, watched);
-                    this.informationOnlyHider.modifyInformation(observingPlayer, watched);
+                    this.fullHider.unModifyInformation(observer, watched);
+                    this.informationOnlyHider.modifyInformation(observer, watched);
                     break;
                 case NONE:
                     // NONE: fullHider inactive, informationOnlyHider inactive
-                    this.informationOnlyHider.unModifyInformation(observingPlayer, watched);
-                    this.fullHider.unModifyInformation(observingPlayer, watched);
+                    this.informationOnlyHider.unModifyInformation(observer, watched);
+                    this.fullHider.unModifyInformation(observer, watched);
                     break;
+                default:
+                    throw new IllegalArgumentException("Unknown HideMode: " + hideMode);
             }
         }
     }
@@ -213,6 +214,12 @@ public class Esp implements ListenerModule
         fullHider.unregisterListeners();
         informationOnlyHider.resetTable();
         informationOnlyHider.unregisterListeners();
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

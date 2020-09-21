@@ -1,61 +1,57 @@
 package de.photon.aacadditionpro.modules.checks.esp;
 
-import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.visibility.HideMode;
+import lombok.RequiredArgsConstructor;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
+@RequiredArgsConstructor
 class EspPairRunnable implements Runnable
 {
-    private final User observingUser;
-    private final User watched;
+    private final Player observer;
+    private final Player watched;
 
-    private final int playerTrackingRange;
-
-    public EspPairRunnable(User observingUser, User watched)
+    @NotNull
+    private static HideMode getHideModeCanSee(Player observingPlayer, Player watchedPlayer)
     {
-        this.observingUser = observingUser;
-        this.watched = watched;
-        this.playerTrackingRange = Esp.getInstance().playerTrackingRanges.getOrDefault(observingUser.getPlayer().getWorld().getUID(), Esp.getInstance().defaultTrackingRange);
+        // Is the user visible
+        if (CanSee.canSee(observingPlayer, watchedPlayer)) {
+            return HideMode.NONE;
+        }
+
+        // If the watched player is sneaking hide him fully
+        return watchedPlayer.isSneaking() ? HideMode.FULL : HideMode.INFORMATION_ONLY;
     }
 
     @Override
     public void run()
     {
+        final int playerTrackingRange = Esp.getInstance().playerTrackingRanges.getOrDefault(observer.getWorld(), Esp.getInstance().defaultTrackingRange);
+
         // The users are always in the same world (see above)
-        final double pairDistanceSquared = observingUser.getPlayer().getLocation().distanceSquared(watched.getPlayer().getLocation());
+        final double pairDistanceSquared = observer.getLocation().distanceSquared(watched.getLocation());
+
+        final HideMode observerToWatched;
+        final HideMode watchedToObserver;
 
         // Less than 1 block distance
         // Everything (smaller than 1)^2 will result in something smaller than 1
         if (pairDistanceSquared < 1) {
-            Esp.getInstance().updatePairHideMode(observingUser, watched, HideMode.NONE);
-            return;
-        }
-
-        if (pairDistanceSquared > this.playerTrackingRange) {
-            Esp.getInstance().updatePairHideMode(observingUser, watched, Esp.getInstance().hideAfterRenderDistance ?
-                                                                         HideMode.FULL :
-                                                                         HideMode.NONE);
-            return;
+            observerToWatched = HideMode.NONE;
+            watchedToObserver = HideMode.NONE;
+        } else if (pairDistanceSquared >= playerTrackingRange) {
+            observerToWatched = Esp.getInstance().hideAfterRenderDistance ? HideMode.FULL : HideMode.NONE;
+            watchedToObserver = observerToWatched;
+        } else {
+            observerToWatched = getHideModeCanSee(observer, watched);
+            watchedToObserver = getHideModeCanSee(watched, observer);
         }
 
         // Update hide mode in both directions.
-        Esp.getInstance().updateHideMode(observingUser, watched.getPlayer(),
-                                         CanSee.canSee(observingUser, watched) ?
-                                         // Is the user visible
-                                         HideMode.NONE :
-                                         // If the observed player is sneaking hide him fully
-                                         (watched.getPlayer().isSneaking() ?
-                                          HideMode.FULL :
-                                          HideMode.INFORMATION_ONLY));
+        Esp.getInstance().updateHideMode(observer, watched.getPlayer(), observerToWatched);
+        Esp.getInstance().updateHideMode(watched, observer.getPlayer(), watchedToObserver);
 
-        Esp.getInstance().updateHideMode(watched, observingUser.getPlayer(),
-                                         CanSee.canSee(watched, observingUser) ?
-                                         // Is the user visible
-                                         HideMode.NONE :
-                                         // If the observed player is sneaking hide him fully
-                                         (observingUser.getPlayer().isSneaking() ?
-                                          HideMode.FULL :
-                                          HideMode.INFORMATION_ONLY));
-
-        Esp.getInstance().activeCalculations.getAndDecrement();
+        // Mark this calculation as finished.
+        Esp.getInstance().cycleSemaphore.release();
     }
 }

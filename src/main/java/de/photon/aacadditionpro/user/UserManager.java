@@ -1,6 +1,8 @@
 package de.photon.aacadditionpro.user;
 
+import com.comphenix.protocol.events.PacketEvent;
 import lombok.Getter;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -24,6 +26,17 @@ public class UserManager implements Listener
     public static User getUser(final UUID uuid)
     {
         return users.get(uuid);
+    }
+
+    public static User safeGetUserFromPacketEvent(PacketEvent event)
+    {
+        // Special handling here as a player could potentially log out after this and therefore cause a NPE.
+        final Player player = event.getPlayer();
+        if (event.isPlayerTemporary() || player == null) {
+            return null;
+        }
+
+        return UserManager.getUser(player.getUniqueId());
     }
 
     /**

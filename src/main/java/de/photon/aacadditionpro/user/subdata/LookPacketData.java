@@ -6,10 +6,10 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.mathematics.RotationUtil;
 import de.photon.aacadditionpro.util.packetwrappers.client.IWrapperPlayClientLook;
@@ -60,7 +60,7 @@ public class LookPacketData extends SubData
 
 
             // Start at 1 as of the 0 element being the first "last element".
-            for (int i = 1; i < elementArray.length; i++) {
+            for (int i = 1; i < elementArray.length; ++i) {
                 if (MathUtils.offset(System.currentTimeMillis(), elementArray[i].getTime()) > 1000) {
                     continue;
                 }
@@ -140,7 +140,7 @@ public class LookPacketData extends SubData
                 return;
             }
 
-            final User user = PacketListenerModule.safeGetUserFromEvent(event);
+            final User user = UserManager.safeGetUserFromPacketEvent(event);
 
             if (user == null) {
                 return;

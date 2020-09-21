@@ -39,6 +39,21 @@ class Threshold implements Comparable<Threshold>
     }
 
     @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Threshold threshold = (Threshold) o;
+        return vl == threshold.vl;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return vl;
+    }
+
+    @Override
     public int compareTo(Threshold o)
     {
         return Integer.compare(vl, o.vl);

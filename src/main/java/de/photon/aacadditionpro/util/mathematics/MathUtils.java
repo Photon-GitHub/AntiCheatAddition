@@ -65,4 +65,14 @@ public final class MathUtils
     {
         return number >= min && number <= max;
     }
+
+    /**
+     * Calculates the sum of the elements from 0 to n.
+     *
+     * @param n the maximum number to sum to (0, 1, 2, 3, 4, ..., n)
+     */
+    public static int gaussianSumFormulaTo(final int n)
+    {
+        return (n * (n + 1)) / 2;
+    }
 }

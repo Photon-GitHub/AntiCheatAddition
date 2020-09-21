@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.world;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Location;
@@ -16,19 +17,13 @@ public final class LocationUtils
      */
     public static boolean inSameWorld(Entity entity1, Entity entity2)
     {
-        return entity1.getWorld().getUID().equals(entity2.getWorld().getUID());
+        return inSameWorld(entity1.getLocation(), entity2.getLocation());
     }
 
-    /**
-     * Gets the squared distance of two {@link Location}s, correctly handling cross-world requests.
-     *
-     * @return the squared distance of the two {@link Location}s or {@link Double#POSITIVE_INFINITY} if they are from different worlds.
-     */
-    public static double safeWorldDistanceSquared(final Location firstLocation, final Location secondLocation)
+    public static boolean inSameWorld(Location locationOne, Location locationTwo)
     {
-        return firstLocation.getWorld().getUID().equals(secondLocation.getWorld().getUID()) ?
-               firstLocation.distanceSquared(secondLocation) :
-               Double.POSITIVE_INFINITY;
+        return Preconditions.checkNotNull(locationOne.getWorld(), "NULL world in same world comparison (one)").getUID()
+                            .equals(Preconditions.checkNotNull(locationTwo.getWorld(), "NULL world in same world comparison (two)").getUID());
     }
 
     /**
@@ -42,7 +37,7 @@ public final class LocationUtils
      */
     public static boolean areLocationsInRange(final Location firstLocation, final Location secondLocation, final double squaredDistance)
     {
-        return firstLocation.getWorld().getUID().equals(secondLocation.getWorld().getUID()) &&
+        return inSameWorld(firstLocation, secondLocation) &&
                firstLocation.distanceSquared(secondLocation) <= squaredDistance;
     }
 }

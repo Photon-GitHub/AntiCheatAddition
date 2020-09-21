@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.modules.PacketListenerModule;
 import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
@@ -44,15 +43,11 @@ public final class DataUpdaterEvents implements Listener
 {
     public static final DataUpdaterEvents INSTANCE = new DataUpdaterEvents();
 
-    private final VelocityChangeDataUpdater velocityChangeDataUpdater;
-    private final KeepAliveDataUpdater keepAliveDataUpdater;
-
     private DataUpdaterEvents()
     {
-        this.keepAliveDataUpdater = new KeepAliveDataUpdater();
-        this.velocityChangeDataUpdater = new VelocityChangeDataUpdater();
-        ProtocolLibrary.getProtocolManager().addPacketListener(this.keepAliveDataUpdater);
-        ProtocolLibrary.getProtocolManager().addPacketListener(this.velocityChangeDataUpdater);
+        ProtocolLibrary.getProtocolManager().addPacketListener(new InventoryDataUpdater());
+        ProtocolLibrary.getProtocolManager().addPacketListener(new KeepAliveDataUpdater());
+        ProtocolLibrary.getProtocolManager().addPacketListener(new VelocityChangeDataUpdater());
     }
 
     public void register()
@@ -294,6 +289,26 @@ public final class DataUpdaterEvents implements Listener
         }
     }
 
+    private static class InventoryDataUpdater extends PacketAdapter
+    {
+        private InventoryDataUpdater()
+        {
+            super(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.CLOSE_WINDOW);
+        }
+
+        @Override
+        public void onPacketReceiving(final PacketEvent event)
+        {
+            final User user = UserManager.safeGetUserFromPacketEvent(event);
+
+            if (user == null) {
+                return;
+            }
+
+            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
+        }
+    }
+
     /**
      * A singleton class to reduce the reqired {@link Listener}s to a minimum.
      */
@@ -307,7 +322,7 @@ public final class DataUpdaterEvents implements Listener
         @Override
         public void onPacketReceiving(final PacketEvent event)
         {
-            final User user = PacketListenerModule.safeGetUserFromEvent(event);
+            final User user = UserManager.safeGetUserFromPacketEvent(event);
 
             if (user == null) {
                 return;

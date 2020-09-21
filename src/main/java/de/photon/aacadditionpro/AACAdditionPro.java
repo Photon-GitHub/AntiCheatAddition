@@ -14,13 +14,13 @@ import de.photon.aacadditionpro.modules.checks.Fastswitch;
 import de.photon.aacadditionpro.modules.checks.ImpossibleChat;
 import de.photon.aacadditionpro.modules.checks.SkinBlinker;
 import de.photon.aacadditionpro.modules.checks.Teaming;
-import de.photon.aacadditionpro.modules.checks.Tower;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFish;
 import de.photon.aacadditionpro.modules.checks.esp.Esp;
 import de.photon.aacadditionpro.modules.checks.inventory.Inventory;
 import de.photon.aacadditionpro.modules.checks.keepalive.KeepAlive;
 import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysis;
 import de.photon.aacadditionpro.modules.checks.scaffold.Scaffold;
+import de.photon.aacadditionpro.modules.checks.tower.Tower;
 import de.photon.aacadditionpro.modules.clientcontrol.BetterSprintingControl;
 import de.photon.aacadditionpro.modules.clientcontrol.DamageIndicator;
 import de.photon.aacadditionpro.modules.clientcontrol.FiveZigControl;
@@ -35,7 +35,7 @@ import de.photon.aacadditionpro.modules.clientcontrol.VersionControl;
 import de.photon.aacadditionpro.modules.clientcontrol.WorldDownloaderControl;
 import de.photon.aacadditionpro.user.DataUpdaterEvents;
 import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -55,8 +55,9 @@ import java.util.stream.Collectors;
 
 public class AACAdditionPro extends JavaPlugin
 {
-    private static AACAdditionPro instance;
+    private static final int BSTATS_PLUGIN_ID = 3265;
 
+    private static AACAdditionPro instance;
     /**
      * Indicates if the loading process is completed.
      */
@@ -95,7 +96,13 @@ public class AACAdditionPro extends JavaPlugin
     {
         if (cachedConfig == null) {
             this.saveDefaultConfig();
-            cachedConfig = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
+
+            final File configFile = new File(this.getDataFolder(), "config.yml");
+            if (!configFile.exists()) {
+                AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Config file could not be created!");
+            }
+
+            cachedConfig = YamlConfiguration.loadConfiguration(configFile);
         }
 
         return cachedConfig;
@@ -128,7 +135,8 @@ public class AACAdditionPro extends JavaPlugin
             //                                                Metrics                                                 //
             // ------------------------------------------------------------------------------------------------------ //
 
-            final Metrics metrics = new Metrics(this);
+            VerboseSender.getInstance().sendVerboseMessage("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AACAdditionPro/3265", true, false);
+            final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // The first getConfig call will automatically saveToFile and cache the config.
 
@@ -141,8 +149,10 @@ public class AACAdditionPro extends JavaPlugin
                 //noinspection unchecked
                 viaAPI = Via.getAPI();
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Used"));
+                VerboseSender.getInstance().sendVerboseMessage("ViaVersion hooked", true, false);
             } else {
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Not used"));
+                VerboseSender.getInstance().sendVerboseMessage("ViaVersion not found", true, false);
             }
 
 
@@ -154,38 +164,38 @@ public class AACAdditionPro extends JavaPlugin
             this.registerListener(new UserManager());
             this.moduleManager = new ModuleManager(ImmutableSet.of(
                     // Additions
-                    new BrandHider(),
-                    new GuiInject(),
-                    new LogBot(),
+                    BrandHider.getInstance(),
+                    GuiInject.getInstance(),
+                    LogBot.getInstance(),
 
                     // ClientControl
-                    new BetterSprintingControl(),
-                    new DamageIndicator(),
-                    new FiveZigControl(),
-                    new ForgeControl(),
-                    new LabyModControl(),
-                    new LiteLoaderControl(),
-                    new OldLabyModControl(),
-                    new PXModControl(),
-                    new SchematicaControl(),
-                    new VapeControl(),
-                    new VersionControl(),
-                    new WorldDownloaderControl(),
+                    BetterSprintingControl.getInstance(),
+                    DamageIndicator.getInstance(),
+                    FiveZigControl.getInstance(),
+                    ForgeControl.getInstance(),
+                    LabyModControl.getInstance(),
+                    LiteLoaderControl.getInstance(),
+                    OldLabyModControl.getInstance(),
+                    PXModControl.getInstance(),
+                    SchematicaControl.getInstance(),
+                    VapeControl.getInstance(),
+                    VersionControl.getInstance(),
+                    WorldDownloaderControl.getInstance(),
 
                     // Normal checks
-                    new AutoEat(),
-                    new AutoFish(),
-                    new AutoPotion(),
+                    AutoEat.getInstance(),
+                    AutoFish.getInstance(),
+                    AutoPotion.getInstance(),
                     Esp.getInstance(),
-                    new Fastswitch(),
-                    new ImpossibleChat(),
-                    new Inventory(),
-                    new KeepAlive(),
-                    new PacketAnalysis(),
-                    new Scaffold(),
-                    new SkinBlinker(),
-                    new Teaming(),
-                    new Tower())
+                    Fastswitch.getInstance(),
+                    ImpossibleChat.getInstance(),
+                    Inventory.getInstance(),
+                    KeepAlive.getInstance(),
+                    PacketAnalysis.getInstance(),
+                    Scaffold.getInstance(),
+                    SkinBlinker.getInstance(),
+                    Teaming.getInstance(),
+                    Tower.getInstance())
             );
 
             // Data storage

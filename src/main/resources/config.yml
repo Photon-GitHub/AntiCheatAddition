@@ -134,6 +134,10 @@ Esp:
   # If your server has more a lot of players in one world within its render distance the ESP check will create a
   # medium - high CPU load.
   #
+  # If you create new worlds make sure to disable and enable the ESP check once to register the new worlds.
+  #
+  # IF YOU NOTICE PLAYERS OR THEIR ARMOR POPPING UP OUT OF NOWHERE YOUR SERVER DOES NOT HAVE THE REQUIRED PERFORMANCE.
+  #
   # Approximate maximum player table for a certain amount of cores to not lag the server:
   # 1 Core   | 40 Players
   # 2 Cores  | 60 Players
@@ -143,15 +147,16 @@ Esp:
   # 32 Cores | 250 Players
   # 64 Cores | 350 Players
   enabled: true
+  # How many milliseconds shall be waited between two ESP cycles. Setting this too low may result in performance issues,
+  # setting it too high may result in players being hidden too long and popping up.
+  sleep_millis: 50
   # This determines whether minecrafts 3rd person modes should be considered for calculation as well.
   # Disabling this will reduce the reqiured number of raytraces by two thirds.
   # Especially useful if you have certain gamemodes in which players are not supposed to use the third person mode.
-  calculate_third_person_modes: true
-  # After this amount of ticks the positions will be updated again
-  #
-  # Note that ESP will detect if it could not finish all tasks and automatically adapts the value. This value is the
-  # minimum value that ESP adaption will not go below.
-  update_ticks: 3
+  calculate_third_person_modes: false
+  # Setting this to true will ESP render players with much less vectors for improved performance.
+  # This might lead to more edge cases where players are hidden even though they are actually visible.
+  low_vector_hitboxes: true
   # This will make AACAdditionPro use the new ray tracing of Spigot 1.13 and upwards.
   # This is more accurate than the normal BlockIterator heuristic, but may have a much worse performance.
   # Only activate if your Spigot is version 1.13 and upwards.
@@ -416,8 +421,6 @@ Scaffold:
     # This part is always enabled as it provides the basic framework.
     # The average part might add between 4 and 24 violation levels depending on the severity of the violation.
     average:
-      # Do you want to enable the average part?
-      enabled: true
       # The minimum delay between blockplaces that will be enforced by AACAdditionPro (measured in ms)
       delays:
         # This delay applies to all straight building techniques
@@ -541,7 +544,7 @@ Tower:
   levitation_leniency: 0.9
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
   # to prevent further towering (measured in ms)
-  timeout: 5500
+  timeout: 6000
   # Map of violation levels to command
   thresholds:
     5: "aac notify {player} in {world} is suspected for Tower"
@@ -791,6 +794,7 @@ ClientControl:
       '1.13': true
       '1.14': true
       '1.15': true
+      '1.16': true
 
   # WorldDownloader is a popular modification to get the maps of a server
   WorldDownloader:

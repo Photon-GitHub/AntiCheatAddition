@@ -75,7 +75,7 @@ public class BufferTest
         Assertions.assertSame(expected.size(), buffer.size(), "Different sizes: EXPECTED: " + expected.size() + " ACTUAL: " + buffer.size());
         int dotSize = 0;
         for (String s : buffer) {
-            dotSize++;
+            ++dotSize;
             Assertions.assertTrue(expected.contains(s), "Wrong element: " + s);
         }
         Assertions.assertSame(expected.size(), dotSize, "Different dot sizes: EXPECTED: " + expected.size() + " ACTUAL: " + dotSize);
@@ -85,7 +85,7 @@ public class BufferTest
         String next;
         while (ascendingIterator.hasNext()) {
             next = ascendingIterator.next();
-            ascSize++;
+            ++ascSize;
 
             Assertions.assertTrue(expected.contains(next), "Wrong element: " + next);
         }
@@ -95,7 +95,7 @@ public class BufferTest
         int desSize = 0;
         while (descendingIterator.hasNext()) {
             next = descendingIterator.next();
-            desSize++;
+            ++desSize;
 
             Assertions.assertTrue(expected.contains(next), "Wrong element: " + next);
         }

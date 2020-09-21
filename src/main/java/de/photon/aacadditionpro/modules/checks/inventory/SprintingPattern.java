@@ -1,24 +1,38 @@
 package de.photon.aacadditionpro.modules.checks.inventory;
 
+import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.entity.EntityUtil;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtils;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-class SprintingPattern extends PatternModule.Pattern<User, InventoryClickEvent>
+class SprintingPattern implements ListenerModule
 {
+    @Getter
+    private static final SprintingPattern instance = new SprintingPattern();
+
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
     private int cancelVl;
 
-    @Override
-    protected int process(User user, InventoryClickEvent event)
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInventoryClick(InventoryClickEvent event)
     {
+        final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
+
+        // Not bypassed
+        if (User.isUserInvalid(user, this.getModuleType())) {
+            return;
+        }
+
         // Flight may trigger this
         if (!user.getPlayer().getAllowFlight() &&
             // Not using an Elytra
@@ -30,17 +44,19 @@ class SprintingPattern extends PatternModule.Pattern<User, InventoryClickEvent>
             // Is the player moving
             user.hasMovedRecently(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT, 1000))
         {
-            message = "Inventory-Verbose | Player: " + user.getPlayer().getName() + " interacted with an inventory while sprinting or sneaking.";
-            return 20;
+            Inventory.getInstance().getViolationLevelManagement().flag(user.getPlayer(), 20, this.cancelVl,
+                                                                       () -> {
+                                                                           event.setCancelled(true);
+                                                                           InventoryUtils.syncUpdateInventory(user.getPlayer());
+                                                                       },
+                                                                       () -> VerboseSender.getInstance().sendVerboseMessage("Inventory-Verbose | Player: " + user.getPlayer().getName() + " interacted with an inventory while sprinting or sneaking."));
         }
-        return 0;
     }
 
     @Override
-    public void cancelAction(User user, InventoryClickEvent event)
+    public boolean isSubModule()
     {
-        event.setCancelled(true);
-        InventoryUtils.syncUpdateInventory(user.getPlayer());
+        return true;
     }
 
     @Override

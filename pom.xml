@@ -6,7 +6,7 @@
 
     <groupId>de.photon</groupId>
     <artifactId>AACAdditionPro</artifactId>
-    <version>6.3.0</version>
+    <version>6.3.1</version>
 
     <name>AACAdditionPro</name>
     <description>This plugin provides niche checks for cheats which are not covered by AAC</description>
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.1-R0.1-SNAPSHOT</version>
+            <version>1.16.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -131,7 +131,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.4</version>
+            <version>1.18.12</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -143,13 +143,13 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.5</version>
+            <version>1.7</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>16.0.2</version>
+            <version>18.0.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

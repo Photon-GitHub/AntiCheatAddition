@@ -6,62 +6,41 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
-import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.user.subdata.KeepAliveData;
-import de.photon.aacadditionpro.util.VerboseSender;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import de.photon.aacadditionpro.util.packetwrappers.WrapperPlayKeepAlive;
 import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientKeepAlive;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
+import lombok.Getter;
 
 import java.util.Iterator;
 import java.util.Set;
 
-public class KeepAlive extends PacketAdapter implements PacketListenerModule, PatternModule, ViolationModule
+public class KeepAlive extends PacketAdapter implements PacketListenerModule, ViolationModule
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 200);
+    @Getter
+    private static final KeepAlive instance = new KeepAlive();
+    private static final Set<Module> submodules = ImmutableSet.of(KeepAliveIgnoredPattern.getInstance(),
+                                                                  KeepAliveInjectPattern.getInstance(),
+                                                                  KeepAliveOffsetPattern.getInstance());
 
-    private final KeepAliveIgnoredPattern keepAliveIgnoredPattern = new KeepAliveIgnoredPattern();
-    private final KeepAliveInjectPattern keepAliveInjectPattern = new KeepAliveInjectPattern();
-    private final KeepAliveOffsetPattern keepAliveOffsetPattern = new KeepAliveOffsetPattern();
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 200);
 
     public KeepAlive()
     {
-        super(AACAdditionPro.getInstance(), ListenerPriority.LOW,
-              // --------------- Server --------------- //
-              // KeepAlive analysis
-              PacketType.Play.Server.KEEP_ALIVE,
-              // --------------- Client --------------- //
-              // KeepAlive analysis
-              PacketType.Play.Client.KEEP_ALIVE);
-    }
-
-    @Override
-    public void onPacketSending(PacketEvent event)
-    {
-        if (event.isPlayerTemporary()) {
-            return;
-        }
-
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
-            return;
-        }
-
-        // The actual processing of the KeepAlive packet is done in the DataUpdaterEvents!
-        vlManager.flag(user.getPlayer(), keepAliveIgnoredPattern.apply(user, event), -1, () -> {}, () -> {});
+        super(AACAdditionPro.getInstance(), ListenerPriority.LOW, PacketType.Play.Client.KEEP_ALIVE);
     }
 
     @Override
     public void onPacketReceiving(final PacketEvent event)
     {
-        final User user = PacketListenerModule.safeGetUserFromEvent(event);
+        final User user = UserManager.safeGetUserFromPacketEvent(event);
 
         if (User.isUserInvalid(user, this.getModuleType())) {
             return;
@@ -84,7 +63,7 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
                     break;
                 }
 
-                offset++;
+                ++offset;
             }
         }
 
@@ -97,7 +76,7 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
             vlManager.flag(user.getPlayer(), 20, -1, () -> {}, () -> {});
         } else {
             keepAlivePacketData.registerResponse();
-            vlManager.flag(user.getPlayer(), keepAliveOffsetPattern.apply(user, offset), -1, () -> {}, () -> {});
+            KeepAliveOffsetPattern.getInstance().getApplyingConsumer().accept(user, offset);
         }
     }
 
@@ -108,11 +87,15 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Pa
     }
 
     @Override
-    public Set<PatternModule.Pattern> getPatterns()
+    public Set<Module> getSubModules()
     {
-        return ImmutableSet.of(keepAliveIgnoredPattern,
-                               keepAliveInjectPattern,
-                               keepAliveOffsetPattern);
+        return submodules;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

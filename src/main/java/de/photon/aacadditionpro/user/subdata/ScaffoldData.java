@@ -1,27 +1,29 @@
 package de.photon.aacadditionpro.user.subdata;
 
+import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
+import de.photon.aacadditionpro.modules.checks.scaffold.Scaffold;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.datawrappers.ScaffoldBlockPlace;
-import de.photon.aacadditionpro.util.datastructures.buffer.ConditionalCleanBuffer;
-import de.photon.aacadditionpro.util.datastructures.buffer.DequeBuffer;
-import de.photon.aacadditionpro.util.world.BlockUtils;
+import de.photon.aacadditionpro.util.datastructures.batch.Batch;
 import lombok.Getter;
+import org.bukkit.Bukkit;
+import org.bukkit.block.BlockFace;
 
 public class ScaffoldData extends SubData
 {
     // Default buffer size is 6, being well tested.
-    private static final int BUFFER_SIZE = 6;
+    public static final int BATCH_SIZE = 6;
     // Use static here as ScaffoldDatas are often created.
-    private static final double DELAY_NORMAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.normal");
-    private static final double SNEAKING_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_addition");
-    private static final double SNEAKING_SLOW_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_slow_addition");
-    private static final double DELAY_DIAGONAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.diagonal");
+    public static final double DELAY_NORMAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.normal");
+    public static final double SNEAKING_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_addition");
+    public static final double SNEAKING_SLOW_ADDITION = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.sneaking_slow_addition");
+    public static final double DELAY_DIAGONAL = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.SCAFFOLD.getConfigString() + ".parts.average.delays.diagonal");
 
     // Add a dummy block to start with in order to make sure that the queue is never empty.
     @Getter
-    private final DequeBuffer<ScaffoldBlockPlace> scaffoldBlockPlaces;
+    private final Batch<ScaffoldBlockPlace> scaffoldBlockPlaces;
     /**
      * This is used to determine wrong angles while scaffolding.
      * One wrong angle might be legit, but more instances are a clear hint.
@@ -55,57 +57,8 @@ public class ScaffoldData extends SubData
     public ScaffoldData(User user)
     {
         super(user);
-
-        scaffoldBlockPlaces = new ConditionalCleanBuffer<ScaffoldBlockPlace>(BUFFER_SIZE)
-        {
-            @Override
-            protected boolean verifyObject(ScaffoldBlockPlace object)
-            {
-                final ScaffoldBlockPlace last = this.getDeque().peek();
-                return last == null || BlockUtils.isNext(last.getBlock(), object.getBlock(), true);
-            }
-        };
-    }
-
-    /**
-     * Used to calculate the average and expected time span between the {@link ScaffoldBlockPlace}s in the buffer.
-     * Also clears the buffer.
-     *
-     * @return an array with the following contents:<br>
-     * [0] = Expected time <br>
-     * [1] = Real time <br>
-     */
-    public double[] calculateTimes()
-    {
-        final double[] result = new double[2];
-
-        // -1 because there is one pop to fill the "last" variable in the beginning.
-        final int divisor = this.scaffoldBlockPlaces.getDeque().size() - 1;
-
-        final boolean moonwalk = this.scaffoldBlockPlaces.getDeque().stream().filter(blockPlace -> !blockPlace.isSneaked()).count() >= BUFFER_SIZE / 2;
-
-        this.scaffoldBlockPlaces.clearLastTwoObjectsIteration(
-                (last, current) ->
-                {
-                    double delay;
-                    if (last.getBlockFace() == current.getBlockFace() || last.getBlockFace() == current.getBlockFace().getOppositeFace()) {
-                        delay = DELAY_NORMAL;
-
-                        if (!moonwalk && last.isSneaked() && current.isSneaked()) {
-                            delay += SNEAKING_ADDITION + (SNEAKING_SLOW_ADDITION * Math.abs(Math.cos(2D * current.getYaw())));
-                        }
-                    } else {
-                        delay = DELAY_DIAGONAL;
-                    }
-
-                    result[0] += delay;
-
-                    // last - current to calculate the delta as the more recent time is always in last.
-                    result[1] += (last.getTime() - current.getTime()) * current.getSpeedModifier();
-                });
-
-        result[0] /= divisor;
-        result[1] /= divisor;
-        return result;
+        // Assume that there is at least one world.
+        scaffoldBlockPlaces = new Batch<>(user, BATCH_SIZE, new ScaffoldBlockPlace(Preconditions.checkNotNull(Bukkit.getWorlds().get(0), "Scaffold-Batch: No world could be found!").getBlockAt(0, 0, 0), BlockFace.NORTH, 10, 0, false));
+        scaffoldBlockPlaces.registerProcessor(Scaffold.getInstance().getBatchProcessor());
     }
 }

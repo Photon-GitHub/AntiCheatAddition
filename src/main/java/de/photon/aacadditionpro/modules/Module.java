@@ -1,13 +1,18 @@
 package de.photon.aacadditionpro.modules;
 
+import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.util.VerboseSender;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
 
+import java.util.Set;
 import java.util.logging.Level;
 
 public interface Module
 {
+    boolean FULL_ENABLE_LOG = AACAdditionPro.getInstance().getConfig().getBoolean("FullEnableLog");
+    Set<Module> NO_SUBMODULES = ImmutableSet.of();
+
     /**
      * This enables the check according to its interfaces.
      */
@@ -53,16 +58,16 @@ public interface Module
                 PluginMessageListenerModule.enable((PluginMessageListenerModule) module);
             }
 
-            if (module instanceof PatternModule) {
-                PatternModule.enablePatterns((PatternModule) module);
+            if (module instanceof BatchProcessorModule) {
+                BatchProcessorModule.enable((BatchProcessorModule) module);
+            }
+
+            // Enable submodules.
+            for (Module submodule : module.getSubModules()) {
+                Module.enableModule(submodule);
             }
 
             module.enable();
-
-            // Make sure that parts don't change the state of the PatternModule
-            if (!(module instanceof PatternModule.Pattern)) {
-                module.getModuleType().setEnabled(true);
-            }
 
             sendNotice(module, module.getConfigString() + " has been enabled.");
         } catch (final Exception e) {
@@ -89,16 +94,16 @@ public interface Module
                 PluginMessageListenerModule.disable((PluginMessageListenerModule) module);
             }
 
-            if (module instanceof PatternModule) {
-                PatternModule.disablePatterns((PatternModule) module);
+            if (module instanceof BatchProcessorModule) {
+                BatchProcessorModule.disable((BatchProcessorModule) module);
+            }
+
+            // Enable submodules.
+            for (Module submodule : module.getSubModules()) {
+                Module.disableModule(submodule);
             }
 
             module.disable();
-
-            // Make sure that parts don't change the state of the PatternModule
-            if (!(module instanceof PatternModule.Pattern)) {
-                module.getModuleType().setEnabled(false);
-            }
 
             sendNotice(module, module.getConfigString() + " has been disabled.");
         } catch (final Exception e) {
@@ -108,14 +113,27 @@ public interface Module
     }
 
     /**
-     * Sends a message if {@link Module#shouldNotify()} returns true.
+     * Sends a message if this is a main module or the full enable log is enabled.
      */
     static void sendNotice(final Module module, final String message)
     {
-        if (module.shouldNotify()) {
+        if (FULL_ENABLE_LOG || !module.isSubModule()) {
             VerboseSender.getInstance().sendVerboseMessage(message, true, false);
         }
     }
+
+    /**
+     * Gets all the submodules of this module.
+     */
+    default Set<Module> getSubModules()
+    {
+        return ImmutableSet.of();
+    }
+
+    /**
+     * Whether or not this module is a submodule, i.e. a module that is part of another module.
+     */
+    boolean isSubModule();
 
     /**
      * All additional chores during enabling that are not handled by the {@link Module} - subinterfaces.
@@ -126,14 +144,6 @@ public interface Module
      * All additional chores during disabling that are not handled by the {@link Module} - subinterfaces.
      */
     default void disable() {}
-
-    /**
-     * Whether or not there are messages regarding this module when enabled/disabled.
-     */
-    default boolean shouldNotify()
-    {
-        return true;
-    }
 
     /**
      * Gets the direct path representing this module in the config.

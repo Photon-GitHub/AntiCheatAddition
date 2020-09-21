@@ -12,6 +12,7 @@ import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
+import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -22,6 +23,9 @@ import java.util.Set;
 
 public class AutoPotion implements ListenerModule, ViolationModule, RestrictedServerVersion
 {
+    @Getter
+    private static final AutoPotion instance = new AutoPotion();
+
     private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 120L);
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
@@ -124,6 +128,12 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
             // Here the timestamp is used to contain the data of the last splash
             user.getTimestampMap().updateTimeStamp(TimestampKey.AUTOPOTION_DETECTION);
         }
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
     }
 
     @Override

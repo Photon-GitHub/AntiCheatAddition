@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 /**
@@ -49,12 +50,12 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
     {
         // Initial state
         if (this.size == 0) {
-            this.size++;
+            ++this.size;
         }
         // First run through
         else if (this.size < maxSize) {
             head = incrementIndexSafely(head);
-            this.size++;
+            ++this.size;
         }
         // Now the array is already full.
         // This means we need to handle the tail.
@@ -134,6 +135,10 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
             @Override
             public T next()
             {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
                 start = false;
                 T returnedObject = (T) array[currentIndex];
                 currentIndex = incrementIndexSafely(currentIndex);
@@ -162,6 +167,10 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
             @Override
             public T next()
             {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+
                 start = false;
                 T returnedObject = (T) array[currentIndex];
                 currentIndex = decrementIndexSafely(currentIndex);

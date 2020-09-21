@@ -1,26 +1,40 @@
 package de.photon.aacadditionpro.modules.checks.autofish;
 
+import de.photon.aacadditionpro.modules.ListenerModule;
 import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.modules.PatternModule;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.datastructures.DoubleStatistics;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.general.StringUtils;
+import de.photon.aacadditionpro.util.files.configs.StringUtil;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
+import de.photon.aacadditionpro.util.messaging.VerboseSender;
+import lombok.Getter;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerFishEvent;
 
-class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
+class ConsistencyPattern implements ListenerModule
 {
+    @Getter
+    private static final ConsistencyPattern instance = new ConsistencyPattern();
+
     @LoadFromConfiguration(configPath = ".violation_offset")
     private int violationOffset;
 
     @LoadFromConfiguration(configPath = ".maximum_fails")
     private int maximumFails;
 
-    @Override
-    protected int process(User user, PlayerFishEvent event)
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerFish(final PlayerFishEvent event)
     {
+        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+
+        // User valid and not bypassed
+        if (User.isUserInvalid(user, this.getModuleType())) {
+            return;
+        }
+
         switch (event.getState()) {
             case FISHING:
                 // Not too many failed attempts in between (afk fish farm false positives)
@@ -40,19 +54,25 @@ class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
                     // Ceil in order to make sure that the result is at least 1
                     final double flagOffset = Math.ceil((violationOffset - maxOffset) * 0.5D);
 
-                    message = "AutoFish-Verbose | Player " +
-                              user.getPlayer().getName() +
-                              " failed consistency | average time: " +
-                              StringUtils.limitStringLength(String.valueOf(consistencyStatistics.getAverage()), 7) +
-                              " | maximum offset: " +
-                              StringUtils.limitStringLength(String.valueOf(maxOffset), 7) +
-                              " | flag offset: " +
-                              StringUtils.limitStringLength(String.valueOf(flagOffset), 7);
-
-                    user.getFishingData().getStatistics().reset();
-
                     // Has the player violated the check?
-                    return (int) Math.max(flagOffset, 0);
+                    if (flagOffset > 0) {
+                        VerboseSender.getInstance().sendVerboseMessage("AutoFish-Verbose | Player " +
+                                                                       user.getPlayer().getName() +
+                                                                       " failed consistency | average time: " +
+                                                                       StringUtil.limitStringLength(String.valueOf(consistencyStatistics.getAverage()), 7) +
+                                                                       " | maximum offset: " +
+                                                                       StringUtil.limitStringLength(String.valueOf(maxOffset), 7) +
+                                                                       " | flag offset: " +
+                                                                       StringUtil.limitStringLength(String.valueOf(flagOffset), 7));
+
+                        AutoFish.getInstance().getViolationLevelManagement().flag(event.getPlayer(),
+                                                                                  (int) flagOffset,
+                                                                                  AutoFish.getInstance().getCancelVl(),
+                                                                                  () -> event.setCancelled(true), () -> {});
+                    }
+
+                    // Reset the statistics.
+                    user.getFishingData().getStatistics().reset();
                 }
 
                 // Reset the fail counter as just now there was a fishing success.
@@ -62,7 +82,7 @@ class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
             case IN_GROUND:
             case FAILED_ATTEMPT:
                 user.getTimestampMap().nullifyTimeStamp(TimestampKey.AUTOFISH_DETECTION);
-                user.getFishingData().failedCounter++;
+                ++user.getFishingData().failedCounter;
                 break;
             case CAUGHT_FISH:
                 // CAUGHT_FISH covers all forms of items from the water.
@@ -71,7 +91,12 @@ class ConsistencyPattern extends PatternModule.Pattern<User, PlayerFishEvent>
             default:
                 break;
         }
-        return 0;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return true;
     }
 
     @Override

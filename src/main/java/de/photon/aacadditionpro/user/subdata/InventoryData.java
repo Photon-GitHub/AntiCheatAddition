@@ -1,21 +1,25 @@
 package de.photon.aacadditionpro.user.subdata;
 
+import de.photon.aacadditionpro.modules.checks.inventory.AverageHeuristicPattern;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.datawrappers.InventoryClick;
-import de.photon.aacadditionpro.util.datastructures.buffer.DequeBuffer;
-import de.photon.aacadditionpro.util.datastructures.buffer.SimpleBuffer;
+import de.photon.aacadditionpro.util.datastructures.batch.Batch;
 import lombok.Getter;
 
 public class InventoryData extends SubData
 {
+    // Default buffer size is 6, being well tested.
+    public static final int AVERAGE_HEURISTICS_BATCH_SIZE = 15;
     @Getter
-    private final DequeBuffer<InventoryClick> averageHeuristicClicks = new SimpleBuffer<>(15);
+    private final Batch<InventoryClick> batch;
     public int averageHeuristicMisclicks = 0;
-
     public long perfectExitFails = 0;
 
-    public InventoryData(User user)
+    public InventoryData(final User user)
     {
         super(user);
+
+        batch = new Batch<>(user, AVERAGE_HEURISTICS_BATCH_SIZE, InventoryClick.dummyClick());
+        batch.registerProcessor(AverageHeuristicPattern.getInstance().getBatchProcessor());
     }
 }

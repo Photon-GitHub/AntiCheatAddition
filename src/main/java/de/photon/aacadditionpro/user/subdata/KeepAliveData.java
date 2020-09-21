@@ -59,7 +59,7 @@ public class KeepAliveData extends SubData
                 // Leave out ignored packets.
                 if (data.timeDifference >= 0) {
                     sum += data.timeDifference;
-                    datapoints++;
+                    ++datapoints;
                 }
             }
 

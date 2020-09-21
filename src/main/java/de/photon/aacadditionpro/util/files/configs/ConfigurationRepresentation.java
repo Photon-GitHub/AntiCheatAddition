@@ -42,20 +42,21 @@ public class ConfigurationRepresentation
         final String[] pathParts = path.split("\\.");
 
         int currentPart = 0;
-        short minDepth = 0;
+        int currentPathPartDepth = 0;
         int currentLineIndex = 0;
+        int currentDepth;
 
         for (String configLine : configLines) {
-            final short currentDepth = depth(configLine);
+            currentDepth = StringUtil.depth(configLine);
 
             // Value could not be found as not all parts are existing.
-            if (minDepth > currentDepth) {
+            if (currentPathPartDepth > currentDepth) {
                 throw new IllegalArgumentException("Path " + path + " could not be found.");
             }
 
             if (!isComment(configLine) && configLine.contains(pathParts[currentPart])) {
                 // Update depth
-                minDepth = currentDepth;
+                currentPathPartDepth = currentDepth;
 
                 // Found the whole path?
                 if (++currentPart >= pathParts.length) {
@@ -88,21 +89,6 @@ public class ConfigurationRepresentation
             ++affectedLines;
         }
         return affectedLines;
-    }
-
-    /**
-     * Counts the leading whitespaces of a {@link String}
-     *
-     * @return the amount of leading whitespaces.
-     */
-    private static short depth(final String string)
-    {
-        for (short i = 0; i < string.length(); ++i) {
-            if (string.charAt(i) != ' ') {
-                return i;
-            }
-        }
-        return 0;
     }
 
     private static boolean isComment(final String string)
@@ -171,7 +157,7 @@ public class ConfigurationRepresentation
                 if (list.isEmpty()) {
                     initialLine += " []";
                 } else {
-                    short entryDepth = depth(initialLine);
+                    int entryDepth = StringUtil.depth(initialLine);
                     final StringBuilder preStringBuilder = new StringBuilder();
 
                     while (entryDepth-- > 0) {
@@ -189,8 +175,8 @@ public class ConfigurationRepresentation
                 switch ((ConfigActions) value) {
                     case DELETE_KEYS:
                         initialLine += " {}";
-                        final short initialLineDepth = depth(initialLine);
-                        int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> depth(line) <= initialLineDepth);
+                        final int initialLineDepth = StringUtil.depth(initialLine);
+                        int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> StringUtil.depth(line) <= initialLineDepth);
 
                         // Remove old values
                         for (int lines = affectedKeyLines; lines > 0; lines--) {

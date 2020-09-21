@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.strings;
+package de.photon.aacadditionpro.util.files.configs;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import java.nio.charset.StandardCharsets;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StringUtils
+public final class StringUtil
 {
     /**
      * Constructs a new {@link String} from a byte array according to the {@link StandardCharsets#UTF_8}.
@@ -59,5 +59,20 @@ public final class StringUtils
             lowerCaseFlags[i] = flags[i].toLowerCase();
         }
         return stringContainsFlags(input.toLowerCase(), lowerCaseFlags);
+    }
+
+    /**
+     * Counts the leading whitespaces of a {@link String}
+     *
+     * @return the amount of leading whitespaces. 0 if there are only whitespaces present.
+     */
+    public static int depth(final String string)
+    {
+        for (int i = 0; i < string.length(); ++i) {
+            if (string.charAt(i) != ' ') {
+                return i;
+            }
+        }
+        return 0;
     }
 }

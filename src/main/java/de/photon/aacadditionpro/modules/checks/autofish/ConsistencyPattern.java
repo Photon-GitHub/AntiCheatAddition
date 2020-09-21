@@ -7,9 +7,9 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.datastructures.DoubleStatistics;
 import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
+import de.photon.aacadditionpro.util.files.configs.StringUtil;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
-import de.photon.aacadditionpro.util.strings.StringUtils;
 import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -59,11 +59,11 @@ class ConsistencyPattern implements ListenerModule
                         VerboseSender.getInstance().sendVerboseMessage("AutoFish-Verbose | Player " +
                                                                        user.getPlayer().getName() +
                                                                        " failed consistency | average time: " +
-                                                                       StringUtils.limitStringLength(String.valueOf(consistencyStatistics.getAverage()), 7) +
+                                                                       StringUtil.limitStringLength(String.valueOf(consistencyStatistics.getAverage()), 7) +
                                                                        " | maximum offset: " +
-                                                                       StringUtils.limitStringLength(String.valueOf(maxOffset), 7) +
+                                                                       StringUtil.limitStringLength(String.valueOf(maxOffset), 7) +
                                                                        " | flag offset: " +
-                                                                       StringUtils.limitStringLength(String.valueOf(flagOffset), 7));
+                                                                       StringUtil.limitStringLength(String.valueOf(flagOffset), 7));
 
                         AutoFish.getInstance().getViolationLevelManagement().flag(event.getPlayer(),
                                                                                   (int) flagOffset,

@@ -6,8 +6,8 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.commands.CommandUtils;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
+import de.photon.aacadditionpro.util.files.configs.StringUtil;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
-import de.photon.aacadditionpro.util.strings.StringUtils;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -57,7 +57,7 @@ abstract class ClientControlModule implements Module
     String getMCBrandMessage(final String channel, final byte[] message)
     {
         return isBrandChannel(channel) ?
-               StringUtils.fromUTF8Bytes(message) :
+               StringUtil.fromUTF8Bytes(message) :
                null;
     }
 
@@ -70,7 +70,7 @@ abstract class ClientControlModule implements Module
 
         // Preconditions for StringUtils
         return (brandMessage != null && flags != null) &&
-               StringUtils.stringContainsFlagsIgnoreCase(brandMessage, flags);
+               StringUtil.stringContainsFlagsIgnoreCase(brandMessage, flags);
     }
 
     boolean shouldFlagBrandCheck(final String channel, final Player player, final byte[] message, final String... flags)

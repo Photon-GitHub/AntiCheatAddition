@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.files.configs;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -50,9 +51,7 @@ public class ConfigurationRepresentation
             currentDepth = StringUtil.depth(configLine);
 
             // Value could not be found as not all parts are existing.
-            if (currentPathPartDepth > currentDepth) {
-                throw new IllegalArgumentException("Path " + path + " could not be found.");
-            }
+            Preconditions.checkArgument(currentPathPartDepth <= currentDepth, "Path " + path + " could not be found.");
 
             if (!isComment(configLine) && configLine.contains(pathParts[currentPart])) {
                 // Update depth

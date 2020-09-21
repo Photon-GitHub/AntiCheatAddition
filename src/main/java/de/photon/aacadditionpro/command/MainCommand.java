@@ -65,7 +65,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
             }
 
             currentCommand = potentialChildCommand;
-            currentArgumentIndex++;
+            ++currentArgumentIndex;
         }
 
 

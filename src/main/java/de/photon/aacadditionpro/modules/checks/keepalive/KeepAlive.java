@@ -63,7 +63,7 @@ public class KeepAlive extends PacketAdapter implements PacketListenerModule, Vi
                     break;
                 }
 
-                offset++;
+                ++offset;
             }
         }
 

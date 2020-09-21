@@ -54,7 +54,7 @@ public final class IterationUtil
     public static <T> void twoObjectsIterationToEnd(List<T> iterable, BiConsumer<T, T> consumer)
     {
         if (iterable instanceof RandomAccess) {
-            for (int i = 1, n = iterable.size(); i < n; i++) {
+            for (int i = 1, n = iterable.size(); i < n; ++i) {
                 consumer.accept(iterable.get(i - 1), iterable.get(i));
             }
         } else {

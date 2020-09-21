@@ -79,7 +79,7 @@ public class TowerBlockPlace extends BlockPlace
         Double landingBlock = null;
 
         // Start the tick-loop at 2 due to the one tick outside.
-        for (short ticks = 2; ticks < 160; ticks++) {
+        for (short ticks = 2; ticks < 160; ++ticks) {
             currentVelocity = Gravitation.applyGravitationAndAirResistance(currentVelocity, Gravitation.PLAYER);
 
             // Break as the player has already reached the max height (no more blocks to place below).

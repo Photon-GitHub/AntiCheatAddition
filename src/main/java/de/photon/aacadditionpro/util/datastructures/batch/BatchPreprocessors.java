@@ -25,7 +25,7 @@ public final class BatchPreprocessors
         final List<T> output = new ArrayList<>(input.size());
 
         T old = input.get(0);
-        for (int i = 1; i < input.size(); i++) {
+        for (int i = 1; i < input.size(); ++i) {
             T current = input.get(i);
             output.add(combiner.apply(old, current));
             old = current;
@@ -52,7 +52,7 @@ public final class BatchPreprocessors
         final List<T> output = new ArrayList<>(input.size());
 
         T old = input.get(input.size() - 1);
-        for (int i = input.size() - 2; i >= 0; i--) {
+        for (int i = input.size() - 2; i >= 0; --i) {
             T current = input.get(i);
             output.add(combiner.apply(old, current));
             old = current;

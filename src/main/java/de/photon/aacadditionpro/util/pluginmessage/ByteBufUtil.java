@@ -81,7 +81,7 @@ public final class ByteBufUtil
     {
         int len = readVarInt(buf);
         List<String> ret = new ArrayList<>(len);
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; ++i) {
             ret.add(readString(buf));
         }
         return ret;

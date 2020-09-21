@@ -52,8 +52,8 @@ public class FiveZigControl extends ClientControlModule implements PluginMessage
         final BitSet disableBitSet = new BitSet();
 
         // Set the according bits
-        for (byte b = 0; b < features.length; b++) {
-            disableBitSet.set(b, features[b]);
+        for (int i = 0; i < features.length; ++i) {
+            disableBitSet.set(i, features[i]);
         }
 
         user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), FIVEZIGCHANNEL.getChannel(), disableBitSet.toByteArray());

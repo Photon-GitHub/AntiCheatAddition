@@ -44,7 +44,7 @@ public class TabListRemoveCommand extends InternalCommand
          */
         final Player[] players = new Player[2];
 
-        for (int i = 0; i < players.length; i++) {
+        for (int i = 0; i < players.length; ++i) {
             players[i] = AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove());
 
             if (players[i] == null) {

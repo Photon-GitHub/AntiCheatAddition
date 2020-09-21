@@ -63,7 +63,7 @@ public class ConfigurationRepresentation
                 }
             }
 
-            currentLineIndex++;
+            ++currentLineIndex;
         }
 
         throw new IllegalArgumentException("Path " + path + " could not be found (full iteration).");
@@ -85,7 +85,7 @@ public class ConfigurationRepresentation
                 break;
             }
 
-            affectedLines++;
+            ++affectedLines;
         }
         return affectedLines;
     }
@@ -97,7 +97,7 @@ public class ConfigurationRepresentation
      */
     private static short depth(final String string)
     {
-        for (short i = 0; i < string.length(); i++) {
+        for (short i = 0; i < string.length(); ++i) {
             if (string.charAt(i) != ' ') {
                 return i;
             }

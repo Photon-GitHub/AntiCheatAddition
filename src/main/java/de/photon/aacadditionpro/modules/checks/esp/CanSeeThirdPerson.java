@@ -44,7 +44,7 @@ class CanSeeThirdPerson implements Function<Player, Vector[]>
                 EspUtil.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[2])
         };
 
-        for (int i = 0; i < intersections.length; i++) {
+        for (int i = 0; i < intersections.length; ++i) {
             // There is an intersection
             if (intersections[i] != 0) {
                 // Now we need to make sure the vectors are not inside of blocks as the method above returns.

@@ -152,7 +152,7 @@ public final class BlockUtils
         for (final BlockFace f : ALL_FACES) {
             relative = block.getRelative(f);
             if (!relative.isEmpty() && (!ignoreLiquids || !LIQUIDS.contains(relative.getType()))) {
-                count++;
+                ++count;
             }
         }
         return count;

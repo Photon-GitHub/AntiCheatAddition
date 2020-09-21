@@ -49,7 +49,7 @@ class BatchTest
         Batch<String> batch = new Batch<>(null, batchSize, "");
         batch.registerProcessor(batchProcessor);
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; ++i) {
             batch.addDataPoint(String.valueOf(i));
         }
 
@@ -77,7 +77,7 @@ class BatchTest
         Batch<String> batch = new Batch<>(null, batchSize, "");
         batch.registerProcessor(batchProcessor);
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; ++i) {
             batch.addDataPoint(String.valueOf(i));
         }
         batchProcessor.controlledShutdown();

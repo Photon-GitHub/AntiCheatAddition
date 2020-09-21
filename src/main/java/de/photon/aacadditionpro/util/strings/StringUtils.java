@@ -55,7 +55,7 @@ public final class StringUtils
     public static boolean stringContainsFlagsIgnoreCase(final String input, final String[] flags)
     {
         final String[] lowerCaseFlags = new String[flags.length];
-        for (int i = 0; i < flags.length; i++) {
+        for (int i = 0; i < flags.length; ++i) {
             lowerCaseFlags[i] = flags[i].toLowerCase();
         }
         return stringContainsFlags(input.toLowerCase(), lowerCaseFlags);

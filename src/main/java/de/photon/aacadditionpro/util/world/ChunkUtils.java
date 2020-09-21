@@ -82,12 +82,12 @@ public final class ChunkUtils
         final int[] currentChunkCoords = {((int) Math.floor(workingX)) >> 4, ((int) Math.floor(workingZ)) >> 4};
         final int[] lastChunkCoords = {currentChunkCoords[0], currentChunkCoords[1]};
 
-        for (int i = 0; i < steps; i++) {
+        for (int i = 0; i < steps; ++i) {
             workingX += xStep;
             workingZ += zStep;
 
             // Modifier to make sure that border behaviour of BlockIterator is covered.
-            for (int modifier = -1; modifier <= 1; modifier++) {
+            for (int modifier = -1; modifier <= 1; ++modifier) {
                 if (modifyX) {
                     workingModifiedX = workingX + modifier;
                     workingModifiedZ = workingZ;

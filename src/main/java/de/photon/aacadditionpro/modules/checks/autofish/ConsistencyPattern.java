@@ -82,7 +82,7 @@ class ConsistencyPattern implements ListenerModule
             case IN_GROUND:
             case FAILED_ATTEMPT:
                 user.getTimestampMap().nullifyTimeStamp(TimestampKey.AUTOFISH_DETECTION);
-                user.getFishingData().failedCounter++;
+                ++user.getFishingData().failedCounter;
                 break;
             case CAUGHT_FISH:
                 // CAUGHT_FISH covers all forms of items from the water.

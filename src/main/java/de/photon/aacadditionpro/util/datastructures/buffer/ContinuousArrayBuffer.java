@@ -50,12 +50,12 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
     {
         // Initial state
         if (this.size == 0) {
-            this.size++;
+            ++this.size;
         }
         // First run through
         else if (this.size < maxSize) {
             head = incrementIndexSafely(head);
-            this.size++;
+            ++this.size;
         }
         // Now the array is already full.
         // This means we need to handle the tail.

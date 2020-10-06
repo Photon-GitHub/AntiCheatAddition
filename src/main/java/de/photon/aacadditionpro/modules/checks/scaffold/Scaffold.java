@@ -123,7 +123,7 @@ public class Scaffold implements BatchProcessorModule<ScaffoldBlockPlace>, Liste
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
-            int vl = AnglePattern.getInstance().apply(user, event);
+            int vl = AnglePattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
             vl += PositionPattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
 
             // All these checks may have false positives in new situations.

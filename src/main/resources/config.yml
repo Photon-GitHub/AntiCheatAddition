@@ -96,8 +96,8 @@ AutoPotion:
   # Violation before AACAdditionPro starts to cancel throwing potions.
   # Set this to 0 to never cancel throwing potions.
   cancel_vl: 2
-  # After a detection which surpasses cancel_vl AACAdditionPro cancels all potion throws to effectively
-  # prevent the cheat (in milliseconds)
+  # After a detection which surpasses cancel_vl AACAdditionPro cancels all potion throws to effectively prevent the
+  # cheat (in milliseconds)
   timeout: 1000
   # How fast the player must look in the initial direction once again to be regarded as having bot-like reaction speed
   # (in milliseconds).
@@ -130,7 +130,7 @@ AutoPotion:
 #                    the combat strength of a player)
 #                    This part will automatically disable itself on servers with MC versions below 1.11.
 Esp:
-  # Do you want to enable the ESP check?
+  # Do you want to enable anti - ESP?
   #
   # If your server has more a lot of players in one world within its render distance the ESP check will create a
   # medium - high CPU load.
@@ -280,7 +280,7 @@ Inventory:
       # The minimum TPS the server must have to activate this check
       # Low TPS will cause an extreme amount of false positives.
       min_tps: 18.5
-      # How many suspicious interactions should Inventory count as legit
+      # How many suspicious interactions should Inventory count as legit?
       # The value must be greater or equal to 0.
       violation_threshold: 5
     # The rotation part detects head movement while having an open inventory.
@@ -368,7 +368,7 @@ PacketAnalysis:
       enabled: true
       # How many offset milliseconds are classified as part of naturally fluctuating connections
       allowed_offset: 120
-      # How many violations Compare will ignore before starting to flag
+      # How many violations should compare count as legit?
       violation_threshold: 3
       # The minimum time between two violations to prevent excessive flagging in lag spikes
       # Measured in milliseconds
@@ -401,27 +401,27 @@ PacketAnalysis:
 Scaffold:
   # Do you want to enable the Scaffold check?
   enabled: true
-  # Violation before AACAdditionPro starts to cancel the block-places.
-  # Set this to 0 to never cancel block-places.
+  # Violation before AACAdditionPro starts to cancel block placement.
+  # Set this to 0 to never cancel block placement.
   cancel_vl: 20
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to place a block in the given
   # time window to prevent further scaffolding (in milliseconds)
   timeout: 1000
-  # Control the different solutions of Scaffold
+  # Control the different parts of Scaffold
   parts:
     # This part detects suspicious angles when the player places blocks.
     # The angle part will add 3 vl if failed.
     angle:
       # Do you want to enable the angle part?
       enabled: true
-      # How many suspicious angles should Scaffold count as legit
+      # How many suspicious angles should Scaffold count as legit?
       # The value must be greater or equal to 0.
       violation_threshold: 3
     # The main part of Scaffold preventing too fast Scaffolding
     # This part is always enabled as it provides the basic framework.
     # The average part might add between 4 and 24 violation levels depending on the severity of the violation.
     average:
-      # The minimum delay between blockplaces that will be enforced by AACAdditionPro (in milliseconds)
+      # The minimum delay between block placements that will be enforced by AACAdditionPro (in milliseconds)
       delays:
         # This delay applies to all straight building techniques
         normal: 238
@@ -462,22 +462,23 @@ Scaffold:
       type1:
         # Do you want to enable the safewalk type1 part?
         enabled: true
-        # How many suspicious positions should Scaffold count as legit
+        # How many suspicious positions should Scaffold count as legit?
         # The value must be greater or equal to 0.
         violation_threshold: 2
       # Type2 will add 4 vl
       type2:
         # Do you want to enable the safewalk type2 part?
         enabled: true
-        # How many suspicious positions should Scaffold count as legit
+        # How many suspicious positions should Scaffold count as legit?
         # The value must be greater or equal to 0.
         violation_threshold: 2
-    # This part detects sprinting between blockplaces.
+    # This part detects sprinting between block placements.
     # The sprinting check always adds 8 vl.
     sprinting:
       # Do you want to enable the sprinting part?
       enabled: true
-      # How many suspicious sprinting periods should Scaffold count as legit
+      # How many suspicious sprinting periods should Scaffold count as legit?
+      # This is needed as sprinting can be perfectly legit e.g. when starting to place blocks.
       # The value must be greater or equal to 0.
       violation_threshold: 4
   # Map of violation levels to command
@@ -486,7 +487,7 @@ Scaffold:
     24: "aac notify {player} in {world} is highly suspected for Scaffold"
     36: "aackick {player} Scaffold"
 
-# The Skinblinker check detects Skinblinker cheats when the player sprints/sneaks.
+# Skinblinker detects cheats of the same name when the player sprints/sneaks.
 Skinblinker:
   # Do you want to enable the Skinblinker check?
   enabled: true
@@ -529,20 +530,21 @@ Teaming:
     10: "aac notify {team} in {world} are suspected for Teaming"
     15: "aac notify {team} in {world} are highly suspected for Teaming"
 
-# The Tower check detects Tower cheats
+# The Tower check detects cheats of the same name, modifications which allow you to build straight up (towering)
+# very fast.
 Tower:
   # Do you want to enable the Tower check?
   enabled: true
-  # Violation before AACAdditionPro starts to cancel the block-places.
-  # Set this to 0 to never cancel block-places.
+  # Violation before AACAdditionPro starts to cancel the block placements.
+  # Set this to 0 to never cancel block placement.
   cancel_vl: 6
   # If you have false positives decrease this SLIGHTLY.
-  # The new Tower check has its own leniency-curve which makes it very effective.
-  # Therefore please only touch this if you have false positives
+  # The Tower check has its own leniency-curve which makes it very effective.
+  # Therefore please only touch this if you have false positives.
   tower_leniency: 1
   # Special leniency which is only applied if the player has the levitation effect
-  levitation_leniency: 0.9
-  # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
+  levitation_leniency: 0.95
+  # After a detection which surpasses cancel_vl AACAdditionPro cancels all block placements in the given timeframe
   # to prevent further towering (in milliseconds)
   timeout: 6000
   # Map of violation levels to command

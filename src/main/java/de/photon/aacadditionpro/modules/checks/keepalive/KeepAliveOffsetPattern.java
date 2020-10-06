@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.modules.checks.keepalive;
 
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
+import de.photon.aacadditionpro.modules.RestrictedBungeecord;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.KeepAliveData;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
@@ -13,7 +14,7 @@ import java.util.function.BiConsumer;
  * This {@link de.photon.aacadditionpro.modules.Module} detects responses to KeepAlive packets which are
  * out of order.
  */
-public class KeepAliveOffsetPattern implements Module
+public class KeepAliveOffsetPattern implements Module, RestrictedBungeecord
 {
     @Getter
     private static final KeepAliveOffsetPattern instance = new KeepAliveOffsetPattern();

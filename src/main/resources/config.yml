@@ -99,7 +99,8 @@ AutoPotion:
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all potion throws to effectively
   # prevent the cheat (in milliseconds)
   timeout: 1000
-  # How fast the player must look in the initial direction once again to be regarded as having bot-like reaction speed.
+  # How fast the player must look in the initial direction once again to be regarded as having bot-like reaction speed
+  # (in milliseconds).
   look_restored_time: 150
   # When looking back, beyond what angle difference should someone be considered as legit?
   angle_offset: 5
@@ -315,13 +316,12 @@ KeepAlive:
   # Control the different parts of KeepAlive
   #
   # NOTE: Even with all subparts turned off a basic unregistered subpart is always active to prevent crash clients.
-  # This particular subpart cannot have false positives and must be set off deliberately by modifying the protocol.
+  # This particular subpart cannot have false positives and must be set off deliberately by injecting malicious packets.
   #
   # PLEASE NOTE THAT DUE TO CURRENTLY UNFIXED BUGS IN BUNGEECORD'S KEEPALIVE HANDLING ALL SUBPARTS SHOULD BE DISABLED
-  # IF YOU USE BUNGEECORD OR A FORK OF IT. THE UNREGISTERED SUBPART (WHICH CANNOT BE TOGGLED HERE) IS NOT AFFECTED BY
-  # THIS BUG.
+  # IF YOU USE BUNGEECORD OR A FORK OF IT. THE UNREGISTERED SUBPART (SEE NOTE) IS NOT AFFECTED BY THIS BUG.
   parts:
-    # Ignored checks for KeepAlive packets the client has not responded to, which is illegal in the minecraft
+    # Ignored checks for KeepAlive packets the client has not responded to, which is not allowed in the minecraft
     # protocol.
     # This part will add 10 vl.
     ignored:
@@ -330,8 +330,6 @@ KeepAlive:
     # Offset analyses the packet order.
     # This part also catches various pingspoof modifications.
     # This part will add 2 to 10 vl, depending on the severity of the violation.
-    #
-    # IF YOU USE BUNGEECORD DISABLE THIS CHECK AS A BUG IN THE NETWORKING STRUCTURE WILL CAUSE FALSE POSITIVES.
     offset:
       # Do you want to enable the packet offset checking?
       enabled: true

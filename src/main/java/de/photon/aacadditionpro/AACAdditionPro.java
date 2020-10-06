@@ -35,6 +35,7 @@ import de.photon.aacadditionpro.modules.clientcontrol.VersionControl;
 import de.photon.aacadditionpro.modules.clientcontrol.WorldDownloaderControl;
 import de.photon.aacadditionpro.user.DataUpdaterEvents;
 import de.photon.aacadditionpro.user.UserManager;
+import de.photon.aacadditionpro.util.files.configs.Configs;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
 import org.bstats.bukkit.Metrics;
@@ -69,6 +70,9 @@ public class AACAdditionPro extends JavaPlugin
     private ModuleManager moduleManager;
     @Getter
     private ViaAPI<Player> viaAPI;
+
+    @Getter
+    private boolean bungeecord = false;
 
     /**
      * This will get the object of the plugin registered on the server.
@@ -130,6 +134,15 @@ public class AACAdditionPro extends JavaPlugin
                         true, true);
                 return;
             }
+
+            // ------------------------------------------------------------------------------------------------------ //
+            //                                               Bungeecord                                               //
+            // ------------------------------------------------------------------------------------------------------ //
+
+            this.bungeecord = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getBoolean("settings.bungeecord", false);
+            VerboseSender.getInstance().sendVerboseMessage("Bungeecord " + (this.bungeecord ?
+                                                                            " detected" :
+                                                                            " not detected"), true, false);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Metrics                                                 //

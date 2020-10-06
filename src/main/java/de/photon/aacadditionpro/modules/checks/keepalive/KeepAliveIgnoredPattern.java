@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.modules.PacketListenerModule;
+import de.photon.aacadditionpro.modules.RestrictedBungeecord;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
@@ -15,7 +16,7 @@ import lombok.Getter;
 /**
  * This {@link de.photon.aacadditionpro.modules.Module} flags KeepAlive packets that are ignored by the client.
  */
-class KeepAliveIgnoredPattern extends PacketAdapter implements PacketListenerModule
+class KeepAliveIgnoredPattern extends PacketAdapter implements PacketListenerModule, RestrictedBungeecord
 {
     @Getter
     private static final KeepAliveIgnoredPattern instance = new KeepAliveIgnoredPattern();

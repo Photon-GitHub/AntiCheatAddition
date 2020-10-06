@@ -22,7 +22,7 @@
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
-# This detects AutoEat bots that will automatically eat for a player with perfect timing.
+# This check detects AutoEat bots that will automatically eat for a player with perfect timing.
 # Please note that one VL from AutoEat decays only every 5 minutes to make sure that cheats can be detected even if
 # eating sessions are several minutes apart.
 AutoEat:
@@ -31,7 +31,7 @@ AutoEat:
   # Violation before AACAdditionPro starts to cancel the consume events.
   cancel_vl: 6
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to consume an item for the
-  # duration of timeout.
+  # duration of timeout (in milliseconds).
   timeout: 5000
   # Map of violation levels to command
   thresholds:
@@ -39,6 +39,9 @@ AutoEat:
     6: "aac notify {player} in {world} is highly suspected for AutoEat"
     10: "aackick {player} AutoEat"
 
+# AutoFish detects cheats that are named just like the check - automatic fishing bots which can yield a lot of
+# treasure and food for those who use them.
+#
 # If you have modified fishing time and/or behaviour please test if this check is compatible with your setup.
 # This check does only work on minecraft versions 1.11 and beyond and auto-disables itself on other versions.
 AutoFish:
@@ -46,30 +49,30 @@ AutoFish:
   enabled: true
   # Violation before AACAdditionPro starts to cancel the fishing.
   # Set this to 0 to never cancel fishing.
-  # Please think of potential luck, thus I do not recommend to set this to a value smaller than 7.
+  # Please think of potential luck, because of this I do not recommend to set this to a value smaller than 7.
   cancel_vl: 10
-  # Control the different solutions of AutoFish
+  # Control the different parts of AutoFish
   parts:
-    # The inhuman_reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
+    # The inhuman reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
     # This might cause some false positives with experienced fishers.
     # This will add up to 6 vl, depending on the reaction speed.
     inhuman_reaction:
-      # Do you want to enable the inhuman_reaction part?
+      # Do you want to enable the inhuman reaction part?
       enabled: true
       # How many milliseconds should have passed before a fishing action counts as legit.
-      # This also influences the given vl according to a linear distribution.
-      fishing_milliseconds: 145
-    # The consistency part recognizes static times between a successful catch and fishing again.
-    # This check has less to none false positives, especially with a high event count
-    # Depending on how accurate the consistency is players will receive between 1 and 15 vl
+      # This also influences the given vl according to a linear distribution - the faster and more inhuman someone
+      # reacts, the more vl they will get.
+      human_reaction_time: 145
+    # The consistency part recognizes unchanging times between a successful catch and fishing again as simple bots have
+    # constant reaction times, whereas human players reaction varies a little bit each time they fish.
+    # Depending on how accurate the consistency is players will receive between 1 and 15 vl.
     consistency:
       # Do you want to enable the consistency part?
       enabled: true
-      # How many FishEvents should be checked by the consistency check
-      consistency_events: 5
-      # The minimum offset a player has to have in order to count as non-cheating.
-      # Measured in ms
-      violation_offset: 30
+      # How many fishing attempts should be checked by the consistency check
+      used_fishing_attempts: 5
+      # The minimum variation a player has to have in their reaction times to count as non cheating (in milliseconds)
+      min_variation: 30
       # After how many failed attempts to fish between two successful attempts should a player be exempted from the
       # consistency part?
       #

@@ -16,8 +16,8 @@ class InhumanReactionPattern implements ListenerModule
     @Getter
     private static final InhumanReactionPattern instance = new InhumanReactionPattern();
 
-    @LoadFromConfiguration(configPath = ".fishing_milliseconds")
-    private int fishingMilliseconds;
+    @LoadFromConfiguration(configPath = ".human_reaction_time")
+    private int humanReactionTime;
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerFish(PlayerFishEvent event)
@@ -32,14 +32,14 @@ class InhumanReactionPattern implements ListenerModule
         switch (event.getState()) {
             case CAUGHT_FISH:
                 // Too few time has passed since the fish bit.
-                if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_FISH_BITE, fishingMilliseconds)) {
+                if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_FISH_BITE, humanReactionTime)) {
 
                     // Get the correct amount of vl.
                     // vl 6 is the maximum.
                     // Points = {{0, 1}, {8, 0}}
                     // Function: 1 - 0.125x
                     for (int b = 5; b > 0; b--) {
-                        if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_FISH_BITE, (long) (1 - 0.125 * b) * fishingMilliseconds)) {
+                        if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_FISH_BITE, (long) (1 - 0.125 * b) * humanReactionTime)) {
                             VerboseSender.getInstance().sendVerboseMessage("AutoFish-Verbose | Player " + user.getPlayer().getName() + " failed inhuman reaction");
 
                             // Flag for vl = b + 1 because there would otherwise be a "0-vl"

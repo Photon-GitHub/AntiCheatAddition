@@ -19,8 +19,8 @@ class ConsistencyPattern implements ListenerModule
     @Getter
     private static final ConsistencyPattern instance = new ConsistencyPattern();
 
-    @LoadFromConfiguration(configPath = ".violation_offset")
-    private int violationOffset;
+    @LoadFromConfiguration(configPath = ".min_variation")
+    private int minVariation;
 
     @LoadFromConfiguration(configPath = ".maximum_fails")
     private int maximumFails;
@@ -51,11 +51,10 @@ class ConsistencyPattern implements ListenerModule
                     // Calculate the maximum offset.
                     final double maxOffset = Math.max(MathUtils.offset(consistencyStatistics.getMin(), consistencyStatistics.getAverage()), MathUtils.offset(consistencyStatistics.getMax(), consistencyStatistics.getAverage()));
 
-                    // Ceil in order to make sure that the result is at least 1
-                    final double flagOffset = Math.ceil((violationOffset - maxOffset) * 0.5D);
+                    if (minVariation > maxOffset) {
+                        // (maxOffset / minVariation) will be at most 1 and at least 0
+                        final double flagOffset = 15 - (14 * (maxOffset / minVariation));
 
-                    // Has the player violated the check?
-                    if (flagOffset > 0) {
                         VerboseSender.getInstance().sendVerboseMessage("AutoFish-Verbose | Player " +
                                                                        user.getPlayer().getName() +
                                                                        " failed consistency | average time: " +

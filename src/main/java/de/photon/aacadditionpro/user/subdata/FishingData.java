@@ -9,7 +9,7 @@ import lombok.Getter;
 
 public class FishingData extends SubData
 {
-    private static final int CONSISTENCY_EVENTS = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.AUTO_FISH.getConfigString() + ".parts.consistency.consistency_events");
+    private static final int USED_FISHING_ATTEMPTS = AACAdditionPro.getInstance().getConfig().getInt(ModuleType.AUTO_FISH.getConfigString() + ".parts.consistency.used_fishing_attempts");
 
     @Getter
     private final DoubleStatistics statistics = new DoubleStatistics();
@@ -34,6 +34,6 @@ public class FishingData extends SubData
     public boolean bufferConsistencyData()
     {
         this.statistics.accept((double) this.user.getTimestampMap().passedTime(TimestampKey.AUTOFISH_DETECTION));
-        return this.statistics.getCount() >= CONSISTENCY_EVENTS;
+        return this.statistics.getCount() >= USED_FISHING_ATTEMPTS;
     }
 }

@@ -4,6 +4,7 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
+import de.photon.aacadditionpro.modules.RestrictedBungeecord;
 import de.photon.aacadditionpro.modules.RestrictedServerVersion;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.UserManager;
@@ -21,7 +22,7 @@ import java.util.Set;
  * regular communication with the client to improve the detection speed of cheats.
  * This is restricted to minecraft 1.8.8 as higher versions have changed the KeepAlive packet handling.
  */
-class KeepAliveInjectPattern implements Module, RestrictedServerVersion
+class KeepAliveInjectPattern implements Module, RestrictedServerVersion, RestrictedBungeecord
 {
     @Getter
     private static final KeepAliveInjectPattern instance = new KeepAliveInjectPattern();

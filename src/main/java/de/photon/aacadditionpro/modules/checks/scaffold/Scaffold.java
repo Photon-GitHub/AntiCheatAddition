@@ -123,16 +123,16 @@ public class Scaffold implements BatchProcessorModule<ScaffoldBlockPlace>, Liste
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
-            int vl = AnglePattern.getInstance().apply(user, event);
-            vl += PositionPattern.getInstance().apply(user, event);
+            int vl = AnglePattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
+            vl += PositionPattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
 
             // All these checks may have false positives in new situations.
             if (!newSituation) {
                 final float[] angleInformation = user.getLookPacketData().getAngleInformation();
 
-                int rotationVl = RotationTypeOnePattern.getInstance().getApplyingConsumer().apply(user) +
-                                 RotationTypeTwoPattern.getInstance().getApplyingConsumer().apply(user, angleInformation[0]) +
-                                 RotationTypeThreePattern.getInstance().getApplyingConsumer().apply(user, angleInformation[1]);
+                int rotationVl = RotationTypeOnePattern.getInstance().getApplyingConsumer().applyAsInt(user) +
+                                 RotationTypeTwoPattern.getInstance().getApplyingConsumer().applyAsInt(user, angleInformation[0]) +
+                                 RotationTypeThreePattern.getInstance().getApplyingConsumer().applyAsInt(user, angleInformation[1]);
 
                 if (rotationVl > 0) {
                     if (++user.getScaffoldData().rotationFails >= this.rotationThreshold) {
@@ -143,9 +143,9 @@ public class Scaffold implements BatchProcessorModule<ScaffoldBlockPlace>, Liste
                     user.getScaffoldData().rotationFails--;
                 }
 
-                vl += SafewalkTypeOnePattern.getInstance().getApplyingConsumer().apply(user, event);
-                vl += SafewalkTypeTwoPattern.getInstance().getApplyingConsumer().apply(user);
-                vl += SprintingPattern.getInstance().getApplyingConsumer().apply(user);
+                vl += SafewalkTypeOnePattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
+                vl += SafewalkTypeTwoPattern.getInstance().getApplyingConsumer().applyAsInt(user);
+                vl += SprintingPattern.getInstance().getApplyingConsumer().applyAsInt(user);
             }
 
             if (vl > 0) {

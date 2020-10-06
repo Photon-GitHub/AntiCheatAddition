@@ -37,8 +37,13 @@ public interface Module
                 return;
             }
 
+            if (module instanceof RestrictedBungeecord && !RestrictedBungeecord.allowedToStart()) {
+                sendNotice(module, module.getConfigString() + " is not compatible with bungeecord.");
+                return;
+            }
+
             // Enabled
-            if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled")) {
+            if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled", false)) {
                 sendNotice(module, module.getConfigString() + " was chosen not to be enabled.");
                 return;
             }
@@ -127,7 +132,7 @@ public interface Module
      */
     default Set<Module> getSubModules()
     {
-        return ImmutableSet.of();
+        return NO_SUBMODULES;
     }
 
     /**

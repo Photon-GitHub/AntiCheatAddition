@@ -22,6 +22,7 @@ import java.util.Set;
 public final class BlockUtils
 {
     public static final Set<Material> LIQUIDS;
+
     /**
      * Contains all containers that need a free space of any kind above the container (e.g. chests with a stair above)
      */

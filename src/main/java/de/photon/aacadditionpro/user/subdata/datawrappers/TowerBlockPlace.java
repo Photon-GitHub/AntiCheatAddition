@@ -53,7 +53,7 @@ public class TowerBlockPlace extends BlockPlace
     {
         if (this.levitationLevel != null) {
             // 0.9 Blocks per second per levitation level.
-            return 900 / ((this.levitationLevel + 1D) * TOWER_LENIENCY * LEVITATION_LENIENCY);
+            return (900 / (this.levitationLevel + 1D)) * TOWER_LENIENCY * LEVITATION_LENIENCY;
         }
 
         // No JUMP_BOOST

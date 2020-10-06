@@ -11,7 +11,7 @@ import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import java.util.function.BiFunction;
+import java.util.function.ToIntBiFunction;
 
 /**
  * This pattern detects suspicious stops right before the edges
@@ -26,7 +26,7 @@ class SafewalkTypeOnePattern implements Module
     private int violationThreshold;
 
     @Getter
-    private BiFunction<User, BlockPlaceEvent, Integer> applyingConsumer = (user, event) -> 0;
+    private ToIntBiFunction<User, BlockPlaceEvent> applyingConsumer = (user, event) -> 0;
 
     @Override
     public void enable()

@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleType;
+import de.photon.aacadditionpro.modules.RestrictedBungeecord;
 import de.photon.aacadditionpro.user.DataKey;
 import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
@@ -20,7 +21,7 @@ import java.util.function.BiConsumer;
  * To do this it uses the fact that every {{@link com.comphenix.protocol.PacketType.Play.Server#POSITION}} packet must
  * be answered with an {@link com.comphenix.protocol.PacketType.Play.Client#POSITION_LOOK} packet
  */
-class ComparePattern implements Module
+class ComparePattern implements Module, RestrictedBungeecord
 {
     @Getter
     private static final ComparePattern instance = new ComparePattern();

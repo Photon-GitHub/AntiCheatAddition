@@ -34,30 +34,15 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
-    /**
-     * How much time can pass between
-     * 1) rotation and throwing a potion
-     * 2) throwing a potion and backwards-rotation
-     * so that the check is NOT failed
-     */
-    @LoadFromConfiguration(configPath = ".time_offset")
-    private int timeOffset;
+    @LoadFromConfiguration(configPath = ".look_restored_time")
+    private int lookRestoredTime;
 
-    /**
-     * How much offset is allowed when comparing the previous angle to the angle of the back-rotation to continue the check
-     */
     @LoadFromConfiguration(configPath = ".angle_offset")
     private double angleOffset;
 
-    /**
-     * The initial pitch-difference, measured in degrees, to start the check
-     */
-    @LoadFromConfiguration(configPath = ".angle_start_threshold")
-    private double angleStartThreshold;
+    @LoadFromConfiguration(configPath = ".initial_pitch_difference")
+    private double initalPitchDifference;
 
-    /**
-     * The minimum angle that is counted as looking down
-     */
     @LoadFromConfiguration(configPath = ".look_down_angle")
     private double lookDownAngle;
 
@@ -76,7 +61,7 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
             if (MathUtils.roughlyEquals(event.getTo().getPitch(), user.getDataMap().getFloat(DataKey.AUTOPOTION_LAST_SUDDEN_PITCH), angleOffset) &&
                 MathUtils.roughlyEquals(event.getTo().getYaw(), user.getDataMap().getFloat(DataKey.AUTOPOTION_LAST_SUDDEN_YAW), angleOffset) &&
                 // Happened in a short time frame
-                user.getTimestampMap().recentlyUpdated(TimestampKey.AUTOPOTION_DETECTION, timeOffset))
+                user.getTimestampMap().recentlyUpdated(TimestampKey.AUTOPOTION_DETECTION, lookRestoredTime))
             {
                 // Flag
                 vlManager.flag(user.getPlayer(), cancelVl, () ->
@@ -84,8 +69,8 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
                         user.getTimestampMap().updateTimeStamp(TimestampKey.AUTOPOTION_TIMEOUT), () -> user.getTimestampMap().nullifyTimeStamp(TimestampKey.AUTOPOTION_DETECTION));
             }
         } else {
-            // The angle_start_threshold is reached
-            if (event.getTo().getPitch() - event.getFrom().getPitch() > this.angleStartThreshold &&
+            // The initial_pitch_difference is reached
+            if (event.getTo().getPitch() - event.getFrom().getPitch() > this.initalPitchDifference &&
                 // The previous pitch is not representing looking down
                 event.getFrom().getPitch() < lookDownAngle &&
                 // The pitch is beyond the lookdown angle
@@ -122,7 +107,7 @@ public class AutoPotion implements ListenerModule, ViolationModule, RestrictedSe
             event.getItem() != null &&
             event.getMaterial() == Material.SPLASH_POTION &&
             // The last sudden movement was not long ago
-            user.getTimestampMap().recentlyUpdated(TimestampKey.AUTOPOTION_DETECTION, timeOffset))
+            user.getTimestampMap().recentlyUpdated(TimestampKey.AUTOPOTION_DETECTION, lookRestoredTime))
         {
             user.getDataMap().setValue(DataKey.AUTOPOTION_ALREADY_THROWN, true);
             // Here the timestamp is used to contain the data of the last splash

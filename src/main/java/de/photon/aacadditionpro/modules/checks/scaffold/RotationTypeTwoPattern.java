@@ -6,7 +6,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
 
-import java.util.function.BiFunction;
+import java.util.function.ToIntBiFunction;
 
 /**
  * This pattern detects huge angle changes while scaffolding that
@@ -20,7 +20,7 @@ class RotationTypeTwoPattern implements Module
     private static final double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
 
     @Getter
-    private BiFunction<User, Float, Integer> applyingConsumer = (user, angleInformation) -> 0;
+    private ToIntBiFunction<User, Float> applyingConsumer = (user, angleInformation) -> 0;
 
     @Override
     public void enable()

@@ -19,9 +19,9 @@ class RotationPattern extends PacketAdapter implements PacketListenerModule
     @Getter
     private static final RotationPattern instance = new RotationPattern();
 
-    @LoadFromConfiguration(configPath = ".teleport_time")
+    @LoadFromConfiguration(configPath = ".teleport_bypass_time")
     private int teleportTime;
-    @LoadFromConfiguration(configPath = ".world_change_time")
+    @LoadFromConfiguration(configPath = ".world_change_bypass_time")
     private int worldChangeTime;
 
     protected RotationPattern()

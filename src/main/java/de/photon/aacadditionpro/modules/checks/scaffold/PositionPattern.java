@@ -24,6 +24,11 @@ class PositionPattern implements Module
     public void enable()
     {
         applyingConsumer = (user, event) -> {
+            // This sorts out scaffolding with non-full block hitboxes that will cause false positives (e.g. fences).
+            if (!event.getBlockPlaced().getType().isOccluding()) {
+                return 0;
+            }
+
             final double xOffset = MathUtils.offset(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
             final double zOffset = MathUtils.offset(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
 

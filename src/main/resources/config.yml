@@ -318,8 +318,8 @@ KeepAlive:
   # NOTE: Even with all subparts turned off a basic unregistered subpart is always active to prevent crash clients.
   # This particular subpart cannot have false positives and must be set off deliberately by injecting malicious packets.
   #
-  # PLEASE NOTE THAT DUE TO CURRENTLY UNFIXED BUGS IN BUNGEECORD'S KEEPALIVE HANDLING ALL SUBPARTS SHOULD BE DISABLED
-  # IF YOU USE BUNGEECORD OR A FORK OF IT. THE UNREGISTERED SUBPART (SEE NOTE) IS NOT AFFECTED BY THIS BUG.
+  # Due to currently unfixed bugs in Bungeecord the subparts will autodisable on a Bungeecord network.
+  # This check will still have a use as you can see in the note.
   parts:
     # Ignored checks for KeepAlive packets the client has not responded to, which is not allowed in the minecraft
     # protocol.
@@ -362,7 +362,7 @@ PacketAnalysis:
     # the client purposefully delays some packets (pingspoof and freecam).
     # This part will add 1 to 9 vl, depending on the severity of the violation.
     #
-    # DISABLE THIS PART IF YOU USE BUNGEECORD!
+    # Due to unfixed bugs within Bungeecord this part will autodisable on a Bungeecord network.
     Compare:
       # Do you want to enable packet time comparison?
       enabled: true

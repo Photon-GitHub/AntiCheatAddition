@@ -141,8 +141,8 @@ public class AACAdditionPro extends JavaPlugin
 
             this.bungeecord = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getBoolean("settings.bungeecord", false);
             VerboseSender.getInstance().sendVerboseMessage("Bungeecord " + (this.bungeecord ?
-                                                                            " detected" :
-                                                                            " not detected"), true, false);
+                                                                            "detected" :
+                                                                            "not detected"), true, false);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Metrics                                                 //

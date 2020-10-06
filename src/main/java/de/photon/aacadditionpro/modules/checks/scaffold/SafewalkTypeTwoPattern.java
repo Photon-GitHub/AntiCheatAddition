@@ -9,7 +9,7 @@ import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
 
-import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 /**
  * This detects safe-walk behaviour (stopping when not sneaking)
@@ -23,7 +23,7 @@ class SafewalkTypeTwoPattern implements Module
     private int violationThreshold;
 
     @Getter
-    private Function<User, Integer> applyingConsumer = user -> 0;
+    private ToIntFunction<User> applyingConsumer = user -> 0;
 
     @Override
     public void enable()

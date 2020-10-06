@@ -7,7 +7,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
 
-import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 /**
  * This pattern detects significant rotation "jumps" in the last two ticks.
@@ -18,7 +18,7 @@ class RotationTypeOnePattern implements Module
     private static final RotationTypeOnePattern instance = new RotationTypeOnePattern();
 
     @Getter
-    private Function<User, Integer> applyingConsumer = user -> 0;
+    private ToIntFunction<User> applyingConsumer = user -> 0;
 
     @Override
     public void enable()

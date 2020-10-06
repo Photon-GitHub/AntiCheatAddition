@@ -38,7 +38,7 @@ public interface Module
             }
 
             // Enabled
-            if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled")) {
+            if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled", false)) {
                 sendNotice(module, module.getConfigString() + " was chosen not to be enabled.");
                 return;
             }

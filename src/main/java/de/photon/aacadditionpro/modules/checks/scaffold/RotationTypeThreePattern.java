@@ -6,7 +6,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
 
-import java.util.function.BiFunction;
+import java.util.function.ToIntBiFunction;
 
 /**
  * This patterns detects very random rotations that some randomized scaffold modules might use.
@@ -19,7 +19,7 @@ class RotationTypeThreePattern implements Module
     private static final double ANGLE_OFFSET_SUM_THRESHOLD = 5.2D;
 
     @Getter
-    private BiFunction<User, Float, Integer> applyingConsumer = (user, angleInformation) -> 0;
+    private ToIntBiFunction<User, Float> applyingConsumer = (user, angleInformation) -> 0;
 
     @Override
     public void enable()

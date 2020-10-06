@@ -10,6 +10,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.Vector;
 
+import java.util.function.ToIntBiFunction;
+
 class AnglePattern implements Module
 {
     @Getter
@@ -19,6 +21,9 @@ class AnglePattern implements Module
 
     @LoadFromConfiguration(configPath = ".violation_threshold")
     private int violationThreshold;
+
+    @Getter
+    private ToIntBiFunction<User, BlockPlaceEvent> applyingConsumer = (user, event) -> 0;
 
     protected int apply(User user, BlockPlaceEvent event)
     {
@@ -35,6 +40,32 @@ class AnglePattern implements Module
             user.getScaffoldData().angleFails--;
         }
         return 0;
+    }
+
+    @Override
+    public void enable()
+    {
+        applyingConsumer = (user, event) -> {
+            final BlockFace placedFace = event.getBlock().getFace(event.getBlockAgainst());
+            final Vector placedVector = new Vector(placedFace.getModX(), placedFace.getModY(), placedFace.getModZ());
+
+            // If greater than 90
+            if (user.getPlayer().getLocation().getDirection().angle(placedVector) > MAX_ANGLE) {
+                if (++user.getScaffoldData().angleFails >= this.violationThreshold) {
+                    VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " placed a block with a suspicious angle.");
+                    return 3;
+                }
+            } else if (user.getScaffoldData().angleFails > 0) {
+                user.getScaffoldData().angleFails--;
+            }
+            return 0;
+        };
+    }
+
+    @Override
+    public void disable()
+    {
+        applyingConsumer = (user, event) -> 0;
     }
 
     @Override

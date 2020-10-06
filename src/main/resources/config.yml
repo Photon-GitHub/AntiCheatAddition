@@ -29,6 +29,7 @@ AutoEat:
   # Do you want to enable the AutoEat check?
   enabled: true
   # Violation before AACAdditionPro starts to cancel the consume events.
+  # Set this to 0 to never cancel the events.
   cancel_vl: 6
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to consume an item for the
   # duration of timeout (in milliseconds).
@@ -48,8 +49,8 @@ AutoFish:
   # Do you want to enable the AutoFish check?
   enabled: true
   # Violation before AACAdditionPro starts to cancel the fishing.
-  # Set this to 0 to never cancel fishing.
   # Please think of potential luck, because of this I do not recommend to set this to a value smaller than 7.
+  # Set this to 0 to never cancel fishing.
   cancel_vl: 10
   # Control the different parts of AutoFish
   parts:
@@ -121,7 +122,7 @@ AutoPotion:
 # MAIN FUNCTIONS:
 # - Sneaking-Hider:  A sneaking player who cannot be directly seen by another player will be completely hidden from
 #                    the second player. (This will make esp / tracers / radar / similar useless if the player who
-#                    should be shown is sneaking)
+#                    is supposed to be shown is sneaking)
 #
 # - Equipment-Hider: If a player cannot be directly seen by another player his equipment (hand, armour) will be hidden
 #                    from the observer. (This will make the life of cheaters harder as they cannot properly estimate
@@ -137,7 +138,8 @@ Esp:
   #
   # IF YOU NOTICE PLAYERS OR THEIR ARMOR POPPING UP OUT OF NOWHERE YOUR SERVER DOES NOT HAVE THE REQUIRED PERFORMANCE.
   #
-  # Approximate maximum player table for a certain amount of cores to not lag the server:
+  # Approximate maximum player table for a certain amount of cores to not lag the server on Minecraft 1.8.8, later
+  # versions have much worse performance:
   # 1 Core   | 40 Players
   # 2 Cores  | 60 Players
   # 4 Cores  | 90 Players
@@ -145,15 +147,15 @@ Esp:
   # 16 Cores | 170 Players
   # 32 Cores | 250 Players
   # 64 Cores | 350 Players
-  enabled: true
+  enabled: false
   # How many milliseconds shall be waited between two ESP cycles. Setting this too low may result in performance issues,
   # setting it too high may result in players being hidden too long and popping up.
   sleep_millis: 50
   # This determines whether minecrafts 3rd person modes should be considered for calculation as well.
-  # Disabling this will reduce the reqiured number of raytraces by two thirds.
-  # Especially useful if you have certain gamemodes in which players are not supposed to use the third person mode.
+  # Disabling this will reduce the required number of raytraces by two thirds.
+  # Especially useful if you have gamemodes in which players are not supposed to use the third person mode.
   calculate_third_person_modes: false
-  # Setting this to true will ESP render players with much less vectors for improved performance.
+  # Setting this to true will allow ESP to render players with much less vectors for improved performance.
   # This might lead to more edge cases where players are hidden even though they are actually visible.
   low_vector_hitboxes: true
   # This will make AACAdditionPro use the new ray tracing of Spigot 1.13 and upwards.
@@ -163,19 +165,20 @@ Esp:
   # !!! THIS MAY DEVASTATE PERFORMANCE, USE WITH CAUTION !!!
   ray_tracing: false
 
-# The Fastswitch check prevents players from switching their hotbar-selection too quickly
+# The Fastswitch check prevents players from switching their hotbar-selection too quickly which can detect some
+# killauras or scaffolds.
+# The check will automatically disable itself if the server is lagging.
 Fastswitch:
   # Do you want to enable the Fastswitch check?
-  # NOTE: This check will automatically disable itself if the server is lagging.
   enabled: true
-  # Violation before AACAdditionPro starts to cancel the interacts.
-  # Set this to 0 to never cancel interacts.
+  # Violation before AACAdditionPro starts to cancel the hotbar selections.
+  # Set this to 0 to never cancel hotbar selections.
   cancel_vl: 3
-  # If a player has a ping higher than that value he bypasses the check
+  # If a player has a ping higher than this value he bypasses the check
   # Please make sure that you have some pingspoof protection enabled while using this feature
   # Set this to -1 to disable
   max_ping: 400
-  # The minimum time between switches that are not considered scrolling
+  # The minimum time between switches that are not considered scrolling (in milliseconds)
   switch_milliseconds: 50
   # Map of violation levels to command
   thresholds:
@@ -198,7 +201,7 @@ ImpossibleChat:
     5: "aac notify {player} in {world} is highly suspected for ImpossibleChat"
     8: "aackick {player} ImpossibleChat"
 
-# This check contains a lot of parts covering all aspects of inventory interaction.
+# This check monitors inventory interactions of players.
 Inventory:
   # Do you want to enable the Inventory check?
   enabled: true
@@ -206,17 +209,17 @@ Inventory:
   parts:
     # This part detects bot-like behaviour with constant times between inventory clicks.
     # This is supposed to detect simple chest stealer bots which do not randomize the click delays.
-    # Note: If you allow inventory sorting mods of any kind make sure to disable this.
+    # NOTE: If you allow inventory sorting mods of any kind make sure to disable this part.
     #
     # This part will add 10-35 vl (this check is quite slow and is only processed every 16 clicks on items) depending on
     # the amount of misclicks and the time between. This will ensure that players which click excessively fast - e.g. in
-    # the beginning of SurvivalGames will not get as many vls as they click on a lot of empty slots just like slow
-    # clickers as having a bot with a slow click rate does not give you a huge advantage and is likely a false positive.
+    # the beginning of SurvivalGames will not get as many vls as they click on a lot of empty slots. Slow clicking
+    # also results in less vl as a slow click rate does not give you an huge advantage and is likely a false positive.
     AverageHeuristic:
       # Do you want to enable the AverageHeuristic part?
       enabled: true
-      # If a player has a ping higher than that value he bypasses the check
-      # Please make sure that you have some pingspoofer protection enabled if you use this feature
+      # If a player has a ping higher than this value he bypasses the check
+      # Please make sure that you have some pingspoof protection enabled if you use this feature
       # Set this to -1 to disable
       max_ping: 400
       # The minimum TPS the server must have to activate this check
@@ -231,11 +234,11 @@ Inventory:
       # Set this to 0 to never cancel hits.
       cancel_vl: 30
     # The move part detects movement when a player is still in his inventory.
-    # This part will add 3 vl when a player moves illegally and 10 vl if a player jumps illegally.
+    # This part will add 3 vl when a player moves illegally and 10 vl when a player jumps illegally.
     Move:
       # Do you want to enable the Move part?
       enabled: true
-      # Violation before AACAdditionPro starts to cancel the movements.
+      # Violation before AACAdditionPro starts to cancel the movement.
       # Set this to 0 to never cancel movement.
       cancel_vl: 30
       # The minimum TPS the server must have to activate this check
@@ -245,23 +248,23 @@ Inventory:
       # Increase this if you have false positive with high-ping players after teleports.
       # Please note that the definition of teleport is quite broad, including e.g. ender pearls, teleport commands,
       # respawns, etc.
-      teleport_time: 900
+      teleport_bypass_time: 900
       # Analogous to the option above this only applies to world changes which usually take more time to process.
-      world_change_time: 2000
+      world_change_bypass_time: 2000
       # This allows to add more lenience on servers with very high-ping players by stretching the no-punish time after
-      # opening an inventory.
-      # Normal connections are already covered by the default values.
+      # opening an inventory (in milliseconds).
+      # Normal connections are already covered by the default values and are internally exempt for 240ms.
       lenience_millis: 0
-    # The MultiInteraction part prevents players from moving more than one item per tick
+    # The MultiInteraction part prevents players from moving items too fast.
     # This part will add 1 to 3 vl, depending on the severity of the violation.
     MultiInteraction:
       # Do you want to enable the MultiInteraction part?
       enabled: true
-      # Violation before AACAdditionPro starts to cancel the interacts.
+      # Violation before AACAdditionPro starts to cancel the inventory interactions.
       # Set this to 0 to never cancel interacts.
       cancel_vl: 18
-      # If a player has a ping higher than that value he bypasses the check
-      # Please make sure that you have some pingspoofer protection enabled if you use this feature
+      # If a player has a ping higher than this value he bypasses the check
+      # Please make sure that you have some pingspoof protection enabled if you use this feature
       # Set this to -1 to disable
       max_ping: 400
       # The minimum TPS the server must have to activate this check
@@ -271,7 +274,7 @@ Inventory:
     # once it is empty.
     # This part will add 7 to 15 vl depending on the severity of the violation.
     PerfectExit:
-      # Do you want to disable the PerfectExit part?
+      # Do you want to enable the PerfectExit part?
       enabled: true
       # The minimum TPS the server must have to activate this check
       # Low TPS will cause an extreme amount of false positives.
@@ -288,13 +291,13 @@ Inventory:
       # Increase this if you have false positive with high-ping players after teleports.
       # Please note that the definition of teleport is quite broad, including e.g. ender pearls, teleport commands,
       # respawns, etc.
-      teleport_time: 900
+      teleport_bypass_time: 900
       # Analogous to the option above this only applies to world changes which usually take more time to process.
-      world_change_time: 2000
+      world_change_bypass_time: 2000
     # This part detects inventory interactions while a player is sprinting or sneaking.
     # This part will add 20 vl.
     Sprinting:
-      # Do you want to enable the sprinting part?
+      # Do you want to enable the Sprinting part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the inventory interactions.
       # Set this to 0 to never cancel inventory interactions.

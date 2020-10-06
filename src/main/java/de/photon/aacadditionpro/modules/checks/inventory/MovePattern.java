@@ -38,10 +38,10 @@ class MovePattern extends PacketAdapter implements PacketListenerModule
     private double minTps;
     @LoadFromConfiguration(configPath = ".lenience_millis")
     private int lenienceMillis;
-    @LoadFromConfiguration(configPath = ".teleport_time")
-    private int teleportTime;
-    @LoadFromConfiguration(configPath = ".world_change_time")
-    private int worldChangeTime;
+    @LoadFromConfiguration(configPath = ".teleport_bypass_time")
+    private int teleportBypassTime;
+    @LoadFromConfiguration(configPath = ".world_change_bypass_time")
+    private int worldChangeBypassTime;
 
     public MovePattern()
     {
@@ -84,8 +84,8 @@ class MovePattern extends PacketAdapter implements PacketListenerModule
             // Player has not been hit recently
             user.getPlayer().getNoDamageTicks() == 0 &&
             // Recent teleports can cause bugs
-            !user.hasTeleportedRecently(this.teleportTime) &&
-            !user.hasChangedWorldsRecently(this.worldChangeTime) &&
+            !user.hasTeleportedRecently(this.teleportBypassTime) &&
+            !user.hasChangedWorldsRecently(this.worldChangeBypassTime) &&
             // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
             // world add errors.
             // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load

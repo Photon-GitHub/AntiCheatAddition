@@ -96,7 +96,7 @@ AutoPotion:
   # Set this to 0 to never cancel throwing potions.
   cancel_vl: 2
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all potion throws to effectively
-  # prevent the cheat (measured in ms)
+  # prevent the cheat (in milliseconds)
   timeout: 1000
   # How much time in milliseconds must pass between
   # 1) rotation and throwing a potion
@@ -408,7 +408,7 @@ Scaffold:
   # Set this to 0 to never cancel block-places.
   cancel_vl: 20
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to place a block in the given
-  # time window to prevent further scaffolding (measured in ms)
+  # time window to prevent further scaffolding (in milliseconds)
   timeout: 1000
   # Control the different solutions of Scaffold
   parts:
@@ -424,7 +424,7 @@ Scaffold:
     # This part is always enabled as it provides the basic framework.
     # The average part might add between 4 and 24 violation levels depending on the severity of the violation.
     average:
-      # The minimum delay between blockplaces that will be enforced by AACAdditionPro (measured in ms)
+      # The minimum delay between blockplaces that will be enforced by AACAdditionPro (in milliseconds)
       delays:
         # This delay applies to all straight building techniques
         normal: 238
@@ -546,7 +546,7 @@ Tower:
   # Special leniency which is only applied if the player has the levitation effect
   levitation_leniency: 0.9
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all blockplaces in the given timeframe
-  # to prevent further towering (measured in ms)
+  # to prevent further towering (in milliseconds)
   timeout: 6000
   # Map of violation levels to command
   thresholds:

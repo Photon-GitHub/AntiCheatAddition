@@ -45,7 +45,6 @@ public final class DataUpdaterEvents implements Listener
 
     private DataUpdaterEvents()
     {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new InventoryDataUpdater());
         ProtocolLibrary.getProtocolManager().addPacketListener(new KeepAliveDataUpdater());
         ProtocolLibrary.getProtocolManager().addPacketListener(new VelocityChangeDataUpdater());
     }
@@ -286,26 +285,6 @@ public final class DataUpdaterEvents implements Listener
         if (user != null) {
             user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
             user.getTimestampMap().updateTimeStamps(TimestampKey.LAST_TELEPORT, TimestampKey.LAST_WORLD_CHANGE);
-        }
-    }
-
-    private static class InventoryDataUpdater extends PacketAdapter
-    {
-        private InventoryDataUpdater()
-        {
-            super(AACAdditionPro.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.CLOSE_WINDOW);
-        }
-
-        @Override
-        public void onPacketReceiving(final PacketEvent event)
-        {
-            final User user = UserManager.safeGetUserFromPacketEvent(event);
-
-            if (user == null) {
-                return;
-            }
-
-            user.getTimestampMap().nullifyTimeStamp(TimestampKey.INVENTORY_OPENED);
         }
     }
 

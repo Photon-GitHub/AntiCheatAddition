@@ -738,7 +738,7 @@ ClientControl:
 
   # A pvp modification from France
   #
-  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
+  # 1.13 AND ABOVE SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   PXMod:
     # Do you want to enable PXMod-Control?
     enabled: false
@@ -769,7 +769,7 @@ ClientControl:
   # in screenshares
   # This will only detect some cracked versions of the client.
   #
-  # NOT COMPATIBLE WITH MINECRAFT 1.13 AS THE BACKDOOR DEPENDS ON CODE THAT HAS CHANGED DRAMATICALLY IN 1.13
+  # NOT COMPATIBLE WITH MINECRAFT 1.13 AND ABOVE DUE TO DRASTIC CODE CHANGES.
   Vape:
     # Do you want to enable Vape-Control?
     enabled: false
@@ -821,7 +821,7 @@ ClientControl:
 # BrandHider allows you to modify the brand that is shown in the debug screen of minecraft.
 # This can be useful if you want to create a custom message or just hide your actual setup.
 BrandHider:
-  # Do you want to enable the BrandHider?
+  # Do you want to enable BrandHider?
   enabled: false
   # This is the replacement text for the brand.
   # You can use the character & for color codes and all placeholders that are available in normal checks
@@ -834,16 +834,16 @@ BrandHider:
 
 # This will make AACAdditionPro hook AAC and inject its own checks into the AAC GUI
 # Please note that currently only the management gui is supported and you can only enable modules that are both
-# supported by your setup and which you have ENABLED IN THE CONFIG. Also, you can not disable GuiInject in the GUI for
+# supported by your setup and which you have ENABLED IN THE CONFIG. Also, you cannot disable GuiInject in the GUI for
 # obvious reasons.
 GuiInject:
-  # Do you want to enable the GUI injection?
+  # Do you want to enable GUI injection?
   enabled: true
 
 # This automatically deletes old log files of both AAC and AACAdditionPro
 # It activates automatically on restart and after that in a 12 hour cycle.
 LogBot:
-  # Do you want to enable the LogBot?
+  # Do you want to enable LogBot?
   enabled: false
   # After how many days should AAC logs be deleted
   # Set to -1 to disable

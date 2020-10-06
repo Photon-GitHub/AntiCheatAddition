@@ -685,7 +685,7 @@ ClientControl:
   # LiteLoader is alternative mod-loader to forge.
   # Many ghost clients exist for LiteLoader, therefore I recommend to block it.
   #
-  # 1.13.2 SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
+  # 1.13.2 AND ABOVE SUPPORT NOT YET VERIFIED! PLEASE TEST BEFORE USING THIS ON A PRODUCTIVE SERVER.
   LiteLoader:
     # Do you want to enable LiteLoader-Control?
     # This cannot be blocked; I recommend to kick if desired
@@ -696,7 +696,7 @@ ClientControl:
   # This covers outdated versions of LabyMod prior to version 3.0
   # A very popular PvP modification similar to 5zig but with more features and TS3 support
   #
-  # Not compatible with 1.13.2 as this only covers old LabyMod versions.
+  # Not compatible with 1.13.2 and above as this only covers old LabyMod versions.
   OldLabyMod:
     # Do you want to enable OldLabyMod-Control?
     enabled: false

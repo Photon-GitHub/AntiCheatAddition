@@ -39,7 +39,7 @@ class AnglePattern implements Module
                     return 3;
                 }
             } else if (user.getScaffoldData().angleFails > 0) {
-                user.getScaffoldData().angleFails--;
+                --user.getScaffoldData().angleFails;
             }
             return 0;
         };

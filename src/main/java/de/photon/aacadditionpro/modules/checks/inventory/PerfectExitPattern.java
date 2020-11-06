@@ -51,7 +51,7 @@ public class PerfectExitPattern implements ListenerModule
                                                                                () -> VerboseSender.getInstance().sendVerboseMessage("Inventory-Verbose | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')'));
                 }
             } else if (user.getInventoryData().perfectExitFails > 0) {
-                user.getInventoryData().perfectExitFails--;
+                --user.getInventoryData().perfectExitFails;
             }
         }
     }

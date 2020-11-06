@@ -40,8 +40,9 @@ public class LogBot implements Module, Runnable
 
                         if (files != null) {
                             // The folder is not empty
+                            String nameOfFile;
                             for (final File file : files) {
-                                final String nameOfFile = file.getName();
+                                nameOfFile = file.getName();
                                 // Be sure it is a log file of AAC or AACAdditionPro (.log) or a log file of the server (.log.gz)
                                 if ((nameOfFile.endsWith(".log") || nameOfFile.endsWith(".log.gz")) &&
                                     // Minimum time

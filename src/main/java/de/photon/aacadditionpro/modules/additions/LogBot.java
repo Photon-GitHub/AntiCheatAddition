@@ -20,7 +20,7 @@ public class LogBot implements Module, Runnable
     // HashMap's real capacity is always a power of 2
     private final Map<File, Long> logDeletionTimes = ImmutableMap.of(
             // Put the respective times in milliseconds into the map.
-            new File("plugins/AAC", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AAC")),
+            new File("plugins/AAC5", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AAC")),
             new File("plugins/AACAdditionPro", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AACAdditionPro")),
             new File("logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".Server")));
 

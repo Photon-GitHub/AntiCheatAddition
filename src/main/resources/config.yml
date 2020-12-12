@@ -845,9 +845,6 @@ GuiInject:
 LogBot:
   # Do you want to enable LogBot?
   enabled: false
-  # After how many days should AAC () logs be deleted
-  # Set to -1 to disable
-  AAC: 10
   # After how many days should AACAdditionPro logs be deleted
   # Set to -1 to disable
   AACAdditionPro: 10

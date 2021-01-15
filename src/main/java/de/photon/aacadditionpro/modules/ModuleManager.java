@@ -13,6 +13,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Manages the {@link Module}s of {@link AACAdditionPro}.
@@ -96,13 +97,19 @@ public final class ModuleManager
         }
     }
 
+    /**
+     * This creates the actual hook for the AAC API.
+     */
     public AACCustomFeatureProvider getCustomFeatureProvider()
     {
         return offlinePlayer -> {
             final List<AACCustomFeature> featureList = new ArrayList<>(violationModules.size());
+            final UUID uuid = offlinePlayer.getUniqueId();
             for (ViolationModule module : violationModules.values()) {
+                // Only add enabled modules
                 if (this.getStateOfModule(module.getModuleType())) {
-                    featureList.add(module.getAACFeature(offlinePlayer.getUniqueId()));
+                    double score = module.getViolationLevelManagement().getAACScore(uuid);
+                    featureList.add(new AACCustomFeature(module.getConfigString(), module.getModuleType().getInfo(), score, module.getAACTooltip(uuid, score)));
                 }
             }
             return featureList;

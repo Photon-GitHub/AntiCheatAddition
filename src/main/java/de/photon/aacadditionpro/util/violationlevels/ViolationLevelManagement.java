@@ -188,8 +188,8 @@ public class ViolationLevelManagement
      */
     private void punishPlayer(final Player player, final int fromVl, final int toVl)
     {
-        // Only schedule the command execution if the plugin is loaded
-        if (AACAdditionPro.getInstance().isLoaded()) {
+        // Only schedule the command execution if the plugin is loaded and when we do not use AAC's feature handling.
+        if (AACAdditionPro.getInstance().isLoaded() && AACAdditionPro.getInstance().getAacapi() == null) {
             for (Threshold threshold : this.thresholds) {
                 // Use the guaranteed sorting of the thresholds to break the loop here as only higher-vl thresholds will
                 // follow.

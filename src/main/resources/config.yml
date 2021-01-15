@@ -880,14 +880,6 @@ BrandHider:
   # Measured in ticks
   refresh_rate: 0
 
-# This will make AACAdditionPro hook AAC and inject its own checks into the AAC GUI
-# Please note that currently only the management gui is supported and you can only enable modules that are both
-# supported by your setup and which you have ENABLED IN THE CONFIG. Also, you cannot disable GuiInject in the GUI for
-# obvious reasons.
-GuiInject:
-  # Do you want to enable GUI injection?
-  enabled: true
-
 # This automatically deletes old log files of both AAC and AACAdditionPro
 # It activates automatically on restart and after that in a 12 hour cycle.
 LogBot:

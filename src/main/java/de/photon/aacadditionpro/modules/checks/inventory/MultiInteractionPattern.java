@@ -60,6 +60,9 @@ class MultiInteractionPattern implements ListenerModule
                     // Unknown reason might not be save to handle
                 case COLLECT_TO_CURSOR:
                     // False positive with collecting all items of one type in the inventory
+                case DROP_ALL_SLOT:
+                case DROP_ONE_SLOT:
+                    // False positives due to autodropping feature of minecraft when holding q
                     return;
                 // ------------------------------------------ Normal -------------------------------------------- //
                 case HOTBAR_SWAP:
@@ -70,12 +73,6 @@ class MultiInteractionPattern implements ListenerModule
                     if (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) >= 3) {
                         return;
                     }
-                    break;
-
-                case DROP_ALL_SLOT:
-                case DROP_ONE_SLOT:
-                    // Drops might be faster than the others.
-                    enforcedTicks = 1;
                     break;
 
                 case PICKUP_ALL:

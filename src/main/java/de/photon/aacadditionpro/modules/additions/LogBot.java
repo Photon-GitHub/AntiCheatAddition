@@ -20,7 +20,6 @@ public class LogBot implements Module, Runnable
     // HashMap's real capacity is always a power of 2
     private final Map<File, Long> logDeletionTimes = ImmutableMap.of(
             // Put the respective times in milliseconds into the map.
-            new File("plugins/AAC", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AAC")),
             new File("plugins/AACAdditionPro", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AACAdditionPro")),
             new File("logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".Server")));
 
@@ -40,8 +39,9 @@ public class LogBot implements Module, Runnable
 
                         if (files != null) {
                             // The folder is not empty
+                            String nameOfFile;
                             for (final File file : files) {
-                                final String nameOfFile = file.getName();
+                                nameOfFile = file.getName();
                                 // Be sure it is a log file of AAC or AACAdditionPro (.log) or a log file of the server (.log.gz)
                                 if ((nameOfFile.endsWith(".log") || nameOfFile.endsWith(".log.gz")) &&
                                     // Minimum time

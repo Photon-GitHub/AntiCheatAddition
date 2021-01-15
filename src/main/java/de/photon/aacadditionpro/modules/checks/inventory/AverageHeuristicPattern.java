@@ -47,7 +47,7 @@ public class AverageHeuristicPattern implements BatchProcessorModule<InventoryCl
             (maxPing < 0 || ServerUtil.getPing(user.getPlayer()) <= maxPing))
         {
             if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
-                user.getInventoryData().averageHeuristicMisclicks++;
+                ++user.getInventoryData().averageHeuristicMisclicks;
             }
             // Shift - Double - Click shortcut will generate a lot of clicks.
             else if (user.getDataMap().getValue(DataKey.LAST_MATERIAL_CLICKED) != event.getCurrentItem().getType()) {

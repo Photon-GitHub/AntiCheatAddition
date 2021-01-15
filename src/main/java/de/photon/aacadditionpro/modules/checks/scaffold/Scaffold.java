@@ -140,7 +140,7 @@ public class Scaffold implements BatchProcessorModule<ScaffoldBlockPlace>, Liste
                         vl += rotationVl;
                     }
                 } else if (user.getScaffoldData().rotationFails > 0) {
-                    user.getScaffoldData().rotationFails--;
+                    --user.getScaffoldData().rotationFails;
                 }
 
                 vl += SafewalkTypeOnePattern.getInstance().getApplyingConsumer().applyAsInt(user, event);

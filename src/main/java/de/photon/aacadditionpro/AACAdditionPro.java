@@ -6,7 +6,6 @@ import de.photon.aacadditionpro.command.MainCommand;
 import de.photon.aacadditionpro.events.APILoadedEvent;
 import de.photon.aacadditionpro.modules.ModuleManager;
 import de.photon.aacadditionpro.modules.additions.BrandHider;
-import de.photon.aacadditionpro.modules.additions.GuiInject;
 import de.photon.aacadditionpro.modules.additions.LogBot;
 import de.photon.aacadditionpro.modules.checks.AutoEat;
 import de.photon.aacadditionpro.modules.checks.AutoPotion;
@@ -38,7 +37,9 @@ import de.photon.aacadditionpro.user.UserManager;
 import de.photon.aacadditionpro.util.files.configs.Configs;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
+import me.konsolas.aac.api.AACAPI;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -70,6 +71,8 @@ public class AACAdditionPro extends JavaPlugin
     private ModuleManager moduleManager;
     @Getter
     private ViaAPI<Player> viaAPI;
+    @Getter
+    private AACAPI aacapi = null;
 
     @Getter
     private boolean bungeecord = false;
@@ -158,7 +161,7 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Call is correct here as Bukkit always has a player api.
-            if (this.getServer().getPluginManager().getPlugin("ViaVersion") != null) {
+            if (this.getServer().getPluginManager().isPluginEnabled("ViaVersion")) {
                 //noinspection unchecked
                 viaAPI = Via.getAPI();
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Used"));
@@ -168,6 +171,19 @@ public class AACAdditionPro extends JavaPlugin
                 VerboseSender.getInstance().sendVerboseMessage("ViaVersion not found", true, false);
             }
 
+            // Call is correct here as Bukkit always has a player api.
+            if (this.getServer().getPluginManager().isPluginEnabled("AAC5")) {
+                if (this.getConfig().getBoolean("UseAACFeatureSystem")) {
+                    this.aacapi = Bukkit.getServicesManager().load(AACAPI.class);
+                }
+
+                //noinspection unchecked
+                metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Used"));
+                VerboseSender.getInstance().sendVerboseMessage("AAC hooked", true, false);
+            } else {
+                metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Not used"));
+                VerboseSender.getInstance().sendVerboseMessage("AAC not found", true, false);
+            }
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //
@@ -178,7 +194,6 @@ public class AACAdditionPro extends JavaPlugin
             this.moduleManager = new ModuleManager(ImmutableSet.of(
                     // Additions
                     BrandHider.getInstance(),
-                    GuiInject.getInstance(),
                     LogBot.getInstance(),
 
                     // ClientControl
@@ -210,6 +225,10 @@ public class AACAdditionPro extends JavaPlugin
                     Teaming.getInstance(),
                     Tower.getInstance())
             );
+
+            if (this.aacapi != null) {
+                this.aacapi.registerCustomFeatureProvider(this.getModuleManager().getCustomFeatureProvider());
+            }
 
             // Data storage
             DataUpdaterEvents.INSTANCE.register();

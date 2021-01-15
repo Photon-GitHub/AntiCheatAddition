@@ -107,7 +107,8 @@ public class Esp implements ListenerModule
                     while (true) {
                         for (World world : Bukkit.getWorlds()) {
                             for (Player player : world.getPlayers()) {
-                                if (!User.isBypassed(player, getModuleType()) && player.getGameMode() != GameMode.SPECTATOR) {
+                                //noinspection ConstantConditions
+                                if (!User.isBypassed(player, getModuleType()) && player.getGameMode() != GameMode.SPECTATOR && player.getWorld() != null) {
                                     players.add(player);
                                 }
                             }

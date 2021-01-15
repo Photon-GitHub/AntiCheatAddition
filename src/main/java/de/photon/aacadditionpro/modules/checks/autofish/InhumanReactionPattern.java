@@ -38,7 +38,7 @@ class InhumanReactionPattern implements ListenerModule
                     // vl 6 is the maximum.
                     // Points = {{0, 1}, {8, 0}}
                     // Function: 1 - 0.125x
-                    for (int b = 5; b > 0; b--) {
+                    for (int b = 5; b > 0; --b) {
                         if (user.getTimestampMap().recentlyUpdated(TimestampKey.LAST_FISH_BITE, (long) (1 - 0.125 * b) * humanReactionTime)) {
                             VerboseSender.getInstance().sendVerboseMessage("AutoFish-Verbose | Player " + user.getPlayer().getName() + " failed inhuman reaction");
 

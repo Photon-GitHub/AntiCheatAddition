@@ -32,6 +32,11 @@ public class ViolationLevelManagement
     private final ModuleType moduleType;
 
     /**
+     * A constant to calculate the score from the vl.
+     */
+    private final double aacScoreMultiplier;
+
+    /**
      * Create a new {@link ViolationLevelManagement}
      *
      * @param moduleType the {@link ModuleType} of the module this {@link ViolationLevelManagement} is being used by.
@@ -47,6 +52,8 @@ public class ViolationLevelManagement
         this.violationLevels = new ViolationLevelMap(decayTicks);
         // Listener registration as of the PlayerQuitEvent
         AACAdditionPro.getInstance().registerListener(this.violationLevels);
+
+        this.aacScoreMultiplier = AACAdditionPro.getInstance().getConfig().getDouble(this.moduleType.getConfigString() + ".aacscoremultiplier");
 
         // Load the thresholds and sort them.
         switch (ServerVersion.getActiveServerVersion()) {
@@ -136,6 +143,14 @@ public class ViolationLevelManagement
     }
 
     /**
+     * Calculates the score given to AAC.
+     */
+    public final double getAACScore(final UUID uuid)
+    {
+        return this.getVL(uuid) * this.aacScoreMultiplier;
+    }
+
+    /**
      * Sets the vl of a player.
      *
      * @param player the {@link Player} whose vl should be set
@@ -173,8 +188,8 @@ public class ViolationLevelManagement
      */
     private void punishPlayer(final Player player, final int fromVl, final int toVl)
     {
-        // Only schedule the command execution if the plugin is loaded
-        if (AACAdditionPro.getInstance().isLoaded()) {
+        // Only schedule the command execution if the plugin is loaded and when we do not use AAC's feature handling.
+        if (AACAdditionPro.getInstance().isLoaded() && AACAdditionPro.getInstance().getAacapi() == null) {
             for (Threshold threshold : this.thresholds) {
                 // Use the guaranteed sorting of the thresholds to break the loop here as only higher-vl thresholds will
                 // follow.

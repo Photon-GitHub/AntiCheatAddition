@@ -41,7 +41,7 @@ class SafewalkTypeTwoPattern implements Module
                     return 4;
                 }
             } else if (user.getScaffoldData().safewalkTypeTwoFails > 0) {
-                user.getScaffoldData().safewalkTypeTwoFails--;
+                --user.getScaffoldData().safewalkTypeTwoFails;
             }
             return 0;
         };

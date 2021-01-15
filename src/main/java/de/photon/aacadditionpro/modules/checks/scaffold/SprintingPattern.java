@@ -35,7 +35,7 @@ class SprintingPattern implements Module
                     return 8;
                 }
             } else if (user.getScaffoldData().sprintingFails > 0) {
-                user.getScaffoldData().sprintingFails--;
+                --user.getScaffoldData().sprintingFails;
             }
 
             return 0;

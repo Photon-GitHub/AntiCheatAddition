@@ -5,8 +5,12 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.files.configs.Configs;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import lombok.Getter;
+import me.konsolas.aac.api.AACCustomFeature;
+import me.konsolas.aac.api.AACCustomFeatureProvider;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,11 +21,17 @@ public final class ModuleManager
 {
     @Getter
     private final Map<ModuleType, Module> modules = new EnumMap<>(ModuleType.class);
+    private final Map<ModuleType, ViolationModule> violationModules = new EnumMap<>(ModuleType.class);
 
     public ModuleManager(final Set<Module> modules)
     {
         for (Module module : modules) {
             this.modules.put(module.getModuleType(), module);
+
+            if (module instanceof ViolationModule) {
+                this.violationModules.put(module.getModuleType(), (ViolationModule) module);
+            }
+
             Module.enableModule(module);
         }
 
@@ -52,9 +62,9 @@ public final class ModuleManager
      */
     public ViolationLevelManagement getViolationLevelManagement(final ModuleType moduleType)
     {
-        final Module module = this.getModule(moduleType);
-        Preconditions.checkArgument(module instanceof ViolationModule, "ModuleType " + moduleType.name() + " does not reference to a module with a ViolationLevelManagement.");
-        return ((ViolationModule) module).getViolationLevelManagement();
+        final ViolationModule module = this.violationModules.get(moduleType);
+        Preconditions.checkArgument(module != null, "ModuleType " + moduleType.name() + " does not reference a module with a ViolationLevelManagement.");
+        return module.getViolationLevelManagement();
     }
 
     /**
@@ -84,5 +94,16 @@ public final class ModuleManager
                 Module.disableModule(this.getModule(moduleType));
             }
         }
+    }
+
+    public AACCustomFeatureProvider getCustomFeatureProvider()
+    {
+        return offlinePlayer -> {
+            final List<AACCustomFeature> featureList = new ArrayList<>(violationModules.size());
+            for (ViolationModule module : violationModules.values()) {
+                featureList.add(module.getAACFeature(offlinePlayer.getUniqueId()));
+            }
+            return featureList;
+        };
     }
 }

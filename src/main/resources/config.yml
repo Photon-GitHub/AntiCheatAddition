@@ -28,6 +28,10 @@
 AutoEat:
   # Do you want to enable the AutoEat check?
   enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player has botlike eating behaviour"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 20
   # Violation before AACAdditionPro starts to cancel the consume events.
   # Set this to 0 to never cancel the events.
   cancel_vl: 6
@@ -48,6 +52,10 @@ AutoEat:
 AutoFish:
   # Do you want to enable the AutoFish check?
   enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player has botlike fishing behaviour"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 20
   # Violation before AACAdditionPro starts to cancel the fishing.
   # Please think of potential luck, because of this I do not recommend to set this to a value smaller than 7.
   # Set this to 0 to never cancel fishing.
@@ -93,6 +101,10 @@ AutoFish:
 AutoPotion:
   # Do you want to enable the AutoPotion check?
   enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player applies splash potions suspiciously"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 50
   # Violation before AACAdditionPro starts to cancel throwing potions.
   # Set this to 0 to never cancel throwing potions.
   cancel_vl: 2
@@ -172,6 +184,10 @@ Esp:
 Fastswitch:
   # Do you want to enable the Fastswitch check?
   enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player switches hotbar selection too quickly"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 25
   # Violation before AACAdditionPro starts to cancel the hotbar selections.
   # Set this to 0 to never cancel hotbar selections.
   cancel_vl: 3
@@ -193,6 +209,10 @@ ImpossibleChat:
   # Do you want to enable the ImpossibleChat check?
   # Disabled by default as some servers might allow auto-chat modifications.
   enabled: false
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player chats while being in an inventory."
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 25
   # Violation before AACAdditionPro starts to cancel the messages.
   # Set this to 0 to never cancel messages.
   cancel_vl: 2
@@ -206,6 +226,10 @@ ImpossibleChat:
 Inventory:
   # Do you want to enable the Inventory check?
   enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player has suspicious inventory interactions"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 2
   # Control the different parts of Inventory
   parts:
     # This part detects bot-like behaviour with constant times between inventory clicks.
@@ -313,6 +337,10 @@ Inventory:
 KeepAlive:
   # Do you want to enable the KeepAlive check?
   enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player has suspicious KeepAlive packet behaviour"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 5
   # Control the different parts of KeepAlive
   #
   # NOTE: Even with all subparts turned off a basic unregistered subpart is always active to prevent crash clients.
@@ -350,6 +378,10 @@ KeepAlive:
 PacketAnalysis:
   # Do you want to enable the PacketAnalysis check?
   enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player has suspicious packet behaviour"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 5
   # Control the different parts of PacketAnalysis
   parts:
     # This part checks if after an attack the client sends an arm animation packet.
@@ -401,6 +433,10 @@ PacketAnalysis:
 Scaffold:
   # Do you want to enable the Scaffold check?
   enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player scaffolds suspiciously"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 6
   # Violation before AACAdditionPro starts to cancel block placement.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 20
@@ -491,6 +527,10 @@ Scaffold:
 Skinblinker:
   # Do you want to enable the Skinblinker check?
   enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player changes skin parts while actively moving"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 50
   # Map of violation levels to command
   thresholds:
     1: "aac notify {player} in {world} is suspected for Skinblinker"
@@ -501,6 +541,10 @@ Skinblinker:
 Teaming:
   # Do you want to enable the Teaming check?
   enabled: false
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player might be teaming"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 10
   # How much delay should be between the check-waves
   # This must be below 15000 milliseconds.
   # Measured in milliseconds.
@@ -535,6 +579,10 @@ Teaming:
 Tower:
   # Do you want to enable the Tower check?
   enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player builds a tower too fast"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 20
   # Violation before AACAdditionPro starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 6
@@ -832,22 +880,11 @@ BrandHider:
   # Measured in ticks
   refresh_rate: 0
 
-# This will make AACAdditionPro hook AAC and inject its own checks into the AAC GUI
-# Please note that currently only the management gui is supported and you can only enable modules that are both
-# supported by your setup and which you have ENABLED IN THE CONFIG. Also, you cannot disable GuiInject in the GUI for
-# obvious reasons.
-GuiInject:
-  # Do you want to enable GUI injection?
-  enabled: true
-
 # This automatically deletes old log files of both AAC and AACAdditionPro
 # It activates automatically on restart and after that in a 12 hour cycle.
 LogBot:
   # Do you want to enable LogBot?
   enabled: false
-  # After how many days should AAC logs be deleted
-  # Set to -1 to disable
-  AAC: 10
   # After how many days should AACAdditionPro logs be deleted
   # Set to -1 to disable
   AACAdditionPro: 10
@@ -862,6 +899,11 @@ LogBot:
 #                                             \_/\___|_| |_.__/\___/__/\___|                                          #
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
+
+# If this option is active and AAC is installed AACAdditionPro will not execute any commands specified above and instead
+# hooks the AAC feature system to allow you to specify punishments via the AAC config.
+# This way, AACAdditionPro's checks will also appear in AAC's status messages.
+UseAACFeatureSystem: true
 
 # Enabling this will show the enable messages for every single check and part
 # (very spammy, only recommended for testing purposes)

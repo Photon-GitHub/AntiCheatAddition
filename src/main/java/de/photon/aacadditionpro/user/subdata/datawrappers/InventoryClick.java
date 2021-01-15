@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -31,7 +32,11 @@ public class InventoryClick
 
     public static InventoryClick fromClickEvent(final InventoryClickEvent event)
     {
-        return new InventoryClick(event.getInventory(), InventoryUtils.locateSlot(event.getRawSlot(), event.getClickedInventory().getType()), event.getClick());
+        final double[] slotLocation = InventoryUtils.locateSlot(event.getRawSlot(), event.getClickedInventory().getType());
+        return new InventoryClick(event.getInventory(), slotLocation == null ?
+                                                        new double[2] :
+                                                        slotLocation,
+                                  event.getClick());
     }
 
     @Override
@@ -51,7 +56,7 @@ public class InventoryClick
         public final double yDistance;
         public final ClickType clickType;
 
-        public BetweenClickInformation(final InventoryClick older, final InventoryClick younger)
+        public BetweenClickInformation(@NotNull final InventoryClick older, @NotNull final InventoryClick younger)
         {
             this.timeDelta = younger.timeStamp - older.timeStamp;
             this.xDistance = younger.slotLocation[0] - older.slotLocation[0];

@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.modules;
 
+import de.photon.aacadditionpro.AACAdditionPro;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,9 +12,8 @@ import java.util.Set;
 public enum ModuleType
 {
     // Additions
-    BRAND_HIDER("BrandHider"),
-    GUI_INJECT("GuiInject"),
-    LOG_BOT("LogBot"),
+    BRAND_HIDER("BrandHider", "Hides the server version in F3 mode."),
+    LOG_BOT("LogBot", "Automatically removes old logs."),
 
     // Normal checks
     AUTO_EAT("AutoEat"),
@@ -23,7 +23,7 @@ public enum ModuleType
     FASTSWITCH("Fastswitch"),
     IMPOSSIBLE_CHAT("ImpossibleChat", "sent illegal chat message (ImpossibleChat)"),
     INVENTORY("Inventory", "has suspicious inventory interactions."),
-    KEEPALIVE("KeepAlive"),
+    KEEPALIVE("KeepAlive", "Detects "),
     PACKET_ANALYSIS("PacketAnalysis"),
     SCAFFOLD("Scaffold"),
     SKINBLINKER("Skinblinker"),
@@ -45,13 +45,13 @@ public enum ModuleType
     WORLDDOWNLOAD_CONTROL("ClientControl.WorldDownloader", "uses WorldDownloader");
 
     public static final Set<ModuleType> VL_MODULETYPES = EnumSet.noneOf(ModuleType.class);
+    private final String configString;
+    private final String violationMessage;
+    private final String info;
 
     @Getter
     @Setter(AccessLevel.PACKAGE)
     private boolean enabled;
-
-    private final String configString;
-    private final String violationMessage;
 
     ModuleType(final String configString)
     {
@@ -62,5 +62,6 @@ public enum ModuleType
     {
         this.configString = configString;
         this.violationMessage = violationMessage;
+        this.info = AACAdditionPro.getInstance().getConfig().getString(configString + ".aacfeatureinfo");
     }
 }

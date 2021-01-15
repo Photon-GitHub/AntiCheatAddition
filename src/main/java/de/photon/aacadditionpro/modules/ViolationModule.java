@@ -21,7 +21,7 @@ public interface ViolationModule extends Module
     default AACCustomFeature getAACFeature(UUID uuid)
     {
         double score = this.getViolationLevelManagement().getAACScore(uuid);
-        return new AACCustomFeature("aacadditonpro_" + this.getConfigString().toLowerCase(Locale.ENGLISH), this.getModuleType().getInfo(), score, getAACTooltip(uuid, score));
+        return new AACCustomFeature("aacadditionpro_" + this.getConfigString().toLowerCase(Locale.ENGLISH), this.getModuleType().getInfo(), score, getAACTooltip(uuid, score));
     }
 
     default Map<String, String> getAACTooltip(UUID uuid, double score)

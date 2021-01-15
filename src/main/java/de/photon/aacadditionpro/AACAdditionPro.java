@@ -72,7 +72,7 @@ public class AACAdditionPro extends JavaPlugin
     @Getter
     private ViaAPI<Player> viaAPI;
     @Getter
-    private AACAPI aacapi = null;
+    private AACAPI aacapi;
 
     @Getter
     private boolean bungeecord = false;
@@ -181,6 +181,7 @@ public class AACAdditionPro extends JavaPlugin
                 metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Used"));
                 VerboseSender.getInstance().sendVerboseMessage("AAC hooked", true, false);
             } else {
+                this.aacapi = null;
                 metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Not used"));
                 VerboseSender.getInstance().sendVerboseMessage("AAC not found", true, false);
             }

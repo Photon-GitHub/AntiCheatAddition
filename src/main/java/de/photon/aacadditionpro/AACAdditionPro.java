@@ -88,7 +88,7 @@ public class AACAdditionPro extends JavaPlugin
     }
 
     /**
-     * Registers a new {@link Listener} for AACAdditionPro.
+     * Registers a new {@link Listener}.
      *
      * @param listener the {@link Listener} which should be registered in the {@link org.bukkit.plugin.PluginManager}
      */

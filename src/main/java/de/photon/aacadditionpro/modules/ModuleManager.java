@@ -72,7 +72,7 @@ public final class ModuleManager
      *
      * @param moduleType the {@link ModuleType} of the module that should be checked
      *
-     * @return <code> true</code> if the module referred to by the {@link ModuleType} is enabled, else <code>false</code>
+     * @return <code>true</code> if the module referred to by the {@link ModuleType} is enabled, else <code>false</code>
      */
     public boolean getStateOfModule(final ModuleType moduleType)
     {
@@ -101,7 +101,9 @@ public final class ModuleManager
         return offlinePlayer -> {
             final List<AACCustomFeature> featureList = new ArrayList<>(violationModules.size());
             for (ViolationModule module : violationModules.values()) {
-                featureList.add(module.getAACFeature(offlinePlayer.getUniqueId()));
+                if (this.getStateOfModule(module.getModuleType())) {
+                    featureList.add(module.getAACFeature(offlinePlayer.getUniqueId()));
+                }
             }
             return featureList;
         };

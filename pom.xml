@@ -12,54 +12,55 @@
     <description>This plugin provides niche checks for cheats which are not covered by AAC</description>
 
     <properties>
+        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javaversion>1.8</javaversion>
-        <maven.compiler.source>${javaversion}</maven.compiler.source>
-        <maven.compiler.target>${javaversion}</maven.compiler.target>
     </properties>
 
     <build>
         <defaultGoal>clean install</defaultGoal>
-
-        <!-- This adds the plugin.yml and config.yml as files that need to be processed. -->
-        <resources>
-            <resource>
-                <directory>src\main\resources</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>pattern</directory>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
-
-        <!-- This shades the metrics in -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
-                    <minimizeJar>true</minimizeJar>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <relocations>
-                        <relocation>
-                            <pattern>org.bstats</pattern>
-                            <!-- Replace this with your package! -->
-                            <shadedPattern>de.photon.aacadditionpro</shadedPattern>
-                        </relocation>
-                    </relocations>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <minimizeJar>true</minimizeJar>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <!-- Replace this with your package! -->
+                                    <shadedPattern>de.photon.aacadditionpro</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
+
+        <!-- This adds the plugin.yml and config.yml as files that need to be processed. -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 
     <repositories>

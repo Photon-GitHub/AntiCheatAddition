@@ -45,7 +45,7 @@ public class Teaming implements ListenerModule, ViolationModule
     @Override
     public void enable()
     {
-        final long period = (AACAdditionPro.getInstance().getConfig().getInt(this.getModuleType().getConfigString() + ".delay") * 20) / 1000;
+        final long period = (AACAdditionPro.getInstance().getConfig().getInt(this.getModuleType().getConfigString() + ".delay") * 20L) / 1000;
 
         // Square it
         proximityRangeSquared *= proximityRangeSquared;

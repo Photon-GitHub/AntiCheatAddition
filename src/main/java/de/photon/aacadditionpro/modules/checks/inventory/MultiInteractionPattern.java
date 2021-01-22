@@ -128,7 +128,7 @@ class MultiInteractionPattern implements ListenerModule
 
             // Convert ticks to millis.
             // 25 to account for server lag.
-            if (user.hasClickedInventoryRecently(25 + (enforcedTicks * 50))) {
+            if (user.hasClickedInventoryRecently(25L + (enforcedTicks * 50))) {
                 Inventory.getInstance().getViolationLevelManagement().flag(user.getPlayer(), addedVl, cancelVl,
                                                                            () -> {
                                                                                event.setCancelled(true);

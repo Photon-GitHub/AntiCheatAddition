@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.modules.checks.inventory;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.InventoryData;
 import de.photon.aacadditionpro.user.subdata.datawrappers.InventoryClick;
+import de.photon.aacadditionpro.util.datastructures.Polynomial;
 import de.photon.aacadditionpro.util.datastructures.batch.AsyncBatchProcessor;
 import de.photon.aacadditionpro.util.datastructures.iteration.IterationUtil;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
@@ -15,6 +16,8 @@ public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<Inventor
 {
     @Getter
     private static final AverageHeuristicBatchProcessor instance = new AverageHeuristicBatchProcessor();
+
+    private static final Polynomial AVERAGE_MULTIPLIER_CALCULATOR = new Polynomial(-0.000102881, 0.00709709, -0.171127, 1.65);
 
     private AverageHeuristicBatchProcessor()
     {
@@ -32,8 +35,8 @@ public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<Inventor
             return;
         }
 
-        final double average = betweenClicks.stream().mapToDouble(between -> between.timeDelta).average().orElseThrow(() -> new IllegalArgumentException("Could not get average of BetweenClick stream."));
-        final double squaredErrorsSum = betweenClicks.stream().mapToDouble(between -> MathUtils.squaredError(average, between.timeDelta)).sum();
+        final double averageMillis = betweenClicks.stream().mapToDouble(between -> between.timeDelta).average().orElseThrow(() -> new IllegalArgumentException("Could not get average of BetweenClick stream."));
+        final double squaredErrorsSum = betweenClicks.stream().mapToDouble(between -> MathUtils.squaredError(averageMillis, between.timeDelta)).sum();
 
         // One time 2 ticks offset and 2 times 1 tick offset * 15 minimum vl = 168750
         // 2500 error sum is legit achievable.
@@ -41,8 +44,7 @@ public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<Inventor
         double vl = 40000 / (squaredErrorsSum + 1);
 
         // Average below 1 tick is considered inhuman and increases vl.
-        final double ticks = average / 50;
-        final double averageMultiplier = 1.65 + ticks * (-0.171127 + (0.00709709 - 0.000102881 * ticks) * ticks);
+        final double averageMultiplier = AVERAGE_MULTIPLIER_CALCULATOR.apply(averageMillis / 50);
         vl *= Math.max(averageMultiplier, 0.5);
 
         // Make sure that misclicks are applied correctly.
@@ -61,7 +63,7 @@ public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<Inventor
                                                                    (int) Math.min(vl, 35),
                                                                    0,
                                                                    () -> {},
-                                                                   () -> VerboseSender.getInstance().sendVerboseMessage("Inventory-Verbose | Player: " + user.getPlayer().getName() + " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + average + " | MC: " + user.getInventoryData().averageHeuristicMisclicks + " | VLU: " + finalVl + ")"));
+                                                                   () -> VerboseSender.getInstance().sendVerboseMessage("Inventory-Verbose | Player: " + user.getPlayer().getName() + " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + averageMillis + " | MC: " + user.getInventoryData().averageHeuristicMisclicks + " | VLU: " + finalVl + ")"));
         user.getInventoryData().averageHeuristicMisclicks = 0;
     }
 }

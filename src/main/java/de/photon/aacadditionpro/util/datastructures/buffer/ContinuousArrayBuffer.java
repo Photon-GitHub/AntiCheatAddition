@@ -194,6 +194,10 @@ public class ContinuousArrayBuffer<T> implements ContinuousBuffer<T>
      */
     private int decrementIndexSafely(int index)
     {
-        return index == 0 ? maxSize - 1 : index - 1;
+        // ((index - 1) + max) % max
+        // 0:       (max - 1) % max = max - 1
+        // 1:       max % max = 0
+        // max - 1: ((max - 1 - 1) + max) % max = (max + max - 2) % max = max - 2
+        return ((index - 1) + maxSize) % maxSize;
     }
 }

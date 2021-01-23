@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro;
 
 import com.google.common.collect.ImmutableList;
-import de.photon.aacadditionpro.util.datastructures.buffer.ContinuousArrayBuffer;
+import de.photon.aacadditionproold.util.datastructures.buffer.ContinuousArrayBuffer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -1,12 +1,8 @@
 package de.photon.aacadditionpro;
 
-import de.photon.aacadditionpro.modules.Module;
-import de.photon.aacadditionpro.modules.clientcontrol.VersionControl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import us.myles.ViaVersion.api.ViaAPI;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -28,6 +24,7 @@ public enum ServerVersion
 
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS;
     public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = EnumSet.of(MC188);
+    public static final Set<ServerVersion> LEGACY_EVENT_VERSIONS = EnumSet.of(MC188, MC19, MC110, MC111, MC112, MC113);
     public static final Set<ServerVersion> NON_188_VERSIONS;
     /**
      * The server version of the currently running {@link Bukkit} instance.
@@ -41,9 +38,7 @@ public enum ServerVersion
 
         NON_188_VERSIONS = EnumSet.copyOf(ALL_SUPPORTED_VERSIONS);
         NON_188_VERSIONS.remove(MC188);
-    }
 
-    static {
         final String versionOutput = Bukkit.getVersion();
         for (final ServerVersion serverVersion : ServerVersion.values()) {
             if (versionOutput.contains(serverVersion.getVersionOutputString())) {
@@ -67,17 +62,5 @@ public enum ServerVersion
     public static boolean supportsActiveServerVersion(Set<ServerVersion> supportedServerVersions)
     {
         return supportedServerVersions.contains(activeServerVersion);
-    }
-
-    /**
-     * Used to get the client version. Might only differ from {@link #getActiveServerVersion()} if ViaVersion is installed.
-     */
-    public static ServerVersion getClientServerVersion(final Player player)
-    {
-        final ViaAPI<Player> viaAPI = AACAdditionPro.getInstance().getViaAPI();
-
-        return viaAPI == null || player == null ?
-               activeServerVersion :
-               VersionControl.getServerVersionFromProtocolVersion(viaAPI.getPlayerVersion(player));
     }
 }

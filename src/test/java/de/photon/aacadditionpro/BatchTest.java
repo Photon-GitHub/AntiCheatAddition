@@ -1,10 +1,10 @@
 package de.photon.aacadditionpro;
 
 import com.google.common.collect.ImmutableList;
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.util.datastructures.batch.AsyncBatchProcessor;
-import de.photon.aacadditionpro.util.datastructures.batch.Batch;
-import de.photon.aacadditionpro.util.datastructures.batch.SyncBatchProcessor;
+import de.photon.aacadditionproold.user.User;
+import de.photon.aacadditionproold.util.datastructures.batch.AsyncBatchProcessor;
+import de.photon.aacadditionproold.util.datastructures.batch.Batch;
+import de.photon.aacadditionproold.util.datastructures.batch.SyncBatchProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

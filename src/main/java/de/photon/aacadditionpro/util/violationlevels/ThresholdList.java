@@ -1,15 +1,17 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.collect.ImmutableList;
-import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
+import de.photon.aacadditionproold.ServerVersion;
+import de.photon.aacadditionproold.util.files.configs.ConfigUtils;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ThresholdList
 {
@@ -23,26 +25,35 @@ public class ThresholdList
 
     public ThresholdList(List<Threshold> thresholds)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
-                Collections.sort(new ArrayList<>(thresholds));
-                this.thresholds = ImmutableList.copyOf(thresholds);
-                break;
-            case MC112:
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-                this.thresholds = ImmutableList.sortedCopyOf(thresholds);
-                break;
-            default:
-                throw new UnknownMinecraftVersion();
+        if (ServerVersion.supportsActiveServerVersion(ServerVersion.NON_188_VERSIONS)) {
+            Collections.sort(new ArrayList<>(thresholds));
+            this.thresholds = ImmutableList.copyOf(thresholds);
+        } else {
+            this.thresholds = ImmutableList.sortedCopyOf(thresholds);
         }
 
         vls = new int[thresholds.size()];
-        for (int i = 0; i < thresholds.size(); ++i) {
+        for (int i = 0; i < vls.length; ++i) {
             vls[i] = thresholds.get(i).getVl();
         }
+    }
+
+    /**
+     * Tries to load all thresholds from the given config key.
+     *
+     * @param thresholdSectionPath the given path to the section that contains the thresholds
+     *
+     * @return a mutable {@link List} containing all {@link Threshold}s.
+     */
+    public static ThresholdList loadThresholds(final String thresholdSectionPath)
+    {
+        // Make sure that the keys exist.
+        return new ThresholdList(Objects.requireNonNull(ConfigUtils.loadKeys(thresholdSectionPath), "Severe loading error: Keys are null when loading: " + thresholdSectionPath)
+                                        .stream()
+                                        // Create a new Threshold for every key.
+                                        .map(key -> new Threshold(Integer.parseInt(key), ConfigUtils.loadStringOrStringList(thresholdSectionPath + '.' + key)))
+                                        // Collect the keys.
+                                        .collect(Collectors.toList()));
     }
 
     /**

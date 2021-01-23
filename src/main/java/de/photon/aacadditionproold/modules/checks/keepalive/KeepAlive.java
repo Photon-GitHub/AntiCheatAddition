@@ -1,0 +1,106 @@
+package de.photon.aacadditionproold.modules.checks.keepalive;
+
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
+import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionproold.AACAdditionPro;
+import de.photon.aacadditionproold.modules.Module;
+import de.photon.aacadditionproold.modules.ModuleType;
+import de.photon.aacadditionproold.modules.PacketListenerModule;
+import de.photon.aacadditionproold.modules.ViolationModule;
+import de.photon.aacadditionproold.user.User;
+import de.photon.aacadditionproold.user.UserManager;
+import de.photon.aacadditionproold.user.subdata.KeepAliveData;
+import de.photon.aacadditionproold.util.messaging.VerboseSender;
+import de.photon.aacadditionproold.util.packetwrappers.WrapperPlayKeepAlive;
+import de.photon.aacadditionproold.util.packetwrappers.client.WrapperPlayClientKeepAlive;
+import de.photon.aacadditionproold.util.violationlevels.ViolationLevelManagement;
+import lombok.Getter;
+
+import java.util.Iterator;
+import java.util.Set;
+
+public class KeepAlive extends PacketAdapter implements PacketListenerModule, ViolationModule
+{
+    @Getter
+    private static final KeepAlive instance = new KeepAlive();
+    private static final Set<Module> submodules = ImmutableSet.of(KeepAliveIgnoredPattern.getInstance(),
+                                                                  KeepAliveInjectPattern.getInstance(),
+                                                                  KeepAliveOffsetPattern.getInstance());
+
+    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 200);
+
+    public KeepAlive()
+    {
+        super(AACAdditionPro.getInstance(), ListenerPriority.LOW, PacketType.Play.Client.KEEP_ALIVE);
+    }
+
+    @Override
+    public void onPacketReceiving(final PacketEvent event)
+    {
+        final User user = UserManager.safeGetUserFromPacketEvent(event);
+
+        if (User.isUserInvalid(user, this.getModuleType())) {
+            return;
+        }
+
+        final WrapperPlayKeepAlive wrapper = new WrapperPlayClientKeepAlive(event.getPacket());
+
+        final long keepAliveId = wrapper.getKeepAliveId();
+        KeepAliveData.KeepAlivePacketData keepAlivePacketData = null;
+
+        int offset = 0;
+        synchronized (user.getKeepAliveData().getKeepAlives()) {
+            final Iterator<KeepAliveData.KeepAlivePacketData> iterator = user.getKeepAliveData().getKeepAlives().descendingIterator();
+            KeepAliveData.KeepAlivePacketData current;
+            while (iterator.hasNext()) {
+                current = iterator.next();
+
+                if (current.getKeepAliveID() == keepAliveId) {
+                    keepAlivePacketData = current;
+                    break;
+                }
+
+                ++offset;
+            }
+        }
+
+        // A packet with the same data must have been sent before.
+        if (keepAlivePacketData == null ||
+            // If the packet already has a response something is off.
+            keepAlivePacketData.hasRegisteredResponse())
+        {
+            VerboseSender.getInstance().sendVerboseMessage("PacketAnalysisData-Verbose | Player: " + user.getPlayer().getName() + " sent unregistered KeepAlive packet.");
+            vlManager.flag(user.getPlayer(), 20, -1, () -> {}, () -> {});
+        } else {
+            keepAlivePacketData.registerResponse();
+            KeepAliveOffsetPattern.getInstance().getApplyingConsumer().accept(user, offset);
+        }
+    }
+
+    @Override
+    public ViolationLevelManagement getViolationLevelManagement()
+    {
+        return vlManager;
+    }
+
+    @Override
+    public Set<Module> getSubModules()
+    {
+        return submodules;
+    }
+
+    @Override
+    public boolean isSubModule()
+    {
+        return false;
+    }
+
+    @Override
+    public ModuleType getModuleType()
+    {
+        return ModuleType.KEEPALIVE;
+    }
+}

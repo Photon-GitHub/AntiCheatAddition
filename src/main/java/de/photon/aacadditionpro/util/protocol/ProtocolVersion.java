@@ -20,7 +20,7 @@ public enum ProtocolVersion
     MC113("1.13", ServerVersion.MC113, 393, 401, 404),
     MC114("1.14", ServerVersion.MC114, 477, 480, 485, 490, 498),
     MC115("1.15", ServerVersion.MC115, 573, 575),
-    MC116("1.16", ServerVersion.MC116, 735, 736, 751, 753);
+    MC116("1.16", ServerVersion.MC116, 735, 736, 751, 753, 754);
 
     private static final Map<Integer, ProtocolVersion> VERSION_NUMBER_MAP;
 
@@ -58,7 +58,9 @@ public enum ProtocolVersion
         this.versionNumbers = ImmutableSet.copyOf(versionNumbers);
     }
 
-    /**This gets the respective {@link ProtocolVersion} for a version number as returned by the {@link us.myles.ViaVersion.api.ViaAPI}.*/
+    /**
+     * This gets the respective {@link ProtocolVersion} for a version number as returned by the {@link us.myles.ViaVersion.api.ViaAPI}.
+     */
     @Nullable
     public static ProtocolVersion getByVersionNumber(int versionNumber)
     {

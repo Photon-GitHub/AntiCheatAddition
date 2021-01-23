@@ -4,13 +4,10 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -43,27 +40,27 @@ public class ConfigurationRepresentation
         final String[] pathParts = path.split("\\.");
 
         int currentPart = 0;
-        int currentPathPartDepth = 0;
-        int currentLineIndex = 0;
-        int currentDepth;
+        int depthOfCurrentPart = 0;
+        int currentLine = 0;
+        int depthOfCurrentLine;
 
         for (String configLine : configLines) {
-            currentDepth = StringUtil.depth(configLine);
+            depthOfCurrentLine = StringUtil.depth(configLine);
 
             // Value could not be found as not all parts are existing.
-            Preconditions.checkArgument(currentPathPartDepth <= currentDepth, "Path " + path + " could not be found.");
+            Preconditions.checkArgument(depthOfCurrentPart <= depthOfCurrentLine, "Path " + path + " could not be found.");
 
             if (!isComment(configLine) && configLine.contains(pathParts[currentPart])) {
                 // Update depth
-                currentPathPartDepth = currentDepth;
+                depthOfCurrentPart = depthOfCurrentLine;
 
                 // Found the whole path?
                 if (++currentPart >= pathParts.length) {
-                    return currentLineIndex;
+                    return currentLine;
                 }
             }
 
-            ++currentLineIndex;
+            ++currentLine;
         }
 
         throw new IllegalArgumentException("Path " + path + " could not be found (full iteration).");
@@ -103,21 +100,11 @@ public class ConfigurationRepresentation
     public void save() throws IOException
     {
         // Directly inject changes.
-        if (requestedChanges.isEmpty()) {
-            return;
-        }
+        if (requestedChanges.isEmpty()) return;
 
         // Load the whole config.
         // Use LinkedList for fast mid-config tampering.
-        final LinkedList<String> configLines = new LinkedList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(this.configFile))) {
-            String line = br.readLine();
-
-            while (line != null) {
-                configLines.add(line);
-                line = br.readLine();
-            }
-        }
+        final List<String> configLines = Files.readAllLines(this.configFile.toPath());
 
         requestedChanges.forEach((path, value) -> {
             int initialLineIndex = searchForPath(configLines, path);
@@ -187,20 +174,7 @@ public class ConfigurationRepresentation
             configLines.set(initialLineIndex, initialLine);
         });
 
-        if (!this.configFile.delete()) {
-            throw new IOException("Unable to delete old file " + this.configFile.getName());
-        }
-
-        if (!this.configFile.createNewFile()) {
-            throw new IOException("Unable to create new file " + this.configFile.getName());
-        }
-
-        try (FileWriter fileWriter = new FileWriter(this.configFile)) {
-            while (!configLines.isEmpty()) {
-                fileWriter.write(configLines.removeFirst());
-                fileWriter.write('\n');
-            }
-        }
+        Files.write(this.configFile.toPath(), configLines);
     }
 
     public enum ConfigActions

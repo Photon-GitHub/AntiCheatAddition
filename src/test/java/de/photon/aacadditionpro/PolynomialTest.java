@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro;
 
-import de.photon.aacadditionpro.util.datastructures.Polynomial;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
+import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -84,18 +84,14 @@ public class TeamViolationLevelManagement extends ViolationLevelManagement
     private void punishTeam(final List<Player> playersOfTeam, final Integer teamVL)
     {
         // Only schedule the command execution if the plugin is loaded
-        if (AACAdditionPro.getInstance().isLoaded()) {
+        if (AACAdditionPro.getInstance().isLoaded() && AACAdditionPro.getInstance().getAacapi() == null) {
             // Find the biggest element below teamVL
-            for (int i = this.thresholds.size() - 1; i >= 0; i--) {
-                if (this.thresholds.get(i).getVl() <= teamVL) {
-                    // Execute the commands
-                    for (final String command : this.thresholds.get(i).getCommandList()) {
-                        // Sync command execution
-                        CommandUtils.executeCommand(Placeholders.replacePlaceholders(command, playersOfTeam, playersOfTeam.get(0).getWorld()));
-                    }
-                    // Due to the sorting of the commands (and the fact that only one command should be executed) we can
-                    // break here.
-                    break;
+            final int index = this.thresholds.getToIndex(teamVL);
+            if (index >= 0) {
+                // Execute the commands
+                for (final String command : this.thresholds.getThresholds().get(index).getCommandList()) {
+                    // Sync command execution
+                    CommandUtils.executeCommand(Placeholders.replacePlaceholders(command, playersOfTeam, playersOfTeam.get(0).getWorld()));
                 }
             }
         }

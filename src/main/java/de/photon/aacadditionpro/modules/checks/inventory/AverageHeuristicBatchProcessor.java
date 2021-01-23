@@ -3,10 +3,10 @@ package de.photon.aacadditionpro.modules.checks.inventory;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.subdata.InventoryData;
 import de.photon.aacadditionpro.user.subdata.datawrappers.InventoryClick;
-import de.photon.aacadditionpro.util.datastructures.Polynomial;
 import de.photon.aacadditionpro.util.datastructures.batch.AsyncBatchProcessor;
 import de.photon.aacadditionpro.util.datastructures.iteration.IterationUtil;
 import de.photon.aacadditionpro.util.mathematics.MathUtils;
+import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
 

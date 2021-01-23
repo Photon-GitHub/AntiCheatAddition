@@ -19,10 +19,7 @@ class ViolationLevelMap extends ConcurrentHashMap<UUID, Integer> implements List
         // Might need to have a vl manager without vl decrease
         if (decayTicks > 0) {
             //The vl-decrease
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(
-                    AACAdditionPro.getInstance(),
-                    () -> this.forEach((key, value) -> this.put(key, value - 1)),
-                    0L, decayTicks);
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::decay, 0L, decayTicks);
         }
     }
 
@@ -30,6 +27,16 @@ class ViolationLevelMap extends ConcurrentHashMap<UUID, Integer> implements List
     public Integer put(@NotNull UUID key, @NotNull Integer value)
     {
         return value > 0 ? super.put(key, value) : this.remove(key);
+    }
+
+    /**
+     * Decrements the vl of every player.
+     */
+    public void decay()
+    {
+        for (Entry<UUID, Integer> entry : this.entrySet()) {
+            this.put(entry.getKey(), entry.getValue() - 1);
+        }
     }
 
     @EventHandler

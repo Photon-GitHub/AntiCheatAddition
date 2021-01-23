@@ -41,7 +41,7 @@ public final class Placeholders
      *
      * @return original with the placeholder replaced.
      */
-    private static String replacePlaceholders(String original, Player player, Collection<Player> players, World world)
+    private static String replacePlaceholders(String original, Player player, Collection<Player> team, World world)
     {
         final StringBuilder placeholderBuilder = new StringBuilder();
         final StringBuilder result = new StringBuilder();
@@ -75,8 +75,8 @@ public final class Placeholders
                         }
                         break;
                     case "team":
-                        if (players != null) {
-                            result.append(TeamPlaceholders.TEAM.getReplacement(players));
+                        if (team != null) {
+                            result.append(TeamPlaceholders.TEAM.getReplacement(team));
                         }
                         break;
                     case "world":

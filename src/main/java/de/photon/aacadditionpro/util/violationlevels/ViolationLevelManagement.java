@@ -1,15 +1,11 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.events.PlayerAdditionViolationEvent;
 import de.photon.aacadditionpro.modules.ModuleType;
 import de.photon.aacadditionpro.util.commands.CommandUtils;
-import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -24,7 +20,7 @@ public class ViolationLevelManagement
     /**
      * A {@link List} of {@link Threshold}s which is guaranteed to be sorted.
      */
-    protected final List<Threshold> thresholds;
+    protected final ThresholdList thresholds;
 
     /**
      * The {@link ModuleType} of the handler, used for reload
@@ -55,23 +51,8 @@ public class ViolationLevelManagement
 
         this.aacScoreMultiplier = AACAdditionPro.getInstance().getConfig().getDouble(this.moduleType.getConfigString() + ".aacscoremultiplier");
 
-        // Load the thresholds and sort them.
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
-                final List<Threshold> temp = Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds");
-                Collections.sort(temp);
-                thresholds = ImmutableList.copyOf(temp);
-                break;
-            case MC112:
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-                thresholds = ImmutableList.sortedCopyOf(Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds"));
-                break;
-            default:
-                throw new UnknownMinecraftVersion();
-        }
+        // Load the thresholds.
+        this.thresholds = new ThresholdList(Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds"));
     }
 
     /**
@@ -181,7 +162,7 @@ public class ViolationLevelManagement
     }
 
     /**
-     * Used to execute the command that are defined in the config section CHECK_NAME.thresholds
+     * Used to execute the commands that are defined in the config section CHECK_NAME.thresholds
      *
      * @param player the {@link Player} that should be punished and that should be used to apply the placeholders
      * @param fromVl the last vl of the player before the addition and the searching-range for command.
@@ -190,21 +171,13 @@ public class ViolationLevelManagement
     {
         // Only schedule the command execution if the plugin is loaded and when we do not use AAC's feature handling.
         if (AACAdditionPro.getInstance().isLoaded() && AACAdditionPro.getInstance().getAacapi() == null) {
-            for (Threshold threshold : this.thresholds) {
-                // Use the guaranteed sorting of the thresholds to break the loop here as only higher-vl thresholds will
-                // follow.
-                if (threshold.getVl() > toVl) {
-                    break;
+            this.thresholds.forEachThreshold(fromVl, toVl, threshold -> {
+                // Thresholds is a random access list, therefore get() is fine here.
+                for (String command : threshold.getCommandList()) {
+                    // Calling of the event + Sync command execution
+                    CommandUtils.executeCommandWithPlaceholders(command, player, moduleType);
                 }
-
-                if (threshold.getVl() > fromVl) {
-                    // Iterate through all the commands that are presented in the threshold of key
-                    for (final String command : threshold.getCommandList()) {
-                        // Calling of the event + Sync command execution
-                        CommandUtils.executeCommandWithPlaceholders(command, player, this.moduleType);
-                    }
-                }
-            }
+            });
         }
     }
 }

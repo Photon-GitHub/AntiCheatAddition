@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.datastructures;
+package de.photon.aacadditionpro.util.mathematics;
 
 import java.util.function.DoubleFunction;
 

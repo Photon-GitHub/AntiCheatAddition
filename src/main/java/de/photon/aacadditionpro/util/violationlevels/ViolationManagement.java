@@ -21,13 +21,22 @@ public abstract class ViolationManagement
     /**
      * Create a new {@link ViolationManagement}
      *
-     * @param moduleId   the module id of the module this {@link ViolationManagement} is being used by.
-     * @param decayTicks the time in ticks until the vl of a player is decreased by one. If this is negative no decrease will happen.
+     * @param moduleId the module id of the module this {@link ViolationManagement} is being used by.
      */
     public ViolationManagement(final String moduleId)
     {
         this.moduleId = moduleId;
         this.thresholds = ThresholdList.loadThresholds(moduleId + ".thresholds");
+    }
+
+    public static Flag flagFromPlayer(Player player)
+    {
+        return new Flag(player);
+    }
+
+    public static Flag flagFromPlayers(Collection<Player> players)
+    {
+        return new Flag(players);
     }
 
     /**
@@ -79,12 +88,12 @@ public abstract class ViolationManagement
         protected Runnable onCancel = null;
         protected Runnable eventNotCancelled = null;
 
-        public Flag(Player player)
+        private Flag(Player player)
         {
             this.player = player;
         }
 
-        public Flag(Collection<Player> team)
+        private Flag(Collection<Player> team)
         {
             this.team = team;
         }

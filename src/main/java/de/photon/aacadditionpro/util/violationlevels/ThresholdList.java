@@ -4,13 +4,14 @@ import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionproold.ServerVersion;
 import de.photon.aacadditionproold.util.files.configs.ConfigUtils;
 import lombok.Getter;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ThresholdList
@@ -26,8 +27,9 @@ public class ThresholdList
     public ThresholdList(List<Threshold> thresholds)
     {
         if (ServerVersion.supportsActiveServerVersion(ServerVersion.NON_188_VERSIONS)) {
-            Collections.sort(new ArrayList<>(thresholds));
-            this.thresholds = ImmutableList.copyOf(thresholds);
+            List<Threshold> temp = new ArrayList<>(thresholds);
+            Collections.sort(temp);
+            this.thresholds = ImmutableList.copyOf(temp);
         } else {
             this.thresholds = ImmutableList.sortedCopyOf(thresholds);
         }
@@ -81,7 +83,7 @@ public class ThresholdList
     /**
      * Used to execute the commands of the {@link Threshold}s in this  {@link ThresholdList}.
      */
-    public void forEachThreshold(int fromVl, int toVl, Consumer<Threshold> execute)
+    public void executeThresholds(int fromVl, int toVl, Collection<Player> players)
     {
         final int fromIndex = this.getFromIndex(fromVl);
         final int toIndex = this.getToIndex(toVl);
@@ -91,7 +93,7 @@ public class ThresholdList
 
         // <= is intentional here.
         for (int i = fromIndex; i <= toIndex; ++i) {
-            execute.accept(this.thresholds.get(i));
+            this.thresholds.get(i).executeCommandList(players);
         }
     }
 }

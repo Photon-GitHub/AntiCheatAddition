@@ -47,17 +47,15 @@ public class ConfigurationRepresentation
         for (String configLine : configLines) {
             depthOfCurrentLine = StringUtil.depth(configLine);
 
-            // Value could not be found as not all parts are existing.
+            // The sub-part we search for does not exist.
             Preconditions.checkArgument(depthOfCurrentPart <= depthOfCurrentLine, "Path " + path + " could not be found.");
 
+            // New "deeper" subpart found?
             if (!isComment(configLine) && configLine.contains(pathParts[currentPart])) {
-                // Update depth
                 depthOfCurrentPart = depthOfCurrentLine;
 
-                // Found the whole path?
-                if (++currentPart >= pathParts.length) {
-                    return currentLine;
-                }
+                // Whole path found
+                if (++currentPart >= pathParts.length) return currentLine;
             }
 
             ++currentLine;
@@ -78,9 +76,7 @@ public class ConfigurationRepresentation
             configLine = listIterator.next();
 
             // ":" is the indicator of a new value
-            if (loopBreak.test(configLine)) {
-                break;
-            }
+            if (loopBreak.test(configLine)) break;
 
             ++affectedLines;
         }

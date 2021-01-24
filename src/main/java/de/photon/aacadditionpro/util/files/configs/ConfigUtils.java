@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -82,7 +81,7 @@ public final class ConfigUtils
                 else if (type == List.class) {
                     // StringLists
                     if (annotation.listType() == String.class) {
-                        field.set(object, ConfigUtils.loadStringOrStringList(path));
+                        field.set(object, ConfigUtils.loadImmutableStringOrStringList(path));
 
                         // Unknown type
                     } else {
@@ -108,7 +107,7 @@ public final class ConfigUtils
      *
      * @return an {@link ImmutableList} of {@link String}s with the path as entries.
      */
-    public static List<String> loadStringOrStringList(final String path)
+    public static List<String> loadImmutableStringOrStringList(final String path)
     {
         // Command list
         final List<String> input = AACAdditionPro.getInstance().getConfig().getStringList(path);
@@ -125,11 +124,7 @@ public final class ConfigUtils
 
         // Input is not empty
         // No-command indicator
-        if ("{}".equals(input.get(0))) {
-            return Collections.emptyList();
-        }
-
-        return ImmutableList.copyOf(input);
+        return "{}".equals(input.get(0)) ? ImmutableList.of() : ImmutableList.copyOf(input);
     }
 
     /**

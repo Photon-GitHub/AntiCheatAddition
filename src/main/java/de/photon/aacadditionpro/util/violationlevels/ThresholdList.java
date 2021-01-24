@@ -1,8 +1,8 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.collect.ImmutableList;
-import de.photon.aacadditionproold.ServerVersion;
-import de.photon.aacadditionproold.util.files.configs.ConfigUtils;
+import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
@@ -53,7 +53,7 @@ public class ThresholdList
         return new ThresholdList(Objects.requireNonNull(ConfigUtils.loadKeys(thresholdSectionPath), "Severe loading error: Keys are null when loading: " + thresholdSectionPath)
                                         .stream()
                                         // Create a new Threshold for every key.
-                                        .map(key -> new Threshold(Integer.parseInt(key), ConfigUtils.loadStringOrStringList(thresholdSectionPath + '.' + key)))
+                                        .map(key -> new Threshold(Integer.parseInt(key), ConfigUtils.loadImmutableStringOrStringList(thresholdSectionPath + '.' + key)))
                                         // Collect the keys.
                                         .collect(Collectors.toList()));
     }

@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
-import de.photon.aacadditionpro.events.ModulePlayerEvent;
 import de.photon.aacadditionpro.events.ViolationEvent;
 import de.photon.aacadditionproold.AACAdditionPro;
 import org.bukkit.entity.Player;
@@ -29,14 +28,11 @@ public class ViolationLevelManagement extends ViolationManagement
     {
         if (flag.addedVl <= 0) return;
 
-        final ModulePlayerEvent event = ViolationEvent.build(flag.player, this.moduleId, flag.addedVl).call();
-
-        if (!event.isCancelled()) {
+        if (!ViolationEvent.build(flag.player, this.moduleId, flag.addedVl).call().isCancelled()) {
             this.addVL(flag.player, flag.addedVl);
 
-            if (flag.cancelVl > 0 && flag.cancelVl <= this.getVL(flag.player.getUniqueId())) {
-                flag.onCancel.run();
-            }
+            if (flag.cancelVl > 0 && flag.cancelVl <= this.getVL(flag.player.getUniqueId())) flag.onCancel.run();
+
             flag.eventNotCancelled.run();
         }
     }

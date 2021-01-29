@@ -1,9 +1,13 @@
 package de.photon.aacadditionpro.util.datastructure.batch;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BinaryOperator;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BatchPreprocessors
 {
     /**

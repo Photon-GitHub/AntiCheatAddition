@@ -87,7 +87,6 @@ public final class ConfigUtils
                     } else {
                         field.set(object, AACAdditionPro.getInstance().getConfig().getList(path));
                     }
-
                 }
                 // No special type found
                 else {

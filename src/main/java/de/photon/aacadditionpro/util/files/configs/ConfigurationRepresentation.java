@@ -85,7 +85,7 @@ public class ConfigurationRepresentation
 
     private static boolean isComment(final String string)
     {
-        return string != null && (string.isEmpty() || string.contains("#"));
+        return string == null || string.isEmpty() || string.indexOf('#') != -1;
     }
 
     public void requestValueChange(final String path, final Object value)
@@ -103,8 +103,8 @@ public class ConfigurationRepresentation
         final List<String> configLines = Files.readAllLines(this.configFile.toPath());
 
         requestedChanges.forEach((path, value) -> {
-            int initialLineIndex = searchForPath(configLines, path);
-            int affectedLines = affectedLines(configLines, initialLineIndex, line -> isComment(line) || line.indexOf(':') != -1);
+            final int initialLineIndex = searchForPath(configLines, path);
+            final int affectedLines = affectedLines(configLines, initialLineIndex, line -> isComment(line) || line.indexOf(':') != -1);
 
             // Remove old values
             for (int lines = affectedLines; lines > 0; lines--) {

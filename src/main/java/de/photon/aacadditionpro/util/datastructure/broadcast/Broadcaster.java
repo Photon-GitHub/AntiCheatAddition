@@ -1,0 +1,41 @@
+package de.photon.aacadditionpro.util.datastructure.broadcast;
+
+import com.google.common.collect.Sets;
+
+import java.util.Set;
+
+/**
+ * This class broadcasts a message of a certain type to receivers.
+ */
+public class Broadcaster<T>
+{
+    // Receivers should not change often -> CopyOnWriteArraySet.
+    // Thread safety is guaranteed by the CopyOnWriteArraySet.
+    private final Set<BroadcastReceiver<T>> receivers = Sets.newCopyOnWriteArraySet();
+
+    /**
+     * Sends a value of a previously defined type to all subscribed {@link BroadcastReceiver}s.
+     */
+    public void broadcast(T value)
+    {
+        for (BroadcastReceiver<T> receiver : this.receivers) {
+            receiver.receive(value);
+        }
+    }
+
+    /**
+     * Add a {@link BroadcastReceiver} to the recipients of a broadcast.
+     */
+    public void subscribe(BroadcastReceiver<T> receiver)
+    {
+        this.receivers.add(receiver);
+    }
+
+    /**
+     * Remove a {@link BroadcastReceiver} from the recipients of a broadcast.
+     */
+    public void unsubscribe(BroadcastReceiver<T> receiver)
+    {
+        this.receivers.remove(receiver);
+    }
+}

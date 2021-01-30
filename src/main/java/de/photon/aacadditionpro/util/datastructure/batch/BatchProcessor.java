@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.datastructure.batch;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.util.datastructure.broadcast.BroadcastReceiver;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
@@ -25,6 +26,8 @@ public abstract class BatchProcessor<T> implements BroadcastReceiver<Batch.Snaps
 
     protected BatchProcessor(Collection<Broadcaster<Batch.Snapshot<T>>> broadcasters)
     {
+        Preconditions.checkArgument(broadcasters != null, "Tried to create BatchProcessor with null broadcasters.");
+        Preconditions.checkArgument(!broadcasters.isEmpty(), "Tried to create BatchProcessor with empty broadcasters.");
         // The wrapping with ImmutableSet.copyOf does not reduce performance when broadcasters is already an
         // ImmutableSet (see copyOf() method).
         this.broadcasters = ImmutableSet.copyOf(broadcasters);

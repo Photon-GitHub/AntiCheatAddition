@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.util.datastructure.buffer;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -38,12 +39,32 @@ public interface Buffer<T> extends Iterable<T>
     Iterator<T> descendingIterator();
 
     /**
+     * Equivalent to {@link #forEach(Consumer)} except the descending iteration order instead of ascending.
+     */
+    default void forEachDescending(Consumer<? super T> action)
+    {
+        Objects.requireNonNull(action);
+        final Iterator<T> descendingIterator = this.descendingIterator();
+        while (descendingIterator.hasNext()) {
+            action.accept(descendingIterator.next());
+        }
+    }
+
+    /**
      * Clears the buffer starting from the least recently added element and performs an action on each element.
      */
-    void clearIteration(Consumer<T> consumer);
+    default void clearIteration(Consumer<T> consumer)
+    {
+        forEach(consumer);
+        clear();
+    }
 
     /**
      * Clears the buffer starting from the most recently added element and performs an action on each element.
      */
-    void clearDescendingIteration(Consumer<T> consumer);
+    default void clearDescendingIteration(Consumer<T> consumer)
+    {
+        forEachDescending(consumer);
+        clear();
+    }
 }

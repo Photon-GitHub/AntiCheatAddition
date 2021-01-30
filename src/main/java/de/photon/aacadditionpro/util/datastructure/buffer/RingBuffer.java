@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Consumer;
 
 /**
  * An implementation of a ring buffer which overwrites the oldest data once it is full.
@@ -88,24 +87,6 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
     {
         this.clear();
         Arrays.fill(this.array, null);
-    }
-
-    @Override
-    public void clearIteration(Consumer<T> consumer)
-    {
-        this.forEach(consumer);
-        this.clear();
-    }
-
-    @Override
-    public void clearDescendingIteration(Consumer<T> consumer)
-    {
-        final Iterator<T> descendingIterator = this.descendingIterator();
-        while (descendingIterator.hasNext()) {
-            consumer.accept(descendingIterator.next());
-        }
-
-        this.clear();
     }
 
     @NotNull

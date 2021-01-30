@@ -13,7 +13,7 @@ import java.util.List;
 public class BufferTest
 {
     @Test
-    public void ContinuousArrayBufferInputTest()
+    public void RingBufferInputTest()
     {
         List<String> forgottenList = new ArrayList<>();
 
@@ -54,7 +54,7 @@ public class BufferTest
     }
 
     @Test
-    public void ContinuousArrayBufferIterationTest()
+    public void RingBufferIterationTest()
     {
 
         FixedSizeBuffer<String> buffer = new RingBuffer<>(10);

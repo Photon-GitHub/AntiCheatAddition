@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * An implementation of a ring buffer which overwrites the oldest data once it is full.
  * <p></p>
  * Note that the {@link RingBuffer} may be changed during iteration which will NOT cause the iteration to throw a
- * {@link java.util.ConcurrentModificationException}!
+ * {@link java.util.ConcurrentModificationException}! They are guaranteed to iterate at most maxSize elements.
  * <p>
  * Make sure to properly synchronize access if iteration needs to be
  * stable.

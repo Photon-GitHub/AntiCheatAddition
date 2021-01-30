@@ -1,5 +1,7 @@
 package de.photon.aacadditionpro.util.mathematics;
 
+import com.google.common.base.Preconditions;
+
 /**
  * A class able of calculations mod n.
  * It provides static methods to directly work on integers, but also allows to be used as a class to for easier handling.
@@ -12,6 +14,7 @@ public class ModularInteger
 
     public ModularInteger(int integer, int mod)
     {
+        Preconditions.checkArgument(mod >= 2, "Tried to create a modular integer with mod below 2.");
         this.mod = mod;
         this.lastInt = mod - 1;
         set(integer);
@@ -29,6 +32,9 @@ public class ModularInteger
 
     /**
      * Fast incrementation mod n that will avoid a modulo operation.
+     * <p>
+     * This method assumes that integer is already a valid representation of x mod n and is therefore neither negative
+     * nor greater or equal to mod.
      */
     public static int increment(int integer, int mod)
     {
@@ -37,6 +43,9 @@ public class ModularInteger
 
     /**
      * Fast decrementation mod n that will avoid a modulo operation.
+     * <p>
+     * This method assumes that integer is already a valid representation of x mod n and is therefore neither negative
+     * nor greater or equal to mod.
      */
     public static int decrement(int integer, int mod)
     {

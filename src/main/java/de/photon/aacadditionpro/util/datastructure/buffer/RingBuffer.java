@@ -115,11 +115,13 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
         return new Iterator<T>()
         {
             private int index = tail.get();
+            // An element counter to limit the iterated elements.
+            private int elements = 0;
 
             @Override
             public boolean hasNext()
             {
-                return index != head.get();
+                return elements < maxSize;
             }
 
             @Override
@@ -128,6 +130,7 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
                 if (!hasNext()) throw new NoSuchElementException();
                 T elem = array[index];
                 index = ModularInteger.increment(index, maxSize);
+                ++elements;
                 return elem;
             }
         };
@@ -142,12 +145,13 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
             // Start at head - 1 as head is the position at which will be written next, but right now there is no
             // element there, or the oldest element.
             private int index = ModularInteger.decrement(head.get(), maxSize);
+            // An element counter to limit the iterated elements.
+            private int elements = 0;
 
             @Override
             public boolean hasNext()
             {
-                // Decrement as the tail itself shall be included in the iteration.
-                return index != ModularInteger.decrement(tail.get(), maxSize);
+                return elements < maxSize;
             }
 
             @Override
@@ -156,6 +160,7 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
                 if (!hasNext()) throw new NoSuchElementException();
                 T elem = array[index];
                 index = ModularInteger.decrement(index, maxSize);
+                ++elements;
                 return elem;
             }
         };

@@ -1,7 +1,8 @@
 package de.photon.aacadditionpro;
 
 import com.google.common.collect.ImmutableList;
-import de.photon.aacadditionproold.util.datastructures.buffer.ContinuousArrayBuffer;
+import de.photon.aacadditionpro.util.datastructure.buffer.FixedSizeBuffer;
+import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,7 @@ public class BufferTest
     {
         List<String> forgottenList = new ArrayList<>();
 
-        ContinuousArrayBuffer<String> buffer = new ContinuousArrayBuffer<String>(10)
+        FixedSizeBuffer<String> buffer = new RingBuffer<String>(10)
         {
             @Override
             public void onForget(String forgotten)
@@ -25,18 +26,18 @@ public class BufferTest
             }
         };
 
-        buffer.bufferObject("1");
-        buffer.bufferObject("2");
-        buffer.bufferObject("3");
-        buffer.bufferObject("4");
-        buffer.bufferObject("5");
-        buffer.bufferObject("6");
-        buffer.bufferObject("7");
-        buffer.bufferObject("8");
-        buffer.bufferObject("9");
-        buffer.bufferObject("10");
-        buffer.bufferObject("11");
-        buffer.bufferObject("12");
+        buffer.add("1");
+        buffer.add("2");
+        buffer.add("3");
+        buffer.add("4");
+        buffer.add("5");
+        buffer.add("6");
+        buffer.add("7");
+        buffer.add("8");
+        buffer.add("9");
+        buffer.add("10");
+        buffer.add("11");
+        buffer.add("12");
 
         List<String> expectedForgotten = ImmutableList.of("1", "2");
         List<String> expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
@@ -56,19 +57,19 @@ public class BufferTest
     public void ContinuousArrayBufferIterationTest()
     {
 
-        ContinuousArrayBuffer<String> buffer = new ContinuousArrayBuffer<>(10);
-        buffer.bufferObject("1");
-        buffer.bufferObject("2");
-        buffer.bufferObject("3");
-        buffer.bufferObject("4");
-        buffer.bufferObject("5");
-        buffer.bufferObject("6");
-        buffer.bufferObject("7");
-        buffer.bufferObject("8");
-        buffer.bufferObject("9");
-        buffer.bufferObject("10");
-        buffer.bufferObject("11");
-        buffer.bufferObject("12");
+        FixedSizeBuffer<String> buffer = new RingBuffer<>(10);
+        buffer.add("1");
+        buffer.add("2");
+        buffer.add("3");
+        buffer.add("4");
+        buffer.add("5");
+        buffer.add("6");
+        buffer.add("7");
+        buffer.add("8");
+        buffer.add("9");
+        buffer.add("10");
+        buffer.add("11");
+        buffer.add("12");
 
         List<String> expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
 

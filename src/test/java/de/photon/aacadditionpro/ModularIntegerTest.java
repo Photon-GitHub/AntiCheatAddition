@@ -22,9 +22,9 @@ public class ModularIntegerTest
             // Shift to prevent integer overflow in the expected calculation below.
             mod = random.nextInt((Integer.MAX_VALUE >> 2) - 1) + 2;
 
-            if (x > 0) {
+            if (x > 1) {
                 Assertions.assertEquals(0, ModularInteger.set(x, x));
-                Assertions.assertEquals(x, ModularInteger.set(x, x + 1));
+                Assertions.assertEquals(x - 1, ModularInteger.set(x - 1, x));
             }
 
             Assertions.assertEquals(((x % mod) + mod) % mod, ModularInteger.set(x, mod), "x: " + x + " mod: " + mod);
@@ -32,7 +32,7 @@ public class ModularIntegerTest
 
         for (int i = 0; i < 1000; ++i) {
             x = random.nextInt(Integer.MAX_VALUE);
-            if (x == 0) continue;
+            if (x < 2) continue;
 
             Assertions.assertEquals(0, ModularInteger.increment(x, x + 1));
             Assertions.assertEquals(0, ModularInteger.increment(x - 1, x));
@@ -43,7 +43,7 @@ public class ModularIntegerTest
 
         for (int i = 0; i < 1000; ++i) {
             x = random.nextInt(Integer.MAX_VALUE);
-            if (x == 0) continue;
+            if (x < 2) continue;
 
             Assertions.assertEquals(x - 1, ModularInteger.decrement(x, Integer.MAX_VALUE));
             Assertions.assertEquals(x - 1, ModularInteger.decrement(0, x));

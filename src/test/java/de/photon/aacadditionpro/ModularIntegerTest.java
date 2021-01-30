@@ -9,11 +9,9 @@ import java.util.Random;
 public class ModularIntegerTest
 {
     @Test
-    public void IntegerTest()
+    public void IntegerSetTest()
     {
         final Random random = new Random();
-
-        Assertions.assertEquals(0, ModularInteger.increment(Integer.MAX_VALUE - 1, Integer.MAX_VALUE));
 
         int x;
         int mod;
@@ -29,6 +27,14 @@ public class ModularIntegerTest
 
             Assertions.assertEquals(((x % mod) + mod) % mod, ModularInteger.set(x, mod), "x: " + x + " mod: " + mod);
         }
+    }
+
+    @Test
+    public void IntegerIncrementTest()
+    {
+        final Random random = new Random();
+        int x;
+        Assertions.assertEquals(0, ModularInteger.increment(Integer.MAX_VALUE - 1, Integer.MAX_VALUE));
 
         for (int i = 0; i < 1000; ++i) {
             x = random.nextInt(Integer.MAX_VALUE);
@@ -38,7 +44,13 @@ public class ModularIntegerTest
             Assertions.assertEquals(0, ModularInteger.increment(x - 1, x));
             Assertions.assertEquals(x + 1, ModularInteger.increment(x, Integer.MAX_VALUE));
         }
+    }
 
+    @Test
+    public void IntegerDecrementTest()
+    {
+        final Random random = new Random();
+        int x;
         Assertions.assertEquals(Integer.MAX_VALUE - 1, ModularInteger.decrement(0, Integer.MAX_VALUE));
 
         for (int i = 0; i < 1000; ++i) {

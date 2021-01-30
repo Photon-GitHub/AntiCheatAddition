@@ -22,10 +22,10 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
     private final T[] array;
 
     // The position at which the next element will be written.
-    private ModularInteger head;
+    private final ModularInteger head;
 
     // The position of the oldest element (if such an element exists).
-    private ModularInteger tail;
+    private final ModularInteger tail;
     private int size = 0;
 
     /**

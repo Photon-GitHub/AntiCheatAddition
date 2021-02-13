@@ -2,9 +2,7 @@ package de.photon.aacadditionpro.modules;
 
 import com.google.common.collect.ImmutableMap;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
-import me.konsolas.aac.api.AACCustomFeature;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,12 +15,6 @@ public interface ViolationModule extends Module
      * @return the {@link ViolationLevelManagement} of the check.
      */
     ViolationLevelManagement getViolationLevelManagement();
-
-    default AACCustomFeature getAACFeature(UUID uuid)
-    {
-        double score = this.getViolationLevelManagement().getAACScore(uuid);
-        return new AACCustomFeature("aacadditionpro_" + this.getConfigString().toLowerCase(Locale.ENGLISH), this.getModuleType().getInfo(), score, getAACTooltip(uuid, score));
-    }
 
     default Map<String, String> getAACTooltip(UUID uuid, double score)
     {

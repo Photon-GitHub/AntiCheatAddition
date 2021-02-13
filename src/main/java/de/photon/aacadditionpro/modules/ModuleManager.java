@@ -13,6 +13,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Manages the {@link Module}s of {@link AACAdditionPro}.
@@ -72,7 +73,7 @@ public final class ModuleManager
      *
      * @param moduleType the {@link ModuleType} of the module that should be checked
      *
-     * @return <code> true</code> if the module referred to by the {@link ModuleType} is enabled, else <code>false</code>
+     * @return <code>true</code> if the module referred to by the {@link ModuleType} is enabled, else <code>false</code>
      */
     public boolean getStateOfModule(final ModuleType moduleType)
     {
@@ -96,12 +97,20 @@ public final class ModuleManager
         }
     }
 
+    /**
+     * This creates the actual hook for the AAC API.
+     */
     public AACCustomFeatureProvider getCustomFeatureProvider()
     {
         return offlinePlayer -> {
             final List<AACCustomFeature> featureList = new ArrayList<>(violationModules.size());
+            final UUID uuid = offlinePlayer.getUniqueId();
             for (ViolationModule module : violationModules.values()) {
-                featureList.add(module.getAACFeature(offlinePlayer.getUniqueId()));
+                // Only add enabled modules
+                if (this.getStateOfModule(module.getModuleType())) {
+                    double score = module.getViolationLevelManagement().getAACScore(uuid);
+                    featureList.add(new AACCustomFeature(module.getConfigString(), module.getModuleType().getInfo(), score, module.getAACTooltip(uuid, score)));
+                }
             }
             return featureList;
         };

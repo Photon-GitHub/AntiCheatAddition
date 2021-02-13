@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.command.MainCommand;
 import de.photon.aacadditionpro.events.APILoadedEvent;
@@ -171,19 +172,6 @@ public class AACAdditionPro extends JavaPlugin
                 VerboseSender.getInstance().sendVerboseMessage("ViaVersion not found", true, false);
             }
 
-            // Call is correct here as Bukkit always has a player api.
-            if (this.getServer().getPluginManager().isPluginEnabled("AAC5")) {
-                if (this.getConfig().getBoolean("UseAACFeatureSystem")) {
-                    this.aacapi = Bukkit.getServicesManager().load(AACAPI.class);
-                }
-
-                //noinspection unchecked
-                metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Used"));
-                VerboseSender.getInstance().sendVerboseMessage("AAC hooked", true, false);
-            } else {
-                metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Not used"));
-                VerboseSender.getInstance().sendVerboseMessage("AAC not found", true, false);
-            }
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //
@@ -226,8 +214,23 @@ public class AACAdditionPro extends JavaPlugin
                     Tower.getInstance())
             );
 
-            if (this.aacapi != null) {
-                this.aacapi.registerCustomFeatureProvider(this.getModuleManager().getCustomFeatureProvider());
+            // ------------------------------------------------------------------------------------------------------ //
+            //                                                AAC hook                                                //
+            // ------------------------------------------------------------------------------------------------------ //
+
+            // Call is correct here as Bukkit always has a player api.
+            if (this.getServer().getPluginManager().isPluginEnabled("AAC5")) {
+                if (this.getConfig().getBoolean("UseAACFeatureSystem")) {
+                    this.aacapi = Preconditions.checkNotNull(Bukkit.getServicesManager().load(AACAPI.class), "Did not find AAC API while hooking.");
+                    this.aacapi.registerCustomFeatureProvider(this.getModuleManager().getCustomFeatureProvider());
+                    VerboseSender.getInstance().sendVerboseMessage("AAC hooked", true, false);
+                }
+
+                metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Used"));
+                VerboseSender.getInstance().sendVerboseMessage("AAC found, but not hooked", true, false);
+            } else {
+                metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Not used"));
+                VerboseSender.getInstance().sendVerboseMessage("AAC not found", true, false);
             }
 
             // Data storage

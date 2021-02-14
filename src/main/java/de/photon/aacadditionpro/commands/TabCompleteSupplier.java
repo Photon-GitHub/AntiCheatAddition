@@ -88,11 +88,6 @@ public class TabCompleteSupplier
             return this;
         }
 
-        public Builder childCommands(CommandAttributes attributes)
-        {
-            return constants(attributes.getChildCommands().keySet());
-        }
-
         public Builder commandHelp()
         {
             return constants("help");
@@ -111,8 +106,11 @@ public class TabCompleteSupplier
         /**
          * Create a {@link TabCompleteSupplier} from the chosen options.
          */
-        public TabCompleteSupplier build()
+        public TabCompleteSupplier build(CommandAttributes attributes)
         {
+            // Add the child commands.
+            constants(attributes.getChildCommands().keySet());
+
             if (!constants.isEmpty()) {
                 final List<String> immutableConstants = ImmutableList.copyOf(this.constants);
                 this.supplierBuilder.add(() -> immutableConstants);

@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.commands;
 
 import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.commands.subcommands.VerboseCommand;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import lombok.Getter;
 import org.bukkit.command.Command;
@@ -24,6 +25,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     {
         super("aacadditionpro", CommandAttributes.builder()
                                                  .setCommandHelp("The main command of AACAdditionPro", "To use a subcommands simply add it to the parent command:", "/aacadditionpro <subcommand>")
+                                                 .setChildCommands(new VerboseCommand())
                                                  .build(), TabCompleteSupplier.builder().commandHelp());
     }
 

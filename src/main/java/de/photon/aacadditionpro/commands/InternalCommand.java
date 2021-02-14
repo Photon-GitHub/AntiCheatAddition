@@ -24,7 +24,7 @@ public abstract class InternalCommand
 
         this.name = name;
         this.commandAttributes = commandAttributes;
-        this.tabCompleteSupplier = tabCompleteSupplier.childCommands(commandAttributes).build();
+        this.tabCompleteSupplier = tabCompleteSupplier.build(commandAttributes);
     }
 
     /**

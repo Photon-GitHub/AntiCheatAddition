@@ -1,14 +1,19 @@
 package de.photon.aacadditionpro.util.mathematics;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Getter
@@ -101,26 +106,57 @@ public enum Hitbox
         );
     }
 
-    public List<Block> getPartiallyIncludedBlocks(final Location location)
+    public int[] getPartiallyIncludedBlocksCoordinates(@NotNull final Location location)
     {
-        int xMin = (int) (location.getX() - this.offsetX);
-        int yMin = (int) location.getY();
-        int zMin = (int) (location.getZ() - this.offsetZ);
+        final int[] coordinates = new int[6];
+        coordinates[0] = (int) (location.getX() - this.offsetX);
+        coordinates[1] = (int) location.getY();
+        coordinates[2] = (int) (location.getZ() - this.offsetZ);
 
         // Add 1 to ceil the value as the cast to int floors it.
-        int xMax = (int) (location.getX() + this.offsetX + 1);
-        int yMax = (int) (location.getY() + this.height + 1);
-        int zMax = (int) (location.getZ() + this.offsetZ + 1);
+        coordinates[3] = (int) (location.getX() + this.offsetX + 1);
+        coordinates[4] = (int) (location.getY() + this.height + 1);
+        coordinates[5] = (int) (location.getZ() + this.offsetZ + 1);
+        return coordinates;
+    }
 
-        final List<Block> blocks = new ArrayList<>(MathUtil.absDiff(xMin, xMax) * MathUtil.absDiff(yMin, yMax) * MathUtil.absDiff(zMin, zMax));
+    /**
+     * Gets all the {@link Block}s that this {@link Hitbox} is partially inside.
+     */
+    public List<Block> getPartiallyIncludedBlocks(@NotNull final Location location)
+    {
+        Preconditions.checkNotNull(location.getWorld(), "Tried to get blocks in hitbox of location with null world.");
 
-        for (; xMin <= xMax; ++xMin) {
-            for (; yMin <= yMax; ++yMin) {
-                for (; zMin <= zMax; ++zMin) {
-                    blocks.add(location.getWorld().getBlockAt(xMin, yMin, zMin));
+        int[] c = getPartiallyIncludedBlocksCoordinates(location);
+        final List<Block> blocks = new ArrayList<>(MathUtil.absDiff(c[0], c[3]) * MathUtil.absDiff(c[1], c[4]) * MathUtil.absDiff(c[2], c[5]) + 1);
+
+        for (; c[0] <= c[3]; ++c[0]) {
+            for (; c[1] <= c[4]; ++c[1]) {
+                for (; c[2] <= c[5]; ++c[2]) {
+                    blocks.add(location.getWorld().getBlockAt(c[0], c[1], c[2]));
                 }
             }
         }
         return blocks;
+    }
+
+    /**
+     * Gets all the {@link Material}s that this {@link Hitbox} is partially inside.
+     */
+    public Set<Material> getPartiallyIncludedMaterials(@NotNull final Location location)
+    {
+        Preconditions.checkNotNull(location.getWorld(), "Tried to get blocks in hitbox of location with null world.");
+
+        final int[] c = getPartiallyIncludedBlocksCoordinates(location);
+        final Set<Material> materials = EnumSet.noneOf(Material.class);
+
+        for (; c[0] <= c[3]; ++c[0]) {
+            for (; c[1] <= c[4]; ++c[1]) {
+                for (; c[2] <= c[5]; ++c[2]) {
+                    materials.add(location.getWorld().getBlockAt(c[0], c[1], c[2]).getType());
+                }
+            }
+        }
+        return materials;
     }
 }

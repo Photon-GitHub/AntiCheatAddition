@@ -11,7 +11,7 @@ import java.util.Set;
 @Getter
 public enum ServerVersion
 {
-    MC188("1.8.8", true),
+    MC18("1.8.8", true),
     MC19("1.9", false),
     MC110("1.10", false),
     MC111("1.11.2", false),
@@ -23,8 +23,8 @@ public enum ServerVersion
 
 
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS;
-    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = EnumSet.of(MC188);
-    public static final Set<ServerVersion> LEGACY_EVENT_VERSIONS = EnumSet.of(MC188, MC19, MC110, MC111, MC112, MC113);
+    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = EnumSet.of(MC18);
+    public static final Set<ServerVersion> LEGACY_EVENT_VERSIONS = EnumSet.of(MC18, MC19, MC110, MC111, MC112, MC113);
     public static final Set<ServerVersion> NON_188_VERSIONS;
     /**
      * The server version of the currently running {@link Bukkit} instance.
@@ -37,7 +37,7 @@ public enum ServerVersion
         ALL_SUPPORTED_VERSIONS.removeIf(serverVersion -> !serverVersion.supported);
 
         NON_188_VERSIONS = EnumSet.copyOf(ALL_SUPPORTED_VERSIONS);
-        NON_188_VERSIONS.remove(MC188);
+        NON_188_VERSIONS.remove(MC18);
 
         final String versionOutput = Bukkit.getVersion();
         for (final ServerVersion serverVersion : ServerVersion.values()) {

@@ -12,7 +12,7 @@ import java.util.Set;
 @Getter
 public enum ProtocolVersion
 {
-    MC188("1.8", ServerVersion.MC188, 47),
+    MC188("1.8", ServerVersion.MC18, 47),
     MC19("1.9", ServerVersion.MC19, 107, 108, 109, 110),
     MC110("1.10", ServerVersion.MC110, 210),
     MC111("1.11", ServerVersion.MC111, 315, 316),

@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.util.mathematics;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -98,5 +99,26 @@ public enum Hitbox
                 location.getY() + this.height,
                 location.getZ() + this.offsetZ
         );
+    }
+
+    public List<Block> getPartiallyIncludedBlocks(final Location location)
+    {
+        int xMin = (int) (location.getX() - this.offsetX);
+        int yMin = (int) location.getY();
+        int zMin = (int) (location.getZ() - this.offsetZ);
+
+        // Add 1 to ceil the value as the cast to int floors it.
+        int xMax = (int) (location.getX() + this.offsetX + 1);
+        int yMax = (int) (location.getY() + this.height + 1);
+        int zMax = (int) (location.getZ() + this.offsetZ + 1);
+
+
+        for (; xMin <= xMax; ++xMin) {
+            for (; yMin <= yMax; ++yMin) {
+                for (; zMin <= zMax; ++zMin) {
+
+                }
+            }
+        }
     }
 }

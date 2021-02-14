@@ -72,6 +72,7 @@ public interface Module
                 Module.enableModule(submodule);
             }
 
+            module.getModuleType().setEnabled(true);
             module.enable();
 
             sendNotice(module, module.getConfigString() + " has been enabled.");
@@ -108,6 +109,7 @@ public interface Module
                 Module.disableModule(submodule);
             }
 
+            module.getModuleType().setEnabled(false);
             module.disable();
 
             sendNotice(module, module.getConfigString() + " has been disabled.");

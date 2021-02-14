@@ -224,10 +224,11 @@ public class AACAdditionPro extends JavaPlugin
                     this.aacapi = Preconditions.checkNotNull(Bukkit.getServicesManager().load(AACAPI.class), "Did not find AAC API while hooking.");
                     this.aacapi.registerCustomFeatureProvider(this.getModuleManager().getCustomFeatureProvider());
                     VerboseSender.getInstance().sendVerboseMessage("AAC hooked", true, false);
+                    metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Hooked"));
+                } else {
+                    metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Used"));
+                    VerboseSender.getInstance().sendVerboseMessage("AAC found, but not hooked", true, false);
                 }
-
-                metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Used"));
-                VerboseSender.getInstance().sendVerboseMessage("AAC found, but not hooked", true, false);
             } else {
                 metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Not used"));
                 VerboseSender.getInstance().sendVerboseMessage("AAC not found", true, false);

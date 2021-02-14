@@ -38,7 +38,7 @@ public final class VerboseSender implements Listener
     private final boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console");
     private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players");
     @Setter
-    private boolean allowedToRegisterTasks;
+    private volatile boolean allowedToRegisterTasks;
     // The File the verbose messages are written to.
     private File logFile = null;
     // Set to an impossible day of the year to make sure the logFile will be initialized.

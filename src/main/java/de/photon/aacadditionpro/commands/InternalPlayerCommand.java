@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.commands;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Queue;
 
@@ -14,7 +15,7 @@ public abstract class InternalPlayerCommand extends InternalCommand
     }
 
     @Override
-    void invokeCommand(CommandSender sender, Queue<String> arguments)
+    protected void invokeCommand(@NotNull CommandSender sender, @NotNull Queue<String> arguments)
     {
         // Only players
         if (!(sender instanceof Player)) {

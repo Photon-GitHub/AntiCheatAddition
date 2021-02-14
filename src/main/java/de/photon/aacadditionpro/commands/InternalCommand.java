@@ -4,18 +4,24 @@ import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 import java.util.Queue;
 
 public abstract class InternalCommand
 {
-    protected final String name;
+    @Getter
+    @NotNull
+    private final String name;
+    @Getter
+    @NotNull
     private final CommandAttributes commandAttributes;
     @Getter
+    @NotNull
     private final TabCompleteSupplier tabCompleteSupplier;
 
-    public InternalCommand(String name, CommandAttributes commandAttributes, TabCompleteSupplier.Builder tabCompleteSupplier)
+    public InternalCommand(@NotNull String name, @NotNull CommandAttributes commandAttributes, @NotNull TabCompleteSupplier.Builder tabCompleteSupplier)
     {
         Preconditions.checkNotNull(name, "Tried to create command with null name.");
         Preconditions.checkNotNull(commandAttributes, "Tried to create command with null attributes.");
@@ -30,7 +36,7 @@ public abstract class InternalCommand
     /**
      * Gets the child command of the given name or null if no such command exists.
      */
-    public InternalCommand getChildCommand(String name)
+    public InternalCommand getChildCommand(@NotNull final String name)
     {
         return this.commandAttributes.getChildCommands().get(name);
     }
@@ -41,7 +47,7 @@ public abstract class InternalCommand
      * @param sender    the {@link CommandSender} that originally sent the command.
      * @param arguments a {@link Queue} which contains the remaining arguments.
      */
-    void invokeCommand(final CommandSender sender, final Queue<String> arguments)
+    protected void invokeCommand(@NotNull final CommandSender sender, @NotNull final Queue<String> arguments)
     {
         if (!this.commandAttributes.hasPermission(sender)) return;
         if (!this.commandAttributes.argumentsInRange(arguments.size())) return;

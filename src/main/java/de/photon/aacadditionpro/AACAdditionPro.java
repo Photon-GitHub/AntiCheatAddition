@@ -3,6 +3,7 @@ package de.photon.aacadditionpro;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionpro.commands.MainCommand;
 import de.photon.aacadditionpro.util.files.configs.Configs;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
@@ -29,11 +30,7 @@ public class AACAdditionPro extends JavaPlugin
     private static final int BSTATS_PLUGIN_ID = 3265;
 
     private static AACAdditionPro instance;
-    /**
-     * Indicates if the loading process is completed.
-     */
-    @Getter
-    private boolean loaded = false;
+
     // Cache the config for better performance
     private FileConfiguration cachedConfig;
     @Getter
@@ -206,17 +203,12 @@ public class AACAdditionPro extends JavaPlugin
             DataUpdaterEvents.INSTANCE.register();
 
             // Commands
-            this.getCommand(MainCommand.getInstance().getMainCommandName()).setExecutor(MainCommand.getInstance());
+            this.getCommand(MainCommand.getInstance().getName()).setExecutor(MainCommand.getInstance());
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                          Enabled-Verbose + API                                         //
             // ------------------------------------------------------------------------------------------------------ //
             this.getLogger().info(this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
-
-            // API loading finished
-            this.loaded = true;
-            this.getServer().getPluginManager().callEvent(new APILoadedEvent());
-
             VerboseSender.getInstance().sendVerboseMessage("AACAdditionPro initialization completed.");
         } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
@@ -240,8 +232,5 @@ public class AACAdditionPro extends JavaPlugin
 
         VerboseSender.getInstance().sendVerboseMessage("AACAdditionPro disabled.", true, false);
         VerboseSender.getInstance().sendVerboseMessage(" ", true, false);
-
-        // Task scheduling
-        loaded = false;
     }
 }

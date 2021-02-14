@@ -1,6 +1,6 @@
 package de.photon.aacadditionpro;
 
-import de.photon.aacadditionpro.util.mathematics.MathUtils;
+import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -59,7 +59,7 @@ class PolynomialTest
             x = ThreadLocalRandom.current().nextDouble(-500, 500);
             actual = polynomial.apply(x);
             expected = 7 * x * x * x + 5 * x * x + x + 9;
-            Assertions.assertTrue(MathUtils.inRange(expected - epsilon, expected + epsilon, expected), "Evaluation failed: Epsilon " + epsilon + " | x " + x + " | actual " + actual + " | expected " + expected);
+            Assertions.assertTrue(MathUtil.inRange(expected - epsilon, expected + epsilon, expected), "Evaluation failed: Epsilon " + epsilon + " | x " + x + " | actual " + actual + " | expected " + expected);
         }
     }
 }

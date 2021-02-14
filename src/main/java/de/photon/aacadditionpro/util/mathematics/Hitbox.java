@@ -112,13 +112,15 @@ public enum Hitbox
         int yMax = (int) (location.getY() + this.height + 1);
         int zMax = (int) (location.getZ() + this.offsetZ + 1);
 
+        final List<Block> blocks = new ArrayList<>(MathUtil.absDiff(xMin, xMax) * MathUtil.absDiff(yMin, yMax) * MathUtil.absDiff(zMin, zMax));
 
         for (; xMin <= xMax; ++xMin) {
             for (; yMin <= yMax; ++yMin) {
                 for (; zMin <= zMax; ++zMin) {
-
+                    blocks.add(location.getWorld().getBlockAt(xMin, yMin, zMin));
                 }
             }
         }
+        return blocks;
     }
 }

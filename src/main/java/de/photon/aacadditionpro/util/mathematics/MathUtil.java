@@ -4,14 +4,24 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MathUtils
+public final class MathUtil
 {
     /**
      * Simple method to calculate the absolute offset of two numbers.
      *
      * @return the absolute offset, always positive or 0 if the numbers are equal.
      */
-    public static double difference(final double a, final double b)
+    public static int absDiff(final int a, final int b)
+    {
+        return a > b ? (a - b) : (b - a);
+    }
+
+    /**
+     * Simple method to calculate the absolute offset of two numbers.
+     *
+     * @return the absolute offset, always positive or 0 if the numbers are equal.
+     */
+    public static double absDiff(final double a, final double b)
     {
         return a > b ? (a - b) : (b - a);
     }
@@ -27,7 +37,7 @@ public final class MathUtils
      */
     public static boolean roughlyEquals(final double a, final double b, final double range)
     {
-        return difference(a, b) <= range;
+        return absDiff(a, b) <= range;
     }
 
     /**

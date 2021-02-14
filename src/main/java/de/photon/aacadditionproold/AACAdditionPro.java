@@ -1,7 +1,10 @@
 package de.photon.aacadditionproold;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.util.files.configs.Configs;
 import de.photon.aacadditionproold.command.MainCommand;
 import de.photon.aacadditionproold.events.APILoadedEvent;
 import de.photon.aacadditionproold.modules.ModuleManager;
@@ -34,7 +37,6 @@ import de.photon.aacadditionproold.modules.clientcontrol.VersionControl;
 import de.photon.aacadditionproold.modules.clientcontrol.WorldDownloaderControl;
 import de.photon.aacadditionproold.user.DataUpdaterEvents;
 import de.photon.aacadditionproold.user.UserManager;
-import de.photon.aacadditionproold.util.files.configs.Configs;
 import de.photon.aacadditionproold.util.messaging.VerboseSender;
 import lombok.Getter;
 import me.konsolas.aac.api.AACAPI;
@@ -72,7 +74,7 @@ public class AACAdditionPro extends JavaPlugin
     @Getter
     private ViaAPI<Player> viaAPI;
     @Getter
-    private AACAPI aacapi;
+    private AACAPI aacapi = null;
 
     @Getter
     private boolean bungeecord = false;
@@ -88,7 +90,7 @@ public class AACAdditionPro extends JavaPlugin
     }
 
     /**
-     * Registers a new {@link Listener}.
+     * Registers a new {@link Listener} for AACAdditionPro.
      *
      * @param listener the {@link Listener} which should be registered in the {@link org.bukkit.plugin.PluginManager}
      */
@@ -125,15 +127,15 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
-            if (ServerVersion.getActiveServerVersion() == null ||
+            if (de.photon.aacadditionpro.ServerVersion.getActiveServerVersion() == null ||
                 // Unsupported
-                !ServerVersion.getActiveServerVersion().isSupported())
+                !de.photon.aacadditionpro.ServerVersion.getActiveServerVersion().isSupported())
             {
                 VerboseSender.getInstance().sendVerboseMessage("Server version is not supported.", true, true);
 
                 // Print the complete message
                 VerboseSender.getInstance().sendVerboseMessage(
-                        "Supported versions: " + Arrays.stream(ServerVersion.values()).filter(ServerVersion::isSupported).map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
+                        "Supported versions: " + Arrays.stream(de.photon.aacadditionpro.ServerVersion.values()).filter(de.photon.aacadditionpro.ServerVersion::isSupported).map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
                         true, true);
                 return;
             }
@@ -171,20 +173,6 @@ public class AACAdditionPro extends JavaPlugin
                 VerboseSender.getInstance().sendVerboseMessage("ViaVersion not found", true, false);
             }
 
-            // Call is correct here as Bukkit always has a player api.
-            if (this.getServer().getPluginManager().isPluginEnabled("AAC5")) {
-                if (this.getConfig().getBoolean("UseAACFeatureSystem")) {
-                    this.aacapi = Bukkit.getServicesManager().load(AACAPI.class);
-                }
-
-                //noinspection unchecked
-                metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Used"));
-                VerboseSender.getInstance().sendVerboseMessage("AAC hooked", true, false);
-            } else {
-                this.aacapi = null;
-                metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Not used"));
-                VerboseSender.getInstance().sendVerboseMessage("AAC not found", true, false);
-            }
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //
@@ -227,8 +215,24 @@ public class AACAdditionPro extends JavaPlugin
                     Tower.getInstance())
             );
 
-            if (this.aacapi != null) {
-                this.aacapi.registerCustomFeatureProvider(this.getModuleManager().getCustomFeatureProvider());
+            // ------------------------------------------------------------------------------------------------------ //
+            //                                                AAC hook                                                //
+            // ------------------------------------------------------------------------------------------------------ //
+
+            // Call is correct here as Bukkit always has a player api.
+            if (this.getServer().getPluginManager().isPluginEnabled("AAC5")) {
+                if (this.getConfig().getBoolean("UseAACFeatureSystem")) {
+                    this.aacapi = Preconditions.checkNotNull(Bukkit.getServicesManager().load(AACAPI.class), "Did not find AAC API while hooking.");
+                    this.aacapi.registerCustomFeatureProvider(this.getModuleManager().getCustomFeatureProvider());
+                    VerboseSender.getInstance().sendVerboseMessage("AAC hooked", true, false);
+                    metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Hooked"));
+                } else {
+                    metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Used"));
+                    VerboseSender.getInstance().sendVerboseMessage("AAC found, but not hooked", true, false);
+                }
+            } else {
+                metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Not used"));
+                VerboseSender.getInstance().sendVerboseMessage("AAC not found", true, false);
             }
 
             // Data storage

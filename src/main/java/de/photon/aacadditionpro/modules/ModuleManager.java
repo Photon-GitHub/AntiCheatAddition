@@ -11,6 +11,7 @@ import me.konsolas.aac.api.AACCustomFeatureProvider;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -109,7 +110,7 @@ public final class ModuleManager
                 // Only add enabled modules
                 if (this.getStateOfModule(module.getModuleType())) {
                     double score = module.getViolationLevelManagement().getAACScore(uuid);
-                    featureList.add(new AACCustomFeature(module.getConfigString(), module.getModuleType().getInfo(), score, module.getAACTooltip(uuid, score)));
+                    featureList.add(new AACCustomFeature("aacadditionpro_" + module.getConfigString().toLowerCase(Locale.ENGLISH), module.getModuleType().getInfo(), score, module.getAACTooltip(uuid, score)));
                 }
             }
             return featureList;

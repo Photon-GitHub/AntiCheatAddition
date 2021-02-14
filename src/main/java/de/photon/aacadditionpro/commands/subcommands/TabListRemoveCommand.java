@@ -2,10 +2,14 @@ package de.photon.aacadditionpro.commands.subcommands;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.commands.CommandAttributes;
 import de.photon.aacadditionpro.commands.InternalCommand;
 import de.photon.aacadditionpro.commands.TabCompleteSupplier;
+import de.photon.aacadditionpro.util.messaging.ChatMessage;
+import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPlayerInfo;
+import de.photon.aacadditionpro.util.server.ServerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -49,7 +53,7 @@ public class TabListRemoveCommand extends InternalCommand
 
         // This prevents the crashing of the player.
         if (players[0].getUniqueId().equals(players[1].getUniqueId())) {
-            ChatMessage.sendErrorMessage(sender, "The affected player must not be the removed player.");
+            ChatMessage.sendMessage(sender, "The affected player must not be the removed player.");
             return;
         }
         long ticks = 0;
@@ -58,7 +62,7 @@ public class TabListRemoveCommand extends InternalCommand
                 ticks = Long.parseLong(arguments.remove());
             }
         } catch (NumberFormatException e) {
-            ChatMessage.sendErrorMessage(sender, "Please specify a valid integer.");
+            ChatMessage.sendMessage(sender, "Please specify a valid integer.");
             return;
         }
 

@@ -30,10 +30,7 @@ public class ViolationLevelManagement extends ViolationManagement
 
         if (!ViolationEvent.build(flag.player, this.moduleId, flag.addedVl).call().isCancelled()) {
             this.addVL(flag.player, flag.addedVl);
-
-            if (flag.cancelVl > 0 && flag.cancelVl <= this.getVL(flag.player.getUniqueId())) flag.onCancel.run();
-
-            flag.eventNotCancelled.run();
+            flag.executeRunnablesIfNeeded(this.getVL(flag.player.getUniqueId()));
         }
     }
 

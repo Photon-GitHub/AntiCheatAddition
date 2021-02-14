@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
+import com.google.common.base.Preconditions;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -100,12 +101,15 @@ public abstract class ViolationManagement
 
         public Flag setAddedVl(int addedVl)
         {
+            Preconditions.checkArgument(cancelVl >= 1, "Tried to add no or negative vl in flag.");
             this.addedVl = addedVl;
             return this;
         }
 
         public Flag setCancelAction(int cancelVl, Runnable onCancel)
         {
+            Preconditions.checkArgument(cancelVl >= 0, "Set negative cancel vl in flag.");
+            Preconditions.checkArgument(onCancel != null, "Tried to set null onCancel action in flag.");
             this.cancelVl = cancelVl;
             this.onCancel = onCancel;
             return this;
@@ -113,8 +117,18 @@ public abstract class ViolationManagement
 
         public Flag setEventNotCancelledAction(Runnable eventNotCancelled)
         {
+            Preconditions.checkArgument(eventNotCancelled != null, "Tried to set null eventNotCancelled action in flag.");
             this.eventNotCancelled = eventNotCancelled;
             return this;
+        }
+
+        /**
+         * This method will execute both the
+         */
+        public void executeRunnablesIfNeeded(int currentVl)
+        {
+            if (this.cancelVl >= 0 && currentVl >= this.cancelVl) this.onCancel.run();
+            if (this.eventNotCancelled != null) this.eventNotCancelled.run();
         }
     }
 }

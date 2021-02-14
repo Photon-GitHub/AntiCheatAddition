@@ -85,9 +85,9 @@ public abstract class ViolationManagement
         protected Player player;
         protected Collection<Player> team;
         protected int addedVl = 1;
-        protected int cancelVl = -1;
-        protected Runnable onCancel = null;
-        protected Runnable eventNotCancelled = null;
+        private int cancelVl = -1;
+        private Runnable onCancel = null;
+        private Runnable eventNotCancelled = null;
 
         private Flag(Player player)
         {

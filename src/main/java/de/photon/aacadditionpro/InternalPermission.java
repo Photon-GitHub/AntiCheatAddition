@@ -5,8 +5,8 @@ import org.bukkit.permissions.Permissible;
 
 public enum InternalPermission
 {
-    AAC_VERBOSE("aac.manage"),
-    AAC_MANAGE("aac.verbose"),
+    AAC_VERBOSE("aac.verbose"),
+    AAC_MANAGE("aac.manage"),
     BYPASS("aacadditionpro.bypass"),
     INFO("aacadditionpro.info"),
     TABLISTREMOVE("aacadditionpro.tablistremove");

@@ -47,7 +47,7 @@ public enum ModuleType
     public static final Set<ModuleType> VL_MODULETYPES = EnumSet.noneOf(ModuleType.class);
     private final String configString;
     private final String violationMessage;
-    private final String info;
+    private String info;
 
     @Getter
     @Setter(AccessLevel.PACKAGE)
@@ -62,6 +62,14 @@ public enum ModuleType
     {
         this.configString = configString;
         this.violationMessage = violationMessage;
-        this.info = AACAdditionPro.getInstance().getConfig().getString(configString + ".aacfeatureinfo");
+    }
+
+    public String getInfo()
+    {
+        if (info == null)
+        {
+            info = AACAdditionPro.getInstance().getConfig().getString(configString + ".aacfeatureinfo");
+        }
+        return info;
     }
 }

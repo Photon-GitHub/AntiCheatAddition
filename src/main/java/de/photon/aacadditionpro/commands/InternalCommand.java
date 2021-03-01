@@ -17,7 +17,7 @@ public abstract class InternalCommand
 {
     @NotNull private final String name;
     @NotNull private final CommandAttributes commandAttributes;
-    @NotNull private final TabCompleteSupplier tabCompleteSupplier;
+    @EqualsAndHashCode.Exclude @NotNull private final TabCompleteSupplier tabCompleteSupplier;
 
     public InternalCommand(@NotNull String name, @NotNull CommandAttributes commandAttributes, @NotNull TabCompleteSupplier.Builder tabCompleteSupplier)
     {
@@ -82,6 +82,4 @@ public abstract class InternalCommand
      * This contains the code that is actually executed if everything is correct.
      */
     protected abstract void execute(CommandSender sender, Queue<String> arguments);
-
-
 }

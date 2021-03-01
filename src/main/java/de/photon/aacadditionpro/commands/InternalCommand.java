@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.commands;
 
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -9,17 +10,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Locale;
 import java.util.Queue;
 
+
+@Getter
+@EqualsAndHashCode(doNotUseGetters = true, cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
 public abstract class InternalCommand
 {
-    @Getter
-    @NotNull
-    private final String name;
-    @Getter
-    @NotNull
-    private final CommandAttributes commandAttributes;
-    @Getter
-    @NotNull
-    private final TabCompleteSupplier tabCompleteSupplier;
+    @NotNull private final String name;
+    @NotNull private final CommandAttributes commandAttributes;
+    @NotNull private final TabCompleteSupplier tabCompleteSupplier;
 
     public InternalCommand(@NotNull String name, @NotNull CommandAttributes commandAttributes, @NotNull TabCompleteSupplier.Builder tabCompleteSupplier)
     {
@@ -84,4 +82,6 @@ public abstract class InternalCommand
      * This contains the code that is actually executed if everything is correct.
      */
     protected abstract void execute(CommandSender sender, Queue<String> arguments);
+
+
 }

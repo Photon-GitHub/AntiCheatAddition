@@ -7,9 +7,12 @@ import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,11 +23,12 @@ import java.util.TreeMap;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@EqualsAndHashCode(doNotUseGetters = true, cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
 public class CommandAttributes
 {
-    private final SortedMap<String, InternalCommand> childCommands;
-    private final List<String> commandHelp;
-    private final InternalPermission permission;
+    @NotNull private final SortedMap<String, InternalCommand> childCommands;
+    @NotNull private final List<String> commandHelp;
+    @Nullable private final InternalPermission permission;
     private final int minArguments;
     private final int maxArguments;
 
@@ -56,9 +60,7 @@ public class CommandAttributes
      */
     public void sendCommandHelp(CommandSender sender)
     {
-        for (String line : this.commandHelp) {
-            ChatMessage.sendMessage(sender, line);
-        }
+        for (String line : this.commandHelp) ChatMessage.sendMessage(sender, line);
     }
 
     /**
@@ -144,26 +146,26 @@ public class CommandAttributes
         public Builder setChildCommands(Collection<InternalCommand> commands)
         {
             this.childCommands.clear();
-            commands.forEach(this::addChildCommand);
+            for (InternalCommand command : commands) addChildCommand(command);
             return this;
         }
 
         /**
          * Directly sets the command help.
          */
-        public Builder setChildCommands(InternalCommand... commands)
+        public Builder setChildCommands(final InternalCommand... commands)
         {
             this.childCommands.clear();
-            Arrays.stream(commands).forEach(this::addChildCommand);
+            for (InternalCommand command : commands) addChildCommand(command);
             return this;
         }
 
         /**
          * Add a single line to the command help.
          */
-        public Builder addChildCommand(InternalCommand command)
+        public Builder addChildCommand(final InternalCommand command)
         {
-            this.childCommands.put(command.name, command);
+            this.childCommands.put(command.getName(), command);
             return this;
         }
 

@@ -5,13 +5,13 @@ author: Photon
 api-version: 1.13
 website: https://www.spigotmc.org/resources/aacadditionpro.33590/
 
-depend: [ProtocolLib]
-softdepend: [AAC5, LabyModAPI, ViaVersion]
+depend: [ ProtocolLib ]
+softdepend: [ AAC5, LabyModAPI, ViaVersion ]
 main: de.photon.aacadditionpro.AACAdditionPro
 
 commands:
   aacadditionpro:
-    aliases: [aacap, aacadp]
+    aliases: [ aacap, aacadp ]
     description: The main command of AACAdditionPro.
     usage: /aacadditionpro
 
@@ -25,6 +25,7 @@ permissions:
       aacadditionpro.neural: true
       aacadditionpro.neural.*: true
       aacadditionpro.tablistremove: true
+    default: op
 
   aacadditionpro.bypass.*:
     description: Gives permission to bypass all checks and clientcontrols.
@@ -114,19 +115,6 @@ permissions:
 
   aacadditionpro.info:
     description: Allows to request an overview about a player's violation levels
-
-  aacadditionpro.neural.*:
-    description: Grants access to the full heuristics framework (config setting unlock_full_framework is still required)
-    children:
-      aacadditionpro.neural: true
-      aacadditionpro.neural.create: true
-      aacadditionpro.neural.train: true
-  aacadditionpro.neural:
-    description: Grants basic access to the heuristics framework (see all active patterns and access the help)
-  aacadditionpro.neural.create:
-    description: Allows the creation and removal of patterns
-  aacadditionpro.neural.train:
-    description: Allows the training of patterns.
 
   aacadditionpro.tablistremove:
     description: Grants access to a command to temporarily remove a player from the tablist of another player.

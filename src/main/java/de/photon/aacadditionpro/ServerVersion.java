@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro;
 
+import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,8 @@ public enum ServerVersion
 
 
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS;
-    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = EnumSet.of(MC18);
-    public static final Set<ServerVersion> LEGACY_EVENT_VERSIONS = EnumSet.of(MC18, MC19, MC110, MC111, MC112, MC113);
+    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = Sets.immutableEnumSet(MC18);
+    public static final Set<ServerVersion> LEGACY_EVENT_VERSIONS = Sets.immutableEnumSet(MC18, MC19, MC110, MC111, MC112, MC113);
     public static final Set<ServerVersion> NON_188_VERSIONS;
     /**
      * The server version of the currently running {@link Bukkit} instance.
@@ -35,11 +36,13 @@ public enum ServerVersion
     private static final ServerVersion activeServerVersion;
 
     static {
-        ALL_SUPPORTED_VERSIONS = EnumSet.allOf(ServerVersion.class);
-        ALL_SUPPORTED_VERSIONS.removeIf(serverVersion -> !serverVersion.supported);
+        final Set<ServerVersion> allSup = EnumSet.allOf(ServerVersion.class);
+        allSup.removeIf(serverVersion -> !serverVersion.supported);
+        ALL_SUPPORTED_VERSIONS = Sets.immutableEnumSet(allSup);
 
-        NON_188_VERSIONS = EnumSet.copyOf(ALL_SUPPORTED_VERSIONS);
-        NON_188_VERSIONS.remove(MC18);
+        final Set<ServerVersion> non18 = EnumSet.copyOf(ALL_SUPPORTED_VERSIONS);
+        non18.remove(MC18);
+        NON_188_VERSIONS = Sets.immutableEnumSet(non18);
 
         activeServerVersion = Arrays.stream(ServerVersion.values())
                                     .filter(serverVersion -> Bukkit.getVersion().contains(serverVersion.getVersionOutputString()))

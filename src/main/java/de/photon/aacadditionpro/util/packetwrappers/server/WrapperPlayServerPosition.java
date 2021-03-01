@@ -5,7 +5,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.util.packetwrappers.AbstractPacket;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayLook;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Set;
 
 public class WrapperPlayServerPosition extends AbstractPacket implements IWrapperPlayPosition, IWrapperPlayLook
@@ -123,6 +124,6 @@ public class WrapperPlayServerPosition extends AbstractPacket implements IWrappe
         Y_ROT,
         X_ROT;
 
-        private static final Set<PlayerTeleportFlag> ALL_FLAGS = ImmutableSet.copyOf(PlayerTeleportFlag.values());
+        private static final Set<PlayerTeleportFlag> ALL_FLAGS = Sets.immutableEnumSet(EnumSet.allOf(PlayerTeleportFlag.class));
     }
 }

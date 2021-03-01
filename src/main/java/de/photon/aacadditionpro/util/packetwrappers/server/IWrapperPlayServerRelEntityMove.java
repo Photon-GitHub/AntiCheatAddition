@@ -33,7 +33,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
      */
     default void setDx(double value)
     {
-        // Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
+        Preconditions.checkArgument(value <= 8, "Tried to move relative x: " + value + " blocks when teleport is needed.");
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 getHandle().getBytes().write(0, (byte) (value * 32));
@@ -76,8 +76,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
      */
     default void setDy(double value)
     {
-        // Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
-        Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
+        Preconditions.checkArgument(value <= 8, "Tried to move relative y: " + value + " blocks when teleport is needed.");
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 getHandle().getBytes().write(1, (byte) (value * 32));
@@ -120,8 +119,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
      */
     default void setDz(double value)
     {
-        // Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
-        Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
+        Preconditions.checkArgument(value <= 8, "Tried to move relative z: " + value + " blocks when teleport is needed.");
         switch (ServerVersion.getActiveServerVersion()) {
             case MC188:
                 getHandle().getBytes().write(2, (byte) (value * 32));

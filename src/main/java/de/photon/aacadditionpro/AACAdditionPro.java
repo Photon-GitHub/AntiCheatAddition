@@ -74,7 +74,6 @@ public class AACAdditionPro extends JavaPlugin
             if (!configFile.exists()) {
                 AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Config file could not be created!");
             }
-
             cachedConfig = YamlConfiguration.loadConfiguration(configFile);
         }
 

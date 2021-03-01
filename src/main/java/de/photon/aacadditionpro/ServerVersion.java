@@ -1,9 +1,11 @@
 package de.photon.aacadditionpro;
 
+import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -30,7 +32,7 @@ public enum ServerVersion
      * The server version of the currently running {@link Bukkit} instance.
      */
     @Getter
-    private static ServerVersion activeServerVersion;
+    private static final ServerVersion activeServerVersion;
 
     static {
         ALL_SUPPORTED_VERSIONS = EnumSet.allOf(ServerVersion.class);
@@ -39,14 +41,10 @@ public enum ServerVersion
         NON_188_VERSIONS = EnumSet.copyOf(ALL_SUPPORTED_VERSIONS);
         NON_188_VERSIONS.remove(MC18);
 
-        final String versionOutput = Bukkit.getVersion();
-        for (final ServerVersion serverVersion : ServerVersion.values()) {
-            if (versionOutput.contains(serverVersion.getVersionOutputString())) {
-                activeServerVersion = serverVersion;
-                // break for better performance as no other version should be found.
-                break;
-            }
-        }
+        activeServerVersion = Arrays.stream(ServerVersion.values())
+                                    .filter(serverVersion -> Bukkit.getVersion().contains(serverVersion.getVersionOutputString()))
+                                    .findFirst()
+                                    .orElseThrow(UnknownMinecraftException::new);
     }
 
     private final String versionOutputString;

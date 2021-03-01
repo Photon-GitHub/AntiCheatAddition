@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 class CommandTest
 {
@@ -35,8 +36,9 @@ class CommandTest
     {
         DummyCommandSender dummySender = new DummyCommandSender();
         MainCommand.getInstance().onCommand(dummySender, null, "aacadditionpro", new String[]{"help"});
-        List<String> expectedLines = new ArrayList<>();
-        MainCommand.getInstance().getCommandAttributes().getCommandHelp().forEach(line -> expectedLines.add(ChatMessage.AACADDITIONPRO_PREFIX + line));
+        final List<String> expectedLines = MainCommand.getInstance().getCommandAttributes().getCommandHelp().stream()
+                                                      .map(line -> ChatMessage.AACADDITIONPRO_PREFIX + line)
+                                                      .collect(Collectors.toList());
         Assertions.assertLinesMatch(expectedLines, dummySender.sentMessages, "Command help not functional.");
     }
 

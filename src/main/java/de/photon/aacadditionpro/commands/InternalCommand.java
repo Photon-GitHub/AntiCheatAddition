@@ -15,6 +15,9 @@ import java.util.Queue;
 @EqualsAndHashCode(doNotUseGetters = true, cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
 public abstract class InternalCommand
 {
+    /**
+     * The name of the command. Guaranteed to be lowercase only.
+     */
     @NotNull private final String name;
     @NotNull private final CommandAttributes commandAttributes;
     @EqualsAndHashCode.Exclude @NotNull private final TabCompleteSupplier tabCompleteSupplier;

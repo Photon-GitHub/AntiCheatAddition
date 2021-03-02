@@ -27,9 +27,7 @@ public enum ProtocolVersion
     static {
         ImmutableMap.Builder<Integer, ProtocolVersion> builder = ImmutableMap.builder();
         for (ProtocolVersion value : ProtocolVersion.values()) {
-            for (Integer versionNumber : value.versionNumbers) {
-                builder.put(versionNumber, value);
-            }
+            for (Integer versionNumber : value.versionNumbers) builder.put(versionNumber, value);
         }
 
         VERSION_NUMBER_MAP = builder.build();

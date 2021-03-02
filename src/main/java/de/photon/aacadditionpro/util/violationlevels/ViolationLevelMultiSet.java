@@ -34,9 +34,7 @@ class ViolationLevelMultiSet implements Listener
     private void decay()
     {
         // Decrement the vl of every player.
-        for (UUID uuid : multiset.elementSet()) {
-            multiset.remove(uuid);
-        }
+        for (UUID uuid : multiset.elementSet()) multiset.remove(uuid);
     }
 
     @EventHandler

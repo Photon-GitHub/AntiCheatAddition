@@ -15,8 +15,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -44,9 +44,9 @@ public class CommandAttributes
      *
      * @return <code>true</code> iff minArguments <= arguments <= maxArguments
      */
-    public boolean argumentsInRange(int arguments)
+    public boolean argumentsOutOfRange(int arguments)
     {
-        return MathUtil.inRange(minArguments, maxArguments, arguments);
+        return !MathUtil.inRange(minArguments, maxArguments, arguments);
     }
 
     public boolean hasPermission(Permissible permissible)
@@ -114,9 +114,8 @@ public class CommandAttributes
         /**
          * Directly sets the command help.
          */
-        public Builder setCommandHelp(List<String> commandHelp)
+        public Builder addCommandHelp(List<String> commandHelp)
         {
-            this.commandHelp.clear();
             this.commandHelp.addAll(commandHelp);
             return this;
         }
@@ -124,10 +123,9 @@ public class CommandAttributes
         /**
          * Directly sets the command help.
          */
-        public Builder setCommandHelp(String... commandHelp)
+        public Builder addCommandHelp(String... commandHelp)
         {
-            this.commandHelp.clear();
-            this.commandHelp.addAll(Arrays.asList(commandHelp));
+            Collections.addAll(this.commandHelp, commandHelp);
             return this;
         }
 
@@ -143,9 +141,8 @@ public class CommandAttributes
         /**
          * Directly sets the command help.
          */
-        public Builder setChildCommands(Collection<InternalCommand> commands)
+        public Builder addChildCommands(Collection<InternalCommand> commands)
         {
-            this.childCommands.clear();
             for (InternalCommand command : commands) addChildCommand(command);
             return this;
         }
@@ -153,9 +150,8 @@ public class CommandAttributes
         /**
          * Directly sets the command help.
          */
-        public Builder setChildCommands(final InternalCommand... commands)
+        public Builder addChildCommands(final InternalCommand... commands)
         {
-            this.childCommands.clear();
             for (InternalCommand command : commands) addChildCommand(command);
             return this;
         }

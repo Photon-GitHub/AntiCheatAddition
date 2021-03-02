@@ -10,19 +10,37 @@ public final class ChatMessage
 {
     public static final String AACADDITIONPRO_PREFIX = ChatColor.AQUA + "[AACAdditionPro] " + ChatColor.GRAY;
 
-    public static void sendMessage(CommandSender sender, String message)
+    /**
+     * Sends a message with the AACAdditionPro prefix to a single recipient.
+     */
+    public static void sendMessage(CommandSender recipient, String message)
     {
-        sender.sendMessage(AACADDITIONPRO_PREFIX + message);
+        recipient.sendMessage(AACADDITIONPRO_PREFIX + message);
     }
 
-
-    public static void sendNoPermissionMessage(CommandSender sender)
+    /**
+     * Sends a message with the AACAdditionPro prefix to multiple recipients, caching the message for less String
+     * concatenations.
+     */
+    public static void sendMessage(final Iterable<CommandSender> sender, final String message)
     {
-        sendMessage(sender, "You don't have permission to do that.");
+        final String prefixedMessage = AACADDITIONPRO_PREFIX + message;
+        for (CommandSender cs : sender) cs.sendMessage(prefixedMessage);
     }
 
-    public static void sendPlayerNotFoundMessage(CommandSender sender)
+    /**
+     * Sends the "You don't have permission to do that." message with prefix to a recipient.
+     */
+    public static void sendNoPermissionMessage(CommandSender recipient)
     {
-        sendMessage(sender, "The specified player could not be found.");
+        sendMessage(recipient, "You don't have permission to do that.");
+    }
+
+    /**
+     * Sends the "The specified player could not be found." message with prefix to a recipient.
+     */
+    public static void sendPlayerNotFoundMessage(CommandSender recipient)
+    {
+        sendMessage(recipient, "The specified player could not be found.");
     }
 }

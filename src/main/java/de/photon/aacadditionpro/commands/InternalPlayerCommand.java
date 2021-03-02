@@ -9,7 +9,7 @@ import java.util.Queue;
 
 public abstract class InternalPlayerCommand extends InternalCommand
 {
-    public InternalPlayerCommand(String name, CommandAttributes commandAttributes, TabCompleteSupplier.Builder tabCompleteSupplier)
+    protected InternalPlayerCommand(String name, CommandAttributes commandAttributes, TabCompleteSupplier.Builder tabCompleteSupplier)
     {
         super(name, commandAttributes, tabCompleteSupplier);
     }

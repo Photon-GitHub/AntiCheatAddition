@@ -14,6 +14,6 @@ public abstract class SyncBatchProcessor<T> extends BatchProcessor<T>
     @Override
     public void receive(Batch.Snapshot<T> snapshot)
     {
-        this.processBatch(snapshot.user, snapshot.values);
+        this.processBatch(snapshot.getUser(), snapshot.getValues());
     }
 }

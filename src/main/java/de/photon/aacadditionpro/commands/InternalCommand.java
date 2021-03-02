@@ -22,7 +22,7 @@ public abstract class InternalCommand
     @NotNull private final CommandAttributes commandAttributes;
     @EqualsAndHashCode.Exclude @NotNull private final TabCompleteSupplier tabCompleteSupplier;
 
-    public InternalCommand(@NotNull String name, @NotNull CommandAttributes commandAttributes, @NotNull TabCompleteSupplier.Builder tabCompleteSupplier)
+    protected InternalCommand(@NotNull String name, @NotNull CommandAttributes commandAttributes, @NotNull TabCompleteSupplier.Builder tabCompleteSupplier)
     {
         Preconditions.checkNotNull(name, "Tried to create command with null name.");
         Preconditions.checkNotNull(commandAttributes, "Tried to create command with null attributes.");
@@ -51,7 +51,7 @@ public abstract class InternalCommand
     protected void invokeCommand(@NotNull final CommandSender sender, @NotNull final Queue<String> arguments)
     {
         if (!this.commandAttributes.hasPermission(sender)) return;
-        if (!this.commandAttributes.argumentsInRange(arguments.size())) return;
+        if (this.commandAttributes.argumentsOutOfRange(arguments.size())) return;
 
         if (!arguments.isEmpty()) {
             final String nextArgument = arguments.peek();
@@ -72,7 +72,7 @@ public abstract class InternalCommand
         // ------- Normal command procedure or childCommands is null or no fitting child commands were found. ------- //
 
         // Correct amount of arguments
-        if (!this.commandAttributes.argumentsInRange(arguments.size())) {
+        if (this.commandAttributes.argumentsOutOfRange(arguments.size())) {
             ChatMessage.sendMessage(sender, "Wrong amount of arguments: " + arguments.size() + " expected: " + this.commandAttributes.getMinArguments() + " to " + this.commandAttributes.getMaxArguments());
             ChatMessage.sendMessage(sender, "For further information use /<command> help");
             return;

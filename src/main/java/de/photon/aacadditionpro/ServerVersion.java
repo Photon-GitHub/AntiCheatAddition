@@ -54,7 +54,7 @@ public enum ServerVersion
     private final boolean supported;
 
     /**
-     * Used to check whether the current server version is included in the supported server versions of a {@link Module}
+     * Used to check whether the current server version is included in a set of supported server versions.
      *
      * @param supportedServerVersions the {@link Set} of supported server versions of the module
      *

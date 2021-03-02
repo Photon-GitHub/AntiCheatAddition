@@ -27,9 +27,7 @@ public enum Configs
 
     public static void saveChangesForAllConfigs()
     {
-        for (Configs config : values()) {
-            config.saveChanges();
-        }
+        for (Configs config : values()) config.saveChanges();
     }
 
     public void saveChanges()

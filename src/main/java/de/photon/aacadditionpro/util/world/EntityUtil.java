@@ -66,7 +66,7 @@ public final class EntityUtil
         // complexity.
         return entity.getNearbyEntities(x, y, z).stream()
                      .filter(e -> (e instanceof LivingEntity))
-                     .map(e -> (LivingEntity) e)
+                     .map(LivingEntity.class::cast)
                      .collect(Collectors.toList());
     }
 

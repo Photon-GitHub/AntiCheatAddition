@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
 import de.photon.aacadditionproold.user.User;
-import lombok.ToString;
+import lombok.Value;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -84,14 +84,11 @@ public class Batch<T>
     /**
      * Represents a snapshot of a {@link Batch}, e.g. for broadcasting.
      */
-    @ToString
+    @Value
     public static class Snapshot<T>
     {
-        @NotNull
-        public final User user;
-        @NotNull
-        @Unmodifiable
-        public final List<T> values;
+        @NotNull User user;
+        @NotNull @Unmodifiable List<T> values;
 
         protected Snapshot(@NotNull Batch<T> batch)
         {

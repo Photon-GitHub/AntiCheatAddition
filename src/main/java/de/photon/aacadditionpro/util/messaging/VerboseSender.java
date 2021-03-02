@@ -3,7 +3,6 @@ package de.photon.aacadditionpro.util.messaging;
 import de.photon.aacadditionproold.AACAdditionPro;
 import de.photon.aacadditionproold.events.ClientControlEvent;
 import de.photon.aacadditionproold.events.PlayerAdditionViolationEvent;
-import de.photon.aacadditionproold.user.User;
 import de.photon.aacadditionproold.user.UserManager;
 import de.photon.aacadditionproold.util.commands.Placeholders;
 import de.photon.aacadditionproold.util.files.FileUtil;
@@ -26,8 +25,7 @@ public final class VerboseSender implements Listener
 {
     @Getter
     private static final VerboseSender instance;
-    private static final String PRE_STRING = ChatColor.DARK_RED + "[AACAdditionPro] " + ChatColor.GRAY;
-    private static final String EVENT_PRE_STRING = ChatColor.GOLD + "{player} " + ChatColor.GRAY;
+    private static final String EVENT_PRE_STRING = ChatColor.WHITE + "{player} " + ChatColor.GRAY;
 
     static {
         instance = new VerboseSender();
@@ -92,9 +90,7 @@ public final class VerboseSender implements Listener
 
                 // Add a 0 if it is too short
                 // Technically only 12, but we already appended the "[", thus one more.
-                while (verboseMessage.length() < 13) {
-                    verboseMessage.append('0');
-                }
+                while (verboseMessage.length() < 13) verboseMessage.append('0');
 
                 // Add the rest of the PREFIX and the message
                 verboseMessage.append(']').append(' ').append(logMessage).append('\n');
@@ -114,11 +110,7 @@ public final class VerboseSender implements Listener
 
         // Prevent errors on disable as of scheduling
         if (allowedToRegisterTasks && writeToPlayers) {
-            Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-                for (User user : UserManager.getVerboseUsers()) {
-                    user.getPlayer().sendMessage(PRE_STRING + s);
-                }
-            });
+            Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> ChatMessage.sendMessage(UserManager.getVerboseUsers(), s));
         }
     }
 

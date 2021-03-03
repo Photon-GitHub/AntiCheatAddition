@@ -45,9 +45,7 @@ public abstract class ModulePlayerEvent extends Event implements Cancellable
 
     public void runIfUncancelled(Consumer<ModulePlayerEvent> consumer)
     {
-        if (!this.isCancelled()) {
-            consumer.accept(this);
-        }
+        if (!this.isCancelled()) consumer.accept(this);
     }
 
     @Override

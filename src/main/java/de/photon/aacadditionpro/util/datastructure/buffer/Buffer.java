@@ -1,7 +1,8 @@
 package de.photon.aacadditionpro.util.datastructure.buffer;
 
+import com.google.common.base.Preconditions;
+
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -43,28 +44,26 @@ public interface Buffer<T> extends Iterable<T>
      */
     default void forEachDescending(Consumer<? super T> action)
     {
-        Objects.requireNonNull(action);
+        Preconditions.checkNotNull(action);
         final Iterator<T> descendingIterator = this.descendingIterator();
-        while (descendingIterator.hasNext()) {
-            action.accept(descendingIterator.next());
-        }
+        while (descendingIterator.hasNext()) action.accept(descendingIterator.next());
     }
 
     /**
      * Clears the buffer starting from the least recently added element and performs an action on each element.
      */
-    default void clearIteration(Consumer<T> consumer)
+    default void clearIteration(Consumer<? super T> action)
     {
-        forEach(consumer);
+        forEach(action);
         clear();
     }
 
     /**
      * Clears the buffer starting from the most recently added element and performs an action on each element.
      */
-    default void clearDescendingIteration(Consumer<T> consumer)
+    default void clearDescendingIteration(Consumer<? super T> action)
     {
-        forEachDescending(consumer);
+        forEachDescending(action);
         clear();
     }
 }

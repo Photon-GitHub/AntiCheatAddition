@@ -85,4 +85,13 @@ public final class MathUtil
     {
         return (n * (n + 1)) >> 1;
     }
+
+    /**
+     * Uses the standard {@link Math#sqrt(double)} call to calculate the hypot of two numbers.
+     * Make sure that the absolute value of both numbers are sufficiently small (smaller than 100,000) to avoid overflows.
+     */
+    public static double fastHypot(final double a, final double b)
+    {
+        return Math.sqrt(a * a + b * b);
+    }
 }

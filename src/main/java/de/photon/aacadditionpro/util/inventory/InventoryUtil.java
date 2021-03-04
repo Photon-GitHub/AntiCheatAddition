@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.util.inventory;
 import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -357,7 +358,7 @@ public final class InventoryUtil
 
         public double distance(SlotLocation other)
         {
-            return Math.hypot(x - other.x, y - other.y);
+            return MathUtil.fastHypot(x - other.x, y - other.y);
         }
 
         @Override

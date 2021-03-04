@@ -1,6 +1,7 @@
 package de.photon.aacadditionproold.util.inventory;
 
 import com.google.common.collect.ImmutableList;
+import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionproold.AACAdditionPro;
 import de.photon.aacadditionproold.ServerVersion;
 import de.photon.aacadditionproold.util.exceptions.UnknownMinecraftVersion;
@@ -70,7 +71,7 @@ public final class InventoryUtils
             return -1;
         }
 
-        return Math.hypot(locationOfFirstClick[0] - locationOfSecondClick[0], locationOfFirstClick[1] - locationOfSecondClick[1]);
+        return MathUtil.fastHypot(locationOfFirstClick[0] - locationOfSecondClick[0], locationOfFirstClick[1] - locationOfSecondClick[1]);
     }
 
     /**

@@ -6,7 +6,7 @@ import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InventoryUtil
@@ -350,30 +349,15 @@ public final class InventoryUtil
         Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), player::updateInventory);
     }
 
-    @RequiredArgsConstructor
+    @Value
     private static class SlotLocation
     {
-        final double x;
-        final double y;
+        double x;
+        double y;
 
         public double distance(SlotLocation other)
         {
             return MathUtil.fastHypot(x - other.x, y - other.y);
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            SlotLocation that = (SlotLocation) o;
-            return Double.compare(that.x, x) == 0 && Double.compare(that.y, y) == 0;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Objects.hash(x, y);
         }
     }
 }

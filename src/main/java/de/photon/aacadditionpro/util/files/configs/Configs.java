@@ -8,15 +8,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
+@Getter
 public enum Configs
 {
     AAC("plugins/AAC/config.yml"),
     SPIGOT("spigot.yml"),
     VIAVERSION("plugins/ViaVersion/config.yml");
 
-    @Getter
     private final File configFile;
-    @Getter
     private final ConfigurationRepresentation configurationRepresentation;
 
     Configs(final String path)

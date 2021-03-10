@@ -2,12 +2,12 @@ package de.photon.aacadditionpro.util.world;
 
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Value;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import java.util.Objects;
 
 public enum InternalPotion
 {
@@ -243,18 +243,15 @@ public enum InternalPotion
     /**
      * Wrapper for a potential {@link PotionEffect}.
      */
+    @Value
+    @AllArgsConstructor
     private static class PotentialPotionEffect
     {
-        final PotionEffect underlying;
-
-        public PotentialPotionEffect(PotionEffect underlying)
-        {
-            this.underlying = underlying;
-        }
+        PotionEffect underlying;
 
         public PotentialPotionEffect()
         {
-            this(null);
+            this.underlying = null;
         }
 
         public Boolean getAmbient()
@@ -275,21 +272,6 @@ public enum InternalPotion
         public Integer getAmplifier()
         {
             return underlying == null ? null : underlying.getAmplifier();
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            PotentialPotionEffect that = (PotentialPotionEffect) o;
-            return Objects.equals(underlying, that.underlying);
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Objects.hash(underlying);
         }
     }
 }

@@ -17,7 +17,7 @@ public class Region
     private final World world;
 
     /**
-     * The boundaries of the world are stored here.
+     * The boundaries of the region are stored here.
      */
     private AxisAlignedBB regionBox;
 

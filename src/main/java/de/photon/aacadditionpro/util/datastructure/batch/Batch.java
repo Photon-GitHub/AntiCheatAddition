@@ -15,17 +15,13 @@ import java.util.List;
  */
 public class Batch<T>
 {
-    @NotNull
-    private final User user;
-    @NotNull
-    private final T[] values;
-    @NotNull
-    private final Broadcaster<Snapshot<T>> broadcaster;
+    @NotNull private final User user;
+    @NotNull private final T[] values;
+    @NotNull private final Broadcaster<Snapshot<T>> broadcaster;
 
     private int index = 0;
     // Volatile is ok here as we do not change the object itself and only care for the reference.
-    @NotNull
-    private T lastAdded;
+    @NotNull private T lastAdded;
 
     public Batch(@NotNull Broadcaster<Snapshot<T>> broadcaster, @NotNull User user, int capacity, @NotNull T dummyLastAdded)
     {
@@ -45,7 +41,7 @@ public class Batch<T>
         this.values[this.index++] = value;
 
         if (this.index >= this.values.length) {
-            broadcaster.broadcast(this.createSnapshot());
+            broadcaster.broadcast(Snapshot.of(this));
             // Clear the batch.
             this.clear();
         }
@@ -60,15 +56,6 @@ public class Batch<T>
     public synchronized T peekLastAdded()
     {
         return lastAdded;
-    }
-
-    /**
-     * Creates a {@link Snapshot} of this {@link Batch}.
-     */
-    @NotNull
-    public Snapshot<T> createSnapshot()
-    {
-        return new Snapshot<>(this);
     }
 
     /**
@@ -90,10 +77,9 @@ public class Batch<T>
         @NotNull User user;
         @NotNull @Unmodifiable List<T> values;
 
-        protected Snapshot(@NotNull Batch<T> batch)
+        protected static <T> Snapshot<T> of(@NotNull Batch<T> batch)
         {
-            this.values = ImmutableList.copyOf(batch.values);
-            this.user = batch.user;
+            return new Snapshot<>(batch.user, ImmutableList.copyOf(batch.values));
         }
     }
 }

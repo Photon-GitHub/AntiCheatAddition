@@ -8,13 +8,11 @@ import org.bukkit.event.Event;
 
 import java.util.function.Consumer;
 
+@Getter
 public abstract class ModulePlayerEvent extends Event implements Cancellable
 {
-    @Getter
     protected final Player player;
-    @Getter
     protected final String moduleId;
-
     private boolean cancelled = false;
 
     /**
@@ -48,11 +46,6 @@ public abstract class ModulePlayerEvent extends Event implements Cancellable
         if (!this.isCancelled()) consumer.accept(this);
     }
 
-    @Override
-    public boolean isCancelled()
-    {
-        return cancelled;
-    }
 
     @Override
     public void setCancelled(final boolean b)

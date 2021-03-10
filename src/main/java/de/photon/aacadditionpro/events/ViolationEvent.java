@@ -10,8 +10,7 @@ public class ViolationEvent extends ModulePlayerEvent
 {
     private static final HandlerList handlers = new HandlerList();
 
-    @Getter
-    private final int vl;
+    @Getter private final int vl;
 
     protected ViolationEvent(Player p, String moduleId, int vl)
     {

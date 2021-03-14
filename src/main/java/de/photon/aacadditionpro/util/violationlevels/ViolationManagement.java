@@ -1,9 +1,13 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.base.Preconditions;
+import de.photon.aacadditionproold.AACAdditionPro;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,10 +28,12 @@ public abstract class ViolationManagement
      *
      * @param moduleId the module id of the module this {@link ViolationManagement} is being used by.
      */
-    public ViolationManagement(final String moduleId)
+    public ViolationManagement(String moduleId, boolean hasThresholds)
     {
         this.moduleId = moduleId;
-        this.thresholds = ThresholdList.loadThresholds(moduleId + ".thresholds");
+        this.thresholds = hasThresholds ?
+                          ThresholdList.loadThresholds(moduleId + ".thresholds") :
+                          ThresholdList.empty();
     }
 
     public static Flag flagFromPlayer(Player player)
@@ -74,12 +80,19 @@ public abstract class ViolationManagement
      * @param player the {@link Player} that should be punished and that should be used to apply the placeholders
      * @param fromVl the last vl of the player before the addition and the searching-range for command.
      */
-    protected abstract void punishPlayer(final Player player, final int fromVl, final int toVl);
+    protected void punishPlayer(Player player, int fromVl, int toVl)
+    {
+        // Only schedule the command execution if the plugin is loaded and when we do not use AAC's feature handling.
+        if (AACAdditionPro.getInstance().isLoaded() && AACAdditionPro.getInstance().getAacapi() == null) {
+            this.thresholds.executeThresholds(fromVl, toVl, Collections.singleton(player));
+        }
+    }
 
     /**
      * Has options for the flagging process.
      * {@link Flag} contains the player
      */
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     protected static class Flag
     {
         protected Player player;

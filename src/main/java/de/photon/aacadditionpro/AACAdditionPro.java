@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.commands.MainCommand;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.files.configs.Configs;
 import de.photon.aacadditionpro.util.messaging.VerboseSender;
 import lombok.Getter;
@@ -16,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 import us.myles.ViaVersion.api.Via;
 import us.myles.ViaVersion.api.ViaAPI;
 
@@ -25,33 +25,19 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+@Getter
 public class AACAdditionPro extends JavaPlugin
 {
     private static final int BSTATS_PLUGIN_ID = 3265;
 
+    @Getter
     private static AACAdditionPro instance;
 
-    // Cache the config for better performance
-    private FileConfiguration cachedConfig;
-    @Getter
-    private ModuleManager moduleManager;
-    @Getter
+    @Getter(lazy = true) private final FileConfiguration config = generateConfig();
     private ViaAPI<Player> viaAPI;
-    @Getter
     private AACAPI aacapi = null;
 
-    @Getter
     private boolean bungeecord = false;
-
-    /**
-     * This will get the object of the plugin registered on the server.
-     *
-     * @return the active instance of this plugin on the server.
-     */
-    public static AACAdditionPro getInstance()
-    {
-        return instance;
-    }
 
     /**
      * Registers a new {@link Listener} for AACAdditionPro.
@@ -63,21 +49,16 @@ public class AACAdditionPro extends JavaPlugin
         this.getServer().getPluginManager().registerEvents(listener, this);
     }
 
-    @NotNull
-    @Override
-    public FileConfiguration getConfig()
+    private FileConfiguration generateConfig()
     {
-        if (cachedConfig == null) {
+        final File configFile = new File(this.getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
             this.saveDefaultConfig();
-
-            final File configFile = new File(this.getDataFolder(), "config.yml");
             if (!configFile.exists()) {
-                AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Config file could not be created!");
+                this.getLogger().severe("Config file could not be created!");
             }
-            cachedConfig = YamlConfiguration.loadConfiguration(configFile);
         }
-
-        return cachedConfig;
+        return YamlConfiguration.loadConfiguration(configFile);
     }
 
     @Override
@@ -142,7 +123,7 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Managers
-            this.registerListener(new UserManager());
+            this.registerListener(new User.UserListener());
             this.moduleManager = new ModuleManager(ImmutableSet.of(
                     // Additions
                     BrandHider.getInstance(),

@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedMap;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
 import lombok.Getter;
@@ -21,6 +22,12 @@ public class ThresholdList
         final ImmutableSortedMap.Builder<Integer, Threshold> builder = ImmutableSortedMap.naturalOrder();
         for (Threshold threshold : thresholds) builder.put(threshold.getVl(), threshold);
         thresholdMap = builder.build();
+    }
+
+    /**Returns an empty {@link ThresholdList}.*/
+    public static ThresholdList empty()
+    {
+        return new ThresholdList(ImmutableList.of());
     }
 
     /**

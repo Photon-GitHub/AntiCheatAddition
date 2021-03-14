@@ -1,14 +1,13 @@
 package de.photon.aacadditionpro.util.messaging;
 
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionproold.AACAdditionPro;
 import de.photon.aacadditionproold.events.ClientControlEvent;
 import de.photon.aacadditionproold.events.PlayerAdditionViolationEvent;
-import de.photon.aacadditionproold.user.UserManager;
 import de.photon.aacadditionproold.util.commands.Placeholders;
 import de.photon.aacadditionproold.util.files.FileUtil;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -110,7 +109,7 @@ public final class VerboseSender implements Listener
 
         // Prevent errors on disable as of scheduling
         if (allowedToRegisterTasks && writeToPlayers) {
-            Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> ChatMessage.sendMessage(UserManager.getVerboseUsers(), s));
+            ChatMessage.sendSyncMessage(User.getDebugUsers(), s);
         }
     }
 

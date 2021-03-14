@@ -15,9 +15,9 @@ public class ViolationAggregateManagement extends ViolationManagement
      *
      * @param moduleId the module id of the module this {@link ViolationManagement} is being used by.
      */
-    public ViolationAggregateManagement(String moduleId, ViolationManagement... subViolationManagements)
+    public ViolationAggregateManagement(String moduleId, boolean hasThresholds, ViolationManagement... subViolationManagements)
     {
-        super(moduleId);
+        super(moduleId, hasThresholds);
         this.subViolationManagements = ImmutableSet.copyOf(subViolationManagements);
     }
 
@@ -45,12 +45,6 @@ public class ViolationAggregateManagement extends ViolationManagement
 
     @Override
     protected void addVL(Player player, int vl)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected void punishPlayer(Player player, int fromVl, int toVl)
     {
         throw new UnsupportedOperationException();
     }

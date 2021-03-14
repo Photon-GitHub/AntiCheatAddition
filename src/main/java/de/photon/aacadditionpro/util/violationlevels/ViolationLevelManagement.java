@@ -1,10 +1,8 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
 import de.photon.aacadditionpro.events.ViolationEvent;
-import de.photon.aacadditionproold.AACAdditionPro;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
 import java.util.UUID;
 
 public class ViolationLevelManagement extends ViolationManagement
@@ -17,9 +15,9 @@ public class ViolationLevelManagement extends ViolationManagement
      * @param moduleId   the module id of the module this {@link ViolationManagement} is being used by.
      * @param decayTicks the time in ticks until the vl of a player is decreased by one. If this is negative no decrease will happen.
      */
-    public ViolationLevelManagement(String moduleId, long decayTicks)
+    public ViolationLevelManagement(String moduleId, boolean hasThresholds, long decayTicks)
     {
-        super(moduleId);
+        super(moduleId, hasThresholds);
         vlMultiSet = new ViolationLevelMultiSet(decayTicks);
     }
 
@@ -60,14 +58,5 @@ public class ViolationLevelManagement extends ViolationManagement
         // setVL is also called when decreasing the vl
         // thus we must prevent double punishment
         this.punishPlayer(player, oldVl, oldVl + vl);
-    }
-
-    @Override
-    protected void punishPlayer(Player player, int fromVl, int toVl)
-    {
-        // Only schedule the command execution if the plugin is loaded and when we do not use AAC's feature handling.
-        if (AACAdditionPro.getInstance().isLoaded() && AACAdditionPro.getInstance().getAacapi() == null) {
-            this.thresholds.executeThresholds(fromVl, toVl, Collections.singleton(player));
-        }
     }
 }

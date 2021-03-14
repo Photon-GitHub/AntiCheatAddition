@@ -1,7 +1,9 @@
 package de.photon.aacadditionpro.util.messaging;
 
+import de.photon.aacadditionproold.AACAdditionPro;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -19,13 +21,32 @@ public final class ChatMessage
     }
 
     /**
+     * Sends a message with the AACAdditionPro prefix to a single recipient.
+     * This method should be called asynchronously, else use {@link #sendMessage(CommandSender, String)}
+     */
+    public static void sendSyncMessage(CommandSender recipient, String message)
+    {
+        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> ChatMessage.sendMessage(recipient, message));
+    }
+
+    /**
      * Sends a message with the AACAdditionPro prefix to multiple recipients, caching the message for less String
      * concatenations.
      */
-    public static void sendMessage(final Iterable<CommandSender> sender, final String message)
+    public static void sendMessage(final Iterable<? extends CommandSender> senders, final String message)
     {
         final String prefixedMessage = AACADDITIONPRO_PREFIX + message;
-        for (CommandSender cs : sender) cs.sendMessage(prefixedMessage);
+        for (CommandSender cs : senders) cs.sendMessage(prefixedMessage);
+    }
+
+    /**
+     * Sends a message with the AACAdditionPro prefix to multiple recipients, caching the message for less String
+     * concatenations.
+     * This method should be called asynchronously, else use {@link #sendMessage(Iterable, String)}
+     */
+    public static void sendSyncMessage(final Iterable<? extends CommandSender> senders, final String message)
+    {
+        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> ChatMessage.sendMessage(senders, message));
     }
 
     /**

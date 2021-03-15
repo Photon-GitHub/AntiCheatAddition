@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -31,7 +32,7 @@ import java.util.concurrent.ConcurrentMap;
 public class User implements CommandSender
 {
     private static final ConcurrentMap<UUID, User> USERS = new ConcurrentHashMap<>(1024);
-    private static final Set<User> DEBUG_USERS = ConcurrentHashMap.newKeySet(64);
+    private static final Set<User> DEBUG_USERS = new CopyOnWriteArraySet<>();
 
     @Delegate(types = CommandSender.class)
     @EqualsAndHashCode.Include private final Player player;

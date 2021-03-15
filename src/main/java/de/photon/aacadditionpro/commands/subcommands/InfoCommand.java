@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.commands.TabCompleteSupplier;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,12 +28,8 @@ public class InfoCommand extends InternalCommand
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
         // Peek for better performance
-        final Player player = AACAdditionPro.getInstance().getServer().getPlayer(arguments.peek());
-
-        if (player == null) {
-            ChatMessage.sendPlayerNotFoundMessage(sender);
-            return;
-        }
+        final Player player = getPlayer(sender, arguments.peek());
+        if (player == null) return;
 
         final List<ModuleVl> messages = new ArrayList<>();
         int vl;
@@ -45,13 +40,13 @@ public class InfoCommand extends InternalCommand
             }
         }
 
-        ChatMessage.sendInfoMessage(sender, ChatColor.GOLD, player.getName());
+        ChatMessage.sendMessage(sender, player.getName());
 
         if (messages.isEmpty()) {
-            ChatMessage.sendInfoMessage(sender, ChatColor.GOLD, "The player has no violations.");
+            ChatMessage.sendMessage(sender, "The player has no violations.");
         } else {
             messages.sort(ModuleVl::compareTo);
-            messages.forEach(moduleVl -> ChatMessage.sendInfoMessage(sender, ChatColor.GOLD, moduleVl.getDisplayMessage()));
+            messages.forEach(moduleVl -> ChatMessage.sendMessage(sender, moduleVl.getDisplayMessage()));
         }
     }
 

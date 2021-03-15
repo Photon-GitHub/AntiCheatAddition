@@ -52,8 +52,7 @@ public class User implements CommandSender
      */
     protected static void deleteUser(UUID uuid)
     {
-        val removedUser = USERS.remove(uuid);
-        DEBUG_USERS.remove(removedUser);
+        DEBUG_USERS.remove(USERS.remove(uuid));
     }
 
     public static User getUser(UUID uuid)

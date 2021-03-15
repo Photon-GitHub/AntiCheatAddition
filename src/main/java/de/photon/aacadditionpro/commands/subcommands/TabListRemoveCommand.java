@@ -43,12 +43,8 @@ public class TabListRemoveCommand extends InternalCommand
         final Player[] players = new Player[2];
 
         for (int i = 0; i < players.length; ++i) {
-            players[i] = AACAdditionPro.getInstance().getServer().getPlayer(arguments.remove());
-
-            if (players[i] == null) {
-                ChatMessage.sendPlayerNotFoundMessage(sender);
-                return;
-            }
+            players[i] = getPlayer(sender, arguments.remove());
+            if (players[i] == null) return;
         }
 
         // This prevents the crashing of the player.

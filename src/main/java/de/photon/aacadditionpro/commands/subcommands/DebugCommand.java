@@ -34,7 +34,7 @@ public class DebugCommand extends InternalPlayerCommand
         val user = User.getUser(sender.getUniqueId());
         if (user == null) return;
 
-        boolean toggleTo = user.hasDebug();
+        boolean toggleTo;
         if (arguments.peek() != null) {
             switch (arguments.peek().toLowerCase()) {
                 case "on":
@@ -44,8 +44,11 @@ public class DebugCommand extends InternalPlayerCommand
                     toggleTo = false;
                     break;
                 default:
+                    toggleTo = user.hasDebug();
                     break;
             }
+        } else {
+            toggleTo = user.hasDebug();
         }
 
         user.setDebug(toggleTo);

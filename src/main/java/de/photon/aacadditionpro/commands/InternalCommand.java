@@ -4,7 +4,10 @@ import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.val;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
@@ -32,6 +35,17 @@ public abstract class InternalCommand
         this.name = name;
         this.commandAttributes = commandAttributes;
         this.tabCompleteSupplier = tabCompleteSupplier.build(commandAttributes);
+    }
+
+    /**
+     * Gets a {@link Player} from their name and calls {@link ChatMessage#sendPlayerNotFoundMessage(CommandSender)}
+     * if the {@link Player} could not be found.
+     */
+    protected static Player getPlayer(CommandSender sender, String nameOfPlayer)
+    {
+        val player = Bukkit.getServer().getPlayer(nameOfPlayer);
+        if (player == null) ChatMessage.sendPlayerNotFoundMessage(sender);
+        return player;
     }
 
     /**

@@ -40,6 +40,7 @@ public class TabCompleteSupplier
         return this.tabPossibilities.stream()
                                     .flatMap(listSupplier -> listSupplier.get().stream())
                                     .filter(potentialTab -> potentialTab.toLowerCase(Locale.ENGLISH).startsWith(lowerCaseArgument))
+                                    .sorted()
                                     .collect(Collectors.toList());
     }
 
@@ -50,6 +51,7 @@ public class TabCompleteSupplier
     {
         return this.tabPossibilities.stream()
                                     .flatMap(listSupplier -> listSupplier.get().stream())
+                                    .sorted()
                                     .collect(Collectors.toList());
     }
 
@@ -88,18 +90,13 @@ public class TabCompleteSupplier
             return this;
         }
 
-        public Builder commandHelp()
-        {
-            return constants("help");
-        }
-
         /**
          * Custom supplier that supplies a {@link List} of {@link String}s which will show up in the tab-complete
          * suggestions.
          */
         public Builder supplier(Supplier<List<String>> supplier)
         {
-            supplierBuilder.add(supplier);
+            this.supplierBuilder.add(supplier);
             return this;
         }
 
@@ -110,8 +107,10 @@ public class TabCompleteSupplier
         {
             // Add the child commands.
             constants(attributes.getChildCommands().keySet());
+            // Automatically add the command help.
+            if (!attributes.getCommandHelp().isEmpty()) constants("help");
 
-            if (!constants.isEmpty()) {
+            if (!this.constants.isEmpty()) {
                 final List<String> immutableConstants = ImmutableList.copyOf(this.constants);
                 this.supplierBuilder.add(() -> immutableConstants);
             }

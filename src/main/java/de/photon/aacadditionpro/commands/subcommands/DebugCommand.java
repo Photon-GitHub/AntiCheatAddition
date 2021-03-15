@@ -25,7 +25,7 @@ public class DebugCommand extends InternalPlayerCommand
                                         .maxArguments(1)
                                         .addCommandHelpLine("Used to toggle debug messages on and off.")
                                         .setPermission(InternalPermission.DEBUG)
-                                        .build(), TabCompleteSupplier.builder().constants("on", "off").commandHelp());
+                                        .build(), TabCompleteSupplier.builder().constants("on", "off"));
     }
 
     @Override

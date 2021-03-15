@@ -26,7 +26,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
         super("aacadditionpro", CommandAttributes.builder()
                                                  .addCommandHelp("The main command of AACAdditionPro", "To use a subcommands simply add it to the parent command:", "/aacadditionpro <subcommand>")
                                                  .addChildCommands(new DebugCommand())
-                                                 .build(), TabCompleteSupplier.builder().commandHelp());
+                                                 .build(), TabCompleteSupplier.builder());
     }
 
     @Override

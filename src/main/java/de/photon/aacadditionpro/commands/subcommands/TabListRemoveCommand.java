@@ -30,7 +30,7 @@ public class TabListRemoveCommand extends InternalCommand
                                                "Syntax: /aacadditionpro tablistremove <player whose tablist is affected> <player that will be removed> [<ticks>]")
                                .setPermission(InternalPermission.TABLISTREMOVE)
                                .build(),
-              TabCompleteSupplier.builder().allPlayers().commandHelp());
+              TabCompleteSupplier.builder().allPlayers());
     }
 
     @Override

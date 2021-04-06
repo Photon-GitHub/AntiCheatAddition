@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.util.files.configs;
 
 import de.photon.aacadditionproold.AACAdditionPro;
-import de.photon.aacadditionproold.util.messaging.VerboseSender;
+import de.photon.aacadditionproold.util.messaging.DebugSender;
 import lombok.Getter;
 
 import java.io.File;
@@ -34,7 +34,7 @@ public enum Configs
         try {
             this.configurationRepresentation.save();
         } catch (IOException e) {
-            VerboseSender.getInstance().sendVerboseMessage("Unable to change and save" + this.name() + "'s config.", true, true);
+            DebugSender.getInstance().sendVerboseMessage("Unable to change and save" + this.name() + "'s config.", true, true);
             AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Error when saving a config: ", e);
         }
     }

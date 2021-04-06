@@ -910,7 +910,7 @@ UseAACFeatureSystem: true
 FullEnableLog: false
 
 # Should players with the aac.verbose permission get the AACAdditionPro verbose messages
-Verbose:
+Debug:
   # Do you want AACAdditionPro to log into a log-file?
   file: true
   # Should players be able to get verbose messages if they have the aac.verbose permission

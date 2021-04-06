@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.commands.MainCommand;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.files.configs.Configs;
-import de.photon.aacadditionpro.util.messaging.VerboseSender;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
 import lombok.Getter;
 import me.konsolas.aac.api.AACAPI;
 import org.bstats.bukkit.Metrics;
@@ -75,10 +75,10 @@ public class AACAdditionPro extends JavaPlugin
                 // Unsupported
                 !ServerVersion.getActiveServerVersion().isSupported())
             {
-                VerboseSender.getInstance().sendVerboseMessage("Server version is not supported.", true, true);
+                DebugSender.getInstance().sendVerboseMessage("Server version is not supported.", true, true);
 
                 // Print the complete message
-                VerboseSender.getInstance().sendVerboseMessage(
+                DebugSender.getInstance().sendVerboseMessage(
                         "Supported versions: " + Arrays.stream(ServerVersion.values()).filter(ServerVersion::isSupported).map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
                         true, true);
                 return;
@@ -89,15 +89,15 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             this.bungeecord = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getBoolean("settings.bungeecord", false);
-            VerboseSender.getInstance().sendVerboseMessage("Bungeecord " + (this.bungeecord ?
-                                                                            "detected" :
-                                                                            "not detected"), true, false);
+            DebugSender.getInstance().sendVerboseMessage("Bungeecord " + (this.bungeecord ?
+                                                                          "detected" :
+                                                                          "not detected"), true, false);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Metrics                                                 //
             // ------------------------------------------------------------------------------------------------------ //
 
-            VerboseSender.getInstance().sendVerboseMessage("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AACAdditionPro/3265", true, false);
+            DebugSender.getInstance().sendVerboseMessage("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AACAdditionPro/3265", true, false);
             final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // The first getConfig call will automatically saveToFile and cache the config.
@@ -111,10 +111,10 @@ public class AACAdditionPro extends JavaPlugin
                 //noinspection unchecked
                 viaAPI = Via.getAPI();
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Used"));
-                VerboseSender.getInstance().sendVerboseMessage("ViaVersion hooked", true, false);
+                DebugSender.getInstance().sendVerboseMessage("ViaVersion hooked", true, false);
             } else {
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Not used"));
-                VerboseSender.getInstance().sendVerboseMessage("ViaVersion not found", true, false);
+                DebugSender.getInstance().sendVerboseMessage("ViaVersion not found", true, false);
             }
 
 
@@ -168,15 +168,15 @@ public class AACAdditionPro extends JavaPlugin
                 if (this.getConfig().getBoolean("UseAACFeatureSystem")) {
                     this.aacapi = Preconditions.checkNotNull(Bukkit.getServicesManager().load(AACAPI.class), "Did not find AAC API while hooking.");
                     this.aacapi.registerCustomFeatureProvider(this.getModuleManager().getCustomFeatureProvider());
-                    VerboseSender.getInstance().sendVerboseMessage("AAC hooked", true, false);
+                    DebugSender.getInstance().sendVerboseMessage("AAC hooked", true, false);
                     metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Hooked"));
                 } else {
                     metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Used"));
-                    VerboseSender.getInstance().sendVerboseMessage("AAC found, but not hooked", true, false);
+                    DebugSender.getInstance().sendVerboseMessage("AAC found, but not hooked", true, false);
                 }
             } else {
                 metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Not used"));
-                VerboseSender.getInstance().sendVerboseMessage("AAC not found", true, false);
+                DebugSender.getInstance().sendVerboseMessage("AAC not found", true, false);
             }
 
             // Data storage
@@ -189,7 +189,7 @@ public class AACAdditionPro extends JavaPlugin
             //                                          Enabled-Verbose + API                                         //
             // ------------------------------------------------------------------------------------------------------ //
             this.getLogger().info(this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
-            VerboseSender.getInstance().sendVerboseMessage("AACAdditionPro initialization completed.");
+            DebugSender.getInstance().sendVerboseMessage("AACAdditionPro initialization completed.");
         } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //
@@ -202,7 +202,7 @@ public class AACAdditionPro extends JavaPlugin
     public void onDisable()
     {
         // Plugin is already disabled -> VerboseSender is not allowed to register a task
-        VerboseSender.getInstance().setAllowedToRegisterTasks(false);
+        DebugSender.getInstance().setAllowedToRegisterTasks(false);
 
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
@@ -210,7 +210,7 @@ public class AACAdditionPro extends JavaPlugin
 
         DataUpdaterEvents.INSTANCE.unregister();
 
-        VerboseSender.getInstance().sendVerboseMessage("AACAdditionPro disabled.", true, false);
-        VerboseSender.getInstance().sendVerboseMessage(" ", true, false);
+        DebugSender.getInstance().sendVerboseMessage("AACAdditionPro disabled.", true, false);
+        DebugSender.getInstance().sendVerboseMessage(" ", true, false);
     }
 }

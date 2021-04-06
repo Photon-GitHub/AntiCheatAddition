@@ -142,6 +142,6 @@ public final class ConfigUtils
         return Objects.requireNonNull(
                 // Generate a ConfigurationSection that contains all keys
                 AACAdditionPro.getInstance().getConfig().getConfigurationSection(sectionPath),
-                "Severe loading error: Config-Section is null when loading: " + sectionPath).getKeys(false);
+                "Severe loading error: ConfigurationSection does not exist at " + sectionPath).getKeys(false);
     }
 }

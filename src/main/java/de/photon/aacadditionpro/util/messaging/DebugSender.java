@@ -20,20 +20,20 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 
-public final class VerboseSender implements Listener
+public final class DebugSender implements Listener
 {
     @Getter
-    private static final VerboseSender instance;
+    private static final DebugSender instance;
     private static final String EVENT_PRE_STRING = ChatColor.WHITE + "{player} " + ChatColor.GRAY;
 
     static {
-        instance = new VerboseSender();
+        instance = new DebugSender();
         AACAdditionPro.getInstance().registerListener(instance);
     }
 
-    private final boolean writeToFile = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.file");
-    private final boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.console");
-    private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Verbose.players");
+    private final boolean writeToFile = AACAdditionPro.getInstance().getConfig().getBoolean("Debug.file");
+    private final boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Debug.console");
+    private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Debug.players");
     @Setter
     private volatile boolean allowedToRegisterTasks;
     // The File the verbose messages are written to.
@@ -41,7 +41,7 @@ public final class VerboseSender implements Listener
     // Set to an impossible day of the year to make sure the logFile will be initialized.
     private int currentDayOfYear = -1;
 
-    private VerboseSender()
+    private DebugSender()
     {
         allowedToRegisterTasks = true;
     }

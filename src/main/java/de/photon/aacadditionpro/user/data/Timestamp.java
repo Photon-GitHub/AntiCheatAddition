@@ -8,7 +8,7 @@ public class Timestamp
     // Only set and get operations -> no atomic required.
     private volatile long currentTime = 0;
 
-    private long getTime()
+    public long getTime()
     {
         return currentTime;
     }
@@ -16,7 +16,7 @@ public class Timestamp
     /**
      * Updates this {@link Timestamp} to the current time as given by {@link System#currentTimeMillis()}.
      */
-    private void updateTime()
+    public void update()
     {
         this.currentTime = System.currentTimeMillis();
     }
@@ -24,7 +24,7 @@ public class Timestamp
     /**
      * Sets this {@link Timestamp} to 0.
      */
-    private void setToZero()
+    public void setToZero()
     {
         this.currentTime = 0;
     }

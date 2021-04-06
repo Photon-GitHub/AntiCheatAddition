@@ -15,27 +15,27 @@ public class DataMap
     private final Map<DataKey.DoubleKey, Double> doubleMap = Collections.synchronizedMap(new EnumMap<>(DataKey.DoubleKey.class));
     private final Map<DataKey.ObjectKey, Object> objectMap = Collections.synchronizedMap(new EnumMap<>(DataKey.ObjectKey.class));
 
-    public boolean getBoolean(DataKey.BooleanKey key)
+    public Boolean getBoolean(DataKey.BooleanKey key)
     {
         return this.boolMap.getOrDefault(key, key.getDefaultValue());
     }
 
-    public int getInt(DataKey.IntegerKey key)
+    public Integer getInt(DataKey.IntegerKey key)
     {
         return this.intMap.getOrDefault(key, key.getDefaultValue());
     }
 
-    public long getLong(DataKey.LongKey key)
+    public Long getLong(DataKey.LongKey key)
     {
         return this.longMap.getOrDefault(key, key.getDefaultValue());
     }
 
-    public float getFloat(DataKey.FloatKey key)
+    public Float getFloat(DataKey.FloatKey key)
     {
         return this.floatMap.getOrDefault(key, key.getDefaultValue());
     }
 
-    public double getDouble(DataKey.DoubleKey key)
+    public Double getDouble(DataKey.DoubleKey key)
     {
         return this.doubleMap.getOrDefault(key, key.getDefaultValue());
     }

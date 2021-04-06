@@ -17,7 +17,7 @@ public class TimestampMap
         this.map = enumMap;
     }
 
-    public Timestamp getValue(TimestampKey key)
+    public Timestamp at(TimestampKey key)
     {
         return map.get(key);
     }

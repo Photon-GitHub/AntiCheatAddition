@@ -3,6 +3,9 @@ package de.photon.aacadditionpro.user;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.InternalPermission;
+import de.photon.aacadditionpro.user.data.DataMap;
+import de.photon.aacadditionpro.user.data.TimestampKey;
+import de.photon.aacadditionpro.user.data.TimestampMap;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -37,14 +40,18 @@ public class User implements CommandSender
     @Delegate(types = CommandSender.class)
     @EqualsAndHashCode.Include private final Player player;
 
+    private final DataMap dataMap = new DataMap();
+    private final TimestampMap timestampMap = new TimestampMap();
+
     /**
      * Creates an {@link User} from a {@link Player}.
      */
-    protected static void createFromPlayer(Player player)
+    protected static User createFromPlayer(Player player)
     {
         val user = new User(player);
         USERS.put(player.getUniqueId(), user);
         if (InternalPermission.DEBUG.hasPermission(player)) DEBUG_USERS.add(user);
+        return user;
     }
 
     /**
@@ -130,7 +137,14 @@ public class User implements CommandSender
         @EventHandler(priority = EventPriority.LOWEST)
         public void onJoin(final PlayerJoinEvent event)
         {
-            createFromPlayer(event.getPlayer());
+            val user = createFromPlayer(event.getPlayer());
+
+            // Login time
+            user.timestampMap.at(TimestampKey.LOGIN_TIME).update();
+            // Login should count as movement.
+            user.timestampMap.at(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT).update();
+            user.timestampMap.at(TimestampKey.LAST_XYZ_MOVEMENT).update();
+            user.timestampMap.at(TimestampKey.LAST_XZ_MOVEMENT).update();
         }
 
         @EventHandler

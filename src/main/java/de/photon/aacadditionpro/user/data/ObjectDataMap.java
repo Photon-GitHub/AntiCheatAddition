@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class ObjectDataMap implements DataMap<Datakey, Object>
+public class ObjectDataMap
 {
     private final Map<Datakey, Object> map = Collections.synchronizedMap(new EnumMap<>(Datakey.class));
 
@@ -17,20 +17,17 @@ public class ObjectDataMap implements DataMap<Datakey, Object>
         Preconditions.checkArgument(key.getTypeClass().isAssignableFrom(clazz), "Tried to get or insert wrong type for key " + key);
     }
 
-    @Override
     public void setValue(Datakey key, Object value)
     {
         checkType(key, value.getClass());
         this.map.put(key, value);
     }
 
-    @Override
     public void clear()
     {
         this.map.clear();
     }
 
-    @Override
     public Object getValue(Datakey key)
     {
         return this.map.get(key);

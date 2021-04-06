@@ -5,7 +5,7 @@ import lombok.val;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class TimestampMap implements ImmutableDataMap<TimestampKey, Timestamp>
+public class TimestampMap
 {
     // As the map is not modified by a single thread, we can safely read without synchronization.
     private final Map<TimestampKey, Timestamp> map;
@@ -17,7 +17,6 @@ public class TimestampMap implements ImmutableDataMap<TimestampKey, Timestamp>
         this.map = enumMap;
     }
 
-    @Override
     public Timestamp getValue(TimestampKey key)
     {
         return map.get(key);

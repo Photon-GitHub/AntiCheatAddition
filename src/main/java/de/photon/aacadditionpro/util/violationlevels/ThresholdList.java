@@ -4,18 +4,19 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedMap;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
 import lombok.Getter;
+import lombok.val;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.NavigableMap;
 import java.util.Objects;
-import java.util.SortedMap;
 import java.util.stream.Collectors;
 
 public class ThresholdList
 {
     @Getter
-    private final SortedMap<Integer, Threshold> thresholdMap;
+    private final NavigableMap<Integer, Threshold> thresholdMap;
 
     public ThresholdList(List<Threshold> thresholds)
     {
@@ -24,7 +25,9 @@ public class ThresholdList
         thresholdMap = builder.build();
     }
 
-    /**Returns an empty {@link ThresholdList}.*/
+    /**
+     * Returns an empty {@link ThresholdList}.
+     */
     public static ThresholdList empty()
     {
         return new ThresholdList(ImmutableList.of());
@@ -53,8 +56,7 @@ public class ThresholdList
      */
     public void executeThresholds(int fromVl, int toVl, Collection<Player> players)
     {
-        // Exclusive "to" index -> toVl +1
-        final Collection<Threshold> toExecute = thresholdMap.subMap(fromVl, toVl + 1).values();
+        val toExecute = thresholdMap.subMap(fromVl, false, toVl, true).values();
         for (Threshold threshold : toExecute) threshold.executeCommandList(players);
     }
 }

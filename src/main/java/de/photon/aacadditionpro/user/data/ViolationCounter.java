@@ -31,7 +31,8 @@ public class ViolationCounter
      */
     public boolean incrementCompareThreshold()
     {
-        return this.counter.incrementAndGet() >= threshold;
+        // getAndIncrement due to the config comments of "x violations are fine"
+        return this.counter.getAndIncrement() >= threshold;
     }
 
     /**

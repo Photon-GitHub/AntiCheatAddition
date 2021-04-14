@@ -30,8 +30,7 @@ public class AACAdditionPro extends JavaPlugin
 {
     private static final int BSTATS_PLUGIN_ID = 3265;
 
-    @Getter
-    private static AACAdditionPro instance;
+    @Getter private static AACAdditionPro instance;
 
     @Getter(lazy = true) private final FileConfiguration config = generateConfig();
     private ViaAPI<Player> viaAPI;
@@ -51,14 +50,9 @@ public class AACAdditionPro extends JavaPlugin
 
     private FileConfiguration generateConfig()
     {
-        final File configFile = new File(this.getDataFolder(), "config.yml");
-        if (!configFile.exists()) {
-            this.saveDefaultConfig();
-            if (!configFile.exists()) {
-                this.getLogger().severe("Config file could not be created!");
-            }
-        }
-        return YamlConfiguration.loadConfiguration(configFile);
+        // This will already write an error if the config could not be saved.
+        this.saveDefaultConfig();
+        return YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
     }
 
     @Override

@@ -135,12 +135,6 @@
             <systemPath>${project.basedir}/lib/LabyAPI.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>us.myles</groupId>
             <artifactId>viaversion</artifactId>
             <version>1.6.0</version>
@@ -155,7 +149,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>20.1.0</version>
+            <version>RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -163,6 +157,12 @@
             <artifactId>aac-api</artifactId>
             <version>5.0.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

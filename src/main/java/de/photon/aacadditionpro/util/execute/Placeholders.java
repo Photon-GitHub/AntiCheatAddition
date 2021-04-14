@@ -81,7 +81,7 @@ public final class Placeholders
                         break;
                     default:
                         // Otherwise add the placeholder as plain-string
-                        result.append('{').append(placeholderBuilder.toString()).append('}');
+                        result.append('{').append(placeholderBuilder).append('}');
                         break;
                 }
 

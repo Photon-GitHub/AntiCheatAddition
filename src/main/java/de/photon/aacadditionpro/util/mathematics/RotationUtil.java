@@ -90,6 +90,7 @@ public final class RotationUtil
     /**
      * Generates the direction - vector from yaw and pitch, basically a copy of {@link Location#getDirection()}
      */
+    @SuppressWarnings("RedundantCast")
     public static Vector getDirection(final float yaw, final float pitch)
     {
         Vector vector = new Vector();

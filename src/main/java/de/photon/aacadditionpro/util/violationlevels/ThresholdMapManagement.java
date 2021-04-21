@@ -13,12 +13,12 @@ import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ThresholdList
+public class ThresholdMapManagement implements ThresholdManagement
 {
     @Getter
     private final NavigableMap<Integer, Threshold> thresholdMap;
 
-    public ThresholdList(List<Threshold> thresholds)
+    public ThresholdMapManagement(List<Threshold> thresholds)
     {
         final ImmutableSortedMap.Builder<Integer, Threshold> builder = ImmutableSortedMap.naturalOrder();
         for (Threshold threshold : thresholds) builder.put(threshold.getVl(), threshold);
@@ -26,11 +26,11 @@ public class ThresholdList
     }
 
     /**
-     * Returns an empty {@link ThresholdList}.
+     * Returns an empty {@link ThresholdMapManagement}.
      */
-    public static ThresholdList empty()
+    public static ThresholdMapManagement empty()
     {
-        return new ThresholdList(ImmutableList.of());
+        return new ThresholdMapManagement(ImmutableList.of());
     }
 
     /**
@@ -40,20 +40,18 @@ public class ThresholdList
      *
      * @return a mutable {@link List} containing all {@link Threshold}s.
      */
-    public static ThresholdList loadThresholds(final String thresholdSectionPath)
+    public static ThresholdMapManagement loadThresholds(final String thresholdSectionPath)
     {
         // Make sure that the keys exist.
-        return new ThresholdList(Objects.requireNonNull(ConfigUtils.loadKeys(thresholdSectionPath), "Severe loading error: Keys are null when loading: " + thresholdSectionPath)
-                                        .stream()
-                                        // Create a new Threshold for every key.
-                                        .map(key -> new Threshold(Integer.parseInt(key), ConfigUtils.loadImmutableStringOrStringList(thresholdSectionPath + '.' + key)))
-                                        // Collect the keys.
-                                        .collect(Collectors.toList()));
+        return new ThresholdMapManagement(Objects.requireNonNull(ConfigUtils.loadKeys(thresholdSectionPath), "Severe loading error: Keys are null when loading: " + thresholdSectionPath)
+                                                 .stream()
+                                                 // Create a new Threshold for every key.
+                                                 .map(key -> new Threshold(Integer.parseInt(key), ConfigUtils.loadImmutableStringOrStringList(thresholdSectionPath + '.' + key)))
+                                                 // Collect the keys.
+                                                 .collect(Collectors.toList()));
     }
 
-    /**
-     * Used to execute the commands of the {@link Threshold}s in this  {@link ThresholdList}.
-     */
+    @Override
     public void executeThresholds(int fromVl, int toVl, Collection<Player> players)
     {
         val toExecute = thresholdMap.subMap(fromVl, false, toVl, true).values();

@@ -16,7 +16,7 @@ public abstract class ViolationManagement
     /**
      * A {@link List} of {@link Threshold}s which is guaranteed to be sorted.
      */
-    protected final ThresholdList thresholds;
+    protected final ThresholdManagement thresholds;
 
     /**
      * The module id of the handler
@@ -26,14 +26,13 @@ public abstract class ViolationManagement
     /**
      * Create a new {@link ViolationManagement}
      *
-     * @param moduleId the module id of the module this {@link ViolationManagement} is being used by.
+     * @param moduleId   the module id of the module this {@link ViolationManagement} is being used by.
+     * @param management the backing {@link ThresholdManagement}.
      */
-    public ViolationManagement(String moduleId, boolean hasThresholds)
+    public ViolationManagement(String moduleId, ThresholdManagement management)
     {
         this.moduleId = moduleId;
-        this.thresholds = hasThresholds ?
-                          ThresholdList.loadThresholds(moduleId + ".thresholds") :
-                          ThresholdList.empty();
+        this.thresholds = management;
     }
 
     public static Flag flagFromPlayer(Player player)

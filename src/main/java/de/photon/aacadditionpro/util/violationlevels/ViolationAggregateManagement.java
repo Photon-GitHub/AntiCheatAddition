@@ -15,9 +15,9 @@ public class ViolationAggregateManagement extends ViolationManagement
      *
      * @param moduleId the module id of the module this {@link ViolationManagement} is being used by.
      */
-    public ViolationAggregateManagement(String moduleId, boolean hasThresholds, ViolationManagement... subViolationManagements)
+    public ViolationAggregateManagement(String moduleId, ThresholdManagement management, ViolationManagement... subViolationManagements)
     {
-        super(moduleId, hasThresholds);
+        super(moduleId, management);
         this.subViolationManagements = ImmutableSet.copyOf(subViolationManagements);
     }
 

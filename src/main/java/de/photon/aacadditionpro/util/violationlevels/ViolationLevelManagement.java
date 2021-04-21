@@ -15,9 +15,9 @@ public class ViolationLevelManagement extends ViolationManagement
      * @param moduleId   the module id of the module this {@link ViolationManagement} is being used by.
      * @param decayTicks the time in ticks until the vl of a player is decreased by one. If this is negative no decrease will happen.
      */
-    public ViolationLevelManagement(String moduleId, boolean hasThresholds, long decayTicks)
+    public ViolationLevelManagement(String moduleId, ThresholdManagement management, long decayTicks)
     {
-        super(moduleId, hasThresholds);
+        super(moduleId, management);
         vlMultiSet = new ViolationLevelMultiSet(decayTicks);
     }
 

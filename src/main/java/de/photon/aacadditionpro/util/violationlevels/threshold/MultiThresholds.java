@@ -1,6 +1,5 @@
-package de.photon.aacadditionpro.util.violationlevels;
+package de.photon.aacadditionpro.util.violationlevels.threshold;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedMap;
 import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
 import lombok.Getter;
@@ -13,24 +12,16 @@ import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ThresholdMapManagement implements ThresholdManagement
+class MultiThresholds extends ThresholdManagement
 {
     @Getter
     private final NavigableMap<Integer, Threshold> thresholdMap;
 
-    public ThresholdMapManagement(List<Threshold> thresholds)
+    public MultiThresholds(List<Threshold> thresholds)
     {
         final ImmutableSortedMap.Builder<Integer, Threshold> builder = ImmutableSortedMap.naturalOrder();
         for (Threshold threshold : thresholds) builder.put(threshold.getVl(), threshold);
         thresholdMap = builder.build();
-    }
-
-    /**
-     * Returns an empty {@link ThresholdMapManagement}.
-     */
-    public static ThresholdMapManagement empty()
-    {
-        return new ThresholdMapManagement(ImmutableList.of());
     }
 
     /**
@@ -40,15 +31,15 @@ public class ThresholdMapManagement implements ThresholdManagement
      *
      * @return a mutable {@link List} containing all {@link Threshold}s.
      */
-    public static ThresholdMapManagement loadThresholds(final String thresholdSectionPath)
+    public static MultiThresholds loadThresholds(final String thresholdSectionPath)
     {
         // Make sure that the keys exist.
-        return new ThresholdMapManagement(Objects.requireNonNull(ConfigUtils.loadKeys(thresholdSectionPath), "Severe loading error: Keys are null when loading: " + thresholdSectionPath)
-                                                 .stream()
-                                                 // Create a new Threshold for every key.
-                                                 .map(key -> new Threshold(Integer.parseInt(key), ConfigUtils.loadImmutableStringOrStringList(thresholdSectionPath + '.' + key)))
-                                                 // Collect the keys.
-                                                 .collect(Collectors.toList()));
+        return new MultiThresholds(Objects.requireNonNull(ConfigUtils.loadKeys(thresholdSectionPath), "Severe loading error: Keys are null when loading: " + thresholdSectionPath)
+                                          .stream()
+                                          // Create a new Threshold for every key.
+                                          .map(key -> new Threshold(Integer.parseInt(key), ConfigUtils.loadImmutableStringOrStringList(thresholdSectionPath + '.' + key)))
+                                          // Collect the keys.
+                                          .collect(Collectors.toList()));
     }
 
     @Override

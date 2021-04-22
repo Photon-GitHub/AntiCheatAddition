@@ -38,28 +38,28 @@ public class ModuleLoader
     Set<ServerVersion> allowedServerVersions;
 
     // Loading
-    BatchProcessor batchProcessor;
+    BatchProcessor<?> batchProcessor;
     Set<MessageChannel> incoming;
     Set<MessageChannel> outgoing;
 
     boolean listener;
     boolean packetListener;
 
-    public ModuleLoader(Module module, boolean bungeecordForbidden, Set<String> pluginDependencies, Set<String> pluginIncompatibilities, Set<ServerVersion> allowedServerVersions, BatchProcessor batchProcessor, Set<MessageChannel> incoming, Set<MessageChannel> outgoing)
+    public ModuleLoader(Module module, boolean bungeecordForbidden, Set<String> pluginDependencies, Set<String> pluginIncompatibilities, Set<ServerVersion> allowedServerVersions, BatchProcessor<?> batchProcessor, Set<MessageChannel> incoming, Set<MessageChannel> outgoing)
     {
         this.module = module;
         this.bungeecordForbidden = bungeecordForbidden;
-        this.pluginDependencies = pluginDependencies;
-        this.pluginIncompatibilities = pluginIncompatibilities;
-        this.allowedServerVersions = allowedServerVersions;
+        this.pluginDependencies = ImmutableSet.copyOf(pluginDependencies);
+        this.pluginIncompatibilities = ImmutableSet.copyOf(pluginIncompatibilities);
+        this.allowedServerVersions = Sets.immutableEnumSet(allowedServerVersions);
         this.batchProcessor = batchProcessor;
-        this.incoming = incoming;
-        this.outgoing = outgoing;
+        this.incoming = ImmutableSet.copyOf(incoming);
+        this.outgoing = ImmutableSet.copyOf(outgoing);
 
-        this.listener = module instanceof Listener;
-        this.packetListener = module instanceof PacketListener;
+        this.listener = (module instanceof Listener);
+        this.packetListener = (module instanceof PacketListener);
 
-        Preconditions.checkArgument(module instanceof PluginMessageListener == !(incoming.isEmpty() && outgoing.isEmpty()), "Channels have to be registered in a PluginMessageListener Module and cannot be registered otherwise.");
+        Preconditions.checkArgument((module instanceof PluginMessageListener) == !(incoming.isEmpty() && outgoing.isEmpty()), "Channels have to be registered in a PluginMessageListener Module and cannot be registered otherwise.");
     }
 
     public static Builder builder(Module module)
@@ -79,15 +79,15 @@ public class ModuleLoader
             return false;
         }
 
-        val missingDependencies = pluginDependencies.stream().filter(dependency -> !Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)).collect(Collectors.toSet());
+        val missingDependencies = pluginDependencies.stream().filter(dependency -> !Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)).sorted().collect(Collectors.joining(", "));
         if (!missingDependencies.isEmpty()) {
-            DebugSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been not been enabled as of missing dependencies. Missing: " + String.join(", ", missingDependencies), true, false);
+            DebugSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been not been enabled as of missing dependencies. Missing: " + missingDependencies, true, false);
             return false;
         }
 
-        val loadedIncompatibilities = pluginIncompatibilities.stream().filter(dependency -> Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)).collect(Collectors.toSet());
+        val loadedIncompatibilities = pluginIncompatibilities.stream().filter(dependency -> Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)).sorted().collect(Collectors.joining(", "));
         if (!loadedIncompatibilities.isEmpty()) {
-            DebugSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + String.join(", ", loadedIncompatibilities), true, false);
+            DebugSender.getInstance().sendVerboseMessage(module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + loadedIncompatibilities, true, false);
             return false;
         }
 
@@ -136,7 +136,7 @@ public class ModuleLoader
         private final Set<MessageChannel> outgoing = new HashSet<>();
         private Set<ServerVersion> allowedServerVersions = EnumSet.noneOf(ServerVersion.class);
         private boolean bungeecordForbidden = false;
-        private BatchProcessor batchProcessor = null;
+        private BatchProcessor<?> batchProcessor = null;
 
         public Builder disallowBungeeCord()
         {
@@ -168,7 +168,7 @@ public class ModuleLoader
             return this;
         }
 
-        public Builder batchProcessor(BatchProcessor batchProcessor)
+        public Builder batchProcessor(BatchProcessor<?> batchProcessor)
         {
             this.batchProcessor = batchProcessor;
             return this;

@@ -2,6 +2,9 @@ package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.events.SentinelEvent;
+import de.photon.aacadditionpro.modules.Module;
+import de.photon.aacadditionpro.user.data.Constants;
+import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
@@ -10,26 +13,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DetectionManagement extends ViolationManagement
 {
-    private final Set<UUID> detectionSet = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> detectionSet = ConcurrentHashMap.newKeySet(Constants.SERVER_EXPECTED_PLAYERS);
 
-    /**
-     * Create a new {@link ViolationManagement}
-     *
-     * @param moduleId   the module id of the module this {@link ViolationManagement} is being used by.
-     * @param management the backing {@link ThresholdManagement}.
-     */
-    public DetectionManagement(String moduleId, ThresholdManagement management)
+    public DetectionManagement(Module module)
     {
-        super(moduleId, management);
+        super(module, ThresholdManagement.loadCommands(module.getConfigString() + ".commands_on_detection"));
     }
-
 
     @Override
     public void flag(Flag flag)
     {
         Preconditions.checkArgument(flag.addedVl == 1, "Tried to add more than 1 vl in detection management.");
 
-        if (!SentinelEvent.build(flag.player, this.moduleId).call().isCancelled()) {
+        if (!SentinelEvent.build(flag.player, this.module.getModuleId()).call().isCancelled()) {
             this.addVL(flag.player, flag.addedVl);
             // No execution of the Runnables of flag.
         }
@@ -45,13 +41,22 @@ public class DetectionManagement extends ViolationManagement
     public void setVL(Player player, int newVl)
     {
         Preconditions.checkArgument(newVl <= 1, "A Sentinel detection management only supports the vls 0 (no detection) and 1 (detection).");
-        detectionSet.add(player.getUniqueId());
+
+        if (newVl == 0) {
+            this.detectionSet.remove(player.getUniqueId());
+        } else {
+            this.addVL(player, 1);
+        }
     }
 
     @Override
     protected void addVL(Player player, int vl)
     {
         Preconditions.checkArgument(vl <= 1, "A Sentinel detection management only supports the vls 0 (no detection) and 1 (detection).");
-        detectionSet.add(player.getUniqueId());
+
+        // Only punish if the detection is new.
+        if (detectionSet.add(player.getUniqueId())) {
+            this.punishPlayer(player, 0, 1);
+        }
     }
 }

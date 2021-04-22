@@ -1,6 +1,8 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionpro.modules.Module;
+import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
 import org.bukkit.entity.Player;
 
 import java.util.Set;
@@ -10,15 +12,15 @@ public class ViolationAggregateManagement extends ViolationManagement
 {
     private final Set<ViolationManagement> subViolationManagements;
 
-    /**
-     * Create a new {@link ViolationManagement}
-     *
-     * @param moduleId the module id of the module this {@link ViolationManagement} is being used by.
-     */
-    public ViolationAggregateManagement(String moduleId, ThresholdManagement management, ViolationManagement... subViolationManagements)
+    public ViolationAggregateManagement(Module module, ThresholdManagement management, ViolationManagement... subViolationManagements)
     {
-        super(moduleId, management);
+        super(module, management);
         this.subViolationManagements = ImmutableSet.copyOf(subViolationManagements);
+    }
+
+    public ViolationAggregateManagement(Module module, ViolationManagement... subViolationManagements)
+    {
+        this(module, ThresholdManagement.loadThresholds(module.getConfigString() + ".thresholds"), subViolationManagements);
     }
 
     @Override

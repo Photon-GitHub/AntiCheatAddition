@@ -1,9 +1,13 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.base.Preconditions;
+import de.photon.aacadditionpro.modules.Module;
+import de.photon.aacadditionpro.util.violationlevels.threshold.Threshold;
+import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
 import de.photon.aacadditionproold.AACAdditionPro;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -11,29 +15,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 public abstract class ViolationManagement
 {
+    /**
+     * The module id of the handler
+     */
+    protected final Module module;
+
     /**
      * A {@link List} of {@link Threshold}s which is guaranteed to be sorted.
      */
     protected final ThresholdManagement thresholds;
-
-    /**
-     * The module id of the handler
-     */
-    protected final String moduleId;
-
-    /**
-     * Create a new {@link ViolationManagement}
-     *
-     * @param moduleId   the module id of the module this {@link ViolationManagement} is being used by.
-     * @param management the backing {@link ThresholdManagement}.
-     */
-    public ViolationManagement(String moduleId, ThresholdManagement management)
-    {
-        this.moduleId = moduleId;
-        this.thresholds = management;
-    }
 
     public static Flag flagFromPlayer(Player player)
     {
@@ -121,16 +114,14 @@ public abstract class ViolationManagement
         public Flag setCancelAction(int cancelVl, Runnable onCancel)
         {
             Preconditions.checkArgument(cancelVl >= 0, "Set negative cancel vl in flag.");
-            Preconditions.checkArgument(onCancel != null, "Tried to set null onCancel action in flag.");
             this.cancelVl = cancelVl;
-            this.onCancel = onCancel;
+            this.onCancel = Preconditions.checkNotNull(onCancel, "Tried to set null onCancel action in flag.");
             return this;
         }
 
         public Flag setEventNotCancelledAction(Runnable eventNotCancelled)
         {
-            Preconditions.checkArgument(eventNotCancelled != null, "Tried to set null eventNotCancelled action in flag.");
-            this.eventNotCancelled = eventNotCancelled;
+            this.eventNotCancelled = Preconditions.checkNotNull(eventNotCancelled, "Tried to set null eventNotCancelled action in flag.");
             return this;
         }
 

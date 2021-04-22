@@ -1,6 +1,8 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
 import de.photon.aacadditionpro.events.ViolationEvent;
+import de.photon.aacadditionpro.modules.Module;
+import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -9,16 +11,15 @@ public class ViolationLevelManagement extends ViolationManagement
 {
     private final ViolationLevelMultiSet vlMultiSet;
 
-    /**
-     * Create a new {@link ViolationManagement}
-     *
-     * @param moduleId   the module id of the module this {@link ViolationManagement} is being used by.
-     * @param decayTicks the time in ticks until the vl of a player is decreased by one. If this is negative no decrease will happen.
-     */
-    public ViolationLevelManagement(String moduleId, ThresholdManagement management, long decayTicks)
+    public ViolationLevelManagement(Module module, ThresholdManagement management, long decayTicks)
     {
-        super(moduleId, management);
+        super(module, management);
         vlMultiSet = new ViolationLevelMultiSet(decayTicks);
+    }
+
+    public ViolationLevelManagement(Module module, long decayTicks)
+    {
+        this(module, ThresholdManagement.loadThresholds(module.getConfigString() + ".thresholds"), decayTicks);
     }
 
     @Override
@@ -26,7 +27,7 @@ public class ViolationLevelManagement extends ViolationManagement
     {
         if (flag.addedVl <= 0) return;
 
-        if (!ViolationEvent.build(flag.player, this.moduleId, flag.addedVl).call().isCancelled()) {
+        if (!ViolationEvent.build(flag.player, this.module.getModuleId(), flag.addedVl).call().isCancelled()) {
             this.addVL(flag.player, flag.addedVl);
             flag.executeRunnablesIfNeeded(this.getVL(flag.player.getUniqueId()));
         }

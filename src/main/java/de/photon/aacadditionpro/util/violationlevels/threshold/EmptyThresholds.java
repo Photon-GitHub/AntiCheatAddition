@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-class EmptyThresholds extends ThresholdManagement
+class EmptyThresholds implements ThresholdManagement
 {
     @Override
     public void executeThresholds(int fromVl, int toVl, Collection<Player> players)

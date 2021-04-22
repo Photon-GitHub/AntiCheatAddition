@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 
 @RequiredArgsConstructor
-class SingleThresholds extends ThresholdManagement
+class SingleThresholds implements ThresholdManagement
 {
     private final Threshold threshold;
 

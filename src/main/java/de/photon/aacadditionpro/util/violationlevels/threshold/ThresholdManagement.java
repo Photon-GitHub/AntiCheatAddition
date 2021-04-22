@@ -8,9 +8,9 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public abstract class ThresholdManagement
+public interface ThresholdManagement
 {
-    public static ThresholdManagement loadThresholds(String configPath)
+    static ThresholdManagement loadThresholds(String configPath)
     {
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
         val keys = Preconditions.checkNotNull(ConfigUtils.loadKeys(configPath), "Config loading error: The keys loaded from " + configPath + " are null.");
@@ -26,7 +26,7 @@ public abstract class ThresholdManagement
         }
     }
 
-    public static ThresholdManagement loadCommands(String configPath)
+    static ThresholdManagement loadCommands(String configPath)
     {
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
         val commands = Preconditions.checkNotNull(ConfigUtils.loadImmutableStringOrStringList(configPath), "Config loading error: The commands at " + configPath + " could not be loaded.");
@@ -36,5 +36,5 @@ public abstract class ThresholdManagement
     /**
      * Used to execute the commands of the {@link Threshold}s in this  {@link MultiThresholds}.
      */
-    public abstract void executeThresholds(int fromVl, int toVl, Collection<Player> players);
+    void executeThresholds(int fromVl, int toVl, Collection<Player> players);
 }

@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.util.mathematics;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MathUtil
@@ -72,7 +73,7 @@ public final class MathUtil
      */
     public static double squaredError(final double reference, final double value)
     {
-        double error = value - reference;
+        val error = value - reference;
         return error * error;
     }
 

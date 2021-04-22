@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.util.mathematics;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -42,10 +43,10 @@ public enum Hitbox
 
     public Vector[] getLowResolutionCalculationVectors(final Location location)
     {
-        final Vector[] vectors = new Vector[8];
+        val vectors = new Vector[8];
 
-        final double lowerY = location.getY();
-        final double upperY = lowerY + this.height;
+        val lowerY = location.getY();
+        val upperY = lowerY + this.height;
 
         // Lower corners
         vectors[0] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ() + this.offsetZ));
@@ -75,7 +76,7 @@ public enum Hitbox
         final List<Vector> vectors = new ArrayList<>(13);
         Collections.addAll(vectors, getLowResolutionCalculationVectors(location));
 
-        final double upperY = location.getY() + this.height;
+        val upperY = location.getY() + this.height;
 
         Vector start = location.toVector();
         while (start.getY() < upperY) {
@@ -108,7 +109,7 @@ public enum Hitbox
 
     public int[] getPartiallyIncludedBlocksCoordinates(@NotNull final Location location)
     {
-        final int[] coordinates = new int[6];
+        val coordinates = new int[6];
         coordinates[0] = (int) (location.getX() - this.offsetX);
         coordinates[1] = (int) location.getY();
         coordinates[2] = (int) (location.getZ() - this.offsetZ);
@@ -127,7 +128,7 @@ public enum Hitbox
     {
         Preconditions.checkNotNull(location.getWorld(), "Tried to get blocks in hitbox of location with null world.");
 
-        int[] c = getPartiallyIncludedBlocksCoordinates(location);
+        val c = getPartiallyIncludedBlocksCoordinates(location);
         final List<Block> blocks = new ArrayList<>(MathUtil.absDiff(c[0], c[3]) * MathUtil.absDiff(c[1], c[4]) * MathUtil.absDiff(c[2], c[5]) + 1);
 
         for (; c[0] <= c[3]; ++c[0]) {
@@ -147,8 +148,8 @@ public enum Hitbox
     {
         Preconditions.checkNotNull(location.getWorld(), "Tried to get blocks in hitbox of location with null world.");
 
-        final int[] c = getPartiallyIncludedBlocksCoordinates(location);
-        final Set<Material> materials = EnumSet.noneOf(Material.class);
+        val c = getPartiallyIncludedBlocksCoordinates(location);
+        val materials = EnumSet.noneOf(Material.class);
 
         for (; c[0] <= c[3]; ++c[0]) {
             for (; c[1] <= c[4]; ++c[1]) {

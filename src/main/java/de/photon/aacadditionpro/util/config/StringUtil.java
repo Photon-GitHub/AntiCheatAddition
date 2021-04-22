@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.files.configs;
+package de.photon.aacadditionpro.util.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

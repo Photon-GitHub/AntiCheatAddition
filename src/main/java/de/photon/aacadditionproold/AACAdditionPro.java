@@ -4,7 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.util.files.configs.Configs;
+import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionproold.command.MainCommand;
 import de.photon.aacadditionproold.events.APILoadedEvent;
 import de.photon.aacadditionproold.modules.ModuleManager;

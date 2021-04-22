@@ -1,7 +1,8 @@
-package de.photon.aacadditionpro.util.files.configs;
+package de.photon.aacadditionpro.util.config;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.val;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -37,7 +37,7 @@ public class ConfigurationRepresentation
     private static int searchForPath(List<String> configLines, String path)
     {
         // Special handling for paths without a '.'
-        final String[] pathParts = path.split("\\.");
+        val pathParts = path.split("\\.");
 
         int currentPart = 0;
         int depthOfCurrentPart = 0;
@@ -70,7 +70,7 @@ public class ConfigurationRepresentation
         int affectedLines = 0;
 
         // + 1 as the initial line should not be iterated over.
-        final ListIterator<String> listIterator = configLines.listIterator(initialLine + 1);
+        val listIterator = configLines.listIterator(initialLine + 1);
         String configLine;
         while (listIterator.hasNext()) {
             configLine = listIterator.next();
@@ -100,11 +100,11 @@ public class ConfigurationRepresentation
 
         // Load the whole config.
         // Use LinkedList for fast mid-config tampering.
-        final List<String> configLines = Files.readAllLines(this.configFile.toPath());
+        val configLines = Files.readAllLines(this.configFile.toPath());
 
         requestedChanges.forEach((path, value) -> {
-            final int initialLineIndex = searchForPath(configLines, path);
-            final int affectedLines = affectedLines(configLines, initialLineIndex, line -> isComment(line) || line.indexOf(':') != -1);
+            val initialLineIndex = searchForPath(configLines, path);
+            val affectedLines = affectedLines(configLines, initialLineIndex, line -> isComment(line) || line.indexOf(':') != -1);
 
             // Remove old values
             for (int lines = affectedLines; lines > 0; lines--) {
@@ -134,7 +134,7 @@ public class ConfigurationRepresentation
                 initialLine += ((String) value);
                 initialLine += '\"';
             } else if (value instanceof List) {
-                List list = (List) value;
+                val list = (List) value;
 
                 if (list.isEmpty()) {
                     initialLine += " []";

@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.files.configs;
+package de.photon.aacadditionpro.util.config;
 
 import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionproold.AACAdditionPro;

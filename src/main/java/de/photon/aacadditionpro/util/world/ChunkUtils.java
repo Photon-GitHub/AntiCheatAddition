@@ -44,9 +44,7 @@ public final class ChunkUtils
         Preconditions.checkArgument(LocationUtils.inSameWorld(one, two), "Tried to check chunks between worlds.");
 
         // Basic starting location check
-        if (!isChunkLoaded(one.getWorld(), one.getBlockX(), one.getBlockZ())) {
-            return false;
-        }
+        if (!isChunkLoaded(one.getWorld(), one.getBlockX(), one.getBlockZ())) return false;
 
         final boolean modifyX;
 

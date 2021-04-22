@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.util.mathematics;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
@@ -30,9 +31,7 @@ public final class RotationUtil
     public static float reduceAngleDoubleStep(float input, float minMax)
     {
         final float doubleMinMax = 2 * minMax;
-
         input %= doubleMinMax;
-
         return reduceAngle(input, minMax, doubleMinMax);
     }
 
@@ -59,7 +58,6 @@ public final class RotationUtil
         } else if (input < -minMax) {
             input += step;
         }
-
         return input;
     }
 
@@ -93,7 +91,7 @@ public final class RotationUtil
     @SuppressWarnings("RedundantCast")
     public static Vector getDirection(final float yaw, final float pitch)
     {
-        Vector vector = new Vector();
+        val vector = new Vector();
 
         vector.setY(-Math.sin(Math.toRadians((double) pitch)));
 

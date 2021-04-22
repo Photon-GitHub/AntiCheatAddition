@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.util.messaging;
 import de.photon.aacadditionproold.AACAdditionPro;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -35,7 +36,7 @@ public final class ChatMessage
      */
     public static void sendMessage(final Iterable<? extends CommandSender> senders, final String message)
     {
-        final String prefixedMessage = AACADDITIONPRO_PREFIX + message;
+        val prefixedMessage = AACADDITIONPRO_PREFIX + message;
         for (CommandSender cs : senders) cs.sendMessage(prefixedMessage);
     }
 

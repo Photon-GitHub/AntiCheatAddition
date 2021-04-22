@@ -82,11 +82,10 @@ public final class BlockUtil
     public static List<Block> getBlocksAround(final Block block, final Set<BlockFace> faces)
     {
         final List<Block> blocks = new ArrayList<>(6);
+        Block relative;
         for (final BlockFace face : faces) {
-            final Block relative = block.getRelative(face);
-            if (!relative.isEmpty()) {
-                blocks.add(relative);
-            }
+            relative = block.getRelative(face);
+            if (!relative.isEmpty()) blocks.add(relative);
         }
         return blocks;
     }

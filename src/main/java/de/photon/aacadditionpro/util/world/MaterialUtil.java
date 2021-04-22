@@ -5,6 +5,7 @@ import de.photon.aacadditionproold.ServerVersion;
 import de.photon.aacadditionproold.util.exceptions.UnknownMinecraftVersion;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.bukkit.Material;
 
 import java.util.Collection;
@@ -23,10 +24,10 @@ public final class MaterialUtil
     public static final Set<Material> FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS;
 
     static {
-        final EnumSet<Material> freeSpaceMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
+        val freeSpaceMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
         freeSpaceMaterials.addAll(getMaterialsEndingWith("SHULKER_BOK"));
 
-        final EnumSet<Material> allowedMaterials = EnumSet.of(Material.AIR, Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST, Material.ANVIL);
+        val allowedMaterials = EnumSet.of(Material.AIR, Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST, Material.ANVIL);
         allowedMaterials.addAll(getMaterialsEndingWith("_SLAB", "_STAIRS"));
 
         switch (ServerVersion.getActiveServerVersion()) {
@@ -62,7 +63,7 @@ public final class MaterialUtil
 
     public static Set<Material> getMaterialsEndingWith(String... ends)
     {
-        final Set<Material> materials = EnumSet.noneOf(Material.class);
+        val materials = EnumSet.noneOf(Material.class);
         for (Material material : Material.values()) {
             for (String end : ends) {
                 if (material.name().endsWith(end)) {
@@ -106,7 +107,7 @@ public final class MaterialUtil
 
     /**
      * Checks if a {@link Collection} of {@link Material}s contains liquids.
-     * */
+     */
     public static boolean containsLiquids(final Collection<Material> toBeSearched)
     {
         return containsMaterials(LIQUIDS, toBeSearched);

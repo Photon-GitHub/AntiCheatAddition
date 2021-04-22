@@ -5,9 +5,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.commands.MainCommand;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.util.files.configs.Configs;
+import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import lombok.Getter;
+import lombok.val;
 import me.konsolas.aac.api.AACAPI;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -92,7 +93,7 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             DebugSender.getInstance().sendVerboseMessage("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AACAdditionPro/3265", true, false);
-            final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
+            val metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // The first getConfig call will automatically saveToFile and cache the config.
 

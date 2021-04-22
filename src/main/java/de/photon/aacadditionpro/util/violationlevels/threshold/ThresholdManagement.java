@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.util.violationlevels.threshold;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
+import de.photon.aacadditionpro.util.config.ConfigUtils;
 import lombok.val;
 import org.bukkit.entity.Player;
 

@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.bukkit.Bukkit;
 
 import java.util.Arrays;
@@ -36,11 +37,11 @@ public enum ServerVersion
     private static final ServerVersion activeServerVersion;
 
     static {
-        final Set<ServerVersion> allSup = EnumSet.allOf(ServerVersion.class);
+        val allSup = EnumSet.allOf(ServerVersion.class);
         allSup.removeIf(serverVersion -> !serverVersion.supported);
         ALL_SUPPORTED_VERSIONS = Sets.immutableEnumSet(allSup);
 
-        final Set<ServerVersion> non18 = EnumSet.copyOf(ALL_SUPPORTED_VERSIONS);
+        val non18 = EnumSet.copyOf(ALL_SUPPORTED_VERSIONS);
         non18.remove(MC18);
         NON_188_VERSIONS = Sets.immutableEnumSet(non18);
 

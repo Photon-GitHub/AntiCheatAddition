@@ -10,6 +10,11 @@ import java.util.stream.Collectors;
 
 public interface ThresholdManagement
 {
+    /**
+     * Empty {@link ThresholdManagement} that doesn't have any {@link Threshold}s.
+     */
+    ThresholdManagement EMPTY = (fromVl, toVl, players) -> {};
+
     static ThresholdManagement loadThresholds(String configPath)
     {
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
@@ -18,7 +23,7 @@ public interface ThresholdManagement
 
         switch (thresholds.size()) {
             case 0:
-                return new EmptyThresholds();
+                return EMPTY;
             case 1:
                 return new SingleThresholds(thresholds.get(0));
             default:
@@ -30,7 +35,7 @@ public interface ThresholdManagement
     {
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
         val commands = Preconditions.checkNotNull(ConfigUtils.loadImmutableStringOrStringList(configPath), "Config loading error: The commands at " + configPath + " could not be loaded.");
-        return commands.isEmpty() ? new EmptyThresholds() : new SingleThresholds(new Threshold(1, commands));
+        return commands.isEmpty() ? EMPTY : new SingleThresholds(new Threshold(1, commands));
     }
 
     /**

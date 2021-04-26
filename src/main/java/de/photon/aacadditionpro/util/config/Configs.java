@@ -16,12 +16,12 @@ public enum Configs
     VIAVERSION("plugins/ViaVersion/config.yml");
 
     private final File configFile;
-    private final ConfigurationRepresentation configurationRepresentation;
+    private final ConfigurationRepresentationOld configurationRepresentation;
 
     Configs(final String path)
     {
         this.configFile = new File(path);
-        this.configurationRepresentation = new ConfigurationRepresentation(this.configFile);
+        this.configurationRepresentation = new ConfigurationRepresentationOld(this.configFile);
     }
 
     public static void saveChangesForAllConfigs()

@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.config;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionproold.AACAdditionPro;
 import de.photon.aacadditionproold.modules.Module;
@@ -11,10 +12,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -103,7 +104,8 @@ public final class ConfigUtils
      *
      * @return an {@link ImmutableList} of {@link String}s with the path as entries.
      */
-    public static List<String> loadImmutableStringOrStringList(final String path)
+    @NotNull
+    public static List<String> loadImmutableStringOrStringList(@NotNull final String path)
     {
         // Command list
         val input = AACAdditionPro.getInstance().getConfig().getStringList(path);
@@ -134,11 +136,8 @@ public final class ConfigUtils
      */
     public static Set<String> loadKeys(final String sectionPath)
     {
-        // Loading error when Config-Section is null
-        // Return the Set of keys
-        return Objects.requireNonNull(
-                // Generate a ConfigurationSection that contains all keys
-                AACAdditionPro.getInstance().getConfig().getConfigurationSection(sectionPath),
-                "Severe loading error: ConfigurationSection does not exist at " + sectionPath).getKeys(false);
+        // Return all the keys of the provided section.
+        return Preconditions.checkNotNull(AACAdditionPro.getInstance().getConfig().getConfigurationSection(sectionPath),
+                                          "Config loading error: ConfigurationSection does not exist at " + sectionPath).getKeys(false);
     }
 }

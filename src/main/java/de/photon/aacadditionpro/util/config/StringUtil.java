@@ -3,6 +3,8 @@ package de.photon.aacadditionpro.util.config;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -14,6 +16,7 @@ public final class StringUtil
      * Constructs a new {@link String} from a byte array according to the {@link StandardCharsets#UTF_8}.
      * This is used in various plugin messages.
      */
+    @NotNull
     public static String fromUTF8Bytes(final byte[] bytes)
     {
         return new String(bytes, StandardCharsets.UTF_8);
@@ -28,8 +31,7 @@ public final class StringUtil
      */
     public static String limitStringLength(final String input, int maximumChars)
     {
-        // No need to reduce input.length() by 1 as substring's last letter handling is exclusive.
-        return input.substring(0, Math.min(input.length(), maximumChars));
+        return StringUtils.left(input, maximumChars);
     }
 
     /**

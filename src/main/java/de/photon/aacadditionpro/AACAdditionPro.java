@@ -2,8 +2,8 @@ package de.photon.aacadditionpro;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.commands.MainCommand;
+import de.photon.aacadditionpro.modules.ModuleManager;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
@@ -119,40 +119,9 @@ public class AACAdditionPro extends JavaPlugin
 
             // Managers
             this.registerListener(new User.UserListener());
-            this.moduleManager = new ModuleManager(ImmutableSet.of(
-                    // Additions
-                    BrandHider.getInstance(),
-                    LogBot.getInstance(),
-
-                    // ClientControl
-                    BetterSprintingControl.getInstance(),
-                    DamageIndicator.getInstance(),
-                    FiveZigControl.getInstance(),
-                    ForgeControl.getInstance(),
-                    LabyModControl.getInstance(),
-                    LiteLoaderControl.getInstance(),
-                    OldLabyModControl.getInstance(),
-                    PXModControl.getInstance(),
-                    SchematicaControl.getInstance(),
-                    VapeControl.getInstance(),
-                    VersionControl.getInstance(),
-                    WorldDownloaderControl.getInstance(),
-
-                    // Normal checks
-                    AutoEat.getInstance(),
-                    AutoFish.getInstance(),
-                    AutoPotion.getInstance(),
-                    Esp.getInstance(),
-                    Fastswitch.getInstance(),
-                    ImpossibleChat.getInstance(),
-                    Inventory.getInstance(),
-                    KeepAlive.getInstance(),
-                    PacketAnalysis.getInstance(),
-                    Scaffold.getInstance(),
-                    SkinBlinker.getInstance(),
-                    Teaming.getInstance(),
-                    Tower.getInstance())
-            );
+            // Load the module manager
+            //noinspection ResultOfMethodCallIgnored
+            ModuleManager.getMODULES();
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                AAC hook                                                //

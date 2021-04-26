@@ -1,14 +1,16 @@
 package de.photon.aacadditionpro.modules;
 
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
+import lombok.Getter;
 
-public class ViolationModule extends Module
+public abstract class ViolationModule extends Module
 {
-    private final ViolationManagement management;
+    @Getter(lazy = true) private final ViolationManagement management = createViolationManagement();
 
-    public ViolationModule(String configString, ModuleLoader moduleLoader, ViolationManagement management)
+    public ViolationModule(String configString)
     {
-        super(configString, moduleLoader);
-        this.management = management;
+        super(configString);
     }
+
+    protected abstract ViolationManagement createViolationManagement();
 }

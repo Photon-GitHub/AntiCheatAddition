@@ -127,7 +127,7 @@ public class ModuleLoader
     }
 
     @RequiredArgsConstructor
-    private static class Builder
+    public static class Builder
     {
         private final Module module;
         private final Set<String> pluginDependencies = new HashSet<>();

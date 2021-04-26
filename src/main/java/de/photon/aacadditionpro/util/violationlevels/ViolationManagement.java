@@ -28,15 +28,16 @@ public abstract class ViolationManagement
      */
     protected final ThresholdManagement thresholds;
 
-    public static Flag flagFromPlayer(Player player)
+    public static Flag createFlag(Player player)
     {
         return new Flag(player);
     }
 
-    public static Flag flagFromPlayers(Collection<Player> players)
+    public static Flag createFlag(Collection<Player> players)
     {
         return new Flag(players);
     }
+
 
     /**
      * Flags a {@link Player} according to the options set in the {@link Flag}.
@@ -85,7 +86,7 @@ public abstract class ViolationManagement
      * {@link Flag} contains the player
      */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    protected static class Flag
+    public static class Flag
     {
         protected Player player;
         protected Collection<Player> team;

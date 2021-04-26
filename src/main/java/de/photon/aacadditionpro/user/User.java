@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.user;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.InternalPermission;
+import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.user.data.DataMap;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.user.data.TimestampMap;
@@ -88,6 +89,19 @@ public class User implements CommandSender
     public static Set<User> getDebugUsers()
     {
         return DEBUG_USERS;
+    }
+
+    /**
+     * This checks if this {@link User} still exists and should be checked.
+     *
+     * @param user             the {@link User} to be checked.
+     * @param bypassPermission the bypass permission of the module.
+     *
+     * @return true if the {@link User} is null or bypassed.
+     */
+    public static boolean isUserInvalid(@Nullable User user, @NotNull Module module)
+    {
+        return user == null || user.getPlayer() == null || user.isBypassed(InternalPermission.bypassPermissionOf(module.getModuleId()));
     }
 
     /**

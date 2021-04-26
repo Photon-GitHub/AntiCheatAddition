@@ -5,6 +5,7 @@ import de.photon.aacadditionproold.AACAdditionPro;
 import de.photon.aacadditionproold.modules.Module;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -34,9 +35,7 @@ public final class ConfigUtils
             // Load the annotation and check if it is present.
             annotation = field.getAnnotation(LoadFromConfiguration.class);
 
-            if (annotation == null) {
-                continue;
-            }
+            if (annotation == null) continue;
 
             // Make it possible to modify the field
             field.setAccessible(true);
@@ -44,12 +43,10 @@ public final class ConfigUtils
             // Get the full config path.
             String path = annotation.configPath();
 
-            if (prePath != null) {
-                path = prePath + path;
-            }
+            if (prePath != null) path = prePath + path;
 
             // Get the type of the field.
-            final Class type = field.getType();
+            val type = field.getType();
 
             // The different classes
             try {
@@ -109,11 +106,11 @@ public final class ConfigUtils
     public static List<String> loadImmutableStringOrStringList(final String path)
     {
         // Command list
-        final List<String> input = AACAdditionPro.getInstance().getConfig().getStringList(path);
+        val input = AACAdditionPro.getInstance().getConfig().getStringList(path);
 
         // Single command
         if (input.isEmpty()) {
-            final String possibleCommand = AACAdditionPro.getInstance().getConfig().getString(path);
+            val possibleCommand = AACAdditionPro.getInstance().getConfig().getString(path);
 
             // No-command indicator or null
             return possibleCommand == null || "{}".equals(possibleCommand) ?

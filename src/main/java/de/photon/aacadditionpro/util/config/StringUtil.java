@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.util.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -38,7 +39,7 @@ public final class StringUtil
      */
     public static int depth(final String string)
     {
-        for (int i = 0; i < string.length(); ++i) {
+        for (int i = 0, n = string.length(); i < n; ++i) {
             if (string.charAt(i) != ' ') return i;
         }
         return 0;
@@ -66,7 +67,7 @@ public final class StringUtil
      */
     public static boolean stringContainsFlagsIgnoreCase(final String input, final String... flags)
     {
-        final String lowerCaseInput = input.toLowerCase(Locale.ENGLISH);
+        val lowerCaseInput = input.toLowerCase(Locale.ENGLISH);
         for (String flag : flags) {
             if (lowerCaseInput.contains(flag.toLowerCase(Locale.ENGLISH))) return true;
         }

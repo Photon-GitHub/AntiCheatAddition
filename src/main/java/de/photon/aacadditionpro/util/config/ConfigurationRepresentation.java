@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.util.config;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.val;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -71,13 +72,11 @@ public class ConfigurationRepresentation
 
         // + 1 as the initial line should not be iterated over.
         val listIterator = configLines.listIterator(initialLine + 1);
-        String configLine;
+        String line;
         while (listIterator.hasNext()) {
-            configLine = listIterator.next();
-
+            line = listIterator.next();
             // ":" is the indicator of a new value
-            if (loopBreak.test(configLine)) break;
-
+            if (loopBreak.test(line)) break;
             ++affectedLines;
         }
         return affectedLines;
@@ -107,9 +106,7 @@ public class ConfigurationRepresentation
             val affectedLines = affectedLines(configLines, initialLineIndex, line -> isComment(line) || line.indexOf(':') != -1);
 
             // Remove old values
-            for (int lines = affectedLines; lines > 0; lines--) {
-                configLines.remove(initialLineIndex + 1);
-            }
+            deleteLines(configLines, initialLineIndex, affectedLines);
 
             // Change the initialLine to remove the old value
             String initialLine = configLines.get(initialLineIndex);
@@ -126,28 +123,16 @@ public class ConfigurationRepresentation
                 value instanceof Float ||
                 value instanceof Double)
             {
-                initialLine += ' ';
-                initialLine += value.toString();
+                initialLine += ' ' + value.toString();
             } else if (value instanceof String) {
-                initialLine += ' ';
-                initialLine += '\"';
-                initialLine += ((String) value);
-                initialLine += '\"';
+                initialLine += " \"" + value + '\"';
             } else if (value instanceof List) {
-                val list = (List) value;
+                val list = (List<?>) value;
 
                 if (list.isEmpty()) {
                     initialLine += " []";
                 } else {
-                    int entryDepth = StringUtil.depth(initialLine);
-                    final StringBuilder preStringBuilder = new StringBuilder();
-
-                    while (entryDepth-- > 0) {
-                        preStringBuilder.append(' ');
-                    }
-                    preStringBuilder.append("- ");
-
-                    final String preString = preStringBuilder.toString();
+                    val preString = StringUtils.leftPad("- ", StringUtil.depth(initialLine));
 
                     for (Object o : list) {
                         configLines.add(initialLineIndex + 1, preString + o.toString());
@@ -157,13 +142,11 @@ public class ConfigurationRepresentation
                 switch ((ConfigActions) value) {
                     case DELETE_KEYS:
                         initialLine += " {}";
-                        final int initialLineDepth = StringUtil.depth(initialLine);
-                        int affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> StringUtil.depth(line) <= initialLineDepth);
+                        val initialLineDepth = StringUtil.depth(initialLine);
+                        val affectedKeyLines = affectedLines(configLines, initialLineIndex, line -> StringUtil.depth(line) <= initialLineDepth);
 
                         // Remove old values
-                        for (int lines = affectedKeyLines; lines > 0; lines--) {
-                            configLines.remove(initialLineIndex + 1);
-                        }
+                        deleteLines(configLines, initialLineIndex, affectedKeyLines);
                         break;
                 }
             }
@@ -171,6 +154,13 @@ public class ConfigurationRepresentation
         });
 
         Files.write(this.configFile.toPath(), configLines);
+    }
+
+    private void deleteLines(final List<String> configLines, final int startPosition, final int lineCount)
+    {
+        for (int lines = lineCount; lines > 0; --lines) {
+            configLines.remove(startPosition + 1);
+        }
     }
 
     public enum ConfigActions

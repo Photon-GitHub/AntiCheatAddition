@@ -2,7 +2,7 @@ package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.events.SentinelEvent;
-import de.photon.aacadditionpro.modules.Module;
+import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.data.Constants;
 import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
 import org.bukkit.entity.Player;
@@ -15,7 +15,7 @@ public class DetectionManagement extends ViolationManagement
 {
     private final Set<UUID> detectionSet = ConcurrentHashMap.newKeySet(Constants.SERVER_EXPECTED_PLAYERS);
 
-    public DetectionManagement(Module module)
+    public DetectionManagement(ViolationModule module)
     {
         super(module, ThresholdManagement.loadCommands(module.getConfigString() + ".commands_on_detection"));
     }
@@ -23,10 +23,10 @@ public class DetectionManagement extends ViolationManagement
     @Override
     public void flag(Flag flag)
     {
-        Preconditions.checkArgument(flag.addedVl == 1, "Tried to add more than 1 vl in detection management.");
+        Preconditions.checkArgument(flag.getAddedVl() == 1, "Tried to add more than 1 vl in detection management.");
 
-        if (!SentinelEvent.build(flag.player, this.module.getModuleId()).call().isCancelled()) {
-            this.addVL(flag.player, flag.addedVl);
+        if (!SentinelEvent.build(flag.getPlayer(), this.module.getModuleId()).call().isCancelled()) {
+            this.addVL(flag.getPlayer(), flag.getAddedVl());
             // No execution of the Runnables of flag.
         }
     }

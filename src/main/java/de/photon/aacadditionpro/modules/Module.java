@@ -1,13 +1,10 @@
 package de.photon.aacadditionpro.modules;
 
 import de.photon.aacadditionpro.InternalPermission;
-import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.bukkit.entity.Player;
 
-import java.util.Collection;
 import java.util.Locale;
 
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY, onlyExplicitlyIncluded = true)
@@ -24,16 +21,6 @@ public abstract class Module
     {
         this.configString = configString;
         this.moduleId = "aacadditionpro_" + configString.toLowerCase(Locale.ENGLISH);
-    }
-
-    public static ViolationManagement.Flag createFlag(Player player)
-    {
-        return ViolationManagement.createFlag(player);
-    }
-
-    public static ViolationManagement.Flag createFlag(Collection<Player> players)
-    {
-        return ViolationManagement.createFlag(players);
     }
 
     public void setEnabled(boolean enabled)

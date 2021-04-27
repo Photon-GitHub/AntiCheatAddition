@@ -1,8 +1,10 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
+import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.events.ViolationEvent;
-import de.photon.aacadditionpro.modules.Module;
+import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
+import lombok.val;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -11,25 +13,24 @@ public class ViolationLevelManagement extends ViolationManagement
 {
     private final ViolationLevelMultiSet vlMultiSet;
 
-    public ViolationLevelManagement(Module module, ThresholdManagement management, long decayTicks)
+    public ViolationLevelManagement(ViolationModule module, ThresholdManagement management, long decayTicks)
     {
         super(module, management);
         vlMultiSet = new ViolationLevelMultiSet(decayTicks);
     }
 
-    public ViolationLevelManagement(Module module, long decayTicks)
+    public ViolationLevelManagement(ViolationModule module, long decayTicks)
     {
         this(module, ThresholdManagement.loadThresholds(module.getConfigString() + ".thresholds"), decayTicks);
     }
 
     @Override
-    public void flag(ViolationManagement.Flag flag)
+    public void flag(Flag flag)
     {
-        if (flag.addedVl <= 0) return;
-
-        if (!ViolationEvent.build(flag.player, this.module.getModuleId(), flag.addedVl).call().isCancelled()) {
-            this.addVL(flag.player, flag.addedVl);
-            flag.executeRunnablesIfNeeded(this.getVL(flag.player.getUniqueId()));
+        Preconditions.checkNotNull(flag.getPlayer(), "Tried to flag null player.");
+        if (!ViolationEvent.build(flag.getPlayer(), this.module.getModuleId(), flag.getAddedVl()).call().isCancelled()) {
+            this.addVL(flag.getPlayer(), flag.getAddedVl());
+            flag.executeRunnablesIfNeeded(this.getVL(flag.getPlayer().getUniqueId()));
         }
     }
 
@@ -42,19 +43,17 @@ public class ViolationLevelManagement extends ViolationManagement
     @Override
     public void setVL(Player player, int newVl)
     {
-        final int oldVl = this.vlMultiSet.getMultiset().setCount(player.getUniqueId(), newVl);
+        val oldVl = this.vlMultiSet.getMultiset().setCount(player.getUniqueId(), newVl);
 
         // setVL is also called when decreasing the vl
         // thus we must prevent double punishment
-        if (oldVl < newVl) {
-            this.punishPlayer(player, oldVl, newVl);
-        }
+        if (oldVl < newVl) this.punishPlayer(player, oldVl, newVl);
     }
 
     @Override
     protected void addVL(Player player, int vl)
     {
-        final int oldVl = this.vlMultiSet.getMultiset().add(player.getUniqueId(), vl);
+        val oldVl = this.vlMultiSet.getMultiset().add(player.getUniqueId(), vl);
 
         // setVL is also called when decreasing the vl
         // thus we must prevent double punishment

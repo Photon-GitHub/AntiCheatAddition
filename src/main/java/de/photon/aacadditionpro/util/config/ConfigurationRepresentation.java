@@ -57,11 +57,6 @@ public class ConfigurationRepresentation
         return affectedLines;
     }
 
-    public void requestValueChange(final String path, final Object value)
-    {
-        this.requestedChanges.put(path, value);
-    }
-
     private int searchForPath(@NotNull List<String> lines, @NotNull String path)
     {
         val pathParts = path.trim().split("\\.");
@@ -89,7 +84,12 @@ public class ConfigurationRepresentation
         throw new IllegalArgumentException("Path " + path + " could not be found (full iteration).");
     }
 
-    public void save() throws IOException
+    public synchronized void requestValueChange(final String path, final Object value)
+    {
+        this.requestedChanges.put(path, value);
+    }
+
+    public synchronized void save() throws IOException
     {
         // Directly inject changes.
         if (requestedChanges.isEmpty()) return;

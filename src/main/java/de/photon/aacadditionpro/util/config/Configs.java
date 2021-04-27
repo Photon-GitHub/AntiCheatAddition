@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.util.config;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
+import de.photon.aacadditionproold.util.files.configs.ConfigurationRepresentation;
 import lombok.Getter;
 
 import java.io.File;
@@ -16,12 +17,12 @@ public enum Configs
     VIAVERSION("plugins/ViaVersion/config.yml");
 
     private final File configFile;
-    private final ConfigurationRepresentationOld configurationRepresentation;
+    private final ConfigurationRepresentation configurationRepresentation;
 
     Configs(final String path)
     {
         this.configFile = new File(path);
-        this.configurationRepresentation = new ConfigurationRepresentationOld(this.configFile);
+        this.configurationRepresentation = new ConfigurationRepresentation(this.configFile);
     }
 
     public static void saveChangesForAllConfigs()

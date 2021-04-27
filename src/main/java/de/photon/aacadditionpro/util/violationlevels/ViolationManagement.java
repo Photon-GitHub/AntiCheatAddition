@@ -1,43 +1,40 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.modules.Module;
+import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.util.violationlevels.threshold.Threshold;
 import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
 import de.photon.aacadditionproold.AACAdditionPro;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-@RequiredArgsConstructor
 public abstract class ViolationManagement
 {
     /**
      * The module id of the handler
      */
-    protected final Module module;
-
+    @NotNull protected final ViolationModule module;
     /**
      * A {@link List} of {@link Threshold}s which is guaranteed to be sorted.
      */
-    protected final ThresholdManagement thresholds;
+    @NotNull protected final ThresholdManagement thresholds;
 
-    public static Flag createFlag(Player player)
+    /**
+     * Parent {@link ViolationAggregation} of this {@link ViolationManagement}
+     */
+    @Nullable @Setter protected ViolationAggregation parent = null;
+
+    public ViolationManagement(@NotNull ViolationModule module, @NotNull ThresholdManagement thresholds)
     {
-        return new Flag(player);
+        this.module = Preconditions.checkNotNull(module, "Tried to construct ViolationManagement with null module.");
+        this.thresholds = Preconditions.checkNotNull(thresholds, "Tried to construct ViolationManagement with null ThresholdManagemen.");
     }
-
-    public static Flag createFlag(Collection<Player> players)
-    {
-        return new Flag(players);
-    }
-
 
     /**
      * Flags a {@link Player} according to the options set in the {@link Flag}.
@@ -78,61 +75,6 @@ public abstract class ViolationManagement
         // Only schedule the command execution if the plugin is loaded and when we do not use AAC's feature handling.
         if (AACAdditionPro.getInstance().isLoaded() && AACAdditionPro.getInstance().getAacapi() == null) {
             this.thresholds.executeThresholds(fromVl, toVl, Collections.singleton(player));
-        }
-    }
-
-    /**
-     * Has options for the flagging process.
-     * {@link Flag} contains the player
-     */
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class Flag
-    {
-        protected Player player;
-        protected Collection<Player> team;
-        protected int addedVl = 1;
-        private int cancelVl = -1;
-        private Runnable onCancel = null;
-        private Runnable eventNotCancelled = null;
-
-        private Flag(Player player)
-        {
-            this.player = player;
-        }
-
-        private Flag(Collection<Player> team)
-        {
-            this.team = team;
-        }
-
-        public Flag setAddedVl(int addedVl)
-        {
-            Preconditions.checkArgument(cancelVl >= 1, "Tried to add no or negative vl in flag.");
-            this.addedVl = addedVl;
-            return this;
-        }
-
-        public Flag setCancelAction(int cancelVl, Runnable onCancel)
-        {
-            Preconditions.checkArgument(cancelVl >= 0, "Set negative cancel vl in flag.");
-            this.cancelVl = cancelVl;
-            this.onCancel = Preconditions.checkNotNull(onCancel, "Tried to set null onCancel action in flag.");
-            return this;
-        }
-
-        public Flag setEventNotCancelledAction(Runnable eventNotCancelled)
-        {
-            this.eventNotCancelled = Preconditions.checkNotNull(eventNotCancelled, "Tried to set null eventNotCancelled action in flag.");
-            return this;
-        }
-
-        /**
-         * This method will execute both the
-         */
-        public void executeRunnablesIfNeeded(int currentVl)
-        {
-            if (this.cancelVl >= 0 && currentVl >= this.cancelVl) this.onCancel.run();
-            if (this.eventNotCancelled != null) this.eventNotCancelled.run();
         }
     }
 }

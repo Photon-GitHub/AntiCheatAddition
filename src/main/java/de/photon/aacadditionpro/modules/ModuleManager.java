@@ -2,7 +2,9 @@ package de.photon.aacadditionpro.modules;
 
 import com.google.common.collect.ImmutableMap;
 import de.photon.aacadditionpro.modules.checks.AutoEat;
+import de.photon.aacadditionpro.modules.checks.autofish.AutoFishConsistency;
 import lombok.Getter;
+import lombok.val;
 
 import java.util.Map;
 
@@ -15,6 +17,11 @@ public class ModuleManager
         final ImmutableMap.Builder<String, Module> builder = ImmutableMap.builder();
         final ImmutableMap.Builder<String, Module> violationBuilder = ImmutableMap.builder();
         addModule(builder, violationBuilder, new AutoEat());
+
+        val autoFishConsistency = new AutoFishConsistency();
+        val autoFish = ViolationModule.parentOf("AutoFish", autoFishConsistency);
+        addModule(builder, violationBuilder, autoFishConsistency);
+        addModule(builder, violationBuilder, autoFish);
 
         moduleMap = builder.build();
         violationModuleMap = violationBuilder.build();

@@ -1,5 +1,7 @@
 package de.photon.aacadditionpro.user.data;
 
+import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -70,8 +72,19 @@ public final class DataKey
 
     @Getter
     @AllArgsConstructor
+    public enum CounterKey
+    {
+        AUTOFISH_FAILED(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("AutoFish.consistency.maximum_fails")));
+
+        private final ViolationCounter defaultValue;
+    }
+
+    @Getter
+    @AllArgsConstructor
     public enum ObjectKey
     {
+        AUTOFISH_CONSISTENCY_DATA(DoubleStatistics.class, new DoubleStatistics()),
+
         LAST_CONSUMED_ITEM_STACK(ItemStack.class, null),
 
         /**

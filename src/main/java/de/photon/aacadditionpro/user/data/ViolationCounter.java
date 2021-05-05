@@ -1,14 +1,19 @@
 package de.photon.aacadditionpro.user.data;
 
-import lombok.RequiredArgsConstructor;
+import com.google.common.base.Preconditions;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-@RequiredArgsConstructor
 public class ViolationCounter
 {
     private final AtomicLong counter = new AtomicLong(0);
     private final long threshold;
+
+    public ViolationCounter(long threshold)
+    {
+        Preconditions.checkArgument(threshold >= 0, "ViolationCounter threshold cannot be smaller than 0.");
+        this.threshold = threshold;
+    }
 
     /**
      * Gets the current count

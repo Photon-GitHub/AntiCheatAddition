@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.commands.MainCommand;
 import de.photon.aacadditionpro.modules.ModuleManager;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.data.DataUpdaterEvents;
 import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import lombok.Getter;

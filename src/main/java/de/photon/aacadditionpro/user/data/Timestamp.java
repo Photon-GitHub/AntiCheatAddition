@@ -30,6 +30,14 @@ public class Timestamp
     }
 
     /**
+     * Sets this {@link Timestamp} to a time in the future.
+     */
+    public void setToFuture(long futureMillis)
+    {
+        this.currentTime = System.currentTimeMillis() + futureMillis;
+    }
+
+    /**
      * This determines and returns the time which has passed since the {@link Timestamp} was updated the last time.
      *
      * @return the passed time in milliseconds.

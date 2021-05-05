@@ -20,7 +20,12 @@ public abstract class Module
     public Module(String configString)
     {
         this.configString = configString;
-        this.moduleId = "aacadditionpro_" + configString.toLowerCase(Locale.ENGLISH);
+        this.moduleId = generateModuleId(configString);
+    }
+
+    public static String generateModuleId(final String configString)
+    {
+        return "aacadditionpro_" + configString.toLowerCase(Locale.ENGLISH);
     }
 
     public void setEnabled(boolean enabled)

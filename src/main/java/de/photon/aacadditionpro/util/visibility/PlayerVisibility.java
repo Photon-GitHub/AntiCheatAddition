@@ -12,7 +12,6 @@ public class PlayerVisibility
     private final PlayerInformationHider equipmentHider = new PlayerEquipmentHider();
     private final PlayerInformationHider playerHider = new PlayerHider();
 
-
     /**
      * This sets how much information of the watched {@link Player} the observing {@link Player} can obtain.
      *
@@ -38,5 +37,19 @@ public class PlayerVisibility
             default:
                 throw new IllegalStateException("Unknown Hidemode.");
         }
+    }
+
+    public void enable()
+    {
+        this.equipmentHider.registerListeners();
+        this.playerHider.registerListeners();
+    }
+
+    public void disable()
+    {
+        this.equipmentHider.unregisterListeners();
+        this.equipmentHider.clear();
+        this.playerHider.unregisterListeners();
+        this.playerHider.clear();
     }
 }

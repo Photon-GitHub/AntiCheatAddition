@@ -1,6 +1,8 @@
 package de.photon.aacadditionpro.util.datastructure.buffer;
 
 import de.photon.aacadditionpro.util.mathematics.ModularInteger;
+import lombok.val;
+import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -42,6 +44,12 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
         this.tail = new ModularInteger(0, maxSize);
     }
 
+    public RingBuffer(int maxSize, T defaultObject)
+    {
+        this(maxSize);
+        Arrays.fill(array, defaultObject);
+    }
+
     @Override
     public int getMaxSize()
     {
@@ -71,6 +79,12 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
     public boolean isEmpty()
     {
         return this.size == 0;
+    }
+
+    @Override
+    public boolean contains(Object o)
+    {
+        return ArrayUtils.contains(this.array, o);
     }
 
     @Override
@@ -115,6 +129,32 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
                 return elem;
             }
         };
+    }
+
+    @NotNull
+    @Override
+    public Object @NotNull [] toArray()
+    {
+        val elements = new Object[this.size];
+        int i = 0;
+        for (T t : this) {
+            elements[i++] = t;
+        }
+        return elements;
+    }
+
+    @SuppressWarnings("unchecked")
+    @NotNull
+    @Override
+    public <T1> T1 @NotNull [] toArray(T1[] a)
+    {
+        val elements = a.length < size ? (T1[]) new Object[this.size] : a;
+        int i = 0;
+        for (T t : this) {
+            elements[i++] = (T1) t;
+        }
+        if (a.length > size) elements[size] = null;
+        return elements;
     }
 
 

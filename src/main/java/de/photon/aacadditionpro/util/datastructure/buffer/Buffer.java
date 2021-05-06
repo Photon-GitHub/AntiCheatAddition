@@ -1,14 +1,16 @@
 package de.photon.aacadditionpro.util.datastructure.buffer;
 
 import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
 /**
  * Represents a way of storing data of arbitrary type and working with it.
  */
-public interface Buffer<T> extends Iterable<T>
+public interface Buffer<T> extends Collection<T>
 {
     /**
      * Adds an {@link Object} to the {@link Buffer}
@@ -65,5 +67,35 @@ public interface Buffer<T> extends Iterable<T>
     {
         forEachDescending(action);
         clear();
+    }
+
+    @Override
+    default boolean remove(Object o)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    default boolean containsAll(@NotNull Collection<?> c)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    default boolean addAll(@NotNull Collection<? extends T> c)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    default boolean removeAll(@NotNull Collection<?> c)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    default boolean retainAll(@NotNull Collection<?> c)
+    {
+        throw new UnsupportedOperationException();
     }
 }

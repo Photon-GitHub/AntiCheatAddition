@@ -73,7 +73,7 @@ public enum Hitbox
      */
     public Vector[] getCalculationVectors(final Location location)
     {
-        final List<Vector> vectors = new ArrayList<>(13);
+        val vectors = new ArrayList<Vector>(13);
         Collections.addAll(vectors, getLowResolutionCalculationVectors(location));
 
         val upperY = location.getY() + this.height;

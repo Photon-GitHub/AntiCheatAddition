@@ -15,6 +15,11 @@ public class SynchronizedRingBuffer<T> extends RingBuffer<T>
         super(maxSize);
     }
 
+    public SynchronizedRingBuffer(int maxSize, T defaultObject)
+    {
+        super(maxSize, defaultObject);
+    }
+
     @Override
     public boolean add(T elem)
     {

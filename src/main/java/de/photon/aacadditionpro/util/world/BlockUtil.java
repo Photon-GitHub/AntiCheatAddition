@@ -5,6 +5,7 @@ import de.photon.aacadditionproold.ServerVersion;
 import de.photon.aacadditionproold.util.exceptions.UnknownMinecraftVersion;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -64,7 +65,7 @@ public final class BlockUtil
     {
         byte count = 0;
         Block relative;
-        for (final BlockFace f : faces) {
+        for (BlockFace f : faces) {
             relative = block.getRelative(f);
             if (!relative.isEmpty() && !ignored.contains(relative.getType())) ++count;
         }
@@ -81,9 +82,9 @@ public final class BlockUtil
      */
     public static List<Block> getBlocksAround(final Block block, final Set<BlockFace> faces)
     {
-        final List<Block> blocks = new ArrayList<>(6);
+        val blocks = new ArrayList<Block>(6);
         Block relative;
-        for (final BlockFace face : faces) {
+        for (BlockFace face : faces) {
             relative = block.getRelative(face);
             if (!relative.isEmpty()) blocks.add(relative);
         }

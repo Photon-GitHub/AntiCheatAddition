@@ -6,8 +6,11 @@ import de.photon.aacadditionproold.events.ClientControlEvent;
 import de.photon.aacadditionproold.events.PlayerAdditionViolationEvent;
 import de.photon.aacadditionproold.util.commands.Placeholders;
 import de.photon.aacadditionproold.util.files.FileUtil;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.val;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,10 +23,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DebugSender implements Listener
 {
-    @Getter
-    private static final DebugSender instance;
+    @Getter private static final DebugSender instance;
     private static final String EVENT_PRE_STRING = ChatColor.WHITE + "{player} " + ChatColor.GRAY;
 
     static {
@@ -34,17 +37,12 @@ public final class DebugSender implements Listener
     private final boolean writeToFile = AACAdditionPro.getInstance().getConfig().getBoolean("Debug.file");
     private final boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Debug.console");
     private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Debug.players");
-    @Setter
-    private volatile boolean allowedToRegisterTasks;
+
+    @Setter private volatile boolean allowedToRegisterTasks = true;
     // The File the verbose messages are written to.
     private File logFile = null;
     // Set to an impossible day of the year to make sure the logFile will be initialized.
     private int currentDayOfYear = -1;
-
-    private DebugSender()
-    {
-        allowedToRegisterTasks = true;
-    }
 
     /**
      * Sets off a standard verbose message (no console forcing and not flagged as an error).
@@ -66,22 +64,23 @@ public final class DebugSender implements Listener
     public void sendVerboseMessage(final String s, final boolean force_console, final boolean error)
     {
         // Remove color codes
-        final String logMessage = ChatColor.stripColor(s);
+        val logMessage = ChatColor.stripColor(s);
 
         if (writeToFile) {
             try {
                 // Get the logfile that is in use currently or create a new one if needed.
-                final LocalDateTime now = LocalDateTime.now();
+                val now = LocalDateTime.now();
+                val dayOfYear = now.getDayOfYear();
 
                 // Doesn't need to check for logFile == null as the currentDayOfYear will be -1 in the beginning.
-                if (currentDayOfYear != now.getDayOfYear() || !logFile.exists()) {
-                    currentDayOfYear = now.getDayOfYear();
+                if (currentDayOfYear != dayOfYear || !logFile.exists()) {
+                    currentDayOfYear = dayOfYear;
                     logFile = FileUtil.createFile(new File(AACAdditionPro.getInstance().getDataFolder().getPath() + "/logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log"));
                 }
 
                 // Reserve the required builder size.
                 // Time length is always 12, together with 2 brackets and one space this will result in 15.
-                final StringBuilder verboseMessage = new StringBuilder(15 + logMessage.length());
+                val verboseMessage = new StringBuilder(15 + logMessage.length());
                 // Add the beginning of the PREFIX
                 verboseMessage.append('[');
                 // Get the current time

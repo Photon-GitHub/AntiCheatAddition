@@ -6,6 +6,7 @@ import de.photon.aacadditionproold.util.exceptions.UnknownMinecraftVersion;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 
 import java.util.Collection;
@@ -65,12 +66,7 @@ public final class MaterialUtil
     {
         val materials = EnumSet.noneOf(Material.class);
         for (Material material : Material.values()) {
-            for (String end : ends) {
-                if (material.name().endsWith(end)) {
-                    materials.add(material);
-                    break;
-                }
-            }
+            if (StringUtils.endsWithAny(material.name(), ends)) materials.add(material);
         }
         return materials;
     }
@@ -95,7 +91,7 @@ public final class MaterialUtil
     }
 
     /**
-     * Checks if a {@link Collection} of {@link Material}s contains certain {@link Material}s.
+     * Checks if a {@link Collection} of {@link Material}s contains any of certain {@link Material}s.
      */
     public static boolean containsMaterials(final Collection<Material> searchFor, final Collection<Material> toBeSearched)
     {

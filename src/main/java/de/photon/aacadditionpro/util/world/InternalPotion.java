@@ -223,7 +223,7 @@ public enum InternalPotion
 
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
-                for (final PotionEffect effect : livingEntity.getActivePotionEffects()) {
+                for (PotionEffect effect : livingEntity.getActivePotionEffects()) {
                     if (effect.getType().equals(this.mapping)) {
                         return new PotentialPotionEffect(effect);
                     }

@@ -5,6 +5,7 @@ import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -87,7 +88,7 @@ public final class EntityUtil
     public static List<Entity> getPassengers(final Entity entity)
     {
         if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) {
-            Entity passenger = entity.getPassenger();
+            val passenger = entity.getPassenger();
             return passenger == null ?
                    Collections.emptyList() :
                    Collections.singletonList(passenger);

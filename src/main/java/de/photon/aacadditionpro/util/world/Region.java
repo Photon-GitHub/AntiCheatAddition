@@ -3,11 +3,13 @@ package de.photon.aacadditionpro.util.world;
 import de.photon.aacadditionproold.util.mathematics.AxisAlignedBB;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
+@ToString
 public class Region
 {
     /**

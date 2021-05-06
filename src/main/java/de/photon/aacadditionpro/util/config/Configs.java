@@ -35,7 +35,7 @@ public enum Configs
         try {
             this.configurationRepresentation.save();
         } catch (IOException e) {
-            DebugSender.getInstance().sendVerboseMessage("Unable to change and save" + this.name() + "'s config.", true, true);
+            DebugSender.getInstance().sendDebug("Unable to change and save" + this.name() + "'s config.", true, true);
             AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Error when saving a config: ", e);
         }
     }

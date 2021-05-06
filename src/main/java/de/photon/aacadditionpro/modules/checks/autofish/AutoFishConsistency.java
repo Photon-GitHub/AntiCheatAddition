@@ -63,14 +63,14 @@ public class AutoFishConsistency extends ViolationModule implements Listener
                         // (maxOffset / minVariation) will be at most 1 and at least 0
                         val flagOffset = 15 - (14 * (maxOffset / minVariation));
 
-                        DebugSender.getInstance().sendVerboseMessage("AutoFish-Verbose | Player " +
-                                                                     user.getPlayer().getName() +
-                                                                     " failed consistency | average time: " +
-                                                                     StringUtils.left(String.valueOf(consistencyData.getAverage()), 7) +
-                                                                     " | maximum offset: " +
-                                                                     StringUtils.left(String.valueOf(maxOffset), 7) +
-                                                                     " | flag offset: " +
-                                                                     StringUtils.left(String.valueOf(flagOffset), 7));
+                        DebugSender.getInstance().sendDebug("AutoFish-Verbose | Player " +
+                                                            user.getPlayer().getName() +
+                                                            " failed consistency | average time: " +
+                                                            StringUtils.left(String.valueOf(consistencyData.getAverage()), 7) +
+                                                            " | maximum offset: " +
+                                                            StringUtils.left(String.valueOf(maxOffset), 7) +
+                                                            " | flag offset: " +
+                                                            StringUtils.left(String.valueOf(flagOffset), 7));
 
                         this.getManagement().flag(Flag.of(event.getPlayer())
                                                       .setAddedVl((int) flagOffset)

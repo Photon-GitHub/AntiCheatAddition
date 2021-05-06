@@ -74,7 +74,7 @@ public final class DataKey
     @AllArgsConstructor
     public enum CounterKey
     {
-        AUTOFISH_FAILED(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("AutoFish.consistency.maximum_fails")));
+        AUTOFISH_FAILED(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("AutoFish.parts.consistency.maximum_fails")));
 
         private final ViolationCounter defaultValue;
     }

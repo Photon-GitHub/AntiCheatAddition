@@ -3,7 +3,6 @@ package de.photon.aacadditionpro.util.config;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
@@ -20,18 +19,6 @@ public final class StringUtil
     public static String fromUTF8Bytes(final byte[] bytes)
     {
         return new String(bytes, StandardCharsets.UTF_8);
-    }
-
-    /**
-     * Limits the length of a {@link String} to a certain value.
-     * If the length of the {@link String} is already small enough the {@link String} will be returned without modification.
-     *
-     * @param input        the {@link String} which should be limited
-     * @param maximumChars the maximum allowed chars
-     */
-    public static String limitStringLength(final String input, int maximumChars)
-    {
-        return StringUtils.left(input, maximumChars);
     }
 
     /**

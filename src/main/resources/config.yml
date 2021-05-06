@@ -1,0 +1,76 @@
+# ------------------------------------------------------------------------------------------------------------------- #
+#                               _____               _      _  _  _    _                _____                          #
+#              /\        /\    / ____|    /\       | |    | |(_)| |  (_)              |  __ \                         #
+#             /  \      /  \  | |        /  \    __| |  __| | _ | |_  _   ___   _ __  | |__) |_ __  ___               #
+#            / /\ \    / /\ \ | |       / /\ \  / _` | / _` || || __|| | / _ \ | '_ \ |  ___/| '__|/ _ \              #
+#           / ____ \  / ____ \| |____  / ____ \| (_| || (_| || || |_ | || (_) || | | || |    | |  | (_) |             #
+#          /_/    \_\/_/    \_\\_____|/_/    \_\\__,_| \__,_||_| \__||_| \___/ |_| |_||_|    |_|   \___/              #
+#                                                                                                                     #
+#                           __  __         _       _           ___ _        _                                         #
+#                          |  \/  |__ _ __| |___  | |__ _  _  | _ \ |_  ___| |_ ___ _ _                               #
+#                          | |\/| / _` / _` / -_) | '_ \ || | |  _/ ' \/ _ \  _/ _ \ ' \                              #
+#                          |_|  |_\__,_\__,_\___| |_.__/\_, | |_| |_||_\___/\__\___/_||_|                             #
+#                                                       |__/                                                          #
+# ------------------------------------------------------------------------------------------------------------------- #
+
+
+# ------------------------------------------------------------------------------------------------------------------- #
+#                                               ___ _           _                                                     #
+#                                              / __| |_  ___ __| |__ ___                                              #
+#                                             | (__| ' \/ -_) _| / /(_-<                                              #
+#                                              \___|_||_\___\__|_\_\/__/                                              #
+#                                                                                                                     #
+# ------------------------------------------------------------------------------------------------------------------- #
+
+
+# AutoFish detects cheats that are named just like the check - automatic fishing bots which can yield a lot of
+# treasure and food for those who use them.
+#
+# If you have modified fishing time and/or behaviour please test if this check is compatible with your setup.
+# This check does only work on minecraft versions 1.11 and beyond due to changes in the spigot API compared to older
+# versions and auto-disables itself accordingly.
+AutoFish:
+  # Do you want to enable the AutoFish check?
+  enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aac_status_message: "[AACAdditionPro] Player has botlike fishing behaviour"
+  # Violation before AACAdditionPro starts to cancel the fishing.
+  # Please think of potential luck, because of this I do not recommend to set this to a value smaller than 7.
+  # Set this to 0 to never cancel fishing.
+  cancel_vl: 10
+  # Control the different parts of AutoFish
+  parts:
+    # The inhuman reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
+    # This might cause some false positives with experienced fishers.
+    # This will add up to 6 vl, depending on the reaction speed.
+    inhuman_reaction:
+      # Do you want to enable the inhuman reaction part?
+      enabled: true
+      # How many milliseconds should have passed before a fishing action counts as legit.
+      # This also influences the given vl according to a linear distribution - the faster and more inhuman someone
+      # reacts, the more vl they will get.
+      human_reaction_time: 145
+    # The consistency part recognizes unchanging times between a successful catch and fishing again as simple bots have
+    # constant reaction times, whereas human players reaction varies a little bit each time they fish.
+    # Depending on how accurate the consistency is players will receive between 1 and 15 vl.
+    consistency:
+      # Do you want to enable the consistency part?
+      enabled: true
+      # How many fishing attempts should be checked by the consistency check
+      fishing_attempt_count: 5
+      # The minimum variation a player has to have in their reaction times to count as non cheating (in milliseconds)
+      min_variation: 30
+      # After how many failed attempts to fish between two successful attempts should a player be exempted from the
+      # consistency part?
+      #
+      # This is a countermeasure for afk fishing farm false positives.
+      # Do not extensively lower this value because bots with a custom fail-rate might not be detected.
+      #
+      # If you do not allow afk fishing farms on your server set this to 0.
+      # Values
+      maximum_fails: 12
+  # Map of violation levels to command
+  thresholds:
+    8: "aac notify {player} in {world} is suspected for AutoFish"
+    12: "aac notify {player} in {world} is highly suspected for AutoFish"
+    18: "aackick {player} AutoFish"

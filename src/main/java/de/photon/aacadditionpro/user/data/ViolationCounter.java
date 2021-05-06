@@ -41,6 +41,14 @@ public class ViolationCounter
     }
 
     /**
+     * Increments the counter by 1.
+     */
+    public void increment()
+    {
+        this.counter.getAndIncrement();
+    }
+
+    /**
      * Decrements the counter by 1.
      */
     public void decrement()

@@ -17,9 +17,10 @@ import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.val;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 
-public class AutoFishConsistency extends ViolationModule
+public class AutoFishConsistency extends ViolationModule implements Listener
 {
     private final int cancelVl = AACAdditionPro.getInstance().getConfig().getInt("AutoFish.cancel_vl");
 

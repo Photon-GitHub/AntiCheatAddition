@@ -13,30 +13,30 @@ public class PlayerVisibility
     private final PlayerInformationHider playerHider = new PlayerHider();
 
     /**
-     * This sets how much information of the watched {@link Player} the observing {@link Player} can obtain.
-     *
-     * @param observer the {@link Player} observing the watched {@link Player}.
-     * @param watched  the {@link Player} that shall be (not at all / partially / fully) hidden from the observer.
-     * @param hideMode the {@link HideMode} which defines the degree of hiding.
+     * This method will fully hide the toBeHidden {@link Player} from the observer {@link Player}
      */
-    public void setPlayerVisibility(Player observer, Player watched, HideMode hideMode)
+    public void fullyHidePlayer(Player observer, Player toBeHidden)
     {
-        switch (hideMode) {
-            case FULL:
-                playerHider.hidePlayer(observer, watched);
-                equipmentHider.revealPlayer(observer, watched);
-                break;
-            case INFORMATION_ONLY:
-                equipmentHider.hidePlayer(observer, watched);
-                playerHider.revealPlayer(observer, watched);
-                break;
-            case NONE:
-                playerHider.revealPlayer(observer, watched);
-                equipmentHider.revealPlayer(observer, watched);
-                break;
-            default:
-                throw new IllegalStateException("Unknown Hidemode.");
-        }
+        playerHider.hidePlayer(observer, toBeHidden);
+        equipmentHider.revealPlayer(observer, toBeHidden);
+    }
+
+    /**
+     * This method will hide the equipment of the hideEquipment {@link Player} from the observer {@link Player}
+     */
+    public void hideEquipment(Player observer, Player hideEquipment)
+    {
+        equipmentHider.hidePlayer(observer, hideEquipment);
+        playerHider.revealPlayer(observer, hideEquipment);
+    }
+
+    /**
+     * This method will fully reveal the toBeRevealed {@link Player} from the observer {@link Player}
+     */
+    public void revealPlayer(Player observer, Player toBeRevealed)
+    {
+        playerHider.revealPlayer(observer, toBeRevealed);
+        equipmentHider.revealPlayer(observer, toBeRevealed);
     }
 
     public void enable()

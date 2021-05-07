@@ -6,6 +6,8 @@ import de.photon.aacadditionproold.util.server.ServerUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -31,11 +33,11 @@ public final class Placeholders
     {
         Preconditions.checkArgument(!players.isEmpty(), "Tried to replace placeholders without players.");
 
-        final Player player = players.iterator().next();
-        final World world = player.getWorld();
+        val player = players.iterator().next();
+        val world = player.getWorld();
 
-        final StringBuilder placeholderBuilder = new StringBuilder();
-        final StringBuilder result = new StringBuilder();
+        val placeholderBuilder = new StringBuilder();
+        val result = new StringBuilder();
         boolean placeholderStarted = false;
 
         for (char c : original.toCharArray()) {
@@ -90,17 +92,15 @@ public final class Placeholders
             }
 
             // Record any char in the correct builder.
-            if (placeholderStarted) {
-                placeholderBuilder.append(c);
-            } else {
-                result.append(c);
-            }
+            if (placeholderStarted) placeholderBuilder.append(c);
+            else result.append(c);
         }
 
         return result.toString();
     }
 
     @Getter
+    @RequiredArgsConstructor
     public enum PlayerPlaceholders
     {
         // Single placeholder
@@ -109,11 +109,6 @@ public final class Placeholders
 
         private final Function<Player, String> function;
 
-        PlayerPlaceholders(Function<Player, String> function)
-        {
-            this.function = function;
-        }
-
         public String getReplacement(Player player)
         {
             return this.function.apply(player);
@@ -121,16 +116,12 @@ public final class Placeholders
     }
 
     @Getter
+    @RequiredArgsConstructor
     public enum TeamPlaceholders
     {
         TEAM(players -> players.stream().distinct().map(Player::getName).collect(Collectors.joining(", ")));
 
         private final Function<Collection<Player>, String> function;
-
-        TeamPlaceholders(Function<Collection<Player>, String> function)
-        {
-            this.function = function;
-        }
 
         public String getReplacement(Collection<Player> players)
         {
@@ -139,17 +130,13 @@ public final class Placeholders
     }
 
     @Getter
+    @RequiredArgsConstructor
     public enum WorldPlaceholders
     {
         // Team placeholders
         WORLD(World::getName);
 
         private final Function<World, String> function;
-
-        WorldPlaceholders(Function<World, String> supplier)
-        {
-            this.function = supplier;
-        }
 
         public String getReplacement(World world)
         {
@@ -158,6 +145,7 @@ public final class Placeholders
     }
 
     @Getter
+    @RequiredArgsConstructor
     public enum SimplePlaceholders
     {
         // Global placeholders
@@ -167,11 +155,6 @@ public final class Placeholders
         TPS(() -> StringUtil.limitStringLength(String.valueOf(ServerUtil.getTPS()), 5));
 
         private final Supplier<String> supplier;
-
-        SimplePlaceholders(Supplier<String> supplier)
-        {
-            this.supplier = supplier;
-        }
 
         public String getReplacement()
         {

@@ -5,8 +5,6 @@ import de.photon.aacadditionproold.AACAdditionPro
 import de.photon.aacadditionproold.events.ClientControlEvent
 import de.photon.aacadditionproold.events.PlayerAdditionViolationEvent
 import de.photon.aacadditionproold.util.commands.Placeholders
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.bukkit.ChatColor
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -43,25 +41,17 @@ object DebugSender : Listener {
         // Remove color codes
         val logMessage: String = ChatColor.stripColor(s).toString()
 
-        runBlocking {
-            launch {
-                if (writeToFile) {
-                    // Get the logfile that is in use currently or create a new one if needed.
-                    val now = LocalDateTime.now()
-                    if (!logFile.isValid(now)) logFile = LogFile(now)
-                    logFile.write(logMessage, now)
-                }
-            }
-
-            launch {
-                if (writeToConsole || force_console) AACAdditionPro.getInstance().logger.log(if (error) Level.SEVERE else Level.INFO, logMessage)
-            }
-
-            launch {
-                // Prevent errors on disable as of scheduling
-                if (allowedToRegisterTasks && writeToPlayers) ChatMessage.sendSyncMessage(User.getDebugUsers(), s)
-            }
+        if (writeToFile) {
+            // Get the logfile that is in use currently or create a new one if needed.
+            val now = LocalDateTime.now()
+            if (!logFile.isValid(now)) logFile = LogFile(now)
+            logFile.write(logMessage, now)
         }
+
+        if (writeToConsole || force_console) AACAdditionPro.getInstance().logger.log(if (error) Level.SEVERE else Level.INFO, logMessage)
+
+        // Prevent errors on disable as of scheduling
+        if (allowedToRegisterTasks && writeToPlayers) ChatMessage.sendSyncMessage(User.getDebugUsers(), s)
     }
 
     @EventHandler

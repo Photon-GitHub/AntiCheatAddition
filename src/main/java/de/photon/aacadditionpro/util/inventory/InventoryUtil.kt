@@ -41,6 +41,7 @@ object InventoryUtil {
      */
     @JvmStatic
     fun distanceBetweenSlots(rawSlotOne: Int, rawSlotTwo: Int, inventoryType: InventoryType?): Double {
+        checkNotNull(inventoryType) { "Cannot locate slot in null inventory type." }
         val first = locateSlot(rawSlotOne, inventoryType)
         val second = locateSlot(rawSlotTwo, inventoryType)
         return if (first == null || second == null) -1.0 else first.distance(second)
@@ -58,8 +59,7 @@ object InventoryUtil {
      * @return the coordinates of a slot or null if it is invalid.
      */
     @JvmStatic
-    @Throws(IllegalArgumentException::class)
-    fun locateSlot(rawSlot: Int, inventoryType: InventoryType?): SlotLocation? {
+    fun locateSlot(rawSlot: Int, inventoryType: InventoryType): SlotLocation? {
         // Invalid slot (including the -999 outside rawslot constant)
         if (rawSlot < 0) return null
         val x: Double

@@ -11,8 +11,8 @@ import java.time.format.DateTimeFormatter
 import java.util.logging.Level
 
 class LogFile(now: LocalDateTime) {
-    val backingFile: File?
-    val dayOfTheYear: Int
+    private val backingFile: File?
+    private val dayOfTheYear: Int = now.dayOfYear
 
     fun write(logMessage: String, now: LocalDateTime) {
         if (backingFile != null) {
@@ -43,7 +43,6 @@ class LogFile(now: LocalDateTime) {
     }
 
     init {
-        dayOfTheYear = now.dayOfYear
         var tempFile: File? = null
 
         try {

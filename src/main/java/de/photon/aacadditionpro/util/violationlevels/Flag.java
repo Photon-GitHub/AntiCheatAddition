@@ -13,8 +13,8 @@ import java.util.Set;
 @Getter
 public class Flag
 {
-    private Player player;
-    private Set<Player> team;
+    private final Player player;
+    private final Set<Player> team;
     private int addedVl = 1;
     private int cancelVl = -1;
     private Runnable onCancel = null;
@@ -23,10 +23,12 @@ public class Flag
     private Flag(Player player)
     {
         this.player = player;
+        this.team = null;
     }
 
     private Flag(Set<Player> team)
     {
+        this.player = null;
         this.team = team;
     }
 

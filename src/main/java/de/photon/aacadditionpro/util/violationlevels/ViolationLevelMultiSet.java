@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 class ViolationLevelMultiSet implements Listener
 {
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     @Getter
     private final Multiset<UUID> multiset = ConcurrentHashMultiset.create();

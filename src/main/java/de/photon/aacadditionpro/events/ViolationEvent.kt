@@ -1,46 +1,33 @@
-package de.photon.aacadditionpro.events;
+package de.photon.aacadditionpro.events
 
-import de.photon.aacadditionpro.ServerVersion;
-import lombok.Getter;
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
+import de.photon.aacadditionpro.ServerVersion
+import org.bukkit.entity.Player
+import org.bukkit.event.HandlerList
 
-public class ViolationEvent extends ModulePlayerEvent
-{
-    private static final HandlerList handlers = new HandlerList();
+open class ViolationEvent : ModulePlayerEvent {
+    val vl: Int
 
-    @Getter private final int vl;
-
-    protected ViolationEvent(Player p, String moduleId, int vl)
-    {
-        super(p, moduleId);
-        this.vl = vl;
+    protected constructor(p: Player?, moduleId: String?, vl: Int) : super(p!!, moduleId!!) {
+        this.vl = vl
     }
 
-    protected ViolationEvent(Player player, String moduleId, int vl, boolean legacy)
-    {
-        super(player, moduleId, legacy);
-        this.vl = vl;
+    protected constructor(player: Player?, moduleId: String?, vl: Int, legacy: Boolean) : super(player!!, moduleId!!, legacy) {
+        this.vl = vl
     }
 
-    public static ViolationEvent build(Player player, String moduleId, int vl)
-    {
-        return ServerVersion.supportsActiveServerVersion(ServerVersion.LEGACY_EVENT_VERSIONS) ?
-               new ViolationEvent(player, moduleId, vl, true) :
-               new ViolationEvent(player, moduleId, vl);
+    override fun getHandlers(): HandlerList {
+        return handlerList
     }
 
-    //Needed for 1.8.8
-    public static HandlerList getHandlerList()
-    {
-        return ViolationEvent.handlers;
-    }
+    companion object {
+        //Needed for 1.8.8
+        @JvmStatic
+        val handlerList = HandlerList()
 
-    @NotNull
-    @Override
-    public HandlerList getHandlers()
-    {
-        return ViolationEvent.handlers;
+        @JvmStatic
+        fun build(player: Player?, moduleId: String?, vl: Int): ViolationEvent {
+            return if (ServerVersion.supportsActiveServerVersion(ServerVersion.LEGACY_EVENT_VERSIONS)) ViolationEvent(player, moduleId, vl, true)
+            else ViolationEvent(player, moduleId, vl)
+        }
     }
 }

@@ -1,10 +1,10 @@
 package de.photon.aacadditionpro.util.messaging
 
+import de.photon.aacadditionpro.AACAdditionPro
+import de.photon.aacadditionpro.events.SentinelEvent
+import de.photon.aacadditionpro.events.ViolationEvent
 import de.photon.aacadditionpro.user.User
-import de.photon.aacadditionproold.AACAdditionPro
-import de.photon.aacadditionproold.events.ClientControlEvent
-import de.photon.aacadditionproold.events.PlayerAdditionViolationEvent
-import de.photon.aacadditionproold.util.commands.Placeholders
+import de.photon.aacadditionpro.util.execute.Placeholders
 import org.bukkit.ChatColor
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -55,13 +55,13 @@ object DebugSender : Listener {
     }
 
     @EventHandler
-    fun onAdditionViolation(event: PlayerAdditionViolationEvent) {
-        sendDebug(Placeholders.replacePlaceholders(EVENT_PRE_STRING + event.message + " | Vl: " + event.vl + " | TPS: {tps} | Ping: {ping}", event.player))
+    fun onAdditionViolation(event: ViolationEvent) {
+        sendDebug(Placeholders.replacePlaceholders(EVENT_PRE_STRING + event.moduleId + "| Player: {player} | Vl: " + event.vl + " | TPS: {tps} | Ping: {ping}", listOf(event.player)))
     }
 
     @EventHandler
-    fun onClientControl(event: ClientControlEvent) {
-        sendDebug(Placeholders.replacePlaceholders(EVENT_PRE_STRING + event.message, event.player))
+    fun onClientControl(event: SentinelEvent) {
+        sendDebug(Placeholders.replacePlaceholders(EVENT_PRE_STRING + event.moduleId + "| Player: {player}", listOf(event.player)))
     }
 
     fun setAllowedToRegisterTasks(allowedToRegisterTasks: Boolean) {

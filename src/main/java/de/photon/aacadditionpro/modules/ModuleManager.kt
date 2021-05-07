@@ -39,11 +39,11 @@ object ModuleManager {
         return AACCustomFeatureProvider { offlinePlayer: OfflinePlayer ->
             val uuid = offlinePlayer.uniqueId
             val featureList = mutableListOf<AACCustomFeature>()
-            for (module in violationModuleMap.values()) {
+            for (vm in violationModuleMap.values()) {
                 // Only add enabled modules
-                if (module.isLoaded) {
-                    val score = module.management.getVL(uuid).toDouble()
-                    featureList.add(AACCustomFeature(module.configString, module.aacInfo, score, module.getAACTooltip(uuid, score)))
+                if (vm.isLoaded) {
+                    val score = vm.management.getVL(uuid).toDouble()
+                    featureList.add(AACCustomFeature(vm.configString, vm.aacInfo, score, vm.getAACTooltip(uuid, score)))
                 }
             }
             return@AACCustomFeatureProvider featureList

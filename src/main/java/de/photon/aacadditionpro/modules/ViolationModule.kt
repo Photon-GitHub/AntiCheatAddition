@@ -1,47 +1,34 @@
-package de.photon.aacadditionpro.modules;
+package de.photon.aacadditionpro.modules
 
-import com.google.common.collect.ImmutableMap;
-import de.photon.aacadditionpro.util.violationlevels.ViolationAggregateManagement;
-import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
-import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
-import lombok.Getter;
+import com.google.common.collect.ImmutableMap
+import de.photon.aacadditionpro.util.violationlevels.ViolationAggregateManagement
+import de.photon.aacadditionpro.util.violationlevels.ViolationManagement
+import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement
+import java.util.*
+import java.util.stream.Collectors
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+abstract class ViolationModule(configString: String) : Module(configString) {
+    val management by lazy { createViolationManagement() }
 
-public abstract class ViolationModule extends Module
-{
-    @Getter(lazy = true) private final ViolationManagement management = createViolationManagement();
-
-    public ViolationModule(String configString)
-    {
-        super(configString);
+    fun getAACTooltip(uuid: UUID?, score: Double): Map<String, String> {
+        return ImmutableMap.of("Score:", score.toString())
     }
 
-    public static ViolationModule parentOf(String configString, ViolationModule... children)
-    {
-        return new ViolationModule(configString)
-        {
-            @Override
-            protected ViolationManagement createViolationManagement()
-            {
-                return new ViolationAggregateManagement(this, ThresholdManagement.loadThresholds(this.getConfigString()), Arrays.stream(children).map(violationModule -> getManagement()).collect(Collectors.toSet()));
+    protected abstract fun createViolationManagement(): ViolationManagement
+
+    companion object {
+        fun parentOf(configString: String, vararg children: ViolationModule?): ViolationModule {
+            return object : ViolationModule(configString) {
+                override fun createViolationManagement(): ViolationManagement {
+                    return ViolationAggregateManagement(this,
+                                                        ThresholdManagement.loadThresholds(configString),
+                                                        Arrays.stream(children).map { management }.collect(Collectors.toSet()))
+                }
+
+                override fun createModuleLoader(): ModuleLoader {
+                    return ModuleLoader.builder(this).build()
+                }
             }
-
-            @Override
-            protected ModuleLoader createModuleLoader()
-            {
-                return ModuleLoader.builder(this).build();
-            }
-        };
+        }
     }
-
-    public Map<String, String> getAACTooltip(UUID uuid, double score)
-    {
-        return ImmutableMap.of("Score:", Double.toString(score));
-    }
-
-    protected abstract ViolationManagement createViolationManagement();
 }

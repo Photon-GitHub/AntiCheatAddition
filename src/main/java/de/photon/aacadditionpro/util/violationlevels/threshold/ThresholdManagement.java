@@ -6,6 +6,7 @@ import lombok.val;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public interface ThresholdManagement
@@ -34,7 +35,7 @@ public interface ThresholdManagement
     static ThresholdManagement loadCommands(String configPath)
     {
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
-        val commands = Preconditions.checkNotNull(ConfigUtils.loadImmutableStringOrStringList(configPath), "Config loading error: The commands at " + configPath + " could not be loaded.");
+        final List<String> commands = Preconditions.checkNotNull(ConfigUtils.loadImmutableStringOrStringList(configPath), "Config loading error: The commands at " + configPath + " could not be loaded.");
         return commands.isEmpty() ? EMPTY : new SingleThresholds(new Threshold(1, commands));
     }
 

@@ -1,41 +1,27 @@
-package de.photon.aacadditionpro.events;
+package de.photon.aacadditionpro.events
 
-import de.photon.aacadditionpro.ServerVersion;
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
+import de.photon.aacadditionpro.ServerVersion
+import org.bukkit.entity.Player
+import org.bukkit.event.HandlerList
 
-public class SentinelEvent extends ModulePlayerEvent
-{
-    private static final HandlerList handlers = new HandlerList();
+open class SentinelEvent : ModulePlayerEvent {
 
-    protected SentinelEvent(Player p, String moduleId)
-    {
-        super(p, moduleId);
+    protected constructor(p: Player?, moduleId: String?) : super(p!!, moduleId!!)
+    protected constructor(player: Player?, moduleId: String?, legacy: Boolean) : super(player!!, moduleId!!, legacy)
+
+    override fun getHandlers(): HandlerList {
+        return handlerList
     }
 
-    protected SentinelEvent(Player player, String moduleId, boolean legacy)
-    {
-        super(player, moduleId, legacy);
-    }
+    companion object {
+        //Needed for 1.8.8
+        @JvmStatic
+        val handlerList = HandlerList()
 
-    public static SentinelEvent build(Player player, String moduleId)
-    {
-        return ServerVersion.supportsActiveServerVersion(ServerVersion.LEGACY_EVENT_VERSIONS) ?
-               new SentinelEvent(player, moduleId, true) :
-               new SentinelEvent(player, moduleId);
-    }
-
-    //Needed for 1.8.8
-    public static HandlerList getHandlerList()
-    {
-        return SentinelEvent.handlers;
-    }
-
-    @NotNull
-    @Override
-    public HandlerList getHandlers()
-    {
-        return SentinelEvent.handlers;
+        @JvmStatic
+        fun build(player: Player?, moduleId: String?): SentinelEvent {
+            return if (ServerVersion.supportsActiveServerVersion(ServerVersion.LEGACY_EVENT_VERSIONS)) SentinelEvent(player, moduleId, true)
+            else SentinelEvent(player, moduleId)
+        }
     }
 }

@@ -32,13 +32,17 @@ public class AACAdditionPro extends JavaPlugin
 {
     private static final int BSTATS_PLUGIN_ID = 3265;
 
-    @Getter private static AACAdditionPro instance;
+    private static AACAdditionPro instance;
 
     @Getter(lazy = true) private final FileConfiguration config = generateConfig();
     private ViaAPI<Player> viaAPI;
     private AACAPI aacapi = null;
-
     private boolean bungeecord = false;
+
+    public static AACAdditionPro getInstance()
+    {
+        return instance;
+    }
 
     /**
      * Registers a new {@link Listener} for AACAdditionPro.

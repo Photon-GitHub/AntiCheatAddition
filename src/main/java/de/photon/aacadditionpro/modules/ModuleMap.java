@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.modules;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.experimental.Delegate;
 
 import java.util.Collection;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.Set;
 
 public class ModuleMap<T extends Module>
 {
-    @Delegate(types = Iterable.class)
     private Map<String, T> backingMap;
 
     public ModuleMap(T... modules)

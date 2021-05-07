@@ -33,7 +33,6 @@ public enum ServerVersion
     /**
      * The server version of the currently running {@link Bukkit} instance.
      */
-    @Getter
     private static final ServerVersion activeServerVersion;
 
     static {
@@ -53,6 +52,11 @@ public enum ServerVersion
 
     private final String versionOutputString;
     private final boolean supported;
+
+    public static ServerVersion getActiveServerVersion()
+    {
+        return activeServerVersion;
+    }
 
     /**
      * Used to check whether the current server version is included in a set of supported server versions.

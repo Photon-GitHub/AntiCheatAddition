@@ -1,64 +1,62 @@
-package de.photon.aacadditionpro.modules;
+package de.photon.aacadditionpro.modules
 
-import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.InternalPermission;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import de.photon.aacadditionpro.AACAdditionPro
+import de.photon.aacadditionpro.InternalPermission
+import java.util.*
 
-import java.util.Locale;
+abstract class Module(val configString: String) {
+    val moduleId: String = generateModuleId(configString)
+    @JvmField protected val bypassPermission: String = InternalPermission.bypassPermissionOf(moduleId)
+    val moduleLoader by lazy { createModuleLoader() }
+    val aacInfo: String = AACAdditionPro.getInstance().config.getString(configString + "aac_status_message", configString)!!
+    var isLoaded = false
+        private set
 
-@EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY, onlyExplicitlyIncluded = true)
-@ToString
-public abstract class Module
-{
-    @Getter protected final String configString;
-    @Getter @EqualsAndHashCode.Include private final String moduleId;
-    protected final String bypassPermission = InternalPermission.bypassPermissionOf(this.getModuleId());
-    @Getter(lazy = true) private final ModuleLoader moduleLoader = createModuleLoader();
-    @Getter private final String aacInfo;
-    @Getter private boolean loaded;
-
-    public Module(String configString)
-    {
-        this.configString = configString;
-        this.moduleId = generateModuleId(configString);
-        this.aacInfo = AACAdditionPro.getInstance().getConfig().getString(configString + "aac_status_message");
-    }
-
-    public static String generateModuleId(final String configString)
-    {
-        return "aacadditionpro_" + configString.toLowerCase(Locale.ENGLISH);
-    }
-
-    public void setEnabled(boolean enabled)
-    {
-        if (loaded != enabled) {
+    fun setEnabled(enabled: Boolean) {
+        if (isLoaded != enabled) {
             if (enabled) {
-                enableModule();
+                enableModule()
             } else {
-                disableModule();
+                disableModule()
             }
         }
     }
 
-    public void enableModule()
-    {
-        this.loaded = true;
-        this.moduleLoader.load();
-        this.enable();
+    fun enableModule() {
+        isLoaded = true
+        moduleLoader.load()
+        enable()
     }
 
-    public void disableModule()
-    {
-        this.loaded = false;
-        this.moduleLoader.unload();
-        this.disable();
+    fun disableModule() {
+        isLoaded = false
+        moduleLoader.unload()
+        disable()
     }
 
-    protected abstract ModuleLoader createModuleLoader();
+    protected abstract fun createModuleLoader(): ModuleLoader
 
-    protected void enable() {}
+    protected fun enable() {}
+    protected fun disable() {}
 
-    protected void disable() {}
+    override fun equals(other: Any?): Boolean {
+        if (other === this) return true
+        if (other !is Module) return false
+        return moduleId == other.moduleId
+    }
+
+    override fun hashCode(): Int {
+        return moduleId.hashCode()
+    }
+
+    override fun toString(): String {
+        return "Module(configString=$configString, moduleId=$moduleId, bypassPermission=$bypassPermission, moduleLoader=$moduleLoader, aacInfo=$aacInfo, loaded=$isLoaded)"
+    }
+
+    companion object {
+        @JvmStatic
+        fun generateModuleId(configString: String): String {
+            return "aacadditionpro_" + configString.lowercase(Locale.ENGLISH)
+        }
+    }
 }

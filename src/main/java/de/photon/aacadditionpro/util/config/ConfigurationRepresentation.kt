@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.util.config
 
-import com.google.common.base.Preconditions
 import org.apache.commons.lang.StringUtils
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
@@ -23,7 +22,8 @@ class ConfigurationRepresentation(private val configFile: File) {
             lineDepth = StringUtil.depth(line)
 
             // The sub-part we search for does not exist.
-            Preconditions.checkArgument(partDepth <= lineDepth, "Path $path could not be found.")
+            require(partDepth <= lineDepth) { "Path $path could not be found." }
+
             trimmed = line.trim()
             // New "deeper" subpart found?
             if (!isComment(trimmed) && trimmed.startsWith(pathParts[partIndex])) {

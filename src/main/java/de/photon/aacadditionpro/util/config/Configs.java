@@ -2,7 +2,6 @@ package de.photon.aacadditionpro.util.config;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
-import de.photon.aacadditionproold.util.files.configs.ConfigurationRepresentation;
 import lombok.Getter;
 
 import java.io.File;

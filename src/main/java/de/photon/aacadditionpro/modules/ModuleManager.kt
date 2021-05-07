@@ -7,8 +7,8 @@ import me.konsolas.aac.api.AACCustomFeatureProvider
 import org.bukkit.OfflinePlayer
 
 object ModuleManager {
-    private lateinit var moduleMap: ModuleMap<Module>
-    private lateinit var violationModuleMap: ModuleMap<ViolationModule>
+    lateinit var moduleMap: ModuleMap<Module>
+    lateinit var violationModuleMap: ModuleMap<ViolationModule>
 
     fun enable() {
         val autoFishConsistency = AutoFishConsistency()

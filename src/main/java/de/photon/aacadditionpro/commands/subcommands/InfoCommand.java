@@ -1,18 +1,17 @@
 package de.photon.aacadditionpro.commands.subcommands;
 
-import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.commands.CommandAttributes;
 import de.photon.aacadditionpro.commands.InternalCommand;
 import de.photon.aacadditionpro.commands.TabCompleteSupplier;
+import de.photon.aacadditionpro.modules.ModuleManager;
+import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.val;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 
 public class InfoCommand extends InternalCommand
@@ -28,38 +27,36 @@ public class InfoCommand extends InternalCommand
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
         // Peek for better performance
-        final Player player = getPlayer(sender, arguments.peek());
+        val player = getPlayer(sender, arguments.peek());
         if (player == null) return;
 
-        final List<ModuleVl> messages = new ArrayList<>();
+        val moduleVls = new ArrayList<ModuleVl>();
         int vl;
-        for (ModuleType moduleType : ModuleType.VL_MODULETYPES) {
-            vl = AACAdditionPro.getInstance().getModuleManager().getViolationLevelManagement(moduleType).getVL(player.getUniqueId());
-            if (vl != 0) {
-                messages.add(new ModuleVl(moduleType, vl));
-            }
+        for (ViolationModule vm : ModuleManager.INSTANCE.getViolationModuleMap().values()) {
+            vl = vm.getManagement().getVL(player.getUniqueId());
+            if (vl > 0) moduleVls.add(new ModuleVl(vm, vl));
         }
 
         ChatMessage.sendMessage(sender, player.getName());
 
-        if (messages.isEmpty()) {
+        if (moduleVls.isEmpty()) {
             ChatMessage.sendMessage(sender, "The player has no violations.");
         } else {
-            messages.sort(ModuleVl::compareTo);
-            messages.forEach(moduleVl -> ChatMessage.sendMessage(sender, moduleVl.getDisplayMessage()));
+            moduleVls.sort(ModuleVl::compareTo);
+            moduleVls.forEach(moduleVl -> ChatMessage.sendMessage(sender, moduleVl.message));
         }
     }
 
-    @AllArgsConstructor
     @EqualsAndHashCode(onlyExplicitlyIncluded = true)
     private static class ModuleVl implements Comparable<ModuleVl>
     {
-        @EqualsAndHashCode.Include private final ModuleType moduleType;
+        @EqualsAndHashCode.Include private final String message;
         private final int vl;
 
-        public String getDisplayMessage()
+        public ModuleVl(ViolationModule vm, int vl)
         {
-            return this.moduleType.getConfigString() + " -> vl " + this.vl;
+            this.message = vm.getConfigString() + " -> vl " + vl;
+            this.vl = vl;
         }
 
         @Override

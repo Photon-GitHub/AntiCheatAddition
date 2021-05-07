@@ -7,6 +7,7 @@ import de.photon.aacadditionproold.modules.Module;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -42,9 +43,7 @@ public final class ConfigUtils
             field.setAccessible(true);
 
             // Get the full config path.
-            String path = annotation.configPath();
-
-            if (prePath != null) path = prePath + path;
+            val path = StringUtils.defaultString(prePath) + annotation.configPath();
 
             // Get the type of the field.
             val type = field.getType();

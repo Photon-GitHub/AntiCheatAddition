@@ -123,6 +123,7 @@ internal abstract class PlayerInformationHider protected constructor(vararg affe
         informationPacketListener = object : PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, ImmutableSet.copyOf(affectedPackets)) {
             override fun onPacketSending(event: PacketEvent) {
                 val entityID = event.packet.integers.read(0)
+
                 if (!event.isPlayerTemporary) {
                     val hidden: Boolean
                     synchronized(hiddenFromPlayerMap) {

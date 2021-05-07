@@ -29,7 +29,6 @@ public enum ProtocolVersion
         for (ProtocolVersion value : ProtocolVersion.values()) {
             for (Integer versionNumber : value.versionNumbers) builder.put(versionNumber, value);
         }
-
         VERSION_NUMBER_MAP = builder.build();
     }
 

@@ -1,11 +1,14 @@
 package de.photon.aacadditionpro.modules;
 
+import com.google.common.collect.ImmutableMap;
 import de.photon.aacadditionpro.util.violationlevels.ViolationAggregateManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public abstract class ViolationModule extends Module
@@ -33,6 +36,11 @@ public abstract class ViolationModule extends Module
                 return ModuleLoader.builder(this).build();
             }
         };
+    }
+
+    public Map<String, String> getAACTooltip(UUID uuid, double score)
+    {
+        return ImmutableMap.of("Score:", Double.toString(score));
     }
 
     protected abstract ViolationManagement createViolationManagement();

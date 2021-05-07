@@ -86,8 +86,8 @@ public class AACAdditionPro extends JavaPlugin
 
             this.bungeecord = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getBoolean("settings.bungeecord", false);
             DebugSender.INSTANCE.sendDebug("Bungeecord " + (this.bungeecord ?
-                                                                 "detected" :
-                                                                 "not detected"), true, false);
+                                                            "detected" :
+                                                            "not detected"), true, false);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Metrics                                                 //
@@ -121,8 +121,7 @@ public class AACAdditionPro extends JavaPlugin
             // Managers
             this.registerListener(new User.UserListener());
             // Load the module manager
-            //noinspection ResultOfMethodCallIgnored
-            ModuleManager.getMODULES();
+            ModuleManager.INSTANCE.enable();
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                AAC hook                                                //
@@ -132,7 +131,7 @@ public class AACAdditionPro extends JavaPlugin
             if (this.getServer().getPluginManager().isPluginEnabled("AAC5")) {
                 if (this.getConfig().getBoolean("UseAACFeatureSystem")) {
                     this.aacapi = Preconditions.checkNotNull(Bukkit.getServicesManager().load(AACAPI.class), "Did not find AAC API while hooking.");
-                    this.aacapi.registerCustomFeatureProvider(this.getModuleManager().getCustomFeatureProvider());
+                    this.aacapi.registerCustomFeatureProvider(ModuleManager.INSTANCE.getCustomFeatureProvider());
                     DebugSender.INSTANCE.sendDebug("AAC hooked", true, false);
                     metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Hooked"));
                 } else {

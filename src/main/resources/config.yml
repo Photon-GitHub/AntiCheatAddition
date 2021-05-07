@@ -46,6 +46,8 @@ AutoFish:
     inhuman_reaction:
       # Do you want to enable the inhuman reaction part?
       enabled: true
+      # This message will appear in AAC's status when AAC is used.
+      aac_status_message: "[AACAdditionPro] The player's fishing reaction times are inhumanly fast."
       # How many milliseconds should have passed before a fishing action counts as legit.
       # This also influences the given vl according to a linear distribution - the faster and more inhuman someone
       # reacts, the more vl they will get.
@@ -56,6 +58,8 @@ AutoFish:
     consistency:
       # Do you want to enable the consistency part?
       enabled: true
+      # This message will appear in AAC's status when AAC is used.
+      aac_status_message: "[AACAdditionPro] The player's fishing times are inhumanly constant."
       # How many fishing attempts should be checked by the consistency check
       fishing_attempt_count: 5
       # The minimum variation a player has to have in their reaction times to count as non cheating (in milliseconds)
@@ -74,3 +78,27 @@ AutoFish:
     8: "aac notify {player} in {world} is suspected for AutoFish"
     12: "aac notify {player} in {world} is highly suspected for AutoFish"
     18: "aackick {player} AutoFish"
+
+# ------------------------------------------------------------------------------------------------------------------- #
+#                                               ___      _                                                            #
+#                                              |   \ ___| |__ _  _ __ _                                               #
+#                                              | |) / -_) '_ \ || / _` |                                              #
+#                                              |___/\___|_.__/\_,_\__, |                                              #
+#                                                                 |___/                                               #
+#                                                                                                                     #
+# ------------------------------------------------------------------------------------------------------------------- #
+
+# If this option is active and AAC is installed AACAdditionPro will not execute any commands specified above and instead
+# hooks the AAC feature system to allow you to specify punishments via the AAC config.
+# This way, AACAdditionPro's checks will also appear in AAC's status messages.
+UseAACFeatureSystem: true
+
+# Should players with the aac.verbose permission get the AACAdditionPro verbose messages
+Debug:
+  # Do you want AACAdditionPro to log into a log-file?
+  file: true
+  # Should players be able to get verbose messages if they have the aac.verbose permission
+  # Players can toggle the verbose output with the command /aacadditionpro verbose
+  players: false
+  # Should the verbose output be logged in the console (very spammy, only recommended for testing purposes)
+  console: false

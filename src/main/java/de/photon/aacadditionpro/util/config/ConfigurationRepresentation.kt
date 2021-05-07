@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.util.config
 
-import org.apache.commons.lang.StringUtils
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.io.IOException
@@ -59,26 +58,27 @@ class ConfigurationRepresentation(private val configFile: File) {
             deleteLines(configLines, lineIndexOfKey + 1, affectedLines - 1)
 
             // Add the removed ':' right back.
-            val replacementLine = StringBuilder(StringUtils.substringBeforeLast(originalLine, ":")).append(':')
+            var replacementLine = originalLine.substringBeforeLast(':') + ':'//StringBuilder(StringUtils.substringBeforeLast(originalLine, ":")).append(':')
 
             // Set the new value.
             when (value) {
                 // Simple sets
-                is Boolean, is Byte, is Short, is Int, is Long, is Float, is Double -> replacementLine.append(' ').append(value)
-                is String -> replacementLine.append(" \"").append(value).append('\"')
+                is Boolean, is Byte, is Short, is Int, is Long, is Float, is Double -> replacementLine += " $value"
+                is String -> replacementLine += " \"$value\""
                 // List logic to accommodate both empty lists as well as normal lists.
                 is List<*> -> {
-                    if (value.isEmpty()) {
-                        replacementLine.append(" []")
-                    } else {
-                        val preString = StringUtils.leftPad("- ", StringUtil.depth(originalLine))
+                    if (value.isEmpty()) replacementLine += " []"
+                    else {
+                        // The multiline list shall have the same depth as the key itself, then add two spaces and the obligatory -.
+                        // Another space will automatically be added thanks to the formatting of simple values as shown above.
+                        val preString = "".padStart(StringUtil.depth(originalLine)) + "  -"
                         for (o in value) configLines.add(lineIndexOfKey + 1, preString + o)
                     }
                 }
                 // ConfigActions to allow special actions like the deletion of keys.
                 is ConfigActions -> {
                     if (value === ConfigActions.DELETE_KEYS) {
-                        replacementLine.append(" {}")
+                        replacementLine += " {}"
                     }
                 }
             }
@@ -87,14 +87,10 @@ class ConfigurationRepresentation(private val configFile: File) {
         Files.write(configFile.toPath(), configLines)
     }
 
-    enum class ConfigActions {
-        DELETE_KEYS
-    }
-
-    private fun isComment(string: String?): Boolean {
+    private fun isComment(string: String): Boolean {
         // == Because a '#' at a later point indicates some data before as leading whitespaces are removed.
         // Moreover, a negative value indicates that no comment char was found.
-        return string == null || string.isEmpty() || string.trim().indexOf('#') == 0
+        return string.isEmpty() || string.trim().indexOf('#') == 0
     }
 
     private fun deleteLines(lines: MutableList<String>, startPosition: Int, lineCount: Int) {
@@ -113,5 +109,9 @@ class ConfigurationRepresentation(private val configFile: File) {
             ++affectedLines
         }
         return affectedLines
+    }
+
+    enum class ConfigActions {
+        DELETE_KEYS
     }
 }

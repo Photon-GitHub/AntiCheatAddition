@@ -1,64 +1,57 @@
-package de.photon.aacadditionpro.util.messaging;
+package de.photon.aacadditionpro.util.messaging
 
-import de.photon.aacadditionproold.AACAdditionPro;
-import de.photon.aacadditionproold.util.files.FileUtil;
-import lombok.Value;
-import lombok.val;
+import de.photon.aacadditionproold.AACAdditionPro
+import de.photon.aacadditionproold.util.files.FileUtil
+import java.io.File
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.StandardOpenOption
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.logging.Level
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.logging.Level;
+class LogFile(now: LocalDateTime) {
+    val backingFile: File?
+    val dayOfTheYear: Int
 
-@Value
-public class LogFile
-{
-    File backingFile;
-    int dayOfTheYear;
+    fun write(logMessage: String, now: LocalDateTime) {
+        if (backingFile != null) {
+            // Reserve the required builder size.
+            // Time length is always 12, together with 2 brackets and one space this will result in 15.
+            val verboseMessage = StringBuilder(15 + logMessage.length)
+            // Add the beginning of the PREFIX and format the time.
+            verboseMessage.append('[').append(now.format(DateTimeFormatter.ISO_LOCAL_TIME))
 
-    public LogFile(LocalDateTime now)
-    {
-        this.dayOfTheYear = now.getDayOfYear();
-        File createdFile = null;
-        try {
-            createdFile = FileUtil.createFile(new File(AACAdditionPro.getInstance().getDataFolder().getPath() + "/logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log"));
-        } catch (IOException e) {
-            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Something went wrong while trying to create the log file", e);
-        }
-        this.backingFile = createdFile;
-    }
+            // Add a 0 if it is too short
+            // Technically only 12, but we already appended the "[", thus one more.
+            while (verboseMessage.length < 13) verboseMessage.append('0')
 
-    public void write(String logMessage, LocalDateTime now)
-    {
-        // Reserve the required builder size.
-        // Time length is always 12, together with 2 brackets and one space this will result in 15.
-        val verboseMessage = new StringBuilder(15 + logMessage.length());
-        // Add the beginning of the PREFIX
-        verboseMessage.append('[');
-        // Get the current time
-        verboseMessage.append(now.format(DateTimeFormatter.ISO_LOCAL_TIME));
+            // Add the rest of the PREFIX and the message
+            verboseMessage.append(']').append(' ').append(logMessage).append('\n')
 
-        // Add a 0 if it is too short
-        // Technically only 12, but we already appended the "[", thus one more.
-        while (verboseMessage.length() < 13) verboseMessage.append('0');
-
-        // Add the rest of the PREFIX and the message
-        verboseMessage.append(']').append(' ').append(logMessage).append('\n');
-
-        try {
-            // Log the message
-            Files.write(this.backingFile.toPath(), verboseMessage.toString().getBytes(), StandardOpenOption.APPEND);
-        } catch (final IOException e) {
-            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Something went wrong while trying to write to the log file", e);
+            try {
+                // Log the message
+                Files.write(backingFile.toPath(), verboseMessage.toString().toByteArray(), StandardOpenOption.APPEND)
+            } catch (e: IOException) {
+                AACAdditionPro.getInstance().logger.log(Level.SEVERE, "Something went wrong while trying to write to the log file", e)
+            }
         }
     }
 
-    public boolean isValid(LocalDateTime now)
-    {
-        val dayOfYear = now.getDayOfYear();
-        return this.dayOfTheYear == dayOfYear && this.backingFile.exists();
+    fun isValid(now: LocalDateTime): Boolean {
+        return dayOfTheYear == now.dayOfYear && backingFile != null && backingFile.exists()
+    }
+
+    init {
+        dayOfTheYear = now.dayOfYear
+        var tempFile: File? = null
+
+        try {
+            tempFile = FileUtil.createFile(File(AACAdditionPro.getInstance().dataFolder.path + "/logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log"))
+        } catch (e: IOException) {
+            AACAdditionPro.getInstance().logger.log(Level.SEVERE, "Something went wrong while trying to create the log file", e)
+        }
+
+        backingFile = tempFile
     }
 }

@@ -24,9 +24,9 @@ public final class ExecuteUtil
                     //Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
                     try {
                         Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), command);
-                        DebugSender.getInstance().sendDebug(ChatColor.GOLD + "Executed command: " + command);
+                        DebugSender.INSTANCE.sendDebug(ChatColor.GOLD + "Executed command: " + command);
                     } catch (final Exception e) {
-                        DebugSender.getInstance().sendDebug("Could not execute command /" + command, true, true);
+                        DebugSender.INSTANCE.sendDebug("Could not execute command /" + command, true, true);
                     }
                 });
     }

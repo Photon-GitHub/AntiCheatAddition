@@ -1,50 +1,33 @@
-package de.photon.aacadditionpro.util.messaging;
+package de.photon.aacadditionpro.util.messaging
 
-import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionproold.AACAdditionPro;
-import de.photon.aacadditionproold.events.ClientControlEvent;
-import de.photon.aacadditionproold.events.PlayerAdditionViolationEvent;
-import de.photon.aacadditionproold.util.commands.Placeholders;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.val;
-import org.bukkit.ChatColor;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import de.photon.aacadditionpro.user.User
+import de.photon.aacadditionproold.AACAdditionPro
+import de.photon.aacadditionproold.events.ClientControlEvent
+import de.photon.aacadditionproold.events.PlayerAdditionViolationEvent
+import de.photon.aacadditionproold.util.commands.Placeholders
+import org.bukkit.ChatColor
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import java.time.LocalDateTime
+import java.util.logging.Level
 
-import java.time.LocalDateTime;
-import java.util.logging.Level;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DebugSender implements Listener
-{
-    @Getter private static final DebugSender instance;
-    private static final String EVENT_PRE_STRING = ChatColor.WHITE + "{player} " + ChatColor.GRAY;
-
-    static {
-        instance = new DebugSender();
-        AACAdditionPro.getInstance().registerListener(instance);
+object DebugSender : Listener {
+    init {
+        AACAdditionPro.getInstance().registerListener(this)
     }
 
-    private final boolean writeToFile = AACAdditionPro.getInstance().getConfig().getBoolean("Debug.file");
-    private final boolean writeToConsole = AACAdditionPro.getInstance().getConfig().getBoolean("Debug.console");
-    private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Debug.players");
+    @JvmStatic
+    private val EVENT_PRE_STRING = ChatColor.WHITE.toString() + "{player} " + ChatColor.GRAY
 
-    @Setter private volatile boolean allowedToRegisterTasks = true;
+    private val writeToFile = AACAdditionPro.getInstance().config.getBoolean("Debug.file")
+    private val writeToConsole = AACAdditionPro.getInstance().config.getBoolean("Debug.console")
+    private val writeToPlayers = AACAdditionPro.getInstance().config.getBoolean("Debug.players")
+
+    @Volatile
+    private var allowedToRegisterTasks = true
+
     // The File the verbose messages are written to.
-    private LogFile logFile = new LogFile(LocalDateTime.now());
-
-    /**
-     * Sets off a standard verbose message (no console forcing and not flagged as an error).
-     *
-     * @param s the message that will be sent
-     */
-    public void sendDebug(final String s)
-    {
-        sendDebug(s, false, false);
-    }
+    private var logFile: LogFile = LogFile(LocalDateTime.now())
 
     /**
      * This sets off a verbose message.
@@ -53,39 +36,35 @@ public final class DebugSender implements Listener
      * @param force_console whether the verbose message should appear in the console even when verbose for console is deactivated.
      * @param error         whether the message should be marked as an error
      */
-    public void sendDebug(final String s, final boolean force_console, final boolean error)
-    {
+    @JvmOverloads
+    fun sendDebug(s: String?, force_console: Boolean = false, error: Boolean = false) {
         // Remove color codes
-        val logMessage = ChatColor.stripColor(s);
+        val logMessage: String = ChatColor.stripColor(s).toString()
 
         if (writeToFile) {
             // Get the logfile that is in use currently or create a new one if needed.
-            val now = LocalDateTime.now();
-            if (!this.logFile.isValid(now)) this.logFile = new LogFile(now);
-            this.logFile.write(logMessage, now);
+            val now = LocalDateTime.now()
+            if (!logFile.isValid(now)) logFile = LogFile(now)
+            logFile.write(logMessage, now)
         }
 
-        if (writeToConsole || force_console) {
-            AACAdditionPro.getInstance().getLogger().log(error ?
-                                                         Level.SEVERE :
-                                                         Level.INFO, logMessage);
-        }
+        if (writeToConsole || force_console) AACAdditionPro.getInstance().logger.log(if (error) Level.SEVERE else Level.INFO, logMessage)
 
         // Prevent errors on disable as of scheduling
-        if (allowedToRegisterTasks && writeToPlayers) {
-            ChatMessage.sendSyncMessage(User.getDebugUsers(), s);
-        }
+        if (allowedToRegisterTasks && writeToPlayers) ChatMessage.sendSyncMessage(User.getDebugUsers(), s)
     }
 
     @EventHandler
-    public void onAdditionViolation(final PlayerAdditionViolationEvent event)
-    {
-        this.sendDebug(Placeholders.replacePlaceholders(EVENT_PRE_STRING + event.getMessage() + " | Vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer()));
+    fun onAdditionViolation(event: PlayerAdditionViolationEvent) {
+        sendDebug(Placeholders.replacePlaceholders(EVENT_PRE_STRING + event.message + " | Vl: " + event.vl + " | TPS: {tps} | Ping: {ping}", event.player))
     }
 
     @EventHandler
-    public void onClientControl(final ClientControlEvent event)
-    {
-        this.sendDebug(Placeholders.replacePlaceholders(EVENT_PRE_STRING + event.getMessage(), event.getPlayer()));
+    fun onClientControl(event: ClientControlEvent) {
+        sendDebug(Placeholders.replacePlaceholders(EVENT_PRE_STRING + event.message, event.player))
+    }
+
+    fun setAllowedToRegisterTasks(allowedToRegisterTasks: Boolean) {
+        this.allowedToRegisterTasks = allowedToRegisterTasks
     }
 }

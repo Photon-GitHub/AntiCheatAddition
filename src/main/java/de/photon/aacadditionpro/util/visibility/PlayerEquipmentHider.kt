@@ -1,31 +1,16 @@
-package de.photon.aacadditionpro.util.visibility;
+package de.photon.aacadditionpro.util.visibility
 
-import com.comphenix.protocol.PacketType;
-import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerEntityEquipment;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import com.comphenix.protocol.PacketType
+import de.photon.aacadditionpro.AACAdditionPro
+import de.photon.aacadditionpro.ServerVersion
+import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerEntityEquipment
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 
-import java.util.Set;
-
-class PlayerEquipmentHider extends PlayerInformationHider
-{
-    public PlayerEquipmentHider()
-    {
-        super(PacketType.Play.Server.ENTITY_EQUIPMENT);
+internal class PlayerEquipmentHider : PlayerInformationHider(PacketType.Play.Server.ENTITY_EQUIPMENT) {
+    override fun onHide(observer: Player, playerToHide: Player) {
+        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), Runnable { WrapperPlayServerEntityEquipment.clearAllSlots(playerToHide.entityId, observer) })
     }
 
-    @Override
-    protected void onHide(@NotNull Player observer, @NotNull Player playerToHide)
-    {
-        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> WrapperPlayServerEntityEquipment.clearAllSlots(playerToHide.getEntityId(), observer));
-    }
-
-    @Override
-    protected Set<ServerVersion> getSupportedVersions()
-    {
-        return ServerVersion.NON_188_VERSIONS;
-    }
+    override val supportedVersions: Set<ServerVersion> get() = ServerVersion.NON_188_VERSIONS
 }

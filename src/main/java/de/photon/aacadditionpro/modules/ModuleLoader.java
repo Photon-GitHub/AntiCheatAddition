@@ -75,24 +75,24 @@ public class ModuleLoader
     public boolean load()
     {
         if (this.bungeecordForbidden && AACAdditionPro.getInstance().isBungeecord()) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " is not compatible with bungeecord.", true, false);
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " is not compatible with bungeecord.", true, false);
             return false;
         }
 
         val missingDependencies = pluginDependencies.stream().filter(dependency -> !Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)).sorted().collect(Collectors.joining(", "));
         if (!missingDependencies.isEmpty()) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " has been not been enabled as of missing dependencies. Missing: " + missingDependencies, true, false);
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " has been not been enabled as of missing dependencies. Missing: " + missingDependencies, true, false);
             return false;
         }
 
         val loadedIncompatibilities = pluginIncompatibilities.stream().filter(dependency -> Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)).sorted().collect(Collectors.joining(", "));
         if (!loadedIncompatibilities.isEmpty()) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + loadedIncompatibilities, true, false);
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + loadedIncompatibilities, true, false);
             return false;
         }
 
         if (!ServerVersion.supportsActiveServerVersion(allowedServerVersions)) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " is not compatible with your server version.", true, false);
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " is not compatible with your server version.", true, false);
             return false;
         }
 

@@ -1,55 +1,44 @@
-package de.photon.aacadditionpro.util.visibility;
+package de.photon.aacadditionpro.util.visibility
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Player
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PlayerVisibility
-{
-    private static final PlayerVisibility instance = new PlayerVisibility();
-
-    private final PlayerInformationHider equipmentHider = new PlayerEquipmentHider();
-    private final PlayerInformationHider playerHider = new PlayerHider();
+object PlayerVisibility {
+    private val equipmentHider: PlayerInformationHider = PlayerEquipmentHider()
+    private val playerHider: PlayerInformationHider = PlayerHider()
 
     /**
-     * This method will fully hide the toBeHidden {@link Player} from the observer {@link Player}
+     * This method will fully hide the toBeHidden [Player] from the observer [Player]
      */
-    public void fullyHidePlayer(Player observer, Player toBeHidden)
-    {
-        playerHider.hidePlayer(observer, toBeHidden);
-        equipmentHider.revealPlayer(observer, toBeHidden);
+    fun fullyHidePlayer(observer: Player?, toBeHidden: Player?) {
+        playerHider.hidePlayer(observer, toBeHidden)
+        equipmentHider.revealPlayer(observer, toBeHidden)
     }
 
     /**
-     * This method will hide the equipment of the hideEquipment {@link Player} from the observer {@link Player}
+     * This method will hide the equipment of the hideEquipment [Player] from the observer [Player]
      */
-    public void hideEquipment(Player observer, Player hideEquipment)
-    {
-        equipmentHider.hidePlayer(observer, hideEquipment);
-        playerHider.revealPlayer(observer, hideEquipment);
+    fun hideEquipment(observer: Player?, hideEquipment: Player?) {
+        equipmentHider.hidePlayer(observer, hideEquipment)
+        playerHider.revealPlayer(observer, hideEquipment)
     }
 
     /**
-     * This method will fully reveal the toBeRevealed {@link Player} from the observer {@link Player}
+     * This method will fully reveal the toBeRevealed [Player] from the observer [Player]
      */
-    public void revealPlayer(Player observer, Player toBeRevealed)
-    {
-        playerHider.revealPlayer(observer, toBeRevealed);
-        equipmentHider.revealPlayer(observer, toBeRevealed);
+    fun revealPlayer(observer: Player?, toBeRevealed: Player?) {
+        playerHider.revealPlayer(observer, toBeRevealed)
+        equipmentHider.revealPlayer(observer, toBeRevealed)
     }
 
-    public void enable()
-    {
-        this.equipmentHider.registerListeners();
-        this.playerHider.registerListeners();
+    fun enable() {
+        equipmentHider.registerListeners()
+        playerHider.registerListeners()
     }
 
-    public void disable()
-    {
-        this.equipmentHider.unregisterListeners();
-        this.equipmentHider.clear();
-        this.playerHider.unregisterListeners();
-        this.playerHider.clear();
+    fun disable() {
+        equipmentHider.unregisterListeners()
+        equipmentHider.clear()
+        playerHider.unregisterListeners()
+        playerHider.clear()
     }
 }

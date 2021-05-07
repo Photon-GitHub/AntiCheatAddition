@@ -87,8 +87,8 @@ internal abstract class PlayerInformationHider protected constructor(vararg affe
      * Hides a [Player] from another [Player].
      */
     fun hidePlayer(observer: Player?, playerToHide: Player?) {
-        checkNotNull(observer) { "Tried to hide information from null observer." }
-        checkNotNull(playerToHide) { "Tried to hide information of null player." }
+        // Ignore null players as that is a bug of spigot and as players are automatically removed via events it should not have any consequences.
+        if (observer == null || playerToHide == null) return
 
         synchronized(hiddenFromPlayerMap) {
             hiddenFromPlayerMap.put(observer.entityId, playerToHide.entityId)
@@ -103,8 +103,8 @@ internal abstract class PlayerInformationHider protected constructor(vararg affe
      * Unhides a [Player] from another [Player].
      */
     fun revealPlayer(observer: Player?, playerToReveal: Player?) {
-        checkNotNull(observer) { "Tried to reveal information to null observer." }
-        checkNotNull(playerToReveal) { "Tried to reveal information of null player." }
+        // Ignore null players as that is a bug of spigot and as players are automatically removed via events it should not have any consequences.
+        if (observer == null || playerToReveal == null) return
 
         var hiddenBefore: Boolean
         synchronized(hiddenFromPlayerMap) {

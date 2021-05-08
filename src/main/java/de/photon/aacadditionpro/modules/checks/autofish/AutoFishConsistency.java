@@ -63,7 +63,7 @@ public class AutoFishConsistency extends ViolationModule implements Listener
                         // (maxOffset / minVariation) will be at most 1 and at least 0
                         val flagOffset = 15 - (14 * (maxOffset / minVariation));
 
-                        DebugSender.INSTANCE.sendDebug("AutoFish-Verbose | Player " +
+                        DebugSender.getInstance().sendDebug("AutoFish-Verbose | Player " +
                                                             user.getPlayer().getName() +
                                                             " failed consistency | average time: " +
                                                             StringUtils.left(String.valueOf(consistencyData.getAverage()), 7) +

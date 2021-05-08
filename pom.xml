@@ -26,6 +26,9 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <includes>
+                        <include>de/photon/aacadditionpro/</include>
+                    </includes>
                     <meminitial>1024m</meminitial>
                     <maxmem>8192m</maxmem>
                 </configuration>

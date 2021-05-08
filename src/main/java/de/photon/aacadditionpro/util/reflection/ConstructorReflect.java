@@ -1,6 +1,6 @@
 package de.photon.aacadditionpro.util.reflection;
 
-import de.photon.aacadditionproold.AACAdditionPro;
+import de.photon.aacadditionpro.AACAdditionPro;
 import lombok.Getter;
 
 import java.lang.reflect.Constructor;
@@ -16,7 +16,7 @@ public class ConstructorReflect
     {
         this.constructor = constructor;
     }
-    
+
 
     public Object instance(Object... initObjects)
     {

@@ -1,8 +1,8 @@
 package de.photon.aacadditionpro.util.pluginmessage;
 
 import com.comphenix.protocol.wrappers.MinecraftKey;
-import de.photon.aacadditionproold.AACAdditionPro;
-import de.photon.aacadditionproold.ServerVersion;
+import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.ServerVersion;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.Bukkit;

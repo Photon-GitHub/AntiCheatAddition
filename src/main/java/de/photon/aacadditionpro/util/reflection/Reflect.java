@@ -1,6 +1,6 @@
 package de.photon.aacadditionpro.util.reflection;
 
-import de.photon.aacadditionproold.AACAdditionPro;
+import de.photon.aacadditionpro.AACAdditionPro;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

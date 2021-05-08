@@ -1,8 +1,8 @@
 package de.photon.aacadditionpro.util.world;
 
 import com.google.common.collect.Sets;
-import de.photon.aacadditionproold.ServerVersion;
-import de.photon.aacadditionproold.util.exceptions.UnknownMinecraftVersion;
+import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
@@ -32,7 +32,7 @@ public final class MaterialUtil
         allowedMaterials.addAll(getMaterialsEndingWith("_SLAB", "_STAIRS"));
 
         switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
+            case MC18:
             case MC112:
                 allowedMaterials.add(Material.getMaterial("ENCHANTMENT_TABLE"));
 
@@ -55,7 +55,7 @@ public final class MaterialUtil
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA);
                 break;
             default:
-                throw new UnknownMinecraftVersion();
+                throw new UnknownMinecraftException();
         }
 
         FREE_SPACE_CONTAINERS = Sets.immutableEnumSet(freeSpaceMaterials);
@@ -77,7 +77,7 @@ public final class MaterialUtil
     public static boolean isReallyOccluding(Material material)
     {
         switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
+            case MC18:
             case MC112:
                 return material != Material.BARRIER && material != Material.getMaterial("MOB_SPAWNER") && material.isOccluding();
             case MC113:
@@ -86,7 +86,7 @@ public final class MaterialUtil
             case MC116:
                 return material != Material.BARRIER && material != Material.SPAWNER && material.isOccluding();
             default:
-                throw new UnknownMinecraftVersion();
+                throw new UnknownMinecraftException();
         }
     }
 

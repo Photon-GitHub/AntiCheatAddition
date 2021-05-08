@@ -1,13 +1,13 @@
 package de.photon.aacadditionpro.util.execute;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionproold.util.files.configs.StringUtil;
-import de.photon.aacadditionproold.util.server.ServerUtil;
+import de.photon.aacadditionpro.util.server.ServerUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -104,8 +104,8 @@ public final class Placeholders
     public enum PlayerPlaceholders
     {
         // Single placeholder
-        PLAYER(player -> StringUtil.limitStringLength(player.getName(), 30)),
-        PING(player -> StringUtil.limitStringLength(String.valueOf(ServerUtil.getPing(player)), 5));
+        PLAYER(player -> StringUtils.left(player.getName(), 30)),
+        PING(player -> StringUtils.left(String.valueOf(ServerUtil.getPing(player)), 5));
 
         private final Function<Player, String> function;
 
@@ -150,9 +150,9 @@ public final class Placeholders
     {
         // Global placeholders
         DATE(() -> LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)),
-        TIME(() -> StringUtil.limitStringLength(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME), 8)),
+        TIME(() -> StringUtils.left(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME), 8)),
         SERVER(() -> Bukkit.getServer().getName()),
-        TPS(() -> StringUtil.limitStringLength(String.valueOf(ServerUtil.getTPS()), 5));
+        TPS(() -> StringUtils.left(String.valueOf(ServerUtil.getTPS()), 5));
 
         private final Supplier<String> supplier;
 

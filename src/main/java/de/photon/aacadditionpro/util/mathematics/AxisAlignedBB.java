@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.util.mathematics;
 
-import de.photon.aacadditionproold.util.reflection.ClassReflect;
-import de.photon.aacadditionproold.util.reflection.Reflect;
+import de.photon.aacadditionpro.util.reflection.ClassReflect;
+import de.photon.aacadditionpro.util.reflection.Reflect;
 import lombok.Getter;
 import lombok.ToString;
 import org.bukkit.util.Vector;

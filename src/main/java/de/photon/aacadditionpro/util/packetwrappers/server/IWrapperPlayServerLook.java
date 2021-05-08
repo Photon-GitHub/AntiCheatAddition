@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.util.packetwrappers.server;
 
+import de.photon.aacadditionpro.util.mathematics.RotationUtil;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayLook;
-import de.photon.aacadditionproold.util.mathematics.RotationUtil;
 
 public interface IWrapperPlayServerLook extends IWrapperPlayLook
 {

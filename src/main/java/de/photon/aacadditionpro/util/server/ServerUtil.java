@@ -1,9 +1,9 @@
 package de.photon.aacadditionpro.util.server;
 
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
-import de.photon.aacadditionproold.AACAdditionPro;
-import de.photon.aacadditionproold.util.reflection.ClassReflect;
-import de.photon.aacadditionproold.util.reflection.Reflect;
+import de.photon.aacadditionpro.util.reflection.ClassReflect;
+import de.photon.aacadditionpro.util.reflection.Reflect;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;

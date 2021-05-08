@@ -1,9 +1,9 @@
 package de.photon.aacadditionpro.util.packetwrappers;
 
 import com.comphenix.protocol.utility.MinecraftReflection;
-import de.photon.aacadditionproold.ServerVersion;
-import de.photon.aacadditionproold.util.exceptions.UnknownMinecraftVersion;
-import de.photon.aacadditionproold.util.pluginmessage.MessageChannel;
+import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.exception.UnknownMinecraftException;
+import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -19,16 +19,16 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
     default MessageChannel getChannel()
     {
         switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
+            case MC18:
             case MC112:
-                return new MessageChannel("minecraft", "placeholder", getHandle().getStrings().read(0));
+                return MessageChannel.of("minecraft", "placeholder", getHandle().getStrings().read(0));
             case MC113:
             case MC114:
             case MC115:
             case MC116:
-                return new MessageChannel(getHandle().getMinecraftKeys().read(0));
+                return MessageChannel.of(getHandle().getMinecraftKeys().read(0));
             default:
-                throw new UnknownMinecraftVersion();
+                throw new UnknownMinecraftException();
         }
     }
 
@@ -39,7 +39,7 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
     default void setChannel(MessageChannel value)
     {
         switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
+            case MC18:
             case MC112:
                 getHandle().getStrings().write(0, value.getChannel());
                 break;
@@ -50,7 +50,7 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
                 getHandle().getMinecraftKeys().write(0, value);
                 break;
             default:
-                throw new UnknownMinecraftVersion();
+                throw new UnknownMinecraftException();
         }
     }
 
@@ -65,6 +65,21 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
     }
 
     /**
+     * Update payload contents with a Netty buffer
+     *
+     * @param contents - new payload content
+     */
+    default void setContentsBuffer(ByteBuf contents)
+    {
+        if (MinecraftReflection.is(MinecraftReflection.getPacketDataSerializerClass(), contents)) {
+            getHandle().getModifier().withType(ByteBuf.class).write(0, contents);
+        } else {
+            Object serializer = MinecraftReflection.getPacketDataSerializer(contents);
+            getHandle().getModifier().withType(ByteBuf.class).write(0, serializer);
+        }
+    }
+
+    /**
      * Retrieve payload contents
      *
      * @return Payload contents as a byte array
@@ -75,22 +90,6 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
         byte[] array = new byte[buffer.readableBytes()];
         buffer.readBytes(array);
         return array;
-    }
-
-    /**
-     * Update payload contents with a Netty buffer
-     *
-     * @param contents - new payload content
-     */
-    default void setContentsBuffer(ByteBuf contents)
-    {
-        if (MinecraftReflection.is(MinecraftReflection.getPacketDataSerializerClass(), contents)) {
-            getHandle().getModifier().withType(ByteBuf.class).write(0, contents);
-        }
-        else {
-            Object serializer = MinecraftReflection.getPacketDataSerializer(contents);
-            getHandle().getModifier().withType(ByteBuf.class).write(0, serializer);
-        }
     }
 
     /**

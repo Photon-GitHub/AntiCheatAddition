@@ -1,6 +1,6 @@
 package de.photon.aacadditionpro.util.reflection;
 
-import de.photon.aacadditionproold.util.mathematics.AxisAlignedBB;
+import de.photon.aacadditionpro.util.mathematics.AxisAlignedBB;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 
@@ -8,9 +8,9 @@ import java.util.List;
 
 public final class ReflectionUtils
 {
-    private ReflectionUtils() {}
-
     private static final String versionNumber = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+
+    private ReflectionUtils() {}
 
     /**
      * Used to get the version {@link String} that is necessary for net.minecraft.server reflection

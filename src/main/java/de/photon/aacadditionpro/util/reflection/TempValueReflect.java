@@ -1,6 +1,6 @@
 package de.photon.aacadditionpro.util.reflection;
 
-import de.photon.aacadditionproold.AACAdditionPro;
+import de.photon.aacadditionpro.AACAdditionPro;
 
 import java.lang.reflect.Field;
 import java.util.List;

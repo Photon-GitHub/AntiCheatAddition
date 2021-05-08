@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.util.server;
 
-import de.photon.aacadditionproold.util.simulation.Gravitation;
 import lombok.Getter;
+import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
 public enum Movement
@@ -29,10 +29,10 @@ public enum Movement
     }
 
     /**
-     * This applies the {@link Gravitation} of a specific type to a {@link Vector}
+     * This applies the gravitation of a specific type to a {@link Vector}
      *
      * @param input    the input vector (will not be cloned)
-     * @param movement the type of the {@link org.bukkit.entity.Entity} the {@link Gravitation} relates to.
+     * @param movement the type of the {@link Entity} the gravitation relates to.
      */
     private static Vector applyGravitation(Vector input, Movement movement)
     {
@@ -40,10 +40,10 @@ public enum Movement
     }
 
     /**
-     * This applies the {@link Gravitation} and the air resistance of a specific type to a {@link Vector}
+     * This applies the gravitation and the air resistance of a specific type to a {@link Vector}
      *
      * @param input    the input vector (will not be cloned)
-     * @param movement the type of the {@link org.bukkit.entity.Entity} the {@link Gravitation} relates to.
+     * @param movement the type of the {@link Entity} the gravitation relates to.
      */
     public static Vector applyGravitationAndAirResistance(Vector input, Movement movement)
     {

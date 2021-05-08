@@ -1,9 +1,9 @@
 package de.photon.aacadditionpro.util.packetwrappers.server;
 
 import com.google.common.base.Preconditions;
+import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayOnGround;
-import de.photon.aacadditionproold.ServerVersion;
-import de.photon.aacadditionproold.util.exceptions.UnknownMinecraftVersion;
 import org.bukkit.util.Vector;
 
 public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
@@ -14,7 +14,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
     default double getDx()
     {
         switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
+            case MC18:
                 return getHandle().getBytes().read(0) / 32D;
             case MC112:
             case MC113:
@@ -24,7 +24,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 // Integers are ok, even though wiki.vg says short
                 return getHandle().getIntegers().read(1) / 4096D;
             default:
-                throw new UnknownMinecraftVersion();
+                throw new UnknownMinecraftException();
         }
     }
 
@@ -35,7 +35,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative x: " + value + " blocks when teleport is needed.");
         switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
+            case MC18:
                 getHandle().getBytes().write(0, (byte) (value * 32));
                 break;
             case MC112:
@@ -47,7 +47,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 getHandle().getIntegers().write(1, (int) (value * 4096));
                 break;
             default:
-                throw new UnknownMinecraftVersion();
+                throw new UnknownMinecraftException();
         }
     }
 
@@ -57,7 +57,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
     default double getDy()
     {
         switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
+            case MC18:
                 return getHandle().getBytes().read(1) / 32D;
             case MC112:
             case MC113:
@@ -67,7 +67,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 // Integers are ok, even though wiki.vg says short
                 return getHandle().getIntegers().read(2) / 4096D;
             default:
-                throw new UnknownMinecraftVersion();
+                throw new UnknownMinecraftException();
         }
     }
 
@@ -78,7 +78,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative y: " + value + " blocks when teleport is needed.");
         switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
+            case MC18:
                 getHandle().getBytes().write(1, (byte) (value * 32));
                 break;
             case MC112:
@@ -90,7 +90,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 getHandle().getIntegers().write(2, (int) (value * 4096));
                 break;
             default:
-                throw new UnknownMinecraftVersion();
+                throw new UnknownMinecraftException();
         }
     }
 
@@ -100,7 +100,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
     default double getDz()
     {
         switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
+            case MC18:
                 return getHandle().getBytes().read(2) / 32D;
             case MC112:
             case MC113:
@@ -110,7 +110,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 // Integers are ok, even though wiki.vg says short
                 return getHandle().getIntegers().read(3) / 4096D;
             default:
-                throw new UnknownMinecraftVersion();
+                throw new UnknownMinecraftException();
         }
     }
 
@@ -121,7 +121,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative z: " + value + " blocks when teleport is needed.");
         switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
+            case MC18:
                 getHandle().getBytes().write(2, (byte) (value * 32));
                 break;
             case MC112:
@@ -133,7 +133,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 getHandle().getIntegers().write(3, (int) (value * 4096));
                 break;
             default:
-                throw new UnknownMinecraftVersion();
+                throw new UnknownMinecraftException();
         }
     }
 

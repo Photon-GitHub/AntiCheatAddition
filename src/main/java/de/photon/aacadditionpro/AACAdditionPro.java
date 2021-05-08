@@ -32,17 +32,13 @@ public class AACAdditionPro extends JavaPlugin
 {
     private static final int BSTATS_PLUGIN_ID = 3265;
 
-    private static AACAdditionPro instance;
+    @Getter private static AACAdditionPro instance;
 
     @Getter(lazy = true) private final FileConfiguration config = generateConfig();
     private ViaAPI<Player> viaAPI;
     private AACAPI aacapi = null;
-    private boolean bungeecord = false;
 
-    public static AACAdditionPro getInstance()
-    {
-        return instance;
-    }
+    private boolean bungeecord = false;
 
     /**
      * Registers a new {@link Listener} for AACAdditionPro.
@@ -75,10 +71,10 @@ public class AACAdditionPro extends JavaPlugin
                 // Unsupported
                 !ServerVersion.getActiveServerVersion().isSupported())
             {
-                DebugSender.INSTANCE.sendDebug("Server version is not supported.", true, true);
+                DebugSender.getInstance().sendDebug("Server version is not supported.", true, true);
 
                 // Print the complete message
-                DebugSender.INSTANCE.sendDebug(
+                DebugSender.getInstance().sendDebug(
                         "Supported versions: " + Arrays.stream(ServerVersion.values()).filter(ServerVersion::isSupported).map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
                         true, true);
                 return;
@@ -89,15 +85,15 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             this.bungeecord = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getBoolean("settings.bungeecord", false);
-            DebugSender.INSTANCE.sendDebug("Bungeecord " + (this.bungeecord ?
-                                                            "detected" :
-                                                            "not detected"), true, false);
+            DebugSender.getInstance().sendDebug("Bungeecord " + (this.bungeecord ?
+                                                                 "detected" :
+                                                                 "not detected"), true, false);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Metrics                                                 //
             // ------------------------------------------------------------------------------------------------------ //
 
-            DebugSender.INSTANCE.sendDebug("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AACAdditionPro/3265", true, false);
+            DebugSender.getInstance().sendDebug("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AACAdditionPro/3265", true, false);
             val metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // The first getConfig call will automatically saveToFile and cache the config.
@@ -111,10 +107,10 @@ public class AACAdditionPro extends JavaPlugin
                 //noinspection unchecked
                 viaAPI = Via.getAPI();
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Used"));
-                DebugSender.INSTANCE.sendDebug("ViaVersion hooked", true, false);
+                DebugSender.getInstance().sendDebug("ViaVersion hooked", true, false);
             } else {
                 metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Not used"));
-                DebugSender.INSTANCE.sendDebug("ViaVersion not found", true, false);
+                DebugSender.getInstance().sendDebug("ViaVersion not found", true, false);
             }
 
 
@@ -125,7 +121,8 @@ public class AACAdditionPro extends JavaPlugin
             // Managers
             this.registerListener(new User.UserListener());
             // Load the module manager
-            ModuleManager.INSTANCE.enable();
+            //noinspection ResultOfMethodCallIgnored
+            ModuleManager.getModuleMap();
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                AAC hook                                                //
@@ -135,16 +132,16 @@ public class AACAdditionPro extends JavaPlugin
             if (this.getServer().getPluginManager().isPluginEnabled("AAC5")) {
                 if (this.getConfig().getBoolean("UseAACFeatureSystem")) {
                     this.aacapi = Preconditions.checkNotNull(Bukkit.getServicesManager().load(AACAPI.class), "Did not find AAC API while hooking.");
-                    this.aacapi.registerCustomFeatureProvider(ModuleManager.INSTANCE.getCustomFeatureProvider());
-                    DebugSender.INSTANCE.sendDebug("AAC hooked", true, false);
+                    this.aacapi.registerCustomFeatureProvider(ModuleManager.getCustomFeatureProvider());
+                    DebugSender.getInstance().sendDebug("AAC hooked", true, false);
                     metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Hooked"));
                 } else {
                     metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Used"));
-                    DebugSender.INSTANCE.sendDebug("AAC found, but not hooked", true, false);
+                    DebugSender.getInstance().sendDebug("AAC found, but not hooked", true, false);
                 }
             } else {
                 metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Not used"));
-                DebugSender.INSTANCE.sendDebug("AAC not found", true, false);
+                DebugSender.getInstance().sendDebug("AAC not found", true, false);
             }
 
             // Data storage
@@ -157,7 +154,7 @@ public class AACAdditionPro extends JavaPlugin
             //                                          Enabled-Verbose + API                                         //
             // ------------------------------------------------------------------------------------------------------ //
             this.getLogger().info(this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
-            DebugSender.INSTANCE.sendDebug("AACAdditionPro initialization completed.");
+            DebugSender.getInstance().sendDebug("AACAdditionPro initialization completed.");
         } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //
@@ -170,7 +167,7 @@ public class AACAdditionPro extends JavaPlugin
     public void onDisable()
     {
         // Plugin is already disabled -> VerboseSender is not allowed to register a task
-        DebugSender.INSTANCE.setAllowedToRegisterTasks(false);
+        DebugSender.getInstance().setAllowedToRegisterTasks(false);
 
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
@@ -178,7 +175,7 @@ public class AACAdditionPro extends JavaPlugin
 
         DataUpdaterEvents.INSTANCE.unregister();
 
-        DebugSender.INSTANCE.sendDebug("AACAdditionPro disabled.", true, false);
-        DebugSender.INSTANCE.sendDebug(" ", true, false);
+        DebugSender.getInstance().sendDebug("AACAdditionPro disabled.", true, false);
+        DebugSender.getInstance().sendDebug(" ", true, false);
     }
 }

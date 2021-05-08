@@ -1,8 +1,8 @@
 package de.photon.aacadditionpro.util.world;
 
 import com.google.common.collect.Sets;
-import de.photon.aacadditionproold.ServerVersion;
-import de.photon.aacadditionproold.util.exceptions.UnknownMinecraftVersion;
+import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
@@ -104,7 +104,7 @@ public final class BlockUtil
                 final Location checkForCatLocation = aboveBlock.getLocation().add(0.5, 0.5, 0.5);
 
                 switch (ServerVersion.getActiveServerVersion()) {
-                    case MC188:
+                    case MC18:
                     case MC112:
                         // 1.8.8 and 1.12 doesn't provide isPassable.
                         // Make sure that the block above is not obstructed by blocks
@@ -123,7 +123,7 @@ public final class BlockUtil
                                // Make sure that the block above is not obstructed by cats
                                && aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.ofType(EntityType.CAT)).isEmpty();
                     default:
-                        throw new UnknownMinecraftVersion();
+                        throw new UnknownMinecraftException();
                 }
             }
             return true;

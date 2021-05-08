@@ -3,10 +3,10 @@ package de.photon.aacadditionpro.util.packetwrappers.server;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
+import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import de.photon.aacadditionpro.util.packetwrappers.AbstractPacket;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayEntity;
-import de.photon.aacadditionproold.ServerVersion;
-import de.photon.aacadditionproold.util.exceptions.UnknownMinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -27,6 +27,28 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket implements 
         super(packet, TYPE);
     }
 
+    /**
+     * Sets all equipment slots of the entity to air for the observer.
+     *
+     * @param entityId the id of the {@link Entity} which slots should be cleared.
+     * @param observer the {@link Player} who shall no longer see the equipment.
+     */
+    public static void clearAllSlots(int entityId, Player observer)
+    {
+        for (final ItemSlot slot : ItemSlot.values()) {
+            //Update the equipment with fake-packets
+            final WrapperPlayServerEntityEquipment wrapperPlayServerEntityEquipment = new WrapperPlayServerEntityEquipment();
+
+            wrapperPlayServerEntityEquipment.setEntityID(entityId);
+            wrapperPlayServerEntityEquipment.setItem(new ItemStack(Material.AIR));
+
+            // 1.8.8 is automatically included as of the bukkit-handling, therefore server-version specific handling
+            // as of the different server classes / enums and the null-removal above.
+            wrapperPlayServerEntityEquipment.setSlot(slot);
+            wrapperPlayServerEntityEquipment.sendPacket(observer);
+        }
+    }
+
     public ItemSlot getSlot()
     {
         return handle.getItemSlots().read(0);
@@ -36,7 +58,7 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket implements 
     {
         // Player = null will return the server version.
         switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
+            case MC18:
                 int index = value.ordinal();
 
                 // Reduce by one if index greater 0 as the offhand (index 1) doesn't exist.
@@ -54,7 +76,7 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket implements 
                 handle.getItemSlots().write(0, value);
                 break;
             default:
-                throw new UnknownMinecraftVersion();
+                throw new UnknownMinecraftException();
         }
     }
 
@@ -78,27 +100,5 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket implements 
     public void setItem(final ItemStack value)
     {
         handle.getItemModifier().write(0, value);
-    }
-
-    /**
-     * Sets all equipment slots of the entity to air for the observer.
-     *
-     * @param entityId the id of the {@link Entity} which slots should be cleared.
-     * @param observer the {@link Player} who shall no longer see the equipment.
-     */
-    public static void clearAllSlots(int entityId, Player observer)
-    {
-        for (final ItemSlot slot : ItemSlot.values()) {
-            //Update the equipment with fake-packets
-            final WrapperPlayServerEntityEquipment wrapperPlayServerEntityEquipment = new WrapperPlayServerEntityEquipment();
-
-            wrapperPlayServerEntityEquipment.setEntityID(entityId);
-            wrapperPlayServerEntityEquipment.setItem(new ItemStack(Material.AIR));
-
-            // 1.8.8 is automatically included as of the bukkit-handling, therefore server-version specific handling
-            // as of the different server classes / enums and the null-removal above.
-            wrapperPlayServerEntityEquipment.setSlot(slot);
-            wrapperPlayServerEntityEquipment.sendPacket(observer);
-        }
     }
 }

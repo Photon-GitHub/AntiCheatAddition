@@ -8,7 +8,7 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.aacadditionpro.util.packetwrappers.AbstractPacket;
-import de.photon.aacadditionproold.util.server.ServerUtil;
+import de.photon.aacadditionpro.util.server.ServerUtil;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;

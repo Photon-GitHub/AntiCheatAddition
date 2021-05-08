@@ -1,10 +1,10 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.base.Preconditions;
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.util.violationlevels.threshold.Threshold;
 import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
-import de.photon.aacadditionproold.AACAdditionPro;
 import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -73,7 +73,7 @@ public abstract class ViolationManagement
     protected void punishPlayer(Player player, int fromVl, int toVl)
     {
         // Only schedule the command execution if the plugin is loaded and when we do not use AAC's feature handling.
-        if (AACAdditionPro.getInstance().isLoaded() && AACAdditionPro.getInstance().getAacapi() == null) {
+        if (AACAdditionPro.getInstance().isEnabled() && AACAdditionPro.getInstance().getAacapi() == null) {
             this.thresholds.executeThresholds(fromVl, toVl, Collections.singleton(player));
         }
     }

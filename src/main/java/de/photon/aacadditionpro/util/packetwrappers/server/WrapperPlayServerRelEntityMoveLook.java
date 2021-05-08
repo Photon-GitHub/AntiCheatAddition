@@ -2,8 +2,8 @@ package de.photon.aacadditionpro.util.packetwrappers.server;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import de.photon.aacadditionproold.ServerVersion;
-import de.photon.aacadditionproold.util.exceptions.UnknownMinecraftVersion;
+import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 
 public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEntityMove implements IWrapperPlayServerLook
 {
@@ -24,7 +24,7 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
     public int getByteOffset()
     {
         switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
+            case MC18:
                 return 3;
             case MC112:
             case MC113:
@@ -33,7 +33,7 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
             case MC116:
                 return 0;
             default:
-                throw new UnknownMinecraftVersion();
+                throw new UnknownMinecraftException();
         }
     }
 

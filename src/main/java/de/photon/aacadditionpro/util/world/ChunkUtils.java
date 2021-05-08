@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.util.world;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionproold.util.world.LocationUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Location;

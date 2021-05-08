@@ -1,6 +1,6 @@
 package de.photon.aacadditionpro.util.world;
 
-import de.photon.aacadditionproold.util.mathematics.AxisAlignedBB;
+import de.photon.aacadditionpro.util.mathematics.AxisAlignedBB;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;

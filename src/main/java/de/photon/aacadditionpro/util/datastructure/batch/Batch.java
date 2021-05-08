@@ -2,8 +2,8 @@ package de.photon.aacadditionpro.util.datastructure.batch;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
-import de.photon.aacadditionproold.user.User;
 import lombok.Value;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;

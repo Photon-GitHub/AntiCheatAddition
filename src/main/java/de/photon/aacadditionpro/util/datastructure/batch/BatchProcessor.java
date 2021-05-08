@@ -2,9 +2,9 @@ package de.photon.aacadditionpro.util.datastructure.batch;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructure.broadcast.BroadcastReceiver;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
-import de.photon.aacadditionproold.user.User;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;

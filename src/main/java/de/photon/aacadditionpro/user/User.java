@@ -24,6 +24,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +36,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User implements CommandSender
 {
@@ -132,7 +133,7 @@ public class User implements CommandSender
     }
 
     /**
-     * Checks if the {@link de.photon.aacadditionproold.user.User} is in {@link GameMode#ADVENTURE} or {@link GameMode#SURVIVAL}
+     * Checks if the {@link User} is in {@link GameMode#ADVENTURE} or {@link GameMode#SURVIVAL}
      */
     public boolean inAdventureOrSurvivalMode()
     {
@@ -140,7 +141,7 @@ public class User implements CommandSender
     }
 
     /**
-     * This determines and returnes the correct {@link Hitbox} for this {@link de.photon.aacadditionproold.user.User}.
+     * This determines and returnes the correct {@link Hitbox} for this {@link User}.
      *
      * @return {@link Hitbox#SNEAKING_PLAYER} or {@link Hitbox#PLAYER}.
      */
@@ -155,7 +156,7 @@ public class User implements CommandSender
     // Inventory
 
     /**
-     * Determines whether the {@link de.photon.aacadditionproold.user.User} has a currently opened {@link org.bukkit.inventory.Inventory} according to
+     * Determines whether the {@link User} has a currently opened {@link Inventory} according to
      * {@link AACAdditionPro}s internal data.
      */
     public boolean hasOpenInventory()
@@ -164,10 +165,10 @@ public class User implements CommandSender
     }
 
     /**
-     * Determines if this {@link de.photon.aacadditionproold.user.User} has not had an open inventory for some amount of time.
+     * Determines if this {@link User} has not had an open inventory for some amount of time.
      *
-     * @param milliseconds the amount of time in milliseconds that the {@link de.photon.aacadditionproold.user.User} should not have interacted with an
-     *                     {@link org.bukkit.inventory.Inventory}.
+     * @param milliseconds the amount of time in milliseconds that the {@link User} should not have interacted with an
+     *                     {@link Inventory}.
      */
     public boolean notRecentlyOpenedInventory(final long milliseconds)
     {
@@ -175,10 +176,9 @@ public class User implements CommandSender
     }
 
     /**
-     * Determines if this {@link de.photon.aacadditionproold.user.User} has recently clicked in an {@link org.bukkit.inventory.Inventory}.
+     * Determines if this {@link User} has recently clicked in an {@link Inventory}.
      *
-     * @param milliseconds the amount of time in milliseconds in which the {@link de.photon.aacadditionproold.user.User} should be checked for
-     *                     interactions with an {@link org.bukkit.inventory.Inventory}.
+     * @param milliseconds the amount of time in milliseconds in which the {@link User} should be checked for interactions with an {@link Inventory}.
      */
     public boolean hasClickedInventoryRecently(final long milliseconds)
     {
@@ -189,7 +189,7 @@ public class User implements CommandSender
     // Movement
 
     /**
-     * Checks if this {@link de.photon.aacadditionproold.user.User} has moved recently.
+     * Checks if this {@link User} has moved recently.
      *
      * @param movementType what movement should be checked
      * @param milliseconds the amount of time in milliseconds that should be considered.
@@ -209,7 +209,7 @@ public class User implements CommandSender
     }
 
     /**
-     * Checks if this {@link de.photon.aacadditionproold.user.User} has sprinted recently
+     * Checks if this {@link User} has sprinted recently
      *
      * @param milliseconds the amount of time in milliseconds that should be considered.
      *
@@ -221,7 +221,7 @@ public class User implements CommandSender
     }
 
     /**
-     * Checks if this {@link de.photon.aacadditionproold.user.User} has sneaked recently
+     * Checks if this {@link User} has sneaked recently
      *
      * @param milliseconds the amount of time in milliseconds that should be considered.
      *
@@ -236,7 +236,7 @@ public class User implements CommandSender
     // Convenience methods for much used timestamps
 
     /**
-     * Determines if this {@link de.photon.aacadditionproold.user.User} has recently teleported.
+     * Determines if this {@link User} has recently teleported.
      * This includes ender pearls as well as respawns, world changes and ordinary teleports.
      *
      * @param milliseconds the amount of time in milliseconds that should be considered.
@@ -247,7 +247,7 @@ public class User implements CommandSender
     }
 
     /**
-     * Determines if this {@link de.photon.aacadditionproold.user.User} has recently respawned.
+     * Determines if this {@link User} has recently respawned.
      *
      * @param milliseconds the amount of time in milliseconds that should be considered.
      */
@@ -257,7 +257,7 @@ public class User implements CommandSender
     }
 
     /**
-     * Determines if this {@link de.photon.aacadditionproold.user.User} has recently changed worlds.
+     * Determines if this {@link User} has recently changed worlds.
      *
      * @param milliseconds the amount of time in milliseconds that should be considered.
      */
@@ -267,7 +267,7 @@ public class User implements CommandSender
     }
 
     /**
-     * Determines if this {@link de.photon.aacadditionproold.user.User} has recently logged in.
+     * Determines if this {@link User} has recently logged in.
      *
      * @param milliseconds the amount of time in milliseconds that should be considered.
      */

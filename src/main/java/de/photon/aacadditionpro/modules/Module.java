@@ -45,14 +45,14 @@ public abstract class Module
     public void enableModule()
     {
         this.loaded = true;
-        this.moduleLoader.load();
+        this.getModuleLoader().load();
         this.enable();
     }
 
     public void disableModule()
     {
         this.loaded = false;
-        this.moduleLoader.unload();
+        this.getModuleLoader().unload();
         this.disable();
     }
 

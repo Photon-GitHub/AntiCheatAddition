@@ -32,7 +32,7 @@ public class InfoCommand extends InternalCommand
 
         val moduleVls = new ArrayList<ModuleVl>();
         int vl;
-        for (ViolationModule vm : ModuleManager.INSTANCE.getViolationModuleMap().values()) {
+        for (ViolationModule vm : ModuleManager.getViolationModuleMap().values()) {
             vl = vm.getManagement().getVL(player.getUniqueId());
             if (vl > 0) moduleVls.add(new ModuleVl(vm, vl));
         }

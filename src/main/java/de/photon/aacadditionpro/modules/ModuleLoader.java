@@ -134,7 +134,7 @@ public class ModuleLoader
         private final Set<String> pluginIncompatibilities = new HashSet<>();
         private final Set<MessageChannel> incoming = new HashSet<>();
         private final Set<MessageChannel> outgoing = new HashSet<>();
-        private Set<ServerVersion> allowedServerVersions = EnumSet.noneOf(ServerVersion.class);
+        private final Set<ServerVersion> allowedServerVersions = EnumSet.noneOf(ServerVersion.class);
         private boolean bungeecordForbidden = false;
         private BatchProcessor<?> batchProcessor = null;
 
@@ -153,6 +153,18 @@ public class ModuleLoader
         public Builder addPluginIncompatibilities(String... incompatibilities)
         {
             Collections.addAll(this.pluginIncompatibilities, incompatibilities);
+            return this;
+        }
+
+        public Builder addIncomingMessageChannels(MessageChannel... channels)
+        {
+            Collections.addAll(this.incoming, channels);
+            return this;
+        }
+
+        public Builder addOutgoingMessageChannels(MessageChannel... channels)
+        {
+            Collections.addAll(this.outgoing, channels);
             return this;
         }
 
@@ -177,13 +189,12 @@ public class ModuleLoader
 
         public ModuleLoader build()
         {
-            // Make sure to allow all server versions if nothing else is specified.
-            if (allowedServerVersions.isEmpty()) allowedServerVersions = ServerVersion.ALL_SUPPORTED_VERSIONS;
             return new ModuleLoader(module,
                                     bungeecordForbidden,
                                     ImmutableSet.copyOf(pluginDependencies),
                                     ImmutableSet.copyOf(pluginIncompatibilities),
-                                    Sets.immutableEnumSet(allowedServerVersions),
+                                    // Make sure to allow all server versions if nothing else is specified.
+                                    Sets.immutableEnumSet(allowedServerVersions.isEmpty() ? ServerVersion.ALL_SUPPORTED_VERSIONS : allowedServerVersions),
                                     batchProcessor,
                                     ImmutableSet.copyOf(incoming),
                                     ImmutableSet.copyOf(outgoing));

@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import org.bukkit.entity.Player;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PlayerVisibility
+public final class PlayerVisibility
 {
     private static final PlayerInformationHider equipmentHider = new PlayerEquipmentHider();
     private static final PlayerInformationHider playerHider = new PlayerHider();

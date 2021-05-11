@@ -2,7 +2,9 @@ package de.photon.aacadditionpro.modules;
 
 import de.photon.aacadditionpro.modules.checks.AutoEat;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishConsistency;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.val;
 import me.konsolas.aac.api.AACCustomFeature;
 import me.konsolas.aac.api.AACCustomFeatureProvider;
@@ -12,7 +14,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class ModuleManager
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ModuleManager
 {
     @Getter private static final ModuleMap<Module> moduleMap;
     @Getter private static final ModuleMap<ViolationModule> violationModuleMap;

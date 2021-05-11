@@ -318,6 +318,7 @@ public final class DataUpdaterEvents implements Listener
 
             val wrapper = new WrapperPlayServerKeepAlive(event.getPacket());
 
+            //TODO: KEEP ALIVE
             // Register the KeepAlive
             /*synchronized (user.getKeepAliveData().getKeepAlives()) {
                 user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(wrapper.getKeepAliveId()));

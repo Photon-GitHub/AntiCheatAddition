@@ -95,7 +95,7 @@ public final class RotationUtil
 
         vector.setY(-Math.sin(Math.toRadians((double) pitch)));
 
-        double xz = Math.cos(Math.toRadians((double) pitch));
+        val xz = Math.cos(Math.toRadians((double) pitch));
 
         vector.setX(-xz * Math.sin(Math.toRadians((double) yaw)));
         vector.setZ(xz * Math.cos(Math.toRadians((double) yaw)));

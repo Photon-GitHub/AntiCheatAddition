@@ -36,13 +36,11 @@ public enum ServerVersion
     private static final ServerVersion activeServerVersion;
 
     static {
-        val allSup = EnumSet.allOf(ServerVersion.class);
-        allSup.removeIf(serverVersion -> !serverVersion.supported);
+        val allSup = EnumSet.noneOf(ServerVersion.class);
+        for (ServerVersion s : ServerVersion.values()) if (s.supported) allSup.add(s);
         ALL_SUPPORTED_VERSIONS = Sets.immutableEnumSet(allSup);
-
-        val non18 = EnumSet.copyOf(ALL_SUPPORTED_VERSIONS);
-        non18.remove(MC18);
-        NON_188_VERSIONS = Sets.immutableEnumSet(non18);
+        allSup.remove(MC18);
+        NON_188_VERSIONS = Sets.immutableEnumSet(allSup);
 
         activeServerVersion = Arrays.stream(ServerVersion.values())
                                     .filter(serverVersion -> Bukkit.getVersion().contains(serverVersion.getVersionOutputString()))

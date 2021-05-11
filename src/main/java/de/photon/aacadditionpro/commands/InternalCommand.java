@@ -68,14 +68,14 @@ public abstract class InternalCommand
         if (this.commandAttributes.argumentsOutOfRange(arguments.size())) return;
 
         if (!arguments.isEmpty()) {
-            final String nextArgument = arguments.peek();
+            val nextArgument = arguments.peek();
 
             if ("help".equals(nextArgument)) {
                 this.commandAttributes.sendCommandHelp(sender);
                 return;
             }
 
-            final InternalCommand childCommand = this.getChildCommand(nextArgument);
+            val childCommand = this.getChildCommand(nextArgument);
             if (childCommand != null) {
                 // Remove the current command arg
                 arguments.remove();

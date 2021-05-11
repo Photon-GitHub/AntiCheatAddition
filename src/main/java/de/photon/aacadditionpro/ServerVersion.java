@@ -33,7 +33,10 @@ public enum ServerVersion
     /**
      * The server version of the currently running {@link Bukkit} instance.
      */
-    private static final ServerVersion activeServerVersion;
+    private static final ServerVersion activeServerVersion = Arrays.stream(ServerVersion.values())
+                                                                   .filter(serverVersion -> Bukkit.getVersion().contains(serverVersion.getVersionOutputString()))
+                                                                   .findFirst()
+                                                                   .orElseThrow(UnknownMinecraftException::new);
 
     static {
         val allSup = EnumSet.noneOf(ServerVersion.class);
@@ -41,11 +44,6 @@ public enum ServerVersion
         ALL_SUPPORTED_VERSIONS = Sets.immutableEnumSet(allSup);
         allSup.remove(MC18);
         NON_188_VERSIONS = Sets.immutableEnumSet(allSup);
-
-        activeServerVersion = Arrays.stream(ServerVersion.values())
-                                    .filter(serverVersion -> Bukkit.getVersion().contains(serverVersion.getVersionOutputString()))
-                                    .findFirst()
-                                    .orElseThrow(UnknownMinecraftException::new);
     }
 
     private final String versionOutputString;

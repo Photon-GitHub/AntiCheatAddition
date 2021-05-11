@@ -17,15 +17,13 @@ import java.util.Map;
 
 public class ConfigurationRepresentation
 {
-    private final File configFile;
-    @Getter
-    private final YamlConfiguration yamlConfiguration;
+    @NotNull private final File configFile;
+    @Getter(lazy = true) private final YamlConfiguration yamlConfiguration = loadYaml();
     private final Map<String, Object> requestedChanges = new HashMap<>();
 
-    public ConfigurationRepresentation(File configFile)
+    public ConfigurationRepresentation(@NotNull File configFile)
     {
-        this.configFile = configFile;
-        this.yamlConfiguration = YamlConfiguration.loadConfiguration(this.configFile);
+        this.configFile = Preconditions.checkNotNull(configFile, "Tried to create ConfigurationRepresentation of null config file.");
     }
 
     private static boolean isComment(final String string)
@@ -55,6 +53,11 @@ public class ConfigurationRepresentation
             ++affectedLines;
         }
         return affectedLines;
+    }
+
+    private YamlConfiguration loadYaml()
+    {
+        return YamlConfiguration.loadConfiguration(this.configFile);
     }
 
     private int searchForPath(@NotNull List<String> lines, @NotNull String path)

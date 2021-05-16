@@ -98,7 +98,7 @@ Sentinel:
       enabled: true
       incoming:
         - "PX|Version"
-      commands:S
+      commands:
         - "kick {player} PXMod"
 
 # ------------------------------------------------------------------------------------------------------------------- #

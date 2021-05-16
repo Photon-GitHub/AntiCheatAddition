@@ -162,9 +162,21 @@ public class ModuleLoader
             return this;
         }
 
+        public Builder addIncomingMessageChannels(Collection<MessageChannel> channels)
+        {
+            this.incoming.addAll(channels);
+            return this;
+        }
+
         public Builder addOutgoingMessageChannels(MessageChannel... channels)
         {
             Collections.addAll(this.outgoing, channels);
+            return this;
+        }
+
+        public Builder addOutgoingMessageChannels(Collection<MessageChannel> channels)
+        {
+            this.outgoing.addAll(channels);
             return this;
         }
 

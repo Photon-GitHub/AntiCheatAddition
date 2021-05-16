@@ -79,6 +79,28 @@ AutoFish:
     12: "aac notify {player} in {world} is highly suspected for AutoFish"
     18: "aackick {player} AutoFish"
 
+
+# ------------------------------------------------------------------------------------------------------------------- #
+#                                            ___          _   _          _                                            #
+#                                           / __| ___ _ _| |_(_)_ _  ___| |                                           #
+#                                           \__ \/ -_) ' \  _| | ' \/ -_) |                                           #
+#                                           |___/\___|_||_\__|_|_||_\___|_|                                           #
+#                                                                                                                     #
+# ------------------------------------------------------------------------------------------------------------------- #
+
+
+# Sentinel watches over your server detecting mods and sometimes certain cheat clients on join without false detections.
+# It does so by listening for certain messages that clients and mods can send over channels invisible to the user.
+# You can define your own checks in the listening section.
+Sentinel:
+  Custom:
+    PXMod:
+      enabled: true
+      incoming:
+        - "PX|Version"
+      commands:S
+        - "kick {player} PXMod"
+
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                               ___      _                                                            #
 #                                              |   \ ___| |__ _  _ __ _                                               #
@@ -87,6 +109,7 @@ AutoFish:
 #                                                                 |___/                                               #
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
+
 
 # If this option is active and AAC is installed AACAdditionPro will not execute any commands specified above and instead
 # hooks the AAC feature system to allow you to specify punishments via the AAC config.

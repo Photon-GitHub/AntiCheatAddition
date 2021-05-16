@@ -8,6 +8,7 @@ import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
+import java.util.Locale;
 import java.util.Objects;
 
 public class MessageChannel extends MinecraftKey
@@ -54,6 +55,15 @@ public class MessageChannel extends MinecraftKey
     public static MessageChannel of(MinecraftKey minecraftKey)
     {
         return new MessageChannel(minecraftKey);
+    }
+
+    public static MessageChannel of(String channel)
+    {
+        val splitNew = channel.split(":");
+        val splitOld = channel.split("\\|");
+        if (splitNew.length == 2) return new MessageChannel(splitNew[0], splitNew[1]);
+        if (splitOld.length == 2) return new MessageChannel(splitOld[0].toLowerCase(Locale.ENGLISH), splitNew[1].toLowerCase(Locale.ENGLISH), channel);
+        throw new IllegalArgumentException("Cannot recognize " + channel + " as a channel. Please make sure that it contains either the ':' or the '|' char.");
     }
 
     public static MessageChannel of(String prefix, String key)

@@ -73,6 +73,7 @@ public class User implements CommandSender
         return USERS.get(uuid);
     }
 
+    @Nullable
     public static User safeGetUserFromPacketEvent(PacketEvent event)
     {
         // Special handling here as a player could potentially log out after this and therefore cause a NPE.

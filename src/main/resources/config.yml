@@ -13,6 +13,51 @@
 #                                                       |__/                                                          #
 # ------------------------------------------------------------------------------------------------------------------- #
 
+# ------------------------------------------------------------------------------------------------------------------- #
+#                                           _      _    _ _ _   _                                                     #
+#                                          /_\  __| |__| (_) |_(_)___ _ _  ___                                        #
+#                                         / _ \/ _` / _` | |  _| / _ \ ' \(_-<                                        #
+#                                        /_/ \_\__,_\__,_|_|\__|_\___/_||_/__/                                        #
+#                                                                                                                     #
+# ------------------------------------------------------------------------------------------------------------------- #
+
+# BrandHider allows you to modify the brand that is shown in the debug screen of minecraft.
+# This can be useful if you want to create a custom message or just hide your actual setup.
+BrandHider:
+  # Do you want to enable BrandHider?
+  enabled: false
+  # This is the replacement text for the brand.
+  # You can use the character & for color codes and all placeholders that are available in normal checks
+  brand: "Some Spigot"
+  # If you want to display attributes that update over time, e.g. TPS, Ping, Time or Date this will update the values
+  # in the defined interval.
+  # Set to 0 to disable the refreshing (recommended if you only use static text or placeholders that do not change)
+  # Measured in ticks
+  refresh_rate: 0
+
+# This will spoof the health of all players on your server so that DamageIndicators (and any other mod to that tries
+# to show other players' health, like HealthTags and ESP) becomes useless.
+# This is a clientsided spoof, meaning that your plugins are able to get the correct health.
+DamageIndicator:
+  # Do you want to enable DamageIndicator?
+  enabled: false
+  # Spoof the health of the following entity categories.
+  spoof:
+    players: true
+    animals: true
+    monsters: true
+
+# This automatically deletes old log files of both AAC and AACAdditionPro
+# It activates automatically on restart and after that in a 12 hour cycle.
+LogBot:
+  # Do you want to enable LogBot?
+  enabled: false
+  # After how many days should AACAdditionPro logs be deleted
+  # Set to -1 to disable
+  AACAdditionPro: 10
+  # After how many days should server logs be deleted
+  # Set to -1 to disable
+  Server: 10
 
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                               ___ _           _                                                     #
@@ -111,8 +156,9 @@ Sentinel:
       # This gives players a configurable speed boost when flying in creative or survival mode.
       survival_fly_boost: true
       enable_all_dirs: true
-    commands_on_detection:
-      - "aac notify {player} in {world} uses BetterSprinting"
+    # What commands will be executed if the mod is detected.
+    commands:
+      - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses BetterSprinting"
 
   # Here you can easily define your own simple Sentinel checks.
   # These checks are automatically generated, please make sure that you use NO SPECIAL CHARACTERS and NO DUPLICATE
@@ -145,7 +191,7 @@ Sentinel:
       # At least one string in this list will need to be included in the message sent in the channels above to trigger
       # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
       containsAny: [ ]
-      # What commands will be executed if the
+      # What commands will be executed if the mod is detected.
       commands:
         - "kick {player} PXMod"
 

@@ -42,12 +42,14 @@ public class ModuleLoader
     Set<MessageChannel> incoming;
     Set<MessageChannel> outgoing;
 
-    boolean listener;
-    boolean packetListener;
+    Set<Listener> listeners;
+    Set<PacketListener> packetListeners;
 
-    public ModuleLoader(Module module, boolean bungeecordForbidden, Set<String> pluginDependencies, Set<String> pluginIncompatibilities, Set<ServerVersion> allowedServerVersions, BatchProcessor<?> batchProcessor, Set<MessageChannel> incoming, Set<MessageChannel> outgoing)
+    public ModuleLoader(Module module, Set<Listener> listeners, Set<PacketListener> packetListeners, boolean bungeecordForbidden, Set<String> pluginDependencies, Set<String> pluginIncompatibilities, Set<ServerVersion> allowedServerVersions, BatchProcessor<?> batchProcessor, Set<MessageChannel> incoming, Set<MessageChannel> outgoing)
     {
         this.module = module;
+        this.listeners = listeners;
+        this.packetListeners = packetListeners;
         this.bungeecordForbidden = bungeecordForbidden;
         this.pluginDependencies = ImmutableSet.copyOf(pluginDependencies);
         this.pluginIncompatibilities = ImmutableSet.copyOf(pluginIncompatibilities);
@@ -55,9 +57,6 @@ public class ModuleLoader
         this.batchProcessor = batchProcessor;
         this.incoming = ImmutableSet.copyOf(incoming);
         this.outgoing = ImmutableSet.copyOf(outgoing);
-
-        this.listener = (module instanceof Listener);
-        this.packetListener = (module instanceof PacketListener);
 
         Preconditions.checkArgument((module instanceof PluginMessageListener) == !(incoming.isEmpty() && outgoing.isEmpty()), "Channels have to be registered in a PluginMessageListener Module and cannot be registered otherwise.");
     }
@@ -99,9 +98,10 @@ public class ModuleLoader
         // Load the config values
         ConfigUtils.processLoadFromConfiguration(module, module.getConfigString());
 
-        // Automatically handle Listener and PacketListener
-        if (listener) AACAdditionPro.getInstance().registerListener((Listener) module);
-        if (packetListener) ProtocolLibrary.getProtocolManager().addPacketListener((PacketListener) module);
+        // Handle Listeners and PacketListeners
+        for (Listener listener : listeners) AACAdditionPro.getInstance().registerListener(listener);
+        for (PacketListener packetListener : packetListeners) ProtocolLibrary.getProtocolManager().addPacketListener(packetListener);
+
         if (batchProcessor != null) batchProcessor.enable();
 
         if (!incoming.isEmpty()) {
@@ -114,9 +114,10 @@ public class ModuleLoader
 
     public void unload()
     {
-        // Automatically handle Listener and PacketListener
-        if (listener) HandlerList.unregisterAll((Listener) module);
-        if (packetListener) ProtocolLibrary.getProtocolManager().removePacketListener((PacketListener) module);
+        // Handle Listeners and PacketListeners
+        for (Listener listener : listeners) HandlerList.unregisterAll(listener);
+        for (PacketListener packetListener : packetListeners) ProtocolLibrary.getProtocolManager().removePacketListener(packetListener);
+
         if (batchProcessor != null) batchProcessor.disable();
 
         if (!incoming.isEmpty()) {
@@ -130,6 +131,8 @@ public class ModuleLoader
     public static class Builder
     {
         private final Module module;
+        private final Set<Listener> listeners = new HashSet<>();
+        private final Set<PacketListener> packetListeners = new HashSet<>();
         private final Set<String> pluginDependencies = new HashSet<>();
         private final Set<String> pluginIncompatibilities = new HashSet<>();
         private final Set<MessageChannel> incoming = new HashSet<>();
@@ -141,6 +144,18 @@ public class ModuleLoader
         public Builder disallowBungeeCord()
         {
             this.bungeecordForbidden = true;
+            return this;
+        }
+
+        public Builder addListeners(Listener... listeners)
+        {
+            Collections.addAll(this.listeners, listeners);
+            return this;
+        }
+
+        public Builder addPacketListeners(PacketListener... packetListeners)
+        {
+            Collections.addAll(this.packetListeners, packetListeners);
             return this;
         }
 
@@ -201,12 +216,17 @@ public class ModuleLoader
 
         public ModuleLoader build()
         {
+            // Auto-Add module
+            if (module instanceof Listener) this.listeners.add((Listener) module);
+            val resultingEnumSet = allowedServerVersions.isEmpty() ? ServerVersion.ALL_SUPPORTED_VERSIONS : allowedServerVersions;
             return new ModuleLoader(module,
+                                    listeners,
+                                    packetListeners,
                                     bungeecordForbidden,
                                     ImmutableSet.copyOf(pluginDependencies),
                                     ImmutableSet.copyOf(pluginIncompatibilities),
                                     // Make sure to allow all server versions if nothing else is specified.
-                                    Sets.immutableEnumSet(allowedServerVersions.isEmpty() ? ServerVersion.ALL_SUPPORTED_VERSIONS : allowedServerVersions),
+                                    Sets.immutableEnumSet(resultingEnumSet),
                                     batchProcessor,
                                     ImmutableSet.copyOf(incoming),
                                     ImmutableSet.copyOf(outgoing));

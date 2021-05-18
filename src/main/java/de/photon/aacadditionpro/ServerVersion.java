@@ -2,10 +2,12 @@ package de.photon.aacadditionpro;
 
 import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
+import de.photon.aacadditionpro.util.protocol.ProtocolVersion;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -52,6 +54,19 @@ public enum ServerVersion
     public static ServerVersion getActiveServerVersion()
     {
         return activeServerVersion;
+    }
+
+    /**
+     * Used to get the client version. Might only differ from {@link #getActiveServerVersion()} if ViaVersion is installed.
+     */
+    public static ServerVersion getClientServerVersion(final Player player)
+    {
+        if (player == null) return activeServerVersion;
+        val viaAPI = AACAdditionPro.getInstance().getViaAPI();
+        if (viaAPI == null) return activeServerVersion;
+
+        val clientVersion = ProtocolVersion.getByVersionNumber(viaAPI.getPlayerVersion(player));
+        return clientVersion == null ? activeServerVersion : clientVersion.getEquivalentServerVersion();
     }
 
     /**

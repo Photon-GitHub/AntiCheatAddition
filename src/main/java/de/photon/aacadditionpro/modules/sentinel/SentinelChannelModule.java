@@ -1,12 +1,9 @@
-package de.photon.aacadditionpro.modules;
+package de.photon.aacadditionpro.modules.sentinel;
 
+import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
-import de.photon.aacadditionpro.util.violationlevels.Flag;
-import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
-import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
-import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
 import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -26,25 +23,18 @@ public class SentinelChannelModule extends SentinelModule implements PluginMessa
     {
         val user = User.getUser(player.getUniqueId());
         if (User.isUserInvalid(user, this)) return;
-        this.getManagement().flag(Flag.of(user.getPlayer()));
+        this.detection(user.getPlayer());
     }
 
     @Override
     protected ModuleLoader createModuleLoader()
     {
         val builder = ModuleLoader.builder(this);
-        val incoming = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".incoming");
-        val outgoing = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".outgoing");
+        val incoming = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".incoming_channels");
+        val outgoing = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".outgoing_channels");
 
         if (!incoming.isEmpty()) builder.addIncomingMessageChannels(incoming.stream().map(MessageChannel::of).collect(Collectors.toSet()));
         if (!outgoing.isEmpty()) builder.addOutgoingMessageChannels(outgoing.stream().map(MessageChannel::of).collect(Collectors.toSet()));
         return builder.build();
-    }
-
-    @Override
-    protected ViolationManagement createViolationManagement()
-    {
-        // -1 decay ticks to never decay.
-        return new ViolationLevelManagement(this, ThresholdManagement.loadCommands(this.configString + ".commands"), -1);
     }
 }

@@ -75,9 +75,9 @@ AutoFish:
       maximum_fails: 12
   # Map of violation levels to command
   thresholds:
-    8: "aac notify {player} in {world} is suspected for AutoFish"
-    12: "aac notify {player} in {world} is highly suspected for AutoFish"
-    18: "aackick {player} AutoFish"
+    8: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoFish"
+    12: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoFish"
+    18: "kick {player} AutoFish"
 
 
 # ------------------------------------------------------------------------------------------------------------------- #
@@ -93,11 +93,59 @@ AutoFish:
 # It does so by listening for certain messages that clients and mods can send over channels invisible to the user.
 # You can define your own checks in the listening section.
 Sentinel:
+  # If AAC's feature system is used every detection will show up as with this score in AAC's status.
+  AACFeatureScore: 100
+
+  # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
+  BetterSprinting:
+    # Do you want to enable BetterSprinting-Control?
+    enabled: false
+    # The mod provides a method to disable it.
+    # If you want to completely disable the mod set this to true.
+    disable_mod: false
+    # This mod provides a method to disable parts of it.
+    # Disabling all subparts listed here will a BetterSprinting client behave like a vanilla client.
+    # To disable a subpart set the value to true.
+    # This more specific disable feature will only work on versions
+    disable:
+      # This gives players a configurable speed boost when flying in creative or survival mode.
+      survival_fly_boost: true
+      enable_all_dirs: true
+    commands_on_detection:
+      - "aac notify {player} in {world} uses BetterSprinting"
+
+  # Here you can easily define your own simple Sentinel checks.
+  # These checks are automatically generated, please make sure that you use NO SPECIAL CHARACTERS and NO DUPLICATE
+  # NAMES to define a check (special characters are obviously fine as channel names and in "contains").
+  #
+  # Simple step-by-step manual to create your own check:
+  # (1) Copy the section of PXMod
+  # (2) Rename the section from PXMod to <NAME_OF_YOUR_CUSTOM_CHECK>
+  # (3) Add the channels you want to listen to in incoming channels (e.g. minecraft:brand)
+  #     AACAdditionPro will automatically try to generate the legacy channel name and listen for that as well (in this
+  #     case MC|Brand).
+  # (4) If needed, define what the message need to contain to trigger the check. E.g. if you are listening to
+  #     minecraft:brand and superspecialmod:version to detect a mod you could define containsAny as:
+  #     containsAll: ["SSM", "ssm"]
+  #     Note: that is a purely fictional example, the channels and messages will differ for each mod, and many mods
+  #     will not send any message (especially if they are used to cheat).
+  # (5) Define the commands you want to execute when the mod is detected. The commands are executed exactly once right
+  #     after player join. This allows you to e.g. disallow a certain mod on your server by kicking players on join.
   Custom:
+    # This will detect PXMod,
     PXMod:
+      # Whether or not to enable this check.
       enabled: true
-      incoming:
+      #
+      incoming_channels:
         - "PX|Version"
+      # All strings in this list will need to be included in the message sent in the channels above to trigger the
+      # commands. An empty list defined as [ ] means any message is accepted by containsAll.
+      containsAll: [ ]
+      # At least one string in this list will need to be included in the message sent in the channels above to trigger
+      # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
+      containsAny: [ ]
+      # What commands will be executed if the
       commands:
         - "kick {player} PXMod"
 

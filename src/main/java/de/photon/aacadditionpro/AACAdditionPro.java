@@ -122,7 +122,7 @@ public class AACAdditionPro extends JavaPlugin
 
             // Call is correct here as Bukkit always has a player api.
             if (this.getServer().getPluginManager().isPluginEnabled("AAC5")) {
-                if (this.getConfig().getBoolean("UseAACFeatureSystem")) {
+                if (this.getConfig().getBoolean("UseAACFeatureSystem", true)) {
                     this.aacapi = Preconditions.checkNotNull(Bukkit.getServicesManager().load(AACAPI.class), "Did not find AAC API while hooking.");
                     this.aacapi.registerCustomFeatureProvider(ModuleManager.getCustomFeatureProvider());
                     DebugSender.getInstance().sendDebug("AAC hooked", true, false);

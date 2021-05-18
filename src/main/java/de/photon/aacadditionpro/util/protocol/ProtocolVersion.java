@@ -61,6 +61,7 @@ public enum ProtocolVersion
     @Nullable
     public static ProtocolVersion getByVersionNumber(int versionNumber)
     {
+        // Latest ProtocolVersion as default.
         return VERSION_NUMBER_MAP.get(versionNumber);
     }
 }

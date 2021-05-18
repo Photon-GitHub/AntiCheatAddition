@@ -87,12 +87,10 @@ public class BetterSprintingSentinel extends SentinelModule
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addIncomingMessageChannels(MessageChannel.of("minecraft", "bsm", "BSM"),
-                                                       MessageChannel.of("minecraft", "bsprint", "BSprint"),
-                                                       MessageChannel.of("bsm", "settings"))
+                           .addIncomingMessageChannels(MessageChannel.of("bsm", "settings", "BSM"),
+                                                       MessageChannel.of("minecraft", "bsprint", "BSprint"))
                            // No message is sent in BSprint.
-                           .addOutgoingMessageChannels(MessageChannel.of("minecraft", "bsm", "BSM"),
-                                                       MessageChannel.of("bsm", "settings"))
+                           .addOutgoingMessageChannels(MessageChannel.of("bsm", "settings", "BSM"))
                            .build();
     }
 }

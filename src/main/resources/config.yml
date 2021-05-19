@@ -143,7 +143,7 @@ Sentinel:
 
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   BetterSprinting:
-    # Do you want to enable BetterSprinting-Control?
+    # Do you want to enable BetterSprinting?
     enabled: false
     # The mod provides a method to disable it.
     # If you want to completely disable the mod set this to true.
@@ -159,6 +159,14 @@ Sentinel:
     # What commands will be executed if the mod is detected.
     commands:
       - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses BetterSprinting"
+
+  # A popular pvp mod that can display a HUD, capes and has multiple social features.
+  5Zig:
+    # Do you want to enable 5Zig?
+    enabled: false
+    # What commands will be executed if the mod is detected.
+    commands:
+      - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses 5Zig"
 
   # Here you can easily define your own simple Sentinel checks.
   # These checks are automatically generated, please make sure that you use NO SPECIAL CHARACTERS and NO DUPLICATE
@@ -179,11 +187,11 @@ Sentinel:
   # (5) Define the commands you want to execute when the mod is detected. The commands are executed exactly once right
   #     after player join. This allows you to e.g. disallow a certain mod on your server by kicking players on join.
   Custom:
-    # This will detect PXMod,
+    # This will detect PXMod.
     PXMod:
-      # Whether or not to enable this check.
+      # Do you want to enable PXMod?
       enabled: true
-      #
+      # The channels AACAdditionPro will listen to.
       incoming_channels:
         - "px:version"
         - "PX|Version"

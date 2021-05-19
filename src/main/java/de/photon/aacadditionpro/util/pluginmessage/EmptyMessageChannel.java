@@ -17,14 +17,14 @@ public class EmptyMessageChannel implements MessageChannel
     }
 
     @Override
-    public void registerIncomingChannel(PluginMessageListener listener) { }
+    public void registerIncomingChannel(PluginMessageListener listener) {}
 
     @Override
-    public void unregisterIncomingChannel(PluginMessageListener listener) { }
+    public void unregisterIncomingChannel(PluginMessageListener listener) {}
 
     @Override
-    public void registerOutgoingChannel() { }
+    public void registerOutgoingChannel() {}
 
     @Override
-    public void unregisterOutgoingChannel() { }
+    public void unregisterOutgoingChannel() {}
 }

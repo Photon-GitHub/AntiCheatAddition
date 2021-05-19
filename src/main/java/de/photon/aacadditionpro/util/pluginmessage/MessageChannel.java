@@ -7,21 +7,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
-
 public interface MessageChannel
 {
     MessageChannel MC_BRAND_CHANNEL = MessageChannel.of("minecraft", "brand", "MC|Brand");
 
+    @NotNull
     static MessageChannel of(final String channel)
     {
         val splitNew = channel.split(":");
-        val splitOld = channel.split("\\|");
-        if (splitNew.length == 2) return MessageChannel.of(splitNew[0], splitNew[1]);
-        if (splitOld.length == 2) return MessageChannel.of(splitOld[0].toLowerCase(Locale.ENGLISH), splitNew[1].toLowerCase(Locale.ENGLISH), channel);
-        throw new IllegalArgumentException("Cannot recognize " + channel + " as a channel. Please make sure that it contains either the ':' or the '|' char.");
+        return splitNew.length == 2 ? MessageChannel.of(splitNew[0], splitNew[1]) : ofLegacy(channel);
+
     }
 
+    @NotNull
     static MessageChannel of(final String prefix, final String key)
     {
         final String legacyName;
@@ -43,6 +41,7 @@ public interface MessageChannel
         return MessageChannel.of(prefix, key, legacyName);
     }
 
+    @NotNull
     static MessageChannel of(final String prefix, final String key, final String legacyName)
     {
         if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
@@ -52,6 +51,7 @@ public interface MessageChannel
         }
     }
 
+    @NotNull
     static MessageChannel ofLegacy(final String legacyName)
     {
         return legacyName != null && ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ? new LegacyMessageChannel(legacyName) : EmptyMessageChannel.EMPTY;

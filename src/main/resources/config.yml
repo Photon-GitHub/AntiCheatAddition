@@ -169,7 +169,8 @@ Sentinel:
   # (2) Rename the section from PXMod to <NAME_OF_YOUR_CUSTOM_CHECK>
   # (3) Add the channels you want to listen to in incoming channels (e.g. minecraft:brand)
   #     AACAdditionPro will automatically try to generate the legacy channel name and listen for that as well (in this
-  #     case MC|Brand).
+  #     case MC|Brand). Generally, if you know the legacy name, add it as well and AACAdditionPro will automatically
+  #     choose the correct one for your server version.
   # (4) If needed, define what the message need to contain to trigger the check. E.g. if you are listening to
   #     minecraft:brand and superspecialmod:version to detect a mod you could define containsAny as:
   #     containsAll: ["SSM", "ssm"]
@@ -184,6 +185,7 @@ Sentinel:
       enabled: true
       #
       incoming_channels:
+        - "px:version"
         - "PX|Version"
       # All strings in this list will need to be included in the message sent in the channels above to trigger the
       # commands. An empty list defined as [ ] means any message is accepted by containsAll.

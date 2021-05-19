@@ -5,7 +5,7 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
+import de.photon.aacadditionpro.util.pluginmessage.KeyMessageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.val;
@@ -93,10 +93,10 @@ public class BetterSprintingSentinel extends SentinelModule
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addIncomingMessageChannels(MessageChannel.of("bsm", "settings", "BSM"),
-                                                       MessageChannel.of("minecraft", "bsprint", "BSprint"))
+                           .addIncomingMessageChannels(KeyMessageChannel.of("bsm", "settings", "BSM"),
+                                                       KeyMessageChannel.of("bsm", "settings", "BSprint"))
                            // No message is sent in BSprint.
-                           .addOutgoingMessageChannels(MessageChannel.of("bsm", "settings", "BSM"))
+                           .addOutgoingMessageChannels(KeyMessageChannel.of("bsm", "settings", "BSM"))
                            .build();
     }
 }

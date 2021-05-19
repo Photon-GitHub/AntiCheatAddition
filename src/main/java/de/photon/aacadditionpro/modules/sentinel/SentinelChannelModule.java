@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.modules.sentinel;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
-import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
+import de.photon.aacadditionpro.util.pluginmessage.KeyMessageChannel;
 import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -33,8 +33,8 @@ public class SentinelChannelModule extends SentinelModule implements PluginMessa
         val incoming = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".incoming_channels");
         val outgoing = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".outgoing_channels");
 
-        if (!incoming.isEmpty()) builder.addIncomingMessageChannels(incoming.stream().map(MessageChannel::of).collect(Collectors.toSet()));
-        if (!outgoing.isEmpty()) builder.addOutgoingMessageChannels(outgoing.stream().map(MessageChannel::of).collect(Collectors.toSet()));
+        if (!incoming.isEmpty()) builder.addIncomingMessageChannels(incoming.stream().map(KeyMessageChannel::of).collect(Collectors.toSet()));
+        if (!outgoing.isEmpty()) builder.addOutgoingMessageChannels(outgoing.stream().map(KeyMessageChannel::of).collect(Collectors.toSet()));
         return builder.build();
     }
 }

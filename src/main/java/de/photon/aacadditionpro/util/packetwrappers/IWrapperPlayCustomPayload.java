@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.util.packetwrappers;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
-import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
+import de.photon.aacadditionpro.util.pluginmessage.KeyMessageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -16,17 +16,17 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
      *
      * @return The current Channel
      */
-    default MessageChannel getChannel()
+    default KeyMessageChannel getChannel()
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
             case MC112:
-                return MessageChannel.of("minecraft", "placeholder", getHandle().getStrings().read(0));
+                return KeyMessageChannel.of("minecraft", "placeholder", getHandle().getStrings().read(0));
             case MC113:
             case MC114:
             case MC115:
             case MC116:
-                return MessageChannel.of(getHandle().getMinecraftKeys().read(0));
+                return KeyMessageChannel.of(getHandle().getMinecraftKeys().read(0));
             default:
                 throw new UnknownMinecraftException();
         }
@@ -36,7 +36,7 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
      * Starting in 1.13, channel names need to be lower case, in the new identifier format,
      * i.e. {@code minecraft:brand}. The previously standard {@code |} is no longer allowed.
      */
-    default void setChannel(MessageChannel value)
+    default void setChannel(KeyMessageChannel value)
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:

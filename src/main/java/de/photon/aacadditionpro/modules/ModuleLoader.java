@@ -10,7 +10,7 @@ import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.datastructure.batch.BatchProcessor;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
-import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
+import de.photon.aacadditionpro.util.pluginmessage.KeyMessageChannel;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
@@ -39,13 +39,13 @@ public class ModuleLoader
 
     // Loading
     BatchProcessor<?> batchProcessor;
-    Set<MessageChannel> incoming;
-    Set<MessageChannel> outgoing;
+    Set<KeyMessageChannel> incoming;
+    Set<KeyMessageChannel> outgoing;
 
     Set<Listener> listeners;
     Set<PacketListener> packetListeners;
 
-    public ModuleLoader(Module module, Set<Listener> listeners, Set<PacketListener> packetListeners, boolean bungeecordForbidden, Set<String> pluginDependencies, Set<String> pluginIncompatibilities, Set<ServerVersion> allowedServerVersions, BatchProcessor<?> batchProcessor, Set<MessageChannel> incoming, Set<MessageChannel> outgoing)
+    public ModuleLoader(Module module, Set<Listener> listeners, Set<PacketListener> packetListeners, boolean bungeecordForbidden, Set<String> pluginDependencies, Set<String> pluginIncompatibilities, Set<ServerVersion> allowedServerVersions, BatchProcessor<?> batchProcessor, Set<KeyMessageChannel> incoming, Set<KeyMessageChannel> outgoing)
     {
         this.module = module;
         this.listeners = listeners;
@@ -108,7 +108,7 @@ public class ModuleLoader
             incoming.forEach(messageChannel -> messageChannel.registerIncomingChannel((PluginMessageListener) module));
         }
 
-        if (!outgoing.isEmpty()) outgoing.forEach(MessageChannel::registerOutgoingChannel);
+        if (!outgoing.isEmpty()) outgoing.forEach(KeyMessageChannel::registerOutgoingChannel);
         return true;
     }
 
@@ -124,7 +124,7 @@ public class ModuleLoader
             incoming.forEach(messageChannel -> messageChannel.unregisterIncomingChannel((PluginMessageListener) module));
         }
 
-        if (!outgoing.isEmpty()) outgoing.forEach(MessageChannel::unregisterOutgoingChannel);
+        if (!outgoing.isEmpty()) outgoing.forEach(KeyMessageChannel::unregisterOutgoingChannel);
     }
 
     @RequiredArgsConstructor
@@ -135,8 +135,8 @@ public class ModuleLoader
         private final Set<PacketListener> packetListeners = new HashSet<>();
         private final Set<String> pluginDependencies = new HashSet<>();
         private final Set<String> pluginIncompatibilities = new HashSet<>();
-        private final Set<MessageChannel> incoming = new HashSet<>();
-        private final Set<MessageChannel> outgoing = new HashSet<>();
+        private final Set<KeyMessageChannel> incoming = new HashSet<>();
+        private final Set<KeyMessageChannel> outgoing = new HashSet<>();
         private final Set<ServerVersion> allowedServerVersions = EnumSet.noneOf(ServerVersion.class);
         private boolean bungeecordForbidden = false;
         private BatchProcessor<?> batchProcessor = null;
@@ -171,25 +171,25 @@ public class ModuleLoader
             return this;
         }
 
-        public Builder addIncomingMessageChannels(MessageChannel... channels)
+        public Builder addIncomingMessageChannels(KeyMessageChannel... channels)
         {
             Collections.addAll(this.incoming, channels);
             return this;
         }
 
-        public Builder addIncomingMessageChannels(Collection<MessageChannel> channels)
+        public Builder addIncomingMessageChannels(Collection<KeyMessageChannel> channels)
         {
             this.incoming.addAll(channels);
             return this;
         }
 
-        public Builder addOutgoingMessageChannels(MessageChannel... channels)
+        public Builder addOutgoingMessageChannels(KeyMessageChannel... channels)
         {
             Collections.addAll(this.outgoing, channels);
             return this;
         }
 
-        public Builder addOutgoingMessageChannels(Collection<MessageChannel> channels)
+        public Builder addOutgoingMessageChannels(Collection<KeyMessageChannel> channels)
         {
             this.outgoing.addAll(channels);
             return this;

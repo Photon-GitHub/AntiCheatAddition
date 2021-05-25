@@ -114,7 +114,7 @@ public final class AACAdditionProApi
      * <p>
      * <p>
      * <p>
-     * 2.1) If you want additional config values, use the {@link de.photon.aacadditionpro.util.config.LoadFromConfiguration}.
+     * 2.1) If you want additional config values, use the {@link de.photon.aacadditionpro.util.config.LoadFromConfiguration} annotation.
      * Possible config example:
      * <p>ExampleModule:</p>
      * <p>enabled: true</p>

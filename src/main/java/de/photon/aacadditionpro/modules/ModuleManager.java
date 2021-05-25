@@ -18,8 +18,6 @@ import me.konsolas.aac.api.AACCustomFeatureProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -80,8 +78,8 @@ public final class ModuleManager
     public static AACCustomFeatureProvider getCustomFeatureProvider()
     {
         return offlinePlayer -> {
-            final List<AACCustomFeature> featureList = new ArrayList<>(violationModuleMap.size());
-            final UUID uuid = offlinePlayer.getUniqueId();
+            val featureList = new ArrayList<AACCustomFeature>(violationModuleMap.size());
+            val uuid = offlinePlayer.getUniqueId();
             double score;
             for (ViolationModule module : violationModuleMap.values()) {
                 // Only add enabled modules

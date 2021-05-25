@@ -122,6 +122,7 @@ public final class AACAdditionProApi
      * <p>myIntValue: 42</p>
      * <p>
      * <p>
+     * <p>
      * 3) Implement the {@link de.photon.aacadditionpro.modules.ModuleLoader}-creation method from {@link Module}.
      * If your module is a {@link org.bukkit.event.Listener} it will automatically be registered, no need to call the method of {@link de.photon.aacadditionpro.modules.ModuleLoader}, any other
      * {@link org.bukkit.event.Listener} need to be registered that way. For any further information, please check the provided methods.

@@ -1,11 +1,16 @@
 package de.photon.aacadditionpro.api;
 
 import de.photon.aacadditionpro.modules.Module;
+import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ModuleManager;
+import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.modules.additions.BrandHider;
+import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.pluginmessage.labymod.LabyModProtocol;
+import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 
 import java.util.UUID;
 
@@ -102,7 +107,7 @@ public final class AACAdditionProApi
      * <p>
      * <p>
      * An in-depth tutorial is provided on the overview page of spigot, this is just the quick-start:
-     * <p>1) Extend either {@link Module} or {@link de.photon.aacadditionpro.modules.ViolationModule}, depending on whether or not your Module is supposed to have a vls (ViolationModule) or not (Module)</p>
+     * <p>1) Extend either {@link Module} or {@link ViolationModule}, depending on whether or not your Module is supposed to have a vls (ViolationModule) or not (Module)</p>
      * <p>If you know what you are doing you can also use {@link de.photon.aacadditionpro.events.SentinelEvent} to create your own complex Sentinel checks.</p>
      * <p>2) Supply the config string and add your module to the config of AACAdditionPro. Don't forget to add enabled.</p>
      * <p>
@@ -114,7 +119,7 @@ public final class AACAdditionProApi
      * <p>
      * <p>
      * <p>
-     * 2.1) If you want additional config values, use the {@link de.photon.aacadditionpro.util.config.LoadFromConfiguration} annotation.
+     * 2.1) If you want additional config values, use the {@link LoadFromConfiguration} annotation.
      * Possible config example:
      * <p>ExampleModule:</p>
      * <p>enabled: true</p>
@@ -123,14 +128,14 @@ public final class AACAdditionProApi
      * <p>
      * <p>
      * <p>
-     * 3) Implement the {@link de.photon.aacadditionpro.modules.ModuleLoader}-creation method from {@link Module}.
-     * If your module is a {@link org.bukkit.event.Listener} it will automatically be registered, no need to call the method of {@link de.photon.aacadditionpro.modules.ModuleLoader}, any other
-     * {@link org.bukkit.event.Listener} need to be registered that way. For any further information, please check the provided methods.
+     * 3) Implement the {@link ModuleLoader}-creation method from {@link Module}.
+     * If your module is a {@link Listener} it will automatically be registered, no need to call the method of {@link ModuleLoader}, any other
+     * {@link Listener} need to be registered that way. For any further information, please check the provided methods.
      * <p>
      * <p>
      * <p>
-     * 4) To flag a player in a {@link de.photon.aacadditionpro.modules.ViolationModule}, use this.getManagement().flag(Flag.of(event.getPlayer()).setAddedVl(vl);
-     * For further actions, like cancelling please check out the {@link de.photon.aacadditionpro.util.violationlevels.Flag} documentation.
+     * 4) To flag a player in a {@link ViolationModule}, use this.getManagement().flag(Flag.of(event.getPlayer()).setAddedVl(vl);
+     * For further actions, like cancelling please check out the {@link Flag} documentation.
      * <p>
      * <p>
      * <p>

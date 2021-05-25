@@ -17,7 +17,7 @@ public abstract class Module
     protected final String bypassPermission = InternalPermission.bypassPermissionOf(this.getModuleId());
     @Getter(lazy = true) private final ModuleLoader moduleLoader = createModuleLoader();
     @Getter private final String aacInfo;
-    @Getter private boolean loaded;
+    @Getter private boolean enabled;
 
     public Module(String configString)
     {
@@ -33,7 +33,7 @@ public abstract class Module
 
     public void setEnabled(boolean enabled)
     {
-        if (loaded != enabled) {
+        if (this.enabled != enabled) {
             if (enabled) {
                 enableModule();
             } else {
@@ -44,14 +44,14 @@ public abstract class Module
 
     public void enableModule()
     {
-        this.loaded = true;
+        this.enabled = true;
         this.getModuleLoader().load();
         this.enable();
     }
 
     public void disableModule()
     {
-        this.loaded = false;
+        this.enabled = false;
         this.getModuleLoader().unload();
         this.disable();
     }

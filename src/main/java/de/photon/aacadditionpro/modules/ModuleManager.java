@@ -83,7 +83,7 @@ public final class ModuleManager
             double score;
             for (ViolationModule module : violationModuleMap.values()) {
                 // Only add enabled modules
-                if (module.isLoaded()) {
+                if (module.isEnabled()) {
                     score = module.getManagement().getVL(uuid);
                     featureList.add(new AACCustomFeature(module.getConfigString(), module.getAacInfo(), score, module.getAACTooltip(uuid, score)));
                 }

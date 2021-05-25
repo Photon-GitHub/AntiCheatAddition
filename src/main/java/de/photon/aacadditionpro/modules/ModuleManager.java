@@ -66,7 +66,7 @@ public final class ModuleManager
                                                       .collect(Collectors.toList()));
     }
 
-    private static void addExternalModule(final Module externalModule)
+    public static void addExternalModule(final Module externalModule)
     {
         moduleMap.addModule(externalModule);
         if (externalModule instanceof ViolationModule) violationModuleMap.addModule((ViolationModule) externalModule);

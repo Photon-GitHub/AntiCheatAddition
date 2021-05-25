@@ -32,21 +32,35 @@ public class Flag
         this.team = team;
     }
 
+    /**
+     * Creates a new flag concerning a {@link Player}
+     */
     public static Flag of(Player player)
     {
         return new Flag(player);
     }
 
+
+    /**
+     * Creates a new flag concerning multiple {@link Player}s.
+     */
     public static Flag of(Player... team)
     {
         return new Flag(ImmutableSet.copyOf(team));
     }
 
+
+    /**
+     * Creates a new flag concerning multiple {@link Player}s.
+     */
     public static Flag of(Set<Player> team)
     {
         return new Flag(ImmutableSet.copyOf(team));
     }
 
+    /**
+     * This method defines how many vls are added to the score of the {@link Player}s defined in the constructors.
+     */
     public Flag setAddedVl(int addedVl)
     {
         Preconditions.checkArgument(addedVl >= 1, "Tried to add no or negative vl in flag.");
@@ -54,6 +68,12 @@ public class Flag
         return this;
     }
 
+    /**
+     * This method defines what action should be taken once a certain vl is surpassed to cancel a flagged action.
+     *
+     * @param cancelVl the vl needed to trigger the action. Must be greater or equal to 0.
+     * @param onCancel the action that will be performed once the cancelVl is reached.
+     */
     public Flag setCancelAction(int cancelVl, Runnable onCancel)
     {
         Preconditions.checkArgument(cancelVl >= 0, "Set negative cancel vl in flag.");
@@ -62,6 +82,9 @@ public class Flag
         return this;
     }
 
+    /**
+     * This is used to set an action that will only be run if the event caused by the flag has not been cancelled.
+     */
     public Flag setEventNotCancelledAction(Runnable eventNotCancelled)
     {
         this.eventNotCancelled = Preconditions.checkNotNull(eventNotCancelled, "Tried to set null eventNotCancelled action in flag.");
@@ -69,7 +92,7 @@ public class Flag
     }
 
     /**
-     * This method will execute both the
+     * This method will execute the runnables when applicable.
      */
     public void executeRunnablesIfNeeded(int currentVl)
     {

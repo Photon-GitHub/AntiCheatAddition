@@ -93,4 +93,50 @@ public final class AACAdditionProApi
     {
         LabyModProtocol.sendServerBanner(player, imageUrl);
     }
+
+    /**
+     * This allows you to create your own modules, while leaving all the loading to AACAdditionPro.
+     * PLEASE NOTE THAT YOU MIGHT USE PRIVATE APIS THAT MAY CHANGE BETWEEN VERSIONS.
+     * You can even add your own values to the config to AACAdditionPro and load them.
+     * <p>
+     * <p>
+     * <p>
+     * An in-depth tutorial is provided on the overview page of spigot, this is just the quick-start:
+     * <p>1) Extend either {@link Module} or {@link de.photon.aacadditionpro.modules.ViolationModule}, depending on whether or not your Module is supposed to have a vls (ViolationModule) or not (Module)</p>
+     * <p>If you know what you are doing you can also use {@link de.photon.aacadditionpro.events.SentinelEvent} to create your own complex Sentinel checks.</p>
+     * <p>2) Supply the config string and add your module to the config of AACAdditionPro. Don't forget to add enabled.</p>
+     * <p>
+     * <p>
+     * <p>
+     * It should now look something like this (see other modules):
+     * <p>ExampleModule:</p>
+     * <p>enabled: true</p>
+     * <p>
+     * <p>
+     * <p>
+     * 2.1) If you want additional config values, use the {@link de.photon.aacadditionpro.util.config.LoadFromConfiguration}.
+     * Possible config example:
+     * <p>ExampleModule:</p>
+     * <p>enabled: true</p>
+     * <p>myBooleanValue: true</p>
+     * <p>myIntValue: 42</p>
+     * <p>
+     * <p>
+     * 3) Implement the {@link de.photon.aacadditionpro.modules.ModuleLoader}-creation method from {@link Module}.
+     * If your module is a {@link org.bukkit.event.Listener} it will automatically be registered, no need to call the method of {@link de.photon.aacadditionpro.modules.ModuleLoader}, any other
+     * {@link org.bukkit.event.Listener} need to be registered that way. For any further information, please check the provided methods.
+     * <p>
+     * <p>
+     * <p>
+     * 4) To flag a player in a {@link de.photon.aacadditionpro.modules.ViolationModule}, use this.getManagement().flag(Flag.of(event.getPlayer()).setAddedVl(vl);
+     * For further actions, like cancelling please check out the {@link de.photon.aacadditionpro.util.violationlevels.Flag} documentation.
+     * <p>
+     * <p>
+     * <p>
+     * 5) Call this method with your module and start your server.
+     */
+    public static void addExternalModule(Module module)
+    {
+        ModuleManager.addExternalModule(module);
+    }
 }

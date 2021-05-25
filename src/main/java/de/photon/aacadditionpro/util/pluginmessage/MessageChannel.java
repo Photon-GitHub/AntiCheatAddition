@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public interface MessageChannel
 {
     MessageChannel MC_BRAND_CHANNEL = MessageChannel.of("minecraft", "brand", "MC|Brand");
+    MessageChannel LABYMOD_CHANNEL = MessageChannel.of("labymod3", "main", "LMC");
 
     @NotNull
     static MessageChannel of(final String channel)

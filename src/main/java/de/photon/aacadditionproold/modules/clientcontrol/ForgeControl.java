@@ -1,5 +1,6 @@
 package de.photon.aacadditionproold.modules.clientcontrol;
 
+import com.comphenix.protocol.PacketType;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionproold.ServerVersion;
 import de.photon.aacadditionproold.modules.ModuleType;
@@ -35,6 +36,7 @@ public class ForgeControl extends ClientControlModule implements PluginMessageLi
         return ImmutableSet.of(new MessageChannel("minecraft", "fml", "FML"),
                                new MessageChannel("minecraft", "fmlhs", "FMLHS"),
                                MessageChannel.MC_BRAND_CHANNEL);
+        PacketType
     }
 
 

@@ -129,15 +129,8 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>
-            <version>4.0.13.Final</version>
+            <version>4.0.23.Final</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.labymod</groupId>
-            <artifactId>serverapi</artifactId>
-            <version>1.1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/LabyAPI.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>us.myles</groupId>

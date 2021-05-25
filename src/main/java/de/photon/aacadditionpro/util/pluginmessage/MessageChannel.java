@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.pluginmessage;
 
+import com.comphenix.protocol.wrappers.MinecraftKey;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import lombok.val;
@@ -13,11 +14,16 @@ public interface MessageChannel
     MessageChannel LABYMOD_CHANNEL = MessageChannel.of("labymod3", "main", "LMC");
 
     @NotNull
+    static MessageChannel of(final MinecraftKey channel)
+    {
+        return MessageChannel.of(channel.getPrefix(), channel.getKey());
+    }
+
+    @NotNull
     static MessageChannel of(final String channel)
     {
         val splitNew = channel.split(":");
         return splitNew.length == 2 ? MessageChannel.of(splitNew[0], splitNew[1]) : ofLegacy(channel);
-
     }
 
     @NotNull

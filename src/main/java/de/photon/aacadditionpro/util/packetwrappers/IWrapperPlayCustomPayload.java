@@ -17,17 +17,17 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
      *
      * @return The current Channel
      */
-    default KeyMessageChannel getChannel()
+    default MessageChannel getChannel()
     {
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
             case MC112:
-                return KeyMessageChannel.of("minecraft", "placeholder", getHandle().getStrings().read(0));
+                return MessageChannel.of("minecraft", "placeholder", getHandle().getStrings().read(0));
             case MC113:
             case MC114:
             case MC115:
             case MC116:
-                return KeyMessageChannel.of(getHandle().getMinecraftKeys().read(0));
+                return MessageChannel.of(getHandle().getMinecraftKeys().read(0));
             default:
                 throw new UnknownMinecraftException();
         }

@@ -17,4 +17,10 @@ public class ModulePacketAdapter extends PacketAdapter
         super(AACAdditionPro.getInstance(), listenerPriority, types);
         this.module = module;
     }
+
+    public ModulePacketAdapter(Module module, ListenerPriority listenerPriority, Iterable<? extends PacketType> types)
+    {
+        super(AACAdditionPro.getInstance(), listenerPriority, types);
+        this.module = module;
+    }
 }

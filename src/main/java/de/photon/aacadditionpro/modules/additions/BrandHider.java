@@ -43,9 +43,7 @@ public class BrandHider extends Module implements Listener
 
     private static void updateAllBrands()
     {
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            updateBrand(onlinePlayer);
-        }
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) updateBrand(onlinePlayer);
     }
 
     private static void updateBrand(final Player player)

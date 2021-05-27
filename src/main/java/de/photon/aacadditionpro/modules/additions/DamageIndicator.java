@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
+import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import de.photon.aacadditionpro.modules.Module;
@@ -22,12 +23,41 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Wither;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 
 public class DamageIndicator extends Module
 {
+    /**
+     * Index of the health value in ENTITY_METADATA
+     */
+    public static final int ENTITY_METADATA_HEALTH_FIELD_INDEX;
+
+    static {
+        // Passenger problems
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC18:
+                // index 6 in 1.8
+                ENTITY_METADATA_HEALTH_FIELD_INDEX = 6;
+                break;
+            case MC112:
+            case MC113:
+                // index 7 in 1.11+
+                ENTITY_METADATA_HEALTH_FIELD_INDEX = 7;
+                break;
+            case MC114:
+            case MC115:
+            case MC116:
+                // index 8 in 1.14.4+
+                ENTITY_METADATA_HEALTH_FIELD_INDEX = 8;
+                break;
+            default:
+                throw new UnknownMinecraftException();
+        }
+    }
+
     @LoadFromConfiguration(configPath = ".spoof.players")
     private boolean spoofPlayers;
     @LoadFromConfiguration(configPath = ".spoof.animals")
@@ -53,7 +83,10 @@ public class DamageIndicator extends Module
     {
         public DamageIndicatorPacketAdapter(Module module)
         {
-            super(module, ListenerPriority.HIGH, PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN);
+            super(module, ListenerPriority.HIGH, ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+                                                 // Only register NAMED_ENTITY_SPAWN on 1.8 as it doesn't work on newer versions.
+                                                 ImmutableList.of(PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN) :
+                                                 ImmutableList.of(PacketType.Play.Server.ENTITY_METADATA));
         }
 
         @Override
@@ -77,73 +110,45 @@ public class DamageIndicator extends Module
                 // Entity must be living to have health; all categories extend LivingEntity.
                 ((entity instanceof HumanEntity && spoofPlayers) ||
                  (entity instanceof Monster && spoofMonsters) ||
-                 (entity instanceof Animals && spoofAnimals)))
+                 (entity instanceof Animals && spoofAnimals)) &&
+                // Entity has no passengers.
+                EntityUtil.getPassengers(entity).isEmpty())
             {
-                // Index of the health value in ENTITY_METADATA
-                final int index;
-
-                // Passenger problems
-                switch (ServerVersion.getActiveServerVersion()) {
-                    case MC18:
-                        // index 6 in 1.8
-                        index = 6;
-                        break;
-                    case MC112:
-                    case MC113:
-                        // index 7 in 1.11+
-                        index = 7;
-                        break;
-                    case MC114:
-                    case MC115:
-                    case MC116:
-                        // index 8 in 1.14.4+
-                        index = 8;
-                        break;
-                    default:
-                        throw new UnknownMinecraftException();
-                }
-
-                // No passengers.
-                if (!EntityUtil.getPassengers(entity).isEmpty()) return;
 
                 // Clone the packet to prevent a serversided connection of the health.
                 event.setPacket(event.getPacket().deepClone());
-                List<WrappedWatchableObject> read = null;
 
-                final float spoofedHealth;
-                switch (ServerVersion.getActiveServerVersion()) {
-                    case MC18:
-                        spoofedHealth = Float.NaN;
-
-                        // Only set it on 1.8.8, otherwise it will just be at the max health.
-                        // This packetwrapper doesn't currently work with 1.15+.
-                        if (event.getPacket().getType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
-                            val spawnWrapper = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
-                            read = spawnWrapper.getMetadata().getWatchableObjects();
-                        }
-                        break;
-                    case MC112:
-                    case MC113:
-                    case MC114:
-                    case MC115:
-                    case MC116:
-                        spoofedHealth = (float) Objects.requireNonNull(((LivingEntity) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH), "Tried to get max health of an entity without health.").getValue();
-                        break;
-                    default:
-                        throw new UnknownMinecraftException();
-                }
-
+                final List<WrappedWatchableObject> read;
                 if (event.getPacket().getType() == PacketType.Play.Server.ENTITY_METADATA) {
-                    val metadataWrapper = new WrapperPlayServerEntityMetadata(event.getPacket());
-                    read = metadataWrapper.getMetadata();
+                    read = new WrapperPlayServerEntityMetadata(event.getPacket()).getMetadata();
+                    // Only set it on 1.8.8, otherwise it will just be at the max health.
+                    // Automatically excluded on later versions as the PacketType is not registered.
+                    // This packetwrapper doesn't currently work with 1.15+.
+                } else if (event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
+                    read = new WrapperPlayServerNamedEntitySpawn(event.getPacket()).getMetadata().getWatchableObjects();
+                } else {
+                    read = null;
                 }
 
-                if (read != null) {
-                    for (WrappedWatchableObject watch : read) {
-                        if ((watch.getIndex() == index) && ((Float) watch.getValue() > 0.0F)) {
-                            watch.setValue(spoofedHealth);
-                        }
+                if (read == null) return;
+                spoofHealth((LivingEntity) entity, read);
+            }
+        }
+
+        private void spoofHealth(@NotNull LivingEntity entity, @NotNull List<WrappedWatchableObject> readMetadata)
+        {
+            for (WrappedWatchableObject watch : readMetadata) {
+                // Check for the HEALTH field
+                if (watch.getIndex() == ENTITY_METADATA_HEALTH_FIELD_INDEX) {
+                    // Only set it if the entity is not yet dead to prevent problems on the clientside.
+                    if (((Float) watch.getValue() > 0.0F)) {
+                        val spoofedHealth = ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+                                            Float.NaN :
+                                            (float) Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH), "Tried to get health of entity without health.").getValue();
+                        watch.setValue(spoofedHealth);
                     }
+                    // Immediately return to not cause unnecessary reflection calls.
+                    return;
                 }
             }
         }

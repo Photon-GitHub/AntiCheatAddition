@@ -33,25 +33,25 @@ public class DamageIndicator extends Module
     /**
      * Index of the health value in ENTITY_METADATA
      */
-    public static final int ENTITY_METADATA_HEALTH_FIELD_INDEX;
+    public static final int METADATA_HEALTH_FIELD_INDEX;
 
     static {
         // Passenger problems
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
                 // index 6 in 1.8
-                ENTITY_METADATA_HEALTH_FIELD_INDEX = 6;
+                METADATA_HEALTH_FIELD_INDEX = 6;
                 break;
             case MC112:
             case MC113:
                 // index 7 in 1.11+
-                ENTITY_METADATA_HEALTH_FIELD_INDEX = 7;
+                METADATA_HEALTH_FIELD_INDEX = 7;
                 break;
             case MC114:
             case MC115:
             case MC116:
                 // index 8 in 1.14.4+
-                ENTITY_METADATA_HEALTH_FIELD_INDEX = 8;
+                METADATA_HEALTH_FIELD_INDEX = 8;
                 break;
             default:
                 throw new UnknownMinecraftException();
@@ -142,7 +142,7 @@ public class DamageIndicator extends Module
         {
             for (WrappedWatchableObject watch : readMetadata) {
                 // Check for the HEALTH field
-                if (watch.getIndex() == ENTITY_METADATA_HEALTH_FIELD_INDEX) {
+                if (watch.getIndex() == METADATA_HEALTH_FIELD_INDEX) {
                     // Only set it if the entity is not yet dead to prevent problems on the clientside.
                     if (((Float) watch.getValue() > 0.0F)) watch.setValue(healthToSpoof);
                     // Immediately return to not cause unnecessary reflection calls.

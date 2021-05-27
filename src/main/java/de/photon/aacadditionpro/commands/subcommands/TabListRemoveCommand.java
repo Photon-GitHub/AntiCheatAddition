@@ -10,6 +10,7 @@ import de.photon.aacadditionpro.commands.TabCompleteSupplier;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPlayerInfo;
 import de.photon.aacadditionpro.util.server.ServerUtil;
+import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -40,7 +41,7 @@ public class TabListRemoveCommand extends InternalCommand
          * [0] represents the the affected player
          * [1] represents the modified player
          */
-        final Player[] players = new Player[2];
+        val players = new Player[2];
 
         for (int i = 0; i < players.length; ++i) {
             players[i] = getPlayer(sender, arguments.remove());
@@ -52,6 +53,7 @@ public class TabListRemoveCommand extends InternalCommand
             ChatMessage.sendMessage(sender, "The affected player must not be the removed player.");
             return;
         }
+
         long ticks = 0;
         try {
             if (!arguments.isEmpty()) {

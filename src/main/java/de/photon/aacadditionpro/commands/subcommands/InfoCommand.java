@@ -8,18 +8,21 @@ import de.photon.aacadditionpro.modules.ModuleManager;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import lombok.EqualsAndHashCode;
+import lombok.Value;
 import lombok.val;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 public class InfoCommand extends InternalCommand
 {
     public InfoCommand()
     {
         super("info", CommandAttributes.builder().exactArguments(1)
-                                       .addCommandHelpLine("Displays all violation levels of a player.")
+                                       .addCommandHelp("Displays all violation levels of a player.",
+                                                       "Syntax: /aacadditionpro info <player>")
                                        .setPermission(InternalPermission.INFO).build(), TabCompleteSupplier.builder().allPlayers());
     }
 
@@ -30,33 +33,29 @@ public class InfoCommand extends InternalCommand
         val player = getPlayer(sender, arguments.peek());
         if (player == null) return;
 
-        val moduleVls = new ArrayList<ModuleVl>();
-        int vl;
-        for (ViolationModule vm : ModuleManager.getViolationModuleMap().values()) {
-            vl = vm.getManagement().getVL(player.getUniqueId());
-            if (vl > 0) moduleVls.add(new ModuleVl(vm, vl));
-        }
+        val moduleVls = ModuleManager.getViolationModuleMap().values().stream()
+                                     // The of() method will return null when the vl is 0.
+                                     .map(vlm -> ModuleVl.of(vlm, vlm.getManagement().getVL(player.getUniqueId())))
+                                     .filter(Objects::nonNull)
+                                     .sorted()
+                                     .collect(Collectors.toList());
 
         ChatMessage.sendMessage(sender, player.getName());
 
-        if (moduleVls.isEmpty()) {
-            ChatMessage.sendMessage(sender, "The player has no violations.");
-        } else {
-            moduleVls.sort(ModuleVl::compareTo);
-            moduleVls.forEach(moduleVl -> ChatMessage.sendMessage(sender, moduleVl.message));
-        }
+        if (moduleVls.isEmpty()) ChatMessage.sendMessage(sender, "The player has no violations.");
+        else moduleVls.forEach(moduleVl -> ChatMessage.sendMessage(sender, moduleVl.message));
     }
 
-    @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+    @Value
     private static class ModuleVl implements Comparable<ModuleVl>
     {
-        @EqualsAndHashCode.Include private final String message;
-        private final int vl;
+        String message;
+        @EqualsAndHashCode.Exclude int vl;
 
-        public ModuleVl(ViolationModule vm, int vl)
+        public static ModuleVl of(ViolationModule vm, int vl)
         {
-            this.message = vm.getConfigString() + " -> vl " + vl;
-            this.vl = vl;
+            // Return null when the vl is 0.
+            return vl > 0 ? new ModuleVl(vm.getConfigString() + " -> vl " + vl, vl) : null;
         }
 
         @Override

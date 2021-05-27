@@ -2,6 +2,9 @@ package de.photon.aacadditionpro.commands;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.commands.subcommands.DebugCommand;
+import de.photon.aacadditionpro.commands.subcommands.InfoCommand;
+import de.photon.aacadditionpro.commands.subcommands.SetVlCommand;
+import de.photon.aacadditionpro.commands.subcommands.TabListRemoveCommand;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import lombok.Getter;
 import org.bukkit.command.Command;
@@ -25,7 +28,10 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
     {
         super("aacadditionpro", CommandAttributes.builder()
                                                  .addCommandHelp("The main command of AACAdditionPro", "To use a subcommands simply add it to the parent command:", "/aacadditionpro <subcommand>")
-                                                 .addChildCommands(new DebugCommand())
+                                                 .addChildCommands(new DebugCommand(),
+                                                                   new InfoCommand(),
+                                                                   new SetVlCommand(),
+                                                                   new TabListRemoveCommand())
                                                  .build(), TabCompleteSupplier.builder());
     }
 

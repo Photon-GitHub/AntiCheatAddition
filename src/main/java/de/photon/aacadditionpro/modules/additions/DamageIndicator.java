@@ -127,26 +127,24 @@ public class DamageIndicator extends Module
                 } else if (event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
                     read = new WrapperPlayServerNamedEntitySpawn(event.getPacket()).getMetadata().getWatchableObjects();
                 } else {
-                    read = null;
+                    throw new IllegalStateException("Unregistered packet type.");
                 }
 
-                if (read == null) return;
-                spoofHealth((LivingEntity) entity, read);
+                val spoofedHealth = ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+                                    Float.NaN :
+                                    (float) Objects.requireNonNull(((LivingEntity) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH), "Tried to get health of entity without health.").getValue();
+
+                spoofHealth(read, spoofedHealth);
             }
         }
 
-        private void spoofHealth(@NotNull LivingEntity entity, @NotNull List<WrappedWatchableObject> readMetadata)
+        private void spoofHealth(@NotNull final List<WrappedWatchableObject> readMetadata, final float healthToSpoof)
         {
             for (WrappedWatchableObject watch : readMetadata) {
                 // Check for the HEALTH field
                 if (watch.getIndex() == ENTITY_METADATA_HEALTH_FIELD_INDEX) {
                     // Only set it if the entity is not yet dead to prevent problems on the clientside.
-                    if (((Float) watch.getValue() > 0.0F)) {
-                        val spoofedHealth = ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
-                                            Float.NaN :
-                                            (float) Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH), "Tried to get health of entity without health.").getValue();
-                        watch.setValue(spoofedHealth);
-                    }
+                    if (((Float) watch.getValue() > 0.0F)) watch.setValue(healthToSpoof);
                     // Immediately return to not cause unnecessary reflection calls.
                     return;
                 }

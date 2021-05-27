@@ -40,7 +40,7 @@ BrandHider:
 # This is a clientsided spoof, meaning that your plugins are able to get the correct health.
 DamageIndicator:
   # Do you want to enable DamageIndicator?
-  enabled: false
+  enabled: true
   # Spoof the health of the following entity categories.
   spoof:
     players: true

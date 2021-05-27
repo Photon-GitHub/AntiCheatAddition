@@ -8,6 +8,7 @@ import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
@@ -46,6 +47,49 @@ public abstract class InternalCommand
         val player = Bukkit.getServer().getPlayer(nameOfPlayer);
         if (player == null) ChatMessage.sendPlayerNotFoundMessage(sender);
         return player;
+    }
+
+    /**
+     * This checks if an object is null. If it is, it will send the message to the recipient, else nothing will happen.
+     *
+     * @return <code>true</code> when the object is null, else <code>false</code>.
+     */
+    @Contract("null, _ , _ -> true; !null, _ , _ -> false")
+    protected static boolean checkNotNullElseSend(final Object notNull, final CommandSender recipient, final String message)
+    {
+        val n = notNull == null;
+        if (n) recipient.sendMessage(message);
+        return n;
+    }
+
+    /**
+     * Tries to parse an integer. If the integer could not be parsed, send the message to the recipient.
+     *
+     * @return null if the string was not a valid integer, else the parsed value
+     */
+    protected static Integer parseIntElseSend(final String toParse, final CommandSender recipient, final String message)
+    {
+        try {
+            return Integer.parseInt(toParse);
+        } catch (NumberFormatException e) {
+            recipient.sendMessage(message);
+        }
+        return null;
+    }
+
+    /**
+     * Tries to parse an long. If the long could not be parsed, send the message to the recipient.
+     *
+     * @return null if the string was not a valid long, else the parsed value
+     */
+    protected static Long parseLongElseSend(final String toParse, final CommandSender recipient, final String message)
+    {
+        try {
+            return Long.parseLong(toParse);
+        } catch (NumberFormatException e) {
+            recipient.sendMessage(message);
+        }
+        return null;
     }
 
     /**

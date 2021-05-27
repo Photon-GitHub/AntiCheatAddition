@@ -7,7 +7,6 @@ import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.Contract;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ChatMessage
@@ -65,18 +64,5 @@ public final class ChatMessage
     public static void sendPlayerNotFoundMessage(CommandSender recipient)
     {
         sendMessage(recipient, "The specified player could not be found.");
-    }
-
-    /**
-     * This checks if an object is null. If it is, it will send the message to the recipient, else nothing will happen.
-     *
-     * @return <code>true</code> when the object is null, else <code>false</code>.
-     */
-    @Contract("null, _ , _ -> true; !null, _ , _ -> false")
-    public static boolean checkNotNullElseSend(final Object notNull, final CommandSender recipient, final String message)
-    {
-        val n = notNull == null;
-        if (n) recipient.sendMessage(message);
-        return n;
     }
 }

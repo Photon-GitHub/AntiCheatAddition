@@ -41,12 +41,9 @@ public class TabListRemoveCommand extends InternalCommand
          * [0] represents the the affected player
          * [1] represents the modified player
          */
-        val players = new Player[2];
-
-        for (int i = 0; i < players.length; ++i) {
-            players[i] = getPlayer(sender, arguments.remove());
-            if (players[i] == null) return;
-        }
+        val players = new Player[]{getPlayer(sender, arguments.remove()), getPlayer(sender, arguments.remove())};
+        // Error messages are already sent by the getPlayer() method.
+        for (Player player : players) if (player == null) return;
 
         // This prevents the crashing of the player.
         if (players[0].getUniqueId().equals(players[1].getUniqueId())) {
@@ -54,24 +51,14 @@ public class TabListRemoveCommand extends InternalCommand
             return;
         }
 
-        long ticks = 0;
-        try {
-            if (!arguments.isEmpty()) {
-                ticks = Long.parseLong(arguments.remove());
-            }
-        } catch (NumberFormatException e) {
-            ChatMessage.sendMessage(sender, "Please specify a valid integer.");
-            return;
-        }
+        val ticks = arguments.isEmpty() ? Long.valueOf(0) : parseLongElseSend(arguments.poll(), sender, "Please specify a valid integer");
+        if (ticks == null) return;
 
         sender.sendMessage(ChatColor.GOLD + "Removed player " + ChatColor.RED + players[1].getName() + ChatColor.GOLD + " from " + ChatColor.RED + players[0].getName() + ChatColor.GOLD + "'s tablist for " + ChatColor.RED + ticks + ChatColor.GOLD + " ticks.");
 
         updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, players[0], players[1]);
-        if (ticks == 0) {
-            updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, players[0], players[1]);
-        } else {
-            Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, players[0], players[1]), ticks);
-        }
+        if (ticks == 0) updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, players[0], players[1]);
+        else Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, players[0], players[1]), ticks);
     }
 
     private void updatePlayerInfo(final EnumWrappers.PlayerInfoAction action, final Player affectedPlayer, final Player modifiedPlayer)

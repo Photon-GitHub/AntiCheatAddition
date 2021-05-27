@@ -4,7 +4,6 @@ import de.photon.aacadditionpro.commands.CommandAttributes;
 import de.photon.aacadditionpro.commands.InternalCommand;
 import de.photon.aacadditionpro.commands.TabCompleteSupplier;
 import de.photon.aacadditionpro.modules.ModuleManager;
-import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import lombok.val;
 import org.bukkit.command.CommandSender;
 
@@ -29,16 +28,14 @@ public class SetVlCommand extends InternalCommand
         if (player == null) return;
 
         val module = ModuleManager.getViolationModuleMap().getModule(arguments.poll());
-        if (ChatMessage.checkNotNullElseSend(module, sender, "The given module_id does not refer to a known module.")) return;
+        if (checkNotNullElseSend(module, sender, "The given module_id does not refer to a known module.")) return;
 
         val vlString = arguments.poll();
-        if (ChatMessage.checkNotNullElseSend(vlString, sender, "Please specify the new vl you want to set for the module.")) return;
+        if (checkNotNullElseSend(vlString, sender, "Please specify the new vl you want to set for the module.")) return;
 
-        try {
-            val vl = Integer.parseInt(vlString);
-            module.getManagement().setVL(player, vl);
-        } catch (NumberFormatException exception) {
-            ChatMessage.sendMessage(sender, "Please specify a valid integer as vl.");
-        }
+        val vl = parseIntElseSend(vlString, sender, "Please specify a valid integer as vl.");
+        if (vl == null) return;
+
+        module.getManagement().setVL(player, vl);
     }
 }

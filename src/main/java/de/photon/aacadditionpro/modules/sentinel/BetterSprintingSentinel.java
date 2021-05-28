@@ -65,7 +65,7 @@ public class BetterSprintingSentinel extends SentinelModule
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull final String channel, final Player player, @NotNull final byte[] message)
+    public void onPluginMessageReceived(@NotNull final String channel, @NotNull final Player player, @NotNull final byte[] message)
     {
         val user = User.getUser(player.getUniqueId());
         if (User.isUserInvalid(user, this)) return;

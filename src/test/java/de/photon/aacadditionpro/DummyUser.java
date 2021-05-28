@@ -730,6 +730,12 @@ public class DummyUser extends User
                 return 0;
             }
 
+            @Override
+            public int getPing()
+            {
+                return 2;
+            }
+
             @NotNull
             @Override
             public String getLocale()

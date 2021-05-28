@@ -1,6 +1,8 @@
 package de.photon.aacadditionpro.util.server;
 
 import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
 import de.photon.aacadditionpro.util.reflection.ClassReflect;
 import de.photon.aacadditionpro.util.reflection.Reflect;
@@ -53,12 +55,26 @@ public final class ServerUtil
      */
     public static int getPing(final Player player)
     {
-        val craftPlayer = CRAFTPLAYER_CLASS_REFLECT.method("getHandle").invoke(player);
-        try {
-            return craftPlayer.getClass().getDeclaredField("ping").getInt(craftPlayer);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            AACAdditionPro.getInstance().getLogger().log(Level.WARNING, "Failed to retrieve ping of a player: ", e);
-            return 0;
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC18:
+            case MC19:
+            case MC110:
+            case MC111:
+            case MC112:
+            case MC113:
+            case MC114:
+            case MC115:
+                val craftPlayer = CRAFTPLAYER_CLASS_REFLECT.method("getHandle").invoke(player);
+                try {
+                    return craftPlayer.getClass().getDeclaredField("ping").getInt(craftPlayer);
+                } catch (IllegalAccessException | NoSuchFieldException e) {
+                    AACAdditionPro.getInstance().getLogger().log(Level.WARNING, "Failed to retrieve ping of a player: ", e);
+                    return 0;
+                }
+            case MC116:
+                return player.getPing();
+            default:
+                throw new UnknownMinecraftException();
         }
     }
 

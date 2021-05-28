@@ -31,7 +31,7 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
     private int size = 0;
 
     /**
-     * Create a new {@link de.photon.aacadditionproold.util.datastructures.buffer.ContinuousArrayBuffer}.
+     * Create a new {@link RingBuffer}.
      *
      * @param maxSize the size of the internal array to store the data. Once it is full, the oldest element will be
      *                overwritten.

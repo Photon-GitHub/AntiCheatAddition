@@ -6,6 +6,7 @@ import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.data.Constants;
 import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.UUID;
@@ -21,7 +22,7 @@ public class DetectionManagement extends ViolationManagement
     }
 
     @Override
-    public void flag(Flag flag)
+    public void flag(@NotNull Flag flag)
     {
         Preconditions.checkArgument(flag.getAddedVl() == 1, "Tried to add more than 1 vl in detection management.");
 
@@ -32,13 +33,13 @@ public class DetectionManagement extends ViolationManagement
     }
 
     @Override
-    public int getVL(UUID uuid)
+    public int getVL(@NotNull UUID uuid)
     {
         return detectionSet.contains(uuid) ? 1 : 0;
     }
 
     @Override
-    public void setVL(Player player, int newVl)
+    public void setVL(@NotNull Player player, int newVl)
     {
         Preconditions.checkArgument(newVl <= 1, "A Sentinel detection management only supports the vls 0 (no detection) and 1 (detection).");
 
@@ -50,7 +51,7 @@ public class DetectionManagement extends ViolationManagement
     }
 
     @Override
-    protected void addVL(Player player, int vl)
+    protected void addVL(@NotNull Player player, int vl)
     {
         Preconditions.checkArgument(vl <= 1, "A Sentinel detection management only supports the vls 0 (no detection) and 1 (detection).");
 

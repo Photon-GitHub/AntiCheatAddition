@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.api;
 
+import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ModuleManager;
@@ -11,6 +12,7 @@ import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -32,9 +34,11 @@ public final class AACAdditionProApi
      *
      * @throws NullPointerException if the module does not exist or does not have a {@link ViolationManagement}.
      */
-    public static int getVL(final UUID uuid, final String moduleId)
+    public static int getVL(@NotNull final UUID uuid, @NotNull final String moduleId)
     {
-        return ModuleManager.getViolationModuleMap().getModule(moduleId).getManagement().getVL(uuid);
+        Preconditions.checkNotNull(uuid, "Tried to get vl of null uuid.");
+        Preconditions.checkNotNull(moduleId, "Tried to get vl of null moduleId.");
+        return Preconditions.checkNotNull(ModuleManager.getViolationModuleMap().getModule(moduleId), "The moduleId does not exist or the associated module has no vl management.").getManagement().getVL(uuid);
     }
 
     /**
@@ -48,7 +52,9 @@ public final class AACAdditionProApi
      */
     public static void setVl(final Player player, final String moduleId, final int new_vl)
     {
-        ModuleManager.getViolationModuleMap().getModule(moduleId).getManagement().setVL(player, new_vl);
+        Preconditions.checkNotNull(player, "Tried to set vl of null player.");
+        Preconditions.checkNotNull(moduleId, "Tried to set vl of null moduleId.");
+        Preconditions.checkNotNull(ModuleManager.getViolationModuleMap().getModule(moduleId), "The moduleId does not exist or the associated module has no vl management.").getManagement().setVL(player, new_vl);
     }
 
     /**
@@ -62,6 +68,7 @@ public final class AACAdditionProApi
      */
     public static boolean getStateOfModule(final String moduleId)
     {
+        Preconditions.checkNotNull(moduleId, "Tried to get state of null moduleId.");
         return ModuleManager.getModuleMap().getModule(moduleId).isEnabled();
     }
 
@@ -75,6 +82,7 @@ public final class AACAdditionProApi
      */
     public static void setStateOfModule(final String moduleId, final boolean enabled)
     {
+        Preconditions.checkNotNull(moduleId, "Tried to set state of null moduleId.");
         ModuleManager.getModuleMap().getModule(moduleId).setEnabled(enabled);
     }
 
@@ -83,6 +91,7 @@ public final class AACAdditionProApi
      */
     public static void setBrandHiderBrand(final String string)
     {
+        Preconditions.checkNotNull(string, "Tried to set BrandHider brand to null.");
         BrandHider.setBrand(string);
     }
 
@@ -96,6 +105,8 @@ public final class AACAdditionProApi
      */
     public static void sendServerBanner(Player player, String imageUrl)
     {
+        Preconditions.checkNotNull(player, "Tried to send server banner to null player.");
+        Preconditions.checkNotNull(imageUrl, "Tried to send null server banner.");
         LabyModProtocol.sendServerBanner(player, imageUrl);
     }
 
@@ -143,6 +154,8 @@ public final class AACAdditionProApi
      */
     public static void addExternalModule(Module module)
     {
+        Preconditions.checkNotNull(module, "Tried to add null module");
+        Preconditions.checkArgument(ModuleManager.getModuleMap().getModule(module.getModuleId()) == null, "Tried to add a module with an already existing moduleId.");
         ModuleManager.addExternalModule(module);
     }
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -93,7 +94,7 @@ public final class MaterialUtil
     /**
      * Checks if a {@link Collection} of {@link Material}s contains any of certain {@link Material}s.
      */
-    public static boolean containsMaterials(final Collection<Material> searchFor, final Collection<Material> toBeSearched)
+    public static boolean containsMaterials(@NotNull final Collection<Material> searchFor, @NotNull final Collection<Material> toBeSearched)
     {
         for (Material material : searchFor) {
             if (toBeSearched.contains(material)) return true;
@@ -104,7 +105,7 @@ public final class MaterialUtil
     /**
      * Checks if a {@link Collection} of {@link Material}s contains liquids.
      */
-    public static boolean containsLiquids(final Collection<Material> toBeSearched)
+    public static boolean containsLiquids(@NotNull final Collection<Material> toBeSearched)
     {
         return containsMaterials(LIQUIDS, toBeSearched);
     }

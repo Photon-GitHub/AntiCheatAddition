@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.world;
 
+import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.util.mathematics.AxisAlignedBB;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
 @ToString
@@ -15,16 +17,16 @@ public class Region
     /**
      * The {@link World} the region is a part of.
      */
-    @Getter private final World world;
+    @Getter @NotNull private final World world;
 
     /**
      * The boundaries of the region are stored here.
      */
-    private final AxisAlignedBB regionBox;
+    @NotNull private final AxisAlignedBB regionBox;
 
     public Region(final World world, final double x1, final double z1, final double x2, final double z2)
     {
-        this.world = world;
+        this.world = Preconditions.checkNotNull(world, "Tried to define region with unknown world");
         // From y = MIN_VALUE to y = MAX_VALUE as a region is 2-dimensional and has to cover the entire y-range.
         this.regionBox = new AxisAlignedBB(Double.min(x1, x2),
                                            Double.MIN_VALUE,
@@ -39,7 +41,7 @@ public class Region
      * Parses a {@link Region} from a {@link String} of the following format:
      * [affected_world] [x1] [z1] [x2] [z2]
      */
-    public static Region parseRegion(final String stringToParse)
+    public static Region parseRegion(@NotNull final String stringToParse)
     {
         // Split the String, the ' ' char is gone after that process.
         final String[] parts = stringToParse.split(" ");
@@ -58,7 +60,7 @@ public class Region
      *
      * @return if the given {@link Location} is inside this {@link Region}.
      */
-    public boolean isInsideRegion(final Location location)
+    public boolean isInsideRegion(@NotNull final Location location)
     {
         return this.world.equals(location.getWorld()) && regionBox.isVectorInside(location.toVector());
     }

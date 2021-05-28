@@ -33,7 +33,7 @@ abstract class PlayerInformationHider implements Listener
     private final PacketListener informationPacketListener;
     private final Multimap<Integer, Integer> hiddenFromPlayerMap;
 
-    protected PlayerInformationHider(PacketType... affectedPackets)
+    protected PlayerInformationHider(@NotNull PacketType... affectedPackets)
     {
         informationPacketListener = new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, ImmutableSet.copyOf(affectedPackets))
         {

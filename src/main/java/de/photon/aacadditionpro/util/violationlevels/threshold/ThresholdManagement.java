@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import lombok.val;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +17,7 @@ public interface ThresholdManagement
      */
     ThresholdManagement EMPTY = (fromVl, toVl, players) -> {};
 
+    @NotNull
     static ThresholdManagement loadThresholds(String configPath)
     {
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
@@ -32,6 +34,7 @@ public interface ThresholdManagement
         }
     }
 
+    @NotNull
     static ThresholdManagement loadCommands(String configPath)
     {
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
@@ -42,5 +45,5 @@ public interface ThresholdManagement
     /**
      * Used to execute the commands of the {@link Threshold}s in this  {@link MultiThresholds}.
      */
-    void executeThresholds(int fromVl, int toVl, Collection<Player> players);
+    void executeThresholds(int fromVl, int toVl, @NotNull Collection<Player> players);
 }

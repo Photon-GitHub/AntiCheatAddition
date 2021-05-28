@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.util.server;
 import lombok.Getter;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 public enum Movement
 {
@@ -23,7 +24,7 @@ public enum Movement
      *
      * @param input the input vector (will not be cloned)
      */
-    private static Vector applyAirResistance(Vector input)
+    private static Vector applyAirResistance(@NotNull Vector input)
     {
         return input.multiply((double) 0.98F);
     }
@@ -34,7 +35,7 @@ public enum Movement
      * @param input    the input vector (will not be cloned)
      * @param movement the type of the {@link Entity} the gravitation relates to.
      */
-    private static Vector applyGravitation(Vector input, Movement movement)
+    private static Vector applyGravitation(@NotNull Vector input, @NotNull Movement movement)
     {
         return input.setY(input.getY() + movement.gravitationPerTick);
     }
@@ -45,7 +46,7 @@ public enum Movement
      * @param input    the input vector (will not be cloned)
      * @param movement the type of the {@link Entity} the gravitation relates to.
      */
-    public static Vector applyGravitationAndAirResistance(Vector input, Movement movement)
+    public static Vector applyGravitationAndAirResistance(@NotNull Vector input, @NotNull Movement movement)
     {
         return applyAirResistance(applyGravitation(input, movement));
     }

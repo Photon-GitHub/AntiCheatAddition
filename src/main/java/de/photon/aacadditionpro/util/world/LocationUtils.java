@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.jetbrains.annotations.Contract;
 
 /**
  * Provides util methods regarding {@link Location}s.
@@ -15,11 +16,13 @@ public final class LocationUtils
     /**
      * Checks if two Entities are in the same world.
      */
+    @Contract("null, _ -> fail; _, null -> fail")
     public static boolean inSameWorld(Entity entity1, Entity entity2)
     {
         return inSameWorld(entity1.getLocation(), entity2.getLocation());
     }
 
+    @Contract("null, _ -> fail; _, null -> fail")
     public static boolean inSameWorld(Location locationOne, Location locationTwo)
     {
         return Preconditions.checkNotNull(locationOne.getWorld(), "NULL world in same world comparison (one)").getUID()
@@ -35,6 +38,7 @@ public final class LocationUtils
      *
      * @return true if the {@link Location} are in range, false if not
      */
+    @Contract("null, _, _ -> fail; _, null, _ -> fail")
     public static boolean areLocationsInRange(final Location firstLocation, final Location secondLocation, final double squaredDistance)
     {
         return inSameWorld(firstLocation, secondLocation) &&

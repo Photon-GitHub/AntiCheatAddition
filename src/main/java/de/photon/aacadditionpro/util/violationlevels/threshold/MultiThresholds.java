@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSortedMap;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,7 +22,7 @@ class MultiThresholds implements ThresholdManagement
     }
 
     @Override
-    public void executeThresholds(int fromVl, int toVl, Collection<Player> players)
+    public void executeThresholds(int fromVl, int toVl, @NotNull Collection<Player> players)
     {
         val toExecute = thresholdMap.subMap(fromVl, false, toVl, true).values();
         for (Threshold threshold : toExecute) threshold.executeCommandList(players);

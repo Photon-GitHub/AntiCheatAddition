@@ -6,6 +6,7 @@ import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
 import lombok.val;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -13,19 +14,19 @@ public class ViolationLevelManagement extends ViolationManagement
 {
     private final ViolationLevelMultiSet vlMultiSet;
 
-    public ViolationLevelManagement(ViolationModule module, ThresholdManagement management, long decayTicks)
+    public ViolationLevelManagement(@NotNull ViolationModule module, @NotNull ThresholdManagement management, long decayTicks)
     {
         super(module, management);
         vlMultiSet = new ViolationLevelMultiSet(decayTicks);
     }
 
-    public ViolationLevelManagement(ViolationModule module, long decayTicks)
+    public ViolationLevelManagement(@NotNull ViolationModule module, long decayTicks)
     {
         this(module, ThresholdManagement.loadThresholds(module.getConfigString() + ".thresholds"), decayTicks);
     }
 
     @Override
-    public void flag(Flag flag)
+    public void flag(@NotNull Flag flag)
     {
         Preconditions.checkNotNull(flag.getPlayer(), "Tried to flag null player.");
         if (!ViolationEvent.build(flag.getPlayer(), this.module.getModuleId(), flag.getAddedVl()).call().isCancelled()) {
@@ -35,13 +36,13 @@ public class ViolationLevelManagement extends ViolationManagement
     }
 
     @Override
-    public int getVL(UUID uuid)
+    public int getVL(@NotNull UUID uuid)
     {
         return this.vlMultiSet.getMultiset().count(uuid);
     }
 
     @Override
-    public void setVL(Player player, int newVl)
+    public void setVL(@NotNull Player player, int newVl)
     {
         val oldVl = this.vlMultiSet.getMultiset().setCount(player.getUniqueId(), newVl);
 
@@ -51,7 +52,7 @@ public class ViolationLevelManagement extends ViolationManagement
     }
 
     @Override
-    protected void addVL(Player player, int vl)
+    protected void addVL(@NotNull Player player, int vl)
     {
         val oldVl = this.vlMultiSet.getMultiset().add(player.getUniqueId(), vl);
 

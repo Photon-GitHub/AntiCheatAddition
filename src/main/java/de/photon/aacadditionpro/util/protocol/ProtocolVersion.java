@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.ServerVersion;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -48,7 +49,7 @@ public enum ProtocolVersion
      */
     private final Set<Integer> versionNumbers;
 
-    ProtocolVersion(final String name, final ServerVersion equivalentServerVersion, final Integer... versionNumbers)
+    ProtocolVersion(@NotNull final String name, @NotNull final ServerVersion equivalentServerVersion, @NotNull final Integer... versionNumbers)
     {
         this.name = name;
         this.equivalentServerVersion = equivalentServerVersion;

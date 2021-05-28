@@ -28,13 +28,13 @@ public abstract class ViolationAggregation extends ViolationManagement
     }
 
     @Override
-    public void flag(Flag flag)
+    public void flag(@NotNull Flag flag)
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setVL(Player player, int newVl)
+    public void setVL(@NotNull Player player, int newVl)
     {
         throw new UnsupportedOperationException();
     }
@@ -42,7 +42,7 @@ public abstract class ViolationAggregation extends ViolationManagement
     /**
      * Updates the vl aggregation of a {@link Player} and punishes when necessary.
      */
-    public void update(Player player)
+    public void update(@NotNull Player player)
     {
         val uuid = player.getUniqueId();
         val oldVl = oldVls.count(uuid);
@@ -52,7 +52,7 @@ public abstract class ViolationAggregation extends ViolationManagement
     }
 
     @Override
-    protected void addVL(Player player, int vl)
+    protected void addVL(@NotNull Player player, int vl)
     {
         throw new UnsupportedOperationException();
     }

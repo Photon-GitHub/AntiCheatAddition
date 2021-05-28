@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ChunkUtils
@@ -15,8 +16,10 @@ public final class ChunkUtils
      *
      * @return True if the chunk is loaded, else false.
      */
-    public static boolean isChunkLoaded(final Location location)
+    public static boolean isChunkLoaded(@NotNull final Location location)
     {
+        Preconditions.checkNotNull(location, "Tried to check chunks in null location.");
+        Preconditions.checkNotNull(location.getWorld(), "Tried to check chunks null world of a location.");
         return isChunkLoaded(location.getWorld(), location.getBlockX(), location.getBlockZ());
     }
 
@@ -29,8 +32,9 @@ public final class ChunkUtils
      *
      * @return True if the chunk is loaded, else false.
      */
-    public static boolean isChunkLoaded(final World world, final int blockX, final int blockZ)
+    public static boolean isChunkLoaded(@NotNull final World world, final int blockX, final int blockZ)
     {
+        Preconditions.checkNotNull(world, "Tried to check chunks in null world.");
         return world.isChunkLoaded(blockX >> 4, blockZ >> 4);
     }
 
@@ -38,8 +42,11 @@ public final class ChunkUtils
      * Checks if the chunks between two locations are loaded without trying to load them.
      * This method should be used to see if a calculation is safe for async usage.
      */
-    public static boolean areChunksLoadedBetweenLocations(final Location one, final Location two)
+    public static boolean areChunksLoadedBetweenLocations(@NotNull final Location one, @NotNull final Location two)
     {
+        Preconditions.checkNotNull(one, "Tried to check chunks in null location one.");
+        Preconditions.checkNotNull(two, "Tried to check chunks in null location two.");
+        Preconditions.checkNotNull(one.getWorld(), "Tried to check chunks null world of a location.");
         Preconditions.checkArgument(LocationUtils.inSameWorld(one, two), "Tried to check chunks between worlds.");
 
         // Basic starting location check
@@ -106,9 +113,7 @@ public final class ChunkUtils
                     currentChunkCoords[0] = chunkX;
                     currentChunkCoords[1] = chunkZ;
 
-                    if (!one.getWorld().isChunkLoaded(chunkX, chunkZ)) {
-                        return false;
-                    }
+                    if (!one.getWorld().isChunkLoaded(chunkX, chunkZ)) return false;
                 }
             }
         }

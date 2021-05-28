@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -35,6 +36,8 @@ public enum ServerVersion
     /**
      * The server version of the currently running {@link Bukkit} instance.
      */
+    @Getter
+    @NotNull
     private static final ServerVersion activeServerVersion = Arrays.stream(ServerVersion.values())
                                                                    .filter(serverVersion -> Bukkit.getVersion().contains(serverVersion.getVersionOutputString()))
                                                                    .findFirst()
@@ -51,14 +54,10 @@ public enum ServerVersion
     private final String versionOutputString;
     private final boolean supported;
 
-    public static ServerVersion getActiveServerVersion()
-    {
-        return activeServerVersion;
-    }
-
     /**
      * Used to get the client version. Might only differ from {@link #getActiveServerVersion()} if ViaVersion is installed.
      */
+    @NotNull
     public static ServerVersion getClientServerVersion(final Player player)
     {
         if (player == null) return activeServerVersion;

@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.modules;
 
 import com.google.common.collect.ImmutableMap;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -24,6 +25,7 @@ public class ModuleMap<T extends Module>
         this.backingMap = builder.build();
     }
 
+    @Nullable
     public T getModule(String moduleId)
     {
         return this.backingMap.get(moduleId);

@@ -15,7 +15,7 @@ public class ViolationAggregateManagement extends ViolationAggregation
     }
 
     @Override
-    public int getVL(UUID uuid)
+    public int getVL(@NotNull UUID uuid)
     {
         int i = 0;
         for (ViolationManagement child : this.children) {

@@ -80,7 +80,7 @@ public final class BlockUtil
      *
      * @return a {@link List} of all {@link Block}s which were found.
      */
-    public static List<Block> getBlocksAround(final Block block, final Set<BlockFace> faces)
+    public static List<Block> getBlocksAround(@NotNull final Block block, @NotNull final Set<BlockFace> faces)
     {
         val blocks = new ArrayList<Block>(6);
         Block relative;

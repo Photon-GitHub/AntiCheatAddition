@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +32,7 @@ public final class EntityUtil
     /**
      * Determines if a {@link LivingEntity} is gliding (i.e. flying with an elytra)
      */
-    public static boolean isFlyingWithElytra(final LivingEntity livingEntity)
+    public static boolean isFlyingWithElytra(@NotNull final LivingEntity livingEntity)
     {
         // On 1.8.8 there is no Elytra, on higher versions check for gliding.
         return ServerVersion.getActiveServerVersion() != ServerVersion.MC18 && livingEntity.isGliding();
@@ -46,7 +47,7 @@ public final class EntityUtil
      *
      * @return a {@link List} of {@link LivingEntity}s which are in range.
      */
-    public static List<LivingEntity> getLivingEntitiesAroundEntity(final Entity entity, final Hitbox hitbox, final double offset)
+    public static List<LivingEntity> getLivingEntitiesAroundEntity(@NotNull final Entity entity, final Hitbox hitbox, final double offset)
     {
         return getLivingEntitiesAroundEntity(entity, hitbox.getOffsetX() + offset, hitbox.getHeight() + offset, hitbox.getOffsetZ() + offset);
     }
@@ -61,12 +62,12 @@ public final class EntityUtil
      *
      * @return a {@link List} of {@link LivingEntity}s which are in range, excluding the given entity.
      */
-    public static List<LivingEntity> getLivingEntitiesAroundEntity(final Entity entity, final double x, final double y, final double z)
+    public static List<LivingEntity> getLivingEntitiesAroundEntity(@NotNull final Entity entity, final double x, final double y, final double z)
     {
         // Streaming here as the returned list of getNearbyEntities is unmodifiable, therefore streaming reduces code
         // complexity.
         return entity.getNearbyEntities(x, y, z).stream()
-                     .filter(e -> (e instanceof LivingEntity))
+                     .filter(LivingEntity.class::isInstance)
                      .map(LivingEntity.class::cast)
                      .collect(Collectors.toList());
     }
@@ -74,7 +75,7 @@ public final class EntityUtil
     /**
      * Gets the maximum health of an {@link LivingEntity}.
      */
-    public static double getMaxHealth(LivingEntity livingEntity)
+    public static double getMaxHealth(@NotNull LivingEntity livingEntity)
     {
         return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
                livingEntity.getMaxHealth() :
@@ -85,7 +86,7 @@ public final class EntityUtil
      * Gets the passengers of an entity.
      * This method solves the compatibility issues of the newer APIs with server version 1.8.8
      */
-    public static List<Entity> getPassengers(final Entity entity)
+    public static List<Entity> getPassengers(@NotNull final Entity entity)
     {
         if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) {
             val passenger = entity.getPassenger();

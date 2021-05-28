@@ -8,6 +8,7 @@ import lombok.Value;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 public enum InternalPotion
 {
@@ -217,7 +218,7 @@ public enum InternalPotion
      * @return the {@link PotionEffect} with the provided {@link PotionEffectType} or null if the {@link LivingEntity}
      * doesn't have such a {@link PotionEffect}.
      */
-    public PotentialPotionEffect getPotionEffect(final LivingEntity livingEntity)
+    public PotentialPotionEffect getPotionEffect(@NotNull final LivingEntity livingEntity)
     {
         if (!this.isAvailable()) return null;
 

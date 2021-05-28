@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.util.config;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +19,7 @@ public enum Configs
     private final File configFile;
     private final ConfigurationRepresentation configurationRepresentation;
 
-    Configs(final String path)
+    Configs(@NotNull final String path)
     {
         this.configFile = new File(path);
         this.configurationRepresentation = new ConfigurationRepresentation(this.configFile);

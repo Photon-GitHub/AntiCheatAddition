@@ -46,9 +46,7 @@ public enum LabyModPermission
     private static JsonObject generatePermissionJsonObject()
     {
         val json = new JsonObject();
-        for (LabyModPermission value : LabyModPermission.values()) {
-            json.addProperty(value.name(), value.configValue);
-        }
+        for (LabyModPermission value : LabyModPermission.values()) json.addProperty(value.name(), value.configValue);
         return json;
     }
 }

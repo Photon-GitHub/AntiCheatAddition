@@ -225,6 +225,26 @@ Sentinel:
     commands_on_detection:
       - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses LabyMod"
 
+  # A mod that lets you display (clientside) holograms to improve building, but also has
+  # a module to download worlds.
+  #
+  # This is only compatible with 1.8 and will autodisable on other versions.
+  Schematica:
+    # Do you want to enable Schematica-Control?
+    enabled: false
+    # This mod provides a method to disable parts of it.
+    # Set the corresponding value to true if you want to block a part of the mod
+    disable:
+      # Automatically builds based on a schematic.
+      # This is also called a building-bot sometimes.
+      printer: true
+      # This saves a part of the world as a schematic for later use thus being a small version
+      # of the full WorldDownloader mod.
+      save: true
+      # This allows to load a schematic on your server for printing or a hologram.
+      load: false
+      # The mod cannot be detected, just disabled
+
   # Here you can easily define your own simple Sentinel checks.
   # These checks are automatically generated, please make sure that you use NO SPECIAL CHARACTERS and NO DUPLICATE
   # NAMES to define a check (special characters are obviously fine as channel names and in "contains").

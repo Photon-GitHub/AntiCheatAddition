@@ -18,13 +18,6 @@ public class SchematicaSentinel extends SentinelModule implements Listener
 {
     private static final MessageChannel SCHEMATICA_CHANNEL = MessageChannel.ofLegacy("schematica");
 
-
-    private final boolean[] disable = {
-            !AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.printer"),
-            !AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.saveToFile"),
-            !AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.load")
-    };
-
     private final ByteBuf sentMessage;
 
     public SchematicaSentinel(String restString)

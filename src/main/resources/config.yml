@@ -136,12 +136,12 @@ Pingspoof:
   # This message will appear in AAC's status when AAC is used.
   aac_status_message: "[AACAdditionPro] Player tries to spoof their ping"
   # How much is the player ping allowed to deviate from the tested ping (measured in ms)?
-  ping_leniency: 200
+  ping_leniency: 150
   # Map of violation levels to command
   thresholds:
-    8: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Pingspoof"
-    12: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Pingspoof"
-    18: "kick {player} Pingspoof"
+    30: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Pingspoof"
+    70: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Pingspoof"
+    100: "kick {player} Pingspoof"
 
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                            ___          _   _          _                                            #

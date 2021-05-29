@@ -20,9 +20,9 @@ public class SchematicaSentinel extends SentinelModule implements Listener
 
     private final ByteBuf sentMessage;
 
-    public SchematicaSentinel(String restString)
+    public SchematicaSentinel()
     {
-        super(restString);
+        super("Schematica");
         val byteBuf = Unpooled.buffer();
         byteBuf.writeByte(0);
 

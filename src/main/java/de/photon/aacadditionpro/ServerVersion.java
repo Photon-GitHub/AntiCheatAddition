@@ -30,7 +30,7 @@ public enum ServerVersion
 
 
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS;
-    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = Sets.immutableEnumSet(MC18);
+    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = Sets.immutableEnumSet(MC18, MC19, MC110, MC111, MC112);
     public static final Set<ServerVersion> LEGACY_EVENT_VERSIONS = Sets.immutableEnumSet(MC18, MC19, MC110, MC111, MC112, MC113);
     public static final Set<ServerVersion> NON_188_VERSIONS;
     /**

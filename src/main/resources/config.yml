@@ -245,9 +245,9 @@ Sentinel:
   # A mod that lets you display (clientside) holograms to improve building, but also has
   # a module to download worlds.
   #
-  # This is only compatible with 1.8 and will autodisable on other versions.
+  # The mod itself is quite old and therefore this Sentinel only works on minecraft versions 1.8 - 1.12.
   Schematica:
-    # Do you want to enable Schematica-Control?
+    # Do you want to enable Schematica-Sentinel?
     enabled: false
     # This mod provides a method to disable parts of it.
     # Set the corresponding value to true if you want to block a part of the mod
@@ -261,6 +261,18 @@ Sentinel:
       # This allows to load a schematic on your server for printing or a hologram.
       load: false
       # The mod cannot be detected, just disabled
+
+  # Vape is a very popular ghost-client, often seen in ranked pvp gameplay and optimized to be especially hard to find
+  # in screenshares
+  # This will only detect some cracked versions of the client.
+  #
+  # This Sentinel is not compatible with minecraft 1.13+ as the cracked client is version 1.8 and there have been
+  # large API changes in 1.13.
+  Vape:
+    # Do you want to enable Vape -Sentinel?
+    enabled: false
+    commands_on_detection:
+      - "ban {player} Illegal client modification"
 
   # Here you can easily define your own simple Sentinel checks.
   # These checks are automatically generated, please make sure that you use NO SPECIAL CHARACTERS and NO DUPLICATE

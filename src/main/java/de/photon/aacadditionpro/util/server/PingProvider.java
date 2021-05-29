@@ -22,7 +22,7 @@ public final class PingProvider
     public static final int FAIL_PING = -1;
     private static final ClassReflect CRAFTPLAYER_CLASS_REFLECT = Reflect.fromOBC("entity.CraftPlayer");
     private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("win");
-    private static final Pattern PING_PATTERN = Pattern.compile("\\d+ms");
+    private static final Pattern PING_PATTERN = Pattern.compile("=\\d+ms");
 
     /**
      * Reflects the real ping of a {@link Player} from the CraftPlayer class.

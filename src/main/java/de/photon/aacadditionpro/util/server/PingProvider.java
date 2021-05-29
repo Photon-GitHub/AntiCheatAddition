@@ -22,7 +22,7 @@ public final class PingProvider
     public static final int FAIL_PING = -1;
     private static final ClassReflect CRAFTPLAYER_CLASS_REFLECT = Reflect.fromOBC("entity.CraftPlayer");
     private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().contains("win");
-    private static final Pattern pingPattern = Pattern.compile("\d+ms");
+    private static final Pattern PING_PATTERN = Pattern.compile("\\d+ms");
 
     /**
      * Reflects the real ping of a {@link Player} from the CraftPlayer class.
@@ -73,7 +73,7 @@ public final class PingProvider
                 // read the output from the command
                 String s;
                 while ((s = stdInput.readLine()) != null) {
-                    val matcher = pingPattern.matcher(s);
+                    val matcher = PING_PATTERN.matcher(s);
                     if (matcher.matches()) {
                         String found = matcher.group();
                         found = found.substring(1, found.length() - 2);

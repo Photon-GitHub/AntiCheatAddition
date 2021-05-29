@@ -23,7 +23,7 @@ public abstract class Module
     {
         this.configString = configString;
         this.moduleId = generateModuleId(configString);
-        this.aacInfo = AACAdditionPro.getInstance().getConfig().getString(configString + "aac_status_message");
+        this.aacInfo = AACAdditionPro.getInstance().getConfig().getString(configString + "aac_status_message", null);
     }
 
     public static String generateModuleId(final String configString)

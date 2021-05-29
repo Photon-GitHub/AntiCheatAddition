@@ -77,7 +77,8 @@ public final class PingProvider
                     if (matcher.matches()) {
                         String found = matcher.group();
                         found = found.substring(1, found.length() - 2);
-                        return Integer.parseInt(found);
+                        // Fast ceil for more leniency.
+                        return ((int) Double.parseDouble(found)) + 1;
                     }
                 }
             }

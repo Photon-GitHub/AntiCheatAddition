@@ -128,13 +128,14 @@ AutoFish:
 # than they actually have to partially bypass anticheats or get other advantages.
 #
 # PLEASE NOTE THAT THIS WILL CREATE NEW PROCESSES ON YOUR SYSTEM TO PING PLAYERS VIA THE PING COMMAND AS IF YOU WERE
-# DOING THIS IN A TERMINAL!
+# DOING THIS IN A TERMINAL. IF YOU HAVE DISABLED THIS COMMAND, HAVE A SYSTEM THAT IS NOT BASED ON LINUX, WINDOWS OR MAC,
+# OR HAVE FIREWALL RESTRICTIONS THAT DISALLOW A PING THIS CHECK WILL _NOT_ WORK!
 Pingspoof:
   # Do you want to enable the Pingspoof check?
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aac_status_message: "[AACAdditionPro] Player tries to spoof their ping"
-  # How much is the player allowed to deviate from the sent ping (measured in ms)?
+  # How much is the player ping allowed to deviate from the tested ping (measured in ms)?
   ping_leniency: 200
   # Map of violation levels to command
   thresholds:

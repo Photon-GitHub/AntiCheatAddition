@@ -57,7 +57,7 @@ public final class PingProvider
     }
 
     /**
-     * Tries to get the player ping in different
+     * Tries to get the player ping via a ping command on the system.
      */
     public static int getEchoPing(Player player)
     {

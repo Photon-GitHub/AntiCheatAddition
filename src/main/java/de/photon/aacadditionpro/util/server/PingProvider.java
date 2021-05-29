@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -72,10 +73,12 @@ public final class PingProvider
             try (val stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 // read the output from the command
                 String s;
+                Matcher matcher;
+                String found;
                 while ((s = stdInput.readLine()) != null) {
-                    val matcher = PING_PATTERN.matcher(s);
+                    matcher = PING_PATTERN.matcher(s);
                     if (matcher.matches()) {
-                        String found = matcher.group();
+                        found = matcher.group();
                         found = found.substring(1, found.length() - 2);
                         // Fast ceil for more leniency.
                         return ((int) Double.parseDouble(found)) + 1;

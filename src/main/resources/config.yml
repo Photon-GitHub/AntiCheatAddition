@@ -67,7 +67,6 @@ LogBot:
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
-
 # AutoFish detects cheats that are named just like the check - automatic fishing bots which can yield a lot of
 # treasure and food for those who use them.
 #
@@ -77,7 +76,7 @@ LogBot:
 AutoFish:
   # Do you want to enable the AutoFish check?
   enabled: true
-  # This message will appear in AAC's status when AAC is used.
+  # This message will appear in AAC's status when AAC hooking is used.
   aac_status_message: "[AACAdditionPro] Player has botlike fishing behaviour"
   # Violation before AACAdditionPro starts to cancel the fishing.
   # Please think of potential luck, because of this I do not recommend to set this to a value smaller than 7.
@@ -99,7 +98,7 @@ AutoFish:
       human_reaction_time: 145
     # The consistency part recognizes unchanging times between a successful catch and fishing again as simple bots have
     # constant reaction times, whereas human players reaction varies a little bit each time they fish.
-    # Depending on how accurate the consistency is players will receive between 1 and 15 vl.
+    # Depending on how accurate the consistency is players will receive between 1 and 80 vl.
     consistency:
       # Do you want to enable the consistency part?
       enabled: true
@@ -120,9 +119,9 @@ AutoFish:
       maximum_fails: 12
   # Map of violation levels to command
   thresholds:
-    8: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoFish"
-    12: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoFish"
-    18: "kick {player} AutoFish"
+    45: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoFish"
+    70: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoFish"
+    100: "kick {player} AutoFish"
 
 # Pingspoof tries to detect modifications that trick the server into believing the player has a higher or lower ping
 # than they actually have to partially bypass anticheats or get other advantages.
@@ -133,7 +132,7 @@ AutoFish:
 Pingspoof:
   # Do you want to enable the Pingspoof check?
   enabled: true
-  # This message will appear in AAC's status when AAC is used.
+  # This message will appear in AAC's status when AAC hooking is used.
   aac_status_message: "[AACAdditionPro] Player tries to spoof their ping"
   # How much is the player ping allowed to deviate from the tested ping (measured in ms)?
   ping_leniency: 150
@@ -330,6 +329,10 @@ Sentinel:
 # If this option is active and AAC is installed AACAdditionPro will not execute any commands specified above and instead
 # hooks the AAC feature system to allow you to specify punishments via the AAC config.
 # This way, AACAdditionPro's checks will also appear in AAC's status messages.
+#
+# When a module does not have the key aac_score_multiplier, it behaves like an implicit
+# aac_score_multiplier: 1.0
+# You can use this to change the multiplier of checks.
 UseAACFeatureSystem: true
 
 # Should players with the aac.verbose permission get the AACAdditionPro verbose messages

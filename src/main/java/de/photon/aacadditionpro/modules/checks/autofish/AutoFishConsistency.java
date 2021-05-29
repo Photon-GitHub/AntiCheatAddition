@@ -61,7 +61,7 @@ public class AutoFishConsistency extends ViolationModule implements Listener
 
                     if (minVariation > maxOffset) {
                         // (maxOffset / minVariation) will be at most 1 and at least 0
-                        val flagOffset = 15 - (14 * (maxOffset / minVariation));
+                        val flagOffset = 80 - (79 * (maxOffset / minVariation));
 
                         DebugSender.getInstance().sendDebug("AutoFish-Verbose | Player " +
                                                             user.getPlayer().getName() +

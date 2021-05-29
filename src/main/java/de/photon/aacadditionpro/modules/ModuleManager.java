@@ -84,7 +84,7 @@ public final class ModuleManager
             for (ViolationModule module : violationModuleMap.values()) {
                 // Only add enabled modules
                 if (module.isEnabled() && module.getAacInfo() != null) {
-                    score = module.getManagement().getVL(uuid);
+                    score = module.getAACScore(uuid);
                     featureList.add(new AACCustomFeature(module.getConfigString(), module.getAacInfo(), score, module.getAACTooltip(uuid, score)));
                 }
             }

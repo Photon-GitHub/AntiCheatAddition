@@ -9,7 +9,7 @@ import de.photon.aacadditionpro.commands.InternalCommand;
 import de.photon.aacadditionpro.commands.TabCompleteSupplier;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPlayerInfo;
-import de.photon.aacadditionpro.util.server.ServerUtil;
+import de.photon.aacadditionpro.util.server.PingProvider;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -65,7 +65,7 @@ public class TabListRemoveCommand extends InternalCommand
     {
         WrapperPlayServerPlayerInfo.updatePlayerInformation(action,
                                                             WrappedGameProfile.fromPlayer(modifiedPlayer),
-                                                            ServerUtil.getPing(modifiedPlayer),
+                                                            PingProvider.getPing(modifiedPlayer),
                                                             EnumWrappers.NativeGameMode.fromBukkit(modifiedPlayer.getGameMode()),
                                                             null,
                                                             affectedPlayer);

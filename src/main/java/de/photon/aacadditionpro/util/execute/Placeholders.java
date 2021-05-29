@@ -1,7 +1,8 @@
 package de.photon.aacadditionpro.util.execute;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.util.server.ServerUtil;
+import de.photon.aacadditionpro.util.server.PingProvider;
+import de.photon.aacadditionpro.util.server.TPSProvider;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -105,7 +106,7 @@ public final class Placeholders
     {
         // Single placeholder
         PLAYER(player -> StringUtils.left(player.getName(), 30)),
-        PING(player -> StringUtils.left(String.valueOf(ServerUtil.getPing(player)), 5));
+        PING(player -> StringUtils.left(String.valueOf(PingProvider.getPing(player)), 5));
 
         private final Function<Player, String> function;
 
@@ -152,7 +153,7 @@ public final class Placeholders
         DATE(() -> LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)),
         TIME(() -> StringUtils.left(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME), 8)),
         SERVER(() -> Bukkit.getServer().getName()),
-        TPS(() -> StringUtils.left(String.valueOf(ServerUtil.getTPS()), 5));
+        TPS(() -> StringUtils.left(String.valueOf(TPSProvider.getTPS()), 5));
 
         private final Supplier<String> supplier;
 

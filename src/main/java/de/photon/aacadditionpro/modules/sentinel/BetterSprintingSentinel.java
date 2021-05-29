@@ -55,13 +55,13 @@ public class BetterSprintingSentinel extends SentinelModule
         settingsBuffer.writeByte(0);
 
         for (Boolean enable : featureList) settingsBuffer.writeBoolean(enable);
-        this.settingsBuf = settingsBuffer;
+        this.settingsBuf = Unpooled.unmodifiableBuffer(settingsBuffer);
 
         val disableBuffer = Unpooled.buffer();
         // Bypassed players are already filtered out.
         // The mod provides a method to disable it
         disableBuffer.writeByte(this.disable ? 1 : 2);
-        this.disableBuf = disableBuffer;
+        this.disableBuf = Unpooled.unmodifiableBuffer(disableBuffer);
     }
 
     @Override

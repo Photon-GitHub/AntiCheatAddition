@@ -2,7 +2,7 @@ package de.photon.aacadditionpro.modules;
 
 import de.photon.aacadditionpro.modules.additions.BrandHider;
 import de.photon.aacadditionpro.modules.additions.DamageIndicator;
-import de.photon.aacadditionpro.modules.checks.AutoEat;
+import de.photon.aacadditionpro.modules.checks.autoeat.AutoEat;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishConsistency;
 import de.photon.aacadditionpro.modules.sentinel.BetterSprintingSentinel;
 import de.photon.aacadditionpro.modules.sentinel.FiveZigSentinel;

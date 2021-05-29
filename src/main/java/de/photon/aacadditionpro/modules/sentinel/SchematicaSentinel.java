@@ -23,17 +23,19 @@ public class SchematicaSentinel extends SentinelModule implements Listener
     public SchematicaSentinel(String restString)
     {
         super(restString);
-        sentMessage = Unpooled.buffer();
-        sentMessage.writeByte(0);
+        val byteBuf = Unpooled.buffer();
+        byteBuf.writeByte(0);
 
         /*
          * This array holds what features of schematica should be disabled.
          * SENDING A 1 MEANS ALLOWING THE FEATURE -> NEGATION.
          * Link to the original plugin: https://www.spigotmc.org/resources/schematicaplugin.14411/
          */
-        sentMessage.writeBoolean(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.printer"));
-        sentMessage.writeBoolean(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.saveToFile"));
-        sentMessage.writeBoolean(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.load"));
+        byteBuf.writeBoolean(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.printer"));
+        byteBuf.writeBoolean(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.saveToFile"));
+        byteBuf.writeBoolean(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.load"));
+
+        this.sentMessage = Unpooled.unmodifiableBuffer(byteBuf);
     }
 
     @EventHandler

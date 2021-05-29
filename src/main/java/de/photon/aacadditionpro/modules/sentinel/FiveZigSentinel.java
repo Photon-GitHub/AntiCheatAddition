@@ -18,7 +18,7 @@ public class FiveZigSentinel extends SentinelModule implements Listener
     private static final int FIVE_ZIG_API_VERSION = 4;
     private static final String REGISTER_SEND_CHANNEL = "the5zigmod:5zig_reg";
     private static final String RESPONSE_CHANNEL = "the5zigmod:5zig";
-    private static final ByteBuf MESSAGE = Unpooled.buffer().writeInt(FIVE_ZIG_API_VERSION);
+    private static final ByteBuf MESSAGE = Unpooled.unmodifiableBuffer(Unpooled.buffer().writeInt(FIVE_ZIG_API_VERSION));
 
     public FiveZigSentinel()
     {

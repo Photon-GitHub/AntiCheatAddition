@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.modules.checks;
+package de.photon.aacadditionpro.modules.checks.autoeat;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleLoader;

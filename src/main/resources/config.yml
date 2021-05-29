@@ -124,6 +124,21 @@ AutoFish:
     12: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoFish"
     18: "kick {player} AutoFish"
 
+# Pingspoof tries to detect
+Pingspoof:
+  # Do you want to enable the Pingspoof check?
+  enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aac_status_message: "[AACAdditionPro] Player tries to spoof their ping"
+  # How much is the player allowed to deviate from the sent ping (measured in ms)?
+  ping_leniency: 200
+  # When AACAdditionPro is checking the player, this will be the difference in milliseconds between steps it takes.
+  step: 100
+  # Map of violation levels to command
+  thresholds:
+    8: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Pingspoof"
+    12: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Pingspoof"
+    18: "kick {player} Pingspoof"
 
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                            ___          _   _          _                                            #

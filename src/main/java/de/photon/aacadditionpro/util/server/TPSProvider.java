@@ -1,27 +1,19 @@
 package de.photon.aacadditionpro.util.server;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
-import de.photon.aacadditionpro.util.reflection.ClassReflect;
-import de.photon.aacadditionpro.util.reflection.Reflect;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.logging.Level;
 
 /**
  * This util provides methods to get information from the server that is usually hidden.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ServerUtil
+public final class TPSProvider
 {
-    private static final ClassReflect CRAFTPLAYER_CLASS_REFLECT = Reflect.fromOBC("entity.CraftPlayer");
     private static final TPS TPS = new TPS(AACAdditionPro.getInstance());
 
     // Use ConditionalCommands logic.
@@ -45,38 +37,6 @@ public final class ServerUtil
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.*/
-
-    /**
-     * Reflects the real ping of a {@link Player} from the CraftPlayer class.
-     *
-     * @param player the {@link Player} whose ping should be returned.
-     *
-     * @return the ping of the player or 0 if an exception is thrown.
-     */
-    public static int getPing(final Player player)
-    {
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-            case MC19:
-            case MC110:
-            case MC111:
-            case MC112:
-            case MC113:
-            case MC114:
-            case MC115:
-                val craftPlayer = CRAFTPLAYER_CLASS_REFLECT.method("getHandle").invoke(player);
-                try {
-                    return craftPlayer.getClass().getDeclaredField("ping").getInt(craftPlayer);
-                } catch (IllegalAccessException | NoSuchFieldException e) {
-                    AACAdditionPro.getInstance().getLogger().log(Level.WARNING, "Failed to retrieve ping of a player: ", e);
-                    return 0;
-                }
-            case MC116:
-                return player.getPing();
-            default:
-                throw new UnknownMinecraftException();
-        }
-    }
 
     /**
      * Gets the current TPS of the server.

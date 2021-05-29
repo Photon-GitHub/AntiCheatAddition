@@ -124,7 +124,10 @@ AutoFish:
     12: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoFish"
     18: "kick {player} AutoFish"
 
-# Pingspoof tries to detect
+# Pingspoof tries to detect modifications that trick the server into believing the player has a higher or lower ping
+# than they actually have to partially bypass anticheats or get other advantages.
+#
+# PLEASE NOTE THAT THIS WILL CREATE NEW PROCESSES ON YOUR SYSTEM TO PING PLAYERS!
 Pingspoof:
   # Do you want to enable the Pingspoof check?
   enabled: true

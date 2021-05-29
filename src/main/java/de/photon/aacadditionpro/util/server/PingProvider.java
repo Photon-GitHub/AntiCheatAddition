@@ -93,6 +93,7 @@ public final class PingProvider
             DebugSender.getInstance().sendDebug("AACAdditionPro is not allowed to start a process. Therefore pingspoof will not work.", true, true);
             return FAIL_PING;
         }
+        // Packet lost or other error.
         return FAIL_PING;
     }
 }

@@ -260,7 +260,8 @@ Sentinel:
       save: true
       # This allows to load a schematic on your server for printing or a hologram.
       load: false
-      # The mod cannot be detected, just disabled
+    commands_on_detection:
+      - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses Schematica"
 
   # Vape is a very popular ghost-client, often seen in ranked pvp gameplay and optimized to be especially hard to find
   # in screenshares
@@ -293,27 +294,28 @@ Sentinel:
   # (5) Define the commands you want to execute when the mod is detected. The commands are executed exactly once right
   #     after player join. This allows you to e.g. disallow a certain mod on your server by kicking players on join.
   Custom:
-    # This will detect PXMod.
-    PXMod:
-      # Do you want to enable PXMod?
-      enabled: true
+    # This will detect Forge.
+    Forge:
+      # Do you want to enable Forge-Sentinel?
+      enabled: false
       # The channels AACAdditionPro will listen to.
       incoming_channels:
-        - "px:version"
-        - "PX|Version"
+        - "minecraft:brand"
+        - "MC|Brand"
       # All strings in this list will need to be included in the message sent in the channels above to trigger the
       # commands. An empty list defined as [ ] means any message is accepted by containsAll.
       containsAll: [ ]
       # At least one string in this list will need to be included in the message sent in the channels above to trigger
       # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
-      containsAny: [ ]
+      containyAny: [ "forge", "fml" ]
       # What commands will be executed if the mod is detected.
       commands:
-        - "kick {player} PXMod"
-    # This will detect PXMod.
+        - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses Forge"
+
+    # This will detect Liteloader.
     LiteLoader:
-      # Do you want to enable PXMod?
-      enabled: true
+      # Do you want to enable LiteLoader-Sentinel?
+      enabled: false
       # The channels AACAdditionPro will listen to.
       incoming_channels:
         - "minecraft:brand"
@@ -326,7 +328,44 @@ Sentinel:
       containsAny: [ "LiteLoader", "Liteloader" ]
       # What commands will be executed if the mod is detected.
       commands:
-        - "kick {player} PXMod"
+        - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses LiteLoader"
+
+    # This will detect PXMod.
+    PXMod:
+      # Do you want to enable PXMod-Sentinel?
+      enabled: false
+      # The channels AACAdditionPro will listen to.
+      incoming_channels:
+        - "px:version"
+        - "PX|Version"
+      # All strings in this list will need to be included in the message sent in the channels above to trigger the
+      # commands. An empty list defined as [ ] means any message is accepted by containsAll.
+      containsAll: [ ]
+      # At least one string in this list will need to be included in the message sent in the channels above to trigger
+      # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
+      containsAny: [ ]
+      # What commands will be executed if the mod is detected.
+      commands:
+        - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses PXMod"
+
+    # This will detect Rift.
+    Rift:
+      # Do you want to enable Rift-Sentinel?
+      enabled: false
+      # The channels AACAdditionPro will listen to.
+      incoming_channels:
+        - "minecraft:brand"
+        - "MC|Brand"
+      # All strings in this list will need to be included in the message sent in the channels above to trigger the
+      # commands. An empty list defined as [ ] means any message is accepted by containsAll.
+      containsAll: [ ]
+      # At least one string in this list will need to be included in the message sent in the channels above to trigger
+      # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
+      containsAny: [ "rift" ]
+      # What commands will be executed if the mod is detected.
+      commands:
+        - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses Rift"
+
 
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                               ___      _                                                            #

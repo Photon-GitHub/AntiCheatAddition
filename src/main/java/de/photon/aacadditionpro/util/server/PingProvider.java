@@ -84,5 +84,6 @@ public final class PingProvider
         } catch (IOException e) {
             return FAIL_PING;
         }
+        return FAIL_PING;
     }
 }

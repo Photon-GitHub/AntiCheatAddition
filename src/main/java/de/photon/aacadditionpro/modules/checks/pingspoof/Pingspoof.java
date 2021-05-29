@@ -38,7 +38,7 @@ public class Pingspoof extends ViolationModule
                 echoPing = PingProvider.getEchoPing(player);
 
                 val pingDifference = (serverPing - echoPing) - pingLeniency;
-                if (pingDifference <= 0) continue;
+                if (echoPing == PingProvider.FAIL_PING || pingDifference <= 0) continue;
                 int vl;
                 if (pingDifference <= 500) vl = VL_CALCULATOR_BELOW_500.apply(pingDifference).intValue();
                 else if (pingDifference <= 10000) vl = VL_CALCULATOR_ABOVE_500.apply(pingDifference).intValue();

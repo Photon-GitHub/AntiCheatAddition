@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.util.server;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.reflection.ClassReflect;
 import de.photon.aacadditionpro.util.reflection.Reflect;
 import lombok.AccessLevel;
@@ -86,6 +87,9 @@ public final class PingProvider
                 }
             }
         } catch (IOException e) {
+            return FAIL_PING;
+        } catch (SecurityException e) {
+            DebugSender.getInstance().sendDebug("AACAdditionPro is not allowed to start a process. Therefore pingspoof will not work.", true, true);
             return FAIL_PING;
         }
         return FAIL_PING;

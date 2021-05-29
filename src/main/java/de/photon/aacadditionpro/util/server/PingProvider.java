@@ -76,6 +76,7 @@ public final class PingProvider
                 String s;
                 Matcher matcher;
                 String found;
+                // Greedily get the first ms appearance as that will be the answer.
                 while ((s = stdInput.readLine()) != null) {
                     matcher = PING_PATTERN.matcher(s);
                     if (matcher.matches()) {

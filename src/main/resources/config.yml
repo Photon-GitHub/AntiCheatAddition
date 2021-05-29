@@ -330,6 +330,24 @@ Sentinel:
       commands:
         - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses LiteLoader"
 
+    # This will detect PixelClient.
+    PixelClient:
+      # Do you want to enable PixelClient-Sentinel?
+      enabled: false
+      # The channels AACAdditionPro will listen to.
+      incoming_channels:
+        - "mc:pixel"
+        - "MC|PIXEL"
+      # All strings in this list will need to be included in the message sent in the channels above to trigger the
+      # commands. An empty list defined as [ ] means any message is accepted by containsAll.
+      containsAll: [ ]
+      # At least one string in this list will need to be included in the message sent in the channels above to trigger
+      # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
+      containsAny: [ ]
+      # What commands will be executed if the mod is detected.
+      commands:
+        - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses PixelClient"
+
     # This will detect PXMod.
     PXMod:
       # Do you want to enable PXMod-Sentinel?
@@ -366,7 +384,23 @@ Sentinel:
       commands:
         - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses Rift"
 
-
+    # This will detect Winterware.
+    Winterware:
+      # Do you want to enable Winterware-Sentinel?
+      enabled: false
+      # The channels AACAdditionPro will listen to.
+      incoming_channels:
+        - "lc:brand"
+        - "LC|Brand"
+      # All strings in this list will need to be included in the message sent in the channels above to trigger the
+      # commands. An empty list defined as [ ] means any message is accepted by containsAll.
+      containsAll: [ ]
+      # At least one string in this list will need to be included in the message sent in the channels above to trigger
+      # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
+      containsAny: [ ]
+      # What commands will be executed if the mod is detected.
+      commands:
+        - "ban {player} in {world} Illegal Client Modifications"
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                               ___      _                                                            #
 #                                              |   \ ___| |__ _  _ __ _                                               #

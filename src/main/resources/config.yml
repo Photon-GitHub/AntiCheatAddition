@@ -135,8 +135,6 @@ Pingspoof:
   aac_status_message: "[AACAdditionPro] Player tries to spoof their ping"
   # How much is the player allowed to deviate from the sent ping (measured in ms)?
   ping_leniency: 200
-  # When AACAdditionPro is checking the player, this will be the difference in milliseconds between steps it takes.
-  step: 100
   # Map of violation levels to command
   thresholds:
     8: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Pingspoof"

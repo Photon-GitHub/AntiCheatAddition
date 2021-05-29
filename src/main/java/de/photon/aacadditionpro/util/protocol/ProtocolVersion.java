@@ -23,14 +23,18 @@ public enum ProtocolVersion
     MC115("1.15", ServerVersion.MC115, 573, 575),
     MC116("1.16", ServerVersion.MC116, 735, 736, 751, 753, 754);
 
+    private static final Map<String, ProtocolVersion> NAME_MAP;
     private static final Map<Integer, ProtocolVersion> VERSION_NUMBER_MAP;
 
     static {
-        ImmutableMap.Builder<Integer, ProtocolVersion> builder = ImmutableMap.builder();
+        ImmutableMap.Builder<String, ProtocolVersion> nameBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<Integer, ProtocolVersion> versionBuilder = ImmutableMap.builder();
         for (ProtocolVersion value : ProtocolVersion.values()) {
-            for (Integer versionNumber : value.versionNumbers) builder.put(versionNumber, value);
+            nameBuilder.put(value.name, value);
+            for (Integer versionNumber : value.versionNumbers) versionBuilder.put(versionNumber, value);
         }
-        VERSION_NUMBER_MAP = builder.build();
+        NAME_MAP = nameBuilder.build();
+        VERSION_NUMBER_MAP = versionBuilder.build();
     }
 
     /**
@@ -62,7 +66,15 @@ public enum ProtocolVersion
     @Nullable
     public static ProtocolVersion getByVersionNumber(int versionNumber)
     {
-        // Latest ProtocolVersion as default.
         return VERSION_NUMBER_MAP.get(versionNumber);
+    }
+
+    /**
+     * This gets the respective {@link ProtocolVersion} for a name.
+     */
+    @Nullable
+    public static ProtocolVersion getByName(String name)
+    {
+        return NAME_MAP.get(name);
     }
 }

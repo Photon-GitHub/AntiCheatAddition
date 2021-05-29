@@ -59,6 +59,29 @@ LogBot:
   # Set to -1 to disable
   Server: 10
 
+# This allows you to control which minecraft versions can join your server.
+# THIS REQUIRES VIAVERSION TO BE INSTALLED.
+# You might need to restart your server TWICE for some changes to take effect.
+VersionControl:
+  # Do you want to enable VersionControl?
+  enabled: false
+  # This option allows you to define a message that will be shown to players which join with a disallowed version
+  # THIS WILL OVERRIDE THE block-disconnect-msg OPTION IN THE VIAVERSION CONFIG!
+  message: "You are using an unsupported version. Supported Versions are {supportedVersions}"
+  # What versions should be able to join?
+  # THIS WILL OVERRIDE THE block-protocols OPTION IN THE VIAVERSION CONFIG!
+  allowedVersions:
+    '1.8': true
+    # Versions 1.9 - 1.12 are not officially supported by this plugin. Issues can occur.
+    '1.9': false
+    '1.10': false
+    '1.11': false
+    '1.12': false
+    '1.13': true
+    '1.14': true
+    '1.15': true
+    '1.16': true
+
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                               ___ _           _                                                     #
 #                                              / __| |_  ___ __| |__ ___                                              #

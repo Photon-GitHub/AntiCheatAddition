@@ -41,7 +41,7 @@ public class BetterSprintingSentinel extends SentinelModule
     private final ByteBuf settingsBuf;
     private final ByteBuf disableBuf;
 
-    @LoadFromConfiguration(configPath = ".disable_mod")
+    @LoadFromConfiguration(configPath = ".disable.general")
     private boolean disable;
 
     public BetterSprintingSentinel()

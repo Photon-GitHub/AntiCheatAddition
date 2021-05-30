@@ -185,14 +185,12 @@ Sentinel:
   BetterSprinting:
     # Do you want to enable BetterSprinting?
     enabled: false
-    # The mod provides a method to disable it.
-    # If you want to completely disable the mod set this to true.
-    disable_mod: false
     # This mod provides a method to disable parts of it.
-    # Disabling all subparts listed here will a BetterSprinting client behave like a vanilla client.
-    # To disable a subpart set the value to true.
-    # This more specific disable feature will only work on versions
     disable:
+      # The mod provides a method to disable it.
+      # Other options will be ignored if this is set to true.
+      # If you want to completely disable the mod set this to true.
+      general: true
       # This gives players a configurable speed boost when flying in creative or survival mode.
       survival_fly_boost: true
       enable_all_dirs: true
@@ -293,10 +291,39 @@ Sentinel:
   # This Sentinel is not compatible with minecraft 1.13+ as the cracked client is version 1.8 and there have been
   # large API changes in 1.13.
   Vape:
-    # Do you want to enable Vape -Sentinel?
+    # Do you want to enable Vape-Sentinel?
     enabled: false
     commands_on_detection:
       - "ban {player} Illegal client modification"
+
+  # WorldDownloader is a popular modification to get the maps of a server
+  WorldDownloader:
+    # Do you want to enable WorldDownloader-Sentinel?
+    enabled: false
+    # This mod provides a method to disable parts of it.
+    disable:
+      # The mod provides a method to disable it.
+      # Other options will be ignored if this is set to true.
+      # If you want to completely disable the mod set this to true.
+      general: true
+      # This will disable future features of the mod not yet included in the server api.
+      # It is recommended to set this to true.
+      future: true
+      # This indicates the distance from the player chunks can be saved from.
+      # -1 means allowing all distances. This is a square distance, not a circle or a diamond.
+      # Only applies if chunk caching is disabled.
+      save_radius: 0
+      # This will disable chunk caching which allows the player to save all chunks he has moved through.
+      chunk_caching: true
+      # This will disable saving entities.
+      entity_saving: true
+      # This will disable saving tile entities.
+      tile_entity_saving: true
+      # This will disable saving containers and their inventories.
+      # If tile_entity_saving is disabled, this has no effect.
+      container_saving: true
+    commands_on_detection:
+      - "kick {player} WorldDownloader"
 
   # Here you can easily define your own simple Sentinel checks.
   # These checks are automatically generated, please make sure that you use NO SPECIAL CHARACTERS and NO DUPLICATE

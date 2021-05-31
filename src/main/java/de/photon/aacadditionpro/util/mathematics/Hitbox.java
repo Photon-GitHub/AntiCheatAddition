@@ -53,7 +53,7 @@ public enum Hitbox
         if (cullX && cullZ) {
             val vectors = new Vector[2];
             vectors[0] = (new Vector(location.getX(), lowerY, location.getZ()));
-            vectors[1] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ() + this.offsetZ));
+            vectors[1] = (new Vector(location.getX(), upperY, location.getZ()));
             return vectors;
         } else if (cullX) {
             val vectors = new Vector[4];

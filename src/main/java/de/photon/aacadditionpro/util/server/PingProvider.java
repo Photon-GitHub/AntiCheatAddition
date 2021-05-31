@@ -3,7 +3,8 @@ package de.photon.aacadditionpro.util.server;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
+import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.reflection.ClassReflect;
 import de.photon.aacadditionpro.util.reflection.Reflect;
 import lombok.AccessLevel;
@@ -11,11 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.bukkit.entity.Player;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -61,39 +58,9 @@ public final class PingProvider
     /**
      * Tries to get the player ping via a ping command on the system.
      */
-    public static int getEchoPing(Player player)
+    public static long getEchoPing(final User user)
     {
-        // Return FAIL_PING to prevent false positives and bugs.
-        if (player == null || player.getAddress() == null) return FAIL_PING;
-
-        try {
-            // Windows has a different ping command.
-            val processBuilder = new ProcessBuilder("ping", IS_WINDOWS ? "-n" : "-c", "1", player.getAddress().getAddress().getHostAddress());
-            val process = processBuilder.start();
-
-            try (val stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                // read the output from the command
-                String s;
-                Matcher matcher;
-                String found;
-                // Greedily get the first ms appearance as that will be the answer.
-                while ((s = stdInput.readLine()) != null) {
-                    matcher = PING_PATTERN.matcher(s);
-                    if (matcher.matches()) {
-                        found = matcher.group();
-                        found = found.substring(1, found.length() - 2);
-                        // Fast ceil for more leniency.
-                        return ((int) Double.parseDouble(found)) + 1;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            return FAIL_PING;
-        } catch (SecurityException e) {
-            DebugSender.getInstance().sendDebug("AACAdditionPro is not allowed to start a process. Therefore pingspoof will not work.", true, true);
-            return FAIL_PING;
-        }
-        // Packet lost or other error.
-        return FAIL_PING;
+        val received = user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).getTime();
+        return received < 0 ? -1 : received - user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).getTime();
     }
 }

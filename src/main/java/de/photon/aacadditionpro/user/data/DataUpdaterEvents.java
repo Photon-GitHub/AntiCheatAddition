@@ -9,7 +9,6 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
-import de.photon.aacadditionpro.util.packetwrappers.sentbyserver.WrapperPlayServerKeepAlive;
 import de.photon.aacadditionpro.util.world.BlockUtil;
 import lombok.val;
 import org.bukkit.Material;
@@ -45,7 +44,6 @@ public final class DataUpdaterEvents implements Listener
 
     private DataUpdaterEvents()
     {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new KeepAliveDataUpdater());
         ProtocolLibrary.getProtocolManager().addPacketListener(new VelocityChangeDataUpdater());
     }
 
@@ -287,28 +285,6 @@ public final class DataUpdaterEvents implements Listener
                     user.getTimestampMap().at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).update();
                 }
             }
-        }
-    }
-
-    private static class KeepAliveDataUpdater extends PacketAdapter
-    {
-        private KeepAliveDataUpdater()
-        {
-            super(AACAdditionPro.getInstance(), ListenerPriority.LOWEST, PacketType.Play.Server.KEEP_ALIVE);
-        }
-
-        @Override
-        public void onPacketSending(final PacketEvent event)
-        {
-            val user = User.safeGetUserFromPacketEvent(event);
-
-            val wrapper = new WrapperPlayServerKeepAlive(event.getPacket());
-
-            //TODO: KEEP ALIVE
-            // Register the KeepAlive
-            /*synchronized (user.getKeepAliveData().getKeepAlives()) {
-                user.getKeepAliveData().getKeepAlives().bufferObject(new KeepAliveData.KeepAlivePacketData(wrapper.getKeepAliveId()));
-            }*/
         }
     }
 }

@@ -97,8 +97,6 @@ VersionControl:
 # This check does only work on minecraft versions 1.11 and beyond due to changes in the spigot API compared to older
 # versions and auto-disables itself accordingly.
 AutoFish:
-  # Do you want to enable the AutoFish check?
-  enabled: true
   # This message will appear in AAC's status when AAC hooking is used.
   aac_status_message: "[AACAdditionPro] Player has botlike fishing behaviour"
   # Violation before AACAdditionPro starts to cancel the fishing.
@@ -109,7 +107,7 @@ AutoFish:
   parts:
     # The inhuman reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
     # This might cause some false positives with experienced fishers.
-    # This will add up to 6 vl, depending on the reaction speed.
+    # This will add up to 30 vl, depending on the reaction speed.
     inhuman_reaction:
       # Do you want to enable the inhuman reaction part?
       enabled: true
@@ -118,7 +116,7 @@ AutoFish:
       # How many milliseconds should have passed before a fishing action counts as legit.
       # This also influences the given vl according to a linear distribution - the faster and more inhuman someone
       # reacts, the more vl they will get.
-      human_reaction_time: 145
+      human_reaction_time: 145.0
     # The consistency part recognizes unchanging times between a successful catch and fishing again as simple bots have
     # constant reaction times, whereas human players reaction varies a little bit each time they fish.
     # Depending on how accurate the consistency is players will receive between 1 and 80 vl.

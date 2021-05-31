@@ -9,7 +9,7 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
-import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerKeepAlive;
+import de.photon.aacadditionpro.util.packetwrappers.sentbyserver.WrapperPlayServerKeepAlive;
 import de.photon.aacadditionpro.util.world.BlockUtil;
 import lombok.val;
 import org.bukkit.Material;

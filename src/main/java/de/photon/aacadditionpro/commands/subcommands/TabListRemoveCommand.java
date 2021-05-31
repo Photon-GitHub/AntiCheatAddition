@@ -8,7 +8,7 @@ import de.photon.aacadditionpro.commands.CommandAttributes;
 import de.photon.aacadditionpro.commands.InternalCommand;
 import de.photon.aacadditionpro.commands.TabCompleteSupplier;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
-import de.photon.aacadditionpro.util.packetwrappers.server.WrapperPlayServerPlayerInfo;
+import de.photon.aacadditionpro.util.packetwrappers.sentbyserver.WrapperPlayServerPlayerInfo;
 import de.photon.aacadditionpro.util.server.PingProvider;
 import lombok.val;
 import org.bukkit.Bukkit;

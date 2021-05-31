@@ -2,7 +2,7 @@ package de.photon.aacadditionpro.util.pluginmessage.labymod;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.photon.aacadditionpro.util.packetwrappers.client.WrapperPlayClientCustomPayload;
+import de.photon.aacadditionpro.util.packetwrappers.sentbyclient.WrapperPlayClientCustomPayload;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

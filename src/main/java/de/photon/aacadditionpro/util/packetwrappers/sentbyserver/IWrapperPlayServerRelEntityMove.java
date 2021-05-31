@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.packetwrappers.server;
+package de.photon.aacadditionpro.util.packetwrappers.sentbyserver;
 
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.ServerVersion;

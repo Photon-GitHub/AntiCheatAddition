@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.packetwrappers.client;
+package de.photon.aacadditionpro.util.packetwrappers.sentbyclient;
 
 
 import com.comphenix.protocol.PacketType;

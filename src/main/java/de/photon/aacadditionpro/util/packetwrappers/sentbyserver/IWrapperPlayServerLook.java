@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.packetwrappers.server;
+package de.photon.aacadditionpro.util.packetwrappers.sentbyserver;
 
 import de.photon.aacadditionpro.util.mathematics.RotationUtil;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayLook;

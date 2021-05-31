@@ -148,10 +148,6 @@ AutoFish:
 
 # Pingspoof tries to detect modifications that trick the server into believing the player has a higher or lower ping
 # than they actually have to partially bypass anticheats or get other advantages.
-#
-# PLEASE NOTE THAT THIS WILL CREATE NEW PROCESSES ON YOUR SYSTEM TO PING PLAYERS VIA THE PING COMMAND AS IF YOU WERE
-# DOING THIS IN A TERMINAL. IF YOU HAVE DISABLED THIS COMMAND, HAVE A SYSTEM THAT IS NOT BASED ON LINUX, WINDOWS OR MAC,
-# OR HAVE FIREWALL RESTRICTIONS THAT DISALLOW A PING THIS CHECK WILL _NOT_ WORK!
 Pingspoof:
   # Do you want to enable the Pingspoof check?
   enabled: true

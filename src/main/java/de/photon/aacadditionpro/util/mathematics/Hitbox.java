@@ -43,24 +43,48 @@ public enum Hitbox
 
     public Vector[] getLowResolutionCalculationVectors(final Location location)
     {
-        val vectors = new Vector[8];
 
         val lowerY = location.getY();
         val upperY = lowerY + this.height;
 
-        // Lower corners
-        vectors[0] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ() + this.offsetZ));
-        vectors[1] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ() + this.offsetZ));
-        vectors[2] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ() - this.offsetZ));
-        vectors[3] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ() - this.offsetZ));
+        val cullX = (location.getBlockX() - (int) (location.getX() + offsetX)) == 0 && (location.getBlockX() - (int) (location.getX() - offsetX)) == 0;
+        val cullZ = (location.getBlockZ() - (int) (location.getZ() + offsetZ)) == 0 && (location.getBlockZ() - (int) (location.getZ() - offsetZ)) == 0;
 
-        // Upper corners
-        vectors[4] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ() + this.offsetZ));
-        vectors[5] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ() + this.offsetZ));
-        vectors[6] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ() - this.offsetZ));
-        vectors[7] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ() - this.offsetZ));
+        if (cullX && cullZ) {
+            val vectors = new Vector[2];
+            vectors[0] = (new Vector(location.getX(), lowerY, location.getZ()));
+            vectors[1] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ() + this.offsetZ));
+            return vectors;
+        } else if (cullX) {
+            val vectors = new Vector[4];
+            vectors[0] = (new Vector(location.getX(), lowerY, location.getZ() + this.offsetZ));
+            vectors[1] = (new Vector(location.getX(), lowerY, location.getZ() - this.offsetZ));
+            vectors[2] = (new Vector(location.getX(), upperY, location.getZ() + this.offsetZ));
+            vectors[3] = (new Vector(location.getX(), upperY, location.getZ() - this.offsetZ));
+            return vectors;
+        } else if (cullZ) {
+            val vectors = new Vector[4];
+            vectors[0] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ()));
+            vectors[1] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ()));
+            vectors[2] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ()));
+            vectors[3] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ()));
+            return vectors;
+        } else {
+            val vectors = new Vector[8];
 
-        return vectors;
+            // Lower corners
+            vectors[0] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ() + this.offsetZ));
+            vectors[1] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ() + this.offsetZ));
+            vectors[2] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ() - this.offsetZ));
+            vectors[3] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ() - this.offsetZ));
+
+            // Upper corners
+            vectors[4] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ() + this.offsetZ));
+            vectors[5] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ() + this.offsetZ));
+            vectors[6] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ() - this.offsetZ));
+            vectors[7] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ() - this.offsetZ));
+            return vectors;
+        }
     }
 
     /**

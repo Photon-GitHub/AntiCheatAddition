@@ -47,6 +47,52 @@ DamageIndicator:
     animals: true
     monsters: true
 
+# This module uses advanced mathematics to determine if players can see each other.
+# It also thinks of the 3rd person camera modes and uses accurate hitbox-models.
+# If the players cannot see each other several actions will be taken to hide information on packet-level.
+#
+# MAIN FUNCTIONS:
+# - Sneaking-Hider:  A sneaking player who cannot be directly seen by another player will be completely hidden from
+#                    the second player. (This will make esp / tracers / radar / similar useless if the player who
+#                    is supposed to be shown is sneaking)
+#
+# - Equipment-Hider: If a player cannot be directly seen by another player his equipment (hand, armour) will be hidden
+#                    from the observer. (This will make the life of cheaters harder as they cannot properly estimate
+#                    the combat strength of a player)
+#                    This part will automatically disable itself on servers with MC versions below 1.11.
+Esp:
+  # Do you want to enable anti - ESP?
+  #
+  # If your server has more a lot of players in one world within its render distance the ESP check will create a
+  # medium - high CPU load.
+  #
+  # If you create new worlds make sure to disable and enable the ESP check once to register the new worlds.
+  #
+  # IF YOU NOTICE PLAYERS OR THEIR ARMOR POPPING UP OUT OF NOWHERE YOUR SERVER DOES NOT HAVE THE REQUIRED PERFORMANCE.
+  #
+  # Approximate maximum player table for a certain amount of cores to not lag the server on Minecraft 1.8.8, later
+  # versions have much worse performance:
+  # 1 Core   | 40 Players
+  # 2 Cores  | 60 Players
+  # 4 Cores  | 90 Players
+  # 8 Cores  | 120 Players
+  # 16 Cores | 170 Players
+  # 32 Cores | 250 Players
+  # 64 Cores | 350 Players
+  enabled: false
+  # How many milliseconds shall be waited between two ESP cycles. Setting this too low may result in performance issues,
+  # setting it too high may result in players being hidden too long and popping up.
+  interval: 50
+  # This allows AACAdditionPro to use
+  block_heuristic: true
+  # Setting this to true will allow ESP to render players with much less vectors for improved performance.
+  # This might lead to more edge cases where players are hidden even though they are actually visible.
+  low_vector_hitboxes: true
+  # This determines whether minecrafts 3rd person modes should be considered for calculation as well.
+  # Disabling this will reduce the required number of block queries by two thirds.
+  # Especially useful if you have gamemodes in which players are not supposed to use the third person mode.
+  calculate_third_person_modes: false
+
 # This automatically deletes old log files of both AAC and AACAdditionPro
 # It activates automatically on restart and after that in a 12 hour cycle.
 LogBot:

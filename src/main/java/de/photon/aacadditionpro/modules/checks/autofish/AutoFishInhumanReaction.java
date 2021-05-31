@@ -17,7 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 
-class InhumanReactionPattern extends ViolationModule implements Listener
+public class AutoFishInhumanReaction extends ViolationModule implements Listener
 {
     private static final Polynomial VL_CALCULATOR = new Polynomial(-30, 30);
     private final int cancelVl = AACAdditionPro.getInstance().getConfig().getInt("AutoFish.cancel_vl");
@@ -25,7 +25,7 @@ class InhumanReactionPattern extends ViolationModule implements Listener
     @LoadFromConfiguration(configPath = ".human_reaction_time")
     private double humanReactionTime;
 
-    public InhumanReactionPattern()
+    public AutoFishInhumanReaction()
     {
         super("AutoFish.parts.inhuman_reaction");
     }

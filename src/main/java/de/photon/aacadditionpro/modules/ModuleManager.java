@@ -2,12 +2,18 @@ package de.photon.aacadditionpro.modules;
 
 import de.photon.aacadditionpro.modules.additions.BrandHider;
 import de.photon.aacadditionpro.modules.additions.DamageIndicator;
+import de.photon.aacadditionpro.modules.additions.LogBot;
+import de.photon.aacadditionpro.modules.additions.VersionControl;
 import de.photon.aacadditionpro.modules.checks.autoeat.AutoEat;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishConsistency;
+import de.photon.aacadditionpro.modules.checks.autofish.AutoFishInhumanReaction;
 import de.photon.aacadditionpro.modules.sentinel.BetterSprintingSentinel;
 import de.photon.aacadditionpro.modules.sentinel.FiveZigSentinel;
 import de.photon.aacadditionpro.modules.sentinel.LabyModSentinel;
+import de.photon.aacadditionpro.modules.sentinel.SchematicaSentinel;
 import de.photon.aacadditionpro.modules.sentinel.SentinelChannelModule;
+import de.photon.aacadditionpro.modules.sentinel.VapeSentinel;
+import de.photon.aacadditionpro.modules.sentinel.WorldDownloaderSentinel;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,31 +36,42 @@ public final class ModuleManager
         // Additions
         val brandHider = new BrandHider();
         val damageIndicator = new DamageIndicator();
+        val logBot = new LogBot();
+        val versionControl = new VersionControl();
 
         // Checks
         val autoEat = new AutoEat();
 
         val autoFishConsistency = new AutoFishConsistency();
-        val autoFish = ViolationModule.parentOf("AutoFish", autoFishConsistency);
+        val autoFishInhumanReaction = new AutoFishInhumanReaction();
+        val autoFish = ViolationModule.parentOf("AutoFish", autoFishConsistency, autoFishInhumanReaction);
 
         // Sentinel
         val betterSprintingSentinel = new BetterSprintingSentinel();
         val fiveZigSentinel = new FiveZigSentinel();
         val labyModSentinel = new LabyModSentinel();
+        val schematicaSentinel = new SchematicaSentinel();
+        val vapeSentinel = new VapeSentinel();
+        val worldDownloaderSentinel = new WorldDownloaderSentinel();
 
         val moduleList = new ArrayList<>(Arrays.asList(
                 // Additions
                 brandHider,
                 damageIndicator,
+                logBot,
+                versionControl,
 
                 // Checks
                 autoEat,
-                autoFish, autoFishConsistency,
+                autoFish, autoFishConsistency, autoFishInhumanReaction,
 
                 //Sentinel
                 betterSprintingSentinel,
                 fiveZigSentinel,
-                labyModSentinel));
+                labyModSentinel,
+                schematicaSentinel,
+                vapeSentinel,
+                worldDownloaderSentinel));
 
         // Add sentinel custom modules.
         ConfigUtils.loadKeys("Sentinel.Custom").stream().map(key -> new SentinelChannelModule("Sentinel.Custom." + key)).forEach(moduleList::add);

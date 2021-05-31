@@ -1,7 +1,12 @@
 package de.photon.aacadditionpro.modules.checks.pingspoof;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
+import de.photon.aacadditionpro.modules.ModulePacketAdapter;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
@@ -52,7 +57,7 @@ public class Pingspoof extends ViolationModule implements Listener
             // Create packet.
             val packet = new WrapperPlayServerTransaction();
             packet.setAccepted(false);
-            packet.setActionNumber((short) 1);
+            packet.setActionNumber((short) 0);
             packet.setWindowId(0);
 
             for (Player player : Bukkit.getOnlinePlayers()) {
@@ -104,12 +109,33 @@ public class Pingspoof extends ViolationModule implements Listener
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        return ModuleLoader.builder(this).build();
+        val adapter = new PingspoofPacketAdapter(this);
+        return ModuleLoader.builder(this)
+                           .addPacketListeners(adapter)
+                           .build();
     }
 
     @Override
     protected ViolationManagement createViolationManagement()
     {
         return new ViolationLevelManagement(this, 300L);
+    }
+
+    private static class PingspoofPacketAdapter extends ModulePacketAdapter
+    {
+        public PingspoofPacketAdapter(Module module)
+        {
+            super(module, ListenerPriority.HIGH, PacketType.Play.Client.TRANSACTION);
+        }
+
+        @Override
+        public void onPacketReceiving(PacketEvent event)
+        {
+            val user = User.safeGetUserFromPacketEvent(event);
+            if (User.isUserInvalid(user, this.getModule())) return;
+
+            // We have now received the answer.
+            user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).update();
+        }
     }
 }

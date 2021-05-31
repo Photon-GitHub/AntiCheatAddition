@@ -63,10 +63,10 @@ DamageIndicator:
 Esp:
   # Do you want to enable anti - ESP?
   #
-  # If your server has more a lot of players in one world within its render distance the ESP check will create a
-  # medium - high CPU load.
+  # If your server has a lot of players in one world within its render distance the ESP check will create a medium to
+  # high CPU load.
   #
-  # If you create new worlds make sure to disable and enable the ESP check once to register the new worlds.
+  # If you create new worlds make sure to restart your server to make ESP cover the new worlds.
   #
   # IF YOU NOTICE PLAYERS OR THEIR ARMOR POPPING UP OUT OF NOWHERE YOUR SERVER DOES NOT HAVE THE REQUIRED PERFORMANCE.
   #
@@ -83,7 +83,10 @@ Esp:
   # How many milliseconds shall be waited between two ESP cycles. Setting this too low may result in performance issues,
   # setting it too high may result in players being hidden too long and popping up.
   interval: 50
-  # This allows AACAdditionPro to use
+  # This allows AACAdditionPro to not completely check the entire way between two players, but just check a constant
+  # amount of select blocks. This will cause players to be visible when they should be hidden, but the majority of
+  # use cases of this check (e.g. make sure underground bases are hidden) is still covered.
+  # Enabling this will drastically improve performance.
   block_heuristic: true
   # Setting this to true will allow ESP to render players with much less vectors for improved performance.
   # This might lead to more edge cases where players are hidden even though they are actually visible.

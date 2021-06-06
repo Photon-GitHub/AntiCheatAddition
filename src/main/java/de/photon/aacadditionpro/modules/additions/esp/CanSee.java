@@ -82,7 +82,7 @@ class CanSee
 
     private static boolean checkRay(ResetLocation cameraLocation, Vector betweenVector, Vector destinationVector)
     {
-        val dest = new ResetLocation(destinationVector.toLocation(cameraLocation.getWorld()));
+        val dest = new ResetLocation(cameraLocation.getWorld(), destinationVector.getX(), destinationVector.getY(), destinationVector.getZ());
         val between = new ResetVector(betweenVector);
 
         Block block;
@@ -90,6 +90,8 @@ class CanSee
             block = cameraLocation.add(between.multiply(d)).getBlock();
             //noinspection ConstantConditions
             if (block != null && !block.isEmpty() && MaterialUtil.isReallyOccluding(block.getType())) return false;
+            cameraLocation.resetToBase();
+            between.resetToBase();
         }
         return true;
     }

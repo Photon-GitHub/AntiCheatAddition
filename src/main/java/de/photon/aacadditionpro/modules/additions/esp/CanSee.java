@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.modules.additions.esp;
 
+import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.mathematics.ResetLocation;
 import de.photon.aacadditionpro.util.mathematics.ResetVector;
@@ -9,8 +10,11 @@ import de.photon.aacadditionpro.util.world.MaterialUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -104,5 +108,37 @@ class CanSee
         if (distance <= 10) return new double[]{1, 1.5, 2, 2.5, distance / 2, distance - 2.5, distance - 2, distance - 1.5, distance - 1};
         if (distance <= 25) return new double[]{1, 1.5, 2, 2.5, distance / 4, distance / 2, 3 * distance / 4, distance - 2.5, distance - 2, distance - 1.5, distance - 1};
         return new double[]{1, 1.5, 2, 2.5, distance / 4, distance / 3, distance / 2, 2 * distance / 3, 3 * distance / 4, distance - 2.5, distance - 2, distance - 1.5, distance - 1};
+    }
+
+    /**
+     * Get to know where the {@link Vector} intersects with a {@link org.bukkit.block.Block}.
+     * Non-Occluding {@link Block}s as defined in {@link MaterialUtil#isReallyOccluding(Material)} are ignored.
+     *
+     * @param start     the starting {@link Location}
+     * @param direction the {@link Vector} which should be checked
+     *
+     * @return The length when the {@link Vector} intersects or 0 if no intersection was found
+     */
+    public static double getDistanceToFirstIntersectionWithBlock(final Location start, final Vector direction)
+    {
+        Preconditions.checkNotNull(start.getWorld(), "RayTrace: Unknown start world.");
+        val length = (int) direction.length();
+
+        if (length >= 1) {
+            try {
+                val blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
+                Block block;
+                while (blockIterator.hasNext()) {
+                    block = blockIterator.next();
+                    // Account for a Spigot bug: BARRIER and MOB_SPAWNER are not occluding blocks
+                    // Use the middle location of the Block instead of the simple location.
+                    if (MaterialUtil.isReallyOccluding(block.getType())) return block.getLocation().clone().add(0.5, 0.5, 0.5).distance(start);
+                }
+            } catch (IllegalStateException exception) {
+                // Just in case the start block could not be found for some reason or a chunk is loaded async.
+                return 0;
+            }
+        }
+        return 0;
     }
 }

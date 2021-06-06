@@ -40,8 +40,8 @@ class CanSeeThirdPerson implements Function<Player, Vector[]>
         // [0] = frontIntersection
         // [1] = behindIntersection
         final double[] intersections = new double[]{
-                EspUtil.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[1]),
-                EspUtil.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[2])
+                CanSee.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[1]),
+                CanSee.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[2])
         };
 
         for (int i = 0; i < intersections.length; ++i) {

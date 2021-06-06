@@ -32,7 +32,7 @@ public class VersionControl extends Module
     {
         val viaVersionKickMessage = Preconditions.checkNotNull(AACAdditionPro.getInstance().getConfig().getString("ClientControl.VersionControl.message"), "VersionControl message is null. Please fix your config.");
         val configValues = ConfigUtils.loadKeys(this.configString + ".allowedVersions").stream()
-                                      .map(key -> new ImmutablePair<>(key, AACAdditionPro.getInstance().getConfig().getBoolean(this.configString + ".allowedVersions." + key)))
+                                      .map(key -> ImmutablePair.of(key, AACAdditionPro.getInstance().getConfig().getBoolean(this.configString + ".allowedVersions." + key)))
                                       .collect(Collectors.toSet());
 
         val allowedVersions = configValues.stream().filter(ImmutablePair::getSecond).map(ImmutablePair::getFirst).collect(Collectors.joining(", "));

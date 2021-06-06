@@ -39,14 +39,14 @@ public abstract class Module
         }
     }
 
-    public void enableModule()
+    public final void enableModule()
     {
         this.enabled = true;
         this.getModuleLoader().load();
         this.enable();
     }
 
-    public void disableModule()
+    public final void disableModule()
     {
         this.enabled = false;
         this.getModuleLoader().unload();

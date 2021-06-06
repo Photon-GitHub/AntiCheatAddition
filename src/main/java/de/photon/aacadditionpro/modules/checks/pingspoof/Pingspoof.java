@@ -29,8 +29,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class Pingspoof extends ViolationModule implements Listener
 {
-    private static final Polynomial VL_CALCULATOR_BELOW_500 = new Polynomial(-8.92857E-6, 0.0361786, 0.607143);
-    private static final Polynomial VL_CALCULATOR_ABOVE_500 = new Polynomial(6.86217E-11, -1.26749E-6, 0.00802375, 12.8948);
+    private static final Polynomial VL_CALCULATOR_BELOW_500 = new Polynomial(-1.78571E-5, 0.0723572, 1.214286);
+    private static final Polynomial VL_CALCULATOR_ABOVE_500 = new Polynomial(1.372434E-10, -2.53498E-6, 0.0160475, 25.7896);
     private BukkitTask pingSpoofTask;
 
     @LoadFromConfiguration(configPath = ".ping_leniency")
@@ -118,7 +118,7 @@ public class Pingspoof extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return new ViolationLevelManagement(this, 300L, 1);
+        return new ViolationLevelManagement(this, 300L, 2);
     }
 
     private static class PingspoofPacketAdapter extends ModulePacketAdapter

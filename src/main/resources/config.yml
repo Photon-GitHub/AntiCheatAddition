@@ -124,7 +124,7 @@ VersionControl:
 # This check detects AutoEat bots that will automatically eat for a player with perfect timing.
 # Please note that one VL from AutoEat decays only every 5 minutes to make sure that cheats can be detected even if
 # eating sessions are several minutes apart.
-# This will add 20 vl
+# Adds 20 vl.
 AutoEat:
   # Do you want to enable the AutoEat check?
   enabled: true
@@ -159,7 +159,7 @@ AutoFish:
   parts:
     # The inhuman reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
     # This might cause some false positives with experienced fishers.
-    # This will add up to 60 vl, depending on the reaction speed.
+    # Adds up to 60 vl, depending on the reaction speed.
     inhuman_reaction:
       # Do you want to enable the inhuman reaction part?
       enabled: true
@@ -198,7 +198,7 @@ AutoFish:
 
 # AutoPotion detects automated bots which splash the player with potions, e.g. when player health is low.
 # This check does only work on minecraft versions 1.11 and beyond and auto-disables itself on other versions.
-# This will add 50 vl.
+# Adds 50 vl.
 AutoPotion:
   # Do you want to enable the AutoPotion check?
   enabled: true
@@ -231,6 +231,7 @@ AutoPotion:
 
 # Pingspoof tries to detect modifications that trick the server into believing the player has a higher or lower ping
 # than they actually have to partially bypass anticheats or get other advantages.
+# Adds up to 70 vl, depending on the severity of the violation.
 Pingspoof:
   # Do you want to enable the Pingspoof check?
   enabled: true
@@ -245,9 +246,9 @@ Pingspoof:
   interval: 30
   # Map of violation levels to command
   thresholds:
-    30: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Pingspoof"
-    70: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Pingspoof"
-    100: "kick {player} Pingspoof"
+    60: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Pingspoof"
+    140: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Pingspoof"
+    200: "kick {player} Pingspoof"
 
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                            ___          _   _          _                                            #

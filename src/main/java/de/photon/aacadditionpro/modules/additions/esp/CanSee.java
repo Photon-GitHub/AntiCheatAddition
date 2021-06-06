@@ -96,9 +96,11 @@ class CanSee
 
     private static double[] heuristicScalars(double distance)
     {
-        if (distance < 2) return new double[]{1, distance - 1};
-        if (distance < 3) return new double[]{1, 1.5, distance - 1.5, distance - 1};
-        if (distance < 5) return new double[]{1, 1.5, 2, distance - 2, distance - 1.5, distance - 1};
+        if (distance <= 2) return new double[]{1};
+        if (distance <= 3) return new double[]{1, distance - 1};
+        if (distance <= 5) return new double[]{1, 1.5, 2, distance - 2, distance - 1.5, distance - 1};
+        if (distance <= 10) return new double[]{1, 1.5, 2, 2.5, distance / 2, distance - 2.5, distance - 2, distance - 1.5, distance - 1};
+        if (distance <= 25) return new double[]{1, 1.5, 2, 2.5, distance / 4, distance / 2, 3 * distance / 4, distance - 2.5, distance - 2, distance - 1.5, distance - 1};
         return new double[]{1, 1.5, 2, 2.5, distance / 4, distance / 3, distance / 2, 2 * distance / 3, 3 * distance / 4, distance - 2.5, distance - 2, distance - 1.5, distance - 1};
     }
 }

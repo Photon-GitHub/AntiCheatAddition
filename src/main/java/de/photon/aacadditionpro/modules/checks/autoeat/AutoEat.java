@@ -37,7 +37,9 @@ public class AutoEat extends ViolationModule implements Listener
             // A PlayerInteractEvent will always fire when the right mouse button is clicked, therefore a legit player will always hold his mouse a bit longer than a bot and the last right click will
             // be after the last consume event.
             if (user.getTimestampMap().at(TimestampKey.LAST_RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).getTime() < user.getTimestampMap().at(TimestampKey.LAST_CONSUME_EVENT).getTime()) {
-                this.getManagement().flag(Flag.of(user.getPlayer()).setCancelAction(cancelVl, () -> user.getTimestampMap().at(TimestampKey.AUTOEAT_TIMEOUT).update()));
+                this.getManagement().flag(Flag.of(user)
+                                              .setAddedVl(20)
+                                              .setCancelAction(cancelVl, () -> user.getTimestampMap().at(TimestampKey.AUTOEAT_TIMEOUT).update()));
             }
         }, 10L);
 
@@ -54,6 +56,6 @@ public class AutoEat extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return new ViolationLevelManagement(this, 6000L);
+        return new ViolationLevelManagement(this, 6000L, 20);
     }
 }

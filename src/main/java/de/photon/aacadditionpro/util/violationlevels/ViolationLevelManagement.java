@@ -14,15 +14,15 @@ public class ViolationLevelManagement extends ViolationManagement
 {
     private final ViolationLevelMultiSet vlMultiSet;
 
-    public ViolationLevelManagement(@NotNull ViolationModule module, @NotNull ThresholdManagement management, long decayTicks)
+    public ViolationLevelManagement(@NotNull ViolationModule module, @NotNull ThresholdManagement management, long decayTicks, int decayAmount)
     {
         super(module, management);
-        vlMultiSet = new ViolationLevelMultiSet(decayTicks);
+        vlMultiSet = new ViolationLevelMultiSet(decayTicks, decayAmount);
     }
 
-    public ViolationLevelManagement(@NotNull ViolationModule module, long decayTicks)
+    public ViolationLevelManagement(@NotNull ViolationModule module, long decayTicks, int decayAmount)
     {
-        this(module, ThresholdManagement.loadThresholds(module.getConfigString() + ".thresholds"), decayTicks);
+        this(module, ThresholdManagement.loadThresholds(module), decayTicks, decayAmount);
     }
 
     @Override

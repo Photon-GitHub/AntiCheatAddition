@@ -21,20 +21,25 @@ class ViolationLevelMultiSet implements Listener
 
     ViolationLevelMultiSet(final long decayMilliseconds)
     {
+        this(decayMilliseconds, 1);
+    }
+
+    ViolationLevelMultiSet(final long decayMilliseconds, final int occurences)
+    {
         // Might need to have a vl manager without vl decrease
         if (decayMilliseconds > 0) {
             // Schedule the decay with 3000 milliseconds to free startup.
-            scheduler.scheduleAtFixedRate(this::decay, 3000, decayMilliseconds, TimeUnit.MILLISECONDS);
+            scheduler.scheduleAtFixedRate(() -> this.decay(occurences), 3000, decayMilliseconds, TimeUnit.MILLISECONDS);
         }
     }
 
     /**
      * Decrements the vl of every player.
      */
-    private void decay()
+    private void decay(int occurences)
     {
         // Decrement the vl of every player.
-        for (UUID uuid : multiset.elementSet()) multiset.remove(uuid);
+        for (UUID uuid : multiset.elementSet()) multiset.remove(uuid, occurences);
     }
 
     @EventHandler

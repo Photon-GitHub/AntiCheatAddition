@@ -121,6 +121,27 @@ VersionControl:
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
+# This check detects AutoEat bots that will automatically eat for a player with perfect timing.
+# Please note that one VL from AutoEat decays only every 5 minutes to make sure that cheats can be detected even if
+# eating sessions are several minutes apart.
+# This will add 20 vl
+AutoEat:
+  # Do you want to enable the AutoEat check?
+  enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player has botlike eating behaviour"
+  # Violation before AACAdditionPro starts to cancel the consume events.
+  # Set this to 0 to never cancel the events.
+  cancel_vl: 6
+  # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to consume an item for the
+  # duration of timeout (in milliseconds).
+  timeout: 5000
+  # Map of violation levels to command
+  thresholds:
+    60: "aac notify {player} in {world} is suspected for AutoEat"
+    120: "aac notify {player} in {world} is highly suspected for AutoEat"
+    200: "aackick {player} AutoEat"
+
 # AutoFish detects cheats that are named just like the check - automatic fishing bots which can yield a lot of
 # treasure and food for those who use them.
 #
@@ -138,7 +159,7 @@ AutoFish:
   parts:
     # The inhuman reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
     # This might cause some false positives with experienced fishers.
-    # This will add up to 30 vl, depending on the reaction speed.
+    # This will add up to 60 vl, depending on the reaction speed.
     inhuman_reaction:
       # Do you want to enable the inhuman reaction part?
       enabled: true
@@ -150,7 +171,7 @@ AutoFish:
       human_reaction_time: 145.0
     # The consistency part recognizes unchanging times between a successful catch and fishing again as simple bots have
     # constant reaction times, whereas human players reaction varies a little bit each time they fish.
-    # Depending on how accurate the consistency is players will receive between 1 and 80 vl.
+    # Depending on how accurate the consistency is players will receive between 1 and 160 vl.
     consistency:
       # Do you want to enable the consistency part?
       enabled: true
@@ -171,9 +192,42 @@ AutoFish:
       maximum_fails: 12
   # Map of violation levels to command
   thresholds:
-    45: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoFish"
-    70: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoFish"
-    100: "kick {player} AutoFish"
+    90: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoFish"
+    140: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoFish"
+    200: "kick {player} AutoFish"
+
+# AutoPotion detects automated bots which splash the player with potions, e.g. when player health is low.
+# This check does only work on minecraft versions 1.11 and beyond and auto-disables itself on other versions.
+# This will add 50 vl.
+AutoPotion:
+  # Do you want to enable the AutoPotion check?
+  enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player applies splash potions suspiciously"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 2
+  # Violation before AACAdditionPro starts to cancel throwing potions.
+  # Set this to 0 to never cancel throwing potions.
+  cancel_vl: 2
+  # After a detection which surpasses cancel_vl AACAdditionPro cancels all potion throws to effectively prevent the
+  # cheat (in milliseconds)
+  timeout: 1000
+  # How fast the player must look in the initial direction once again to be regarded as having bot-like reaction speed
+  # (in milliseconds).
+  look_restored_time: 150
+  # When looking back, beyond what angle difference should someone be considered as legit?
+  angle_offset: 5
+  # How much someone has to suddenly look down to start the check (in degrees)
+  initial_pitch_difference: 40
+  # The minimum angle, measured in degrees, that is counted as looking down
+  # Negative values represent looking upwards in Spigot and will break the check
+  # It is strongly recommended to test value changes as they have a huge impact on the check
+  look_down_angle: 80
+  # Map of violation levels to command
+  thresholds:
+    50: "aac notify {player} in {world} is suspected for AutoPotion"
+    100: "aac notify {player} in {world} is highly suspected for AutoPotion"
+    200: "aackick {player} AutoPotion"
 
 # Pingspoof tries to detect modifications that trick the server into believing the player has a higher or lower ping
 # than they actually have to partially bypass anticheats or get other advantages.
@@ -182,6 +236,8 @@ Pingspoof:
   enabled: true
   # This message will appear in AAC's status when AAC hooking is used.
   aac_status_message: "[AACAdditionPro] Player tries to spoof their ping"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 2
   # How much is the player ping allowed to deviate from the tested ping (measured in ms)?
   ping_leniency: 150
   # How often should the ping be checked?

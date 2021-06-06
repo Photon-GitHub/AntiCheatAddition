@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionpro.user.User;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
@@ -35,11 +36,18 @@ public class Flag
     /**
      * Creates a new flag concerning a {@link Player}
      */
+    public static Flag of(User user)
+    {
+        return new Flag(user.getPlayer());
+    }
+
+    /**
+     * Creates a new flag concerning a {@link Player}
+     */
     public static Flag of(Player player)
     {
         return new Flag(player);
     }
-
 
     /**
      * Creates a new flag concerning multiple {@link Player}s.

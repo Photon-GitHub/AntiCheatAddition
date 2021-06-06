@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.util.violationlevels.threshold;
 
 import com.google.common.base.Preconditions;
+import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import lombok.val;
 import org.bukkit.entity.Player;
@@ -16,6 +17,12 @@ public interface ThresholdManagement
      * Empty {@link ThresholdManagement} that doesn't have any {@link Threshold}s.
      */
     ThresholdManagement EMPTY = (fromVl, toVl, players) -> {};
+
+    @NotNull
+    static ThresholdManagement loadThresholds(ViolationModule module)
+    {
+        return loadThresholds(module.getConfigString() + ".thresholds");
+    }
 
     @NotNull
     static ThresholdManagement loadThresholds(String configPath)

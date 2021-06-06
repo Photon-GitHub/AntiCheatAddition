@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 
 public class AutoFishInhumanReaction extends ViolationModule implements Listener
 {
-    private static final Polynomial VL_CALCULATOR = new Polynomial(-30, 30);
+    private static final Polynomial VL_CALCULATOR = new Polynomial(-60, 60);
     private final int cancelVl = AACAdditionPro.getInstance().getConfig().getInt("AutoFish.cancel_vl");
 
     @LoadFromConfiguration(configPath = ".human_reaction_time")
@@ -46,7 +46,7 @@ public class AutoFishInhumanReaction extends ViolationModule implements Listener
                     DebugSender.getInstance().sendDebug("AutoFish-Verbose | Player " + user.getPlayer().getName() + " failed inhuman reaction");
 
                     // Flag for vl = b + 1 because there would otherwise be a "0-vl"
-                    this.getManagement().flag(Flag.of(user.getPlayer())
+                    this.getManagement().flag(Flag.of(user)
                                                   .setAddedVl(vl)
                                                   .setCancelAction(cancelVl, () -> event.setCancelled(true)));
                 }
@@ -73,6 +73,6 @@ public class AutoFishInhumanReaction extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return new ViolationLevelManagement(this, 600);
+        return new ViolationLevelManagement(this, 600, 5);
     }
 }

@@ -59,9 +59,9 @@ public class AutoFishConsistency extends ViolationModule implements Listener
                     // Calculate the maximum offset.
                     val maxOffset = Math.max(MathUtil.absDiff(consistencyData.getMin(), consistencyData.getAverage()), MathUtil.absDiff(consistencyData.getMax(), consistencyData.getAverage()));
 
-                    if (minVariation > maxOffset) {
+                    if (minVariation > (maxOffset + 1)) {
                         // (maxOffset / minVariation) will be at most 1 and at least 0
-                        val flagOffset = 80 - (79 * (maxOffset / minVariation));
+                        val flagOffset = 160 - (159 * (maxOffset / minVariation));
 
                         DebugSender.getInstance().sendDebug("AutoFish-Verbose | Player " +
                                                             user.getPlayer().getName() +
@@ -110,6 +110,6 @@ public class AutoFishConsistency extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return new ViolationLevelManagement(this, 600);
+        return new ViolationLevelManagement(this, 600, 5);
     }
 }

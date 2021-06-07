@@ -45,7 +45,7 @@ public abstract class ViolationModule extends Module
 
     public double getAACScore(UUID uuid)
     {
-        return this.management.getVL(uuid) * aacScoreMultiplier;
+        return this.getManagement().getVL(uuid) * aacScoreMultiplier;
     }
 
     public Map<String, String> getAACTooltip(UUID uuid, double score)

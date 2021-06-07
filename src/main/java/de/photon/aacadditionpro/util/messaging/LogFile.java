@@ -25,7 +25,7 @@ public class LogFile
         File createdFile = null;
         try {
             createdFile = new File(AACAdditionPro.getInstance().getDataFolder().getPath() + "/logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
-            createdFile.mkdirs();
+            createdFile.getParentFile().mkdirs();
             createdFile.createNewFile();
         } catch (IOException e) {
             AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Something went wrong while trying to create the log file", e);

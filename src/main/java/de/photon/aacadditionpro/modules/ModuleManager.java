@@ -81,6 +81,8 @@ public final class ModuleManager
                                                       .filter(ViolationModule.class::isInstance)
                                                       .map(ViolationModule.class::cast)
                                                       .collect(Collectors.toList()));
+        // TODO: TEST IF THE ORDER OF LOADED MODULES IS IMPORTANT
+        moduleMap.values().forEach(Module::enableModule);
     }
 
     public static void addExternalModule(final Module externalModule)

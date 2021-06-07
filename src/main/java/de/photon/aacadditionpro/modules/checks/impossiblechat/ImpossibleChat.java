@@ -38,8 +38,7 @@ public class ImpossibleChat extends ViolationModule implements Listener
              user.notRecentlyOpenedInventory(1000)
             ))
         {
-            this.getManagement().flag(Flag.of(user)
-                                          .setCancelAction(cancelVl, () -> event.setCancelled(true)));
+            this.getManagement().flag(Flag.of(user).setCancelAction(cancelVl, () -> event.setCancelled(true)));
         }
     }
 

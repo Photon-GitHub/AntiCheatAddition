@@ -118,7 +118,7 @@ public class Pingspoof extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return new ViolationLevelManagement(this, 300L, 2);
+        return ViolationLevelManagement.builder(this).withDecay(300, 2).build();
     }
 
     private static class PingspoofPacketAdapter extends ModulePacketAdapter

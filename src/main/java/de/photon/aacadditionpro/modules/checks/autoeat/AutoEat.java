@@ -56,6 +56,6 @@ public class AutoEat extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return new ViolationLevelManagement(this, 6000L, 20);
+        return ViolationLevelManagement.builder(this).withDecay(6000L, 20).build();
     }
 }

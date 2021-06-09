@@ -118,6 +118,6 @@ public class AutoPotion extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return new ViolationLevelManagement(this, 120L, 50);
+        return ViolationLevelManagement.builder(this).withDecay(120, 50).build();
     }
 }

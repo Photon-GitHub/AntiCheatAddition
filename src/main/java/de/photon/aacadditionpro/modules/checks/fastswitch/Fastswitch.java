@@ -58,7 +58,7 @@ public class Fastswitch extends ViolationModule
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return new ViolationLevelManagement(this, 120L, 1);
+        return ViolationLevelManagement.builder(this).withDecay(120, 1).build();
     }
 
     private class FastswitchPacketAdaper extends ModulePacketAdapter

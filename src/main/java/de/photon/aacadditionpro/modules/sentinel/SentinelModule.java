@@ -22,7 +22,9 @@ public abstract class SentinelModule extends ViolationModule implements PluginMe
     protected ViolationManagement createViolationManagement()
     {
         // -1 decay ticks to never decay.
-        return new ViolationLevelManagement(this, ThresholdManagement.loadCommands(this.configString + ".commands"), -1, 0);
+        return ViolationLevelManagement.builder(this)
+                                       .withCustomThresholdManagement(ThresholdManagement.loadCommands(this.configString + ".commands"))
+                                       .build();
     }
 
     /**

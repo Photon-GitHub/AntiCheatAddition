@@ -73,6 +73,6 @@ public class AutoFishInhumanReaction extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return new ViolationLevelManagement(this, 600, 5);
+        return ViolationLevelManagement.builder(this).withDecay(600, 5).build();
     }
 }

@@ -32,7 +32,7 @@ public class SkinBlinker extends ViolationModule
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return new ViolationLevelManagement(this, 100L, 1);
+        return ViolationLevelManagement.builder(this).withDecay(100, 1).build();
     }
 
     private class SkinblinkerPacketAdapter extends ModulePacketAdapter

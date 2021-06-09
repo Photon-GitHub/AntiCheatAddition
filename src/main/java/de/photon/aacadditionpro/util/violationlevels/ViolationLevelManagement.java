@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.events.ViolationEvent;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -14,15 +15,15 @@ public class ViolationLevelManagement extends ViolationManagement
 {
     private final ViolationLevelMultiSet vlMultiSet;
 
-    public ViolationLevelManagement(@NotNull ViolationModule module, @NotNull ThresholdManagement management, long decayTicks, int decayAmount)
+    private ViolationLevelManagement(@NotNull ViolationModule module, @NotNull ThresholdManagement management, long decayTicks, int decayAmount)
     {
         super(module, management);
         vlMultiSet = new ViolationLevelMultiSet(decayTicks, decayAmount);
     }
 
-    public ViolationLevelManagement(@NotNull ViolationModule module, long decayTicks, int decayAmount)
+    public static Builder builder(ViolationModule module)
     {
-        this(module, ThresholdManagement.loadThresholds(module), decayTicks, decayAmount);
+        return new Builder(module);
     }
 
     @Override
@@ -59,5 +60,44 @@ public class ViolationLevelManagement extends ViolationManagement
         // setVL is also called when decreasing the vl
         // thus we must prevent double punishment
         this.punishPlayer(player, oldVl, oldVl + vl);
+    }
+
+    @RequiredArgsConstructor
+    public static class Builder
+    {
+        @NotNull private final ViolationModule module;
+        private ThresholdManagement management = null;
+        private long decayTicks = -1;
+        private int decayAmount = 0;
+
+        /**
+         * This allows to define a custom {@link ThresholdManagement}.
+         * The standard is {@link ThresholdManagement#loadThresholds(ViolationModule)}.
+         */
+        public Builder withCustomThresholdManagement(@NotNull ThresholdManagement management)
+        {
+            Preconditions.checkNotNull(management, "The custom management must not be null.");
+            this.management = management;
+            return this;
+        }
+
+        /**
+         * Allows to define decay.
+         * Not calling this method indicates no decay.
+         */
+        public Builder withDecay(long decayTicks, int decayAmount)
+        {
+            Preconditions.checkArgument(decayTicks > 0, "The decay ticks need to be greater than 0. No decay is the default setting.");
+            Preconditions.checkArgument(decayAmount > 0, "The decay amount needs to be greater than 0. No decay is the default setting.");
+            this.decayTicks = decayTicks;
+            this.decayAmount = decayAmount;
+            return this;
+        }
+
+        public ViolationLevelManagement build()
+        {
+            if (this.management == null) management = ThresholdManagement.loadThresholds(this.module);
+            return new ViolationLevelManagement(this.module, management, decayTicks, decayAmount);
+        }
     }
 }

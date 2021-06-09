@@ -26,7 +26,6 @@ import java.util.Set;
 
 public class Teaming extends ViolationModule implements Listener
 {
-    // Config
     @LoadFromConfiguration(configPath = ".proximity_range")
     private double proximityRangeSquared;
     @LoadFromConfiguration(configPath = ".no_pvp_time")
@@ -100,6 +99,7 @@ public class Teaming extends ViolationModule implements Listener
                             // Team is too big
                             if (teamingList.size() > this.allowedSize) this.getManagement().flag(Flag.of(ImmutableSet.copyOf(teamingList)));
                         }
+                        teamingList.clear();
                     }
                 }, 1L, period);
     }

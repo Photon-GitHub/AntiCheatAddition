@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.datastructure.batch;
 
+import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
 
 import java.util.Collection;
@@ -11,9 +12,9 @@ public abstract class AsyncBatchProcessor<T> extends BatchProcessor<T>
 {
     private ExecutorService executor;
 
-    protected AsyncBatchProcessor(Collection<Broadcaster<Batch.Snapshot<T>>> broadcasters)
+    protected AsyncBatchProcessor(ViolationModule module, Collection<Broadcaster<Batch.Snapshot<T>>> broadcasters)
     {
-        super(broadcasters);
+        super(module, broadcasters);
     }
 
     @Override

@@ -220,7 +220,7 @@ public enum InternalPotion
      */
     public PotentialPotionEffect getPotionEffect(@NotNull final LivingEntity livingEntity)
     {
-        if (!this.isAvailable()) return null;
+        if (!this.isAvailable()) return PotentialPotionEffect.EMPTY;
 
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
@@ -246,8 +246,10 @@ public enum InternalPotion
      */
     @Value
     @AllArgsConstructor
-    private static class PotentialPotionEffect
+    public static class PotentialPotionEffect
     {
+        public static final PotentialPotionEffect EMPTY = new PotentialPotionEffect(null);
+
         PotionEffect underlying;
 
         public PotentialPotionEffect()

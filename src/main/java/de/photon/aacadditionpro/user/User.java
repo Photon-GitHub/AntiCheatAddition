@@ -9,6 +9,7 @@ import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.DataMap;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.user.data.TimestampMap;
+import de.photon.aacadditionpro.user.data.batch.TowerBatch;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -48,6 +49,8 @@ public class User implements CommandSender
 
     private final DataMap dataMap = new DataMap();
     private final TimestampMap timestampMap = new TimestampMap();
+
+    private final TowerBatch towerBatch = new TowerBatch(this);
 
     /**
      * Creates an {@link User} from a {@link Player}.

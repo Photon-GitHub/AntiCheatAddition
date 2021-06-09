@@ -2,9 +2,11 @@ package de.photon.aacadditionpro.util.datastructure.batch;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructure.broadcast.BroadcastReceiver;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
+import lombok.Getter;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -21,11 +23,16 @@ import java.util.Set;
  */
 public abstract class BatchProcessor<T> implements BroadcastReceiver<Batch.Snapshot<T>>
 {
+    @Getter
+    private final ViolationModule module;
+
     @Unmodifiable
     private final Set<Broadcaster<Batch.Snapshot<T>>> broadcasters;
 
-    protected BatchProcessor(Collection<Broadcaster<Batch.Snapshot<T>>> broadcasters)
+    protected BatchProcessor(ViolationModule module, Collection<Broadcaster<Batch.Snapshot<T>>> broadcasters)
     {
+        this.module = module;
+
         Preconditions.checkArgument(broadcasters != null, "Tried to create BatchProcessor with null broadcasters.");
         Preconditions.checkArgument(!broadcasters.isEmpty(), "Tried to create BatchProcessor with empty broadcasters.");
         // The wrapping with ImmutableSet.copyOf does not reduce performance when broadcasters is already an

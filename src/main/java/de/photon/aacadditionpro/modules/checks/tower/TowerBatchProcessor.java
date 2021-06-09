@@ -3,20 +3,26 @@ package de.photon.aacadditionpro.modules.checks.tower;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.user.data.batch.TowerBatch;
+import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
 import de.photon.aacadditionpro.util.datastructure.batch.AsyncBatchProcessor;
+import de.photon.aacadditionpro.util.datastructure.batch.BatchPreprocessors;
+import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
+import de.photon.aacadditionpro.util.inventory.InventoryUtil;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.server.Movement;
+import de.photon.aacadditionpro.util.violationlevels.Flag;
 import lombok.val;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlockPlace>
 {
-    private static final double TOWER_LENIENCY = AACAdditionPro.getInstance().getConfig().getDouble("Tower.tower_leniency");
-    private static final double LEVITATION_LENIENCY = AACAdditionPro.getInstance().getConfig().getDouble("Tower.levitation_leniency");
-
     /**
      * This {@link java.util.List} provides usually used and tested values to speed up performance and possibly low-
      * quality simulation results.
@@ -38,38 +44,38 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
             // Jump boost 4
             129.5);
 
-    private TowerBatchProcessor()
+    private final int cancelVl = AACAdditionPro.getInstance().getConfig().getInt(this.getModule().getConfigString() + ".cancel_vl");
+    private final double towerLeniency = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".tower_leniency");
+    private final double levitationLeniency = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".levitation_leniency");
+
+    public TowerBatchProcessor(ViolationModule module)
     {
-        super(ImmutableSet.of(TowerBatch.TOWER_BATCH_BROADCASTER));
+        super(module, ImmutableSet.of(TowerBatch.TOWER_BATCH_BROADCASTER));
     }
 
     @Override
     public void processBatch(User user, List<TowerBatch.TowerBlockPlace> batch)
     {
-        final double[] results = new double[2];
+        val calcStatistics = new DoubleStatistics();
+        val actualStatistics = new DoubleStatistics();
+        val pairs = new ArrayList<>(BatchPreprocessors.zipOffsetOne(batch));
 
+        for (ImmutablePair<TowerBatch.TowerBlockPlace, TowerBatch.TowerBlockPlace> pair : pairs) {
+            calcStatistics.accept(calculateDelay(pair.getFirst()));
+            actualStatistics.accept(pair.getFirst().timeOffset(pair.getSecond()));
+        }
 
-        val actualTime = batch.stream().
-                IterationUtil.twoObjectsIterationToEnd(batch, (old, current) -> {
-            // [0] = Expected time; [1] = Real time
-            results[0] += current.calculateDelay();
-            results[1] += (current.getTime() - old.getTime());
-        });
-
-        // Average
-        results[0] /= batch.size();
-        results[1] /= batch.size();
-
-        if (results[1] < results[0]) {
-            final int vlToAdd = (int) Math.min(1 + Math.floor((results[0] - results[1]) / 16), 100);
-
-            // Violation-Level handling
-            Tower.getInstance().getViolationLevelManagement().flag(user.getPlayer(), vlToAdd, Tower.getInstance().getCancelVl(), () ->
-            {
-                user.getTimestampMap().updateTimeStamp(TimestampKey.TOWER_TIMEOUT);
-                InventoryUtils.syncUpdateInventory(user.getPlayer());
-                // If not cancelled run the verbose message with additional data
-            }, () -> VerboseSender.getInstance().sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + results[0] + " | real: " + results[1]));
+        val calcAvg = calcStatistics.getAverage();
+        val actAvg = actualStatistics.getAverage();
+        if (actAvg < calcAvg) {
+            val vlToAdd = (int) Math.min(1 + Math.floor((calcAvg - actAvg) / 16), 100);
+            this.getModule().getManagement().flag(Flag.of(user)
+                                                      .setAddedVl(vlToAdd)
+                                                      .setCancelAction(cancelVl, () -> {
+                                                          user.getTimestampMap().at(TimestampKey.TOWER_TIMEOUT).update();
+                                                          InventoryUtil.syncUpdateInventory(user.getPlayer());
+                                                      })
+                                                      .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + calcAvg + " | real: " + actAvg)));
         }
     }
 
@@ -80,7 +86,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
     {
         if (blockPlace.getLevitationLevel() != null) {
             // 0.9 Blocks per second per levitation level.
-            return (900 / (blockPlace.getLevitationLevel() + 1D)) * TOWER_LENIENCY * LEVITATION_LENIENCY;
+            return (900 / (blockPlace.getLevitationLevel() + 1D)) * towerLeniency * levitationLeniency;
         }
 
         // No JUMP_BOOST
@@ -119,7 +125,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
                     // 0.92 is the required simulation leniency I got from testing.
                     // 0.925 is additional leniency
                     // -15 is special leniency for high jump boost environments.
-                    return ((((ticks * 50) / landingBlock) * 0.92 * 0.925) - 15) * TOWER_LENIENCY;
+                    return ((((ticks * 50) / landingBlock) * 0.92 * 0.925) - 15) * towerLeniency;
                 }
             }
 

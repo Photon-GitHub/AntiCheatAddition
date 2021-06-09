@@ -4,6 +4,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructure.batch.Batch;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
 import lombok.Value;
+import lombok.val;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,5 +25,11 @@ public class TowerBatch extends Batch<TowerBatch.TowerBlockPlace>
         Block block;
         Integer jumpBoostLevel;
         Integer levitationLevel;
+
+        public long timeOffset(@NotNull TowerBlockPlace other)
+        {
+            val otime = other.getTime();
+            return time < otime ? otime - time : time - otime;
+        }
     }
 }

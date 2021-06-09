@@ -56,6 +56,25 @@ public final class BlockUtil
      *
      * @param block   the block that faces should be checked for other {@link Block}s
      * @param faces   the {@link Set} containing all {@link BlockFace}s which shall be included.
+     *
+     * @return the amount of {@link Block}s which were counted
+     */
+    public static byte countBlocksAround(@NotNull final Block block, final Set<BlockFace> faces)
+    {
+        byte count = 0;
+        Block relative;
+        for (BlockFace f : faces) {
+            relative = block.getRelative(f);
+            if (!relative.isEmpty()) ++count;
+        }
+        return count;
+    }
+
+    /**
+     * This counts the {@link Block}s around the given block if they are not air/empty.
+     *
+     * @param block   the block that faces should be checked for other {@link Block}s
+     * @param faces   the {@link Set} containing all {@link BlockFace}s which shall be included.
      * @param ignored the {@link Set} of {@link Material}s which shall be ignored while counting.
      *                Empty blocks are automatically ignored.
      *

@@ -29,7 +29,7 @@ public class VapeSentinel extends SentinelModule implements Listener
     @Override
     public void onPluginMessageReceived(@NotNull final String channel, final Player player, @NotNull final byte[] message)
     {
-        val user = User.getUser(player.getUniqueId());
+        val user = User.getUser(player);
         if (User.isUserInvalid(user, this)) return;
 
         String clientData;

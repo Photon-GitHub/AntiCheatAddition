@@ -1,25 +1,28 @@
 package de.photon.aacadditionpro.modules.checks.teaming;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
+import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
+import de.photon.aacadditionpro.util.world.LocationUtils;
 import de.photon.aacadditionpro.util.world.Region;
 import lombok.Getter;
+import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 public class Teaming extends ViolationModule implements Listener
@@ -28,8 +31,9 @@ public class Teaming extends ViolationModule implements Listener
     private static final Teaming instance = new Teaming();
 
     // Region handling
-    private final Set<World> enabledWorlds = new HashSet<>(3);
-    private final Set<Region> safeZones = new HashSet<>(3);
+    private Set<World> enabledWorlds;
+    private Set<Region> safeZones;
+
     // Config
     @LoadFromConfiguration(configPath = ".proximity_range")
     private double proximityRangeSquared;
@@ -38,104 +42,94 @@ public class Teaming extends ViolationModule implements Listener
     @LoadFromConfiguration(configPath = ".allowed_size")
     private int allowedSize;
 
-    @Override
-    protected ModuleLoader createModuleLoader()
+    public Teaming()
     {
-        return null;
+        super("Teaming");
     }
 
     @Override
     public void enable()
     {
-        final long period = (AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".delay") * 20L) / 1000;
+        val period = (AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".delay") * 20L) / 1000;
 
         // Square it
         proximityRangeSquared *= proximityRangeSquared;
 
-        // Enabled worlds init
-        for (final String nameOfWorld : ConfigUtils.loadImmutableStringOrStringList(this.getConfigString() + ".enabled_worlds")) {
-            enabledWorlds.add(Objects.requireNonNull(Bukkit.getWorld(nameOfWorld), "Config loading error: Unable to get world " + nameOfWorld + " for the teaming check."));
-        }
+        final ImmutableSet.Builder<World> worldBuilder = new ImmutableSet.Builder<>();
+        final ImmutableSet.Builder<Region> safeZoneBuilder = new ImmutableSet.Builder<>();
 
-        // Safe zone init
-        for (final String safeZone : ConfigUtils.loadImmutableStringOrStringList(this.getConfigString() + ".safe_zones")) {
-            safeZones.add(Region.parseRegion(safeZone));
-        }
+        ConfigUtils.loadImmutableStringOrStringList(this.getConfigString() + ".enabled_worlds").stream()
+                   .map(Bukkit::getWorld)
+                   .forEach(world -> worldBuilder.add(Preconditions.checkNotNull(world, "Config loading error: Unable to identify world for the teaming check. Please check your world names listed in the config.")));
+
+        ConfigUtils.loadImmutableStringOrStringList(this.getConfigString() + ".safe_zones").stream().map(Region::parseRegion).forEach(safeZoneBuilder::add);
+
+        this.enabledWorlds = worldBuilder.build();
+        this.safeZones = safeZoneBuilder.build();
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
                 () -> {
-                    // Have the same LinkedList for all worlds in order to boost performance
-                    final LinkedList<User> usersOfWorld = new LinkedList<>();
-                    for (final World world : enabledWorlds) {
-                        // Clear the old world's data.
-                        usersOfWorld.clear();
+                    final LinkedList<Player> playersOfWorld = new LinkedList<>();
+                    final List<Player> teamingList = new LinkedList<>();
 
+                    for (World world : enabledWorlds) {
+                        // No need to clear playersOfWorld here, that is automatically done below.
                         // Add the users of the world.
-                        for (final Player player : world.getPlayers()) {
-                            final User user = UserManager.getUser(player.getUniqueId());
+                        User user;
+                        for (Player player : world.getPlayers()) {
+                            user = User.getUser(player);
 
                             // Only add users if they meet the preconditions
                             // User has to be online and not bypassed
-                            if (!User.isUserInvalid(user, this.getModuleType()) &&
+                            if (!User.isUserInvalid(user, this) &&
                                 // Correct gamemodes
                                 user.inAdventureOrSurvivalMode() &&
                                 // Not engaged in pvp
-                                !user.getTimestampMap().recentlyUpdated(TimestampKey.TEAMING_COMBAT_TAG, noPvpTime) &&
+                                !user.getTimestampMap().at(TimestampKey.TEAMING_COMBAT_TAG).recentlyUpdated(noPvpTime) &&
                                 // Not in a bypassed region
                                 !this.isPlayerRegionalBypassed(user.getPlayer()))
                             {
-                                usersOfWorld.add(user);
+                                playersOfWorld.add(user.getPlayer());
                             }
                         }
 
-                        while (!usersOfWorld.isEmpty()) {
-                            // More than 8 players usually don't team.
-                            final List<User> teamingList = new ArrayList<>(8);
-                            final User currentUser = usersOfWorld.removeFirst();
+                        while (!playersOfWorld.isEmpty()) {
+                            teamingList.clear();
+                            val currentPlayer = playersOfWorld.removeFirst();
+                            teamingList.add(currentPlayer);
 
-                            // Add the user himself
-                            teamingList.add(currentUser);
-
-                            for (final User possibleTeamUser : usersOfWorld) {
-                                if (LocationUtils.areLocationsInRange(currentUser.getPlayer().getLocation(), possibleTeamUser.getPlayer().getLocation(), proximityRangeSquared)) {
-                                    usersOfWorld.remove(possibleTeamUser);
-                                    teamingList.add(possibleTeamUser);
+                            for (final Player possibleTeamPlayer : playersOfWorld) {
+                                if (LocationUtils.areLocationsInRange(currentPlayer.getLocation(), possibleTeamPlayer.getLocation(), proximityRangeSquared)) {
+                                    playersOfWorld.remove(possibleTeamPlayer);
+                                    teamingList.add(possibleTeamPlayer);
                                 }
                             }
 
                             // Team is too big
-                            if (teamingList.size() > this.allowedSize) {
-                                final List<Player> playersOfTeam = new ArrayList<>(teamingList.size());
-
-                                for (final User teamUser : teamingList) {
-                                    playersOfTeam.add(teamUser.getPlayer());
-                                }
-
-                                // Flag the team
-                                vlManager.flagTeam(playersOfTeam, -1, () -> {}, () -> {});
-                            }
+                            if (teamingList.size() > this.allowedSize) this.getManagement().flag(Flag.of(ImmutableSet.copyOf(teamingList)));
                         }
                     }
                 }, 1L, period);
     }
 
-    /**
-     * @return false if the given {@link Player} is not in an enabled world or he is in a safe zone.
-     */
     private boolean isPlayerRegionalBypassed(final Player player)
     {
-        for (final Region safe_zone : safeZones) {
-            if (safe_zone.isInsideRegion(player.getLocation())) {
-                return true;
-            }
+        for (final Region safeZone : safeZones) {
+            if (safeZone.isInsideRegion(player.getLocation())) return true;
         }
         return false;
     }
 
     @Override
+    protected ModuleLoader createModuleLoader()
+    {
+        return ModuleLoader.builder(this).build();
+    }
+
+    @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(300, 1).build()
+        return ViolationLevelManagement.builder(this).withDecay(300, 1).build();
     }
 }

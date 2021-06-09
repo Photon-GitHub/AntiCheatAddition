@@ -33,7 +33,7 @@ public class AutoFishInhumanReaction extends ViolationModule implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onPlayerFish(PlayerFishEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         switch (event.getState()) {

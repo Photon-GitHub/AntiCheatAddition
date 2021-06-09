@@ -28,7 +28,7 @@ public class FiveZigSentinel extends SentinelModule implements Listener
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), REGISTER_SEND_CHANNEL, MESSAGE.array());
@@ -37,7 +37,7 @@ public class FiveZigSentinel extends SentinelModule implements Listener
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] message)
     {
-        val user = User.getUser(player.getUniqueId());
+        val user = User.getUser(player);
         if (User.isUserInvalid(user, this)) return;
         detection(user.getPlayer());
     }

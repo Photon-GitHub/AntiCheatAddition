@@ -77,7 +77,7 @@ public class Esp extends Module
             for (World world : Bukkit.getWorlds()) {
                 for (Player player : world.getPlayers()) {
                     //noinspection ConstantConditions
-                    if (player.getWorld() != null && player.getGameMode() != GameMode.SPECTATOR && !User.isUserInvalid(User.getUser(player.getUniqueId()), this)) players.add(player);
+                    if (player.getWorld() != null && player.getGameMode() != GameMode.SPECTATOR && !User.isUserInvalid(User.getUser(player), this)) players.add(player);
                 }
 
                 while (!players.isEmpty()) {

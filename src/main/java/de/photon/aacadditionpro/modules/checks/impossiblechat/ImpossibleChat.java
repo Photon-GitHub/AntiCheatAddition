@@ -25,7 +25,7 @@ public class ImpossibleChat extends ViolationModule implements Listener
     @EventHandler
     public void onAsyncChat(final AsyncPlayerChatEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         // Is in Inventory (Detection)

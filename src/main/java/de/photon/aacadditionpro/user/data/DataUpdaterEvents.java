@@ -60,7 +60,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onConsume(final PlayerItemConsumeEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (user == null) return;
 
         user.getTimestampMap().at(TimestampKey.LAST_CONSUME_EVENT).update();
@@ -98,7 +98,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onInteract(final PlayerInteractEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         val clickedBlock = event.getClickedBlock();
 
         // Make sure that we right click a block.
@@ -160,7 +160,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler
     public void onItemInteract(PlayerInteractEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (user == null) return;
 
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
@@ -172,7 +172,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onMove(final PlayerMoveEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (user == null || event.getTo() == null) return;
 
         // Head + normal movement
@@ -201,7 +201,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRespawn(final PlayerRespawnEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (user == null) return;
 
         user.getTimestampMap().at(TimestampKey.INVENTORY_OPENED).setToZero();
@@ -212,7 +212,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTeleport(final PlayerTeleportEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (user == null) return;
 
         user.getTimestampMap().at(TimestampKey.INVENTORY_OPENED).setToZero();
@@ -222,7 +222,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onToggleSneak(final PlayerToggleSneakEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (user == null) return;
 
         val sneak = event.isSneaking();
@@ -234,7 +234,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onToggleSprint(final PlayerToggleSprintEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (user == null) return;
 
         val sprint = event.isSprinting();
@@ -246,7 +246,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler
     public void onWorldChange(final PlayerChangedWorldEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (user == null) return;
 
         user.getTimestampMap().at(TimestampKey.INVENTORY_OPENED).setToZero();

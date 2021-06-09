@@ -47,7 +47,7 @@ public class AutoPotion extends ViolationModule implements Listener
     @EventHandler
     public void onMove(final PlayerMoveEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this) || event.getTo() == null) return;
 
         if (user.getDataMap().getBoolean(DataKey.BooleanKey.AUTOPOTION_ALREADY_THROWN)) {
@@ -84,7 +84,7 @@ public class AutoPotion extends ViolationModule implements Listener
     @EventHandler
     public void onInteract(final PlayerInteractEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         // Timeout

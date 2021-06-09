@@ -61,7 +61,7 @@ public class Pingspoof extends ViolationModule implements Listener
             packet.setWindowId(0);
 
             for (Player player : Bukkit.getOnlinePlayers()) {
-                user = User.getUser(player.getUniqueId());
+                user = User.getUser(player);
                 if (User.isUserInvalid(user, this)) continue;
 
                 serverPing = PingProvider.getPing(player);
@@ -93,7 +93,7 @@ public class Pingspoof extends ViolationModule implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         // Update the received once to make sure the player is not initially flagged for not sending a received packet.

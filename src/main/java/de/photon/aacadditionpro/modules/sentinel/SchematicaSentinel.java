@@ -39,7 +39,7 @@ public class SchematicaSentinel extends SentinelModule
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] message)
     {
         if (new String(message).contains("schematica")) {
-            val user = User.getUser(player.getUniqueId());
+            val user = User.getUser(player);
             if (User.isUserInvalid(user, this)) return;
 
             detection(player);

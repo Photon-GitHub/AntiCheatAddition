@@ -30,7 +30,7 @@ public class AutoEat extends ViolationModule implements Listener
     @EventHandler
     public void onConsume(PlayerItemConsumeEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, bypassPermission)) return;
 
         Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> {

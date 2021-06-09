@@ -68,6 +68,11 @@ public class User implements CommandSender
         DEBUG_USERS.remove(USERS.remove(uuid));
     }
 
+    public static User getUser(Player player)
+    {
+        return USERS.get(player.getUniqueId());
+    }
+
     public static User getUser(UUID uuid)
     {
         return USERS.get(uuid);
@@ -78,7 +83,7 @@ public class User implements CommandSender
     {
         // Special handling here as a player could potentially log out after this and therefore cause a NPE.
         val player = event.getPlayer();
-        return event.isPlayerTemporary() || player == null ? null : getUser(player.getUniqueId());
+        return event.isPlayerTemporary() || player == null ? null : getUser(player);
     }
 
     /**

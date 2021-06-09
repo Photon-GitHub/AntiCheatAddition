@@ -14,7 +14,6 @@ import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import de.photon.aacadditionpro.util.world.LocationUtils;
 import de.photon.aacadditionpro.util.world.Region;
-import lombok.Getter;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -27,13 +26,6 @@ import java.util.Set;
 
 public class Teaming extends ViolationModule implements Listener
 {
-    @Getter
-    private static final Teaming instance = new Teaming();
-
-    // Region handling
-    private Set<World> enabledWorlds;
-    private Set<Region> safeZones;
-
     // Config
     @LoadFromConfiguration(configPath = ".proximity_range")
     private double proximityRangeSquared;
@@ -64,8 +56,8 @@ public class Teaming extends ViolationModule implements Listener
 
         ConfigUtils.loadImmutableStringOrStringList(this.getConfigString() + ".safe_zones").stream().map(Region::parseRegion).forEach(safeZoneBuilder::add);
 
-        this.enabledWorlds = worldBuilder.build();
-        this.safeZones = safeZoneBuilder.build();
+        final Set<World> enabledWorlds = worldBuilder.build();
+        final Set<Region> safeZones = safeZoneBuilder.build();
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
@@ -87,7 +79,7 @@ public class Teaming extends ViolationModule implements Listener
                                 // Not engaged in pvp
                                 !user.getTimestampMap().at(TimestampKey.TEAMING_COMBAT_TAG).recentlyUpdated(noPvpTime) &&
                                 // Not in a bypassed region
-                                !this.isPlayerRegionalBypassed(user.getPlayer()))
+                                safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(player.getLocation())))
                             {
                                 playersOfWorld.add(user.getPlayer());
                             }
@@ -110,14 +102,6 @@ public class Teaming extends ViolationModule implements Listener
                         }
                     }
                 }, 1L, period);
-    }
-
-    private boolean isPlayerRegionalBypassed(final Player player)
-    {
-        for (final Region safeZone : safeZones) {
-            if (safeZone.isInsideRegion(player.getLocation())) return true;
-        }
-        return false;
     }
 
     @Override

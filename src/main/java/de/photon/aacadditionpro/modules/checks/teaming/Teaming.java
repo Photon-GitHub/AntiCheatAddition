@@ -76,9 +76,8 @@ public class Teaming extends ViolationModule implements Listener
                     for (World world : enabledWorlds) {
                         // No need to clear playersOfWorld here, that is automatically done below.
                         // Add the users of the world.
-                        User user;
                         for (Player player : world.getPlayers()) {
-                            user = User.getUser(player);
+                            val user = User.getUser(player);
 
                             // Only add users if they meet the preconditions
                             // User has to be online and not bypassed

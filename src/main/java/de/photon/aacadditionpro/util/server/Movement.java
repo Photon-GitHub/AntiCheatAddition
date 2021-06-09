@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.util.server;
 
 import lombok.Getter;
-import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +23,7 @@ public enum Movement
      *
      * @param input the input vector (will not be cloned)
      */
-    private static Vector applyAirResistance(@NotNull Vector input)
+    private Vector applyAirResistance(@NotNull Vector input)
     {
         return input.multiply((double) 0.98F);
     }
@@ -32,23 +31,21 @@ public enum Movement
     /**
      * This applies the gravitation of a specific type to a {@link Vector}
      *
-     * @param input    the input vector (will not be cloned)
-     * @param movement the type of the {@link Entity} the gravitation relates to.
+     * @param input the input vector (will not be cloned)
      */
-    private static Vector applyGravitation(@NotNull Vector input, @NotNull Movement movement)
+    private Vector applyGravitation(@NotNull Vector input)
     {
-        return input.setY(input.getY() + movement.gravitationPerTick);
+        return input.setY(input.getY() + this.gravitationPerTick);
     }
 
     /**
      * This applies the gravitation and the air resistance of a specific type to a {@link Vector}
      *
-     * @param input    the input vector (will not be cloned)
-     * @param movement the type of the {@link Entity} the gravitation relates to.
+     * @param input the input vector (will not be cloned)
      */
-    public static Vector applyGravitationAndAirResistance(@NotNull Vector input, @NotNull Movement movement)
+    public Vector applyGravitationAndAirResistance(@NotNull Vector input)
     {
-        return applyAirResistance(applyGravitation(input, movement));
+        return applyAirResistance(applyGravitation(input));
     }
 
     /**

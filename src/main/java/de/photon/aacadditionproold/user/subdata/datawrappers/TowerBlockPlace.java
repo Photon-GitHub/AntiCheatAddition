@@ -12,30 +12,6 @@ import java.util.List;
 
 public class TowerBlockPlace extends BlockPlace
 {
-    private static final double TOWER_LENIENCY = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.TOWER.getConfigString() + ".tower_leniency");
-    private static final double LEVITATION_LENIENCY = AACAdditionPro.getInstance().getConfig().getDouble(ModuleType.TOWER.getConfigString() + ".levitation_leniency");
-
-    /**
-     * This {@link java.util.List} provides usually used and tested values to speed up performance and possibly low-
-     * quality simulation results.
-     */
-    private static final List<Double> AMPLIFIER_CACHE = ImmutableList.of(
-            // 478.4 * 0.925
-            // No jump boost
-            442.52D,
-            // 578.4 * 0.925
-            // Jump boost 1
-            542.52D,
-            // 290 * 0.925
-            // Jump boost 2
-            268.25,
-            // 190 * 0.925
-            // Jump boost 3
-            175.75,
-            // 140 * 0.925
-            // Jump boost 4
-            129.5);
-
     final Integer jumpBoostLevel;
     final Integer levitationLevel;
 

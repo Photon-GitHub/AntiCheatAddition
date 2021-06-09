@@ -1,15 +1,50 @@
 package de.photon.aacadditionpro.util.datastructure.batch;
 
+import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BinaryOperator;
+import java.util.ListIterator;
+import java.util.function.BiFunction;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BatchPreprocessors
 {
+    /**
+     * This will zip neighboring elements of the list.
+     * This returns (0, 1), (2, 3), (4, 5) ...
+     * Therefore every element is at most in one pair.
+     * <p>
+     * The last element may be ignored if a pair cannot fully be formed.
+     */
+    public static <T> List<ImmutablePair<T, T>> zipToPairs(List<T> input)
+    {
+        final List<ImmutablePair<T, T>> output = new ArrayList<>(input.size());
+        T last = null;
+        for (T t : input) {
+            if (last == null) last = t;
+            else {
+                output.add(ImmutablePair.of(last, t));
+                last = null;
+            }
+        }
+        return combineTwoObjectsToEnd(input, ImmutablePair::of);
+    }
+
+    /**
+     * This will zip neighboring elements of the list.
+     * This returns (0, 1), (1, 2), (2, 3) ...
+     * Therefore elements can appear multiple times in the list!
+     * <p>
+     * The last element may be ignored if a pair cannot fully be formed.
+     */
+    public static <T> List<ImmutablePair<T, T>> zipOffsetOne(List<T> input)
+    {
+        return combineTwoObjectsToEnd(input, ImmutablePair::of);
+    }
+
     /**
      * <p>Combines two element according to a BiFunction.</p>
      * <p>This will take combine n elements to n-1 elements.</p>
@@ -24,13 +59,15 @@ public final class BatchPreprocessors
      *
      * @return an empty {@link List} if input has less than two elements or the {@link List} of the combined elements.
      */
-    public static <T> List<T> combineTwoObjectsToEnd(List<T> input, BinaryOperator<T> combiner)
+    public static <T, U> List<U> combineTwoObjectsToEnd(List<T> input, BiFunction<T, T, U> combiner)
     {
-        final List<T> output = new ArrayList<>(input.size());
+        final List<U> output = new ArrayList<>(input.size());
 
         T old = input.get(0);
-        for (int i = 1; i < input.size(); ++i) {
-            T current = input.get(i);
+        T current;
+        final ListIterator<T> iterator = input.listIterator(1);
+        while (iterator.hasNext()) {
+            current = iterator.next();
             output.add(combiner.apply(old, current));
             old = current;
         }
@@ -51,9 +88,9 @@ public final class BatchPreprocessors
      *
      * @return an empty {@link List} if input has less than two elements or the {@link List} of the combined elements.
      */
-    public static <T> List<T> combineTwoObjectsToStart(List<T> input, BinaryOperator<T> combiner)
+    public static <T, U> List<U> combineTwoObjectsToStart(List<T> input, BiFunction<T, T, U> combiner)
     {
-        final List<T> output = new ArrayList<>(input.size());
+        final List<U> output = new ArrayList<>(input.size());
 
         T old = input.get(input.size() - 1);
         for (int i = input.size() - 2; i >= 0; --i) {

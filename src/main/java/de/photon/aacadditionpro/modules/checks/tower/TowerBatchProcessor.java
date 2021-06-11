@@ -14,8 +14,10 @@ import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.server.Movement;
+import de.photon.aacadditionpro.util.server.MovementSimulator;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import lombok.val;
+import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
      * This {@link java.util.List} provides usually used and tested values to speed up performance and possibly low-
      * quality simulation results.
      */
-    private static final List<Double> AMPLIFIER_CACHE = ImmutableList.of(
+    private static final List<Double> FIRST_DELAYS = ImmutableList.of(
             // 478.4 * 0.925
             // No jump boost
             442.52D,
@@ -84,55 +86,36 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
      */
     public double calculateDelay(TowerBatch.TowerBlockPlace blockPlace)
     {
-        if (blockPlace.getLevitationLevel() != null) {
+        if (blockPlace.getLevitation().exists()) {
             // 0.9 Blocks per second per levitation level.
-            return (900 / (blockPlace.getLevitationLevel() + 1D)) * towerLeniency * levitationLeniency;
+            return (900 / (blockPlace.getLevitation().getAmplifier() + 1D)) * towerLeniency * levitationLeniency;
         }
 
-        // No JUMP_BOOST
-        if (blockPlace.getJumpBoostLevel() == null) {
-            return AMPLIFIER_CACHE.get(0);
-        }
+        // No Jump Boost
+        if (!blockPlace.getJumpBoost().exists()) return FIRST_DELAYS.get(0);
 
-        // Player has JUMP_BOOST
-        if (blockPlace.getJumpBoostLevel() < 0) {
-            // Negative JUMP_BOOST -> Not allowed to place blocks -> Very high delay
-            return 1500;
-        }
+        val jumpBoost = blockPlace.getJumpBoost().getAmplifier();
+        // Negative Jump Boost -> Not allowed to place blocks -> Very high delay
+        if (jumpBoost < 0) return 1500;
 
-        if (blockPlace.getJumpBoostLevel() + 1 < AMPLIFIER_CACHE.size()) {
-            return AMPLIFIER_CACHE.get(blockPlace.getJumpBoostLevel() + 1);
-        }
+        // Normal Jump Boost in cache
+        if (jumpBoost + 1 < FIRST_DELAYS.size()) return FIRST_DELAYS.get(jumpBoost + 1);
 
         // The velocity in the beginning
-        Vector currentVelocity = new Vector(0, Movement.PLAYER.getJumpYMotion(blockPlace.getJumpBoostLevel()), 0);
+        val currentVelocity = new Vector(0, Movement.PLAYER.getJumpYMotion(jumpBoost), 0);
+        val startLocation = new Location(null, 0, 0, 0);
 
-        // The first tick (1) happens here
-        double currentBlockValue = currentVelocity.getY();
-        Double landingBlock = null;
+        val simulator = new MovementSimulator(startLocation, currentVelocity, Movement.PLAYER);
+        simulator.tick();
+        simulator.tickUntil(sim -> sim.getVelocity().getY() <= 0, 200);
+        val landingBlockY = simulator.getCurrent().getBlock().getY();
+        simulator.tickUntil(sim -> sim.getCurrent().getY() <= landingBlockY, 50);
 
-        // Start the tick-loop at 2 due to the one tick outside.
-        for (short ticks = 2; ticks < 160; ++ticks) {
-            currentVelocity = Movement.PLAYER.applyGravitationAndAirResistance(currentVelocity);
-
-            // Break as the player has already reached the max height (no more blocks to place below).
-            if (currentVelocity.getY() <= 0) {
-                if (landingBlock == null) {
-                    landingBlock = Math.floor(currentBlockValue);
-                } else if (currentBlockValue <= landingBlock) {
-                    // If the result is lower here, the detection is more lenient.
-                    // * 50 : Convert ticks to milliseconds
-                    // 0.92 is the required simulation leniency I got from testing.
-                    // 0.925 is additional leniency
-                    // -15 is special leniency for high jump boost environments.
-                    return ((((ticks * 50) / landingBlock) * 0.92 * 0.925) - 15) * towerLeniency;
-                }
-            }
-
-            currentBlockValue += currentVelocity.getY();
-        }
-
-        // Too high movement; no checking
-        return 0;
+        // If the result is lower here, the detection is more lenient.
+        // * 50 : Convert ticks to milliseconds
+        // 0.92 is the required simulation leniency I got from testing.
+        // 0.925 is additional leniency
+        // -15 is special leniency for high jump boost environments.
+        return ((((simulator.getTick() * 50D) / landingBlockY) * 0.92D * 0.925D) - 15D) * towerLeniency;
     }
 }

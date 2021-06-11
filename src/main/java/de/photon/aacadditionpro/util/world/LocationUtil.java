@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Contract;
  * Provides util methods regarding {@link Location}s.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LocationUtils
+public final class LocationUtil
 {
     /**
      * Checks if two Entities are in the same world.

@@ -257,6 +257,11 @@ public enum InternalPotion
             this.underlying = null;
         }
 
+        public boolean exists()
+        {
+            return this.underlying == null;
+        }
+
         public Boolean getAmbient()
         {
             return underlying == null ? null : underlying.isAmbient();

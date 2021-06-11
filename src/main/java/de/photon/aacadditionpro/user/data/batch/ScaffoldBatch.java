@@ -3,20 +3,20 @@ package de.photon.aacadditionpro.user.data.batch;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructure.batch.Batch;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
-import de.photon.aacadditionpro.util.world.InternalPotion;
 import lombok.Value;
 import lombok.val;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
-public class TowerBatch extends Batch<TowerBatch.TowerBlockPlace>
+public class ScaffoldBatch extends Batch<ScaffoldBatch.TowerBlockPlace>
 {
-    public static final Broadcaster<Snapshot<TowerBlockPlace>> TOWER_BATCH_BROADCASTER = new Broadcaster<>();
-    private static final int TOWER_BATCH_SIZE = 6;
+    public static final Broadcaster<Snapshot<TowerBlockPlace>> SCAFFOLD_BATCH_BROADCASTER = new Broadcaster<>();
+    private static final int SCAFFOLD_BATCH_SIZE = 6;
 
-    public TowerBatch(@NotNull User user)
+    public ScaffoldBatch(@NotNull User user)
     {
-        super(TOWER_BATCH_BROADCASTER, user, TOWER_BATCH_SIZE, new TowerBlockPlace(null, null, null));
+        super(SCAFFOLD_BATCH_BROADCASTER, user, SCAFFOLD_BATCH_SIZE, new TowerBlockPlace(null, null, null));
     }
 
     @Value
@@ -24,8 +24,11 @@ public class TowerBatch extends Batch<TowerBatch.TowerBlockPlace>
     {
         long time = System.currentTimeMillis();
         Block block;
-        InternalPotion.PotentialPotionEffect jumpBoost;
-        InternalPotion.PotentialPotionEffect levitation;
+        Integer jumpBoostLevel;
+        Integer levitationLevel;
+        BlockFace blockFace;
+        double yaw;
+        boolean sneaked;
 
         public long timeOffset(@NotNull TowerBlockPlace other)
         {

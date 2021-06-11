@@ -47,7 +47,7 @@ public final class ChunkUtils
         Preconditions.checkNotNull(one, "Tried to check chunks in null location one.");
         Preconditions.checkNotNull(two, "Tried to check chunks in null location two.");
         Preconditions.checkNotNull(one.getWorld(), "Tried to check chunks null world of a location.");
-        Preconditions.checkArgument(LocationUtils.inSameWorld(one, two), "Tried to check chunks between worlds.");
+        Preconditions.checkArgument(LocationUtil.inSameWorld(one, two), "Tried to check chunks between worlds.");
 
         // Basic starting location check
         if (!isChunkLoaded(one.getWorld(), one.getBlockX(), one.getBlockZ())) return false;

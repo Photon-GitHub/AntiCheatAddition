@@ -17,7 +17,7 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
 
     public ScaffoldBatch(@NotNull User user)
     {
-        super(SCAFFOLD_BATCH_BROADCASTER, user, SCAFFOLD_BATCH_SIZE, new ScaffoldBlockPlace(null, InternalPotion.PotentialPotionEffect.EMPTY, null, 0, false));
+        super(SCAFFOLD_BATCH_BROADCASTER, user, SCAFFOLD_BATCH_SIZE, new ScaffoldBlockPlace(null, null, InternalPotion.PotentialPotionEffect.EMPTY, 0, false));
     }
 
     @Value
@@ -25,8 +25,8 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
     {
         long time = System.currentTimeMillis();
         Block block;
-        InternalPotion.PotentialPotionEffect speed;
         BlockFace blockFace;
+        InternalPotion.PotentialPotionEffect speed;
         double yaw;
         boolean sneaked;
 

@@ -4,17 +4,16 @@ import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
+import de.photon.aacadditionpro.user.data.batch.ScaffoldBatch;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import de.photon.aacadditionpro.util.world.BlockUtil;
+import de.photon.aacadditionpro.util.world.InternalPotion;
 import de.photon.aacadditionpro.util.world.LocationUtil;
 import de.photon.aacadditionpro.util.world.MaterialUtil;
-import de.photon.aacadditionproold.user.subdata.datawrappers.ScaffoldBlockPlace;
 import de.photon.aacadditionproold.util.inventory.InventoryUtils;
-import de.photon.aacadditionproold.util.potion.InternalPotionEffectType;
-import de.photon.aacadditionproold.util.potion.PotionUtil;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.Material;
@@ -23,10 +22,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import java.util.Objects;
+
 public class Scaffold extends ViolationModule implements Listener
 {
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 80L);
-
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
     private int cancelVl;
@@ -84,23 +83,19 @@ public class Scaffold extends ViolationModule implements Listener
             BlockUtil.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
         {
 
-            val lastScaffoldBlock = user.getScaffoldData().getScaffoldBlockPlaces().peekLastAdded().getBlock();
+            val lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().getBlock();
             // This checks if the block was placed against the expected block for scaffolding.
-            val newSituation = !lastScaffoldBlock.equals(event.getBlockAgainst()) || !BlockUtil.isNext(lastScaffoldBlock, event.getBlockPlaced(), true);
+            val newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !BlockUtil.isNext(lastScaffoldBlock, event.getBlockPlaced(), BlockUtil.HORIZONTAL_FACES);
 
             // ---------------------------------------------- Average ---------------------------------------------- //
 
-            if (newSituation) {
-                user.getScaffoldData().getScaffoldBlockPlaces().clear();
-            }
+            if (newScaffoldLocation) user.getScaffoldBatch().clear();
 
-            user.getScaffoldData().getScaffoldBlockPlaces().addDataPoint(new ScaffoldBlockPlace(
-                    event.getBlockPlaced(),
-                    event.getBlockPlaced().getFace(event.getBlockAgainst()),
-                    // Speed-Effect
-                    PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), InternalPotionEffectType.SPEED)),
-                    user.getPlayer().getLocation().getYaw(),
-                    user.hasSneakedRecently(175)));
+            user.getScaffoldBatch().addDataPoint(new ScaffoldBatch.ScaffoldBlockPlace(event.getBlockPlaced(),
+                                                                                      event.getBlockPlaced().getFace(event.getBlockAgainst()),
+                                                                                      InternalPotion.SPEED.getPotionEffect(event.getPlayer()),
+                                                                                      event.getPlayer().getLocation().getYaw(),
+                                                                                      user.hasSneakedRecently(175)));
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
@@ -108,7 +103,7 @@ public class Scaffold extends ViolationModule implements Listener
             vl += PositionPattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
 
             // All these checks may have false positives in new situations.
-            if (!newSituation) {
+            if (!newScaffoldLocation) {
                 final float[] angleInformation = user.getLookPacketData().getAngleInformation();
 
                 int rotationVl = RotationTypeOnePattern.getInstance().getApplyingConsumer().applyAsInt(user) +

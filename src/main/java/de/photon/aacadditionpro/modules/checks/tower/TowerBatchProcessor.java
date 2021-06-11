@@ -86,6 +86,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
      */
     public double calculateDelay(TowerBatch.TowerBlockPlace blockPlace)
     {
+        // Levitation handling.
         if (blockPlace.getLevitation().exists()) {
             // 0.9 Blocks per second per levitation level.
             return (900 / (blockPlace.getLevitation().getAmplifier() + 1D)) * towerLeniency * levitationLeniency;

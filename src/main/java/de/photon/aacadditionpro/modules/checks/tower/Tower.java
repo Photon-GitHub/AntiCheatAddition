@@ -70,13 +70,11 @@ public class Tower extends ViolationModule implements Listener
                 !MaterialUtil.containsLiquids(Hitbox.PLAYER.getPartiallyIncludedMaterials(user.getPlayer().getLocation())))
             {
                 // Make sure that the player is still towering in the same position.
-                if (!event.getBlockAgainst().getLocation().equals(user.getTowerBatch().peekLastAdded().getBlock().getLocation())) {
-                    user.getTowerBatch().clear();
-                }
+                if (!event.getBlockAgainst().getLocation().equals(user.getTowerBatch().peekLastAdded().getLocationOfBlock())) user.getTowerBatch().clear();
 
-                user.getTowerBatch().addDataPoint(new TowerBatch.TowerBlockPlace(blockPlaced,
-                                                                                 InternalPotion.JUMP.getPotionEffect(user.getPlayer()).getAmplifier(),
-                                                                                 InternalPotion.LEVITATION.getPotionEffect(user.getPlayer()).getAmplifier()));
+                user.getTowerBatch().addDataPoint(new TowerBatch.TowerBlockPlace(blockPlaced.getLocation(),
+                                                                                 InternalPotion.JUMP.getPotionEffect(user.getPlayer()),
+                                                                                 InternalPotion.LEVITATION.getPotionEffect(user.getPlayer())));
             }
         }
     }

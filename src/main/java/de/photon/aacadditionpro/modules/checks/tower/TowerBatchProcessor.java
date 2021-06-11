@@ -101,9 +101,9 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
         // Normal Jump Boost in cache
         if (jumpBoost + 1 < FIRST_DELAYS.size()) return FIRST_DELAYS.get(jumpBoost + 1);
 
-        // The velocity in the beginning
-        val currentVelocity = new Vector(0, Movement.PLAYER.getJumpYMotion(jumpBoost), 0);
+        // Start the simulation.
         val startLocation = new Location(null, 0, 0, 0);
+        val currentVelocity = new Vector(0, Movement.PLAYER.getJumpYMotion(jumpBoost), 0);
 
         val simulator = new MovementSimulator(startLocation, currentVelocity, Movement.PLAYER);
         simulator.tick();

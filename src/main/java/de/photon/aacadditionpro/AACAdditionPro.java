@@ -2,6 +2,8 @@ package de.photon.aacadditionpro;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.base.Preconditions;
+import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.ViaAPI;
 import de.photon.aacadditionpro.commands.MainCommand;
 import de.photon.aacadditionpro.modules.ModuleManager;
 import de.photon.aacadditionpro.user.User;
@@ -19,8 +21,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.myles.ViaVersion.api.Via;
-import us.myles.ViaVersion.api.ViaAPI;
 
 import java.io.File;
 import java.util.Arrays;

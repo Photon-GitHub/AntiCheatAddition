@@ -22,22 +22,14 @@ public abstract class Module
     {
         Preconditions.checkNotNull(configString, "Tried to create Module with null configString.");
         this.configString = configString;
-        this.moduleId = generateModuleId(configString);
-    }
-
-    public static String generateModuleId(final String configString)
-    {
-        return "aacadditionpro_" + configString.toLowerCase(Locale.ENGLISH);
+        this.moduleId = "aacadditionpro_" + configString.toLowerCase(Locale.ENGLISH);
     }
 
     public void setEnabled(boolean enabled)
     {
         if (this.enabled != enabled) {
-            if (enabled) {
-                enableModule();
-            } else {
-                disableModule();
-            }
+            if (enabled) enableModule();
+            else disableModule();
         }
     }
 

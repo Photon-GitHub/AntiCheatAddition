@@ -22,7 +22,6 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,22 +43,6 @@ public class ModuleLoader
 
     Set<Listener> listeners;
     Set<PacketListener> packetListeners;
-
-    public ModuleLoader(Module module, Set<Listener> listeners, Set<PacketListener> packetListeners, boolean bungeecordForbidden, Set<String> pluginDependencies, Set<String> pluginIncompatibilities, Set<ServerVersion> allowedServerVersions, BatchProcessor<?> batchProcessor, Set<MessageChannel> incoming, Set<MessageChannel> outgoing)
-    {
-        this.module = module;
-        this.listeners = listeners;
-        this.packetListeners = packetListeners;
-        this.bungeecordForbidden = bungeecordForbidden;
-        this.pluginDependencies = ImmutableSet.copyOf(pluginDependencies);
-        this.pluginIncompatibilities = ImmutableSet.copyOf(pluginIncompatibilities);
-        this.allowedServerVersions = Sets.immutableEnumSet(allowedServerVersions);
-        this.batchProcessor = batchProcessor;
-        this.incoming = ImmutableSet.copyOf(incoming);
-        this.outgoing = ImmutableSet.copyOf(outgoing);
-
-        Preconditions.checkArgument((module instanceof PluginMessageListener) == !(incoming.isEmpty() && outgoing.isEmpty()), "Channels have to be registered in a PluginMessageListener Module and cannot be registered otherwise.");
-    }
 
     public static Builder builder(Module module)
     {
@@ -131,12 +114,12 @@ public class ModuleLoader
     public static class Builder
     {
         private final Module module;
-        private final Set<Listener> listeners = new HashSet<>();
-        private final Set<PacketListener> packetListeners = new HashSet<>();
-        private final Set<String> pluginDependencies = new HashSet<>();
-        private final Set<String> pluginIncompatibilities = new HashSet<>();
-        private final Set<MessageChannel> incoming = new HashSet<>();
-        private final Set<MessageChannel> outgoing = new HashSet<>();
+        private final ImmutableSet.Builder<Listener> listeners = ImmutableSet.builder();
+        private final ImmutableSet.Builder<PacketListener> packetListeners = ImmutableSet.builder();
+        private final ImmutableSet.Builder<String> pluginDependencies = ImmutableSet.builder();
+        private final ImmutableSet.Builder<String> pluginIncompatibilities = ImmutableSet.builder();
+        private final ImmutableSet.Builder<MessageChannel> incoming = ImmutableSet.builder();
+        private final ImmutableSet.Builder<MessageChannel> outgoing = ImmutableSet.builder();
         private final Set<ServerVersion> allowedServerVersions = EnumSet.noneOf(ServerVersion.class);
         private boolean bungeecordForbidden = false;
         private BatchProcessor<?> batchProcessor = null;
@@ -149,31 +132,31 @@ public class ModuleLoader
 
         public Builder addListeners(Listener... listeners)
         {
-            Collections.addAll(this.listeners, listeners);
+            this.listeners.add(listeners);
             return this;
         }
 
         public Builder addPacketListeners(PacketListener... packetListeners)
         {
-            Collections.addAll(this.packetListeners, packetListeners);
+            this.packetListeners.add(packetListeners);
             return this;
         }
 
         public Builder addPluginDependencies(String... dependencies)
         {
-            Collections.addAll(this.pluginDependencies, dependencies);
+            this.pluginDependencies.add(dependencies);
             return this;
         }
 
         public Builder addPluginIncompatibilities(String... incompatibilities)
         {
-            Collections.addAll(this.pluginIncompatibilities, incompatibilities);
+            this.pluginDependencies.add(incompatibilities);
             return this;
         }
 
         public Builder addIncomingMessageChannels(MessageChannel... channels)
         {
-            Collections.addAll(this.incoming, channels);
+            this.incoming.add(channels);
             return this;
         }
 
@@ -185,7 +168,7 @@ public class ModuleLoader
 
         public Builder addOutgoingMessageChannels(MessageChannel... channels)
         {
-            Collections.addAll(this.outgoing, channels);
+            this.outgoing.add(channels);
             return this;
         }
 
@@ -216,20 +199,22 @@ public class ModuleLoader
 
         public ModuleLoader build()
         {
-            // Auto-Add module
+            val incomingChannels = incoming.build();
+            val outgoingChannels = outgoing.build();
+            Preconditions.checkArgument((module instanceof PluginMessageListener) == !(incomingChannels.isEmpty() && outgoingChannels.isEmpty()), "Channels have to be registered in a PluginMessageListener Module and cannot be registered otherwise.");
+
             if (module instanceof Listener) this.listeners.add((Listener) module);
-            val resultingEnumSet = allowedServerVersions.isEmpty() ? ServerVersion.ALL_SUPPORTED_VERSIONS : allowedServerVersions;
+            val resultingVersionSet = allowedServerVersions.isEmpty() ? ServerVersion.ALL_SUPPORTED_VERSIONS : allowedServerVersions;
             return new ModuleLoader(module,
-                                    listeners,
-                                    packetListeners,
                                     bungeecordForbidden,
-                                    ImmutableSet.copyOf(pluginDependencies),
-                                    ImmutableSet.copyOf(pluginIncompatibilities),
-                                    // Make sure to allow all server versions if nothing else is specified.
-                                    Sets.immutableEnumSet(resultingEnumSet),
+                                    pluginDependencies.build(),
+                                    pluginIncompatibilities.build(),
+                                    Sets.immutableEnumSet(resultingVersionSet),
                                     batchProcessor,
-                                    ImmutableSet.copyOf(incoming),
-                                    ImmutableSet.copyOf(outgoing));
+                                    incomingChannels,
+                                    outgoingChannels,
+                                    listeners.build(),
+                                    packetListeners.build());
         }
     }
 }

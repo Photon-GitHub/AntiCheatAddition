@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.modules;
 
+import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.InternalPermission;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public abstract class Module
 
     public Module(String configString)
     {
+        Preconditions.checkNotNull(configString, "Tried to create Module with null configString.");
         this.configString = configString;
         this.moduleId = generateModuleId(configString);
     }

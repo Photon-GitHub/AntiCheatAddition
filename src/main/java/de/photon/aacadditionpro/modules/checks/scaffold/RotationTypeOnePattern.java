@@ -25,7 +25,7 @@ class RotationTypeOnePattern implements Module
     {
         applyingConsumer = user -> {
             if (user.getTimestampMap().recentlyUpdated(TimestampKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE, 125)) {
-                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1");
+                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 1");
                 return 3;
             }
             return 0;

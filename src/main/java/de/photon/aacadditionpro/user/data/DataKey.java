@@ -75,6 +75,7 @@ public final class DataKey
     public enum CounterKey
     {
         AUTOFISH_FAILED(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("AutoFish.parts.consistency.maximum_fails"))),
+        SCAFFOLD_ANGLE_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.angle.violation_threshold"))),
         SCAFFOLD_ROTATION_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.rotation.violation_threshold"))),
         SCAFFOLD_SAFEWALK_TYPE1_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.safewalk.type1.violation_threshold"))),
         SCAFFOLD_SAFEWALK_TYPE2_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.safewalk.type2.violation_threshold"))),

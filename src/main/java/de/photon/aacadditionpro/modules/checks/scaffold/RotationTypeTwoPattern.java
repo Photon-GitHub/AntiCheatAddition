@@ -27,7 +27,7 @@ class RotationTypeTwoPattern implements Module
     {
         applyingConsumer = (user, angleInformation) -> {
             if (angleInformation > ANGLE_CHANGE_SUM_THRESHOLD) {
-                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2");
+                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 2");
                 return 2;
             }
             return 0;

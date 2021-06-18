@@ -53,7 +53,7 @@ class PositionPattern implements Module
             }
 
             if (flag) {
-                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + event.getPlayer().getName() + " placed from a suspicious location.");
+                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Debug | Player: " + event.getPlayer().getName() + " placed from a suspicious location.");
                 return 5;
             }
 

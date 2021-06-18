@@ -43,7 +43,7 @@ public class AutoFishInhumanReaction extends ViolationModule implements Listener
                 val vl = VL_CALCULATOR.apply(passedBiteTime / humanReactionTime).intValue();
 
                 if (vl > 0) {
-                    DebugSender.getInstance().sendDebug("AutoFish-Verbose | Player " + user.getPlayer().getName() + " failed inhuman reaction");
+                    DebugSender.getInstance().sendDebug("AutoFish-Debug | Player " + user.getPlayer().getName() + " failed inhuman reaction");
 
                     // Flag for vl = b + 1 because there would otherwise be a "0-vl"
                     this.getManagement().flag(Flag.of(user)

@@ -26,7 +26,7 @@ class RotationTypeThreePattern implements Module
     {
         applyingConsumer = (user, angleInformation) -> {
             if (angleInformation > ANGLE_OFFSET_SUM_THRESHOLD) {
-                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
+                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
                 return 1;
             }
             return 0;

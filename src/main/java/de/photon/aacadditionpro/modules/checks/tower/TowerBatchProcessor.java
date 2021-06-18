@@ -77,7 +77,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
                                                           user.getTimestampMap().at(TimestampKey.TOWER_TIMEOUT).update();
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
-                                                      .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + calcAvg + " | real: " + actAvg)));
+                                                      .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Tower-Debug | Player: " + user.getPlayer().getName() + " expected time: " + calcAvg + " | real: " + actAvg)));
         }
     }
 

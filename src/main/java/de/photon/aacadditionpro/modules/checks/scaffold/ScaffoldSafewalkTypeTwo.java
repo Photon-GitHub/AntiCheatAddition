@@ -35,7 +35,7 @@ class ScaffoldSafewalkTypeTwo extends Module
                 !(user.hasSneakedRecently(175) && user.getDataMap().getLong(DataKey.LongKey.LAST_SNEAK_DURATION) > 148))
             {
                 if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TYPE2_FAILS).incrementCompareThreshold()) {
-                    DebugSender.getInstance().sendDebug("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
+                    DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
                     return 4;
                 }
             } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TYPE2_FAILS).decrementAboveZero();

@@ -68,7 +68,7 @@ public class AverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBlockPlac
             Scaffold.getInstance().getViolationLevelManagement().flag(user.getPlayer(), vlIncrease, Scaffold.getInstance().getCancelVl(), () -> {
                 user.getTimestampMap().updateTimeStamp(TimestampKey.SCAFFOLD_TIMEOUT);
                 InventoryUtils.syncUpdateInventory(user.getPlayer());
-            }, () -> VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " enforced delay: " + result[0] + " | real: " + result[1] + " | vl increase: " + vlIncrease));
+            }, () -> VerboseSender.getInstance().sendVerboseMessage("Scaffold-Debug | Player: " + user.getPlayer().getName() + " enforced delay: " + result[0] + " | real: " + result[1] + " | vl increase: " + vlIncrease));
         }
     }
 }

@@ -27,6 +27,9 @@ import java.util.Objects;
 
 public class Scaffold extends ViolationModule implements Listener
 {
+    private final ScaffoldAngle scaffoldAngle = new ScaffoldAngle(this.getConfigString());
+    private final ScaffoldPosition scaffoldPosition = new ScaffoldPosition(this.getConfigString());
+    private final ScaffoldRotationFastChange scaffoldRotationFastChange = new ScaffoldRotationFastChange(this.getConfigString());
     private final ScaffoldSafewalkTypeOne scaffoldSafewalkTypeOne = new ScaffoldSafewalkTypeOne(this.getConfigString());
     private final ScaffoldSafewalkTypeTwo scaffoldSafewalkTypeTwo = new ScaffoldSafewalkTypeTwo(this.getConfigString());
     private final ScaffoldSprinting scaffoldSprinting = new ScaffoldSprinting(this.getConfigString());
@@ -100,14 +103,14 @@ public class Scaffold extends ViolationModule implements Listener
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
-            int vl = AnglePattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
-            vl += PositionPattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
+            int vl = this.scaffoldAngle.getApplyingConsumer().applyAsInt(user, event);
+            vl += this.scaffoldPosition.getApplyingConsumer().applyAsInt(user, event);
 
             // All these checks may have false positives in new situations.
             if (!newScaffoldLocation) {
-                final float[] angleInformation = user.getLookPacketData().getAngleInformation();
+                val angleInformation = user.getLookPacketData().getAngleInformation();
 
-                int rotationVl = RotationTypeOnePattern.getInstance().getApplyingConsumer().applyAsInt(user) +
+                val rotationVl = this.scaffoldRotationFastChange.getApplyingConsumer().applyAsInt(user) +
                                  RotationTypeTwoPattern.getInstance().getApplyingConsumer().applyAsInt(user, angleInformation[0]) +
                                  RotationTypeThreePattern.getInstance().getApplyingConsumer().applyAsInt(user, angleInformation[1]);
 

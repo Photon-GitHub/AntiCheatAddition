@@ -69,6 +69,16 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
         return true;
     }
 
+    public T head()
+    {
+        return this.array[ModularInteger.decrement(head.get(), maxSize)];
+    }
+
+    public T tail()
+    {
+        return this.array[tail.get()];
+    }
+
     @Override
     public int size()
     {

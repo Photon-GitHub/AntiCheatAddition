@@ -9,6 +9,7 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
+import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.mathematics.RotationUtil;
 import de.photon.aacadditionpro.util.packetwrappers.sentbyclient.IWrapperPlayClientLook;
@@ -17,9 +18,6 @@ import lombok.Getter;
 import lombok.val;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.LinkedList;
 
 public class LookPacketData
 {
@@ -30,13 +28,7 @@ public class LookPacketData
     }
 
     @Getter
-    private final Deque<RotationChange> rotationChangeQueue = new LinkedList<>();
-
-    public LookPacketData()
-    {
-        // Prevent initial problems.
-        this.rotationChangeQueue.addLast(new RotationChange(0, 0));
-    }
+    private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(QUEUE_CAPACITY, new RotationChange(0, 0));
 
     /**
      * Calculates the total rotation change in the last time.
@@ -47,35 +39,30 @@ public class LookPacketData
      */
     public float[] getAngleInformation()
     {
-        final float[] result = new float[2];
+        val result = new float[2];
 
         // Ticks that must be added to fill up the gaps in the queue.
         short gapFillers = 0;
 
         synchronized (this.rotationChangeQueue) {
-            final Collection<Float> rotationCache = new ArrayList<>(this.rotationChangeQueue.size());
-            final RotationChange[] elementArray = this.rotationChangeQueue.toArray(new RotationChange[0]);
-
+            val rotationCache = new ArrayList<>(this.rotationChangeQueue.size());
+            val elementArray = this.rotationChangeQueue.toArray(new RotationChange[0]);
 
             // Start at 1 as of the 0 element being the first "last element".
             for (int i = 1; i < elementArray.length; ++i) {
-                if (MathUtil.absDiff(System.currentTimeMillis(), elementArray[i].getTime()) > 1000) {
-                    continue;
-                }
+                if (MathUtil.absDiff(System.currentTimeMillis(), elementArray[i].getTime()) > 1000) continue;
 
-                short ticks = (short) (MathUtil.absDiff(elementArray[i].getTime(),
-                                                        // Using -1 for the last element is fine as there is always the last element.
-                                                        elementArray[i - 1].getTime()) / 50
+                val ticks = (short) (MathUtil.absDiff(elementArray[i].getTime(),
+                                                      // Using -1 for the last element is fine as there is always the last element.
+                                                      elementArray[i - 1].getTime()) / 50
                 );
 
                 // The current tick should be ignored, no gap filler.
-                if (ticks > 1) {
-                    // How many ticks have been left out?
-                    gapFillers += (ticks - 1);
-                }
+                // How many ticks have been left out?
+                if (ticks > 1) gapFillers += (ticks - 1);
 
                 // Angle calculations
-                float angle = elementArray[i - 1].angle(elementArray[i]);
+                val angle = elementArray[i - 1].angle(elementArray[i]);
                 rotationCache.add(angle);
                 // Angle change sum
                 result[0] += angle;
@@ -138,18 +125,14 @@ public class LookPacketData
 
             final IWrapperPlayClientLook lookWrapper = event::getPacket;
 
-            final RotationChange rotationChange = new RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
+            val rotationChange = new RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
 
             // Same tick -> merge
             synchronized (user.getLookPacketData().rotationChangeQueue) {
-                if (rotationChange.getTime() - user.getLookPacketData().rotationChangeQueue.getLast().getTime() < 55) {
-                    user.getLookPacketData().rotationChangeQueue.getLast().merge(rotationChange);
+                if (rotationChange.getTime() - user.getLookPacketData().getRotationChangeQueue().head().getTime() < 55) {
+                    user.getLookPacketData().getRotationChangeQueue().head().merge(rotationChange);
                 } else {
-                    user.getLookPacketData().rotationChangeQueue.addLast(rotationChange);
-                }
-
-                while (user.getLookPacketData().rotationChangeQueue.size() > QUEUE_CAPACITY) {
-                    user.getLookPacketData().rotationChangeQueue.removeFirst();
+                    user.getLookPacketData().getRotationChangeQueue().add(rotationChange);
                 }
             }
 

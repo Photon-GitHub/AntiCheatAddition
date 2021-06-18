@@ -405,6 +405,176 @@ Pingspoof:
     140: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Pingspoof"
     200: "kick {player} Pingspoof"
 
+# The Scaffold check detects Scaffold cheats
+Scaffold:
+  # Do you want to enable the Scaffold check?
+  enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player scaffolds suspiciously"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 6
+  # Violation before AACAdditionPro starts to cancel block placement.
+  # Set this to 0 to never cancel block placement.
+  cancel_vl: 20
+  # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to place a block in the given
+  # time window to prevent further scaffolding (in milliseconds)
+  timeout: 1000
+  # Control the different parts of Scaffold
+  parts:
+    # This part detects suspicious angles when the player places blocks.
+    # The angle part will add 3 vl if failed.
+    Angle:
+      # Do you want to enable the angle part?
+      enabled: true
+      # How many suspicious angles should Scaffold count as legit?
+      # The value must be greater or equal to 0.
+      violation_threshold: 3
+    # The main part of Scaffold preventing too fast Scaffolding
+    # This part is always enabled as it provides the basic framework.
+    # The average part might add between 4 and 24 violation levels depending on the severity of the violation.
+    Average:
+      # The minimum delay between block placements that will be enforced by AACAdditionPro (in milliseconds)
+      delays:
+        # This delay applies to all straight building techniques
+        normal: 238
+        # Constants used for building techniques which include sneaking
+        sneaking_addition: 30
+        sneaking_slow_addition: 40
+        # This delay applies to diagonal building
+        diagonal: 138
+    # This part detects suspicious placement positions.
+    # The position check always adds 5 vl.
+    Position:
+      # Do you want to enable the position part?
+      enabled: true
+    # This part analyzes the rotations of a player while scaffolding
+    Rotation:
+      # FastChange checks if a player has frequent, sudden spikes in their looking direction.
+      # This module can detect combinations of Killaura and Scaffold especially fast.
+      # Adds 3 vl.
+      FastChange:
+        enabled: true
+      # Type2 will add 2 vl
+      type2:
+        # Do you want to enable the position type2 part?
+        enabled: true
+      # Type3 will add 1 vl
+      type3:
+        # Do you want to enable the position type3 part?
+        enabled: true
+      # How many suspicious rotations should Scaffold count as legit
+      # The value must be greater or equal to 0.
+      violation_threshold: 6
+    # This checks for behaviour associated with safe-walk
+    Safewalk:
+      # What types of this part should be enabled
+      # Disabling all types will disable the part.
+      # Type1 will add 3 vl
+      type1:
+        # Do you want to enable the safewalk type1 part?
+        enabled: true
+        # How many suspicious positions should Scaffold count as legit?
+        # The value must be greater or equal to 0.
+        violation_threshold: 2
+      # Type2 will add 4 vl
+      type2:
+        # Do you want to enable the safewalk type2 part?
+        enabled: true
+        # How many suspicious positions should Scaffold count as legit?
+        # The value must be greater or equal to 0.
+        violation_threshold: 2
+    # This part detects sprinting between block placements.
+    # The sprinting check always adds 8 vl.
+    Sprinting:
+      # Do you want to enable the sprinting part?
+      enabled: true
+      # How many suspicious sprinting periods should Scaffold count as legit?
+      # This is needed as sprinting can be perfectly legit e.g. when starting to place blocks.
+      # The value must be greater or equal to 0.
+      violation_threshold: 4
+  # Map of violation levels to command
+  thresholds:
+    16: "aac notify {player} in {world} is suspected for Scaffold"
+    24: "aac notify {player} in {world} is highly suspected for Scaffold"
+    36: "aackick {player} Scaffold"
+
+# Skinblinker detects cheats of the same name when the player sprints/sneaks.
+Skinblinker:
+  # Do you want to enable the Skinblinker check?
+  enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player changes skin parts while actively moving"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 50
+  # Map of violation levels to command
+  thresholds:
+    1: "aac notify {player} in {world} is suspected for Skinblinker"
+    5: "aackick {player} Skinblinker"
+
+# This check tries to alert you of teamers
+# This is safe to enable, just make sure that you configure this check for your own needs.
+Teaming:
+  # Do you want to enable the Teaming check?
+  enabled: false
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player might be teaming"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 10
+  # How much delay should be between the check-waves
+  # This must be below 15000 milliseconds.
+  # Measured in milliseconds.
+  delay: 5000
+  # How far in blocks should players at most be away to count as teaming
+  proximity_range: 4.5
+  # If you only want to allow teams with a certain member-cap you can change this value appropriately.
+  # Setting it to 1 flags all teams.
+  allowed_size: 1
+  # Non-pvp time to count as teaming
+  # Measured in milliseconds.
+  no_pvp_time: 6000
+  # This contains all worlds the check should be enabled in.
+  enabled_worlds:
+    - "world"
+    - "world_nether"
+    - "world_the_end"
+  # Here you can define zones in which the check should not be run
+  # An entry is formatted as following:
+  # - <affected_world> <x1> <z1> <x2> <z2>
+  safe_zones:
+    - "world -15 -15 15 15"
+  # These ViolationLevel are cumulative for a team.
+  # E.g. a potential team of 6 members will generate 6 vl after every delay.
+  thresholds:
+    4: "aac notify {team} in {world} may be Teaming"
+    10: "aac notify {team} in {world} are suspected for Teaming"
+    15: "aac notify {team} in {world} are highly suspected for Teaming"
+
+# The Tower check detects cheats of the same name, modifications which allow you to build straight up (towering)
+# very fast.
+Tower:
+  # Do you want to enable the Tower check?
+  enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player builds a tower too fast"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aacscoremultiplier: 20
+  # Violation before AACAdditionPro starts to cancel the block placements.
+  # Set this to 0 to never cancel block placement.
+  cancel_vl: 6
+  # If you have false positives decrease this SLIGHTLY.
+  # The Tower check has its own leniency-curve which makes it very effective.
+  # Therefore please only touch this if you have false positives.
+  tower_leniency: 1
+  # Special leniency which is only applied if the player has the levitation effect
+  levitation_leniency: 0.95
+  # After a detection which surpasses cancel_vl AACAdditionPro cancels all block placements in the given timeframe
+  # to prevent further towering (in milliseconds)
+  timeout: 6000
+  # Map of violation levels to command
+  thresholds:
+    5: "aac notify {player} in {world} is suspected for Tower"
+    12: "aackick {player} Tower"
+
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                            ___          _   _          _                                            #
 #                                           / __| ___ _ _| |_(_)_ _  ___| |                                           #

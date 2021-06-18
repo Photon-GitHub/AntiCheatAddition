@@ -20,7 +20,7 @@ class ScaffoldSprinting extends Module
 
     public ScaffoldSprinting(String scaffoldConfigString)
     {
-        super(scaffoldConfigString + ".parts.sprinting");
+        super(scaffoldConfigString + ".parts.Sprinting");
     }
 
     @Override

@@ -22,6 +22,11 @@ public interface Buffer<T> extends Collection<T>
     boolean add(T object);
 
     /**
+     * Gets the most recently added element.
+     */
+    T head();
+
+    /**
      * @return whether or not the {@link Buffer} is empty.
      */
     boolean isEmpty();

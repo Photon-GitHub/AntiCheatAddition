@@ -20,7 +20,7 @@ class ScaffoldSafewalkTypeTwo extends Module
 
     public ScaffoldSafewalkTypeTwo(String scaffoldConfigString)
     {
-        super(scaffoldConfigString + ".parts.safewalk.type2");
+        super(scaffoldConfigString + ".parts.Safewalk.type2");
     }
 
     @Override

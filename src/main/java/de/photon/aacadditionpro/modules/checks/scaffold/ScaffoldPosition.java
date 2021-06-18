@@ -1,11 +1,12 @@
 package de.photon.aacadditionpro.modules.checks.scaffold;
 
-import de.photon.aacadditionproold.modules.Module;
-import de.photon.aacadditionproold.modules.ModuleType;
-import de.photon.aacadditionproold.user.User;
-import de.photon.aacadditionproold.util.mathematics.MathUtils;
-import de.photon.aacadditionproold.util.messaging.VerboseSender;
+import de.photon.aacadditionpro.modules.Module;
+import de.photon.aacadditionpro.modules.ModuleLoader;
+import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.util.mathematics.MathUtil;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
 import lombok.Getter;
+import lombok.val;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.util.function.ToIntBiFunction;
@@ -13,24 +14,25 @@ import java.util.function.ToIntBiFunction;
 /**
  * This pattern checks for suspicious positions when placing a block to prevent extend scaffolds.
  */
-class PositionPattern implements Module
+class ScaffoldPosition extends Module
 {
     @Getter
-    private static final PositionPattern instance = new PositionPattern();
-    @Getter
     private ToIntBiFunction<User, BlockPlaceEvent> applyingConsumer = (user, event) -> 0;
+
+    public ScaffoldPosition(String scaffoldConfigString)
+    {
+        super(scaffoldConfigString + ".parts.Position");
+    }
 
     @Override
     public void enable()
     {
         applyingConsumer = (user, event) -> {
             // This sorts out scaffolding with non-full block hitboxes that will cause false positives (e.g. fences).
-            if (!event.getBlockPlaced().getType().isOccluding()) {
-                return 0;
-            }
+            if (!event.getBlockPlaced().getType().isOccluding()) return 0;
 
-            final double xOffset = MathUtils.offset(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
-            final double zOffset = MathUtils.offset(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
+            val xOffset = MathUtil.absDiff(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
+            val zOffset = MathUtil.absDiff(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
 
             boolean flag;
             switch (event.getBlock().getFace(event.getBlockAgainst())) {
@@ -53,7 +55,7 @@ class PositionPattern implements Module
             }
 
             if (flag) {
-                VerboseSender.getInstance().sendVerboseMessage("Scaffold-Debug | Player: " + event.getPlayer().getName() + " placed from a suspicious location.");
+                DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + event.getPlayer().getName() + " placed from a suspicious location.");
                 return 5;
             }
 
@@ -68,20 +70,8 @@ class PositionPattern implements Module
     }
 
     @Override
-    public boolean isSubModule()
+    protected ModuleLoader createModuleLoader()
     {
-        return true;
-    }
-
-    @Override
-    public String getConfigString()
-    {
-        return this.getModuleType().getConfigString() + ".parts.position";
-    }
-
-    @Override
-    public ModuleType getModuleType()
-    {
-        return ModuleType.SCAFFOLD;
+        return ModuleLoader.builder(this).build();
     }
 }

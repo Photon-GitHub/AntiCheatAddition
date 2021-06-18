@@ -12,23 +12,18 @@ import org.bukkit.util.Vector;
 
 import java.util.function.ToIntBiFunction;
 
-class AnglePattern extends Module
+class ScaffoldAngle extends Module
 {
     private static final double MAX_ANGLE = Math.toRadians(90);
 
     @Getter
     private ToIntBiFunction<User, BlockPlaceEvent> applyingConsumer = (user, event) -> 0;
 
-    public AnglePattern(String scaffoldConfigString)
+    public ScaffoldAngle(String scaffoldConfigString)
     {
         super(scaffoldConfigString + ".parts.angle");
     }
 
-    @Override
-    protected ModuleLoader createModuleLoader()
-    {
-        return ModuleLoader.builder(this).build();
-    }
 
     @Override
     public void enable()
@@ -41,18 +36,9 @@ class AnglePattern extends Module
             if (user.getPlayer().getLocation().getDirection().angle(placedVector) > MAX_ANGLE) {
                 if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ANGLE_FAILS).incrementCompareThreshold()) {
                     DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " placed a block with a suspicious angle.");
-                }
-            }
-
-
-            if (user.getPlayer().getLocation().getDirection().angle(placedVector) > MAX_ANGLE) {
-                if (++user.getScaffoldData().angleFails >= this.violationThreshold) {
-                    VerboseSender.getInstance().sendVerboseMessage("Scaffold-Debug | Player: " + user.getPlayer().getName() + " placed a block with a suspicious angle.");
                     return 3;
                 }
-            } else if (user.getScaffoldData().angleFails > 0) {
-                --user.getScaffoldData().angleFails;
-            }
+            } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ANGLE_FAILS).decrementAboveZero();
             return 0;
         };
     }
@@ -64,20 +50,8 @@ class AnglePattern extends Module
     }
 
     @Override
-    public boolean isSubModule()
+    protected ModuleLoader createModuleLoader()
     {
-        return true;
-    }
-
-    @Override
-    public String getConfigString()
-    {
-        return this.getModuleType().getConfigString() + ".parts.angle";
-    }
-
-    @Override
-    public ModuleType getModuleType()
-    {
-        return ModuleType.SCAFFOLD;
+        return ModuleLoader.builder(this).build();
     }
 }

@@ -24,7 +24,7 @@ class ScaffoldSafewalkTypeOne extends Module
 
     public ScaffoldSafewalkTypeOne(String scaffoldConfigString)
     {
-        super(scaffoldConfigString + ".parts.safewalk.type1");
+        super(scaffoldConfigString + ".parts.Safewalk.type1");
     }
 
     @Override

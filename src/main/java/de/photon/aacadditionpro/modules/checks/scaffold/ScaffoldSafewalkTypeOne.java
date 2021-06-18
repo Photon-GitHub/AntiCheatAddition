@@ -1,14 +1,14 @@
 package de.photon.aacadditionpro.modules.checks.scaffold;
 
-import de.photon.aacadditionproold.modules.Module;
-import de.photon.aacadditionproold.modules.ModuleType;
-import de.photon.aacadditionproold.user.DataKey;
-import de.photon.aacadditionproold.user.TimestampKey;
-import de.photon.aacadditionproold.user.User;
-import de.photon.aacadditionproold.util.files.configs.LoadFromConfiguration;
-import de.photon.aacadditionproold.util.mathematics.MathUtils;
-import de.photon.aacadditionproold.util.messaging.VerboseSender;
+import de.photon.aacadditionpro.modules.Module;
+import de.photon.aacadditionpro.modules.ModuleLoader;
+import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.data.DataKey;
+import de.photon.aacadditionpro.user.data.TimestampKey;
+import de.photon.aacadditionpro.util.mathematics.MathUtil;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
 import lombok.Getter;
+import lombok.val;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.util.function.ToIntBiFunction;
@@ -17,16 +17,15 @@ import java.util.function.ToIntBiFunction;
  * This pattern detects suspicious stops right before the edges
  * of {@link org.bukkit.block.Block}s.
  */
-class SafewalkTypeOnePattern implements Module
+class ScaffoldSafewalkTypeOne extends Module
 {
     @Getter
-    private static final SafewalkTypeOnePattern instance = new SafewalkTypeOnePattern();
-
-    @LoadFromConfiguration(configPath = ".violation_threshold")
-    private int violationThreshold;
-
-    @Getter
     private ToIntBiFunction<User, BlockPlaceEvent> applyingConsumer = (user, event) -> 0;
+
+    public ScaffoldSafewalkTypeOne(String scaffoldConfigString)
+    {
+        super(scaffoldConfigString + ".parts.safewalk.type1");
+    }
 
     @Override
     public void enable()
@@ -35,11 +34,10 @@ class SafewalkTypeOnePattern implements Module
             // Moved to the edge of the block
             if (user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 175) &&
                 // Not sneaked recently. The sneaking must endure some time to prevent bypasses.
-                !(user.hasSneakedRecently(125) && user.getDataMap().getLong(DataKey.LAST_SNEAK_DURATION) > 148))
+                !(user.hasSneakedRecently(125) && user.getDataMap().getLong(DataKey.LongKey.LAST_SNEAK_DURATION) > 148))
             {
-
-                final double xOffset = MathUtils.offset(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
-                final double zOffset = MathUtils.offset(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
+                val xOffset = MathUtil.absDiff(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
+                val zOffset = MathUtil.absDiff(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
 
                 boolean sneakBorder;
                 switch (event.getBlock().getFace(event.getBlockAgainst())) {
@@ -62,13 +60,11 @@ class SafewalkTypeOnePattern implements Module
                 }
 
                 if (sneakBorder) {
-                    if (++user.getScaffoldData().safewalkTypeOneFails >= this.violationThreshold) {
-                        VerboseSender.getInstance().sendVerboseMessage("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
+                    if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TYPE1_FAILS).incrementCompareThreshold()) {
+                        DebugSender.getInstance().sendDebug("Scaffold-Verbose | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
                         return 3;
                     }
-                } else {
-                    user.getScaffoldData().safewalkTypeOneFails = 0;
-                }
+                } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TYPE1_FAILS).setToZero();
             }
             return 0;
         };
@@ -81,20 +77,8 @@ class SafewalkTypeOnePattern implements Module
     }
 
     @Override
-    public boolean isSubModule()
+    protected ModuleLoader createModuleLoader()
     {
-        return true;
-    }
-
-    @Override
-    public String getConfigString()
-    {
-        return this.getModuleType().getConfigString() + ".parts.safewalk.type1";
-    }
-
-    @Override
-    public ModuleType getModuleType()
-    {
-        return ModuleType.SCAFFOLD;
+        return ModuleLoader.builder(this).build();
     }
 }

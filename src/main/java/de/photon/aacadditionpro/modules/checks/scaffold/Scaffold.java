@@ -27,10 +27,13 @@ import java.util.Objects;
 
 public class Scaffold extends ViolationModule implements Listener
 {
+    private final ScaffoldSafewalkTypeOne scaffoldSafewalkTypeOne = new ScaffoldSafewalkTypeOne(this.getConfigString());
+    private final ScaffoldSafewalkTypeTwo scaffoldSafewalkTypeTwo = new ScaffoldSafewalkTypeTwo(this.getConfigString());
+    private final ScaffoldSprinting scaffoldSprinting = new ScaffoldSprinting(this.getConfigString());
+
     @Getter
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancelVl;
-
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
@@ -112,10 +115,10 @@ public class Scaffold extends ViolationModule implements Listener
                     if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ROTATION_FAILS).incrementCompareThreshold()) vl += rotationVl;
                 } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ROTATION_FAILS).decrementAboveZero();
 
-                vl += SafewalkTypeOnePattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
-                vl += SafewalkTypeTwoPattern.getInstance().getApplyingConsumer().applyAsInt(user);
-                vl += ScaffoldSprinting.getInstance().getApplyingConsumer().applyAsInt(user);
-            }S
+                vl += this.scaffoldSafewalkTypeOne.getApplyingConsumer().applyAsInt(user, event);
+                vl += this.scaffoldSafewalkTypeTwo.getApplyingConsumer().applyAsInt(user);
+                vl += this.scaffoldSprinting.getApplyingConsumer().applyAsInt(user);
+            }
 
             if (vl > 0) {
                 this.getManagement().flag(Flag.of(event.getPlayer()).setCancelAction(cancelVl, () -> {

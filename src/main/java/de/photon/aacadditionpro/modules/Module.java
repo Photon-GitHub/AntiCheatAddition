@@ -15,7 +15,7 @@ public abstract class Module
     @Getter protected final String configString;
     @Getter @EqualsAndHashCode.Include private final String moduleId;
     protected final String bypassPermission = InternalPermission.bypassPermissionOf(this.getModuleId());
-    @Getter(lazy = true) private final ModuleLoader moduleLoader = createModuleLoader();
+    @Getter(lazy = true) private final ModuleLoader moduleLoader = Preconditions.checkNotNull(createModuleLoader(), "Tried to create null ModuleLoader.");
     @Getter private boolean enabled;
 
     public Module(String configString)

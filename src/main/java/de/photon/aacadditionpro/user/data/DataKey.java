@@ -76,6 +76,8 @@ public final class DataKey
     {
         AUTOFISH_FAILED(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("AutoFish.parts.consistency.maximum_fails"))),
         SCAFFOLD_ROTATION_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.rotation.violation_threshold"))),
+        SCAFFOLD_SAFEWALK_TYPE1_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.safewalk.type1.violation_threshold"))),
+        SCAFFOLD_SAFEWALK_TYPE2_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.safewalk.type2.violation_threshold"))),
         SCAFFOLD_SPRINTING_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.sprinting.violation_threshold")));
 
         private final ViolationCounter defaultValue;

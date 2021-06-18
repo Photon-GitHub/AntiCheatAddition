@@ -18,9 +18,9 @@ class ScaffoldSprinting extends Module
     @Getter
     private ToIntFunction<User> applyingConsumer = user -> 0;
 
-    public ScaffoldSprinting(String configString)
+    public ScaffoldSprinting(String scaffoldConfigString)
     {
-        super(configString);
+        super(scaffoldConfigString + ".parts.sprinting");
     }
 
     @Override

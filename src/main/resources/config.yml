@@ -424,7 +424,7 @@ Scaffold:
     # This part detects suspicious angles when the player places blocks.
     # The angle part will add 3 vl if failed.
     Angle:
-      # Do you want to enable the angle part?
+      # Do you want to enable Angle?
       enabled: true
       # How many suspicious angles should Scaffold count as legit?
       # The value must be greater or equal to 0.
@@ -449,18 +449,21 @@ Scaffold:
       enabled: true
     # This part analyzes the rotations of a player while scaffolding
     Rotation:
+      # This checks the player's rotation's derivative.
+      # Adds 2 vl.
+      Derivative:
+        # Do you want to enable Derivative?
+        enabled: true
       # FastChange checks if a player has frequent, sudden spikes in their looking direction.
       # This module can detect combinations of Killaura and Scaffold especially fast.
       # Adds 3 vl.
       FastChange:
+        # Do you want to enable FastChange?
         enabled: true
-      # Type2 will add 2 vl
-      type2:
-        # Do you want to enable the position type2 part?
-        enabled: true
-      # Type3 will add 1 vl
-      type3:
-        # Do you want to enable the position type3 part?
+      # This checks the player's rotation's second derivative.
+      # Adds 1 vl.
+      SecondDerivative:
+        # Do you want to enable SecondDerivative?
         enabled: true
       # How many suspicious rotations should Scaffold count as legit
       # The value must be greater or equal to 0.
@@ -471,14 +474,14 @@ Scaffold:
       # Disabling all types will disable the part.
       # Type1 will add 3 vl
       type1:
-        # Do you want to enable the safewalk type1 part?
+        # Do you want to enable Safewalk Type 1?
         enabled: true
         # How many suspicious positions should Scaffold count as legit?
         # The value must be greater or equal to 0.
         violation_threshold: 2
       # Type2 will add 4 vl
       type2:
-        # Do you want to enable the safewalk type2 part?
+        # Do you want to enable Safewalk Type 2?
         enabled: true
         # How many suspicious positions should Scaffold count as legit?
         # The value must be greater or equal to 0.
@@ -486,7 +489,7 @@ Scaffold:
     # This part detects sprinting between block placements.
     # The sprinting check always adds 8 vl.
     Sprinting:
-      # Do you want to enable the sprinting part?
+      # Do you want to enable Sprinting?
       enabled: true
       # How many suspicious sprinting periods should Scaffold count as legit?
       # This is needed as sprinting can be perfectly legit e.g. when starting to place blocks.

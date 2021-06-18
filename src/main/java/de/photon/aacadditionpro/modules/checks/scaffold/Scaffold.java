@@ -28,10 +28,16 @@ import java.util.Objects;
 public class Scaffold extends ViolationModule implements Listener
 {
     private final ScaffoldAngle scaffoldAngle = new ScaffoldAngle(this.getConfigString());
+
     private final ScaffoldPosition scaffoldPosition = new ScaffoldPosition(this.getConfigString());
+
     private final ScaffoldRotationFastChange scaffoldRotationFastChange = new ScaffoldRotationFastChange(this.getConfigString());
+    private final ScaffoldRotationDerivative scaffoldRotationDerivative = new ScaffoldRotationDerivative(this.getConfigString());
+    private final ScaffoldRotationSecondDerivative scaffoldRotationSecondDerivative = new ScaffoldRotationSecondDerivative(this.getConfigString());
+
     private final ScaffoldSafewalkTypeOne scaffoldSafewalkTypeOne = new ScaffoldSafewalkTypeOne(this.getConfigString());
     private final ScaffoldSafewalkTypeTwo scaffoldSafewalkTypeTwo = new ScaffoldSafewalkTypeTwo(this.getConfigString());
+
     private final ScaffoldSprinting scaffoldSprinting = new ScaffoldSprinting(this.getConfigString());
 
     @Getter
@@ -111,8 +117,8 @@ public class Scaffold extends ViolationModule implements Listener
                 val angleInformation = user.getLookPacketData().getAngleInformation();
 
                 val rotationVl = this.scaffoldRotationFastChange.getApplyingConsumer().applyAsInt(user) +
-                                 RotationTypeTwoPattern.getInstance().getApplyingConsumer().applyAsInt(user, angleInformation[0]) +
-                                 RotationTypeThreePattern.getInstance().getApplyingConsumer().applyAsInt(user, angleInformation[1]);
+                                 this.scaffoldRotationDerivative.getApplyingConsumer().applyAsInt(user, angleInformation[0]) +
+                                 this.scaffoldRotationSecondDerivative.getApplyingConsumer().applyAsInt(user, angleInformation[1]);
 
                 if (rotationVl > 0) {
                     if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ROTATION_FAILS).incrementCompareThreshold()) vl += rotationVl;
@@ -136,7 +142,9 @@ public class Scaffold extends ViolationModule implements Listener
     @Override
     protected ModuleLoader createModuleLoader()
     {
+        val batchProcessor = new ScaffoldAverageBatchProcessor(this);
         return ModuleLoader.builder(this)
+                           .batchProcessor(batchProcessor)
                            .build();
     }
 

@@ -11,6 +11,7 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.user.data.TimestampMap;
 import de.photon.aacadditionpro.user.data.batch.ScaffoldBatch;
 import de.photon.aacadditionpro.user.data.batch.TowerBatch;
+import de.photon.aacadditionpro.user.data.subdata.LookPacketData;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -54,6 +55,8 @@ public class User implements CommandSender
     private final ScaffoldBatch scaffoldBatch = new ScaffoldBatch(this);
     private final TowerBatch towerBatch = new TowerBatch(this);
 
+    private final LookPacketData lookPacketData = new LookPacketData();
+
     /**
      * Creates an {@link User} from a {@link Player}.
      */
@@ -88,7 +91,7 @@ public class User implements CommandSender
     {
         // Special handling here as a player could potentially log out after this and therefore cause a NPE.
         val player = event.getPlayer();
-        return event.isPlayerTemporary() || player == null ? null : getUser(player);
+        return event.isCancelled() || event.isPlayerTemporary() || player == null ? null : getUser(player);
     }
 
     /**

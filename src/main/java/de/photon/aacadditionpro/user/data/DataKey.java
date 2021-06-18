@@ -56,8 +56,8 @@ public final class DataKey
     {
         AUTOPOTION_LAST_SUDDEN_PITCH(0F),
         AUTOPOTION_LAST_SUDDEN_YAW(0F),
-        PACKET_ANALYSIS_REAL_LAST_PITCH(-1F),
-        PACKET_ANALYSIS_REAL_LAST_YAW(-1F);
+        LAST_PACKET_PITCH(-1F),
+        LAST_PACKET_YAW(-1F);
 
         private final Float defaultValue;
     }
@@ -74,7 +74,9 @@ public final class DataKey
     @AllArgsConstructor
     public enum CounterKey
     {
-        AUTOFISH_FAILED(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("AutoFish.parts.consistency.maximum_fails")));
+        AUTOFISH_FAILED(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("AutoFish.parts.consistency.maximum_fails"))),
+        SCAFFOLD_ROTATION_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.rotation.violation_threshold"))),
+        SCAFFOLD_SPRINTING_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.sprinting.violation_threshold")));
 
         private final ViolationCounter defaultValue;
     }

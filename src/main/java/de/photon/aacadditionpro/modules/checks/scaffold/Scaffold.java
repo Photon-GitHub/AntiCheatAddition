@@ -3,17 +3,18 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.user.data.batch.ScaffoldBatch;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
+import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import de.photon.aacadditionpro.util.world.BlockUtil;
 import de.photon.aacadditionpro.util.world.InternalPotion;
 import de.photon.aacadditionpro.util.world.LocationUtil;
 import de.photon.aacadditionpro.util.world.MaterialUtil;
-import de.photon.aacadditionproold.util.inventory.InventoryUtils;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.Material;
@@ -26,15 +27,12 @@ import java.util.Objects;
 
 public class Scaffold extends ViolationModule implements Listener
 {
-    @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
+    @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancelVl;
 
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
-
-    @LoadFromConfiguration(configPath = ".parts.rotation.violation_threshold")
-    private int rotationThreshold;
 
     public Scaffold(String configString)
     {
@@ -111,26 +109,20 @@ public class Scaffold extends ViolationModule implements Listener
                                  RotationTypeThreePattern.getInstance().getApplyingConsumer().applyAsInt(user, angleInformation[1]);
 
                 if (rotationVl > 0) {
-                    if (++user.getScaffoldData().rotationFails >= this.rotationThreshold) {
-                        // Flag the player
-                        vl += rotationVl;
-                    }
-                } else if (user.getScaffoldData().rotationFails > 0) {
-                    --user.getScaffoldData().rotationFails;
-                }
+                    if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ROTATION_FAILS).incrementCompareThreshold()) vl += rotationVl;
+                } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ROTATION_FAILS).decrementAboveZero();
 
                 vl += SafewalkTypeOnePattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
                 vl += SafewalkTypeTwoPattern.getInstance().getApplyingConsumer().applyAsInt(user);
-                vl += SprintingPattern.getInstance().getApplyingConsumer().applyAsInt(user);
-            }
+                vl += ScaffoldSprinting.getInstance().getApplyingConsumer().applyAsInt(user);
+            }S
 
             if (vl > 0) {
-                vlManager.flag(event.getPlayer(), vl, cancelVl, () ->
-                {
+                this.getManagement().flag(Flag.of(event.getPlayer()).setCancelAction(cancelVl, () -> {
                     event.setCancelled(true);
-                    user.getTimestampMap().updateTimeStamp(TimestampKey.SCAFFOLD_TIMEOUT);
-                    InventoryUtils.syncUpdateInventory(user.getPlayer());
-                }, () -> {});
+                    user.getTimestampMap().at(TimestampKey.SCAFFOLD_TIMEOUT).update();
+                    InventoryUtil.syncUpdateInventory(user.getPlayer());
+                }));
             }
         }
     }

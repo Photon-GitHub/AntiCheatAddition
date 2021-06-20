@@ -7,6 +7,17 @@ import de.photon.aacadditionpro.modules.additions.VersionControl;
 import de.photon.aacadditionpro.modules.checks.autoeat.AutoEat;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishConsistency;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishInhumanReaction;
+import de.photon.aacadditionpro.modules.checks.fastswitch.Fastswitch;
+import de.photon.aacadditionpro.modules.checks.impossiblechat.ImpossibleChat;
+import de.photon.aacadditionpro.modules.checks.inventory.InventorySprinting;
+import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysisAnimation;
+import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysisEqualRotation;
+import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysisIllegalPitch;
+import de.photon.aacadditionpro.modules.checks.pingspoof.Pingspoof;
+import de.photon.aacadditionpro.modules.checks.scaffold.Scaffold;
+import de.photon.aacadditionpro.modules.checks.skinblinker.SkinBlinker;
+import de.photon.aacadditionpro.modules.checks.teaming.Teaming;
+import de.photon.aacadditionpro.modules.checks.tower.Tower;
 import de.photon.aacadditionpro.modules.sentinel.BetterSprintingSentinel;
 import de.photon.aacadditionpro.modules.sentinel.FiveZigSentinel;
 import de.photon.aacadditionpro.modules.sentinel.LabyModSentinel;
@@ -46,6 +57,27 @@ public final class ModuleManager
         val autoFishInhumanReaction = new AutoFishInhumanReaction();
         val autoFish = ViolationModule.parentOf("AutoFish", autoFishConsistency, autoFishInhumanReaction);
 
+        val fastswitch = new Fastswitch();
+
+        val impossibleChat = new ImpossibleChat();
+
+        val inventorySprinting = new InventorySprinting();
+
+        val packetAnalysisAnimation = new PacketAnalysisAnimation();
+        val packetAnalysisEqualRotation = new PacketAnalysisEqualRotation();
+        val packetAnalysisIllegalPitch = new PacketAnalysisIllegalPitch();
+        val packetAnalysis = ViolationModule.parentOf("PacketAnalysis", packetAnalysisAnimation, packetAnalysisEqualRotation, packetAnalysisIllegalPitch);
+
+        val pingspoof = new Pingspoof();
+
+        val scaffold = new Scaffold();
+
+        val skinBlinker = new SkinBlinker();
+
+        val teaming = new Teaming();
+
+        val tower = new Tower();
+
         // Sentinel
         val betterSprintingSentinel = new BetterSprintingSentinel();
         val fiveZigSentinel = new FiveZigSentinel();
@@ -64,6 +96,35 @@ public final class ModuleManager
                 // Checks
                 autoEat,
                 autoFish, autoFishConsistency, autoFishInhumanReaction,
+
+                fastswitch,
+
+                impossibleChat,
+
+                inventorySprinting,
+
+                packetAnalysisAnimation,
+                packetAnalysisEqualRotation,
+                packetAnalysisIllegalPitch,
+                packetAnalysis,
+
+                pingspoof,
+
+                scaffold,
+                scaffold.getScaffoldAngle(),
+                scaffold.getScaffoldPosition(),
+                scaffold.getScaffoldRotationDerivative(),
+                scaffold.getScaffoldRotationFastChange(),
+                scaffold.getScaffoldRotationSecondDerivative(),
+                scaffold.getScaffoldSafewalkTypeOne(),
+                scaffold.getScaffoldSafewalkTypeTwo(),
+                scaffold.getScaffoldSprinting(),
+
+                skinBlinker,
+
+                teaming,
+
+                tower,
 
                 //Sentinel
                 betterSprintingSentinel,

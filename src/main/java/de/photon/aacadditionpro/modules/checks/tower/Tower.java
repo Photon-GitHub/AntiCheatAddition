@@ -67,7 +67,7 @@ public class Tower extends ViolationModule implements Listener
                 // Only one block that is not a liquid is allowed (the one which the Block is placed against).
                 BlockUtil.countBlocksAround(blockPlaced, BlockUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&
                 // User is not in water which can cause false positives due to faster swimming on newer versions.
-                !MaterialUtil.containsLiquids(Hitbox.PLAYER.getPartiallyIncludedMaterials(user.getPlayer().getLocation())))
+                !Hitbox.PLAYER.isInLiquids(user.getPlayer().getLocation()))
             {
                 // Make sure that the player is still towering in the same position.
                 if (!event.getBlockAgainst().getLocation().equals(user.getTowerBatch().peekLastAdded().getLocationOfBlock())) user.getTowerBatch().clear();

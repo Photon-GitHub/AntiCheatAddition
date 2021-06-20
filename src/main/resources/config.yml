@@ -384,6 +384,39 @@ Inventory:
     80: "aac notify {player} in {world} is highly suspected for inventory cheats."
     100: "aackick {player} Inventory cheats."
 
+# PacketAnalysis is a general check which aims to detect some of the modifications that are closely linked to
+# interfering with the protocol directly, such as derp, freecam, killauras, aimbots and other rotation-based modules.
+PacketAnalysis:
+  # Do you want to enable the PacketAnalysis?
+  enabled: true
+  # This message will appear in AAC's status when AAC is used.
+  aacfeatureinfo: "[AACAdditionPro] Player has suspicious packet behaviour"
+  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
+  aac_score_multiplier: 5
+  # Control the different parts of PacketAnalysis
+  parts:
+    # This part checks if after an attack the client sends an arm animation packet.
+    # This only flags the worst killauras.
+    # This part will add 10 vl.
+    Animation:
+      # Do you want to enable the Animation part?
+      enabled: true
+    # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
+    # This will catch several scaffold, tower, killaura and aimbot modifications.
+    EqualRotation:
+      # Do you want to enable the EqualRotation part?
+      enabled: true
+    # This checks for illegal pitches that a legit client is not able to send.
+    # This part will add 20 vl.
+    IllegalPitch:
+      # Do you want to enable the IllegalPitch part?
+      enabled: true
+  # Map of violation levels to command
+  thresholds:
+    11: "aac notify {player} in {world} is suspected by PacketAnalysis"
+    18: "aac notify {player} in {world} is highly suspected by PacketAnalysis"
+    28: "aackick {player} Suspicious packets"
+
 # Pingspoof tries to detect modifications that trick the server into believing the player has a higher or lower ping
 # than they actually have to partially bypass anticheats or get other advantages.
 # Adds up to 70 vl, depending on the severity of the violation.

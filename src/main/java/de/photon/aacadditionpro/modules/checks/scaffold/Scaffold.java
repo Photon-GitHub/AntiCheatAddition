@@ -25,6 +25,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.util.Objects;
 
+@Getter
 public class Scaffold extends ViolationModule implements Listener
 {
     private final ScaffoldAngle scaffoldAngle = new ScaffoldAngle(this.getConfigString());
@@ -40,15 +41,14 @@ public class Scaffold extends ViolationModule implements Listener
 
     private final ScaffoldSprinting scaffoldSprinting = new ScaffoldSprinting(this.getConfigString());
 
-    @Getter
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancelVl;
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
-    public Scaffold(String configString)
+    public Scaffold()
     {
-        super(configString);
+        super("Scaffold");
     }
 
     // ------------------------------------------- BlockPlace Handling ---------------------------------------------- //

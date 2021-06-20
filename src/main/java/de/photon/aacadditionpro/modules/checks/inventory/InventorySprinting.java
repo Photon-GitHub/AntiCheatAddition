@@ -18,7 +18,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-class InventorySprinting extends ViolationModule implements Listener
+public class InventorySprinting extends ViolationModule implements Listener
 {
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter

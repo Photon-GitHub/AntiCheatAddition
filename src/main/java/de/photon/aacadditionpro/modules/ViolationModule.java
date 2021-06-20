@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.modules;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.violationlevels.ViolationAggregateManagement;
@@ -27,6 +28,8 @@ public abstract class ViolationModule extends Module
 
     public static ViolationModule parentOf(String configString, ViolationModule... children)
     {
+        Preconditions.checkArgument(children != null && children.length != 0, "Tried to create parent ViolationModule without children.");
+
         return new ViolationModule(configString)
         {
             @Override

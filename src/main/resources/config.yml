@@ -571,8 +571,6 @@ Teaming:
   # This contains all worlds the check should be enabled in.
   enabled_worlds:
     - "world"
-    - "world_nether"
-    - "world_the_end"
   # Here you can define zones in which the check should not be run
   # An entry is formatted as following:
   # - <affected_world> <x1> <z1> <x2> <z2>

@@ -30,7 +30,7 @@ public class VersionControl extends Module
     @Override
     public void enable()
     {
-        val viaVersionKickMessage = Preconditions.checkNotNull(AACAdditionPro.getInstance().getConfig().getString("ClientControl.VersionControl.message"), "VersionControl message is null. Please fix your config.");
+        val viaVersionKickMessage = Preconditions.checkNotNull(AACAdditionPro.getInstance().getConfig().getString("VersionControl.message"), "VersionControl message is null. Please fix your config.");
         val configValues = ConfigUtils.loadKeys(this.configString + ".allowedVersions").stream()
                                       .map(key -> ImmutablePair.of(key, AACAdditionPro.getInstance().getConfig().getBoolean(this.configString + ".allowedVersions." + key)))
                                       .collect(Collectors.toSet());

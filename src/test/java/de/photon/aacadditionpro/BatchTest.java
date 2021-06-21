@@ -1,11 +1,14 @@
 package de.photon.aacadditionpro;
 
 import com.google.common.collect.ImmutableList;
+import de.photon.aacadditionpro.modules.ModuleLoader;
+import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.aacadditionpro.util.datastructure.batch.Batch;
 import de.photon.aacadditionpro.util.datastructure.batch.SyncBatchProcessor;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
+import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,17 +20,33 @@ import java.util.List;
 class BatchTest
 {
     private static final User dummy = new DummyUser();
+    private static final Broadcaster<Batch.Snapshot<String>> stringBroadcaster = new Broadcaster<>();
+    private static final ViolationModule dummyVlModule = new ViolationModule("Inventory")
+    {
+        @Override
+        protected ViolationManagement createViolationManagement()
+        {
+            return null;
+        }
+
+        @Override
+        protected ModuleLoader createModuleLoader()
+        {
+            return null;
+        }
+    };
 
     @Test
     void dummyBatchTest()
     {
+        Assertions.assertThrows(NullPointerException.class, () -> new Batch<>(stringBroadcaster, dummy, 1, null));
+        Assertions.assertThrows(NullPointerException.class, () -> new Batch<>(null, dummy, 1, "null"));
         Assertions.assertThrows(NullPointerException.class, () -> new Batch<String>(null, dummy, 1, null));
     }
 
     @Test
     void illegalCapacityBatchTest()
     {
-        final Broadcaster<Batch.Snapshot<String>> stringBroadcaster = new Broadcaster<>();
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(stringBroadcaster, dummy, 0, ""));
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(stringBroadcaster, dummy, -1, ""));
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(stringBroadcaster, dummy, Integer.MIN_VALUE, ""));
@@ -36,11 +55,25 @@ class BatchTest
     @Test
     void syncBatchProcessorTest()
     {
-        final Broadcaster<Batch.Snapshot<String>> stringBroadcaster = new Broadcaster<>();
+        final ViolationModule dummyVlModule = new ViolationModule("Inventory")
+        {
+            @Override
+            protected ViolationManagement createViolationManagement()
+            {
+                return null;
+            }
+
+            @Override
+            protected ModuleLoader createModuleLoader()
+            {
+                return null;
+            }
+        };
+
         final List<String> output = new ArrayList<>();
         int batchSize = 3;
 
-        final SyncBatchProcessor<String> batchProcessor = new SyncBatchProcessor<String>(Collections.singleton(stringBroadcaster))
+        final SyncBatchProcessor<String> batchProcessor = new SyncBatchProcessor<String>(dummyVlModule, Collections.singleton(stringBroadcaster))
         {
             @Override
             public void processBatch(User user, List<String> batch)
@@ -66,11 +99,10 @@ class BatchTest
     @Test
     void asyncBatchProcessorTest()
     {
-        final Broadcaster<Batch.Snapshot<String>> stringBroadcaster = new Broadcaster<>();
         final List<String> output = Collections.synchronizedList(new ArrayList<>());
         int batchSize = 3;
 
-        final AsyncBatchProcessor<String> batchProcessor = new AsyncBatchProcessor<String>(Collections.singleton(stringBroadcaster))
+        final AsyncBatchProcessor<String> batchProcessor = new AsyncBatchProcessor<String>(dummyVlModule, Collections.singleton(stringBroadcaster))
         {
             @Override
             public void processBatch(User user, List<String> batch)

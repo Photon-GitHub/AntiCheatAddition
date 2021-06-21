@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.user.data;
 
+import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import lombok.AccessLevel;
@@ -71,17 +72,23 @@ public final class DataKey
     }
 
     @Getter
-    @AllArgsConstructor
     public enum CounterKey
     {
-        AUTOFISH_FAILED(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("AutoFish.parts.consistency.maximum_fails"))),
-        SCAFFOLD_ANGLE_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.angle.violation_threshold"))),
-        SCAFFOLD_ROTATION_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.rotation.violation_threshold"))),
-        SCAFFOLD_SAFEWALK_TYPE1_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.safewalk.type1.violation_threshold"))),
-        SCAFFOLD_SAFEWALK_TYPE2_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.safewalk.type2.violation_threshold"))),
-        SCAFFOLD_SPRINTING_FAILS(new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong("Scaffold.parts.sprinting.violation_threshold")));
+        AUTOFISH_FAILED("AutoFish.parts.consistency.maximum_fails"),
+        INVENTORY_PERFECT_EXIT_FAILS("Inventory.parts.Rotation.violation_threshold"),
+        SCAFFOLD_ANGLE_FAILS("Scaffold.parts.Angle.violation_threshold"),
+        SCAFFOLD_ROTATION_FAILS("Scaffold.parts.Rotation.violation_threshold"),
+        SCAFFOLD_SAFEWALK_TYPE1_FAILS("Scaffold.parts.Safewalk.type1.violation_threshold"),
+        SCAFFOLD_SAFEWALK_TYPE2_FAILS("Scaffold.parts.Safewalk.type2.violation_threshold"),
+        SCAFFOLD_SPRINTING_FAILS("Scaffold.parts.Sprinting.violation_threshold");
 
         private final ViolationCounter defaultValue;
+
+        CounterKey(String configPath)
+        {
+            Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(configPath, false), "Tried to load ViolationCounter from nonexistant path.");
+            this.defaultValue = new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong(configPath));
+        }
     }
 
     @Getter

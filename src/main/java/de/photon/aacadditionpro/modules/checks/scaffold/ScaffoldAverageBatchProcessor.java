@@ -16,6 +16,7 @@ import de.photon.aacadditionpro.util.violationlevels.Flag;
 import lombok.val;
 
 import java.util.List;
+import java.util.LongSummaryStatistics;
 
 class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.ScaffoldBlockPlace>
 {
@@ -39,7 +40,7 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
     public void processBatch(User user, List<ScaffoldBatch.ScaffoldBlockPlace> batch)
     {
         val moonwalk = batch.stream().filter(blockPlace -> !blockPlace.isSneaked()).count() >= batch.size() / 2;
-        val actualDelay = new DoubleStatistics();
+        val actualDelay = new LongSummaryStatistics();
         val minExpecedDelay = new DoubleStatistics();
 
         for (val pair : BatchPreprocessors.zipOffsetOne(batch)) {

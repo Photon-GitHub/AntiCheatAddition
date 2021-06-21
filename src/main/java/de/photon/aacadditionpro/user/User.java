@@ -9,6 +9,7 @@ import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.DataMap;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.user.data.TimestampMap;
+import de.photon.aacadditionpro.user.data.batch.InventoryBatch;
 import de.photon.aacadditionpro.user.data.batch.ScaffoldBatch;
 import de.photon.aacadditionpro.user.data.batch.TowerBatch;
 import de.photon.aacadditionpro.user.data.subdata.LookPacketData;
@@ -52,6 +53,7 @@ public class User implements CommandSender
     private final DataMap dataMap = new DataMap();
     private final TimestampMap timestampMap = new TimestampMap();
 
+    private final InventoryBatch inventoryBatch = new InventoryBatch(this);
     private final ScaffoldBatch scaffoldBatch = new ScaffoldBatch(this);
     private final TowerBatch towerBatch = new TowerBatch(this);
 

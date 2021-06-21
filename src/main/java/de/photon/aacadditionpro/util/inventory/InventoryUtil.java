@@ -351,8 +351,10 @@ public final class InventoryUtil
     }
 
     @Value
-    private static class SlotLocation
+    public static class SlotLocation
     {
+        public static final SlotLocation DUMMY = new SlotLocation(0, 0);
+
         double x;
         double y;
 

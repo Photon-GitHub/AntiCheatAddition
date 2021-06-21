@@ -16,7 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-class InventoryHit extends ViolationModule implements Listener
+public class InventoryHit extends ViolationModule implements Listener
 {
     @Getter
     private static final InventoryHit instance = new InventoryHit();

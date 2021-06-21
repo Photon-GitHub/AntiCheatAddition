@@ -22,6 +22,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LongSummaryStatistics;
 
 public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlockPlace>
 {
@@ -59,7 +60,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
     public void processBatch(User user, List<TowerBatch.TowerBlockPlace> batch)
     {
         val calcStatistics = new DoubleStatistics();
-        val actualStatistics = new DoubleStatistics();
+        val actualStatistics = new LongSummaryStatistics();
         val pairs = new ArrayList<>(BatchPreprocessors.zipOffsetOne(batch));
 
         for (ImmutablePair<TowerBatch.TowerBlockPlace, TowerBatch.TowerBlockPlace> pair : pairs) {

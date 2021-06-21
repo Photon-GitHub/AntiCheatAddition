@@ -9,6 +9,11 @@ import de.photon.aacadditionpro.modules.checks.autofish.AutoFishConsistency;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishInhumanReaction;
 import de.photon.aacadditionpro.modules.checks.fastswitch.Fastswitch;
 import de.photon.aacadditionpro.modules.checks.impossiblechat.ImpossibleChat;
+import de.photon.aacadditionpro.modules.checks.inventory.InventoryAverageHeuristic;
+import de.photon.aacadditionpro.modules.checks.inventory.InventoryHit;
+import de.photon.aacadditionpro.modules.checks.inventory.InventoryMove;
+import de.photon.aacadditionpro.modules.checks.inventory.InventoryMultiInteraction;
+import de.photon.aacadditionpro.modules.checks.inventory.InventoryPerfectExit;
 import de.photon.aacadditionpro.modules.checks.inventory.InventoryRotation;
 import de.photon.aacadditionpro.modules.checks.inventory.InventorySprinting;
 import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysisAnimation;
@@ -62,9 +67,14 @@ public final class ModuleManager
 
         val impossibleChat = new ImpossibleChat();
 
-        val inventorySprinting = new InventorySprinting();
+        val inventoryAverageHeuristic = new InventoryAverageHeuristic();
+        val inventoryHit = new InventoryHit();
+        val inventoryMove = new InventoryMove();
+        val inventoryMultiInteraction = new InventoryMultiInteraction();
+        val inventoryPerfectExit = new InventoryPerfectExit();
         val inventoryRotation = new InventoryRotation();
-        val inventory = ViolationModule.parentOf("Inventory", inventoryRotation, inventorySprinting);
+        val inventorySprinting = new InventorySprinting();
+        val inventory = ViolationModule.parentOf("Inventory", inventoryAverageHeuristic, inventoryHit, inventoryMove, inventoryMultiInteraction, inventoryPerfectExit, inventoryRotation, inventorySprinting);
 
 
         val packetAnalysisAnimation = new PacketAnalysisAnimation();
@@ -99,12 +109,20 @@ public final class ModuleManager
 
                 // Checks
                 autoEat,
-                autoFish, autoFishConsistency, autoFishInhumanReaction,
+
+                autoFishConsistency,
+                autoFishInhumanReaction,
+                autoFish,
 
                 fastswitch,
 
                 impossibleChat,
 
+                inventoryAverageHeuristic,
+                inventoryHit,
+                inventoryMove,
+                inventoryMultiInteraction,
+                inventoryPerfectExit,
                 inventoryRotation,
                 inventorySprinting,
                 inventory,
@@ -116,7 +134,6 @@ public final class ModuleManager
 
                 pingspoof,
 
-                scaffold,
                 scaffold.getScaffoldAngle(),
                 scaffold.getScaffoldPosition(),
                 scaffold.getScaffoldRotationDerivative(),
@@ -125,6 +142,7 @@ public final class ModuleManager
                 scaffold.getScaffoldSafewalkTypeOne(),
                 scaffold.getScaffoldSafewalkTypeTwo(),
                 scaffold.getScaffoldSprinting(),
+                scaffold,
 
                 skinBlinker,
 

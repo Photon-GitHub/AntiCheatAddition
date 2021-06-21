@@ -75,6 +75,7 @@ public final class DataKey
     public enum CounterKey
     {
         AUTOFISH_FAILED("AutoFish.parts.consistency.maximum_fails"),
+        INVENTORY_AVERAGE_HEURISTICS_MISCLICKS(0),
         INVENTORY_PERFECT_EXIT_FAILS("Inventory.parts.Rotation.violation_threshold"),
         SCAFFOLD_ANGLE_FAILS("Scaffold.parts.Angle.violation_threshold"),
         SCAFFOLD_ROTATION_FAILS("Scaffold.parts.Rotation.violation_threshold"),
@@ -83,6 +84,11 @@ public final class DataKey
         SCAFFOLD_SPRINTING_FAILS("Scaffold.parts.Sprinting.violation_threshold");
 
         private final ViolationCounter defaultValue;
+
+        CounterKey(long defaultValue)
+        {
+            this.defaultValue = new ViolationCounter(defaultValue);
+        }
 
         CounterKey(String configPath)
         {

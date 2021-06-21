@@ -18,7 +18,7 @@ public abstract class AsyncBatchProcessor<T> extends BatchProcessor<T>
     }
 
     @Override
-    public void receive(Batch.Snapshot<T> snapshot)
+    public final void receive(Batch.Snapshot<T> snapshot)
     {
         if (executor != null && !executor.isShutdown()) {
             executor.execute(() -> processBatch(snapshot.getUser(), snapshot.getValues()));

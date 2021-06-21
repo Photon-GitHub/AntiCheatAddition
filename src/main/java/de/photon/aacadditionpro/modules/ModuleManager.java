@@ -159,7 +159,7 @@ public final class ModuleManager
                 worldDownloaderSentinel));
 
         // Add sentinel custom modules.
-        ConfigUtils.loadKeys("Sentinel.Custom").stream().map(key -> new SentinelChannelModule(".Custom." + key)).forEach(moduleList::add);
+        ConfigUtils.loadKeys("Sentinel.Custom").stream().map(key -> new SentinelChannelModule("Custom." + key)).forEach(moduleList::add);
 
         moduleMap = new ModuleMap<>(moduleList);
         violationModuleMap = new ModuleMap<>(moduleMap.values().stream()

@@ -32,7 +32,7 @@ public class WorldDownloaderSentinel extends SentinelModule
 
     public WorldDownloaderSentinel()
     {
-        super("World");
+        super("WorldDownloader");
     }
 
     @Override

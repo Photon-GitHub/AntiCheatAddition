@@ -3,13 +3,12 @@ package de.photon.aacadditionpro.user.data.batch;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructure.batch.Batch;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
+import de.photon.aacadditionpro.util.datastructure.dummy.DummyInventory;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import lombok.Value;
 import lombok.val;
-import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +28,7 @@ public class InventoryBatch extends Batch<InventoryBatch.InventoryClick>
     @Value
     public static class InventoryClick
     {
-        public static final InventoryClick DUMMY = new InventoryClick(Bukkit.createInventory(null, InventoryType.CHEST), InventoryUtil.SlotLocation.DUMMY, ClickType.CREATIVE);
+        public static final InventoryClick DUMMY = new InventoryClick(new DummyInventory(), InventoryUtil.SlotLocation.DUMMY, ClickType.CREATIVE);
 
         long time = System.currentTimeMillis();
         Inventory inventory;

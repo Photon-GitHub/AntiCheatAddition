@@ -19,22 +19,10 @@ import java.util.List;
 
 class BatchTest
 {
-    private static final User dummy = new DummyUser();
+    private static AACAdditionPro mock = Dummy.mockAACAdditionPro();
+    private static final User dummy = Dummy.mockUser();
+    private static final ViolationModule dummyVlModule = Dummy.mockViolationModule();
     private static final Broadcaster<Batch.Snapshot<String>> stringBroadcaster = new Broadcaster<>();
-    private static final ViolationModule dummyVlModule = new ViolationModule("Inventory")
-    {
-        @Override
-        protected ViolationManagement createViolationManagement()
-        {
-            return null;
-        }
-
-        @Override
-        protected ModuleLoader createModuleLoader()
-        {
-            return null;
-        }
-    };
 
     @Test
     void dummyBatchTest()
@@ -81,9 +69,8 @@ class BatchTest
                 output.addAll(batch);
             }
         };
-        Assertions.assertThrows(IllegalStateException.class, batchProcessor::disable);
+
         batchProcessor.enable();
-        Assertions.assertThrows(IllegalStateException.class, batchProcessor::enable);
 
         Batch<String> batch = new Batch<>(stringBroadcaster, dummy, batchSize, "");
         stringBroadcaster.subscribe(batchProcessor);
@@ -110,9 +97,8 @@ class BatchTest
                 output.addAll(batch);
             }
         };
-        Assertions.assertThrows(IllegalStateException.class, batchProcessor::disable);
+
         batchProcessor.enable();
-        Assertions.assertThrows(IllegalStateException.class, batchProcessor::enable);
 
         Batch<String> batch = new Batch<>(stringBroadcaster, dummy, batchSize, "");
         stringBroadcaster.subscribe(batchProcessor);

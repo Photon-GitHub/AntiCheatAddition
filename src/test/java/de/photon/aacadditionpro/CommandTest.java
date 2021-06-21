@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 
 class CommandTest
 {
+    private static AACAdditionPro mock = Dummy.mockAACAdditionPro();
+
     private static List<String> getTabCompletions(String... arguments)
     {
         return MainCommand.getInstance().onTabComplete(new DummyCommandSender(), null, "aacap", arguments);

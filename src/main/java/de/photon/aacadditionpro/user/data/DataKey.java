@@ -76,7 +76,7 @@ public final class DataKey
     {
         AUTOFISH_FAILED("AutoFish.parts.consistency.maximum_fails"),
         INVENTORY_AVERAGE_HEURISTICS_MISCLICKS(0),
-        INVENTORY_PERFECT_EXIT_FAILS("Inventory.parts.Rotation.violation_threshold"),
+        INVENTORY_PERFECT_EXIT_FAILS("Inventory.parts.PerfectExit.violation_threshold"),
         SCAFFOLD_ANGLE_FAILS("Scaffold.parts.Angle.violation_threshold"),
         SCAFFOLD_ROTATION_FAILS("Scaffold.parts.Rotation.violation_threshold"),
         SCAFFOLD_SAFEWALK_TYPE1_FAILS("Scaffold.parts.Safewalk.type1.violation_threshold"),
@@ -92,7 +92,7 @@ public final class DataKey
 
         CounterKey(String configPath)
         {
-            Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(configPath), "Tried to load ViolationCounter from nonexistant path.");
+            Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(configPath), "Tried to load ViolationCounter from nonexistant path " + configPath);
             this.defaultValue = new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong(configPath));
         }
     }

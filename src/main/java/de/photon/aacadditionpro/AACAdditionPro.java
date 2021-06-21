@@ -10,7 +10,9 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataUpdaterEvents;
 import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 import me.konsolas.aac.api.AACAPI;
 import org.bstats.bukkit.Metrics;
@@ -32,6 +34,7 @@ public class AACAdditionPro extends JavaPlugin
 {
     private static final int BSTATS_PLUGIN_ID = 3265;
 
+    @Setter(AccessLevel.PROTECTED)
     @Getter private static AACAdditionPro instance;
 
     @Getter(lazy = true) private final FileConfiguration config = generateConfig();
@@ -62,7 +65,7 @@ public class AACAdditionPro extends JavaPlugin
     {
         try {
             // Now needs to be done via this ugly way as the original way did lead to a loading error.
-            instance = this;
+            setInstance(this);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //

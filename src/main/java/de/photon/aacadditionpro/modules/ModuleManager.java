@@ -9,6 +9,7 @@ import de.photon.aacadditionpro.modules.checks.autofish.AutoFishConsistency;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishInhumanReaction;
 import de.photon.aacadditionpro.modules.checks.fastswitch.Fastswitch;
 import de.photon.aacadditionpro.modules.checks.impossiblechat.ImpossibleChat;
+import de.photon.aacadditionpro.modules.checks.inventory.InventoryRotation;
 import de.photon.aacadditionpro.modules.checks.inventory.InventorySprinting;
 import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysisAnimation;
 import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysisEqualRotation;
@@ -62,6 +63,9 @@ public final class ModuleManager
         val impossibleChat = new ImpossibleChat();
 
         val inventorySprinting = new InventorySprinting();
+        val inventoryRotation = new InventoryRotation();
+        val inventory = ViolationModule.parentOf("Inventory", inventoryRotation, inventorySprinting);
+
 
         val packetAnalysisAnimation = new PacketAnalysisAnimation();
         val packetAnalysisEqualRotation = new PacketAnalysisEqualRotation();
@@ -101,7 +105,9 @@ public final class ModuleManager
 
                 impossibleChat,
 
+                inventoryRotation,
                 inventorySprinting,
+                inventory,
 
                 packetAnalysisAnimation,
                 packetAnalysisEqualRotation,

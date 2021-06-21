@@ -16,14 +16,14 @@ import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.val;
 
-class RotationPattern extends ViolationModule
+public class InventoryRotation extends ViolationModule
 {
     @LoadFromConfiguration(configPath = ".teleport_bypass_time")
     private int teleportTime;
     @LoadFromConfiguration(configPath = ".world_change_bypass_time")
     private int worldChangeTime;
 
-    public RotationPattern()
+    public InventoryRotation()
     {
         super("Inventory.parts.Rotation");
     }

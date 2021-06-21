@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.modules;
 
 import com.google.common.base.Preconditions;
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.InternalPermission;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public abstract class Module
     public Module(String configString)
     {
         Preconditions.checkNotNull(configString, "Tried to create Module with null configString.");
+        Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(configString), "Config path " + configString + " does not exist in the config. Please regenerate your config.");
         this.configString = configString;
         this.moduleId = "aacadditionpro_" + configString.toLowerCase(Locale.ENGLISH);
     }

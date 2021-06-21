@@ -1,24 +1,26 @@
 package de.photon.aacadditionpro.modules.checks.inventory;
 
-import de.photon.aacadditionproold.modules.ListenerModule;
-import de.photon.aacadditionproold.modules.ModuleType;
-import de.photon.aacadditionproold.user.DataKey;
-import de.photon.aacadditionproold.user.User;
-import de.photon.aacadditionproold.user.UserManager;
-import de.photon.aacadditionproold.util.files.configs.LoadFromConfiguration;
-import de.photon.aacadditionproold.util.inventory.InventoryUtils;
-import de.photon.aacadditionproold.util.messaging.VerboseSender;
-import de.photon.aacadditionproold.util.server.ServerUtil;
+import de.photon.aacadditionpro.modules.ModuleLoader;
+import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.user.data.DataKey;
+import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
+import de.photon.aacadditionpro.util.inventory.InventoryUtil;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
+import de.photon.aacadditionpro.util.server.PingProvider;
+import de.photon.aacadditionpro.util.server.TPSProvider;
+import de.photon.aacadditionpro.util.violationlevels.Flag;
+import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
+import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.Getter;
+import lombok.val;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-class MultiInteractionPattern implements ListenerModule
+class InventoryMultiInteraction extends ViolationModule implements Listener
 {
-    @Getter
-    private static final MultiInteractionPattern instance = new MultiInteractionPattern();
-
     @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
     private int cancelVl;
@@ -28,24 +30,26 @@ class MultiInteractionPattern implements ListenerModule
     @LoadFromConfiguration(configPath = ".min_tps")
     private double minTps;
 
+    public InventoryMultiInteraction()
+    {
+        super("Inventory.parts.MultiInteraction");
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClick(InventoryClickEvent event)
     {
-        final User user = UserManager.getUser(event.getWhoClicked().getUniqueId());
+        val user = User.getUser(event.getWhoClicked().getUniqueId());
+        if (User.isUserInvalid(user, this)) return;
 
-        // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
-            return;
-        }
-
-        // Creative-clear might trigger this.
-        if (user.inAdventureOrSurvivalMode() &&
+        if (event.getClickedInventory() != null &&
+            // Creative-clear might trigger this.
+            user.inAdventureOrSurvivalMode() &&
             // Minimum TPS before the check is activated as of a huge amount of fps
-            ServerUtil.getTPS() > minTps &&
+            TPSProvider.getTPS() > minTps &&
             // Minimum ping
-            (maxPing < 0 || ServerUtil.getPing(user.getPlayer()) <= maxPing) &&
+            (maxPing < 0 || PingProvider.getPing(user.getPlayer()) <= maxPing) &&
             // False positive: Click-spamming on the same slot
-            event.getRawSlot() != user.getDataMap().getInt(DataKey.LAST_RAW_SLOT_CLICKED))
+            event.getRawSlot() != user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED))
         {
             // Default vl to 3
             int addedVl = 3;
@@ -70,9 +74,7 @@ class MultiInteractionPattern implements ListenerModule
                     addedVl = 1;
                     enforcedTicks = 1;
                     // Enough distance to keep false positives at bay.
-                    if (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) >= 3) {
-                        return;
-                    }
+                    if (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) >= 3) return;
                     break;
 
                 case PICKUP_ALL:
@@ -85,7 +87,7 @@ class MultiInteractionPattern implements ListenerModule
                     // No false positives to check for.
                     addedVl = 3;
 
-                    enforcedTicks = (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
+                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
                                     1 :
                                     5;
                     break;
@@ -99,12 +101,10 @@ class MultiInteractionPattern implements ListenerModule
 
                 case MOVE_TO_OTHER_INVENTORY:
                     // Last material false positive due to the fast move all items shortcut.
-                    if (user.getDataMap().getValue(DataKey.LAST_MATERIAL_CLICKED) == event.getCurrentItem().getType()) {
-                        return;
-                    }
+                    if (event.getCurrentItem() == null || user.getDataMap().getObject(DataKey.ObjectKey.LAST_MATERIAL_CLICKED) == event.getCurrentItem().getType()) return;
 
                     // Depending on the distance of the clicks.
-                    enforcedTicks = (InventoryUtils.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
+                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
                                     1 :
                                     2;
                     break;
@@ -129,31 +129,23 @@ class MultiInteractionPattern implements ListenerModule
             // Convert ticks to millis.
             // 25 to account for server lag.
             if (user.hasClickedInventoryRecently(25L + (enforcedTicks * 50))) {
-                Inventory.getInstance().getViolationLevelManagement().flag(user.getPlayer(), addedVl, cancelVl,
-                                                                           () -> {
-                                                                               event.setCancelled(true);
-                                                                               InventoryUtils.syncUpdateInventory(user.getPlayer());
-                                                                           },
-                                                                           () -> VerboseSender.getInstance().sendVerboseMessage("Inventory-Verbose | Player: " + user.getPlayer().getName() + " moved items too quickly."));
+                this.getManagement().flag(Flag.of(user).setAddedVl(addedVl).setCancelAction(cancelVl, () -> {
+                    event.setCancelled(true);
+                    InventoryUtil.syncUpdateInventory(user.getPlayer());
+                }).setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " moved items too quickly.")));
             }
         }
     }
 
     @Override
-    public boolean isSubModule()
+    protected ModuleLoader createModuleLoader()
     {
-        return true;
+        return ModuleLoader.builder(this).build();
     }
 
     @Override
-    public String getConfigString()
+    protected ViolationManagement createViolationManagement()
     {
-        return this.getModuleType().getConfigString() + ".parts.MultiInteraction";
-    }
-
-    @Override
-    public ModuleType getModuleType()
-    {
-        return ModuleType.INVENTORY;
+        return ViolationLevelManagement.builder(this).withDecay(80, 1).build();
     }
 }

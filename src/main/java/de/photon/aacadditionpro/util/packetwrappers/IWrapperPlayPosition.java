@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.util.packetwrappers;
 
 import org.bukkit.Location;
+import org.bukkit.util.Vector;
 
 public interface IWrapperPlayPosition extends IWrapperPlay
 {
@@ -69,6 +70,16 @@ public interface IWrapperPlayPosition extends IWrapperPlay
     default void setZ(final double value)
     {
         getHandle().getDoubles().write(2, value);
+    }
+
+    /**
+     * Retrieve the position as a vector.
+     *
+     * @return The position as a vector.
+     */
+    default Vector getPosition()
+    {
+        return new Vector(this.getX(), this.getY(), this.getZ());
     }
 
     default void setWithLocation(Location location)

@@ -50,16 +50,6 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
     }
 
     /**
-     * Retrieve the position of the spawned entity as a vector.
-     *
-     * @return The position as a vector.
-     */
-    public Vector getPosition()
-    {
-        return new Vector(getX(), getY(), getZ());
-    }
-
-    /**
      * Set the position of the spawned entity using a vector.
      *
      * @param position - the new position.

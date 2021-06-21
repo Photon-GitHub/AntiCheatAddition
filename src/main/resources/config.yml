@@ -445,7 +445,7 @@ Scaffold:
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player scaffolds suspiciously"
   # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aacscoremultiplier: 6
+  aac_score_multiplier: 6
   # Violation before AACAdditionPro starts to cancel block placement.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 20
@@ -541,7 +541,7 @@ Skinblinker:
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player changes skin parts while actively moving"
   # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aacscoremultiplier: 50
+  aac_score_multiplier: 50
   # Map of violation levels to command
   thresholds:
     1: "aac notify {player} in {world} is suspected for Skinblinker"
@@ -555,7 +555,7 @@ Teaming:
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player might be teaming"
   # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aacscoremultiplier: 10
+  aac_score_multiplier: 10
   # How much delay should be between the check-waves
   # This must be below 15000 milliseconds.
   # Measured in milliseconds.
@@ -593,7 +593,7 @@ Tower:
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player builds a tower too fast"
   # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aacscoremultiplier: 20
+  aac_score_multiplier: 20
   # Violation before AACAdditionPro starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 6

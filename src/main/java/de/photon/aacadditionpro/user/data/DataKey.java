@@ -86,7 +86,7 @@ public final class DataKey
 
         CounterKey(String configPath)
         {
-            Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(configPath, false), "Tried to load ViolationCounter from nonexistant path.");
+            Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(configPath), "Tried to load ViolationCounter from nonexistant path.");
             this.defaultValue = new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong(configPath));
         }
     }

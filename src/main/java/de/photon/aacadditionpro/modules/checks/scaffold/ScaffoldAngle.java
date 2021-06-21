@@ -21,7 +21,7 @@ class ScaffoldAngle extends Module
 
     public ScaffoldAngle(String scaffoldConfigString)
     {
-        super(scaffoldConfigString + ".parts.angle");
+        super(scaffoldConfigString + ".parts.Angle");
     }
 
 

@@ -78,6 +78,11 @@ public class ModuleLoader
             return false;
         }
 
+        if (!AACAdditionPro.getInstance().getConfig().getBoolean(this.module.getConfigString() + ".enabled")) {
+            DebugSender.getInstance().sendDebug(module.getConfigString() + " has been disabled in the config.", true, false);
+            return false;
+        }
+
         // Load the config values
         ConfigUtils.processLoadFromConfiguration(module, module.getConfigString());
 
@@ -92,6 +97,8 @@ public class ModuleLoader
         }
 
         if (!outgoing.isEmpty()) outgoing.forEach(MessageChannel::registerOutgoingChannel);
+
+        DebugSender.getInstance().sendDebug(module.getConfigString() + " has been enabled.", true, false);
         return true;
     }
 

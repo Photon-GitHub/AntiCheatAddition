@@ -65,6 +65,6 @@ public class InventorySprinting extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(100, 1).build();
+        return ViolationLevelManagement.builder(this).withDecay(80, 1).build();
     }
 }

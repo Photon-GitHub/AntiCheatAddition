@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ModulePacketAdapter;
@@ -111,6 +112,8 @@ public class Pingspoof extends ViolationModule implements Listener
     {
         val adapter = new PingspoofPacketAdapter(this);
         return ModuleLoader.builder(this)
+                           //TODO: 1.17 is not yet compatible.
+                           .addAllowedServerVersions(ServerVersion.MC18, ServerVersion.MC112, ServerVersion.MC113, ServerVersion.MC114, ServerVersion.MC115, ServerVersion.MC116)
                            .addPacketListeners(adapter)
                            .build();
     }

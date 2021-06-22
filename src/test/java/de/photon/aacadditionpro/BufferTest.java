@@ -3,6 +3,7 @@ package de.photon.aacadditionpro;
 import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.util.datastructure.buffer.FixedSizeBuffer;
 import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -101,5 +102,28 @@ public class BufferTest
             Assertions.assertTrue(expected.contains(next), "Wrong element: " + next);
         }
         Assertions.assertSame(expected.size(), desSize, "Wrong amount of elements DESC.");
+    }
+
+    @Test
+    void RungBufferArrayTest()
+    {
+
+        FixedSizeBuffer<String> buffer = new RingBuffer<>(10);
+        buffer.add("1");
+        buffer.add("2");
+        buffer.add("3");
+        buffer.add("4");
+        buffer.add("5");
+        buffer.add("6");
+        buffer.add("7");
+        buffer.add("8");
+        buffer.add("9");
+        buffer.add("10");
+        buffer.add("11");
+        buffer.add("12");
+
+        val expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12").toArray(new String[0]);
+        val actual = buffer.toArray(new String[0]);
+        Assertions.assertEquals(expected, actual);
     }
 }

@@ -259,7 +259,7 @@ public enum InternalPotion
 
         public boolean exists()
         {
-            return this.underlying == null;
+            return this.underlying != null;
         }
 
         public Boolean getAmbient()

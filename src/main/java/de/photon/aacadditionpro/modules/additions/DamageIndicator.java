@@ -53,6 +53,10 @@ public class DamageIndicator extends Module
                 // index 8 in 1.14.4+
                 METADATA_HEALTH_FIELD_INDEX = 8;
                 break;
+            case MC117:
+                // index 8 in 1.14.4+
+                METADATA_HEALTH_FIELD_INDEX = 9;
+                break;
             default:
                 throw new UnknownMinecraftException();
         }

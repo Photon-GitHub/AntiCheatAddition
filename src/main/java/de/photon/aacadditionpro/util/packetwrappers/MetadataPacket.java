@@ -47,6 +47,7 @@ public abstract class MetadataPacket extends AbstractPacket
                 case MC114:
                 case MC115:
                 case MC116:
+                case MC117:
                     dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(classOfValue)), value);
                     break;
                 default:
@@ -81,10 +82,13 @@ public abstract class MetadataPacket extends AbstractPacket
                     return this.setMetadata(6, Float.class, health);
                 case MC112:
                 case MC113:
+                    return this.setMetadata(7, Float.class, health);
                 case MC114:
                 case MC115:
                 case MC116:
-                    return this.setMetadata(7, Float.class, health);
+                    return this.setMetadata(8, Float.class, health);
+                case MC117:
+                    return this.setMetadata(9, Float.class, health);
                 default:
                     throw new UnknownMinecraftException();
             }
@@ -103,11 +107,13 @@ public abstract class MetadataPacket extends AbstractPacket
                     return this.setMetadata(10, Byte.class, (byte) arrows);
                 case MC112:
                 case MC113:
+                    return this.setMetadata(10, Integer.class, arrows);
                 case MC114:
                 case MC115:
                 case MC116:
-                    // IN 1.12.2 THIS IS AN INTEGER!
-                    return this.setMetadata(10, Integer.class, arrows);
+                    return this.setMetadata(11, Integer.class, arrows);
+                case MC117:
+                    return this.setMetadata(12, Integer.class, arrows);
                 default:
                     throw new UnknownMinecraftException();
             }
@@ -128,9 +134,12 @@ public abstract class MetadataPacket extends AbstractPacket
                 case MC112:
                 case MC113:
                 case MC114:
+                    return this.setMetadata(13, Byte.class, skinParts);
                 case MC115:
                 case MC116:
-                    return this.setMetadata(13, Byte.class, skinParts);
+                    return this.setMetadata(16, Byte.class, skinParts);
+                case MC117:
+                    return this.setMetadata(17, Byte.class, skinParts);
                 default:
                     throw new UnknownMinecraftException();
             }

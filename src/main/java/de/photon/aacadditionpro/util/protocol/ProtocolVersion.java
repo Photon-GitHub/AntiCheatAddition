@@ -21,7 +21,8 @@ public enum ProtocolVersion
     MC113("1.13", ServerVersion.MC113, 393, 401, 404),
     MC114("1.14", ServerVersion.MC114, 477, 480, 485, 490, 498),
     MC115("1.15", ServerVersion.MC115, 573, 575),
-    MC116("1.16", ServerVersion.MC116, 735, 736, 751, 753, 754);
+    MC116("1.16", ServerVersion.MC116, 735, 736, 751, 753, 754),
+    MC117("1.17", ServerVersion.MC117, 755);
 
     private static final Map<String, ProtocolVersion> NAME_MAP;
     private static final Map<Integer, ProtocolVersion> VERSION_NUMBER_MAP;
@@ -29,10 +30,12 @@ public enum ProtocolVersion
     static {
         ImmutableMap.Builder<String, ProtocolVersion> nameBuilder = ImmutableMap.builder();
         ImmutableMap.Builder<Integer, ProtocolVersion> versionBuilder = ImmutableMap.builder();
+
         for (ProtocolVersion value : ProtocolVersion.values()) {
             nameBuilder.put(value.name, value);
             for (Integer versionNumber : value.versionNumbers) versionBuilder.put(versionNumber, value);
         }
+
         NAME_MAP = nameBuilder.build();
         VERSION_NUMBER_MAP = versionBuilder.build();
     }

@@ -70,6 +70,12 @@ public class ViolationLevelManagement extends ViolationManagement
         private long decayTicks = -1;
         private int decayAmount = 0;
 
+        /**This will set the {@link ThresholdManagement} to {@link ThresholdManagement#EMPTY}*/
+        public Builder emptyThresholdManagement()
+        {
+            return withCustomThresholdManagement(ThresholdManagement.EMPTY);
+        }
+
         /**
          * This allows to define a custom {@link ThresholdManagement}.
          * The standard is {@link ThresholdManagement#loadThresholds(ViolationModule)}.

@@ -110,6 +110,8 @@ public class AutoFishConsistency extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(600, 5).build();
+        return ViolationLevelManagement.builder(this)
+                                       .emptyThresholdManagement()
+                                       .withDecay(600, 5).build();
     }
 }

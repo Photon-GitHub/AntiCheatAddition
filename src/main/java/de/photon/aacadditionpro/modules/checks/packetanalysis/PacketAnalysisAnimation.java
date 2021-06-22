@@ -28,7 +28,9 @@ public class PacketAnalysisAnimation extends ViolationModule
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(200, 1).build();
+        return ViolationLevelManagement.builder(this)
+                                       .emptyThresholdManagement()
+                                       .withDecay(200, 1).build();
     }
 
     @Override

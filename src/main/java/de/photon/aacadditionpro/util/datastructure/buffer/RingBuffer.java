@@ -127,7 +127,7 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
             @Override
             public boolean hasNext()
             {
-                return elements < maxSize;
+                return elements < size;
             }
 
             @Override
@@ -156,9 +156,11 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
     @Override
     public <T1> T1 @NotNull [] toArray(T1[] a)
     {
-        final T1[] elements = a.length < size ? (T1[]) Array.newInstance(a.getClass().getComponentType(), size) : a;
+        val elements = a.length < size ? (T1[]) Array.newInstance(a.getClass().getComponentType(), size) : a;
         int i = 0;
-        for (T t : this) elements[i++] = (T1) t;
+        for (T t : this) {
+            elements[i++] = (T1) t;
+        }
         if (a.length > size) elements[size - 1] = null;
         return elements;
     }

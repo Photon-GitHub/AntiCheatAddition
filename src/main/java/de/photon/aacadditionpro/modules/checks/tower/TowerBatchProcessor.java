@@ -71,7 +71,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
         val calcAvg = calcStatistics.getAverage();
         val actAvg = actualStatistics.getAverage();
         // TODO: SWITCHED THE SIGN FROM < TO > FOR TESTING
-        if (actAvg < calcAvg) {
+        if (actAvg > calcAvg) {
             val vlToAdd = (int) Math.min(1 + Math.floor((calcAvg - actAvg) / 16), 100);
             this.getModule().getManagement().flag(Flag.of(user)
                                                       .setAddedVl(vlToAdd)

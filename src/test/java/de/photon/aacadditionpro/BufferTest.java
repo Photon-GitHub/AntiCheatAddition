@@ -63,6 +63,14 @@ class BufferTest
         buffer.add("2");
         buffer.add("3");
         buffer.add("4");
+
+
+        List<String> expected = ImmutableList.of("1", "2", "3", "4");
+        int i = 0;
+        for (String s : buffer) {
+            Assertions.assertEquals(expected.get(i++), s);
+        }
+
         buffer.add("5");
         buffer.add("6");
         buffer.add("7");
@@ -72,7 +80,12 @@ class BufferTest
         buffer.add("11");
         buffer.add("12");
 
-        List<String> expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
+        expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
+        i = 0;
+        for (String s : buffer) {
+            Assertions.assertEquals(expected.get(i++), s);
+        }
+
 
         Assertions.assertSame(expected.size(), buffer.size(), "Different sizes: EXPECTED: " + expected.size() + " ACTUAL: " + buffer.size());
         int dotSize = 0;

@@ -5,6 +5,7 @@ import lombok.val;
 import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -147,23 +148,18 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
     {
         val elements = new Object[this.size];
         int i = 0;
-        for (T t : this) {
-            elements[i++] = t;
-        }
+        for (T t : this) elements[i++] = t;
         return elements;
     }
 
-    @SuppressWarnings("unchecked")
     @NotNull
     @Override
     public <T1> T1 @NotNull [] toArray(T1[] a)
     {
-        val elements = a.length < size ? (T1[]) new Object[this.size] : a;
+        final T1[] elements = a.length < size ? (T1[]) Array.newInstance(a.getClass().getComponentType(), size) : a;
         int i = 0;
-        for (T t : this) {
-            elements[i++] = (T1) t;
-        }
-        if (a.length > size) elements[size] = null;
+        for (T t : this) elements[i++] = (T1) t;
+        if (a.length > size) elements[size - 1] = null;
         return elements;
     }
 

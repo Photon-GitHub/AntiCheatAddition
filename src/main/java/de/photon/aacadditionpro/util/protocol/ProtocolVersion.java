@@ -49,6 +49,7 @@ public enum ProtocolVersion
     /**
      * What {@link ServerVersion} should be used when using this {@link ProtocolVersion}.
      */
+    @NotNull
     private final ServerVersion equivalentServerVersion;
 
     /**

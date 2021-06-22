@@ -32,7 +32,7 @@ public class LabyModSentinel extends SentinelModule implements Listener
         //val json = LabyModProtocol.readString(byteBuf, Short.MAX_VALUE);
 
         // LabyMod user joins the server
-        if (key.equals("INFO")) {
+        if ("INFO".equals(key)) {
             // Sentinel-commands
             detection(player);
 

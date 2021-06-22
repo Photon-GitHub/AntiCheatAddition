@@ -108,7 +108,7 @@ class BufferTest
     void RingBufferArrayTest()
     {
 
-        FixedSizeBuffer<String> buffer = new RingBuffer<>(10);
+        RingBuffer<String> buffer = new RingBuffer<>(10);
         buffer.add("1");
         buffer.add("2");
         buffer.add("3");
@@ -124,6 +124,6 @@ class BufferTest
 
         val expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12").toArray(new String[0]);
         val actual = buffer.toArray(new String[0]);
-        Assertions.assertEquals(expected, actual);
+        Assertions.assertArrayEquals(expected, actual);
     }
 }

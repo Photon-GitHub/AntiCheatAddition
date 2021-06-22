@@ -30,7 +30,7 @@ public final class BatchPreprocessors
                 last = null;
             }
         }
-        return combineTwoObjectsToEnd(input, ImmutablePair::of);
+        return output;
     }
 
     /**

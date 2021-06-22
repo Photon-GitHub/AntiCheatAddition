@@ -21,6 +21,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 // Integers are ok, even though wiki.vg says short
                 return getHandle().getIntegers().read(1) / 4096D;
             default:
@@ -43,6 +44,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 // Integers are ok, even though wiki.vg says short
                 getHandle().getIntegers().write(1, (int) (value * 4096));
                 break;
@@ -64,6 +66,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 // Integers are ok, even though wiki.vg says short
                 return getHandle().getIntegers().read(2) / 4096D;
             default:
@@ -86,6 +89,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 // Integers are ok, even though wiki.vg says short
                 getHandle().getIntegers().write(2, (int) (value * 4096));
                 break;
@@ -107,6 +111,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 // Integers are ok, even though wiki.vg says short
                 return getHandle().getIntegers().read(3) / 4096D;
             default:
@@ -129,6 +134,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 // Integers are ok, even though wiki.vg says short
                 getHandle().getIntegers().write(3, (int) (value * 4096));
                 break;

@@ -4,7 +4,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
 import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import de.photon.aacadditionpro.util.packetwrappers.AbstractPacket;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayEntity;
 import org.bukkit.Material;
@@ -57,27 +56,14 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket implements 
     public void setSlot(final ItemSlot value)
     {
         // Player = null will return the server version.
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-                int index = value.ordinal();
+        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) {
+            int index = value.ordinal();
 
-                // Reduce by one if index greater 0 as the offhand (index 1) doesn't exist.
-                if (index > 0) {
-                    index--;
-                }
+            // Reduce by one if index greater 0 as the offhand (index 1) doesn't exist.
+            if (index > 0) --index;
 
-                handle.getIntegers().write(1, index);
-                break;
-            case MC112:
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-                handle.getItemSlots().write(0, value);
-                break;
-            default:
-                throw new UnknownMinecraftException();
-        }
+            handle.getIntegers().write(1, index);
+        } else handle.getItemSlots().write(0, value);
     }
 
     /**

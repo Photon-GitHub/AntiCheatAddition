@@ -70,6 +70,9 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             case MC112:
             case MC113:
             case MC114:
+            case MC115:
+            case MC116:
+            case MC117:
                 return handle.getDoubles().read(0);
             default:
                 throw new UnknownMinecraftException();
@@ -88,6 +91,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 handle.getDoubles().write(0, value);
                 break;
             default:
@@ -106,6 +110,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 return handle.getDoubles().read(1);
             default:
                 throw new UnknownMinecraftException();
@@ -124,6 +129,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 handle.getDoubles().write(1, value);
                 break;
             default:
@@ -142,6 +148,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 return handle.getDoubles().read(2);
             default:
                 throw new UnknownMinecraftException();
@@ -160,6 +167,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 handle.getDoubles().write(2, value);
                 break;
             default:

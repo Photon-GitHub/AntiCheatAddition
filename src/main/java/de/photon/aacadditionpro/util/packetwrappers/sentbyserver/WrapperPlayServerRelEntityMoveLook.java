@@ -31,6 +31,7 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 return 0;
             default:
                 throw new UnknownMinecraftException();

@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class BufferTest
+class BufferTest
 {
     @Test
-    public void RingBufferInputTest()
+    void RingBufferInputTest()
     {
         List<String> forgottenList = new ArrayList<>();
 
@@ -55,7 +55,7 @@ public class BufferTest
     }
 
     @Test
-    public void RingBufferIterationTest()
+    void RingBufferIterationTest()
     {
 
         FixedSizeBuffer<String> buffer = new RingBuffer<>(10);
@@ -105,7 +105,7 @@ public class BufferTest
     }
 
     @Test
-    void RungBufferArrayTest()
+    void RingBufferArrayTest()
     {
 
         FixedSizeBuffer<String> buffer = new RingBuffer<>(10);

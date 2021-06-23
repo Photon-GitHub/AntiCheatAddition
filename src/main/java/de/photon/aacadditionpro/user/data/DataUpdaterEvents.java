@@ -10,6 +10,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.packetwrappers.IWrapperPlayPosition;
 import de.photon.aacadditionpro.util.world.BlockUtil;
+import de.photon.aacadditionpro.util.world.MaterialUtil;
 import lombok.val;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -167,7 +168,7 @@ public final class DataUpdaterEvents implements Listener
             user.getTimestampMap().at(TimestampKey.LAST_RIGHT_CLICK_EVENT).update();
             if (event.getMaterial().isEdible()) user.getTimestampMap().at(TimestampKey.LAST_RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).update();
 
-            if (event.getItem() != null && event.getItem().getType() == Material.EXPERIENCE_BOTTLE) user.getTimestampMap().at(TimestampKey.LAST_EXPERIENCE_BOTTLE_THROWN).update();
+            if (event.getItem() != null && event.getItem().getType() == MaterialUtil.EXPERIENCE_BOTTLE) user.getTimestampMap().at(TimestampKey.LAST_EXPERIENCE_BOTTLE_THROWN).update();
         }
     }
 

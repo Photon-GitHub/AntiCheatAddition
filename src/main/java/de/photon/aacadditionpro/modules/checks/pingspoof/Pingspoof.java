@@ -31,17 +31,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class Pingspoof extends ViolationModule implements Listener
 {
-    private static final WrapperPlayServerTransaction TRANSACTION_PACKET;
     private static final Polynomial VL_CALCULATOR_BELOW_500 = new Polynomial(-1.78571E-5, 0.0723572, 1.214286);
     private static final Polynomial VL_CALCULATOR_ABOVE_500 = new Polynomial(1.372434E-10, -2.53498E-6, 0.0160475, 25.7896);
-
-    static {
-        TRANSACTION_PACKET = new WrapperPlayServerTransaction();
-        TRANSACTION_PACKET.setAccepted(false);
-        TRANSACTION_PACKET.setAccepted(false);
-        TRANSACTION_PACKET.setActionNumber((short) 0);
-        TRANSACTION_PACKET.setWindowId(0);
-    }
 
     private BukkitTask pingSpoofTask;
     @LoadFromConfiguration(configPath = ".ping_leniency")
@@ -59,6 +50,13 @@ public class Pingspoof extends ViolationModule implements Listener
     {
         // Seconds -> Ticks
         val tickInterval = interval * 20;
+
+        val transactionPacket = new WrapperPlayServerTransaction();
+        transactionPacket.setAccepted(false);
+        transactionPacket.setAccepted(false);
+        transactionPacket.setActionNumber((short) 0);
+        transactionPacket.setWindowId(0);
+
 
         pingSpoofTask = Bukkit.getScheduler().runTaskTimerAsynchronously(AACAdditionPro.getInstance(), () -> {
             long serverPing;
@@ -97,7 +95,7 @@ public class Pingspoof extends ViolationModule implements Listener
 
                 // Send the new packet.
                 user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).setToZero();
-                TRANSACTION_PACKET.sendPacket(player);
+                transactionPacket.sendPacket(player);
                 user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).update();
             }
         }, 600, tickInterval);

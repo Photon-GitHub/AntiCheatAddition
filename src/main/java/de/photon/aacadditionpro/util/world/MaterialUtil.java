@@ -17,6 +17,8 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MaterialUtil
 {
+    public static final Material EXPERIENCE_BOTTLE;
+
     public static final Set<Material> LIQUIDS;
 
     /**
@@ -35,6 +37,7 @@ public final class MaterialUtil
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
             case MC112:
+                EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
                 allowedMaterials.add(Material.getMaterial("ENCHANTMENT_TABLE"));
 
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA, Material.getMaterial("STATIONARY_WATER"), Material.getMaterial("STATIONARY_LAVA"));
@@ -43,16 +46,19 @@ public final class MaterialUtil
                 allowedMaterials.add(Material.CAVE_AIR);
                 allowedMaterials.add(Material.ENCHANTING_TABLE);
 
+                EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA);
                 break;
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 allowedMaterials.addAll(getMaterialsEndingWith("_SIGN"));
 
                 allowedMaterials.add(Material.CAVE_AIR);
                 allowedMaterials.add(Material.ENCHANTING_TABLE);
 
+                EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA);
                 break;
             default:
@@ -85,6 +91,7 @@ public final class MaterialUtil
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 return material != Material.BARRIER && material != Material.SPAWNER && material.isOccluding();
             default:
                 throw new UnknownMinecraftException();

@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.util.world;
 
 import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
@@ -222,23 +221,17 @@ public enum InternalPotion
     {
         if (!this.isAvailable()) return PotentialPotionEffect.EMPTY;
 
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-                for (PotionEffect effect : livingEntity.getActivePotionEffects()) {
-                    if (effect.getType().equals(this.mapping)) {
-                        return new PotentialPotionEffect(effect);
-                    }
+        // Workaroud for missing method in MC 1.8.8
+        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) {
+            for (PotionEffect effect : livingEntity.getActivePotionEffects()) {
+                if (effect.getType().equals(this.mapping)) {
+                    return new PotentialPotionEffect(effect);
                 }
-                return new PotentialPotionEffect();
-            case MC112:
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-                return new PotentialPotionEffect(livingEntity.getPotionEffect(this.mapping));
-            default:
-                throw new UnknownMinecraftException();
+            }
+            return new PotentialPotionEffect();
         }
+
+        return new PotentialPotionEffect(livingEntity.getPotionEffect(this.mapping));
     }
 
     /**

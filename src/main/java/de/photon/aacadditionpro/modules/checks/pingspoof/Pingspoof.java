@@ -74,21 +74,23 @@ public class Pingspoof extends ViolationModule implements Listener
                 val received = user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).getTime();
                 val sent = user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).getTime();
 
-                if (received <= 0) {
-                    DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + player.getName() + " tried to bypass pingspoof check.");
-                    this.getManagement().flag(Flag.of(player).setAddedVl(35));
-                } else {
-                    user.getPingspoofPing().addDataPoint(MathUtil.absDiff(received, sent));
-                    echoPing = PingProvider.getEchoPing(user);
+                if (sent > 0) {
+                    if (received <= 0) {
+                        DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + player.getName() + " tried to bypass pingspoof check.");
+                        this.getManagement().flag(Flag.of(player).setAddedVl(35));
+                    } else {
+                        user.getPingspoofPing().addDataPoint(MathUtil.absDiff(received, sent));
+                        echoPing = PingProvider.getEchoPing(user);
 
-                    // The player has not sent the received packet.
-                    val difference = Math.abs(serverPing - echoPing);
+                        // The player has not sent the received packet.
+                        val difference = Math.abs(serverPing - echoPing);
 
-                    if (difference > pingLeniency) {
-                        DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + player.getName() + " tried to spoof ping. Spoofed: " + serverPing + " | Actual: " + echoPing);
-                        this.getManagement().flag(Flag.of(player).setAddedVl(difference > 500 ?
-                                                                             VL_CALCULATOR_ABOVE_500.apply(difference).intValue() :
-                                                                             VL_CALCULATOR_BELOW_500.apply(difference).intValue()));
+                        if (difference > pingLeniency) {
+                            DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + player.getName() + " tried to spoof ping. Spoofed: " + serverPing + " | Actual: " + echoPing);
+                            this.getManagement().flag(Flag.of(player).setAddedVl(difference > 500 ?
+                                                                                 VL_CALCULATOR_ABOVE_500.apply(difference).intValue() :
+                                                                                 VL_CALCULATOR_BELOW_500.apply(difference).intValue()));
+                        }
                     }
                 }
 
@@ -108,8 +110,6 @@ public class Pingspoof extends ViolationModule implements Listener
 
         // Update the received once to make sure the player is not initially flagged for not sending a received packet.
         user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).update();
-        TRANSACTION_PACKET.sendPacket(event.getPlayer());
-        user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).update();
     }
 
     @Override

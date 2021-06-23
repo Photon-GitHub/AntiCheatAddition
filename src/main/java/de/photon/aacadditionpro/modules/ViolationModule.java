@@ -35,7 +35,7 @@ public abstract class ViolationModule extends Module
             @Override
             protected ViolationManagement createViolationManagement()
             {
-                return new ViolationAggregateManagement(this, ThresholdManagement.loadThresholds(this.getConfigString()), Arrays.stream(children).map(violationModule -> getManagement()).collect(Collectors.toSet()));
+                return new ViolationAggregateManagement(this, ThresholdManagement.loadThresholds(this.getConfigString() + ".thresholds"), Arrays.stream(children).map(violationModule -> getManagement()).collect(Collectors.toSet()));
             }
 
             @Override

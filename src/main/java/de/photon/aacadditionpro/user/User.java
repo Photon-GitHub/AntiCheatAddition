@@ -60,7 +60,7 @@ public class User implements CommandSender
 
     private final LookPacketData lookPacketData = new LookPacketData();
 
-    private final FloatingAverage pingspoofPing = new FloatingAverage(4, 200);
+    private final FloatingAverage pingspoofPing = new FloatingAverage(4, 200D);
 
     /**
      * Creates an {@link User} from a {@link Player}.

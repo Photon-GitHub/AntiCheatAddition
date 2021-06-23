@@ -22,6 +22,6 @@ public class FloatingAverage
     {
         double sum = 0;
         for (Double datum : data) sum += datum;
-        return sum / data.size();
+        return sum / data.getMaxSize();
     }
 }

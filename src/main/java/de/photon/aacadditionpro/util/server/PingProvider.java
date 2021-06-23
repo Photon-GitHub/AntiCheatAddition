@@ -4,7 +4,6 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.reflection.ClassReflect;
 import de.photon.aacadditionpro.util.reflection.Reflect;
 import lombok.AccessLevel;
@@ -58,10 +57,11 @@ public final class PingProvider
 
     /**
      * Tries to get the player ping via a ping command on the system.
+     *
+     * @Return -1 if the ping could not be calculated, else the ping.
      */
     public static long getEchoPing(final User user)
     {
-        val received = user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).getTime();
-        return received < 0 ? -1 : received - user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).getTime();
+        return (long) user.getPingspoofPing().getFloatingAverage();
     }
 }

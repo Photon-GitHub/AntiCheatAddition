@@ -12,6 +12,7 @@ import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
+import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.packetwrappers.sentbyserver.WrapperPlayServerTransaction;
@@ -30,10 +31,19 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class Pingspoof extends ViolationModule implements Listener
 {
+    private static final WrapperPlayServerTransaction TRANSACTION_PACKET;
     private static final Polynomial VL_CALCULATOR_BELOW_500 = new Polynomial(-1.78571E-5, 0.0723572, 1.214286);
     private static final Polynomial VL_CALCULATOR_ABOVE_500 = new Polynomial(1.372434E-10, -2.53498E-6, 0.0160475, 25.7896);
-    private BukkitTask pingSpoofTask;
 
+    static {
+        TRANSACTION_PACKET = new WrapperPlayServerTransaction();
+        TRANSACTION_PACKET.setAccepted(false);
+        TRANSACTION_PACKET.setAccepted(false);
+        TRANSACTION_PACKET.setActionNumber((short) 0);
+        TRANSACTION_PACKET.setWindowId(0);
+    }
+
+    private BukkitTask pingSpoofTask;
     @LoadFromConfiguration(configPath = ".ping_leniency")
     private int pingLeniency;
     @LoadFromConfiguration(configPath = ".interval")
@@ -55,25 +65,23 @@ public class Pingspoof extends ViolationModule implements Listener
             long echoPing;
             User user;
 
-            // Create packet.
-            val packet = new WrapperPlayServerTransaction();
-            packet.setAccepted(false);
-            packet.setActionNumber((short) 0);
-            packet.setWindowId(0);
-
             for (Player player : Bukkit.getOnlinePlayers()) {
                 user = User.getUser(player);
                 if (User.isUserInvalid(user, this)) continue;
 
                 serverPing = PingProvider.getPing(player);
-                user.getPingspoofPing().addDataPoint(PingProvider.getEchoPing(user));
-                echoPing = (long) user.getPingspoofPing().getFloatingAverage();
 
-                // The player has not sent the received packet.
-                if (echoPing < 0) {
+                val received = user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).getTime();
+                val sent = user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).getTime();
+
+                if (received <= 0) {
                     DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + player.getName() + " tried to bypass pingspoof check.");
                     this.getManagement().flag(Flag.of(player).setAddedVl(35));
                 } else {
+                    user.getPingspoofPing().addDataPoint(MathUtil.absDiff(received, sent));
+                    echoPing = PingProvider.getEchoPing(user);
+
+                    // The player has not sent the received packet.
                     val difference = Math.abs(serverPing - echoPing);
 
                     if (difference > pingLeniency) {
@@ -86,7 +94,7 @@ public class Pingspoof extends ViolationModule implements Listener
 
                 // Send the new packet.
                 user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).setToZero();
-                packet.sendPacket(player);
+                TRANSACTION_PACKET.sendPacket(player);
                 user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).update();
             }
         }, 600, tickInterval);
@@ -100,6 +108,8 @@ public class Pingspoof extends ViolationModule implements Listener
 
         // Update the received once to make sure the player is not initially flagged for not sending a received packet.
         user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).update();
+        TRANSACTION_PACKET.sendPacket(event.getPlayer());
+        user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).update();
     }
 
     @Override

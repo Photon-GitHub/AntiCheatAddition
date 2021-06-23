@@ -16,7 +16,7 @@ public class ConstructorReflect
     {
         this.constructor = constructor;
     }
-    
+
 
     public Object instance(Object... initObjects)
     {

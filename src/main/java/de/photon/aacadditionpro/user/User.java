@@ -1,85 +1,154 @@
 package de.photon.aacadditionpro.user;
 
+import com.comphenix.protocol.events.PacketEvent;
+import com.google.common.base.Preconditions;
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.InternalPermission;
-import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.user.subdata.FishingData;
-import de.photon.aacadditionpro.user.subdata.InventoryData;
-import de.photon.aacadditionpro.user.subdata.KeepAliveData;
-import de.photon.aacadditionpro.user.subdata.LookPacketData;
-import de.photon.aacadditionpro.user.subdata.ScaffoldData;
-import de.photon.aacadditionpro.user.subdata.TowerData;
+import de.photon.aacadditionpro.modules.Module;
+import de.photon.aacadditionpro.user.data.DataKey;
+import de.photon.aacadditionpro.user.data.DataMap;
+import de.photon.aacadditionpro.user.data.TimestampKey;
+import de.photon.aacadditionpro.user.data.TimestampMap;
+import de.photon.aacadditionpro.user.data.batch.InventoryBatch;
+import de.photon.aacadditionpro.user.data.batch.ScaffoldBatch;
+import de.photon.aacadditionpro.user.data.batch.TowerBatch;
+import de.photon.aacadditionpro.user.data.subdata.LookPacketData;
+import de.photon.aacadditionpro.util.mathematics.FloatingAverage;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
+import lombok.val;
 import org.bukkit.GameMode;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @Getter
-public class User
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class User implements CommandSender
 {
-    private final Player player;
-    private final TimestampMap<TimestampKey> timestampMap;
-    private final ObjectDataMap<DataKey> dataMap;
+    private static final ConcurrentMap<UUID, User> USERS = new ConcurrentHashMap<>(1024);
+    private static final Set<User> DEBUG_USERS = new CopyOnWriteArraySet<>();
 
-    private final FishingData fishingData = new FishingData(this);
-    private final InventoryData inventoryData = new InventoryData(this);
-    private final KeepAliveData keepAliveData = new KeepAliveData(this);
-    private final LookPacketData lookPacketData = new LookPacketData(this);
-    private final ScaffoldData scaffoldData = new ScaffoldData(this);
-    private final TowerData towerData = new TowerData(this);
+    @Delegate(types = CommandSender.class)
+    @EqualsAndHashCode.Include private final Player player;
 
-    public User(final Player player)
+    private final DataMap dataMap = new DataMap();
+    private final TimestampMap timestampMap = new TimestampMap();
+
+    private final InventoryBatch inventoryBatch = new InventoryBatch(this);
+    private final ScaffoldBatch scaffoldBatch = new ScaffoldBatch(this);
+    private final TowerBatch towerBatch = new TowerBatch(this);
+
+    private final LookPacketData lookPacketData = new LookPacketData();
+
+    private final FloatingAverage pingspoofPing = new FloatingAverage(4, 200D);
+
+    /**
+     * Creates an {@link User} from a {@link Player}.
+     */
+    protected static User createFromPlayer(Player player)
     {
-        this.player = player;
-        UserManager.setVerbose(this, InternalPermission.AAC_VERBOSE.hasPermission(player));
-
-        // Timestamps
-        this.timestampMap = new TimestampMap<>(TimestampKey.class);
-        this.timestampMap.nullifyTimeStamps(TimestampKey.values());
-
-        // Login time
-        this.getTimestampMap().updateTimeStamp(TimestampKey.LOGIN_TIME);
-        // Login should count as movement.
-        this.getTimestampMap().updateTimeStamp(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT);
-        this.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XYZ_MOVEMENT);
-        this.getTimestampMap().updateTimeStamp(TimestampKey.LAST_XZ_MOVEMENT);
-
-        // Data
-        this.dataMap = new ObjectDataMap<>(DataKey.class, (key, value) -> value == null || key.getClazz().isAssignableFrom(value.getClass()));
-        for (DataKey value : DataKey.values()) {
-            this.dataMap.setValue(value, value.getDefaultValue());
-        }
+        val user = new User(player);
+        USERS.put(player.getUniqueId(), user);
+        if (InternalPermission.DEBUG.hasPermission(player)) DEBUG_USERS.add(user);
+        return user;
     }
 
+    /**
+     * Removes an {@link User}.
+     */
+    protected static void deleteUser(UUID uuid)
+    {
+        DEBUG_USERS.remove(USERS.remove(uuid));
+    }
 
-    // Basics
+    public static User getUser(Player player)
+    {
+        return USERS.get(player.getUniqueId());
+    }
+
+    public static User getUser(UUID uuid)
+    {
+        return USERS.get(uuid);
+    }
+
+    @Nullable
+    public static User safeGetUserFromPacketEvent(PacketEvent event)
+    {
+        // Special handling here as a player could potentially log out after this and therefore cause a NPE.
+        val player = event.getPlayer();
+        return event.isCancelled() || event.isPlayerTemporary() || player == null ? null : getUser(player);
+    }
+
+    /**
+     * Gets all {@link User}s without wrapping. <br>
+     * DO NOT MODIFY THIS COLLECTION; IT WILL MESS UP THE USER MANAGEMENT.
+     * <p>
+     * Use this solely for performance purposes e.g. in iterations or as a source {@link Collection} for wrapping.
+     */
+    public static Collection<User> getUsersUnwrapped()
+    {
+        return USERS.values();
+    }
+
+    public static Set<User> getDebugUsers()
+    {
+        return DEBUG_USERS;
+    }
 
     /**
      * This checks if this {@link User} still exists and should be checked.
      *
-     * @param user       the {@link User} to be checked.
-     * @param moduleType the {@link ModuleType} that should be used to determine if the {@link User} is bypassed.
+     * @param user   the {@link User} to be checked.
+     * @param module the module which bypass permission shall be used.
      *
      * @return true if the {@link User} is null or bypassed.
      */
-    public static boolean isUserInvalid(final User user, final ModuleType moduleType)
+    public static boolean isUserInvalid(@Nullable User user, @NotNull Module module)
     {
-        return user == null || user.getPlayer() == null || user.isBypassed(moduleType);
+        return user == null || user.getPlayer() == null || user.isBypassed(InternalPermission.bypassPermissionOf(module.getModuleId()));
     }
 
     /**
-     * Determines whether a {@link Player} bypasses a certain {@link ModuleType}.
+     * This checks if this {@link User} still exists and should be checked.
+     *
+     * @param user             the {@link User} to be checked.
+     * @param bypassPermission the bypass permission of the module.
+     *
+     * @return true if the {@link User} is null or bypassed.
      */
-    public static boolean isBypassed(Player player, ModuleType moduleType)
+    public static boolean isUserInvalid(@Nullable User user, @NotNull String bypassPermission)
     {
-        return InternalPermission.hasPermission(player, InternalPermission.BYPASS.getRealPermission() + '.' + moduleType.getConfigString().toLowerCase());
+        return user == null || user.getPlayer() == null || user.isBypassed(bypassPermission);
     }
 
+
     /**
-     * Determines whether a {@link User} bypasses a certain {@link ModuleType}.
+     * Determines whether a {@link Player} bypasses a certain module.
      */
-    public boolean isBypassed(ModuleType moduleType)
+    public boolean isBypassed(@NotNull String bypassPermission)
     {
-        return isBypassed(this.player, moduleType);
+        Preconditions.checkArgument(bypassPermission.startsWith(InternalPermission.BYPASS.getRealPermission()), "Invalid bypass permission");
+        return InternalPermission.hasPermission(player, bypassPermission);
     }
 
     /**
@@ -106,34 +175,33 @@ public class User
     // Inventory
 
     /**
-     * Determines whether the {@link User} has a currently opened {@link org.bukkit.inventory.Inventory} according to
-     * {@link de.photon.aacadditionpro.AACAdditionPro}s internal data.
+     * Determines whether the {@link User} has a currently opened {@link Inventory} according to
+     * {@link AACAdditionPro}s internal data.
      */
     public boolean hasOpenInventory()
     {
-        return this.getTimestampMap().getTimeStamp(TimestampKey.INVENTORY_OPENED) != 0;
+        return this.getTimestampMap().at(TimestampKey.INVENTORY_OPENED).getTime() != 0;
     }
 
     /**
      * Determines if this {@link User} has not had an open inventory for some amount of time.
      *
      * @param milliseconds the amount of time in milliseconds that the {@link User} should not have interacted with an
-     *                     {@link org.bukkit.inventory.Inventory}.
+     *                     {@link Inventory}.
      */
     public boolean notRecentlyOpenedInventory(final long milliseconds)
     {
-        return !this.getTimestampMap().recentlyUpdated(TimestampKey.INVENTORY_OPENED, milliseconds);
+        return !this.getTimestampMap().at(TimestampKey.INVENTORY_OPENED).recentlyUpdated(milliseconds);
     }
 
     /**
-     * Determines if this {@link User} has recently clicked in an {@link org.bukkit.inventory.Inventory}.
+     * Determines if this {@link User} has recently clicked in an {@link Inventory}.
      *
-     * @param milliseconds the amount of time in milliseconds in which the {@link User} should be checked for
-     *                     interactions with an {@link org.bukkit.inventory.Inventory}.
+     * @param milliseconds the amount of time in milliseconds in which the {@link User} should be checked for interactions with an {@link Inventory}.
      */
     public boolean hasClickedInventoryRecently(final long milliseconds)
     {
-        return this.getTimestampMap().recentlyUpdated(TimestampKey.LAST_INVENTORY_CLICK, milliseconds);
+        return this.getTimestampMap().at(TimestampKey.LAST_INVENTORY_CLICK).recentlyUpdated(milliseconds);
     }
 
 
@@ -153,7 +221,7 @@ public class User
             case LAST_HEAD_OR_OTHER_MOVEMENT:
             case LAST_XYZ_MOVEMENT:
             case LAST_XZ_MOVEMENT:
-                return this.timestampMap.recentlyUpdated(movementType, milliseconds);
+                return this.timestampMap.at(movementType).recentlyUpdated(milliseconds);
             default:
                 throw new IllegalStateException("Unexpected MovementType: " + movementType);
         }
@@ -168,7 +236,7 @@ public class User
      */
     public boolean hasSprintedRecently(final long milliseconds)
     {
-        return this.dataMap.getBoolean(DataKey.SPRINTING) || this.timestampMap.recentlyUpdated(TimestampKey.LAST_SPRINT_TOGGLE, milliseconds);
+        return this.dataMap.getBoolean(DataKey.BooleanKey.SPRINTING) || this.timestampMap.at(TimestampKey.LAST_SPRINT_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -180,7 +248,7 @@ public class User
      */
     public boolean hasSneakedRecently(final long milliseconds)
     {
-        return this.dataMap.getBoolean(DataKey.SNEAKING) || this.timestampMap.recentlyUpdated(TimestampKey.LAST_SNEAK_TOGGLE, milliseconds);
+        return this.dataMap.getBoolean(DataKey.BooleanKey.SNEAKING) || this.timestampMap.at(TimestampKey.LAST_SNEAK_TOGGLE).recentlyUpdated(milliseconds);
     }
 
 
@@ -194,7 +262,7 @@ public class User
      */
     public boolean hasTeleportedRecently(final long milliseconds)
     {
-        return this.getTimestampMap().recentlyUpdated(TimestampKey.LAST_TELEPORT, milliseconds);
+        return this.timestampMap.at(TimestampKey.LAST_TELEPORT).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -204,7 +272,7 @@ public class User
      */
     public boolean hasRespawnedRecently(final long milliseconds)
     {
-        return this.getTimestampMap().recentlyUpdated(TimestampKey.LAST_RESPAWN, milliseconds);
+        return this.timestampMap.at(TimestampKey.LAST_RESPAWN).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -214,7 +282,7 @@ public class User
      */
     public boolean hasChangedWorldsRecently(final long milliseconds)
     {
-        return this.getTimestampMap().recentlyUpdated(TimestampKey.LAST_WORLD_CHANGE, milliseconds);
+        return this.timestampMap.at(TimestampKey.LAST_WORLD_CHANGE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -224,7 +292,7 @@ public class User
      */
     public boolean hasLoggedInRecently(final long milliseconds)
     {
-        return this.getTimestampMap().recentlyUpdated(TimestampKey.LOGIN_TIME, milliseconds);
+        return this.timestampMap.at(TimestampKey.LOGIN_TIME).recentlyUpdated(milliseconds);
     }
 
 
@@ -237,45 +305,59 @@ public class User
      */
     public boolean updateSkinComponents(int newSkinComponents)
     {
-        Integer oldSkin = (Integer) this.getDataMap().getValue(DataKey.SKIN_COMPONENTS);
+        val oldSkin = this.getDataMap().getInt(DataKey.IntegerKey.SKIN_COMPONENTS);
 
         if (oldSkin == null) {
-            this.getDataMap().setValue(DataKey.SKIN_COMPONENTS, newSkinComponents);
+            this.getDataMap().setInt(DataKey.IntegerKey.SKIN_COMPONENTS, newSkinComponents);
             return false;
         }
 
-        if (oldSkin == newSkinComponents) {
-            return false;
-        }
+        if (oldSkin == newSkinComponents) return false;
 
-        this.getDataMap().setValue(DataKey.SKIN_COMPONENTS, newSkinComponents);
+        this.getDataMap().setInt(DataKey.IntegerKey.SKIN_COMPONENTS, newSkinComponents);
         return true;
     }
 
 
-    // Disabling, equals() and hashCode()
+    /**
+     * Gets the debug state (determines whether or not an {@link User} gets debug messages).
+     */
+    public boolean hasDebug()
+    {
+        return DEBUG_USERS.contains(this);
+    }
 
     /**
-     * This method unregisters the {@link User} to make sure that memory leaks will not happen, and if they do,
-     * their impact is very small.
+     * Sets the debug state (determines whether or not an {@link User} gets debug messages).
      */
-    public void unregister()
+    public void setDebug(boolean debug)
     {
-        this.timestampMap.clear();
-        this.dataMap.clear();
+        if (debug) {
+            DEBUG_USERS.add(this);
+        } else {
+            DEBUG_USERS.remove(this);
+        }
     }
 
-    @Override
-    public boolean equals(Object o)
+    public static class UserListener implements Listener
     {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        return this.player.getUniqueId().equals(((User) o).player.getUniqueId());
-    }
+        @EventHandler(priority = EventPriority.LOWEST)
+        public void onJoin(final PlayerJoinEvent event)
+        {
+            val user = createFromPlayer(event.getPlayer());
 
-    @Override
-    public int hashCode()
-    {
-        return 47 + (this.player == null ? 0 : player.getUniqueId().hashCode());
+            // Login time
+            user.timestampMap.at(TimestampKey.LOGIN_TIME).update();
+            // Login should count as movement.
+            user.timestampMap.at(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT).update();
+            user.timestampMap.at(TimestampKey.LAST_XYZ_MOVEMENT).update();
+            user.timestampMap.at(TimestampKey.LAST_XZ_MOVEMENT).update();
+        }
+
+        @EventHandler
+        public void onQuit(final PlayerQuitEvent event)
+        {
+            deleteUser(event.getPlayer().getUniqueId());
+        }
     }
 }

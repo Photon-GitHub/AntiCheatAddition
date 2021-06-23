@@ -1,13 +1,21 @@
 package de.photon.aacadditionpro.util.mathematics;
 
+import com.google.common.base.Preconditions;
+import de.photon.aacadditionpro.util.world.MaterialUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Getter
@@ -36,24 +44,48 @@ public enum Hitbox
 
     public Vector[] getLowResolutionCalculationVectors(final Location location)
     {
-        final Vector[] vectors = new Vector[8];
 
-        final double lowerY = location.getY();
-        final double upperY = lowerY + this.height;
+        val lowerY = location.getY();
+        val upperY = lowerY + this.height;
 
-        // Lower corners
-        vectors[0] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ() + this.offsetZ));
-        vectors[1] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ() + this.offsetZ));
-        vectors[2] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ() - this.offsetZ));
-        vectors[3] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ() - this.offsetZ));
+        val cullX = (location.getBlockX() - (int) (location.getX() + offsetX)) == 0 && (location.getBlockX() - (int) (location.getX() - offsetX)) == 0;
+        val cullZ = (location.getBlockZ() - (int) (location.getZ() + offsetZ)) == 0 && (location.getBlockZ() - (int) (location.getZ() - offsetZ)) == 0;
 
-        // Upper corners
-        vectors[4] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ() + this.offsetZ));
-        vectors[5] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ() + this.offsetZ));
-        vectors[6] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ() - this.offsetZ));
-        vectors[7] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ() - this.offsetZ));
+        if (cullX && cullZ) {
+            val vectors = new Vector[2];
+            vectors[0] = (new Vector(location.getX(), lowerY, location.getZ()));
+            vectors[1] = (new Vector(location.getX(), upperY, location.getZ()));
+            return vectors;
+        } else if (cullX) {
+            val vectors = new Vector[4];
+            vectors[0] = (new Vector(location.getX(), lowerY, location.getZ() + this.offsetZ));
+            vectors[1] = (new Vector(location.getX(), lowerY, location.getZ() - this.offsetZ));
+            vectors[2] = (new Vector(location.getX(), upperY, location.getZ() + this.offsetZ));
+            vectors[3] = (new Vector(location.getX(), upperY, location.getZ() - this.offsetZ));
+            return vectors;
+        } else if (cullZ) {
+            val vectors = new Vector[4];
+            vectors[0] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ()));
+            vectors[1] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ()));
+            vectors[2] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ()));
+            vectors[3] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ()));
+            return vectors;
+        } else {
+            val vectors = new Vector[8];
 
-        return vectors;
+            // Lower corners
+            vectors[0] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ() + this.offsetZ));
+            vectors[1] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ() + this.offsetZ));
+            vectors[2] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ() - this.offsetZ));
+            vectors[3] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ() - this.offsetZ));
+
+            // Upper corners
+            vectors[4] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ() + this.offsetZ));
+            vectors[5] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ() + this.offsetZ));
+            vectors[6] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ() - this.offsetZ));
+            vectors[7] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ() - this.offsetZ));
+            return vectors;
+        }
     }
 
     /**
@@ -66,10 +98,10 @@ public enum Hitbox
      */
     public Vector[] getCalculationVectors(final Location location)
     {
-        final List<Vector> vectors = new ArrayList<>(13);
+        val vectors = new ArrayList<Vector>(13);
         Collections.addAll(vectors, getLowResolutionCalculationVectors(location));
 
-        final double upperY = location.getY() + this.height;
+        val upperY = location.getY() + this.height;
 
         Vector start = location.toVector();
         while (start.getY() < upperY) {
@@ -98,5 +130,67 @@ public enum Hitbox
                 location.getY() + this.height,
                 location.getZ() + this.offsetZ
         );
+    }
+
+    public int[] getPartiallyIncludedBlocksCoordinates(@NotNull final Location location)
+    {
+        val coordinates = new int[6];
+        coordinates[0] = (int) (location.getX() - this.offsetX);
+        coordinates[1] = (int) location.getY();
+        coordinates[2] = (int) (location.getZ() - this.offsetZ);
+
+        // Add 1 to ceil the value as the cast to int floors it.
+        coordinates[3] = (int) (location.getX() + this.offsetX + 1);
+        coordinates[4] = (int) (location.getY() + this.height + 1);
+        coordinates[5] = (int) (location.getZ() + this.offsetZ + 1);
+        return coordinates;
+    }
+
+    /**
+     * Gets all the {@link Block}s that this {@link Hitbox} is partially inside.
+     */
+    public List<Block> getPartiallyIncludedBlocks(@NotNull final Location location)
+    {
+        Preconditions.checkNotNull(location.getWorld(), "Tried to get blocks in hitbox of location with null world.");
+
+        val c = getPartiallyIncludedBlocksCoordinates(location);
+        final List<Block> blocks = new ArrayList<>(MathUtil.absDiff(c[0], c[3]) * MathUtil.absDiff(c[1], c[4]) * MathUtil.absDiff(c[2], c[5]) + 1);
+
+        for (; c[0] <= c[3]; ++c[0]) {
+            for (; c[1] <= c[4]; ++c[1]) {
+                for (; c[2] <= c[5]; ++c[2]) {
+                    blocks.add(location.getWorld().getBlockAt(c[0], c[1], c[2]));
+                }
+            }
+        }
+        return blocks;
+    }
+
+    /**
+     * Gets all the {@link Material}s that this {@link Hitbox} is partially inside.
+     */
+    public Set<Material> getPartiallyIncludedMaterials(@NotNull final Location location)
+    {
+        Preconditions.checkNotNull(location.getWorld(), "Tried to get blocks in hitbox of location with null world.");
+
+        val c = getPartiallyIncludedBlocksCoordinates(location);
+        val materials = EnumSet.noneOf(Material.class);
+
+        for (; c[0] <= c[3]; ++c[0]) {
+            for (; c[1] <= c[4]; ++c[1]) {
+                for (; c[2] <= c[5]; ++c[2]) {
+                    materials.add(location.getWorld().getBlockAt(c[0], c[1], c[2]).getType());
+                }
+            }
+        }
+        return materials;
+    }
+
+    /**
+     * Checks whether or not any {@link Block}s that are partially inside this {@link Hitbox} are liquids as defined in {@link MaterialUtil#LIQUIDS}
+     */
+    public boolean isInLiquids(@NotNull final Location location)
+    {
+        return MaterialUtil.containsLiquids(this.getPartiallyIncludedMaterials(location));
     }
 }

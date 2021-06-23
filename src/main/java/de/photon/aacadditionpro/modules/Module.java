@@ -1,167 +1,60 @@
 package de.photon.aacadditionpro.modules;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.util.files.configs.ConfigUtils;
-import de.photon.aacadditionpro.util.messaging.VerboseSender;
+import de.photon.aacadditionpro.InternalPermission;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
-import java.util.Set;
-import java.util.logging.Level;
+import java.util.Locale;
 
-public interface Module
+@EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY, onlyExplicitlyIncluded = true)
+@ToString
+public abstract class Module
 {
-    boolean FULL_ENABLE_LOG = AACAdditionPro.getInstance().getConfig().getBoolean("FullEnableLog");
-    Set<Module> NO_SUBMODULES = ImmutableSet.of();
+    @Getter protected final String configString;
+    @Getter @EqualsAndHashCode.Include private final String moduleId;
+    protected final String bypassPermission = InternalPermission.bypassPermissionOf(this.getModuleId());
+    @Getter(lazy = true) private final ModuleLoader moduleLoader = Preconditions.checkNotNull(createModuleLoader(), "Tried to create null ModuleLoader.");
+    @Getter private boolean enabled;
 
-    /**
-     * This enables the check according to its interfaces.
-     */
-    static void enableModule(final Module module)
+    public Module(String configString)
     {
-        try {
-            // ServerVersion check
-            if (module instanceof RestrictedServerVersion && !RestrictedServerVersion.allowedToStart((RestrictedServerVersion) module)) {
-                sendNotice(module, module.getConfigString() + " is not compatible with your server version.");
-                return;
-            }
+        Preconditions.checkNotNull(configString, "Tried to create Module with null configString.");
+        Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(configString), "Config path " + configString + " does not exist in the config. Please regenerate your config.");
+        this.configString = configString;
+        this.moduleId = "aacadditionpro_" + configString.toLowerCase(Locale.ENGLISH);
+    }
 
-            // Dependency check
-            if (module instanceof Dependency && !Dependency.allowedToStart((Dependency) module)) {
-                sendNotice(module, module.getConfigString() + " has been not been enabled as of missing dependencies. Missing: " + Dependency.listMissingDependencies((Dependency) module));
-                return;
-            }
-
-            // Incompatibility check
-            if (module instanceof IncompatiblePluginModule && !IncompatiblePluginModule.allowedToStart((IncompatiblePluginModule) module)) {
-                sendNotice(module, module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + IncompatiblePluginModule.listInstalledIncompatiblePlugins((IncompatiblePluginModule) module));
-                return;
-            }
-
-            if (module instanceof RestrictedBungeecord && !RestrictedBungeecord.allowedToStart()) {
-                sendNotice(module, module.getConfigString() + " is not compatible with bungeecord.");
-                return;
-            }
-
-            // Enabled
-            if (!AACAdditionPro.getInstance().getConfig().getBoolean(module.getConfigString() + ".enabled", false)) {
-                sendNotice(module, module.getConfigString() + " was chosen not to be enabled.");
-                return;
-            }
-
-            // Load the config values
-            ConfigUtils.processLoadFromConfiguration(module, module.getConfigString());
-
-            if (module instanceof ListenerModule) {
-                ListenerModule.enable((ListenerModule) module);
-            }
-
-            if (module instanceof PacketListenerModule) {
-                PacketListenerModule.enable((PacketListenerModule) module);
-            }
-
-            if (module instanceof PluginMessageListenerModule) {
-                PluginMessageListenerModule.enable((PluginMessageListenerModule) module);
-            }
-
-            if (module instanceof BatchProcessorModule) {
-                BatchProcessorModule.enable((BatchProcessorModule) module);
-            }
-
-            // Enable submodules.
-            for (Module submodule : module.getSubModules()) {
-                Module.enableModule(submodule);
-            }
-
-            module.getModuleType().setEnabled(true);
-            module.enable();
-
-            sendNotice(module, module.getConfigString() + " has been enabled.");
-        } catch (final Exception e) {
-            VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be enabled.", true, true);
-            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, module.getConfigString() + " could not be enabled. ", e);
+    public void setEnabled(boolean enabled)
+    {
+        if (this.enabled != enabled) {
+            if (enabled) enableModule();
+            else disableModule();
         }
     }
 
-    /**
-     * This disables the check according to its interfaces.
-     */
-    static void disableModule(final Module module)
+    public final void enableModule()
     {
-        try {
-            if (module instanceof ListenerModule) {
-                ListenerModule.disable((ListenerModule) module);
-            }
-
-            if (module instanceof PacketListenerModule) {
-                PacketListenerModule.disable((PacketListenerModule) module);
-            }
-
-            if (module instanceof PluginMessageListenerModule) {
-                PluginMessageListenerModule.disable((PluginMessageListenerModule) module);
-            }
-
-            if (module instanceof BatchProcessorModule) {
-                BatchProcessorModule.disable((BatchProcessorModule) module);
-            }
-
-            // Enable submodules.
-            for (Module submodule : module.getSubModules()) {
-                Module.disableModule(submodule);
-            }
-
-            module.getModuleType().setEnabled(false);
-            module.disable();
-
-            sendNotice(module, module.getConfigString() + " has been disabled.");
-        } catch (final Exception e) {
-            VerboseSender.getInstance().sendVerboseMessage(module.getConfigString() + " could not be disabled.", true, true);
-            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, module.getConfigString() + " could not be disabled. ", e);
+        if (this.getModuleLoader().load()) {
+            this.enabled = true;
+            this.enable();
         }
     }
 
-    /**
-     * Sends a message if this is a main module or the full enable log is enabled.
-     */
-    static void sendNotice(final Module module, final String message)
+    public final void disableModule()
     {
-        if (FULL_ENABLE_LOG || !module.isSubModule()) {
-            VerboseSender.getInstance().sendVerboseMessage(message, true, false);
+        if (this.enabled) {
+            this.enabled = false;
+            this.getModuleLoader().unload();
+            this.disable();
         }
     }
 
-    /**
-     * Gets all the submodules of this module.
-     */
-    default Set<Module> getSubModules()
-    {
-        return NO_SUBMODULES;
-    }
+    protected abstract ModuleLoader createModuleLoader();
 
-    /**
-     * Whether or not this module is a submodule, i.e. a module that is part of another module.
-     */
-    boolean isSubModule();
+    protected void enable() {}
 
-    /**
-     * All additional chores during enabling that are not handled by the {@link Module} - subinterfaces.
-     */
-    default void enable() {}
-
-    /**
-     * All additional chores during disabling that are not handled by the {@link Module} - subinterfaces.
-     */
-    default void disable() {}
-
-    /**
-     * Gets the direct path representing this module in the config.
-     */
-    default String getConfigString()
-    {
-        return this.getModuleType().getConfigString();
-    }
-
-    /**
-     * Gets the {@link ModuleType} of this {@link Module}
-     */
-    ModuleType getModuleType();
+    protected void disable() {}
 }

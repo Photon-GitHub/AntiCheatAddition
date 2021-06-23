@@ -1,52 +1,123 @@
 package de.photon.aacadditionpro.modules.checks.tower;
 
-import de.photon.aacadditionpro.user.TimestampKey;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.subdata.TowerData;
-import de.photon.aacadditionpro.user.subdata.datawrappers.TowerBlockPlace;
-import de.photon.aacadditionpro.util.datastructures.batch.AsyncBatchProcessor;
-import de.photon.aacadditionpro.util.datastructures.iteration.IterationUtil;
-import de.photon.aacadditionpro.util.inventory.InventoryUtils;
-import de.photon.aacadditionpro.util.messaging.VerboseSender;
-import lombok.Getter;
+import de.photon.aacadditionpro.user.data.TimestampKey;
+import de.photon.aacadditionpro.user.data.batch.TowerBatch;
+import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
+import de.photon.aacadditionpro.util.datastructure.batch.AsyncBatchProcessor;
+import de.photon.aacadditionpro.util.datastructure.batch.BatchPreprocessors;
+import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
+import de.photon.aacadditionpro.util.inventory.InventoryUtil;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
+import de.photon.aacadditionpro.util.server.Movement;
+import de.photon.aacadditionpro.util.server.MovementSimulator;
+import de.photon.aacadditionpro.util.violationlevels.Flag;
+import lombok.val;
+import org.bukkit.Location;
+import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.LongSummaryStatistics;
 
-public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBlockPlace>
+public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlockPlace>
 {
-    @Getter
-    private static final TowerBatchProcessor instance = new TowerBatchProcessor();
+    /**
+     * This {@link java.util.List} provides usually used and tested values to speed up performance and possibly low-
+     * quality simulation results.
+     */
+    private static final List<Double> FIRST_DELAYS = ImmutableList.of(
+            // 478.4 * 0.925
+            // No jump boost
+            442.52D,
+            // 578.4 * 0.925
+            // Jump boost 1
+            542.52D,
+            // 290 * 0.925
+            // Jump boost 2
+            268.25,
+            // 190 * 0.925
+            // Jump boost 3
+            175.75,
+            // 140 * 0.925
+            // Jump boost 4
+            129.5);
 
-    private TowerBatchProcessor()
+    private final int cancelVl = AACAdditionPro.getInstance().getConfig().getInt(this.getModule().getConfigString() + ".cancel_vl");
+    private final double towerLeniency = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".tower_leniency");
+    private final double levitationLeniency = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".levitation_leniency");
+
+    public TowerBatchProcessor(ViolationModule module)
     {
-        super(TowerData.TOWER_BATCH_SIZE);
+        super(module, ImmutableSet.of(TowerBatch.TOWER_BATCH_BROADCASTER));
     }
 
     @Override
-    public void processBatch(User user, List<TowerBlockPlace> batch)
+    public void processBatch(User user, List<TowerBatch.TowerBlockPlace> batch)
     {
-        final double[] results = new double[2];
+        val calcStatistics = new DoubleStatistics();
+        val actualStatistics = new LongSummaryStatistics();
+        val pairs = new ArrayList<>(BatchPreprocessors.zipOffsetOne(batch));
 
-        IterationUtil.twoObjectsIterationToEnd(batch, (old, current) -> {
-            // [0] = Expected time; [1] = Real time
-            results[0] += current.calculateDelay();
-            results[1] += (current.getTime() - old.getTime());
-        });
-
-        // Average
-        results[0] /= batch.size();
-        results[1] /= batch.size();
-
-        if (results[1] < results[0]) {
-            final int vlToAdd = (int) Math.min(1 + Math.floor((results[0] - results[1]) / 16), 100);
-
-            // Violation-Level handling
-            Tower.getInstance().getViolationLevelManagement().flag(user.getPlayer(), vlToAdd, Tower.getInstance().getCancelVl(), () ->
-            {
-                user.getTimestampMap().updateTimeStamp(TimestampKey.TOWER_TIMEOUT);
-                InventoryUtils.syncUpdateInventory(user.getPlayer());
-                // If not cancelled run the verbose message with additional data
-            }, () -> VerboseSender.getInstance().sendVerboseMessage("Tower-Verbose | Player: " + user.getPlayer().getName() + " expected time: " + results[0] + " | real: " + results[1]));
+        for (ImmutablePair<TowerBatch.TowerBlockPlace, TowerBatch.TowerBlockPlace> pair : pairs) {
+            calcStatistics.accept(calculateDelay(pair.getFirst()));
+            actualStatistics.accept(pair.getFirst().timeOffset(pair.getSecond()));
         }
+
+        val calcAvg = calcStatistics.getAverage();
+        val actAvg = actualStatistics.getAverage();
+        if (actAvg < calcAvg) {
+            val vlToAdd = (int) Math.min(1 + Math.floor((calcAvg - actAvg) / 16), 100);
+            this.getModule().getManagement().flag(Flag.of(user)
+                                                      .setAddedVl(vlToAdd)
+                                                      .setCancelAction(cancelVl, () -> {
+                                                          user.getTimestampMap().at(TimestampKey.TOWER_TIMEOUT).update();
+                                                          InventoryUtil.syncUpdateInventory(user.getPlayer());
+                                                      })
+                                                      .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Tower-Debug | Player: " + user.getPlayer().getName() + " expected time: " + calcAvg + " | real: " + actAvg)));
+        }
+    }
+
+    /**
+     * Calculates the time needed to place one block.
+     */
+    public double calculateDelay(TowerBatch.TowerBlockPlace blockPlace)
+    {
+        // Levitation handling.
+        if (blockPlace.getLevitation().exists()) {
+            // 0.9 Blocks per second per levitation level.
+            return (900 / (blockPlace.getLevitation().getAmplifier() + 1D)) * towerLeniency * levitationLeniency;
+        }
+
+        // No Jump Boost
+        if (!blockPlace.getJumpBoost().exists()) return FIRST_DELAYS.get(0);
+
+        val jumpBoost = blockPlace.getJumpBoost().getAmplifier();
+        // Negative Jump Boost -> Not allowed to place blocks -> Very high delay
+        if (jumpBoost < 0) return 1500;
+
+        // Normal Jump Boost in cache
+        if (jumpBoost + 1 < FIRST_DELAYS.size()) return FIRST_DELAYS.get(jumpBoost + 1);
+
+        // Start the simulation.
+        val startLocation = new Location(null, 0, 0, 0);
+        val currentVelocity = new Vector(0, Movement.PLAYER.getJumpYMotion(jumpBoost), 0);
+
+        val simulator = new MovementSimulator(startLocation, currentVelocity, Movement.PLAYER);
+        simulator.tick();
+        simulator.tickUntil(sim -> sim.getVelocity().getY() <= 0, 200);
+        val landingBlockY = simulator.getCurrent().getBlock().getY();
+        simulator.tickUntil(sim -> sim.getCurrent().getY() <= landingBlockY, 50);
+
+        // If the result is lower here, the detection is more lenient.
+        // * 50 : Convert ticks to milliseconds
+        // 0.92 is the required simulation leniency I got from testing.
+        // 0.925 is additional leniency
+        // -15 is special leniency for high jump boost environments.
+        return ((((simulator.getTick() * 50D) / landingBlockY) * 0.92D * 0.925D) - 15D) * towerLeniency;
     }
 }

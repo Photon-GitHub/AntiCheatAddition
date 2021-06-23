@@ -6,60 +6,71 @@
 
     <groupId>de.photon</groupId>
     <artifactId>AACAdditionPro</artifactId>
-    <version>6.5.3</version>
+    <version>7.0.0</version>
 
     <name>AACAdditionPro</name>
     <description>This plugin provides niche checks for cheats which are not covered by AAC</description>
 
     <properties>
+        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javaversion>1.8</javaversion>
-        <maven.compiler.source>${javaversion}</maven.compiler.source>
-        <maven.compiler.target>${javaversion}</maven.compiler.target>
     </properties>
 
     <build>
         <defaultGoal>clean install</defaultGoal>
-
-        <!-- This adds the plugin.yml and config.yml as files that need to be processed. -->
-        <resources>
-            <resource>
-                <directory>src\main\resources</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>pattern</directory>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
-
-        <!-- This shades the metrics in -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
-                    <minimizeJar>true</minimizeJar>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <relocations>
-                        <relocation>
-                            <pattern>org.bstats</pattern>
-                            <!-- Replace this with your package! -->
-                            <shadedPattern>de.photon.aacadditionpro</shadedPattern>
-                        </relocation>
-                    </relocations>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <includes>
+                        <include>de/photon/aacadditionpro/</include>
+                    </includes>
+                    <meminitial>1024m</meminitial>
+                    <maxmem>8192m</maxmem>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <minimizeJar>true</minimizeJar>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <!-- Replace this with your package! -->
+                                    <shadedPattern>de.photon.aacadditionpro</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
+            </plugin>
         </plugins>
+
+        <!-- This adds the plugin.yml and config.yml as files that need to be processed. -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 
     <repositories>
@@ -80,7 +91,7 @@
         <!-- ViaVersion -->
         <repository>
             <id>viaversion-repo</id>
-            <url>https://repo.viaversion.com/</url>
+            <url>https://repo.viaversion.com</url>
         </repository>
         <!-- BStats Metrics -->
         <repository>
@@ -111,7 +122,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -123,26 +134,13 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>
-            <version>4.0.13.Final</version>
+            <version>4.0.23.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.labymod</groupId>
-            <artifactId>serverapi</artifactId>
-            <version>1.1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/LabyAPI.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>us.myles</groupId>
-            <artifactId>viaversion</artifactId>
-            <version>1.6.0</version>
+            <groupId>com.viaversion</groupId>
+            <artifactId>viaversion-api</artifactId>
+            <version>LATEST</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -154,7 +152,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>19.0.0</version>
+            <version>RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -162,6 +160,18 @@
             <artifactId>aac-api</artifactId>
             <version>5.0.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>3.11.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

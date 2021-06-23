@@ -1,116 +1,199 @@
 package de.photon.aacadditionpro.modules;
 
-import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.util.files.configs.Configs;
-import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
+import de.photon.aacadditionpro.modules.additions.BrandHider;
+import de.photon.aacadditionpro.modules.additions.DamageIndicator;
+import de.photon.aacadditionpro.modules.additions.LogBot;
+import de.photon.aacadditionpro.modules.additions.VersionControl;
+import de.photon.aacadditionpro.modules.checks.autoeat.AutoEat;
+import de.photon.aacadditionpro.modules.checks.autofish.AutoFishConsistency;
+import de.photon.aacadditionpro.modules.checks.autofish.AutoFishInhumanReaction;
+import de.photon.aacadditionpro.modules.checks.autopotion.AutoPotion;
+import de.photon.aacadditionpro.modules.checks.fastswitch.Fastswitch;
+import de.photon.aacadditionpro.modules.checks.impossiblechat.ImpossibleChat;
+import de.photon.aacadditionpro.modules.checks.inventory.InventoryAverageHeuristic;
+import de.photon.aacadditionpro.modules.checks.inventory.InventoryHit;
+import de.photon.aacadditionpro.modules.checks.inventory.InventoryMove;
+import de.photon.aacadditionpro.modules.checks.inventory.InventoryMultiInteraction;
+import de.photon.aacadditionpro.modules.checks.inventory.InventoryPerfectExit;
+import de.photon.aacadditionpro.modules.checks.inventory.InventoryRotation;
+import de.photon.aacadditionpro.modules.checks.inventory.InventorySprinting;
+import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysisAnimation;
+import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysisEqualRotation;
+import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysisIllegalPitch;
+import de.photon.aacadditionpro.modules.checks.pingspoof.Pingspoof;
+import de.photon.aacadditionpro.modules.checks.scaffold.Scaffold;
+import de.photon.aacadditionpro.modules.checks.skinblinker.SkinBlinker;
+import de.photon.aacadditionpro.modules.checks.teaming.Teaming;
+import de.photon.aacadditionpro.modules.checks.tower.Tower;
+import de.photon.aacadditionpro.modules.sentinel.BetterSprintingSentinel;
+import de.photon.aacadditionpro.modules.sentinel.FiveZigSentinel;
+import de.photon.aacadditionpro.modules.sentinel.LabyModSentinel;
+import de.photon.aacadditionpro.modules.sentinel.SchematicaSentinel;
+import de.photon.aacadditionpro.modules.sentinel.SentinelChannelModule;
+import de.photon.aacadditionpro.modules.sentinel.VapeSentinel;
+import de.photon.aacadditionpro.modules.sentinel.WorldDownloaderSentinel;
+import de.photon.aacadditionpro.util.config.ConfigUtils;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.val;
 import me.konsolas.aac.api.AACCustomFeature;
 import me.konsolas.aac.api.AACCustomFeatureProvider;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
-/**
- * Manages the {@link Module}s of {@link AACAdditionPro}.
- */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ModuleManager
 {
-    @Getter
-    private final Map<ModuleType, Module> modules = new EnumMap<>(ModuleType.class);
-    private final Map<ModuleType, ViolationModule> violationModules = new EnumMap<>(ModuleType.class);
+    @Getter private static final ModuleMap<Module> moduleMap;
+    @Getter private static final ModuleMap<ViolationModule> violationModuleMap;
 
-    public ModuleManager(final Set<Module> modules)
-    {
-        for (Module module : modules) {
-            this.modules.put(module.getModuleType(), module);
+    static {
+        // Additions
+        val brandHider = new BrandHider();
+        val damageIndicator = new DamageIndicator();
+        val logBot = new LogBot();
+        val versionControl = new VersionControl();
 
-            if (module instanceof ViolationModule) {
-                this.violationModules.put(module.getModuleType(), (ViolationModule) module);
-            }
+        // Checks
+        val autoEat = new AutoEat();
 
-            Module.enableModule(module);
-        }
+        val autoFishConsistency = new AutoFishConsistency();
+        val autoFishInhumanReaction = new AutoFishInhumanReaction();
+        val autoFish = ViolationModule.parentOf("AutoFish", autoFishConsistency, autoFishInhumanReaction);
 
-        // Invoke the changing of configs after all enable calls.
-        Configs.saveChangesForAllConfigs();
+        val autoPotion = new AutoPotion();
+
+        val fastswitch = new Fastswitch();
+
+        val impossibleChat = new ImpossibleChat();
+
+        val inventoryAverageHeuristic = new InventoryAverageHeuristic();
+        val inventoryHit = new InventoryHit();
+        val inventoryMove = new InventoryMove();
+        val inventoryMultiInteraction = new InventoryMultiInteraction();
+        val inventoryPerfectExit = new InventoryPerfectExit();
+        val inventoryRotation = new InventoryRotation();
+        val inventorySprinting = new InventorySprinting();
+        val inventory = ViolationModule.parentOf("Inventory", inventoryAverageHeuristic, inventoryHit, inventoryMove, inventoryMultiInteraction, inventoryPerfectExit, inventoryRotation, inventorySprinting);
+
+
+        val packetAnalysisAnimation = new PacketAnalysisAnimation();
+        val packetAnalysisEqualRotation = new PacketAnalysisEqualRotation();
+        val packetAnalysisIllegalPitch = new PacketAnalysisIllegalPitch();
+        val packetAnalysis = ViolationModule.parentOf("PacketAnalysis", packetAnalysisAnimation, packetAnalysisEqualRotation, packetAnalysisIllegalPitch);
+
+        val pingspoof = new Pingspoof();
+
+        val scaffold = new Scaffold();
+
+        val skinBlinker = new SkinBlinker();
+
+        val teaming = new Teaming();
+
+        val tower = new Tower();
+
+        // Sentinel
+        val betterSprintingSentinel = new BetterSprintingSentinel();
+        val fiveZigSentinel = new FiveZigSentinel();
+        val labyModSentinel = new LabyModSentinel();
+        val schematicaSentinel = new SchematicaSentinel();
+        val vapeSentinel = new VapeSentinel();
+        val worldDownloaderSentinel = new WorldDownloaderSentinel();
+
+        val moduleList = new ArrayList<>(Arrays.asList(
+                // Additions
+                brandHider,
+                damageIndicator,
+                logBot,
+                versionControl,
+
+                // Checks
+                autoEat,
+
+                autoFishConsistency,
+                autoFishInhumanReaction,
+                autoFish,
+
+                autoPotion,
+
+                fastswitch,
+
+                impossibleChat,
+
+                inventoryAverageHeuristic,
+                inventoryHit,
+                inventoryMove,
+                inventoryMultiInteraction,
+                inventoryPerfectExit,
+                inventoryRotation,
+                inventorySprinting,
+                inventory,
+
+                packetAnalysisAnimation,
+                packetAnalysisEqualRotation,
+                packetAnalysisIllegalPitch,
+                packetAnalysis,
+
+                pingspoof,
+
+                scaffold.getScaffoldAngle(),
+                scaffold.getScaffoldPosition(),
+                scaffold.getScaffoldRotationDerivative(),
+                scaffold.getScaffoldRotationFastChange(),
+                scaffold.getScaffoldRotationSecondDerivative(),
+                scaffold.getScaffoldSafewalkTypeOne(),
+                scaffold.getScaffoldSafewalkTypeTwo(),
+                scaffold.getScaffoldSprinting(),
+                scaffold,
+
+                skinBlinker,
+
+                teaming,
+
+                tower,
+
+                //Sentinel
+                betterSprintingSentinel,
+                fiveZigSentinel,
+                labyModSentinel,
+                schematicaSentinel,
+                vapeSentinel,
+                worldDownloaderSentinel));
+
+        // Add sentinel custom modules.
+        ConfigUtils.loadKeys("Sentinel.Custom").stream().map(key -> new SentinelChannelModule("Custom." + key)).forEach(moduleList::add);
+
+        moduleMap = new ModuleMap<>(moduleList);
+        violationModuleMap = new ModuleMap<>(moduleMap.values().stream()
+                                                      .filter(ViolationModule.class::isInstance)
+                                                      .map(ViolationModule.class::cast)
+                                                      .collect(Collectors.toList()));
+        moduleMap.values().forEach(Module::enableModule);
     }
 
-    /**
-     * Gets a {@link Module} from its {@link ModuleType}.
-     *
-     * @param moduleType the {@link ModuleType} of the {@link Module} that should be found
-     *
-     * @return the {@link Module} if a match was found
-     */
-    public Module getModule(final ModuleType moduleType)
+    public static void addExternalModule(final Module externalModule)
     {
-        return this.modules.get(moduleType);
-    }
-
-    /**
-     * Gets a the {@link ViolationLevelManagement} of a module from its {@link ModuleType}.
-     *
-     * @param moduleType the {@link ModuleType} of the check which {@link ViolationLevelManagement} is searched for.
-     *
-     * @return the check if it was found
-     *
-     * @throws IllegalArgumentException if the check does not have a {@link ViolationLevelManagement}.
-     */
-    public ViolationLevelManagement getViolationLevelManagement(final ModuleType moduleType)
-    {
-        final ViolationModule module = this.violationModules.get(moduleType);
-        Preconditions.checkArgument(module != null, "ModuleType " + moduleType.name() + " does not reference a module with a ViolationLevelManagement.");
-        return module.getViolationLevelManagement();
-    }
-
-    /**
-     * Checks if a {@link Module} of a certain {@link ModuleType} is enabled.
-     *
-     * @param moduleType the {@link ModuleType} of the module that should be checked
-     *
-     * @return <code>true</code> if the module referred to by the {@link ModuleType} is enabled, else <code>false</code>
-     */
-    public boolean getStateOfModule(final ModuleType moduleType)
-    {
-        return moduleType.isEnabled();
-    }
-
-    /**
-     * Enables or disables a check in runtime
-     *
-     * @param moduleType the {@link ModuleType} of the module that should be enabled or disabled.
-     */
-    public void setStateOfModule(final ModuleType moduleType, final boolean state)
-    {
-        // This will prevent bugs with registering modules multiple times
-        if (state != getStateOfModule(moduleType)) {
-            if (state) {
-                Module.enableModule(this.getModule(moduleType));
-            } else {
-                Module.disableModule(this.getModule(moduleType));
-            }
-        }
+        moduleMap.addModule(externalModule);
+        if (externalModule instanceof ViolationModule) violationModuleMap.addModule((ViolationModule) externalModule);
     }
 
     /**
      * This creates the actual hook for the AAC API.
      */
-    public AACCustomFeatureProvider getCustomFeatureProvider()
+    public static AACCustomFeatureProvider getCustomFeatureProvider()
     {
         return offlinePlayer -> {
-            final List<AACCustomFeature> featureList = new ArrayList<>(violationModules.size());
-            final UUID uuid = offlinePlayer.getUniqueId();
-            for (ViolationModule module : violationModules.values()) {
+            val featureList = new ArrayList<AACCustomFeature>(violationModuleMap.size());
+            val uuid = offlinePlayer.getUniqueId();
+            double score;
+            for (ViolationModule module : violationModuleMap.values()) {
                 // Only add enabled modules
-                if (this.getStateOfModule(module.getModuleType())) {
-                    double score = module.getViolationLevelManagement().getAACScore(uuid);
-                    featureList.add(new AACCustomFeature("aacadditionpro_" + module.getConfigString().toLowerCase(Locale.ENGLISH), module.getModuleType().getInfo(), score, module.getAACTooltip(uuid, score)));
+                if (module.isEnabled() && module.getAacInfo() != null) {
+                    score = module.getAACScore(uuid);
+                    featureList.add(new AACCustomFeature(module.getConfigString(), module.getAacInfo(), score, module.getAACTooltip(uuid, score)));
                 }
             }
             return featureList;

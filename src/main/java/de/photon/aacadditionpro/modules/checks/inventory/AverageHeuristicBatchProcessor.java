@@ -1,39 +1,49 @@
 package de.photon.aacadditionpro.modules.checks.inventory;
 
+import com.google.common.collect.ImmutableSet;
+import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.subdata.InventoryData;
-import de.photon.aacadditionpro.user.subdata.datawrappers.InventoryClick;
-import de.photon.aacadditionpro.util.datastructures.batch.AsyncBatchProcessor;
-import de.photon.aacadditionpro.util.datastructures.iteration.IterationUtil;
-import de.photon.aacadditionpro.util.mathematics.MathUtils;
-import de.photon.aacadditionpro.util.messaging.VerboseSender;
-import lombok.Getter;
+import de.photon.aacadditionpro.user.data.DataKey;
+import de.photon.aacadditionpro.user.data.batch.InventoryBatch;
+import de.photon.aacadditionpro.util.datastructure.batch.AsyncBatchProcessor;
+import de.photon.aacadditionpro.util.datastructure.batch.BatchPreprocessors;
+import de.photon.aacadditionpro.util.mathematics.MathUtil;
+import de.photon.aacadditionpro.util.mathematics.Polynomial;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
+import de.photon.aacadditionpro.util.violationlevels.Flag;
+import lombok.val;
 
+import java.util.Arrays;
 import java.util.List;
 
-public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<InventoryClick>
+public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<InventoryBatch.InventoryClick>
 {
-    @Getter
-    private static final AverageHeuristicBatchProcessor instance = new AverageHeuristicBatchProcessor();
+    private static final Polynomial AVERAGE_MULTIPLIER_CALCULATOR = new Polynomial(-0.000102881, 0.00709709, -0.171127, 1.65);
 
-    private AverageHeuristicBatchProcessor()
+    protected AverageHeuristicBatchProcessor(ViolationModule module)
     {
-        super(InventoryData.AVERAGE_HEURISTICS_BATCH_SIZE);
+        super(module, ImmutableSet.of(InventoryBatch.INVENTORY_BATCH_BROADCASTER));
     }
 
     @Override
-    public void processBatch(User user, List<InventoryClick> batch)
+    public void processBatch(User user, List<InventoryBatch.InventoryClick> batch)
     {
-        final List<InventoryClick.BetweenClickInformation> betweenClicks = IterationUtil.pairCombine(batch, (old, current) -> old.inventory.equals(current.inventory), InventoryClick.BetweenClickInformation::new);
+        val timeOffsets = BatchPreprocessors.zipOffsetOne(batch).stream()
+                                            .filter(pair -> pair.getFirst().getInventory().equals(pair.getSecond().getInventory()))
+                                            .mapToLong(pair -> pair.getFirst().timeOffset(pair.getSecond()))
+                                            .toArray();
+
+
+        val misClickCounter = user.getDataMap().getCounter(DataKey.CounterKey.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS);
 
         // Not enough data to check as the player opened many different inventories.
-        if (betweenClicks.size() < 8) {
-            user.getInventoryData().averageHeuristicMisclicks = 0;
+        if (timeOffsets.length < 8) {
+            misClickCounter.setToZero();
             return;
         }
 
-        final double average = betweenClicks.stream().mapToDouble(between -> between.timeDelta).average().orElseThrow(() -> new IllegalArgumentException("Could not get average of BetweenClick stream."));
-        final double squaredErrorsSum = betweenClicks.stream().mapToDouble(between -> MathUtils.squaredError(average, between.timeDelta)).sum();
+        val averageMillis = Arrays.stream(timeOffsets).average().orElseThrow(() -> new IllegalArgumentException("Could not get average of BetweenClick stream."));
+        val squaredErrorsSum = Arrays.stream(timeOffsets).mapToDouble(value -> MathUtil.squaredError(averageMillis, value)).sum();
 
         // One time 2 ticks offset and 2 times 1 tick offset * 15 minimum vl = 168750
         // 2500 error sum is legit achievable.
@@ -41,27 +51,23 @@ public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<Inventor
         double vl = 40000 / (squaredErrorsSum + 1);
 
         // Average below 1 tick is considered inhuman and increases vl.
-        final double ticks = average / 50;
-        final double averageMultiplier = 1.65 + ticks * (-0.171127 + (0.00709709 - 0.000102881 * ticks) * ticks);
+        val averageMultiplier = AVERAGE_MULTIPLIER_CALCULATOR.apply(averageMillis / 50);
         vl *= Math.max(averageMultiplier, 0.5);
 
         // Make sure that misclicks are applied correctly.
-        vl /= (user.getInventoryData().averageHeuristicMisclicks + 1);
+        vl /= (misClickCounter.getCounter() + 1);
 
         // Mitigation for possibly better players.
         vl -= 10;
 
         // Too low vl.
-        if (vl < 10) {
-            return;
-        }
+        if (vl < 10) return;
 
-        final double finalVl = vl;
-        Inventory.getInstance().getViolationLevelManagement().flag(user.getPlayer(),
-                                                                   (int) Math.min(vl, 35),
-                                                                   0,
-                                                                   () -> {},
-                                                                   () -> VerboseSender.getInstance().sendVerboseMessage("Inventory-Verbose | Player: " + user.getPlayer().getName() + " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + average + " | MC: " + user.getInventoryData().averageHeuristicMisclicks + " | VLU: " + finalVl + ")"));
-        user.getInventoryData().averageHeuristicMisclicks = 0;
+        val finalVl = (int) Math.min(vl, 35);
+        this.getModule().getManagement().flag(Flag.of(user)
+                                                  .setAddedVl(finalVl)
+                                                  .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer() + " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + averageMillis + " | MC: " + misClickCounter.getCounter() + " | VLU: " + finalVl + ")")));
+
+        misClickCounter.setToZero();
     }
 }

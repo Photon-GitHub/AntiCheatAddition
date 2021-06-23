@@ -3,67 +3,77 @@ package de.photon.aacadditionpro.util.pluginmessage;
 import com.comphenix.protocol.wrappers.MinecraftKey;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
-import lombok.Getter;
+import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
 
-public class MessageChannel extends MinecraftKey
+public interface MessageChannel
 {
-    public static final MessageChannel MC_BRAND_CHANNEL = new MessageChannel("minecraft", "brand");
+    MessageChannel MC_BRAND_CHANNEL = MessageChannel.of("minecraft", "brand", "MC|Brand");
+    MessageChannel LABYMOD_CHANNEL = MessageChannel.of("labymod3", "main", "LMC");
 
-    @Getter
-    private final String legacyName;
-
-    public MessageChannel(String prefix, String key, String legacyName)
+    @NotNull
+    static MessageChannel of(final MinecraftKey channel)
     {
-        super(prefix, key);
-        this.legacyName = legacyName;
+        return MessageChannel.of(channel.getPrefix(), channel.getKey());
     }
 
-    public MessageChannel(String prefix, String key)
+    @NotNull
+    static MessageChannel of(final String channel)
     {
-        super(prefix, key);
+        val splitNew = channel.split(":");
+        return splitNew.length == 2 ? MessageChannel.of(splitNew[0], splitNew[1]) : ofLegacy(channel);
+    }
 
-        String tempKey = this.getKey();
-        switch (this.getPrefix()) {
+    @NotNull
+    static MessageChannel of(final String prefix, final String key)
+    {
+        final String legacyName;
+        val upperStartTempKey = Character.toUpperCase(key.charAt(0)) + key.substring(1);
+        switch (prefix) {
             case "minecraft":
-                tempKey = Character.toUpperCase(tempKey.charAt(0)) + tempKey.substring(1);
-                this.legacyName = "MC|" + tempKey;
+                legacyName = "MC|" + upperStartTempKey;
                 break;
             case "px":
-                tempKey = Character.toUpperCase(tempKey.charAt(0)) + tempKey.substring(1);
-                this.legacyName = "PX|" + tempKey;
+                legacyName = "PX|" + upperStartTempKey;
                 break;
             case "wdl":
-                this.legacyName = "WDL|" + tempKey.toUpperCase();
+                legacyName = "WDL|" + key.toUpperCase();
                 break;
             default:
-                // This is done to make sure that 1.13.2 servers with plugins that utilize PluginMessageChannels
-                // do not see a lot of exceptions.
-                this.legacyName = null;
+                legacyName = null;
                 break;
+        }
+        return MessageChannel.of(prefix, key, legacyName);
+    }
+
+    @NotNull
+    static MessageChannel of(final String prefix, final String key, final String legacyName)
+    {
+        if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
+            return legacyName == null ? EmptyMessageChannel.EMPTY : new LegacyMessageChannel(legacyName);
+        } else {
+            return prefix == null || key == null ? EmptyMessageChannel.EMPTY : new KeyMessageChannel(prefix, key);
         }
     }
 
-    public MessageChannel(MinecraftKey minecraftKey)
+    @NotNull
+    static MessageChannel ofLegacy(final String legacyName)
     {
-        this(minecraftKey.getPrefix(), minecraftKey.getKey());
+        return legacyName != null && ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ? new LegacyMessageChannel(legacyName) : EmptyMessageChannel.EMPTY;
     }
 
     /**
-     * This gets the correct channel for the server version.
+     * Gets the channel for the current {@link ServerVersion} or null if it doesn't support the current {@link ServerVersion}
      */
-    public String getChannel()
-    {
-        return ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ?
-               this.legacyName :
-               this.getFullKey();
-    }
+    @NotNull
+    String getChannel();
 
     /**
      * Registers the incoming channel for a certain {@link PluginMessageListener}
      */
-    public void registerIncomingChannel(final PluginMessageListener listener)
+    default void registerIncomingChannel(final PluginMessageListener listener)
     {
         Bukkit.getMessenger().registerIncomingPluginChannel(AACAdditionPro.getInstance(), this.getChannel(), listener);
     }
@@ -71,7 +81,7 @@ public class MessageChannel extends MinecraftKey
     /**
      * Unregisters the incoming channel for a certain {@link PluginMessageListener}
      */
-    public void unregisterIncomingChannel(final PluginMessageListener listener)
+    default void unregisterIncomingChannel(final PluginMessageListener listener)
     {
         Bukkit.getMessenger().unregisterIncomingPluginChannel(AACAdditionPro.getInstance(), this.getChannel(), listener);
     }
@@ -79,7 +89,7 @@ public class MessageChannel extends MinecraftKey
     /**
      * Registers the outgoing channel for a certain {@link PluginMessageListener}
      */
-    public void registerOutgoingChannel()
+    default void registerOutgoingChannel()
     {
         Bukkit.getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
     }
@@ -87,7 +97,7 @@ public class MessageChannel extends MinecraftKey
     /**
      * Unregisters the outgoing channel for a certain {@link PluginMessageListener}
      */
-    public void unregisterOutgoingChannel()
+    default void unregisterOutgoingChannel()
     {
         Bukkit.getMessenger().unregisterOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
     }

@@ -1,91 +1,81 @@
 package de.photon.aacadditionpro.modules.checks.scaffold;
 
-import com.google.common.collect.ImmutableSet;
-import de.photon.aacadditionpro.modules.BatchProcessorModule;
-import de.photon.aacadditionpro.modules.ListenerModule;
-import de.photon.aacadditionpro.modules.Module;
-import de.photon.aacadditionpro.modules.ModuleType;
+import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.user.TimestampKey;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.user.UserManager;
-import de.photon.aacadditionpro.user.subdata.datawrappers.ScaffoldBlockPlace;
-import de.photon.aacadditionpro.util.datastructures.batch.BatchProcessor;
-import de.photon.aacadditionpro.util.files.configs.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.inventory.InventoryUtils;
-import de.photon.aacadditionpro.util.potion.InternalPotionEffectType;
-import de.photon.aacadditionpro.util.potion.PotionUtil;
+import de.photon.aacadditionpro.user.data.DataKey;
+import de.photon.aacadditionpro.user.data.TimestampKey;
+import de.photon.aacadditionpro.user.data.batch.ScaffoldBatch;
+import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
+import de.photon.aacadditionpro.util.inventory.InventoryUtil;
+import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
-import de.photon.aacadditionpro.util.world.BlockUtils;
-import de.photon.aacadditionpro.util.world.LocationUtils;
+import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
+import de.photon.aacadditionpro.util.world.BlockUtil;
+import de.photon.aacadditionpro.util.world.InternalPotion;
+import de.photon.aacadditionpro.util.world.LocationUtil;
+import de.photon.aacadditionpro.util.world.MaterialUtil;
 import lombok.Getter;
+import lombok.val;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import java.util.Set;
+import java.util.Objects;
 
-public class Scaffold implements BatchProcessorModule<ScaffoldBlockPlace>, ListenerModule, ViolationModule
+@Getter
+public class Scaffold extends ViolationModule implements Listener
 {
-    @Getter
-    private static final Scaffold instance = new Scaffold();
+    private final ScaffoldAngle scaffoldAngle = new ScaffoldAngle(this.getConfigString());
 
-    private static final Set<Module> submodules = ImmutableSet.of(AnglePattern.getInstance(),
-                                                                  PositionPattern.getInstance(),
-                                                                  RotationTypeOnePattern.getInstance(),
-                                                                  RotationTypeTwoPattern.getInstance(),
-                                                                  RotationTypeThreePattern.getInstance(),
-                                                                  SafewalkTypeOnePattern.getInstance(),
-                                                                  SafewalkTypeTwoPattern.getInstance(),
-                                                                  SprintingPattern.getInstance());
+    private final ScaffoldPosition scaffoldPosition = new ScaffoldPosition(this.getConfigString());
 
-    private final ViolationLevelManagement vlManager = new ViolationLevelManagement(this.getModuleType(), 80L);
+    private final ScaffoldRotationFastChange scaffoldRotationFastChange = new ScaffoldRotationFastChange(this.getConfigString());
+    private final ScaffoldRotationDerivative scaffoldRotationDerivative = new ScaffoldRotationDerivative(this.getConfigString());
+    private final ScaffoldRotationSecondDerivative scaffoldRotationSecondDerivative = new ScaffoldRotationSecondDerivative(this.getConfigString());
+
+    private final ScaffoldSafewalkTypeOne scaffoldSafewalkTypeOne = new ScaffoldSafewalkTypeOne(this.getConfigString());
+    private final ScaffoldSafewalkTypeTwo scaffoldSafewalkTypeTwo = new ScaffoldSafewalkTypeTwo(this.getConfigString());
+
+    private final ScaffoldSprinting scaffoldSprinting = new ScaffoldSprinting(this.getConfigString());
 
     @LoadFromConfiguration(configPath = ".cancel_vl")
-    @Getter
     private int cancelVl;
-
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
-    @LoadFromConfiguration(configPath = ".parts.rotation.violation_threshold")
-    private int rotationThreshold;
+    public Scaffold()
+    {
+        super("Scaffold");
+    }
 
     // ------------------------------------------- BlockPlace Handling ---------------------------------------------- //
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPreBlockPlace(final BlockPlaceEvent event)
     {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
-
-        // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
-            return;
-        }
+        val user = User.getUser(event.getPlayer());
+        if (User.isUserInvalid(user, this)) return;
 
         // To prevent too fast scaffolding -> Timeout
-        if (user.getTimestampMap().recentlyUpdated(TimestampKey.SCAFFOLD_TIMEOUT, timeout)) {
+        if (user.getTimestampMap().at(TimestampKey.SCAFFOLD_TIMEOUT).recentlyUpdated(timeout)) {
             event.setCancelled(true);
-            InventoryUtils.syncUpdateInventory(user.getPlayer());
+            InventoryUtil.syncUpdateInventory(user.getPlayer());
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(final BlockPlaceEvent event)
     {
-        final User user = UserManager.getUser(event.getPlayer().getUniqueId());
+        val user = User.getUser(event.getPlayer());
+        if (User.isUserInvalid(user, this)) return;
 
-        // Not bypassed
-        if (User.isUserInvalid(user, this.getModuleType())) {
-            return;
-        }
-
-        final Block blockPlaced = event.getBlockPlaced();
+        val blockPlaced = event.getBlockPlaced();
 
         // Short distance between player and the block (at most 2 Blocks)
-        if (LocationUtils.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D) &&
+        if (LocationUtil.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D) &&
             // Not flying
             !user.getPlayer().isFlying() &&
             // Above the block
@@ -98,94 +88,69 @@ public class Scaffold implements BatchProcessorModule<ScaffoldBlockPlace>, Liste
             event.getBlockPlaced().getType() != Material.LADDER && event.getBlockPlaced().getType() != Material.VINE &&
             // Check if the block is placed against one block face only, also implies no blocks above and below.
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
-            BlockUtils.countBlocksAround(blockPlaced, true) == 1 &&
+            BlockUtil.countBlocksAround(blockPlaced, BlockUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
-            BlockUtils.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
+            BlockUtil.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
         {
 
-            final Block lastScaffoldBlock = user.getScaffoldData().getScaffoldBlockPlaces().peekLastAdded().getBlock();
+            val lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().getBlock();
             // This checks if the block was placed against the expected block for scaffolding.
-            final boolean newSituation = !lastScaffoldBlock.equals(event.getBlockAgainst()) || !BlockUtils.isNext(lastScaffoldBlock, event.getBlockPlaced(), true);
+            val newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !BlockUtil.isNext(lastScaffoldBlock, event.getBlockPlaced(), BlockUtil.HORIZONTAL_FACES);
 
             // ---------------------------------------------- Average ---------------------------------------------- //
 
-            if (newSituation) {
-                user.getScaffoldData().getScaffoldBlockPlaces().clear();
-            }
+            if (newScaffoldLocation) user.getScaffoldBatch().clear();
 
-            user.getScaffoldData().getScaffoldBlockPlaces().addDataPoint(new ScaffoldBlockPlace(
-                    event.getBlockPlaced(),
-                    event.getBlockPlaced().getFace(event.getBlockAgainst()),
-                    // Speed-Effect
-                    PotionUtil.getAmplifier(PotionUtil.getPotionEffect(user.getPlayer(), InternalPotionEffectType.SPEED)),
-                    user.getPlayer().getLocation().getYaw(),
-                    user.hasSneakedRecently(175)));
+            user.getScaffoldBatch().addDataPoint(new ScaffoldBatch.ScaffoldBlockPlace(event.getBlockPlaced(),
+                                                                                      event.getBlockPlaced().getFace(event.getBlockAgainst()),
+                                                                                      InternalPotion.SPEED.getPotionEffect(event.getPlayer()),
+                                                                                      event.getPlayer().getLocation().getYaw(),
+                                                                                      user.hasSneakedRecently(175)));
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
-            int vl = AnglePattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
-            vl += PositionPattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
+            int vl = this.scaffoldAngle.getApplyingConsumer().applyAsInt(user, event);
+            vl += this.scaffoldPosition.getApplyingConsumer().applyAsInt(user, event);
 
             // All these checks may have false positives in new situations.
-            if (!newSituation) {
-                final float[] angleInformation = user.getLookPacketData().getAngleInformation();
+            if (!newScaffoldLocation) {
+                val angleInformation = user.getLookPacketData().getAngleInformation();
 
-                int rotationVl = RotationTypeOnePattern.getInstance().getApplyingConsumer().applyAsInt(user) +
-                                 RotationTypeTwoPattern.getInstance().getApplyingConsumer().applyAsInt(user, angleInformation[0]) +
-                                 RotationTypeThreePattern.getInstance().getApplyingConsumer().applyAsInt(user, angleInformation[1]);
+                val rotationVl = this.scaffoldRotationFastChange.getApplyingConsumer().applyAsInt(user) +
+                                 this.scaffoldRotationDerivative.getApplyingConsumer().applyAsInt(user, angleInformation[0]) +
+                                 this.scaffoldRotationSecondDerivative.getApplyingConsumer().applyAsInt(user, angleInformation[1]);
 
                 if (rotationVl > 0) {
-                    if (++user.getScaffoldData().rotationFails >= this.rotationThreshold) {
-                        // Flag the player
-                        vl += rotationVl;
-                    }
-                } else if (user.getScaffoldData().rotationFails > 0) {
-                    --user.getScaffoldData().rotationFails;
-                }
+                    if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ROTATION_FAILS).incrementCompareThreshold()) vl += rotationVl;
+                } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ROTATION_FAILS).decrementAboveZero();
 
-                vl += SafewalkTypeOnePattern.getInstance().getApplyingConsumer().applyAsInt(user, event);
-                vl += SafewalkTypeTwoPattern.getInstance().getApplyingConsumer().applyAsInt(user);
-                vl += SprintingPattern.getInstance().getApplyingConsumer().applyAsInt(user);
+                vl += this.scaffoldSafewalkTypeOne.getApplyingConsumer().applyAsInt(user, event);
+                vl += this.scaffoldSafewalkTypeTwo.getApplyingConsumer().applyAsInt(user);
+                vl += this.scaffoldSprinting.getApplyingConsumer().applyAsInt(user);
             }
 
             if (vl > 0) {
-                vlManager.flag(event.getPlayer(), vl, cancelVl, () ->
-                {
+                this.getManagement().flag(Flag.of(event.getPlayer()).setCancelAction(cancelVl, () -> {
                     event.setCancelled(true);
-                    user.getTimestampMap().updateTimeStamp(TimestampKey.SCAFFOLD_TIMEOUT);
-                    InventoryUtils.syncUpdateInventory(user.getPlayer());
-                }, () -> {});
+                    user.getTimestampMap().at(TimestampKey.SCAFFOLD_TIMEOUT).update();
+                    InventoryUtil.syncUpdateInventory(user.getPlayer());
+                }));
             }
         }
     }
 
     @Override
-    public ViolationLevelManagement getViolationLevelManagement()
+    protected ModuleLoader createModuleLoader()
     {
-        return vlManager;
+        val batchProcessor = new ScaffoldAverageBatchProcessor(this);
+        return ModuleLoader.builder(this)
+                           .batchProcessor(batchProcessor)
+                           .build();
     }
 
     @Override
-    public Set<Module> getSubModules()
+    protected ViolationManagement createViolationManagement()
     {
-        return submodules;
-    }
-
-    @Override
-    public boolean isSubModule()
-    {
-        return false;
-    }
-
-    @Override
-    public ModuleType getModuleType()
-    {
-        return ModuleType.SCAFFOLD;
-    }
-
-    @Override
-    public BatchProcessor<ScaffoldBlockPlace> getBatchProcessor()
-    {
-        return AverageBatchProcessor.getInstance();
+        return ViolationLevelManagement.builder(this).withDecay(80, 1).build();
     }
 }

@@ -1,210 +1,109 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
-import com.google.common.collect.ImmutableList;
-import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.events.PlayerAdditionViolationEvent;
-import de.photon.aacadditionpro.modules.ModuleType;
-import de.photon.aacadditionpro.util.commands.CommandUtils;
-import de.photon.aacadditionpro.util.exceptions.UnknownMinecraftVersion;
+import com.google.common.base.Preconditions;
+import de.photon.aacadditionpro.events.ViolationEvent;
+import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-public class ViolationLevelManagement
+public class ViolationLevelManagement extends ViolationManagement
 {
-    /**
-     * The {@link Map} violation-levels of all the players.
-     */
-    protected final ViolationLevelMap violationLevels;
+    private final ViolationLevelMultiSet vlMultiSet;
 
-    /**
-     * A {@link List} of {@link Threshold}s which is guaranteed to be sorted.
-     */
-    protected final List<Threshold> thresholds;
-
-    /**
-     * The {@link ModuleType} of the handler, used for reload
-     */
-    private final ModuleType moduleType;
-
-    /**
-     * A constant to calculate the score from the vl.
-     */
-    private final double aacScoreMultiplier;
-
-    /**
-     * Create a new {@link ViolationLevelManagement}
-     *
-     * @param moduleType the {@link ModuleType} of the module this {@link ViolationLevelManagement} is being used by.
-     * @param decayTicks the time in ticks until the vl of a player is decreased by one. If this is negative no decrease will happen.
-     */
-    public ViolationLevelManagement(final ModuleType moduleType, final long decayTicks)
+    private ViolationLevelManagement(@NotNull ViolationModule module, @NotNull ThresholdManagement management, long decayTicks, int decayAmount)
     {
-        // The ModuleType of the check
-        this.moduleType = moduleType;
+        super(module, management);
+        vlMultiSet = new ViolationLevelMultiSet(decayTicks, decayAmount);
+    }
 
-        ModuleType.VL_MODULETYPES.add(moduleType);
+    public static Builder builder(ViolationModule module)
+    {
+        return new Builder(module);
+    }
 
-        this.violationLevels = new ViolationLevelMap(decayTicks);
-        // Listener registration as of the PlayerQuitEvent
-        AACAdditionPro.getInstance().registerListener(this.violationLevels);
-
-        this.aacScoreMultiplier = AACAdditionPro.getInstance().getConfig().getDouble(this.moduleType.getConfigString() + ".aacscoremultiplier");
-
-        // Load the thresholds and sort them.
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC188:
-                final List<Threshold> temp = Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds");
-                Collections.sort(temp);
-                thresholds = ImmutableList.copyOf(temp);
-                break;
-            case MC112:
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-                thresholds = ImmutableList.sortedCopyOf(Threshold.loadThresholds(moduleType.getConfigString() + ".thresholds"));
-                break;
-            default:
-                throw new UnknownMinecraftVersion();
+    @Override
+    public void flag(@NotNull Flag flag)
+    {
+        Preconditions.checkNotNull(flag.getPlayer(), "Tried to flag null player.");
+        if (!ViolationEvent.build(flag.getPlayer(), this.module.getModuleId(), flag.getAddedVl()).call().isCancelled()) {
+            this.addVL(flag.getPlayer(), flag.getAddedVl());
+            flag.executeRunnablesIfNeeded(this.getVL(flag.getPlayer().getUniqueId()));
         }
     }
 
-    /**
-     * Flags a {@link Player} in the violationLevelManagement with the amount of vl_increase
-     *
-     * @param player      the player that should be flagged.
-     * @param cancel_vl   the ViolationLevel up from which onCancel is run. Set to -1 to disable
-     * @param onCancel    a {@link Runnable} that is executed if the vl is higher that cancel_vl
-     * @param specialCode a {@link Runnable} to define special code such as critical_vl. Contrary to normal code it is only run if the event is not cancelled.
-     */
-    public void flag(final Player player, final int cancel_vl, final Runnable onCancel, final Runnable specialCode)
+    @Override
+    public int getVL(@NotNull UUID uuid)
     {
-        flag(player, 1, cancel_vl, onCancel, specialCode);
+        return this.vlMultiSet.getMultiset().count(uuid);
     }
 
-    /**
-     * Flags a {@link Player} in the violationLevelManagement with the amount of vlIncrease
-     *
-     * @param player           the player that should be flagged.
-     * @param vlIncrease       how much the vl should be increased.
-     * @param cancelVl         the ViolationLevel up from which onCancel is run. Set to -1 to disable
-     * @param onCancel         a {@link Runnable} that is executed if the vl is higher that cancelVl
-     * @param runIfEventPassed a {@link Runnable} to define special code such as critical_vl. Contrary to normal code it is only run if the event is not cancelled.
-     */
-    public void flag(final Player player, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable runIfEventPassed)
+    @Override
+    public void setVL(@NotNull Player player, int newVl)
     {
-        flag(player, this.moduleType.getViolationMessage(), vlIncrease, cancelVl, onCancel, runIfEventPassed);
-    }
-
-    /**
-     * Flags a {@link Player} in the violationLevelManagement with the amount of vlIncrease
-     *
-     * @param player           the player that should be flagged.
-     * @param vlIncrease       how much the vl should be increased.
-     * @param cancelVl         the ViolationLevel up from which onCancel is run. Set to -1 to disable
-     * @param onCancel         a {@link Runnable} that is executed if the vl is higher that cancelVl
-     * @param runIfEventPassed a {@link Runnable} to define special code such as critical_vl. Contrary to normal code it is only run if the event is not cancelled.
-     */
-    public void flag(final Player player, final String message, final int vlIncrease, final int cancelVl, final Runnable onCancel, final Runnable runIfEventPassed)
-    {
-        // Prevent unnecessary flagging.
-        if (vlIncrease <= 0) {
-            return;
-        }
-
-        // Create and call the event.
-        final PlayerAdditionViolationEvent playerAdditionViolationEvent = PlayerAdditionViolationEvent.build(player, this.moduleType, this.getVL(player.getUniqueId()) + vlIncrease, message).call();
-
-        if (!playerAdditionViolationEvent.isCancelled()) {
-            this.addVL(player, vlIncrease);
-
-            //Cancel
-            if (cancelVl > 0 && cancelVl <= this.getVL(player.getUniqueId())) {
-                onCancel.run();
-            }
-
-            runIfEventPassed.run();
-        }
-    }
-
-    /**
-     * @param uuid the {@link UUID} of the {@link Player} whose vl should be returned.
-     *
-     * @return the vl of the given uuid.
-     */
-    public final int getVL(final UUID uuid)
-    {
-        return violationLevels.getOrDefault(uuid, 0);
-    }
-
-    /**
-     * Calculates the score given to AAC.
-     */
-    public final double getAACScore(final UUID uuid)
-    {
-        return this.getVL(uuid) * this.aacScoreMultiplier;
-    }
-
-    /**
-     * Sets the vl of a player.
-     *
-     * @param player the {@link Player} whose vl should be set
-     * @param newVl  the new vl of the player.
-     */
-    public void setVL(final Player player, final int newVl)
-    {
-        final int oldVl = this.getVL(player.getUniqueId());
-
-        violationLevels.put(player.getUniqueId(), newVl);
+        val oldVl = this.vlMultiSet.getMultiset().setCount(player.getUniqueId(), newVl);
 
         // setVL is also called when decreasing the vl
         // thus we must prevent double punishment
-        if (oldVl < newVl) {
-            this.punishPlayer(player, oldVl, newVl);
+        if (oldVl < newVl) this.punishPlayer(player, oldVl, newVl);
+    }
+
+    @Override
+    protected void addVL(@NotNull Player player, int vl)
+    {
+        val oldVl = this.vlMultiSet.getMultiset().add(player.getUniqueId(), vl);
+
+        // setVL is also called when decreasing the vl
+        // thus we must prevent double punishment
+        this.punishPlayer(player, oldVl, oldVl + vl);
+    }
+
+    @RequiredArgsConstructor
+    public static class Builder
+    {
+        @NotNull private final ViolationModule module;
+        private ThresholdManagement management = null;
+        private long decayTicks = -1;
+        private int decayAmount = 0;
+
+        /**This will set the {@link ThresholdManagement} to {@link ThresholdManagement#EMPTY}*/
+        public Builder emptyThresholdManagement()
+        {
+            return withCustomThresholdManagement(ThresholdManagement.EMPTY);
         }
-    }
 
-    /**
-     * Adds an {@link Integer} to the vl of a player. The number can be negative, this will decrease the vl then.
-     *
-     * @param player the {@link Player} whose vl should be set
-     * @param vl     the vl to be added to the current vl.
-     */
-    private void addVL(final Player player, final int vl)
-    {
-        this.setVL(player, this.getVL(player.getUniqueId()) + vl);
-    }
+        /**
+         * This allows to define a custom {@link ThresholdManagement}.
+         * The standard is {@link ThresholdManagement#loadThresholds(ViolationModule)}.
+         */
+        public Builder withCustomThresholdManagement(@NotNull ThresholdManagement management)
+        {
+            Preconditions.checkNotNull(management, "The custom management must not be null.");
+            this.management = management;
+            return this;
+        }
 
-    /**
-     * Used to execute the command that are defined in the config section CHECK_NAME.thresholds
-     *
-     * @param player the {@link Player} that should be punished and that should be used to apply the placeholders
-     * @param fromVl the last vl of the player before the addition and the searching-range for command.
-     */
-    private void punishPlayer(final Player player, final int fromVl, final int toVl)
-    {
-        // Only schedule the command execution if the plugin is loaded and when we do not use AAC's feature handling.
-        if (AACAdditionPro.getInstance().isLoaded() && AACAdditionPro.getInstance().getAacapi() == null) {
-            for (Threshold threshold : this.thresholds) {
-                // Use the guaranteed sorting of the thresholds to break the loop here as only higher-vl thresholds will
-                // follow.
-                if (threshold.getVl() > toVl) {
-                    break;
-                }
+        /**
+         * Allows to define decay.
+         * Not calling this method indicates no decay.
+         */
+        public Builder withDecay(long decayTicks, int decayAmount)
+        {
+            Preconditions.checkArgument(decayTicks > 0, "The decay ticks need to be greater than 0. No decay is the default setting.");
+            Preconditions.checkArgument(decayAmount > 0, "The decay amount needs to be greater than 0. No decay is the default setting.");
+            this.decayTicks = decayTicks;
+            this.decayAmount = decayAmount;
+            return this;
+        }
 
-                if (threshold.getVl() > fromVl) {
-                    // Iterate through all the commands that are presented in the threshold of key
-                    for (final String command : threshold.getCommandList()) {
-                        // Calling of the event + Sync command execution
-                        CommandUtils.executeCommandWithPlaceholders(command, player, this.moduleType);
-                    }
-                }
-            }
+        public ViolationLevelManagement build()
+        {
+            if (this.management == null) management = ThresholdManagement.loadThresholds(this.module);
+            return new ViolationLevelManagement(this.module, management, decayTicks, decayAmount);
         }
     }
 }

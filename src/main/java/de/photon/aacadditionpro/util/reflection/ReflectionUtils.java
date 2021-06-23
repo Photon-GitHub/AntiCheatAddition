@@ -8,9 +8,9 @@ import java.util.List;
 
 public final class ReflectionUtils
 {
-    private ReflectionUtils() {}
-
     private static final String versionNumber = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+
+    private ReflectionUtils() {}
 
     /**
      * Used to get the version {@link String} that is necessary for net.minecraft.server reflection

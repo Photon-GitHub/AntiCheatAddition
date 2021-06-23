@@ -5,14 +5,12 @@ import org.bukkit.permissions.Permissible;
 
 public enum InternalPermission
 {
-    AAC_VERBOSE("aac.verbose"),
-    AAC_MANAGE("aac.manage"),
     BYPASS("aacadditionpro.bypass"),
+    DEBUG("aacadditionpro.debug"),
     INFO("aacadditionpro.info"),
     TABLISTREMOVE("aacadditionpro.tablistremove");
 
-    @Getter
-    private final String realPermission;
+    @Getter private final String realPermission;
 
     InternalPermission(final String realPermission)
     {
@@ -29,7 +27,15 @@ public enum InternalPermission
      */
     public static boolean hasPermission(final Permissible permissible, final String permission)
     {
-        return permission == null || permissible.isOp() || permissible.hasPermission(permission);
+        return permission == null || permissible.hasPermission(permission);
+    }
+
+    /**
+     * Generates the bypass permission from the id of a module.
+     */
+    public static String bypassPermissionOf(String moduleId)
+    {
+        return (InternalPermission.BYPASS.getRealPermission() + '.') + moduleId;
     }
 
     /**
@@ -42,7 +48,7 @@ public enum InternalPermission
      */
     public static boolean hasPermission(final Permissible permissible, final InternalPermission permission)
     {
-        return permission == null || permissible.isOp() || permission.hasPermission(permissible);
+        return permission == null || permission.hasPermission(permissible);
     }
 
     /**

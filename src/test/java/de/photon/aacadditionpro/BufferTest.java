@@ -1,7 +1,9 @@
 package de.photon.aacadditionpro;
 
 import com.google.common.collect.ImmutableList;
-import de.photon.aacadditionpro.util.datastructures.buffer.ContinuousArrayBuffer;
+import de.photon.aacadditionpro.util.datastructure.buffer.FixedSizeBuffer;
+import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -9,14 +11,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class BufferTest
+class BufferTest
 {
     @Test
-    public void ContinuousArrayBufferInputTest()
+    void RingBufferInputTest()
     {
         List<String> forgottenList = new ArrayList<>();
 
-        ContinuousArrayBuffer<String> buffer = new ContinuousArrayBuffer<String>(10)
+        FixedSizeBuffer<String> buffer = new RingBuffer<String>(10)
         {
             @Override
             public void onForget(String forgotten)
@@ -25,18 +27,18 @@ public class BufferTest
             }
         };
 
-        buffer.bufferObject("1");
-        buffer.bufferObject("2");
-        buffer.bufferObject("3");
-        buffer.bufferObject("4");
-        buffer.bufferObject("5");
-        buffer.bufferObject("6");
-        buffer.bufferObject("7");
-        buffer.bufferObject("8");
-        buffer.bufferObject("9");
-        buffer.bufferObject("10");
-        buffer.bufferObject("11");
-        buffer.bufferObject("12");
+        buffer.add("1");
+        buffer.add("2");
+        buffer.add("3");
+        buffer.add("4");
+        buffer.add("5");
+        buffer.add("6");
+        buffer.add("7");
+        buffer.add("8");
+        buffer.add("9");
+        buffer.add("10");
+        buffer.add("11");
+        buffer.add("12");
 
         List<String> expectedForgotten = ImmutableList.of("1", "2");
         List<String> expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
@@ -53,24 +55,37 @@ public class BufferTest
     }
 
     @Test
-    public void ContinuousArrayBufferIterationTest()
+    void RingBufferIterationTest()
     {
 
-        ContinuousArrayBuffer<String> buffer = new ContinuousArrayBuffer<>(10);
-        buffer.bufferObject("1");
-        buffer.bufferObject("2");
-        buffer.bufferObject("3");
-        buffer.bufferObject("4");
-        buffer.bufferObject("5");
-        buffer.bufferObject("6");
-        buffer.bufferObject("7");
-        buffer.bufferObject("8");
-        buffer.bufferObject("9");
-        buffer.bufferObject("10");
-        buffer.bufferObject("11");
-        buffer.bufferObject("12");
+        FixedSizeBuffer<String> buffer = new RingBuffer<>(10);
+        buffer.add("1");
+        buffer.add("2");
+        buffer.add("3");
+        buffer.add("4");
 
-        List<String> expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
+
+        List<String> expected = ImmutableList.of("1", "2", "3", "4");
+        int i = 0;
+        for (String s : buffer) {
+            Assertions.assertEquals(expected.get(i++), s);
+        }
+
+        buffer.add("5");
+        buffer.add("6");
+        buffer.add("7");
+        buffer.add("8");
+        buffer.add("9");
+        buffer.add("10");
+        buffer.add("11");
+        buffer.add("12");
+
+        expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
+        i = 0;
+        for (String s : buffer) {
+            Assertions.assertEquals(expected.get(i++), s);
+        }
+
 
         Assertions.assertSame(expected.size(), buffer.size(), "Different sizes: EXPECTED: " + expected.size() + " ACTUAL: " + buffer.size());
         int dotSize = 0;
@@ -100,5 +115,28 @@ public class BufferTest
             Assertions.assertTrue(expected.contains(next), "Wrong element: " + next);
         }
         Assertions.assertSame(expected.size(), desSize, "Wrong amount of elements DESC.");
+    }
+
+    @Test
+    void RingBufferArrayTest()
+    {
+
+        RingBuffer<String> buffer = new RingBuffer<>(10);
+        buffer.add("1");
+        buffer.add("2");
+        buffer.add("3");
+        buffer.add("4");
+        buffer.add("5");
+        buffer.add("6");
+        buffer.add("7");
+        buffer.add("8");
+        buffer.add("9");
+        buffer.add("10");
+        buffer.add("11");
+        buffer.add("12");
+
+        val expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12").toArray(new String[0]);
+        val actual = buffer.toArray(new String[0]);
+        Assertions.assertArrayEquals(expected, actual);
     }
 }

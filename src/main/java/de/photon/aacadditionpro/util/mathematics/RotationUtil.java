@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.util.mathematics;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
@@ -30,9 +31,7 @@ public final class RotationUtil
     public static float reduceAngleDoubleStep(float input, float minMax)
     {
         final float doubleMinMax = 2 * minMax;
-
         input %= doubleMinMax;
-
         return reduceAngle(input, minMax, doubleMinMax);
     }
 
@@ -44,10 +43,7 @@ public final class RotationUtil
      */
     public static float reduceAngle(float input, float minMax)
     {
-        final float doubleMinMax = 2 * minMax;
-
-        input %= doubleMinMax;
-
+        input %= 2 * minMax;
         return reduceAngle(input, minMax, minMax);
     }
 
@@ -62,7 +58,6 @@ public final class RotationUtil
         } else if (input < -minMax) {
             input += step;
         }
-
         return input;
     }
 
@@ -93,13 +88,14 @@ public final class RotationUtil
     /**
      * Generates the direction - vector from yaw and pitch, basically a copy of {@link Location#getDirection()}
      */
+    @SuppressWarnings("RedundantCast")
     public static Vector getDirection(final float yaw, final float pitch)
     {
-        Vector vector = new Vector();
+        val vector = new Vector();
 
         vector.setY(-Math.sin(Math.toRadians((double) pitch)));
 
-        double xz = Math.cos(Math.toRadians((double) pitch));
+        val xz = Math.cos(Math.toRadians((double) pitch));
 
         vector.setX(-xz * Math.sin(Math.toRadians((double) yaw)));
         vector.setZ(xz * Math.cos(Math.toRadians((double) yaw)));

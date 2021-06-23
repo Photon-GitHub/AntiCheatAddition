@@ -52,6 +52,7 @@ public final class MaterialUtil
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 allowedMaterials.addAll(getMaterialsEndingWith("_SIGN"));
 
                 allowedMaterials.add(Material.CAVE_AIR);
@@ -90,6 +91,7 @@ public final class MaterialUtil
             case MC114:
             case MC115:
             case MC116:
+            case MC117:
                 return material != Material.BARRIER && material != Material.SPAWNER && material.isOccluding();
             default:
                 throw new UnknownMinecraftException();

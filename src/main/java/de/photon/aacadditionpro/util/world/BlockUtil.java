@@ -137,6 +137,7 @@ public final class BlockUtil
                     case MC114:
                     case MC115:
                     case MC116:
+                    case MC117:
                         // Make sure that the block above is not obstructed by blocks
                         return (aboveBlock.isPassable() || MaterialUtil.FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()))
                                // Make sure that the block above is not obstructed by cats

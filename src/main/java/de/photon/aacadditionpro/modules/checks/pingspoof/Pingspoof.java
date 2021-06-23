@@ -66,7 +66,8 @@ public class Pingspoof extends ViolationModule implements Listener
                 if (User.isUserInvalid(user, this)) continue;
 
                 serverPing = PingProvider.getPing(player);
-                echoPing = PingProvider.getEchoPing(user);
+                user.getPingspoofPing().addDataPoint(PingProvider.getEchoPing(user));
+                echoPing = (long) user.getPingspoofPing().getFloatingAverage();
 
                 // The player has not sent the received packet.
                 if (echoPing < 0) {

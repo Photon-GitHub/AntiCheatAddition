@@ -49,6 +49,7 @@ public final class PingProvider
                     return 0;
                 }
             case MC116:
+            case MC117:
                 return player.getPing();
             default:
                 throw new UnknownMinecraftException();

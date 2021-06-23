@@ -39,9 +39,9 @@ public class AutoPotion extends ViolationModule implements Listener
     @LoadFromConfiguration(configPath = ".look_down_angle")
     private double lookDownAngle;
 
-    public AutoPotion(String configString)
+    public AutoPotion()
     {
-        super(configString);
+        super("AutoPotion");
     }
 
     @EventHandler

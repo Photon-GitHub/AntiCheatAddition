@@ -7,6 +7,7 @@ import de.photon.aacadditionpro.modules.additions.VersionControl;
 import de.photon.aacadditionpro.modules.checks.autoeat.AutoEat;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishConsistency;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishInhumanReaction;
+import de.photon.aacadditionpro.modules.checks.autopotion.AutoPotion;
 import de.photon.aacadditionpro.modules.checks.fastswitch.Fastswitch;
 import de.photon.aacadditionpro.modules.checks.impossiblechat.ImpossibleChat;
 import de.photon.aacadditionpro.modules.checks.inventory.InventoryAverageHeuristic;
@@ -63,6 +64,8 @@ public final class ModuleManager
         val autoFishInhumanReaction = new AutoFishInhumanReaction();
         val autoFish = ViolationModule.parentOf("AutoFish", autoFishConsistency, autoFishInhumanReaction);
 
+        val autoPotion = new AutoPotion();
+
         val fastswitch = new Fastswitch();
 
         val impossibleChat = new ImpossibleChat();
@@ -113,6 +116,8 @@ public final class ModuleManager
                 autoFishConsistency,
                 autoFishInhumanReaction,
                 autoFish,
+
+                autoPotion,
 
                 fastswitch,
 

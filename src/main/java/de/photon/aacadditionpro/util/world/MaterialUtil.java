@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MaterialUtil
 {
-    public static final Material COMP_EXPERIENCE_BOTTLE;
+    public static final Material EXPERIENCE_BOTTLE;
 
     public static final Set<Material> LIQUIDS;
 
@@ -37,7 +37,7 @@ public final class MaterialUtil
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
             case MC112:
-                COMP_EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
+                EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
                 allowedMaterials.add(Material.getMaterial("ENCHANTMENT_TABLE"));
 
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA, Material.getMaterial("STATIONARY_WATER"), Material.getMaterial("STATIONARY_LAVA"));
@@ -46,7 +46,7 @@ public final class MaterialUtil
                 allowedMaterials.add(Material.CAVE_AIR);
                 allowedMaterials.add(Material.ENCHANTING_TABLE);
 
-                COMP_EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
+                EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA);
                 break;
             case MC114:
@@ -58,7 +58,7 @@ public final class MaterialUtil
                 allowedMaterials.add(Material.CAVE_AIR);
                 allowedMaterials.add(Material.ENCHANTING_TABLE);
 
-                COMP_EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
+                EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA);
                 break;
             default:

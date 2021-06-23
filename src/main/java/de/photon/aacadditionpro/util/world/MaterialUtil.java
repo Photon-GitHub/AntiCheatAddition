@@ -17,6 +17,8 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MaterialUtil
 {
+    public static final Material EXPERIENCE_BOTTLE = ServerVersion.getActiveServerVersion().ordinal() < ServerVersion.MC113.ordinal() ? Material.getMaterial("EXP_BOTTLE") : Material.EXPERIENCE_BOTTLE;
+
     public static final Set<Material> LIQUIDS;
 
     /**

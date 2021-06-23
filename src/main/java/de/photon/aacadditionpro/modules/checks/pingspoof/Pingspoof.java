@@ -63,6 +63,7 @@ public class Pingspoof extends ViolationModule implements Listener
         pingSpoofTask = Bukkit.getScheduler().runTaskTimerAsynchronously(AACAdditionPro.getInstance(), () -> {
             long serverPing;
             long echoPing;
+            long difference;
             User user;
 
             for (Player player : Bukkit.getOnlinePlayers()) {
@@ -83,7 +84,7 @@ public class Pingspoof extends ViolationModule implements Listener
                         echoPing = PingProvider.getEchoPing(user);
 
                         // The player has not sent the received packet.
-                        val difference = Math.abs(serverPing - echoPing);
+                        difference = Math.abs(serverPing - echoPing);
 
                         if (difference > pingLeniency) {
                             DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + player.getName() + " tried to spoof ping. Spoofed: " + serverPing + " | Actual: " + echoPing);

@@ -125,7 +125,7 @@ public class Pingspoof extends ViolationModule implements Listener
         val adapter = new PingspoofPacketAdapter(this);
         return ModuleLoader.builder(this)
                            //TODO: 1.17 is not yet compatible.
-                           .addAllowedServerVersions(ServerVersion.MC18, ServerVersion.MC112, ServerVersion.MC113, ServerVersion.MC114, ServerVersion.MC115, ServerVersion.MC116)
+                           .addAllowedServerVersions(ServerVersion.ALL_VERSIONS_TO_116)
                            .addPacketListeners(adapter)
                            .build();
     }

@@ -166,6 +166,8 @@ public final class DataUpdaterEvents implements Listener
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
             user.getTimestampMap().at(TimestampKey.LAST_RIGHT_CLICK_EVENT).update();
             if (event.getMaterial().isEdible()) user.getTimestampMap().at(TimestampKey.LAST_RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).update();
+
+            if (event.getItem() != null && event.getItem().getType() == Material.EXPERIENCE_BOTTLE) user.getTimestampMap().at(TimestampKey.LAST_EXPERIENCE_BOTTLE_THROWN).update();
         }
     }
 

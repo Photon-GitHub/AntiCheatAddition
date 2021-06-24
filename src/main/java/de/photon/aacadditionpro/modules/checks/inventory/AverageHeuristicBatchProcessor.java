@@ -7,13 +7,12 @@ import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.batch.InventoryBatch;
 import de.photon.aacadditionpro.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.aacadditionpro.util.datastructure.batch.BatchPreprocessors;
-import de.photon.aacadditionpro.util.mathematics.MathUtil;
+import de.photon.aacadditionpro.util.mathematics.DataUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import lombok.val;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<InventoryBatch.InventoryClick>
@@ -42,8 +41,8 @@ public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<Inventor
             return;
         }
 
-        val averageMillis = Arrays.stream(timeOffsets).average().orElseThrow(() -> new IllegalArgumentException("Could not get average of BetweenClick stream."));
-        val squaredErrorsSum = Arrays.stream(timeOffsets).mapToDouble(value -> MathUtil.squaredError(averageMillis, value)).sum();
+        val averageMillis = DataUtil.average(timeOffsets);
+        val squaredErrorsSum = DataUtil.squaredError(averageMillis, timeOffsets);
 
         // One time 2 ticks offset and 2 times 1 tick offset * 15 minimum vl = 168750
         // 2500 error sum is legit achievable.

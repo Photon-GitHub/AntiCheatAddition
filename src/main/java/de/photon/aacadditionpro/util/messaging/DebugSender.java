@@ -35,11 +35,11 @@ public final class DebugSender implements Listener
     private final boolean writeToPlayers = AACAdditionPro.getInstance().getConfig().getBoolean("Debug.players");
 
     @Setter private volatile boolean allowedToRegisterTasks = true;
-    // The File the verbose messages are written to.
+    // The File the debug messages are written to.
     private LogFile logFile = new LogFile(LocalDateTime.now());
 
     /**
-     * Sets off a standard verbose message (no console forcing and not flagged as an error).
+     * Sets off a standard debug message (no console forcing and not flagged as an error).
      *
      * @param s the message that will be sent
      */
@@ -49,10 +49,10 @@ public final class DebugSender implements Listener
     }
 
     /**
-     * This sets off a verbose message.
+     * This sets off a debug message.
      *
      * @param s             the message that will be sent
-     * @param force_console whether the verbose message should appear in the console even when verbose for console is deactivated.
+     * @param force_console whether the debug message should appear in the console even when debug for console is deactivated.
      * @param error         whether the message should be marked as an error
      */
     public void sendDebug(final String s, final boolean force_console, final boolean error)
@@ -75,7 +75,7 @@ public final class DebugSender implements Listener
 
         // Prevent errors on disable as of scheduling
         if (allowedToRegisterTasks && writeToPlayers) {
-            ChatMessage.sendSyncMessage(User.getDebugUsers(), s);
+            ChatMessage.sendSyncMessage(User.getPlayers(User.getDebugUsers()), s);
         }
     }
 

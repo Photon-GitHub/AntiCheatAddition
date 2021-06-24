@@ -23,7 +23,7 @@ public class Batch<T>
     // Volatile is ok here as we do not change the object itself and only care for the reference.
     @NotNull private T lastAdded;
 
-    public Batch(@NotNull Broadcaster<Snapshot<T>> broadcaster, @NotNull User user, int capacity, @NotNull T dummyLastAdded)
+    public Batch(Broadcaster<Snapshot<T>> broadcaster, User user, int capacity, T dummyLastAdded)
     {
         Preconditions.checkArgument(capacity > 0, "Invalid batch size specified.");
         this.broadcaster = Preconditions.checkNotNull(broadcaster, "Tried to create batch with null broadcaster.");
@@ -37,6 +37,7 @@ public class Batch<T>
      */
     public synchronized void addDataPoint(T value)
     {
+        Preconditions.checkNotNull(value, "Tried to add null value to batch");
         this.lastAdded = value;
         this.values[this.index++] = value;
 

@@ -17,7 +17,7 @@ commands:
 
 permissions:
   aacadditionpro.*:
-    description: Allows to bypass all checks and clientcontrols and gives access to all commands but not the verbose system (use aac.verbose as a permission for this).
+    description: Allows to bypass all checks and clientcontrols and gives access to all commands and the debug system.
     children:
       aacadditionpro.bypass.*: true
       aacadditionpro.debug: true

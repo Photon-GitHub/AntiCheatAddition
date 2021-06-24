@@ -37,22 +37,22 @@ public class LogFile
     {
         // Reserve the required builder size.
         // Time length is always 12, together with 2 brackets and one space this will result in 15.
-        val verboseMessage = new StringBuilder(15 + logMessage.length());
+        val debugMessage = new StringBuilder(15 + logMessage.length());
         // Add the beginning of the PREFIX
-        verboseMessage.append('[');
+        debugMessage.append('[');
         // Get the current time
-        verboseMessage.append(now.format(DateTimeFormatter.ISO_LOCAL_TIME));
+        debugMessage.append(now.format(DateTimeFormatter.ISO_LOCAL_TIME));
 
         // Add a 0 if it is too short
         // Technically only 12, but we already appended the "[", thus one more.
-        while (verboseMessage.length() < 13) verboseMessage.append('0');
+        while (debugMessage.length() < 13) debugMessage.append('0');
 
         // Add the rest of the PREFIX and the message
-        verboseMessage.append(']').append(' ').append(logMessage).append('\n');
+        debugMessage.append(']').append(' ').append(logMessage).append('\n');
 
         try {
             // Log the message
-            Files.write(this.backingFile.toPath(), verboseMessage.toString().getBytes(), StandardOpenOption.APPEND);
+            Files.write(this.backingFile.toPath(), debugMessage.toString().getBytes(), StandardOpenOption.APPEND);
         } catch (final IOException e) {
             AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Something went wrong while trying to write to the log file", e);
         }

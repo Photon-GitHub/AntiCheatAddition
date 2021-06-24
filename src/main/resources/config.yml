@@ -914,12 +914,13 @@ Sentinel:
 # You can use this to change the multiplier of checks.
 UseAACFeatureSystem: true
 
-# Should players with the aac.verbose permission get the AACAdditionPro verbose messages
+# Allows to define where to send debus messages to. Please note that when reporting bugs, you will need to provide the
+# debug file of AACAdditionPro, therefore this setting is enabled here.
 Debug:
   # Do you want AACAdditionPro to log into a log-file?
   file: true
-  # Should players be able to get verbose messages if they have the aac.verbose permission
-  # Players can toggle the verbose output with the command /aacadditionpro verbose
+  # Should players be able to get debug messages if they have the aacadditionpro.debug permission
+  # Players can toggle the debug output with the command /aacadditionpro debug
   players: false
-  # Should the verbose output be logged in the console (very spammy, only recommended for testing purposes)
+  # Should the debug output be logged in the console (very spammy, only recommended for testing purposes)
   console: false

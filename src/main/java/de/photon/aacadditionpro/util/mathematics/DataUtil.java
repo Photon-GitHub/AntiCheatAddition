@@ -56,7 +56,7 @@ public class DataUtil
      */
     public static double squaredError(double reference, int[] data)
     {
-        int sum = 0;
+        double sum = 0;
         for (int datum : data) sum += squaredError(reference, datum);
         return sum;
     }
@@ -66,7 +66,7 @@ public class DataUtil
      */
     public static double squaredError(double reference, long[] data)
     {
-        long sum = 0;
+        double sum = 0;
         for (long datum : data) sum += squaredError(reference, datum);
         return sum;
     }

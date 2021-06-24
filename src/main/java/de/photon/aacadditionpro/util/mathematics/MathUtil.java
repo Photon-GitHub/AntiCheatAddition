@@ -2,7 +2,6 @@ package de.photon.aacadditionpro.util.mathematics;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.val;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MathUtil
@@ -66,15 +65,6 @@ public final class MathUtil
     public static double bound(final double min, final double max, final double value)
     {
         return Math.min(Math.max(min, value), max);
-    }
-
-    /**
-     * Shortcut for calculating the squared error of a certain value.
-     */
-    public static double squaredError(final double reference, final double value)
-    {
-        val error = value - reference;
-        return error * error;
     }
 
     /**

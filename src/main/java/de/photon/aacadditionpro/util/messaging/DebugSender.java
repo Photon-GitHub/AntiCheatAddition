@@ -75,7 +75,7 @@ public final class DebugSender implements Listener
 
         // Prevent errors on disable as of scheduling
         if (allowedToRegisterTasks && writeToPlayers) {
-            ChatMessage.sendSyncMessage(User.getDebugUsers(), s);
+            ChatMessage.sendSyncMessage(User.getPlayers(User.getDebugUsers()), s);
         }
     }
 

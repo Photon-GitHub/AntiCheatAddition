@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 import lombok.val;
 import org.bukkit.GameMode;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,9 +29,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -43,12 +44,12 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class User implements CommandSender
+public class User implements Permissible
 {
     private static final ConcurrentMap<UUID, User> USERS = new ConcurrentHashMap<>(1024);
     private static final Set<User> DEBUG_USERS = new CopyOnWriteArraySet<>();
 
-    @Delegate(types = CommandSender.class)
+    @Delegate(types = Permissible.class)
     @EqualsAndHashCode.Include private final Player player;
 
     private final DataMap dataMap = new DataMap();
@@ -97,6 +98,13 @@ public class User implements CommandSender
         // Special handling here as a player could potentially log out after this and therefore cause a NPE.
         val player = event.getPlayer();
         return event.isCancelled() || event.isPlayerTemporary() || player == null ? null : getUser(player);
+    }
+
+    public static Collection<Player> getPlayers(Collection<User> users)
+    {
+        val players = new ArrayList<Player>();
+        for (User user : users) players.add(user.player);
+        return players;
     }
 
     /**

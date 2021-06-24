@@ -146,7 +146,7 @@ public class AACAdditionPro extends JavaPlugin
             this.getCommand(MainCommand.getInstance().getName()).setExecutor(MainCommand.getInstance());
 
             // ------------------------------------------------------------------------------------------------------ //
-            //                                          Enabled-Verbose + API                                         //
+            //                                           Enabled-Debug + API                                          //
             // ------------------------------------------------------------------------------------------------------ //
             this.getLogger().info(this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
             DebugSender.getInstance().sendDebug("AACAdditionPro initialization completed.");
@@ -161,7 +161,7 @@ public class AACAdditionPro extends JavaPlugin
     @Override
     public void onDisable()
     {
-        // Plugin is already disabled -> VerboseSender is not allowed to register a task
+        // Plugin is already disabled -> DebugSender is not allowed to register a task
         DebugSender.getInstance().setAllowedToRegisterTasks(false);
 
         // Remove all the Listeners, PacketListeners

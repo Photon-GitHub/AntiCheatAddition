@@ -77,7 +77,7 @@ public enum ServerVersion
      *
      * @return true if the active server version is included in the provided {@link Set} or false if it is not.
      */
-    public static boolean supportsActiveServerVersion(Set<ServerVersion> supportedServerVersions)
+    public static boolean containsActiveServerVersion(Set<ServerVersion> supportedServerVersions)
     {
         return supportedServerVersions.contains(activeServerVersion);
     }

@@ -36,7 +36,7 @@ class ScaffoldSafewalkTypeTwo extends Module
             {
                 if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TYPE2_FAILS).incrementCompareThreshold()) {
                     DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
-                    return 4;
+                    return 20;
                 }
             } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TYPE2_FAILS).decrementAboveZero();
             return 0;

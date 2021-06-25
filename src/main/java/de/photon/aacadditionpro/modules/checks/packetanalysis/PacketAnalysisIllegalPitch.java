@@ -55,7 +55,7 @@ public class PacketAnalysisIllegalPitch extends ViolationModule
 
             final IWrapperPlayClientLook lookWrapper = packetEvent::getPacket;
             if (!MathUtil.inRange(-90, 90, lookWrapper.getPitch())) {
-                getManagement().flag(Flag.of(user).setAddedVl(20).setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent illegal pitch value.")));
+                getManagement().flag(Flag.of(user).setAddedVl(150).setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent illegal pitch value.")));
             }
         }
     }

@@ -51,8 +51,8 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
             // False positive: Click-spamming on the same slot
             event.getRawSlot() != user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED))
         {
-            // Default vl to 3
-            int addedVl = 3;
+            // Default vl to 6
+            int addedVl = 6;
             // Time in ms that will flag if it has not passed
             int enforcedTicks = 0;
 
@@ -85,7 +85,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                 case PLACE_SOME:
                 case PLACE_ONE:
                     // No false positives to check for.
-                    addedVl = 3;
+                    addedVl = 8;
 
                     enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
                                     1 :
@@ -96,7 +96,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                 case DROP_ONE_CURSOR:
                 case CLONE_STACK:
                     // No false positives to check for.
-                    enforcedTicks = 2;
+                    enforcedTicks = 4;
                     break;
 
                 case MOVE_TO_OTHER_INVENTORY:
@@ -148,6 +148,6 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(80, 1).build();
+                                       .withDecay(100, 1).build();
     }
 }

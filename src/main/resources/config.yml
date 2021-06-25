@@ -132,15 +132,15 @@ AutoEat:
   aacfeatureinfo: "[AACAdditionPro] Player has botlike eating behaviour"
   # Violation before AACAdditionPro starts to cancel the consume events.
   # Set this to 0 to never cancel the events.
-  cancel_vl: 6
+  cancel_vl: 80
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to consume an item for the
   # duration of timeout (in milliseconds).
   timeout: 5000
   # Map of violation levels to command
   thresholds:
-    60: "aac notify {player} in {world} is suspected for AutoEat"
-    120: "aac notify {player} in {world} is highly suspected for AutoEat"
-    200: "aackick {player} AutoEat"
+    60: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoEat"
+    120: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoEat"
+    200: "kick {player} AutoEat"
 
 # AutoFish detects cheats that are named just like the check - automatic fishing bots which can yield a lot of
 # treasure and food for those who use them.
@@ -154,7 +154,7 @@ AutoFish:
   # Violation before AACAdditionPro starts to cancel the fishing.
   # Please think of potential luck, because of this I do not recommend to set this to a value smaller than 7.
   # Set this to 0 to never cancel fishing.
-  cancel_vl: 10
+  cancel_vl: 100
   # Control the different parts of AutoFish
   parts:
     # The inhuman reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
@@ -204,8 +204,6 @@ AutoPotion:
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player applies splash potions suspiciously"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 2
   # Violation before AACAdditionPro starts to cancel throwing potions.
   # Set this to 0 to never cancel throwing potions.
   cancel_vl: 2
@@ -225,23 +223,22 @@ AutoPotion:
   look_down_angle: 80
   # Map of violation levels to command
   thresholds:
-    50: "aac notify {player} in {world} is suspected for AutoPotion"
-    100: "aac notify {player} in {world} is highly suspected for AutoPotion"
-    200: "aackick {player} AutoPotion"
+    50: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoPotion"
+    100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoPotion"
+    200: "kick {player} AutoPotion"
 
 # The Fastswitch check prevents players from switching their hotbar-selection too quickly which can detect some
 # killauras or scaffolds.
 # The check will automatically disable itself if the server is lagging.
+# Adds 25 vl.
 Fastswitch:
   # Do you want to enable the Fastswitch check?
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player switches hotbar selection too quickly"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 25
   # Violation before AACAdditionPro starts to cancel the hotbar selections.
   # Set this to 0 to never cancel hotbar selections.
-  cancel_vl: 3
+  cancel_vl: 50
   # If a player has a ping higher than this value he bypasses the check
   # Please make sure that you have some pingspoof protection enabled while using this feature
   # Set this to -1 to disable
@@ -250,28 +247,27 @@ Fastswitch:
   switch_milliseconds: 50
   # Map of violation levels to command
   thresholds:
-    3: "aac notify {player} in {world} is suspected for Fastswitch"
-    5: "aac notify {player} in {world} is highly suspected for Fastswitch"
-    9: "aackick {player} Fastswitch"
+    30: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Fastswitch"
+    100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Fastswitch"
+    200: "kick {player} Fastswitch"
 
 # ImpossibleChat check detects sending chat messages while being in an inventory, blocking, sprinting and other illegal
 # situations.
+# Adds 25 vl.
 ImpossibleChat:
   # Do you want to enable the ImpossibleChat check?
   # Disabled by default as some servers might allow auto-chat modifications.
   enabled: false
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player chats while being in an inventory."
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 25
   # Violation before AACAdditionPro starts to cancel the messages.
   # Set this to 0 to never cancel messages.
-  cancel_vl: 2
+  cancel_vl: 75
   # Map of violation levels to command
   thresholds:
-    2: "aac notify {player} in {world} is suspected for ImpossibleChat"
-    5: "aac notify {player} in {world} is highly suspected for ImpossibleChat"
-    8: "aackick {player} ImpossibleChat"
+    50: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for ImpossibleChat"
+    100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for ImpossibleChat"
+    200: "kick {player} ImpossibleChat"
 
 # This check monitors inventory interactions of players.
 Inventory:
@@ -279,15 +275,13 @@ Inventory:
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player has suspicious inventory interactions"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 2
   # Control the different parts of Inventory
   parts:
     # This part detects bot-like behaviour with constant times between inventory clicks.
     # This is supposed to detect simple chest stealer bots which do not randomize the click delays.
     # NOTE: If you allow inventory sorting mods of any kind make sure to disable this part.
     #
-    # This part will add 10-35 vl (this check is quite slow and is only processed every 16 clicks on items) depending on
+    # This part will add 20-70 vl (this check is quite slow and is only processed every 16 clicks on items) depending on
     # the amount of misclicks and the time between. This will ensure that players which click excessively fast - e.g. in
     # the beginning of SurvivalGames will not get as many vls as they click on a lot of empty slots. Slow clicking
     # also results in less vl as a slow click rate does not give you an huge advantage and is likely a false positive.
@@ -302,21 +296,21 @@ Inventory:
       # Low TPS will cause an extreme amount of false positives.
       min_tps: 18.5
     # This part flags hitting while the inventory is open.
-    # This part will add 10 vl.
+    # This part will add 20 vl.
     Hit:
       # Do you want to enable the Hit part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the hits.
       # Set this to 0 to never cancel hits.
-      cancel_vl: 30
+      cancel_vl: 60
     # The move part detects movement when a player is still in his inventory.
-    # This part will add 3 vl when a player moves illegally and 10 vl when a player jumps illegally.
+    # This part will add 5 vl when a player moves illegally and 20 vl when a player jumps illegally.
     Move:
       # Do you want to enable the Move part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the movement.
       # Set this to 0 to never cancel movement.
-      cancel_vl: 30
+      cancel_vl: 60
       # The minimum TPS the server must have to activate this check
       # Low TPS will cause an extreme amount of false positives.
       min_tps: 19.5
@@ -332,13 +326,13 @@ Inventory:
       # Normal connections are already covered by the default values and are internally exempt for 240ms.
       lenience_millis: 0
     # The MultiInteraction part prevents players from moving items too fast.
-    # This part will add 1 to 3 vl, depending on the severity of the violation.
+    # This part will add 1 to 8 vl, depending on the severity of the violation.
     MultiInteraction:
       # Do you want to enable the MultiInteraction part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the inventory interactions.
       # Set this to 0 to never cancel interacts.
-      cancel_vl: 18
+      cancel_vl: 25
       # If a player has a ping higher than this value he bypasses the check
       # Please make sure that you have some pingspoof protection enabled if you use this feature
       # Set this to -1 to disable
@@ -348,7 +342,7 @@ Inventory:
       min_tps: 18.5
     # This part will detect perfectly closed inventories to detect chest stealers which automatically close an inventory
     # once it is empty.
-    # This part will add 7 to 15 vl depending on the severity of the violation.
+    # This part will add 20 to 40 vl depending on the severity of the violation.
     PerfectExit:
       # Do you want to enable the PerfectExit part?
       enabled: true
@@ -371,18 +365,18 @@ Inventory:
       # Analogous to the option above this only applies to world changes which usually take more time to process.
       world_change_bypass_time: 2000
     # This part detects inventory interactions while a player is sprinting or sneaking.
-    # This part will add 20 vl.
+    # This part will add 30 vl.
     Sprinting:
       # Do you want to enable the Sprinting part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the inventory interactions.
       # Set this to 0 to never cancel inventory interactions.
-      cancel_vl: 20
+      cancel_vl: 110
   # Map of violation levels to command
   thresholds:
-    55: "aac notify {player} in {world} is suspected for inventory cheats."
-    80: "aac notify {player} in {world} is highly suspected for inventory cheats."
-    100: "aackick {player} Inventory cheats."
+    110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for inventory cheats."
+    160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for inventory cheats."
+    200: "kick {player} Inventory cheats."
 
 # PacketAnalysis is a general check which aims to detect some of the modifications that are closely linked to
 # interfering with the protocol directly, such as derp, freecam, killauras, aimbots and other rotation-based modules.
@@ -391,31 +385,30 @@ PacketAnalysis:
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player has suspicious packet behaviour"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 5
   # Control the different parts of PacketAnalysis
   parts:
     # This part checks if after an attack the client sends an arm animation packet.
     # This only flags the worst killauras.
-    # This part will add 10 vl.
+    # This part will add 30 vl.
     Animation:
       # Do you want to enable the Animation part?
       enabled: true
     # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
     # This will catch several scaffold, tower, killaura and aimbot modifications.
+    # Adds 5 vl
     EqualRotation:
       # Do you want to enable the EqualRotation part?
       enabled: true
     # This checks for illegal pitches that a legit client is not able to send.
-    # This part will add 20 vl.
+    # This part will add 150 vl.
     IllegalPitch:
       # Do you want to enable the IllegalPitch part?
       enabled: true
   # Map of violation levels to command
   thresholds:
-    11: "aac notify {player} in {world} is suspected by PacketAnalysis"
-    18: "aac notify {player} in {world} is highly suspected by PacketAnalysis"
-    28: "aackick {player} Suspicious packets"
+    110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected by PacketAnalysis"
+    160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected by PacketAnalysis"
+    200: "kick {player} Suspicious packets"
 
 # Pingspoof tries to detect modifications that trick the server into believing the player has a higher or lower ping
 # than they actually have to partially bypass anticheats or get other advantages.
@@ -425,8 +418,6 @@ Pingspoof:
   enabled: true
   # This message will appear in AAC's status when AAC hooking is used.
   aac_status_message: "[AACAdditionPro] Player tries to spoof their ping"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 2
   # How much is the player ping allowed to deviate from the tested ping (measured in ms)?
   ping_leniency: 150
   # How often should the ping be checked?
@@ -444,18 +435,16 @@ Scaffold:
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player scaffolds suspiciously"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 6
   # Violation before AACAdditionPro starts to cancel block placement.
   # Set this to 0 to never cancel block placement.
-  cancel_vl: 20
+  cancel_vl: 110
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to place a block in the given
   # time window to prevent further scaffolding (in milliseconds)
   timeout: 1000
   # Control the different parts of Scaffold
   parts:
     # This part detects suspicious angles when the player places blocks.
-    # The angle part will add 3 vl if failed.
+    # Adds 15 vl.
     Angle:
       # Do you want to enable Angle?
       enabled: true
@@ -464,7 +453,7 @@ Scaffold:
       violation_threshold: 3
     # The main part of Scaffold preventing too fast Scaffolding
     # This part is always enabled as it provides the basic framework.
-    # The average part might add between 4 and 24 violation levels depending on the severity of the violation.
+    # The average part might add between 20 and 130 violation levels depending on the severity of the violation.
     Average:
       # The minimum delay between block placements that will be enforced by AACAdditionPro (in milliseconds)
       delays:
@@ -476,25 +465,25 @@ Scaffold:
         # This delay applies to diagonal building
         diagonal: 138
     # This part detects suspicious placement positions.
-    # The position check always adds 5 vl.
+    # Adds 30 vl.
     Position:
       # Do you want to enable the position part?
       enabled: true
     # This part analyzes the rotations of a player while scaffolding
     Rotation:
       # This checks the player's rotation's derivative.
-      # Adds 2 vl.
+      # Adds 10 vl.
       Derivative:
         # Do you want to enable Derivative?
         enabled: true
       # FastChange checks if a player has frequent, sudden spikes in their looking direction.
       # This module can detect combinations of Killaura and Scaffold especially fast.
-      # Adds 3 vl.
+      # Adds 15 vl.
       FastChange:
         # Do you want to enable FastChange?
         enabled: true
       # This checks the player's rotation's second derivative.
-      # Adds 1 vl.
+      # Adds 5 vl.
       SecondDerivative:
         # Do you want to enable SecondDerivative?
         enabled: true
@@ -505,14 +494,14 @@ Scaffold:
     Safewalk:
       # What types of this part should be enabled
       # Disabling all types will disable the part.
-      # Type1 will add 3 vl
+      # Type1 will add 15 vl
       type1:
         # Do you want to enable Safewalk Type 1?
         enabled: true
         # How many suspicious positions should Scaffold count as legit?
         # The value must be greater or equal to 0.
         violation_threshold: 2
-      # Type2 will add 4 vl
+      # Type2 will add 20 vl
       type2:
         # Do you want to enable Safewalk Type 2?
         enabled: true
@@ -520,7 +509,7 @@ Scaffold:
         # The value must be greater or equal to 0.
         violation_threshold: 2
     # This part detects sprinting between block placements.
-    # The sprinting check always adds 8 vl.
+    # The sprinting check always adds 45 vl.
     Sprinting:
       # Do you want to enable Sprinting?
       enabled: true
@@ -530,22 +519,21 @@ Scaffold:
       violation_threshold: 4
   # Map of violation levels to command
   thresholds:
-    16: "aac notify {player} in {world} is suspected for Scaffold"
-    24: "aac notify {player} in {world} is highly suspected for Scaffold"
-    36: "aackick {player} Scaffold"
+    90: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Scaffold"
+    130: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Scaffold"
+    200: "kick {player} Scaffold"
 
 # Skinblinker detects cheats of the same name when the player sprints/sneaks.
+# Adds 50 vl.
 Skinblinker:
   # Do you want to enable the Skinblinker check?
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player changes skin parts while actively moving"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 50
   # Map of violation levels to command
   thresholds:
-    1: "aac notify {player} in {world} is suspected for Skinblinker"
-    5: "aackick {player} Skinblinker"
+    100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Skinblinker"
+    200: "kick {player} Skinblinker"
 
 # This check tries to alert you of teamers
 # This is safe to enable, just make sure that you configure this check for your own needs.
@@ -579,19 +567,18 @@ Teaming:
   # These ViolationLevel are cumulative for a team.
   # E.g. a potential team of 6 members will generate 6 vl after every delay.
   thresholds:
-    4: "aac notify {team} in {world} may be Teaming"
-    10: "aac notify {team} in {world} are suspected for Teaming"
-    15: "aac notify {team} in {world} are highly suspected for Teaming"
+    4: "<YOUR_STAFFCHAT_COMMAND> {team} in {world} may be Teaming"
+    10: "<YOUR_STAFFCHAT_COMMAND> {team} in {world} are suspected for Teaming"
+    15: "<YOUR_STAFFCHAT_COMMAND> {team} in {world} are highly suspected for Teaming"
 
 # The Tower check detects cheats of the same name, modifications which allow you to build straight up (towering)
 # very fast.
+# Adds up to 1000 vl depending on the severity of the violation.
 Tower:
   # Do you want to enable the Tower check?
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player builds a tower too fast"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 20
   # Violation before AACAdditionPro starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 6
@@ -606,8 +593,8 @@ Tower:
   timeout: 6000
   # Map of violation levels to command
   thresholds:
-    5: "aac notify {player} in {world} is suspected for Tower"
-    12: "aackick {player} Tower"
+    80: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Tower"
+    200: "kick {player} Tower"
 
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                            ___          _   _          _                                            #

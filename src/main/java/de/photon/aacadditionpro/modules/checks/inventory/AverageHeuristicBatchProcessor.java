@@ -17,7 +17,7 @@ import java.util.List;
 
 public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<InventoryBatch.InventoryClick>
 {
-    private static final Polynomial AVERAGE_MULTIPLIER_CALCULATOR = new Polynomial(-0.000102881, 0.00709709, -0.171127, 1.65);
+    private static final Polynomial AVERAGE_MULTIPLIER_CALCULATOR = new Polynomial(-0.000205762, 0.0141942, -0.342254, 3.3);
 
     protected AverageHeuristicBatchProcessor(ViolationModule module)
     {
@@ -62,7 +62,7 @@ public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<Inventor
         // Too low vl.
         if (vl < 10) return;
 
-        val finalVl = (int) Math.min(vl, 35);
+        val finalVl = (int) Math.min(vl, 70);
         this.getModule().getManagement().flag(Flag.of(user)
                                                   .setAddedVl(finalVl)
                                                   .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer() + " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + averageMillis + " | MC: " + misClickCounter.getCounter() + " | VLU: " + finalVl + ")")));

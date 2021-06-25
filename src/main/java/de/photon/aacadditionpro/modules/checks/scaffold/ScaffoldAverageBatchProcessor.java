@@ -10,6 +10,7 @@ import de.photon.aacadditionpro.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.aacadditionpro.util.datastructure.batch.BatchPreprocessors;
 import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
+import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import lombok.val;
@@ -19,6 +20,7 @@ import java.util.LongSummaryStatistics;
 
 class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.ScaffoldBlockPlace>
 {
+    private static final Polynomial VL_CALCULATOR = new Polynomial(1.2222222, 20);
     private final int cancelVl = AACAdditionPro.getInstance().getConfig().getInt(this.getModule().getConfigString() + ".cancel_vl");
 
     public double normalDelay = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.normal");
@@ -55,7 +57,7 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
 
             // delta-times are too low -> flag
             if (actualAverage < minExpecedAverage) {
-                val vlIncrease = (int) (4 * Math.min(Math.ceil((minExpecedAverage - actualAverage) / 15D), 6));
+                val vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpecedAverage - actualAverage).intValue());
                 this.getModule().getManagement().flag(Flag.of(user)
                                                           .setAddedVl(vlIncrease)
                                                           .setCancelAction(cancelVl, () -> {

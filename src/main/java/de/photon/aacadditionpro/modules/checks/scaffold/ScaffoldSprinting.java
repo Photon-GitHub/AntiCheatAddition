@@ -30,7 +30,7 @@ class ScaffoldSprinting extends Module
             if (user.hasSprintedRecently(400)) {
                 if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SPRINTING_FAILS).incrementCompareThreshold()) {
                     DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
-                    return 8;
+                    return 45;
                 }
             } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SPRINTING_FAILS).decrementAboveZero();
             return 0;

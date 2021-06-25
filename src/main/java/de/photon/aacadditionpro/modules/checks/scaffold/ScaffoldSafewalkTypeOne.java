@@ -62,7 +62,7 @@ class ScaffoldSafewalkTypeOne extends Module
                 if (sneakBorder) {
                     if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TYPE1_FAILS).incrementCompareThreshold()) {
                         DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
-                        return 3;
+                        return 15;
                     }
                 } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TYPE1_FAILS).setToZero();
             }

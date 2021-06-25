@@ -47,7 +47,7 @@ public class InventorySprinting extends ViolationModule implements Listener
             user.hasMovedRecently(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT, 1000))
         {
             this.getManagement().flag(Flag.of(user)
-                                          .setAddedVl(20)
+                                          .setAddedVl(30)
                                           .setCancelAction(this.cancelVl, () -> {
                                               event.setCancelled(true);
                                               InventoryUtil.syncUpdateInventory(user.getPlayer());
@@ -67,6 +67,6 @@ public class InventorySprinting extends ViolationModule implements Listener
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(80, 1).build();
+                                       .withDecay(100, 1).build();
     }
 }

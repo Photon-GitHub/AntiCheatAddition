@@ -45,7 +45,7 @@ public class InventoryHit extends ViolationModule implements Listener
                 event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK)
             {
                 this.getManagement().flag(Flag.of(user)
-                                              .setAddedVl(10)
+                                              .setAddedVl(20)
                                               .setCancelAction(cancelVl, () -> event.setCancelled(true))
                                               .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " hit an entity while having an open inventory.")));
             }
@@ -63,6 +63,6 @@ public class InventoryHit extends ViolationModule implements Listener
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(80, 1).build();
+                                       .withDecay(160, 2).build();
     }
 }

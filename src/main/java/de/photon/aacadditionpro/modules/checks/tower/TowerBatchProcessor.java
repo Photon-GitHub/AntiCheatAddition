@@ -12,6 +12,7 @@ import de.photon.aacadditionpro.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.aacadditionpro.util.datastructure.batch.BatchPreprocessors;
 import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
+import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.server.Movement;
 import de.photon.aacadditionpro.util.server.MovementSimulator;
@@ -26,6 +27,8 @@ import java.util.LongSummaryStatistics;
 
 public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlockPlace>
 {
+    private static final Polynomial VL_CALCULATOR = new Polynomial(0.37125, 1);
+
     /**
      * This {@link java.util.List} provides usually used and tested values to speed up performance and possibly low-
      * quality simulation results.
@@ -71,7 +74,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
         val calcAvg = calcStatistics.getAverage();
         val actAvg = actualStatistics.getAverage();
         if (actAvg < calcAvg) {
-            val vlToAdd = (int) Math.min(1 + Math.floor((calcAvg - actAvg) / 16), 100);
+            val vlToAdd = Math.min(VL_CALCULATOR.apply(calcAvg - actAvg).intValue(), 1000);
             this.getModule().getManagement().flag(Flag.of(user)
                                                       .setAddedVl(vlToAdd)
                                                       .setCancelAction(cancelVl, () -> {

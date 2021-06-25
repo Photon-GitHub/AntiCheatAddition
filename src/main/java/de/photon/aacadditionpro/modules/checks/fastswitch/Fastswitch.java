@@ -49,7 +49,7 @@ public class Fastswitch extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val adapter = new FastswitchPacketAdaper(this);
+        val adapter = new FastswitchPacketAdapter(this);
         return ModuleLoader.builder(this)
                            .addPacketListeners(adapter)
                            .build();
@@ -58,12 +58,12 @@ public class Fastswitch extends ViolationModule
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(120, 1).build();
+        return ViolationLevelManagement.builder(this).withDecay(120, 25).build();
     }
 
-    private class FastswitchPacketAdaper extends ModulePacketAdapter
+    private class FastswitchPacketAdapter extends ModulePacketAdapter
     {
-        public FastswitchPacketAdaper(Module module)
+        public FastswitchPacketAdapter(Module module)
         {
             super(module, ListenerPriority.NORMAL, PacketType.Play.Client.HELD_ITEM_SLOT);
         }
@@ -86,6 +86,7 @@ public class Fastswitch extends ViolationModule
                     && (maxPing < 0 || PingProvider.getPing(user.getPlayer()) < maxPing))
                 {
                     getManagement().flag(Flag.of(user)
+                                             .setAddedVl(25)
                                              .setCancelAction(cancelVl, () -> event.setCancelled(true))
                                              .setEventNotCancelledAction(() -> InventoryUtil.syncUpdateInventory(user.getPlayer())));
                 }

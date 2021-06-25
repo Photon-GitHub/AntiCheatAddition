@@ -57,7 +57,7 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
 
             // delta-times are too low -> flag
             if (actualAverage < minExpecedAverage) {
-                val vlIncrease = Math.max(130, VL_CALCULATOR.apply(minExpecedAverage - actualAverage).intValue());
+                val vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpecedAverage - actualAverage).intValue());
                 this.getModule().getManagement().flag(Flag.of(user)
                                                           .setAddedVl(vlIncrease)
                                                           .setCancelAction(cancelVl, () -> {

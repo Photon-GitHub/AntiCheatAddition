@@ -32,7 +32,7 @@ public class SkinBlinker extends ViolationModule
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(100, 1).build();
+        return ViolationLevelManagement.builder(this).withDecay(200, 50).build();
     }
 
     private class SkinblinkerPacketAdapter extends ModulePacketAdapter
@@ -59,7 +59,7 @@ public class SkinBlinker extends ViolationModule
                 val newSkinComponents = event.getPacket().getIntegers().readSafely(1);
 
                 // updateSkinComponents returns true if the skin has changed.
-                if (user.updateSkinComponents(newSkinComponents)) getManagement().flag(Flag.of(user));
+                if (user.updateSkinComponents(newSkinComponents)) getManagement().flag(Flag.of(user).setAddedVl(50));
             }
         }
     }

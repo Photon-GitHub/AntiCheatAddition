@@ -524,17 +524,16 @@ Scaffold:
     200: "kick {player} Scaffold"
 
 # Skinblinker detects cheats of the same name when the player sprints/sneaks.
+# Adds 50 vl.
 Skinblinker:
   # Do you want to enable the Skinblinker check?
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player changes skin parts while actively moving"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 50
   # Map of violation levels to command
   thresholds:
-    1: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Skinblinker"
-    5: "kick {player} Skinblinker"
+    100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Skinblinker"
+    200: "kick {player} Skinblinker"
 
 # This check tries to alert you of teamers
 # This is safe to enable, just make sure that you configure this check for your own needs.
@@ -574,6 +573,7 @@ Teaming:
 
 # The Tower check detects cheats of the same name, modifications which allow you to build straight up (towering)
 # very fast.
+# Adds up to 1000 vl depending on the severity of the violation.
 Tower:
   # Do you want to enable the Tower check?
   enabled: true
@@ -595,8 +595,8 @@ Tower:
   timeout: 6000
   # Map of violation levels to command
   thresholds:
-    5: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Tower"
-    12: "kick {player} Tower"
+    80: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Tower"
+    200: "kick {player} Tower"
 
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                            ___          _   _          _                                            #

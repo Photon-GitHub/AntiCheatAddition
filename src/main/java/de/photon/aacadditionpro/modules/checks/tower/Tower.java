@@ -91,6 +91,6 @@ public class Tower extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(120L, 1).build();
+        return ViolationLevelManagement.builder(this).withDecay(120L, 15).build();
     }
 }

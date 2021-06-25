@@ -30,7 +30,7 @@ class ScaffoldRotationDerivative extends Module
         applyingConsumer = (user, angleInformation) -> {
             if (angleInformation > ANGLE_CHANGE_SUM_THRESHOLD) {
                 DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation changes.");
-                return 2;
+                return 10;
             }
             return 0;
         };

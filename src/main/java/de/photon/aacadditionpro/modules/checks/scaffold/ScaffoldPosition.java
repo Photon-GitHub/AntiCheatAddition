@@ -56,7 +56,7 @@ class ScaffoldPosition extends Module
 
             if (flag) {
                 DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + event.getPlayer().getName() + " placed from a suspicious location.");
-                return 5;
+                return 30;
             }
 
             return 0;

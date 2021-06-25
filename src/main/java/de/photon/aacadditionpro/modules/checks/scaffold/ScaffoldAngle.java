@@ -36,7 +36,7 @@ class ScaffoldAngle extends Module
             if (user.getPlayer().getLocation().getDirection().angle(placedVector) > MAX_ANGLE) {
                 if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ANGLE_FAILS).incrementCompareThreshold()) {
                     DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " placed a block with a suspicious angle.");
-                    return 3;
+                    return 15;
                 }
             } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ANGLE_FAILS).decrementAboveZero();
             return 0;

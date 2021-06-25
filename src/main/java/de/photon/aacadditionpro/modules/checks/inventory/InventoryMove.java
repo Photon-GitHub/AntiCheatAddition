@@ -67,7 +67,7 @@ public class InventoryMove extends ViolationModule
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(80, 2).build();
+                                       .withDecay(100, 2).build();
     }
 
     private class InventoryMoveAdapter extends ModulePacketAdapter

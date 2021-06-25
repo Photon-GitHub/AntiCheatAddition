@@ -391,25 +391,26 @@ PacketAnalysis:
   parts:
     # This part checks if after an attack the client sends an arm animation packet.
     # This only flags the worst killauras.
-    # This part will add 10 vl.
+    # This part will add 30 vl.
     Animation:
       # Do you want to enable the Animation part?
       enabled: true
     # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
     # This will catch several scaffold, tower, killaura and aimbot modifications.
+    # Adds 5 vl
     EqualRotation:
       # Do you want to enable the EqualRotation part?
       enabled: true
     # This checks for illegal pitches that a legit client is not able to send.
-    # This part will add 20 vl.
+    # This part will add 150 vl.
     IllegalPitch:
       # Do you want to enable the IllegalPitch part?
       enabled: true
   # Map of violation levels to command
   thresholds:
-    11: "aac notify {player} in {world} is suspected by PacketAnalysis"
-    18: "aac notify {player} in {world} is highly suspected by PacketAnalysis"
-    28: "aackick {player} Suspicious packets"
+    110: "aac notify {player} in {world} is suspected by PacketAnalysis"
+    160: "aac notify {player} in {world} is highly suspected by PacketAnalysis"
+    200: "aackick {player} Suspicious packets"
 
 # Pingspoof tries to detect modifications that trick the server into believing the player has a higher or lower ping
 # than they actually have to partially bypass anticheats or get other advantages.

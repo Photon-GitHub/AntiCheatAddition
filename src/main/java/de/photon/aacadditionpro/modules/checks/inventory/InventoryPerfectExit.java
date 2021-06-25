@@ -66,6 +66,6 @@ public class InventoryPerfectExit extends ViolationModule implements Listener
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(400, 2).build();
+                                       .withDecay(400, 1).build();
     }
 }

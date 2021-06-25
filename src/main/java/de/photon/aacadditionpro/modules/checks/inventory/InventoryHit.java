@@ -63,6 +63,6 @@ public class InventoryHit extends ViolationModule implements Listener
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(160, 4).build();
+                                       .withDecay(160, 2).build();
     }
 }

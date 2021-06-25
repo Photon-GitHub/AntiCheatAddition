@@ -75,6 +75,6 @@ public class AutoFishInhumanReaction extends ViolationModule implements Listener
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(600, 5).build();
+                                       .withDecay(800, 3).build();
     }
 }

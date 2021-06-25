@@ -70,6 +70,6 @@ public class InventoryAverageHeuristic extends ViolationModule implements Listen
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(160, 2).build();
+                                       .withDecay(160, 1).build();
     }
 }

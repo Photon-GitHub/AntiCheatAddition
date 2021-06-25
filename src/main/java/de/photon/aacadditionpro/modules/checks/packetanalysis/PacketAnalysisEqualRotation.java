@@ -3,8 +3,6 @@ package de.photon.aacadditionpro.modules.checks.packetanalysis;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketEvent;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.Module;
@@ -26,7 +24,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -35,13 +32,6 @@ import static java.util.logging.Level.SEVERE;
 
 public class PacketAnalysisEqualRotation extends ViolationModule
 {
-    // A set of materials which hitboxes changed in minecraft 1.9
-    private static final Set<Material> CHANGED_HITBOX_MATERIALS = ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ? Sets.immutableEnumSet(Material.getMaterial("STAINED_GLASS_PANE"),
-                                                                                                                                                       Material.getMaterial("THIN_GLASS"),
-                                                                                                                                                       Material.getMaterial("IRON_FENCE"),
-                                                                                                                                                       Material.CHEST,
-                                                                                                                                                       Material.ANVIL) : ImmutableSet.of();
-
     public PacketAnalysisEqualRotation()
     {
         super("PacketAnalysis.parts.EqualRotation");
@@ -61,7 +51,7 @@ public class PacketAnalysisEqualRotation extends ViolationModule
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(200, 1).build();
+                                       .withDecay(200, 3).build();
     }
 
     private class EqualRotationAdapter extends ModulePacketAdapter
@@ -107,7 +97,7 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                             // Fixes false positives on versions 1.9+ because of changed hitboxes
                             !(ServerVersion.getActiveServerVersion() == ServerVersion.MC18 &&
                               ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC18 &&
-                              MaterialUtil.containsMaterials(Hitbox.PLAYER.getPartiallyIncludedMaterials(user.getPlayer().getLocation()), CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS)))
+                              MaterialUtil.containsMaterials(Hitbox.PLAYER.getPartiallyIncludedMaterials(user.getPlayer().getLocation()), MaterialUtil.CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS)))
                     {
                         // Cancelled packets may cause problems.
                         if (user.getDataMap().getBoolean(DataKey.BooleanKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED)) {

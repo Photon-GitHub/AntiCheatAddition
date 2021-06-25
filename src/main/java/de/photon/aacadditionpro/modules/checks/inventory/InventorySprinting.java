@@ -67,6 +67,6 @@ public class InventorySprinting extends ViolationModule implements Listener
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(100, 2).build();
+                                       .withDecay(100, 1).build();
     }
 }

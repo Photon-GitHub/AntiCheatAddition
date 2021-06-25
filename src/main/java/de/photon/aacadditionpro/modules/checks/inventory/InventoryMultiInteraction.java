@@ -148,6 +148,6 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(100, 2).build();
+                                       .withDecay(100, 1).build();
     }
 }

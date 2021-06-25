@@ -204,8 +204,6 @@ AutoPotion:
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player applies splash potions suspiciously"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 2
   # Violation before AACAdditionPro starts to cancel throwing potions.
   # Set this to 0 to never cancel throwing potions.
   cancel_vl: 2
@@ -232,13 +230,12 @@ AutoPotion:
 # The Fastswitch check prevents players from switching their hotbar-selection too quickly which can detect some
 # killauras or scaffolds.
 # The check will automatically disable itself if the server is lagging.
+# Adds 25 vl.
 Fastswitch:
   # Do you want to enable the Fastswitch check?
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player switches hotbar selection too quickly"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 25
   # Violation before AACAdditionPro starts to cancel the hotbar selections.
   # Set this to 0 to never cancel hotbar selections.
   cancel_vl: 3
@@ -250,9 +247,9 @@ Fastswitch:
   switch_milliseconds: 50
   # Map of violation levels to command
   thresholds:
-    3: "aac notify {player} in {world} is suspected for Fastswitch"
-    5: "aac notify {player} in {world} is highly suspected for Fastswitch"
-    9: "aackick {player} Fastswitch"
+    30: "aac notify {player} in {world} is suspected for Fastswitch"
+    100: "aac notify {player} in {world} is highly suspected for Fastswitch"
+    200: "aackick {player} Fastswitch"
 
 # ImpossibleChat check detects sending chat messages while being in an inventory, blocking, sprinting and other illegal
 # situations.

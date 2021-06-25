@@ -16,7 +16,7 @@ As maven automatically handles all dependencies for you you just need to clone t
 
 ## Deployment
 
-You need to set up a spigot server with the correct version of ProtocolLib installed.
+You need to set up a spigot server with the correct version of [ProtocolLib](https://ci.dmulloy2.net/job/ProtocolLib) installed.
 
 ## Built With
 

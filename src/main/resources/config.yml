@@ -579,8 +579,6 @@ Tower:
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player builds a tower too fast"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 20
   # Violation before AACAdditionPro starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 6

@@ -67,7 +67,7 @@ public class InventoryMove extends ViolationModule
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(80, 1).build();
+                                       .withDecay(80, 2).build();
     }
 
     private class InventoryMoveAdapter extends ModulePacketAdapter
@@ -132,7 +132,7 @@ public class InventoryMove extends ViolationModule
                     }
 
                     getManagement().flag(Flag.of(user)
-                                             .setAddedVl(10)
+                                             .setAddedVl(20)
                                              .setCancelAction(cancelVl, () -> this.cancelAction(user, event))
                                              .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer() + " jumped while having an open inventory.")));
                     return;
@@ -154,7 +154,7 @@ public class InventoryMove extends ViolationModule
                         // Needs to be called synchronously.
                         if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()).get())) {
                             getManagement().flag(Flag.of(user)
-                                                     .setAddedVl(3)
+                                                     .setAddedVl(5)
                                                      .setCancelAction(cancelVl, () -> this.cancelAction(user, event))
                                                      .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer() + " moved while having an open inventory.")));
                         }

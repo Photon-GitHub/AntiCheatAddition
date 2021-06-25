@@ -132,7 +132,7 @@ AutoEat:
   aacfeatureinfo: "[AACAdditionPro] Player has botlike eating behaviour"
   # Violation before AACAdditionPro starts to cancel the consume events.
   # Set this to 0 to never cancel the events.
-  cancel_vl: 6
+  cancel_vl: 80
   # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to consume an item for the
   # duration of timeout (in milliseconds).
   timeout: 5000
@@ -154,7 +154,7 @@ AutoFish:
   # Violation before AACAdditionPro starts to cancel the fishing.
   # Please think of potential luck, because of this I do not recommend to set this to a value smaller than 7.
   # Set this to 0 to never cancel fishing.
-  cancel_vl: 10
+  cancel_vl: 100
   # Control the different parts of AutoFish
   parts:
     # The inhuman reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
@@ -238,7 +238,7 @@ Fastswitch:
   aacfeatureinfo: "[AACAdditionPro] Player switches hotbar selection too quickly"
   # Violation before AACAdditionPro starts to cancel the hotbar selections.
   # Set this to 0 to never cancel hotbar selections.
-  cancel_vl: 3
+  cancel_vl: 50
   # If a player has a ping higher than this value he bypasses the check
   # Please make sure that you have some pingspoof protection enabled while using this feature
   # Set this to -1 to disable
@@ -253,22 +253,21 @@ Fastswitch:
 
 # ImpossibleChat check detects sending chat messages while being in an inventory, blocking, sprinting and other illegal
 # situations.
+# Adds 25 vl.
 ImpossibleChat:
   # Do you want to enable the ImpossibleChat check?
   # Disabled by default as some servers might allow auto-chat modifications.
   enabled: false
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player chats while being in an inventory."
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 25
   # Violation before AACAdditionPro starts to cancel the messages.
   # Set this to 0 to never cancel messages.
-  cancel_vl: 2
+  cancel_vl: 75
   # Map of violation levels to command
   thresholds:
-    2: "aac notify {player} in {world} is suspected for ImpossibleChat"
-    5: "aac notify {player} in {world} is highly suspected for ImpossibleChat"
-    8: "aackick {player} ImpossibleChat"
+    50: "aac notify {player} in {world} is suspected for ImpossibleChat"
+    100: "aac notify {player} in {world} is highly suspected for ImpossibleChat"
+    200: "aackick {player} ImpossibleChat"
 
 # This check monitors inventory interactions of players.
 Inventory:
@@ -276,15 +275,13 @@ Inventory:
   enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player has suspicious inventory interactions"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 2
   # Control the different parts of Inventory
   parts:
     # This part detects bot-like behaviour with constant times between inventory clicks.
     # This is supposed to detect simple chest stealer bots which do not randomize the click delays.
     # NOTE: If you allow inventory sorting mods of any kind make sure to disable this part.
     #
-    # This part will add 10-35 vl (this check is quite slow and is only processed every 16 clicks on items) depending on
+    # This part will add 20-70 vl (this check is quite slow and is only processed every 16 clicks on items) depending on
     # the amount of misclicks and the time between. This will ensure that players which click excessively fast - e.g. in
     # the beginning of SurvivalGames will not get as many vls as they click on a lot of empty slots. Slow clicking
     # also results in less vl as a slow click rate does not give you an huge advantage and is likely a false positive.
@@ -299,21 +296,21 @@ Inventory:
       # Low TPS will cause an extreme amount of false positives.
       min_tps: 18.5
     # This part flags hitting while the inventory is open.
-    # This part will add 10 vl.
+    # This part will add 20 vl.
     Hit:
       # Do you want to enable the Hit part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the hits.
       # Set this to 0 to never cancel hits.
-      cancel_vl: 30
+      cancel_vl: 60
     # The move part detects movement when a player is still in his inventory.
-    # This part will add 3 vl when a player moves illegally and 10 vl when a player jumps illegally.
+    # This part will add 5 vl when a player moves illegally and 20 vl when a player jumps illegally.
     Move:
       # Do you want to enable the Move part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the movement.
       # Set this to 0 to never cancel movement.
-      cancel_vl: 30
+      cancel_vl: 60
       # The minimum TPS the server must have to activate this check
       # Low TPS will cause an extreme amount of false positives.
       min_tps: 19.5
@@ -329,13 +326,13 @@ Inventory:
       # Normal connections are already covered by the default values and are internally exempt for 240ms.
       lenience_millis: 0
     # The MultiInteraction part prevents players from moving items too fast.
-    # This part will add 1 to 3 vl, depending on the severity of the violation.
+    # This part will add 1 to 8 vl, depending on the severity of the violation.
     MultiInteraction:
       # Do you want to enable the MultiInteraction part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the inventory interactions.
       # Set this to 0 to never cancel interacts.
-      cancel_vl: 18
+      cancel_vl: 25
       # If a player has a ping higher than this value he bypasses the check
       # Please make sure that you have some pingspoof protection enabled if you use this feature
       # Set this to -1 to disable
@@ -345,7 +342,7 @@ Inventory:
       min_tps: 18.5
     # This part will detect perfectly closed inventories to detect chest stealers which automatically close an inventory
     # once it is empty.
-    # This part will add 7 to 15 vl depending on the severity of the violation.
+    # This part will add 20 to 40 vl depending on the severity of the violation.
     PerfectExit:
       # Do you want to enable the PerfectExit part?
       enabled: true
@@ -368,18 +365,18 @@ Inventory:
       # Analogous to the option above this only applies to world changes which usually take more time to process.
       world_change_bypass_time: 2000
     # This part detects inventory interactions while a player is sprinting or sneaking.
-    # This part will add 20 vl.
+    # This part will add 30 vl.
     Sprinting:
       # Do you want to enable the Sprinting part?
       enabled: true
       # Violation before AACAdditionPro starts to cancel the inventory interactions.
       # Set this to 0 to never cancel inventory interactions.
-      cancel_vl: 20
+      cancel_vl: 110
   # Map of violation levels to command
   thresholds:
-    55: "aac notify {player} in {world} is suspected for inventory cheats."
-    80: "aac notify {player} in {world} is highly suspected for inventory cheats."
-    100: "aackick {player} Inventory cheats."
+    110: "aac notify {player} in {world} is suspected for inventory cheats."
+    160: "aac notify {player} in {world} is highly suspected for inventory cheats."
+    200: "aackick {player} Inventory cheats."
 
 # PacketAnalysis is a general check which aims to detect some of the modifications that are closely linked to
 # interfering with the protocol directly, such as derp, freecam, killauras, aimbots and other rotation-based modules.

@@ -7,6 +7,7 @@ import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
+import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.server.TPSProvider;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
@@ -20,6 +21,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public class InventoryPerfectExit extends ViolationModule implements Listener
 {
+    private static final Polynomial VL_CALCULATOR = new Polynomial(-0.2857, 40);
+
     @LoadFromConfiguration(configPath = ".min_tps")
     private double minTps;
 
@@ -45,7 +48,7 @@ public class InventoryPerfectExit extends ViolationModule implements Listener
             if (passedTime <= 70) {
                 if (user.getDataMap().getCounter(DataKey.CounterKey.INVENTORY_PERFECT_EXIT_FAILS).incrementCompareThreshold()) {
                     this.getManagement().flag(Flag.of(user)
-                                                  .setAddedVl(passedTime <= 50 ? 15 : 7)
+                                                  .setAddedVl(VL_CALCULATOR.apply(passedTime).intValue())
                                                   .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')')));
                 }
             } else user.getDataMap().getCounter(DataKey.CounterKey.INVENTORY_PERFECT_EXIT_FAILS).decrementAboveZero();
@@ -63,6 +66,6 @@ public class InventoryPerfectExit extends ViolationModule implements Listener
     {
         return ViolationLevelManagement.builder(this)
                                        .emptyThresholdManagement()
-                                       .withDecay(80, 1).build();
+                                       .withDecay(400, 2).build();
     }
 }

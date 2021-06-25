@@ -5,6 +5,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers.EntityUseAction;
+import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.packetwrappers.AbstractPacket;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -36,6 +37,16 @@ public class WrapperPlayClientUseEntity extends AbstractPacket
     }
 
     /**
+     * Set entity ID of the target.
+     *
+     * @param value - new value.
+     */
+    public void setTargetID(int value)
+    {
+        handle.getIntegers().write(0, value);
+    }
+
+    /**
      * Retrieve the entity that was targeted.
      *
      * @param world - the current world of the entity.
@@ -60,23 +71,14 @@ public class WrapperPlayClientUseEntity extends AbstractPacket
     }
 
     /**
-     * Set entity ID of the target.
-     *
-     * @param value - new value.
-     */
-    public void setTargetID(int value)
-    {
-        handle.getIntegers().write(0, value);
-    }
-
-    /**
      * Retrieve Type.
      *
      * @return The current Type
      */
     public EntityUseAction getType()
     {
-        return handle.getEntityUseActions().read(0);
+        if (ServerVersion.containsActiveServerVersion(ServerVersion.ALL_VERSIONS_TO_116)) handle.getEntityUseActions().read(0);
+        return handle.getEnumEntityUseActions().read(0).getAction();
     }
 
     /**

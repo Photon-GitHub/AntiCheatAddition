@@ -66,7 +66,7 @@ abstract class PlayerInformationHider implements Listener
     public void registerListeners()
     {
         // Only start if the ServerVersion is supported
-        if (ServerVersion.supportsActiveServerVersion(this.getSupportedVersions())) {
+        if (ServerVersion.containsActiveServerVersion(this.getSupportedVersions())) {
             // Register events and packet listener
             AACAdditionPro.getInstance().registerListener(this);
             ProtocolLibrary.getProtocolManager().addPacketListener(this.informationPacketListener);

@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.commands.subcommands;
 
+import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.commands.CommandAttributes;
 import de.photon.aacadditionpro.commands.InternalCommand;
 import de.photon.aacadditionpro.commands.TabCompleteSupplier;
@@ -17,6 +18,7 @@ public class SetVlCommand extends InternalCommand
                                         .addCommandHelp("This command sets the vl of a player for a certain violation module.",
                                                         "Helpful for testing purposes or to find false positives.",
                                                         "Syntax: /aacadditionpro setvl <player> <module_id> <vl>")
+                                        .setPermission(InternalPermission.SETVL)
                                         .build(),
               TabCompleteSupplier.builder().allPlayers().constants(ModuleManager.getViolationModuleMap().keySet()));
     }

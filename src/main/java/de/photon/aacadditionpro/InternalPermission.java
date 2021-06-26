@@ -8,6 +8,7 @@ public enum InternalPermission
     BYPASS("aacadditionpro.bypass"),
     DEBUG("aacadditionpro.debug"),
     INFO("aacadditionpro.info"),
+    SETVL("aacadditionpro.setvl"),
     TABLISTREMOVE("aacadditionpro.tablistremove");
 
     @Getter private final String realPermission;

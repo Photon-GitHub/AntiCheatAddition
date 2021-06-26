@@ -77,8 +77,7 @@ public class WrapperPlayClientUseEntity extends AbstractPacket
      */
     public EntityUseAction getType()
     {
-        if (ServerVersion.containsActiveServerVersion(ServerVersion.ALL_VERSIONS_TO_116)) return handle.getEntityUseActions().read(0);
-        return handle.getEnumEntityUseActions().read(0).getAction();
+        return ServerVersion.containsActiveServerVersion(ServerVersion.ALL_VERSIONS_TO_116) ? handle.getEntityUseActions().read(0) : handle.getEnumEntityUseActions().read(0).getAction();
     }
 
     /**

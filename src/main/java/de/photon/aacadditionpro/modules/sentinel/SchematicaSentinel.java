@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.modules.sentinel;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
@@ -53,6 +52,6 @@ public class SchematicaSentinel extends SentinelModule
         return ModuleLoader.builder(this)
                            .addIncomingMessageChannels(MessageChannel.of("minecraft", "register", "REGISTER"))
                            .addOutgoingMessageChannels(SCHEMATICA_CHANNEL)
-                           .addAllowedServerVersions(ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS).build();
+                           .build();
     }
 }

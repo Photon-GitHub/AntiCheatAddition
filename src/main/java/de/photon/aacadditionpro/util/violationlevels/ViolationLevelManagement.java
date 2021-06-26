@@ -18,7 +18,7 @@ public class ViolationLevelManagement extends ViolationManagement
     private ViolationLevelManagement(@NotNull ViolationModule module, @NotNull ThresholdManagement management, long decayTicks, int decayAmount)
     {
         super(module, management);
-        vlMultiSet = new ViolationLevelMultiSet(decayTicks, decayAmount);
+        vlMultiSet = new ViolationLevelMultiSet(decayTicks * 50, decayAmount);
     }
 
     public static Builder builder(ViolationModule module)
@@ -70,7 +70,9 @@ public class ViolationLevelManagement extends ViolationManagement
         private long decayTicks = -1;
         private int decayAmount = 0;
 
-        /**This will set the {@link ThresholdManagement} to {@link ThresholdManagement#EMPTY}*/
+        /**
+         * This will set the {@link ThresholdManagement} to {@link ThresholdManagement#EMPTY}
+         */
         public Builder emptyThresholdManagement()
         {
             return withCustomThresholdManagement(ThresholdManagement.EMPTY);

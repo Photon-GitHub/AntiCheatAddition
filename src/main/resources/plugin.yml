@@ -22,6 +22,7 @@ permissions:
       aacadditionpro.bypass.*: true
       aacadditionpro.debug: true
       aacadditionpro.info: true
+      aacadditionpro.setvl: true
       aacadditionpro.tablistremove: true
     default: op
 
@@ -72,6 +73,9 @@ permissions:
 
   aacadditionpro.info:
     description: Allows requesting an overview about a player's violation levels
+
+  aacadditionpro.setvl:
+    description: Allows the player to execute a command which will set the vl of another player, usually used for testing.
 
   aacadditionpro.tablistremove:
     description: Allows the player to execute a command which will temporarily hide a player from another's tablist.

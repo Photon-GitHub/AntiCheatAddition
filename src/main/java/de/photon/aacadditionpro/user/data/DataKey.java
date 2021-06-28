@@ -80,8 +80,8 @@ public final class DataKey
         SCAFFOLD_ANGLE_FAILS("Scaffold.parts.Angle.violation_threshold"),
         SCAFFOLD_JUMPING_FAILS("Scaffold.parts.Jumping.violation_threshold"),
         SCAFFOLD_ROTATION_FAILS("Scaffold.parts.Rotation.violation_threshold"),
-        SCAFFOLD_SAFEWALK_POSITION_FAILS("Scaffold.parts.Safewalk.type1.violation_threshold"),
-        SCAFFOLD_SAFEWALK_TIMING_FAILS("Scaffold.parts.Safewalk.type2.violation_threshold"),
+        SCAFFOLD_SAFEWALK_POSITION_FAILS("Scaffold.parts.Safewalk.Position.violation_threshold"),
+        SCAFFOLD_SAFEWALK_TIMING_FAILS("Scaffold.parts.Safewalk.Timing.violation_threshold"),
         SCAFFOLD_SPRINTING_FAILS("Scaffold.parts.Sprinting.violation_threshold");
 
         private final ViolationCounter defaultValue;

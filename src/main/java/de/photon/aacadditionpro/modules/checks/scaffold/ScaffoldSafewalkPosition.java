@@ -24,7 +24,7 @@ class ScaffoldSafewalkPosition extends Module
 
     public ScaffoldSafewalkPosition(String scaffoldConfigString)
     {
-        super(scaffoldConfigString + ".parts.Safewalk.position");
+        super(scaffoldConfigString + ".parts.Safewalk.Position");
     }
 
     @Override

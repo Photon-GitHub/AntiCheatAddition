@@ -30,6 +30,8 @@ public class Scaffold extends ViolationModule implements Listener
 {
     private final ScaffoldAngle scaffoldAngle = new ScaffoldAngle(this.getConfigString());
 
+    private final ScaffoldJumping scaffoldJumping = new ScaffoldJumping(this.getConfigString());
+
     private final ScaffoldPosition scaffoldPosition = new ScaffoldPosition(this.getConfigString());
 
     private final ScaffoldRotationFastChange scaffoldRotationFastChange = new ScaffoldRotationFastChange(this.getConfigString());

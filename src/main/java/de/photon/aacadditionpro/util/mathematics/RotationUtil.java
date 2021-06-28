@@ -30,7 +30,7 @@ public final class RotationUtil
      */
     public static float reduceAngleDoubleStep(float input, float minMax)
     {
-        final float doubleMinMax = 2 * minMax;
+        val doubleMinMax = 2 * minMax;
         input %= doubleMinMax;
         return reduceAngle(input, minMax, doubleMinMax);
     }
@@ -53,11 +53,8 @@ public final class RotationUtil
      */
     private static float reduceAngle(float input, float minMax, float step)
     {
-        if (input >= minMax) {
-            input -= step;
-        } else if (input < -minMax) {
-            input += step;
-        }
+        if (input >= minMax) input -= step;
+        else if (input < -minMax) input += step;
         return input;
     }
 
@@ -91,14 +88,17 @@ public final class RotationUtil
     @SuppressWarnings("RedundantCast")
     public static Vector getDirection(final float yaw, final float pitch)
     {
+        val yawRadians = Math.toRadians((double) yaw);
+        val pitchRadians = Math.toRadians((double) pitch);
+
         val vector = new Vector();
 
-        vector.setY(-Math.sin(Math.toRadians((double) pitch)));
+        vector.setY(-Math.sin(pitchRadians));
 
-        val xz = Math.cos(Math.toRadians((double) pitch));
+        val xz = Math.cos(pitchRadians);
 
-        vector.setX(-xz * Math.sin(Math.toRadians((double) yaw)));
-        vector.setZ(xz * Math.cos(Math.toRadians((double) yaw)));
+        vector.setX(-xz * Math.sin(yawRadians));
+        vector.setZ(xz * Math.cos(yawRadians));
 
         return vector;
     }

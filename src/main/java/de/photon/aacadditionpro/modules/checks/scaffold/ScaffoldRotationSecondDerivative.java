@@ -16,7 +16,7 @@ class ScaffoldRotationSecondDerivative extends Module
     private static final double ANGLE_OFFSET_SUM_THRESHOLD = 5.2D;
 
     @Getter
-    private ToIntBiFunction<User, Float> applyingConsumer = (user, angleInformation) -> 0;
+    private ToIntBiFunction<User, Double> applyingConsumer = (user, angleInformation) -> 0;
 
     public ScaffoldRotationSecondDerivative(String scaffoldConfigString)
     {

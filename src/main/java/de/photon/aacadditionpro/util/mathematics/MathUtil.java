@@ -16,6 +16,17 @@ public final class MathUtil
         return a > b ? (a - b) : (b - a);
     }
 
+
+    /**
+     * Simple method to calculate the absolute offset of two numbers.
+     *
+     * @return the absolute offset, always positive or 0 if the numbers are equal.
+     */
+    public static long absDiff(final long a, final long b)
+    {
+        return a > b ? (a - b) : (b - a);
+    }
+
     /**
      * Simple method to calculate the absolute offset of two numbers.
      *

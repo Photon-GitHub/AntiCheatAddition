@@ -13,11 +13,10 @@ import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.mathematics.RotationUtil;
 import de.photon.aacadditionpro.util.packetwrappers.sentbyclient.IWrapperPlayClientLook;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Value;
+import lombok.experimental.NonFinal;
 import lombok.val;
-
-import java.util.ArrayList;
 
 public class LookPacketData
 {
@@ -37,62 +36,62 @@ public class LookPacketData
      * [0] is the sum of the angle changes <br>
      * [1] is the sum of the angle offsets
      */
-    public float[] getAngleInformation()
+    public double[] getAngleInformation()
     {
-        val result = new float[2];
-
-        // Ticks that must be added to fill up the gaps in the queue.
-        short gapFillers = 0;
+        val curTime = System.currentTimeMillis();
+        val result = new double[2];
+        final RotationChange[] changes;
 
         synchronized (this.rotationChangeQueue) {
-            val rotationCache = new ArrayList<>(this.rotationChangeQueue.size());
-            val elementArray = this.rotationChangeQueue.toArray(new RotationChange[0]);
-
-            // Start at 1 as of the 0 element being the first "last element".
-            for (int i = 1; i < elementArray.length; ++i) {
-                if (MathUtil.absDiff(System.currentTimeMillis(), elementArray[i].getTime()) > 1000) continue;
-
-                val ticks = (short) (MathUtil.absDiff(elementArray[i].getTime(),
-                                                      // Using -1 for the last element is fine as there is always the last element.
-                                                      elementArray[i - 1].getTime()) / 50
-                );
-
-                // The current tick should be ignored, no gap filler.
-                // How many ticks have been left out?
-                if (ticks > 1) gapFillers += (ticks - 1);
-
-                // Angle calculations
-                val angle = elementArray[i - 1].angle(elementArray[i]);
-                rotationCache.add(angle);
-                // Angle change sum
-                result[0] += angle;
-            }
-
-            // Angle offset sum
-            result[1] = (float) MathUtil.absDiff(
-                    // The average of the elements
-                    result[0] / (rotationCache.size() + gapFillers) * rotationCache.size(),
-                    // The sum of all elements
-                    result[0]);
+            changes = this.rotationChangeQueue.toArray(new RotationChange[0]);
         }
+
+        int rotationCount = 0;
+        int gapFillers = 0;
+        long ticks;
+        float angle;
+        for (int i = 1; i < changes.length; ++i) {
+            // Ignore rotation changes more than 1 second ago.
+            if (MathUtil.absDiff(curTime, changes[i].getTime()) > 1000) continue;
+
+            // Using -1 for the last element is fine as there is always the last element.
+            ticks = (changes[i - 1].getTime() - changes[i].getTime()) / 50;
+
+            // The current tick should be ignored, no gap filler.
+            // How many ticks have been left out?
+            if (ticks > 1) gapFillers += (ticks - 1);
+
+            // Angle calculations
+            angle = changes[i - 1].angle(changes[i]);
+            ++rotationCount;
+            // Angle change sum
+            result[0] += angle;
+        }
+
+        // Just immediately return the [0,0] array here to avoid dividing by 0.
+        if (rotationCount == 0 && gapFillers == 0) return result;
+
+        // Angle offset sum
+        result[1] = MathUtil.absDiff(
+                // The offset average times the rotations
+                (result[0] / (rotationCount + gapFillers)) * rotationCount,
+                // The sum of all elements
+                result[0]);
 
         return result;
     }
 
-    @AllArgsConstructor
+    @Value
     public static class RotationChange
     {
-        @Getter
-        private final long time = System.currentTimeMillis();
-        @Getter
-        private float yaw;
-        @Getter
-        private float pitch;
+        long time = System.currentTimeMillis();
+        @NonFinal float yaw;
+        @NonFinal float pitch;
 
         /**
          * Merges a {@link RotationChange} with this {@link RotationChange}.
          */
-        public void merge(final RotationChange rotationChange)
+        public void merge(RotationChange rotationChange)
         {
             this.yaw += rotationChange.yaw;
             this.pitch += rotationChange.pitch;
@@ -101,7 +100,7 @@ public class LookPacketData
         /**
          * Calculates the total angle between two {@link RotationChange} - directions.
          */
-        public float angle(final RotationChange rotationChange)
+        public float angle(RotationChange rotationChange)
         {
             return RotationUtil.getDirection(this.getYaw(), this.getPitch()).angle(RotationUtil.getDirection(rotationChange.getYaw(), rotationChange.getPitch()));
         }
@@ -137,7 +136,7 @@ public class LookPacketData
             }
 
             // Huge angle change
-            // Use the queue values here to because the other ones are already updated.
+            // Use the map values here to because the other ones are already updated.
             if (RotationUtil.getDirection(user.getDataMap().getFloat(DataKey.FloatKey.LAST_PACKET_YAW), user.getDataMap().getFloat(DataKey.FloatKey.LAST_PACKET_PITCH))
                             .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
             {

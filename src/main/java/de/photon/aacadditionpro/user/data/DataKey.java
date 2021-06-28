@@ -75,26 +75,27 @@ public final class DataKey
     public enum CounterKey
     {
         AUTOFISH_FAILED("AutoFish.parts.consistency.maximum_fails"),
-        INVENTORY_AVERAGE_HEURISTICS_MISCLICKS(0),
+        INVENTORY_AVERAGE_HEURISTICS_MISCLICKS(10),
         INVENTORY_PERFECT_EXIT_FAILS("Inventory.parts.PerfectExit.violation_threshold"),
         SCAFFOLD_ANGLE_FAILS("Scaffold.parts.Angle.violation_threshold"),
         SCAFFOLD_JUMPING_FAILS("Scaffold.parts.Jumping.violation_threshold"),
+        SCAFFOLD_JUMPING_LEGIT(0),
         SCAFFOLD_ROTATION_FAILS("Scaffold.parts.Rotation.violation_threshold"),
         SCAFFOLD_SAFEWALK_POSITION_FAILS("Scaffold.parts.Safewalk.Position.violation_threshold"),
         SCAFFOLD_SAFEWALK_TIMING_FAILS("Scaffold.parts.Safewalk.Timing.violation_threshold"),
         SCAFFOLD_SPRINTING_FAILS("Scaffold.parts.Sprinting.violation_threshold");
 
-        private final ViolationCounter defaultValue;
+        private final ViolationCounter counter;
 
-        CounterKey(long defaultValue)
+        CounterKey(long threshold)
         {
-            this.defaultValue = new ViolationCounter(defaultValue);
+            this.counter = new ViolationCounter(threshold);
         }
 
         CounterKey(String configPath)
         {
             Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(configPath), "Tried to load ViolationCounter from nonexistant path " + configPath);
-            this.defaultValue = new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong(configPath));
+            this.counter = new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong(configPath));
         }
     }
 

@@ -7,6 +7,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import lombok.Getter;
+import lombok.val;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.util.function.ToIntBiFunction;
@@ -27,10 +28,23 @@ class ScaffoldJumping extends Module
     @Override
     public void enable()
     {
-        applyingConsumer = (user, event) ->
-                user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 500)
-                && user.getTimestampMap().at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1000)
-                && user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_JUMPING_FAILS).incrementCompareThreshold() ? 20 : 0;
+        applyingConsumer = (user, event) -> {
+            val failCounter = user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_JUMPING_FAILS);
+
+            if (user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 500)
+                && user.getTimestampMap().at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1000))
+            {
+                return failCounter.incrementCompareThreshold() ? 20 : 0;
+            } else {
+                // Decrease only every 10 blocks to make sure one cannot easily bypass this check by jumping only every other block.
+                val legitCounter = user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_JUMPING_LEGIT);
+                if (legitCounter.incrementCompareThreshold()) {
+                    failCounter.decrementAboveZero();
+                    legitCounter.setToZero();
+                }
+                return 0;
+            }
+        };
     }
 
     @Override

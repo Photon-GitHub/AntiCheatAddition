@@ -41,7 +41,7 @@ public class DataMap
         return this.doubleMap.computeIfAbsent(key, DataKey.DoubleKey::getDefaultValue);
     }
 
-    public ViolationCounter getCounter(DataKey.CounterKey key) {return this.counterMap.computeIfAbsent(key, DataKey.CounterKey::getDefaultValue);}
+    public ViolationCounter getCounter(DataKey.CounterKey key) {return this.counterMap.computeIfAbsent(key, DataKey.CounterKey::getCounter);}
 
     public Object getObject(DataKey.ObjectKey key)
     {

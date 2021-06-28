@@ -21,10 +21,10 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
     private static final Polynomial VL_CALCULATOR = new Polynomial(1.2222222, 20);
     private final int cancelVl = AACAdditionPro.getInstance().getConfig().getInt(this.getModule().getConfigString() + ".cancel_vl");
 
-    public double normalDelay = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.normal");
-    public double sneakingAddition = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.sneaking_addition");
-    public double sneakingSlowAddition = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.sneaking_slow_addition");
-    public double diagonalDelay = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.diagonal");
+    public final double normalDelay = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.normal");
+    public final double sneakingAddition = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.sneaking_addition");
+    public final double sneakingSlowAddition = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.sneaking_slow_addition");
+    public final double diagonalDelay = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.diagonal");
 
     ScaffoldAverageBatchProcessor(ViolationModule module)
     {

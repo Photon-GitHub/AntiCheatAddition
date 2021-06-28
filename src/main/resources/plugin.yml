@@ -54,6 +54,7 @@ permissions:
       aacadditionpro.bypass.aacadditionpro_pingspoof: true
       aacadditionpro.bypass.aacadditionpro_scaffold: true
       aacadditionpro.bypass.aacadditionpro_scaffold.parts.angle: true
+      aacadditionpro.bypass.aacadditionpro_scaffold.parts.jumping: true
       aacadditionpro.bypass.aacadditionpro_scaffold.parts.position: true
       aacadditionpro.bypass.aacadditionpro_scaffold.parts.rotation.derivative: true
       aacadditionpro.bypass.aacadditionpro_scaffold.parts.rotation.fastChange: true

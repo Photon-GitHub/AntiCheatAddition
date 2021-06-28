@@ -6,6 +6,7 @@ import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
 import de.photon.aacadditionpro.util.world.InternalPotion;
 import lombok.Value;
 import lombok.val;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,7 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
 
     public ScaffoldBatch(@NotNull User user)
     {
-        super(SCAFFOLD_BATCH_BROADCASTER, user, SCAFFOLD_BATCH_SIZE, new ScaffoldBlockPlace(null, null, InternalPotion.PotentialPotionEffect.EMPTY, 0, false));
+        super(SCAFFOLD_BATCH_BROADCASTER, user, SCAFFOLD_BATCH_SIZE, new ScaffoldBlockPlace(null, null, InternalPotion.PotentialPotionEffect.EMPTY, new Location(null, 0, 0, 0), false));
     }
 
     @Value
@@ -27,13 +28,36 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
         Block block;
         BlockFace blockFace;
         InternalPotion.PotentialPotionEffect speed;
-        double yaw;
+        Location location;
         boolean sneaked;
 
         public long timeOffset(@NotNull ScaffoldBlockPlace other)
         {
             val otime = other.getTime();
             return time < otime ? otime - time : time - otime;
+        }
+
+        public double getSpeedModifier()
+        {
+            if (!speed.exists()) return 1.0D;
+
+            switch (speed.getAmplifier()) {
+                case 0:
+                    return 1.01D;
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                    return 1.5D;
+                case 6:
+                    return 1.55D;
+                case 7:
+                    return 2.3D;
+                default:
+                    // Everything above 8 should have a speed_modifier of 3
+                    return 3.0D;
+            }
         }
     }
 }

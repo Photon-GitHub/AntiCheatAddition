@@ -4,17 +4,20 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.val;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class SchematicaSentinel extends SentinelModule
+public class SchematicaSentinel extends SentinelModule implements Listener
 {
-    private static final MessageChannel SCHEMATICA_CHANNEL = MessageChannel.ofLegacy("schematica");
+    private static final String SCHEMATICA = "schematica";
+    private static final MessageChannel SCHEMATICA_CHANNEL = MessageChannel.ofLegacy(SCHEMATICA);
 
-    private final ByteBuf sentMessage;
+    private final byte[] sentMessage;
 
     public SchematicaSentinel()
     {
@@ -31,18 +34,22 @@ public class SchematicaSentinel extends SentinelModule
         byteBuf.writeBoolean(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.saveToFile"));
         byteBuf.writeBoolean(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.load"));
 
-        this.sentMessage = Unpooled.unmodifiableBuffer(byteBuf);
+        this.sentMessage = byteBuf.array();
+        byteBuf.release();
     }
 
-    @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] message)
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerJoin(PlayerJoinEvent event)
     {
-        if (new String(message).contains("schematica")) {
-            val user = User.getUser(player);
-            if (User.isUserInvalid(user, this)) return;
+        val user = User.getUser(event.getPlayer());
+        if (User.isUserInvalid(user, this)) return;
 
-            detection(player);
-            user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), SCHEMATICA_CHANNEL.getChannel(), sentMessage.array());
+        for (String channel : user.getPlayer().getListeningPluginChannels()) {
+            if (channel.equals(SCHEMATICA)) {
+                detection(user.getPlayer());
+                user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), SCHEMATICA_CHANNEL.getChannel(), sentMessage);
+                return;
+            }
         }
     }
 
@@ -50,8 +57,13 @@ public class SchematicaSentinel extends SentinelModule
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addIncomingMessageChannels(MessageChannel.of("minecraft", "register", "REGISTER"))
                            .addOutgoingMessageChannels(SCHEMATICA_CHANNEL)
                            .build();
+    }
+
+    @Override
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] message)
+    {
+        // Ignore.
     }
 }

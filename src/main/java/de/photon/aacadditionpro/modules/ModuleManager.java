@@ -140,12 +140,13 @@ public final class ModuleManager
                 pingspoof,
 
                 scaffold.getScaffoldAngle(),
+                scaffold.getScaffoldJumping(),
                 scaffold.getScaffoldPosition(),
                 scaffold.getScaffoldRotationDerivative(),
                 scaffold.getScaffoldRotationFastChange(),
                 scaffold.getScaffoldRotationSecondDerivative(),
-                scaffold.getScaffoldSafewalkTypeOne(),
-                scaffold.getScaffoldSafewalkTypeTwo(),
+                scaffold.getScaffoldSafewalkPosition(),
+                scaffold.getScaffoldSafewalkTiming(),
                 scaffold.getScaffoldSprinting(),
                 scaffold,
 

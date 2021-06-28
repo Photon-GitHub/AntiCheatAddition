@@ -17,7 +17,7 @@ class ScaffoldRotationDerivative extends Module
     private static final double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
 
     @Getter
-    private ToIntBiFunction<User, Float> applyingConsumer = (user, angleInformation) -> 0;
+    private ToIntBiFunction<User, Double> applyingConsumer = (user, angleInformation) -> 0;
 
     public ScaffoldRotationDerivative(String scaffoldConfigString)
     {

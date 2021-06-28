@@ -17,14 +17,14 @@ import java.util.function.ToIntBiFunction;
  * This pattern detects suspicious stops right before the edges
  * of {@link org.bukkit.block.Block}s.
  */
-class ScaffoldSafewalkTypeOne extends Module
+class ScaffoldSafewalkPosition extends Module
 {
     @Getter
     private ToIntBiFunction<User, BlockPlaceEvent> applyingConsumer = (user, event) -> 0;
 
-    public ScaffoldSafewalkTypeOne(String scaffoldConfigString)
+    public ScaffoldSafewalkPosition(String scaffoldConfigString)
     {
-        super(scaffoldConfigString + ".parts.Safewalk.type1");
+        super(scaffoldConfigString + ".parts.Safewalk.Position");
     }
 
     @Override
@@ -38,9 +38,13 @@ class ScaffoldSafewalkTypeOne extends Module
             {
                 val xOffset = MathUtil.absDiff(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
                 val zOffset = MathUtil.absDiff(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
+                val face = event.getBlock().getFace(event.getBlockAgainst());
+
+                // Not building in a straight line.
+                if (face == null || event.getBlockAgainst().getRelative(face).isEmpty()) return 0;
 
                 boolean sneakBorder;
-                switch (event.getBlock().getFace(event.getBlockAgainst())) {
+                switch (face) {
                     case EAST:
                         sneakBorder = xOffset > 0.28D && xOffset < 0.305D;
                         break;
@@ -60,11 +64,11 @@ class ScaffoldSafewalkTypeOne extends Module
                 }
 
                 if (sneakBorder) {
-                    if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TYPE1_FAILS).incrementCompareThreshold()) {
-                        DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 1)");
+                    if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_POSITION_FAILS).incrementCompareThreshold()) {
+                        DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Position)");
                         return 15;
                     }
-                } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TYPE1_FAILS).setToZero();
+                } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_POSITION_FAILS).setToZero();
             }
             return 0;
         };

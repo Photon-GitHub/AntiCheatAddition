@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.user.data.batch.ScaffoldBatch;
 import de.photon.aacadditionpro.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.aacadditionpro.util.datastructure.batch.BatchPreprocessors;
-import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
@@ -36,28 +35,16 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
     public void processBatch(User user, List<ScaffoldBatch.ScaffoldBlockPlace> batch)
     {
         val moonwalk = batch.stream().filter(blockPlace -> !blockPlace.isSneaked()).count() >= batch.size() / 2;
-        val actualDelay = new DoubleStatistics();
-        val minExpecedDelay = new DoubleStatistics();
+        val delays = BatchPreprocessors.zipReduceToDoubleStatistics(batch,
+                                                                    (old, cur) -> old.getSpeedModifier() * cur.timeOffset(old),
+                                                                    (old, cur) -> calculateMinExpectedDelay(old, cur, moonwalk));
 
-        for (val pair : BatchPreprocessors.zipOffsetOne(batch)) {
-            actualDelay.accept(pair.getFirst().getSpeedModifier() * pair.getSecond().timeOffset(pair.getFirst()));
-
-            if (pair.getSecond().getBlockFace() == pair.getFirst().getBlockFace() || pair.getSecond().getBlockFace() == pair.getFirst().getBlockFace().getOppositeFace()) {
-                // Sneaking handling
-                if (!moonwalk && pair.getSecond().isSneaked() && pair.getFirst().isSneaked())
-                    minExpecedDelay.accept(normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * pair.getSecond().getLocation().getYaw()))));
-                    // Moonwalking.
-                else minExpecedDelay.accept(normalDelay);
-                // Not the same blockfaces means that something is built diagonally or a new build position which means higher actual delay anyways and can be ignored.
-            } else minExpecedDelay.accept(diagonalDelay);
-        }
-
-        val actualAverage = actualDelay.getAverage();
-        val minExpecedAverage = minExpecedDelay.getAverage();
+        val actualAverage = delays.getFirst().getAverage();
+        val minExpectedAverage = delays.getSecond().getAverage();
 
         // delta-times are too low -> flag
-        if (actualAverage < minExpecedAverage) {
-            val vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpecedAverage - actualAverage).intValue());
+        if (actualAverage < minExpectedAverage) {
+            val vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpectedAverage - actualAverage).intValue());
             this.getModule().getManagement().flag(Flag.of(user)
                                                       .setAddedVl(vlIncrease)
                                                       .setCancelAction(cancelVl, () -> {
@@ -65,8 +52,20 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
                                                       .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() +
-                                                                                                                            " enforced delay: " + minExpecedAverage + " | real: " + actualAverage +
+                                                                                                                            " enforced delay: " + minExpectedAverage + " | real: " + actualAverage +
                                                                                                                             " | vl increase: " + vlIncrease)));
         }
+    }
+
+    private double calculateMinExpectedDelay(ScaffoldBatch.ScaffoldBlockPlace old, ScaffoldBatch.ScaffoldBlockPlace current, boolean moonwalk)
+    {
+        if (current.getBlockFace() == old.getBlockFace() || current.getBlockFace() == old.getBlockFace().getOppositeFace()) {
+            return !moonwalk && current.isSneaked() && old.isSneaked() ?
+                   // Sneaking handling
+                   normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * current.getLocation().getYaw()))) :
+                   // Moonwalking.
+                   normalDelay;
+            // Not the same blockfaces means that something is built diagonally or a new build position which means higher actual delay anyways and can be ignored.
+        } else return diagonalDelay;
     }
 }

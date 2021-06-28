@@ -1,13 +1,16 @@
 package de.photon.aacadditionpro.util.datastructure.batch;
 
 import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
+import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.function.BiFunction;
+import java.util.function.ToDoubleBiFunction;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BatchPreprocessors
@@ -46,6 +49,47 @@ public final class BatchPreprocessors
     }
 
     /**
+     * This method allows for the reduction from a {@link List} of {@link ImmutablePair}s to an {@link ImmutablePair} of {@link DoubleStatistics}, which is often used in {@link BatchProcessor}s to
+     * calculate both the expected and the actual delays.
+     */
+    public static <T> ImmutablePair<DoubleStatistics, DoubleStatistics> reducePairToDoubleStatistics(List<ImmutablePair<T, T>> input, ToDoubleBiFunction<T, T> mapFirst, ToDoubleBiFunction<T, T> mapSecond)
+    {
+        val statisticOne = new DoubleStatistics();
+        val statisticTwo = new DoubleStatistics();
+
+        for (val pair : input) {
+            statisticOne.accept(mapFirst.applyAsDouble(pair.getFirst(), pair.getSecond()));
+            statisticTwo.accept(mapSecond.applyAsDouble(pair.getSecond(), pair.getSecond()));
+        }
+
+        return ImmutablePair.of(statisticOne, statisticTwo);
+    }
+
+    /**
+     * Shortcut for often used reducePairToDoubleStatistics(zipOffsetOne(...), ... ) with performance improvements.
+     */
+    public static <T> ImmutablePair<DoubleStatistics, DoubleStatistics> zipReduceToDoubleStatistics(List<T> input, ToDoubleBiFunction<T, T> mapFirst, ToDoubleBiFunction<T, T> mapSecond)
+    {
+        val statisticOne = new DoubleStatistics();
+        val statisticTwo = new DoubleStatistics();
+
+        if (!input.isEmpty()) {
+            T old = input.get(0);
+            T current;
+            final ListIterator<T> iterator = input.listIterator(1);
+            while (iterator.hasNext()) {
+                current = iterator.next();
+
+                statisticOne.accept(mapFirst.applyAsDouble(old, current));
+                statisticTwo.accept(mapSecond.applyAsDouble(old, current));
+
+                old = current;
+            }
+        }
+        return ImmutablePair.of(statisticOne, statisticTwo);
+    }
+
+    /**
      * <p>Combines two element according to a BiFunction.</p>
      * <p>This will take combine n elements to n-1 elements.</p>
      *
@@ -63,13 +107,15 @@ public final class BatchPreprocessors
     {
         final List<U> output = new ArrayList<>(input.size());
 
-        T old = input.get(0);
-        T current;
-        final ListIterator<T> iterator = input.listIterator(1);
-        while (iterator.hasNext()) {
-            current = iterator.next();
-            output.add(combiner.apply(old, current));
-            old = current;
+        if (!input.isEmpty()) {
+            T old = input.get(0);
+            T current;
+            final ListIterator<T> iterator = input.listIterator(1);
+            while (iterator.hasNext()) {
+                current = iterator.next();
+                output.add(combiner.apply(old, current));
+                old = current;
+            }
         }
         return output;
     }
@@ -92,11 +138,13 @@ public final class BatchPreprocessors
     {
         final List<U> output = new ArrayList<>(input.size());
 
-        T old = input.get(input.size() - 1);
-        for (int i = input.size() - 2; i >= 0; --i) {
-            T current = input.get(i);
-            output.add(combiner.apply(old, current));
-            old = current;
+        if (!input.isEmpty()) {
+            T old = input.get(input.size() - 1);
+            for (int i = input.size() - 2; i >= 0; --i) {
+                T current = input.get(i);
+                output.add(combiner.apply(old, current));
+                old = current;
+            }
         }
         return output;
     }

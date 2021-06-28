@@ -1,11 +1,16 @@
 package de.photon.aacadditionpro.util.datastructure.statistics;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 import java.util.DoubleSummaryStatistics;
 import java.util.function.DoubleConsumer;
 
 /**
  * Encapsulates a {@link DoubleSummaryStatistics} to provide a resettable statistics object.
  */
+@EqualsAndHashCode
+@ToString
 public class DoubleStatistics implements DoubleConsumer
 {
     private long count;

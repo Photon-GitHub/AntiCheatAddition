@@ -27,8 +27,10 @@ class ScaffoldJumping extends Module
     @Override
     public void enable()
     {
-        applyingConsumer = (user, event) -> user.getTimestampMap().at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1000)
-                                            && user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_JUMPING_FAILS).incrementCompareThreshold() ? 20 : 0;
+        applyingConsumer = (user, event) ->
+                user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 500)
+                && user.getTimestampMap().at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1000)
+                && user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_JUMPING_FAILS).incrementCompareThreshold() ? 20 : 0;
     }
 
     @Override

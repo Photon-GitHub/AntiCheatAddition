@@ -112,6 +112,7 @@ public class Scaffold extends ViolationModule implements Listener
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
             int vl = this.scaffoldAngle.getApplyingConsumer().applyAsInt(user, event);
+            vl += this.scaffoldJumping.getApplyingConsumer().applyAsInt(user, event);
             vl += this.scaffoldPosition.getApplyingConsumer().applyAsInt(user, event);
 
             // All these checks may have false positives in new situations.

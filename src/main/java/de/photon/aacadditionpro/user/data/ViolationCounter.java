@@ -42,7 +42,12 @@ public class ViolationCounter
         return this.counter.getAndIncrement() >= threshold;
     }
 
-    public boolean conditonalIncDec(boolean condition)
+    /**
+     * This method calls {@link #incrementCompareThreshold()} if the condition is true, else {@link #decrementAboveZero()}.
+     *
+     * @return true if the condition is true and {@link #incrementCompareThreshold()} also returns true, else false.
+     */
+    public boolean conditionallyIncDec(boolean condition)
     {
         if (condition && this.incrementCompareThreshold()) return true;
         else {

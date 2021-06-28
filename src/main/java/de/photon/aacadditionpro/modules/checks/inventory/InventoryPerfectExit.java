@@ -45,7 +45,7 @@ public class InventoryPerfectExit extends ViolationModule implements Listener
             InventoryUtil.isInventoryEmpty(event.getInventory()))
         {
             val passedTime = user.getTimestampMap().at(TimestampKey.LAST_INVENTORY_CLICK_ON_ITEM).passedTime();
-            if (user.getDataMap().getCounter(DataKey.CounterKey.INVENTORY_PERFECT_EXIT_FAILS).conditonalIncDec(passedTime <= 70)) {
+            if (user.getDataMap().getCounter(DataKey.CounterKey.INVENTORY_PERFECT_EXIT_FAILS).conditionallyIncDec(passedTime <= 70)) {
                 this.getManagement().flag(Flag.of(user)
                                               .setAddedVl(VL_CALCULATOR.apply(passedTime).intValue())
                                               .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')')));

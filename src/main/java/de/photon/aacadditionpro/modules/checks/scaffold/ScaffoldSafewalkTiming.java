@@ -27,7 +27,7 @@ class ScaffoldSafewalkTiming extends Module
     public void enable()
     {
         applyingConsumer = user -> {
-            if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TIMING_FAILS).conditonalIncDec(
+            if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TIMING_FAILS).conditionallyIncDec(
                     // Moved recently
                     user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 355) &&
                     // Suddenly stopped

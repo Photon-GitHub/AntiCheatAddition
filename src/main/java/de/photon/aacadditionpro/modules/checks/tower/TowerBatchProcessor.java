@@ -62,8 +62,8 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
                                                                         (old, cur) -> calculateDelay(old),
                                                                         TowerBatch.TowerBlockPlace::timeOffset);
 
-        val calcAvg = statistics.getFirst().getAverage();
-        val actAvg = statistics.getSecond().getAverage();
+        val calcAvg = statistics.get(0).getAverage();
+        val actAvg = statistics.get(1).getAverage();
 
         if (actAvg < calcAvg) {
             val vlToAdd = Math.min(VL_CALCULATOR.apply(calcAvg - actAvg).intValue(), 1000);

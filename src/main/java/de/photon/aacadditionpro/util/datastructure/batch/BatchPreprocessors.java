@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.datastructure.batch;
 
+import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
 import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import lombok.AccessLevel;
@@ -52,26 +53,32 @@ public final class BatchPreprocessors
      * This method allows for the reduction from a {@link List} of {@link ImmutablePair}s to an {@link ImmutablePair} of {@link DoubleStatistics}, which is often used in {@link BatchProcessor}s to
      * calculate both the expected and the actual delays.
      */
-    public static <T> ImmutablePair<DoubleStatistics, DoubleStatistics> reducePairToDoubleStatistics(List<ImmutablePair<T, T>> input, ToDoubleBiFunction<T, T> mapFirst, ToDoubleBiFunction<T, T> mapSecond)
+    @SafeVarargs
+    public static <T> List<DoubleStatistics> reducePairToDoubleStatistics(List<ImmutablePair<T, T>> input, ToDoubleBiFunction<T, T>... mappers)
     {
-        val statisticOne = new DoubleStatistics();
-        val statisticTwo = new DoubleStatistics();
+        val builder = ImmutableList.<DoubleStatistics>builder();
+        for (int i = 0; i < mappers.length; ++i) builder.add(new DoubleStatistics());
+        val statistics = builder.build();
 
         for (val pair : input) {
-            statisticOne.accept(mapFirst.applyAsDouble(pair.getFirst(), pair.getSecond()));
-            statisticTwo.accept(mapSecond.applyAsDouble(pair.getSecond(), pair.getSecond()));
+            for (int i = 0; i < mappers.length; ++i) {
+                statistics.get(i).accept(mappers[i].applyAsDouble(pair.getFirst(), pair.getSecond()));
+            }
         }
 
-        return ImmutablePair.of(statisticOne, statisticTwo);
+        return statistics;
     }
 
     /**
      * Shortcut for often used reducePairToDoubleStatistics(zipOffsetOne(...), ... ) with performance improvements.
      */
-    public static <T> ImmutablePair<DoubleStatistics, DoubleStatistics> zipReduceToDoubleStatistics(List<T> input, ToDoubleBiFunction<T, T> mapFirst, ToDoubleBiFunction<T, T> mapSecond)
+    // We only use the varargs in a loop, we do not return them or cast them  -> safe varargs.
+    @SafeVarargs
+    public static <T> List<DoubleStatistics> zipReduceToDoubleStatistics(List<T> input, ToDoubleBiFunction<T, T>... mappers)
     {
-        val statisticOne = new DoubleStatistics();
-        val statisticTwo = new DoubleStatistics();
+        val builder = ImmutableList.<DoubleStatistics>builder();
+        for (int i = 0; i < mappers.length; ++i) builder.add(new DoubleStatistics());
+        val statistics = builder.build();
 
         if (!input.isEmpty()) {
             T old = input.get(0);
@@ -80,13 +87,12 @@ public final class BatchPreprocessors
             while (iterator.hasNext()) {
                 current = iterator.next();
 
-                statisticOne.accept(mapFirst.applyAsDouble(old, current));
-                statisticTwo.accept(mapSecond.applyAsDouble(old, current));
+                for (int i = 0; i < mappers.length; ++i) statistics.get(i).accept(mappers[i].applyAsDouble(old, current));
 
                 old = current;
             }
         }
-        return ImmutablePair.of(statisticOne, statisticTwo);
+        return statistics;
     }
 
     /**

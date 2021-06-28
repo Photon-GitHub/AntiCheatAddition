@@ -39,8 +39,8 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
                                                                     (old, cur) -> old.getSpeedModifier() * cur.timeOffset(old),
                                                                     (old, cur) -> calculateMinExpectedDelay(old, cur, moonwalk));
 
-        val actualAverage = delays.getFirst().getAverage();
-        val minExpectedAverage = delays.getSecond().getAverage();
+        val actualAverage = delays.get(0).getAverage();
+        val minExpectedAverage = delays.get(1).getAverage();
 
         // delta-times are too low -> flag
         if (actualAverage < minExpectedAverage) {

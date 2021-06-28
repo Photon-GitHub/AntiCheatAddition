@@ -4,7 +4,6 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.val;
 import org.bukkit.entity.Player;
@@ -18,7 +17,7 @@ public class SchematicaSentinel extends SentinelModule implements Listener
     private static final String SCHEMATICA = "schematica";
     private static final MessageChannel SCHEMATICA_CHANNEL = MessageChannel.ofLegacy(SCHEMATICA);
 
-    private final ByteBuf sentMessage;
+    private final byte[] sentMessage;
 
     public SchematicaSentinel()
     {
@@ -35,7 +34,8 @@ public class SchematicaSentinel extends SentinelModule implements Listener
         byteBuf.writeBoolean(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.saveToFile"));
         byteBuf.writeBoolean(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.load"));
 
-        this.sentMessage = Unpooled.unmodifiableBuffer(byteBuf);
+        this.sentMessage = byteBuf.array();
+        byteBuf.release();
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -44,14 +44,10 @@ public class SchematicaSentinel extends SentinelModule implements Listener
         val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
-        if (user.getPlayer().getListeningPluginChannels().contains(""))
-            detection(event.getPlayer());
-        user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), SCHEMATICA_CHANNEL.getChannel(), sentMessage.array());
-
         for (String channel : user.getPlayer().getListeningPluginChannels()) {
             if (channel.equals(SCHEMATICA)) {
                 detection(user.getPlayer());
-                user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), SCHEMATICA_CHANNEL.getChannel(), sentMessage.array());
+                user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), SCHEMATICA_CHANNEL.getChannel(), sentMessage);
                 return;
             }
         }

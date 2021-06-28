@@ -6,7 +6,6 @@ import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.val;
 import org.bukkit.entity.Player;
@@ -38,8 +37,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BetterSprintingSentinel extends SentinelModule
 {
-    private final ByteBuf settingsBuf;
-    private final ByteBuf disableBuf;
+    private final byte[] settingsBufArray;
+    private final byte[] disableBufArray;
 
     @LoadFromConfiguration(configPath = ".disable.general")
     private boolean disable;
@@ -55,13 +54,15 @@ public class BetterSprintingSentinel extends SentinelModule
         settingsBuffer.writeByte(0);
 
         for (Boolean enable : featureList) settingsBuffer.writeBoolean(enable);
-        this.settingsBuf = Unpooled.unmodifiableBuffer(settingsBuffer);
+        this.settingsBufArray = settingsBuffer.array();
+        settingsBuffer.release();
 
         val disableBuffer = Unpooled.buffer();
         // Bypassed players are already filtered out.
         // The mod provides a method to disable it
         disableBuffer.writeByte(this.disable ? 1 : 2);
-        this.disableBuf = Unpooled.unmodifiableBuffer(disableBuffer);
+        this.disableBufArray = disableBuffer.array();
+        disableBuffer.release();
     }
 
     @Override
@@ -85,8 +86,8 @@ public class BetterSprintingSentinel extends SentinelModule
                 throw new IllegalStateException("Unknown channel");
         }
 
-        user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), sendChannel, this.settingsBuf.array());
-        user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), sendChannel, this.disableBuf.array());
+        user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), sendChannel, this.settingsBufArray);
+        user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), sendChannel, this.disableBufArray);
     }
 
     @Override

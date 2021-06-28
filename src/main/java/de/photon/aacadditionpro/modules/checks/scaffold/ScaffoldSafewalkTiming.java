@@ -20,7 +20,7 @@ class ScaffoldSafewalkTiming extends Module
 
     public ScaffoldSafewalkTiming(String scaffoldConfigString)
     {
-        super(scaffoldConfigString + ".parts.Safewalk.timing");
+        super(scaffoldConfigString + ".parts.Safewalk.Timing");
     }
 
     @Override

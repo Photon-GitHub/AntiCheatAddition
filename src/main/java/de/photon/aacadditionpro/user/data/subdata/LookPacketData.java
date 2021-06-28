@@ -38,7 +38,6 @@ public class LookPacketData
      */
     public double[] getAngleInformation()
     {
-        val curTime = System.currentTimeMillis();
         val result = new double[2];
         final RotationChange[] changes;
 
@@ -50,9 +49,10 @@ public class LookPacketData
         int gapFillers = 0;
         long ticks;
         float angle;
+        val curTime = System.currentTimeMillis();
         for (int i = 1; i < changes.length; ++i) {
             // Ignore rotation changes more than 1 second ago.
-            if (MathUtil.absDiff(curTime, changes[i].getTime()) > 1000) continue;
+            if ((curTime - changes[i].getTime()) > 1000) continue;
 
             // Using -1 for the last element is fine as there is always the last element.
             ticks = (changes[i - 1].getTime() - changes[i].getTime()) / 50;

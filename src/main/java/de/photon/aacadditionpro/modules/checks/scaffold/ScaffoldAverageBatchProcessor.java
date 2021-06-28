@@ -40,17 +40,20 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
         val actualDelay = new LongSummaryStatistics();
         val minExpecedDelay = new DoubleStatistics();
 
+        double delay;
         for (val pair : BatchPreprocessors.zipOffsetOne(batch)) {
             actualDelay.accept(pair.getSecond().timeOffset(pair.getFirst()));
 
             if (pair.getSecond().getBlockFace() == pair.getFirst().getBlockFace() || pair.getSecond().getBlockFace() == pair.getFirst().getBlockFace().getOppositeFace()) {
                 // Sneaking handling
                 if (!moonwalk && pair.getSecond().isSneaked() && pair.getFirst().isSneaked())
-                    minExpecedDelay.accept(normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * pair.getSecond().getLocation().getYaw()))));
+                    delay = normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * pair.getSecond().getLocation().getYaw())));
                     // Moonwalking.
-                else minExpecedDelay.accept(normalDelay);
+                else delay = normalDelay;
                 // Not the same blockfaces means that something is built diagonally or a new build position which means higher actual delay anyways and can be ignored.
-            } else minExpecedDelay.accept(diagonalDelay);
+            } else delay = diagonalDelay;
+
+            minExpecedDelay.accept(pair.getFirst().getSpeedModifier() * delay);
         }
 
         val actualAverage = actualDelay.getAverage();

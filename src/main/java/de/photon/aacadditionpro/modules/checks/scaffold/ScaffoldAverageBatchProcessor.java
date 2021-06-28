@@ -16,7 +16,6 @@ import de.photon.aacadditionpro.util.violationlevels.Flag;
 import lombok.val;
 
 import java.util.List;
-import java.util.LongSummaryStatistics;
 
 class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.ScaffoldBlockPlace>
 {
@@ -37,23 +36,20 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
     public void processBatch(User user, List<ScaffoldBatch.ScaffoldBlockPlace> batch)
     {
         val moonwalk = batch.stream().filter(blockPlace -> !blockPlace.isSneaked()).count() >= batch.size() / 2;
-        val actualDelay = new LongSummaryStatistics();
+        val actualDelay = new DoubleStatistics();
         val minExpecedDelay = new DoubleStatistics();
 
-        double delay;
         for (val pair : BatchPreprocessors.zipOffsetOne(batch)) {
-            actualDelay.accept(pair.getSecond().timeOffset(pair.getFirst()));
+            actualDelay.accept(pair.getFirst().getSpeedModifier() * pair.getSecond().timeOffset(pair.getFirst()));
 
             if (pair.getSecond().getBlockFace() == pair.getFirst().getBlockFace() || pair.getSecond().getBlockFace() == pair.getFirst().getBlockFace().getOppositeFace()) {
                 // Sneaking handling
                 if (!moonwalk && pair.getSecond().isSneaked() && pair.getFirst().isSneaked())
-                    delay = normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * pair.getSecond().getLocation().getYaw())));
+                    minExpecedDelay.accept(normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * pair.getSecond().getLocation().getYaw()))));
                     // Moonwalking.
-                else delay = normalDelay;
+                else minExpecedDelay.accept(normalDelay);
                 // Not the same blockfaces means that something is built diagonally or a new build position which means higher actual delay anyways and can be ignored.
-            } else delay = diagonalDelay;
-
-            minExpecedDelay.accept(pair.getFirst().getSpeedModifier() * delay);
+            } else minExpecedDelay.accept(diagonalDelay);
         }
 
         val actualAverage = actualDelay.getAverage();

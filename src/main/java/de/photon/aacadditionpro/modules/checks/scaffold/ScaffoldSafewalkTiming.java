@@ -35,7 +35,7 @@ class ScaffoldSafewalkTiming extends Module
                 !(user.hasSneakedRecently(175) && user.getDataMap().getLong(DataKey.LongKey.LAST_SNEAK_DURATION) > 148))
             {
                 if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TIMING_FAILS).incrementCompareThreshold()) {
-                    DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
+                    DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Timing)");
                     return 20;
                 }
             } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TIMING_FAILS).decrementAboveZero();

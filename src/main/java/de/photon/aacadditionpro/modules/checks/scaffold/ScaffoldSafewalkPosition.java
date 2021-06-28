@@ -38,9 +38,13 @@ class ScaffoldSafewalkPosition extends Module
             {
                 val xOffset = MathUtil.absDiff(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
                 val zOffset = MathUtil.absDiff(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
+                val face = event.getBlock().getFace(event.getBlockAgainst());
+
+                // Not building in a straight line.
+                if (face == null || event.getBlockAgainst().getRelative(face).isEmpty()) return 0;
 
                 boolean sneakBorder;
-                switch (event.getBlock().getFace(event.getBlockAgainst())) {
+                switch (face) {
                     case EAST:
                         sneakBorder = xOffset > 0.28D && xOffset < 0.305D;
                         break;

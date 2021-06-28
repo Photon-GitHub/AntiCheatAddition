@@ -36,8 +36,8 @@ public class Scaffold extends ViolationModule implements Listener
     private final ScaffoldRotationDerivative scaffoldRotationDerivative = new ScaffoldRotationDerivative(this.getConfigString());
     private final ScaffoldRotationSecondDerivative scaffoldRotationSecondDerivative = new ScaffoldRotationSecondDerivative(this.getConfigString());
 
-    private final ScaffoldSafewalkTypeOne scaffoldSafewalkTypeOne = new ScaffoldSafewalkTypeOne(this.getConfigString());
-    private final ScaffoldSafewalkTypeTwo scaffoldSafewalkTypeTwo = new ScaffoldSafewalkTypeTwo(this.getConfigString());
+    private final ScaffoldSafewalkPosition scaffoldSafewalkPosition = new ScaffoldSafewalkPosition(this.getConfigString());
+    private final ScaffoldSafewalkTiming scaffoldSafewalkTiming = new ScaffoldSafewalkTiming(this.getConfigString());
 
     private final ScaffoldSprinting scaffoldSprinting = new ScaffoldSprinting(this.getConfigString());
 
@@ -104,7 +104,7 @@ public class Scaffold extends ViolationModule implements Listener
             user.getScaffoldBatch().addDataPoint(new ScaffoldBatch.ScaffoldBlockPlace(event.getBlockPlaced(),
                                                                                       event.getBlockPlaced().getFace(event.getBlockAgainst()),
                                                                                       InternalPotion.SPEED.getPotionEffect(event.getPlayer()),
-                                                                                      event.getPlayer().getLocation().getYaw(),
+                                                                                      event.getPlayer().getLocation(),
                                                                                       user.hasSneakedRecently(175)));
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
@@ -124,8 +124,8 @@ public class Scaffold extends ViolationModule implements Listener
                     if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ROTATION_FAILS).incrementCompareThreshold()) vl += rotationVl;
                 } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ROTATION_FAILS).decrementAboveZero();
 
-                vl += this.scaffoldSafewalkTypeOne.getApplyingConsumer().applyAsInt(user, event);
-                vl += this.scaffoldSafewalkTypeTwo.getApplyingConsumer().applyAsInt(user);
+                vl += this.scaffoldSafewalkPosition.getApplyingConsumer().applyAsInt(user, event);
+                vl += this.scaffoldSafewalkTiming.getApplyingConsumer().applyAsInt(user);
                 vl += this.scaffoldSprinting.getApplyingConsumer().applyAsInt(user);
             }
 

@@ -13,14 +13,14 @@ import java.util.function.ToIntFunction;
 /**
  * This detects safe-walk behaviour (stopping when not sneaking)
  */
-class ScaffoldSafewalkTypeTwo extends Module
+class ScaffoldSafewalkTiming extends Module
 {
     @Getter
     private ToIntFunction<User> applyingConsumer = user -> 0;
 
-    public ScaffoldSafewalkTypeTwo(String scaffoldConfigString)
+    public ScaffoldSafewalkTiming(String scaffoldConfigString)
     {
-        super(scaffoldConfigString + ".parts.Safewalk.type2");
+        super(scaffoldConfigString + ".parts.Safewalk.timing");
     }
 
     @Override
@@ -34,11 +34,11 @@ class ScaffoldSafewalkTypeTwo extends Module
                 // Has not sneaked recently
                 !(user.hasSneakedRecently(175) && user.getDataMap().getLong(DataKey.LongKey.LAST_SNEAK_DURATION) > 148))
             {
-                if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TYPE2_FAILS).incrementCompareThreshold()) {
+                if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TIMING_FAILS).incrementCompareThreshold()) {
                     DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Type 2)");
                     return 20;
                 }
-            } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TYPE2_FAILS).decrementAboveZero();
+            } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TIMING_FAILS).decrementAboveZero();
             return 0;
         };
     }

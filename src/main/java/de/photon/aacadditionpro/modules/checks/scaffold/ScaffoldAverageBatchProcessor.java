@@ -46,28 +46,28 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
             if (pair.getSecond().getBlockFace() == pair.getFirst().getBlockFace() || pair.getSecond().getBlockFace() == pair.getFirst().getBlockFace().getOppositeFace()) {
                 // Sneaking handling
                 if (!moonwalk && pair.getSecond().isSneaked() && pair.getFirst().isSneaked())
-                    minExpecedDelay.accept(normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * pair.getSecond().getYaw()))));
+                    minExpecedDelay.accept(normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * pair.getSecond().getLocation().getYaw()))));
                     // Moonwalking.
                 else minExpecedDelay.accept(normalDelay);
                 // Not the same blockfaces means that something is built diagonally or a new build position which means higher actual delay anyways and can be ignored.
             } else minExpecedDelay.accept(diagonalDelay);
+        }
 
-            val actualAverage = actualDelay.getAverage();
-            val minExpecedAverage = minExpecedDelay.getAverage();
+        val actualAverage = actualDelay.getAverage();
+        val minExpecedAverage = minExpecedDelay.getAverage();
 
-            // delta-times are too low -> flag
-            if (actualAverage < minExpecedAverage) {
-                val vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpecedAverage - actualAverage).intValue());
-                this.getModule().getManagement().flag(Flag.of(user)
-                                                          .setAddedVl(vlIncrease)
-                                                          .setCancelAction(cancelVl, () -> {
-                                                              user.getTimestampMap().at(TimestampKey.SCAFFOLD_TIMEOUT).update();
-                                                              InventoryUtil.syncUpdateInventory(user.getPlayer());
-                                                          })
-                                                          .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() +
-                                                                                                                                " enforced delay: " + minExpecedAverage + " | real: " + actualAverage +
-                                                                                                                                " | vl increase: " + vlIncrease)));
-            }
+        // delta-times are too low -> flag
+        if (actualAverage < minExpecedAverage) {
+            val vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpecedAverage - actualAverage).intValue());
+            this.getModule().getManagement().flag(Flag.of(user)
+                                                      .setAddedVl(vlIncrease)
+                                                      .setCancelAction(cancelVl, () -> {
+                                                          user.getTimestampMap().at(TimestampKey.SCAFFOLD_TIMEOUT).update();
+                                                          InventoryUtil.syncUpdateInventory(user.getPlayer());
+                                                      })
+                                                      .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() +
+                                                                                                                            " enforced delay: " + minExpecedAverage + " | real: " + actualAverage +
+                                                                                                                            " | vl increase: " + vlIncrease)));
         }
     }
 }

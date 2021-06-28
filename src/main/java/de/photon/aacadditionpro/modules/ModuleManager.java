@@ -144,8 +144,8 @@ public final class ModuleManager
                 scaffold.getScaffoldRotationDerivative(),
                 scaffold.getScaffoldRotationFastChange(),
                 scaffold.getScaffoldRotationSecondDerivative(),
-                scaffold.getScaffoldSafewalkTypeOne(),
-                scaffold.getScaffoldSafewalkTypeTwo(),
+                scaffold.getScaffoldSafewalkPosition(),
+                scaffold.getScaffoldSafewalkTiming(),
                 scaffold.getScaffoldSprinting(),
                 scaffold,
 

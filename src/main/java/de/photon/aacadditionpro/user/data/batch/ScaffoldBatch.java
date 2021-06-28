@@ -6,6 +6,7 @@ import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
 import de.photon.aacadditionpro.util.world.InternalPotion;
 import lombok.Value;
 import lombok.val;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,7 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
 
     public ScaffoldBatch(@NotNull User user)
     {
-        super(SCAFFOLD_BATCH_BROADCASTER, user, SCAFFOLD_BATCH_SIZE, new ScaffoldBlockPlace(null, null, InternalPotion.PotentialPotionEffect.EMPTY, 0, false));
+        super(SCAFFOLD_BATCH_BROADCASTER, user, SCAFFOLD_BATCH_SIZE, new ScaffoldBlockPlace(null, null, InternalPotion.PotentialPotionEffect.EMPTY, new Location(null, 0, 0, 0), false));
     }
 
     @Value
@@ -27,7 +28,7 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
         Block block;
         BlockFace blockFace;
         InternalPotion.PotentialPotionEffect speed;
-        double yaw;
+        Location location;
         boolean sneaked;
 
         public long timeOffset(@NotNull ScaffoldBlockPlace other)

@@ -17,14 +17,14 @@ import java.util.function.ToIntBiFunction;
  * This pattern detects suspicious stops right before the edges
  * of {@link org.bukkit.block.Block}s.
  */
-class ScaffoldSafewalkTypeOne extends Module
+class ScaffoldSafewalkPosition extends Module
 {
     @Getter
     private ToIntBiFunction<User, BlockPlaceEvent> applyingConsumer = (user, event) -> 0;
 
-    public ScaffoldSafewalkTypeOne(String scaffoldConfigString)
+    public ScaffoldSafewalkPosition(String scaffoldConfigString)
     {
-        super(scaffoldConfigString + ".parts.Safewalk.type1");
+        super(scaffoldConfigString + ".parts.Safewalk.position");
     }
 
     @Override

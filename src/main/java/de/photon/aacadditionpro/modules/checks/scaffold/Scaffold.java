@@ -123,9 +123,7 @@ public class Scaffold extends ViolationModule implements Listener
                                  this.scaffoldRotationDerivative.getApplyingConsumer().applyAsInt(user, angleInformation[0]) +
                                  this.scaffoldRotationSecondDerivative.getApplyingConsumer().applyAsInt(user, angleInformation[1]);
 
-                if (rotationVl > 0) {
-                    if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ROTATION_FAILS).incrementCompareThreshold()) vl += rotationVl;
-                } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ROTATION_FAILS).decrementAboveZero();
+                if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_ROTATION_FAILS).conditonalIncDec(rotationVl > 0)) vl += rotationVl;
 
                 vl += this.scaffoldSafewalkPosition.getApplyingConsumer().applyAsInt(user, event);
                 vl += this.scaffoldSafewalkTiming.getApplyingConsumer().applyAsInt(user);

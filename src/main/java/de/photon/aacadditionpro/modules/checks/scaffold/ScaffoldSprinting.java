@@ -27,12 +27,10 @@ class ScaffoldSprinting extends Module
     public void enable()
     {
         applyingConsumer = user -> {
-            if (user.hasSprintedRecently(400)) {
-                if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SPRINTING_FAILS).incrementCompareThreshold()) {
-                    DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
-                    return 45;
-                }
-            } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SPRINTING_FAILS).decrementAboveZero();
+            if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SPRINTING_FAILS).conditonalIncDec(user.hasSprintedRecently(400))) {
+                DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
+                return 45;
+            }
             return 0;
         };
     }

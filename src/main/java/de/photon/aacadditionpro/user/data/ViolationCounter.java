@@ -42,6 +42,15 @@ public class ViolationCounter
         return this.counter.getAndIncrement() >= threshold;
     }
 
+    public boolean conditonalIncDec(boolean condition)
+    {
+        if (condition && this.incrementCompareThreshold()) return true;
+        else {
+            this.decrementAboveZero();
+            return false;
+        }
+    }
+
     /**
      * Increments the counter by 1.
      */

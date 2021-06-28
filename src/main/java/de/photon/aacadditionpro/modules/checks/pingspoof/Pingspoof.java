@@ -22,7 +22,6 @@ import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.val;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -62,21 +61,19 @@ public class Pingspoof extends ViolationModule implements Listener
             long serverPing;
             long echoPing;
             long difference;
-            User user;
 
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                user = User.getUser(player);
+            for (User user : User.getUsersUnwrapped()) {
                 if (User.isUserInvalid(user, this)) continue;
 
-                serverPing = PingProvider.getPing(player);
+                serverPing = PingProvider.getPing(user.getPlayer());
 
                 val received = user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).getTime();
                 val sent = user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).getTime();
 
                 if (sent > 0) {
                     if (received <= 0) {
-                        DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + player.getName() + " tried to bypass pingspoof check.");
-                        this.getManagement().flag(Flag.of(player).setAddedVl(35));
+                        DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to bypass pingspoof check.");
+                        this.getManagement().flag(Flag.of(user).setAddedVl(35));
                     } else {
                         user.getPingspoofPing().addDataPoint(MathUtil.absDiff(received, sent));
                         echoPing = PingProvider.getEchoPing(user);
@@ -85,17 +82,17 @@ public class Pingspoof extends ViolationModule implements Listener
                         difference = Math.abs(serverPing - echoPing);
 
                         if (difference > pingLeniency) {
-                            DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + player.getName() + " tried to spoof ping. Spoofed: " + serverPing + " | Actual: " + echoPing);
-                            this.getManagement().flag(Flag.of(player).setAddedVl(difference > 500 ?
-                                                                                 VL_CALCULATOR_ABOVE_500.apply(difference).intValue() :
-                                                                                 VL_CALCULATOR_BELOW_500.apply(difference).intValue()));
+                            DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to spoof ping. Spoofed: " + serverPing + " | Actual: " + echoPing);
+                            this.getManagement().flag(Flag.of(user).setAddedVl(difference > 500 ?
+                                                                               VL_CALCULATOR_ABOVE_500.apply(difference).intValue() :
+                                                                               VL_CALCULATOR_BELOW_500.apply(difference).intValue()));
                         }
                     }
                 }
 
                 // Send the new packet.
                 user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).setToZero();
-                transactionPacket.sendPacket(player);
+                transactionPacket.sendPacket(user.getPlayer());
                 user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).update();
             }
         }, 600, tickInterval);

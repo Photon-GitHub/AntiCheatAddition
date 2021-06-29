@@ -13,7 +13,7 @@ public abstract class SentinelModule extends ViolationModule implements PluginMe
 {
     private static final int AAC_FEATURE_SCORE = AACAdditionPro.getInstance().getConfig().getInt("Sentinel.AACFeatureScore");
 
-    public SentinelModule(String restString)
+    protected SentinelModule(String restString)
     {
         super("Sentinel." + restString);
     }

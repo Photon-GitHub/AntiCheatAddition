@@ -75,11 +75,11 @@ public final class DataKey
     public enum CounterKey
     {
         AUTOFISH_FAILED("AutoFish.parts.consistency.maximum_fails"),
-        INVENTORY_AVERAGE_HEURISTICS_MISCLICKS(10),
+        INVENTORY_AVERAGE_HEURISTICS_MISCLICKS(0),
         INVENTORY_PERFECT_EXIT_FAILS("Inventory.parts.PerfectExit.violation_threshold"),
         SCAFFOLD_ANGLE_FAILS("Scaffold.parts.Angle.violation_threshold"),
         SCAFFOLD_JUMPING_FAILS("Scaffold.parts.Jumping.violation_threshold"),
-        SCAFFOLD_JUMPING_LEGIT(0),
+        SCAFFOLD_JUMPING_LEGIT(20),
         SCAFFOLD_ROTATION_FAILS("Scaffold.parts.Rotation.violation_threshold"),
         SCAFFOLD_SAFEWALK_POSITION_FAILS("Scaffold.parts.Safewalk.Position.violation_threshold"),
         SCAFFOLD_SAFEWALK_TIMING_FAILS("Scaffold.parts.Safewalk.Timing.violation_threshold"),

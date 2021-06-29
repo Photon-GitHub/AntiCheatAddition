@@ -92,11 +92,8 @@ public class ModuleLoader
 
         if (batchProcessor != null) batchProcessor.enable();
 
-        if (!incoming.isEmpty()) {
-            incoming.forEach(messageChannel -> messageChannel.registerIncomingChannel((PluginMessageListener) module));
-        }
-
-        if (!outgoing.isEmpty()) outgoing.forEach(MessageChannel::registerOutgoingChannel);
+        for (MessageChannel messageChannel : incoming) messageChannel.registerIncomingChannel((PluginMessageListener) module);
+        for (MessageChannel messageChannel : outgoing) messageChannel.registerOutgoingChannel();
 
         DebugSender.getInstance().sendDebug(module.getConfigString() + " has been enabled.", true, false);
         return true;
@@ -110,11 +107,8 @@ public class ModuleLoader
 
         if (batchProcessor != null) batchProcessor.disable();
 
-        if (!incoming.isEmpty()) {
-            incoming.forEach(messageChannel -> messageChannel.unregisterIncomingChannel((PluginMessageListener) module));
-        }
-
-        if (!outgoing.isEmpty()) outgoing.forEach(MessageChannel::unregisterOutgoingChannel);
+        for (MessageChannel messageChannel : incoming) messageChannel.unregisterIncomingChannel((PluginMessageListener) module);
+        for (MessageChannel messageChannel : outgoing) messageChannel.unregisterOutgoingChannel();
     }
 
     @RequiredArgsConstructor

@@ -43,6 +43,8 @@ public class LabyModSentinel extends SentinelModule implements Listener
             if (!voicechat) LabyModProtocol.disableVoiceChat(player);
             if (tablistBanner) LabyModProtocol.sendServerBanner(player, tablistBannerUrl);
         }
+
+        byteBuf.release();
     }
 
     @Override

@@ -19,7 +19,7 @@ public abstract class Module
     @Getter(lazy = true) private final ModuleLoader moduleLoader = Preconditions.checkNotNull(createModuleLoader(), "Tried to create null ModuleLoader.");
     @Getter private boolean enabled;
 
-    public Module(String configString)
+    protected Module(String configString)
     {
         Preconditions.checkNotNull(configString, "Tried to create Module with null configString.");
         Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(configString), "Config path " + configString + " does not exist in the config. Please regenerate your config.");

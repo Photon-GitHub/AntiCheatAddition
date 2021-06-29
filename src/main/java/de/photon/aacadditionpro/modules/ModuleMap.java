@@ -11,13 +11,6 @@ public class ModuleMap<T extends Module>
 {
     private Map<String, T> backingMap;
 
-    public ModuleMap(T... modules)
-    {
-        final ImmutableMap.Builder<String, T> builder = ImmutableMap.builder();
-        for (T module : modules) builder.put(module.getModuleId(), module);
-        this.backingMap = builder.build();
-    }
-
     public ModuleMap(Iterable<T> modules)
     {
         final ImmutableMap.Builder<String, T> builder = ImmutableMap.builder();

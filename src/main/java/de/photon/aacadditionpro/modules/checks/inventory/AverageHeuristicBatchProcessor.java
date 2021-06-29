@@ -50,8 +50,8 @@ public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<Inventor
         double vl = 40000 / (squaredErrorsSum + 1);
 
         // Average below 1 tick is considered inhuman and increases vl.
-        val averageMultiplier = AVERAGE_MULTIPLIER_CALCULATOR.apply(averageMillis / 50);
-        vl *= Math.max(averageMultiplier, 0.5);
+        // / 50 to make sure the coefficients are big enough to avoid precision bugs.
+        vl *= Math.max(AVERAGE_MULTIPLIER_CALCULATOR.apply(averageMillis / 50), 0.5);
 
         // Make sure that misclicks are applied correctly.
         vl /= (misClickCounter.getCounter() + 1);

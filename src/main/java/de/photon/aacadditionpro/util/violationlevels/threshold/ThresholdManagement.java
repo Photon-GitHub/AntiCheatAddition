@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.util.violationlevels.threshold;
 
 import com.google.common.base.Preconditions;
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import lombok.val;
@@ -44,7 +45,8 @@ public interface ThresholdManagement
     static ThresholdManagement loadCommands(String configPath)
     {
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
-        val commands = Preconditions.checkNotNull(ConfigUtils.loadImmutableStringOrStringList(configPath), "Config loading error: The commands at " + configPath + " could not be loaded.");
+        Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(configPath), "Config loading error: The commands at " + configPath + " could not be loaded or the path does not exist.");
+        val commands = ConfigUtils.loadImmutableStringOrStringList(configPath);
         return commands.isEmpty() ? EMPTY : new SingleThresholds(new Threshold(1, commands));
     }
 

@@ -12,8 +12,8 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
-import de.photon.aacadditionpro.util.server.PingProvider;
 import de.photon.aacadditionpro.util.server.TPSProvider;
+import de.photon.aacadditionpro.util.server.ping.PingProvider;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -83,7 +83,7 @@ public class Fastswitch extends ViolationModule
                 // Already switched in the given timeframe
                 if (user.getTimestampMap().at(TimestampKey.LAST_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds)
                     // The ping is valid and in the borders that are set in the config
-                    && (maxPing < 0 || PingProvider.getPing(user.getPlayer()) < maxPing))
+                    && (maxPing < 0 || PingProvider.INSTANCE.getPing(user.getPlayer()) < maxPing))
                 {
                     getManagement().flag(Flag.of(user)
                                              .setAddedVl(25)

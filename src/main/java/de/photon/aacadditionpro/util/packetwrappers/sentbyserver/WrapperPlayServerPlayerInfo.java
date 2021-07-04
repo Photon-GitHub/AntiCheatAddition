@@ -8,7 +8,7 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.aacadditionpro.util.packetwrappers.AbstractPacket;
-import de.photon.aacadditionpro.util.server.PingProvider;
+import lombok.val;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
@@ -36,16 +36,16 @@ public class WrapperPlayServerPlayerInfo extends AbstractPacket
      * @param gameProfile    the {@link WrappedGameProfile} of the player whose information will be updated.<br>
      *                       Use {@link WrappedGameProfile#fromPlayer(Player)} in order to get a {@link WrappedGameProfile} from a {@link Player}.
      * @param ping           the new ping of the updated {@link Player}.
+     *                       Use {@link de.photon.aacadditionpro.util.server.ping.PingProvider#getPing(Player)} to get the ping of a {@link Player}.
      * @param gameMode       the {@link EnumWrappers.NativeGameMode} of the updated {@link Player}.
-     *                       Use {@link PingProvider#getPing(Player)} to get the ping of a {@link Player}.
      * @param displayName    the new displayName of the updated {@link Player}
      * @param affectedPlayer the {@link Player} who will see the updated information as the packet is sent to him.
      */
     public static void updatePlayerInformation(final PlayerInfoAction action, final WrappedGameProfile gameProfile, final int ping, final EnumWrappers.NativeGameMode gameMode, final WrappedChatComponent displayName, final Player affectedPlayer)
     {
-        final PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, ping, gameMode, displayName);
+        val playerInfoData = new PlayerInfoData(gameProfile, ping, gameMode, displayName);
 
-        final WrapperPlayServerPlayerInfo playerInfoWrapper = new WrapperPlayServerPlayerInfo();
+        val playerInfoWrapper = new WrapperPlayServerPlayerInfo();
         playerInfoWrapper.setAction(action);
         playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
 

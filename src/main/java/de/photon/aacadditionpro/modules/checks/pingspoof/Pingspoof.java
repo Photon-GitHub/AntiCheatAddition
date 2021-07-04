@@ -16,7 +16,7 @@ import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.packetwrappers.sentbyserver.WrapperPlayServerTransaction;
-import de.photon.aacadditionpro.util.server.PingProvider;
+import de.photon.aacadditionpro.util.server.ping.PingProvider;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -65,7 +65,7 @@ public class Pingspoof extends ViolationModule implements Listener
             for (User user : User.getUsersUnwrapped()) {
                 if (User.isUserInvalid(user, this)) continue;
 
-                serverPing = PingProvider.getPing(user.getPlayer());
+                serverPing = PingProvider.INSTANCE.getPing(user.getPlayer());
 
                 val received = user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).getTime();
                 val sent = user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).getTime();
@@ -76,7 +76,7 @@ public class Pingspoof extends ViolationModule implements Listener
                         this.getManagement().flag(Flag.of(user).setAddedVl(35));
                     } else {
                         user.getPingspoofPing().addDataPoint(MathUtil.absDiff(received, sent));
-                        echoPing = PingProvider.getEchoPing(user);
+                        echoPing = PingProvider.INSTANCE.getEchoPing(user);
 
                         // The player has not sent the received packet.
                         difference = Math.abs(serverPing - echoPing);

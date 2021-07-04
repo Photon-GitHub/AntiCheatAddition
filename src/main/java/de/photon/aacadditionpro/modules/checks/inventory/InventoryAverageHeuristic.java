@@ -6,8 +6,8 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.batch.InventoryBatch;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.server.PingProvider;
 import de.photon.aacadditionpro.util.server.TPSProvider;
+import de.photon.aacadditionpro.util.server.ping.PingProvider;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.Getter;
@@ -47,7 +47,7 @@ public class InventoryAverageHeuristic extends ViolationModule implements Listen
             // Minimum TPS before the check is activated as of a huge amount of fps
             TPSProvider.getTPS() > minTps &&
             // Minimum ping
-            (maxPing < 0 || PingProvider.getPing(user.getPlayer()) <= maxPing))
+            (maxPing < 0 || PingProvider.INSTANCE.getPing(user.getPlayer()) <= maxPing))
         {
             if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) user.getDataMap().getCounter(DataKey.CounterKey.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS).increment();
                 // Shift - Double - Click shortcut will generate a lot of clicks.

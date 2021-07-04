@@ -18,7 +18,7 @@ public class DetectionManagement extends ViolationManagement
 
     public DetectionManagement(ViolationModule module)
     {
-        super(module, ThresholdManagement.loadCommands(module.getConfigString() + ".commands_on_detection"));
+        super(module, ThresholdManagement.loadCommands(module.getConfigString() + ".commands"));
     }
 
     @Override

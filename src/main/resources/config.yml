@@ -700,7 +700,7 @@ Sentinel:
       # Even though this is sometimes considered as an unfair advantage it is often just handy information
       # which is not really affecting the gameplay.
       saturation_bar: false
-    commands_on_detection:
+    commands:
       - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses LabyMod"
 
   # A mod that lets you display (clientside) holograms to improve building, but also has
@@ -721,7 +721,7 @@ Sentinel:
       save: true
       # This allows to load a schematic on your server for printing or a hologram.
       load: false
-    commands_on_detection:
+    commands:
       - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses Schematica"
 
   # Vape is a very popular ghost-client, often seen in ranked pvp gameplay and optimized to be especially hard to find
@@ -762,7 +762,7 @@ Sentinel:
       # This will disable saving containers and their inventories.
       # If tile_entity_saving is disabled, this has no effect.
       container_saving: true
-    commands_on_detection:
+    commands:
       - "kick {player} WorldDownloader"
 
   # Here you can easily define your own simple Sentinel checks.

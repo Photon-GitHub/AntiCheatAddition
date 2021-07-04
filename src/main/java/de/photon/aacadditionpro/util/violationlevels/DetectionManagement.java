@@ -24,6 +24,7 @@ public class DetectionManagement extends ViolationManagement
     @Override
     public void flag(@NotNull Flag flag)
     {
+        Preconditions.checkNotNull(flag.getPlayer(), "Tried to flag null player.");
         Preconditions.checkArgument(flag.getAddedVl() == 1, "Tried to add more than 1 vl in detection management.");
 
         if (!SentinelEvent.build(flag.getPlayer(), this.module.getModuleId()).call().isCancelled()) {

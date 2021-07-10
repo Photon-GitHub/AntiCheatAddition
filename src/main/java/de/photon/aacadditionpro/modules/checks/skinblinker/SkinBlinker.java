@@ -54,9 +54,15 @@ public class SkinBlinker extends ViolationModule
             val user = User.safeGetUserFromPacketEvent(event);
             if (User.isUserInvalid(user, this.getModule())) return;
 
+            val newSkinComponents = event.getPacket().getIntegers().readSafely(1);
+
+            // Unused skin bit used (detection)
+            if ((newSkinComponents & (1 << 7)) != 0) {
+                getManagement().flag(Flag.of(user).setAddedVl(100));
+            }
+
             // Sprinting or sneaking (detection)
             if ((event.getPlayer().isSprinting() || event.getPlayer().isSneaking())) {
-                val newSkinComponents = event.getPacket().getIntegers().readSafely(1);
 
                 // updateSkinComponents returns true if the skin has changed.
                 if (user.updateSkinComponents(newSkinComponents)) getManagement().flag(Flag.of(user).setAddedVl(50));

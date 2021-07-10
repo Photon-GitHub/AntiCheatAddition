@@ -131,7 +131,7 @@ public class Scaffold extends ViolationModule implements Listener
             }
 
             if (vl > 0) {
-                this.getManagement().flag(Flag.of(event.getPlayer()).setCancelAction(cancelVl, () -> {
+                this.getManagement().flag(Flag.of(event.getPlayer()).setAddedVl(vl).setCancelAction(cancelVl, () -> {
                     event.setCancelled(true);
                     user.getTimestampMap().at(TimestampKey.SCAFFOLD_TIMEOUT).update();
                     InventoryUtil.syncUpdateInventory(user.getPlayer());

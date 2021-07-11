@@ -1,8 +1,8 @@
 package de.photon.aacadditionpro.util.execute;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.util.server.PingProvider;
 import de.photon.aacadditionpro.util.server.TPSProvider;
+import de.photon.aacadditionpro.util.server.ping.PingProvider;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -106,7 +106,7 @@ public final class Placeholders
     {
         // Single placeholder
         PLAYER(player -> StringUtils.left(player.getName(), 30)),
-        PING(player -> StringUtils.left(String.valueOf(PingProvider.getPing(player)), 5));
+        PING(player -> StringUtils.left(String.valueOf(PingProvider.INSTANCE.getPing(player)), 5));
 
         private final Function<Player, String> function;
 

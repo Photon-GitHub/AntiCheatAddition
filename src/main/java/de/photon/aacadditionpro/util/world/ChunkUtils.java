@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.util.world;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
@@ -54,8 +55,8 @@ public final class ChunkUtils
 
         final boolean modifyX;
 
-        final double deltaX = two.getX() - one.getX();
-        final double deltaZ = two.getZ() - one.getZ();
+        val deltaX = two.getX() - one.getX();
+        val deltaZ = two.getZ() - one.getZ();
 
         final double xStep;
         final double zStep;

@@ -1,21 +1,20 @@
 package de.photon.aacadditionpro.util.datastructure.counter;
 
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Value;
 
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * This counter is used for the common use case of "only flag after x consecutive violations".
  */
-@EqualsAndHashCode
-@ToString
-@RequiredArgsConstructor
+@Value
+@Getter(value = AccessLevel.NONE)
 public class ViolationCounter
 {
-    private final AtomicLong counter = new AtomicLong();
-    private final long limit;
+    AtomicLong counter = new AtomicLong();
+    long limit;
 
     /**
      * Increments the counter by one and checks if the limit has been reached.

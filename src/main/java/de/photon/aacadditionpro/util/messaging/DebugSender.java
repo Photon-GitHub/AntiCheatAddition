@@ -22,8 +22,8 @@ import java.util.logging.Level;
 public final class DebugSender implements Listener
 {
     @Getter private static final DebugSender instance;
-    private static final String SENTINEL_PRE_STRING = (ChatColor.WHITE + "{player} " + ChatColor.GRAY) + " Sentinel detection: ";
-    private static final String VIOLATION_PRE_STRING = (ChatColor.WHITE + "{player} " + ChatColor.GRAY) + " module detection: ";
+    private static final String SENTINEL_PRE_STRING = (ChatColor.WHITE + "{player} " + ChatColor.GRAY) + "Sentinel detection: ";
+    private static final String VIOLATION_PRE_STRING = (ChatColor.WHITE + "{player} " + ChatColor.GRAY) + "module detection: ";
 
     static {
         instance = new DebugSender();
@@ -82,7 +82,7 @@ public final class DebugSender implements Listener
     @EventHandler
     public void onAdditionViolation(final ViolationEvent event)
     {
-        this.sendDebug(Placeholders.replacePlaceholders(VIOLATION_PRE_STRING + event.getModuleId() + " | Vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", ImmutableSet.of(event.getPlayer())));
+        this.sendDebug(Placeholders.replacePlaceholders(VIOLATION_PRE_STRING + event.getModuleId() + " | added vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", ImmutableSet.of(event.getPlayer())));
     }
 
     @EventHandler

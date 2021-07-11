@@ -16,7 +16,7 @@ class MultiThresholds implements ThresholdManagement
 
     public MultiThresholds(List<Threshold> thresholds)
     {
-        final ImmutableSortedMap.Builder<Integer, Threshold> builder = ImmutableSortedMap.naturalOrder();
+        val builder = ImmutableSortedMap.<Integer, Threshold>naturalOrder();
         for (Threshold threshold : thresholds) builder.put(threshold.getVl(), threshold);
         thresholdMap = builder.build();
     }

@@ -7,6 +7,7 @@ import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -56,8 +57,8 @@ public final class InventoryUtil
      */
     public static double distanceBetweenSlots(final int rawSlotOne, final int rawSlotTwo, @NotNull final InventoryType inventoryType)
     {
-        final SlotLocation first = InventoryUtil.locateSlot(rawSlotOne, inventoryType);
-        final SlotLocation second = InventoryUtil.locateSlot(rawSlotTwo, inventoryType);
+        val first = InventoryUtil.locateSlot(rawSlotOne, inventoryType);
+        val second = InventoryUtil.locateSlot(rawSlotTwo, inventoryType);
 
         return first == null || second == null ? -1 : first.distance(second);
     }

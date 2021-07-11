@@ -18,12 +18,13 @@ public class DetectionManagement extends ViolationManagement
 
     public DetectionManagement(ViolationModule module)
     {
-        super(module, ThresholdManagement.loadCommands(module.getConfigString() + ".commands_on_detection"));
+        super(module, ThresholdManagement.loadCommands(module.getConfigString() + ".commands"));
     }
 
     @Override
     public void flag(@NotNull Flag flag)
     {
+        Preconditions.checkNotNull(flag.getPlayer(), "Tried to flag null player.");
         Preconditions.checkArgument(flag.getAddedVl() == 1, "Tried to add more than 1 vl in detection management.");
 
         if (!SentinelEvent.build(flag.getPlayer(), this.module.getModuleId()).call().isCancelled()) {

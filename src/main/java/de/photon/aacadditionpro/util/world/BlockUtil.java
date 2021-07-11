@@ -54,8 +54,8 @@ public final class BlockUtil
     /**
      * This counts the {@link Block}s around the given block if they are not air/empty.
      *
-     * @param block   the block that faces should be checked for other {@link Block}s
-     * @param faces   the {@link Set} containing all {@link BlockFace}s which shall be included.
+     * @param block the block that faces should be checked for other {@link Block}s
+     * @param faces the {@link Set} containing all {@link BlockFace}s which shall be included.
      *
      * @return the amount of {@link Block}s which were counted
      */

@@ -7,10 +7,8 @@ import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.user.data.batch.TowerBatch;
-import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
 import de.photon.aacadditionpro.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.aacadditionpro.util.datastructure.batch.BatchPreprocessors;
-import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
@@ -21,9 +19,7 @@ import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.LongSummaryStatistics;
 
 public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlockPlace>
 {
@@ -62,17 +58,13 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
     @Override
     public void processBatch(User user, List<TowerBatch.TowerBlockPlace> batch)
     {
-        val calcStatistics = new DoubleStatistics();
-        val actualStatistics = new LongSummaryStatistics();
-        val pairs = new ArrayList<>(BatchPreprocessors.zipOffsetOne(batch));
+        val statistics = BatchPreprocessors.zipReduceToDoubleStatistics(batch,
+                                                                        (old, cur) -> calculateDelay(old),
+                                                                        TowerBatch.TowerBlockPlace::timeOffset);
 
-        for (ImmutablePair<TowerBatch.TowerBlockPlace, TowerBatch.TowerBlockPlace> pair : pairs) {
-            calcStatistics.accept(calculateDelay(pair.getFirst()));
-            actualStatistics.accept(pair.getFirst().timeOffset(pair.getSecond()));
-        }
+        val calcAvg = statistics.get(0).getAverage();
+        val actAvg = statistics.get(1).getAverage();
 
-        val calcAvg = calcStatistics.getAverage();
-        val actAvg = actualStatistics.getAverage();
         if (actAvg < calcAvg) {
             val vlToAdd = Math.min(VL_CALCULATOR.apply(calcAvg - actAvg).intValue(), 1000);
             this.getModule().getManagement().flag(Flag.of(user)

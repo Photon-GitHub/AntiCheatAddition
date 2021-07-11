@@ -1,13 +1,17 @@
 package de.photon.aacadditionpro.util.datastructure.batch;
 
+import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
+import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.function.BiFunction;
+import java.util.function.ToDoubleBiFunction;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BatchPreprocessors
@@ -46,6 +50,52 @@ public final class BatchPreprocessors
     }
 
     /**
+     * This method allows for the reduction from a {@link List} of {@link ImmutablePair}s to an {@link ImmutablePair} of {@link DoubleStatistics}, which is often used in {@link BatchProcessor}s to
+     * calculate both the expected and the actual delays.
+     */
+    @SafeVarargs
+    public static <T> List<DoubleStatistics> reducePairToDoubleStatistics(List<ImmutablePair<T, T>> input, ToDoubleBiFunction<T, T>... mappers)
+    {
+        val builder = ImmutableList.<DoubleStatistics>builder();
+        for (int i = 0; i < mappers.length; ++i) builder.add(new DoubleStatistics());
+        val statistics = builder.build();
+
+        for (val pair : input) {
+            for (int i = 0; i < mappers.length; ++i) {
+                statistics.get(i).accept(mappers[i].applyAsDouble(pair.getFirst(), pair.getSecond()));
+            }
+        }
+
+        return statistics;
+    }
+
+    /**
+     * Shortcut for often used reducePairToDoubleStatistics(zipOffsetOne(...), ... ) with performance improvements.
+     */
+    // We only use the varargs in a loop, we do not return them or cast them  -> safe varargs.
+    @SafeVarargs
+    public static <T> List<DoubleStatistics> zipReduceToDoubleStatistics(List<T> input, ToDoubleBiFunction<T, T>... mappers)
+    {
+        val builder = ImmutableList.<DoubleStatistics>builder();
+        for (int i = 0; i < mappers.length; ++i) builder.add(new DoubleStatistics());
+        val statistics = builder.build();
+
+        if (!input.isEmpty()) {
+            T old = input.get(0);
+            T current;
+            final ListIterator<T> iterator = input.listIterator(1);
+            while (iterator.hasNext()) {
+                current = iterator.next();
+
+                for (int i = 0; i < mappers.length; ++i) statistics.get(i).accept(mappers[i].applyAsDouble(old, current));
+
+                old = current;
+            }
+        }
+        return statistics;
+    }
+
+    /**
      * <p>Combines two element according to a BiFunction.</p>
      * <p>This will take combine n elements to n-1 elements.</p>
      *
@@ -63,13 +113,15 @@ public final class BatchPreprocessors
     {
         final List<U> output = new ArrayList<>(input.size());
 
-        T old = input.get(0);
-        T current;
-        final ListIterator<T> iterator = input.listIterator(1);
-        while (iterator.hasNext()) {
-            current = iterator.next();
-            output.add(combiner.apply(old, current));
-            old = current;
+        if (!input.isEmpty()) {
+            T old = input.get(0);
+            T current;
+            final ListIterator<T> iterator = input.listIterator(1);
+            while (iterator.hasNext()) {
+                current = iterator.next();
+                output.add(combiner.apply(old, current));
+                old = current;
+            }
         }
         return output;
     }
@@ -92,11 +144,13 @@ public final class BatchPreprocessors
     {
         final List<U> output = new ArrayList<>(input.size());
 
-        T old = input.get(input.size() - 1);
-        for (int i = input.size() - 2; i >= 0; --i) {
-            T current = input.get(i);
-            output.add(combiner.apply(old, current));
-            old = current;
+        if (!input.isEmpty()) {
+            T old = input.get(input.size() - 1);
+            for (int i = input.size() - 2; i >= 0; --i) {
+                T current = input.get(i);
+                output.add(combiner.apply(old, current));
+                old = current;
+            }
         }
         return output;
     }

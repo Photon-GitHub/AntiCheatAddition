@@ -50,8 +50,8 @@ public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<Inventor
         double vl = 40000 / (squaredErrorsSum + 1);
 
         // Average below 1 tick is considered inhuman and increases vl.
-        val averageMultiplier = AVERAGE_MULTIPLIER_CALCULATOR.apply(averageMillis / 50);
-        vl *= Math.max(averageMultiplier, 0.5);
+        // / 50 to make sure the coefficients are big enough to avoid precision bugs.
+        vl *= Math.max(AVERAGE_MULTIPLIER_CALCULATOR.apply(averageMillis / 50), 0.5);
 
         // Make sure that misclicks are applied correctly.
         vl /= (misClickCounter.getCounter() + 1);
@@ -65,7 +65,7 @@ public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<Inventor
         val finalVl = (int) Math.min(vl, 70);
         this.getModule().getManagement().flag(Flag.of(user)
                                                   .setAddedVl(finalVl)
-                                                  .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer() + " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + averageMillis + " | MC: " + misClickCounter.getCounter() + " | VLU: " + finalVl + ")")));
+                                                  .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + averageMillis + " | MC: " + misClickCounter.getCounter() + " | VLU: " + finalVl + ")")));
 
         misClickCounter.setToZero();
     }

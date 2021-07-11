@@ -134,7 +134,7 @@ public class InventoryMove extends ViolationModule
                     getManagement().flag(Flag.of(user)
                                              .setAddedVl(20)
                                              .setCancelAction(cancelVl, () -> this.cancelAction(user, event))
-                                             .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer() + " jumped while having an open inventory.")));
+                                             .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory.")));
                     return;
                 }
 
@@ -156,7 +156,7 @@ public class InventoryMove extends ViolationModule
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(5)
                                                      .setCancelAction(cancelVl, () -> this.cancelAction(user, event))
-                                                     .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer() + " moved while having an open inventory.")));
+                                                     .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory.")));
                         }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();

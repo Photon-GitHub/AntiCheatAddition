@@ -7,8 +7,8 @@ import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
-import de.photon.aacadditionpro.util.server.PingProvider;
 import de.photon.aacadditionpro.util.server.TPSProvider;
+import de.photon.aacadditionpro.util.server.ping.PingProvider;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -47,7 +47,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
             // Minimum TPS before the check is activated as of a huge amount of fps
             TPSProvider.getTPS() > minTps &&
             // Minimum ping
-            (maxPing < 0 || PingProvider.getPing(user.getPlayer()) <= maxPing) &&
+            (maxPing < 0 || PingProvider.INSTANCE.getPing(user.getPlayer()) <= maxPing) &&
             // False positive: Click-spamming on the same slot
             event.getRawSlot() != user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED))
         {

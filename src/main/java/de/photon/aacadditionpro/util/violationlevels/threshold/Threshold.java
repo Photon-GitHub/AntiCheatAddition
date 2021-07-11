@@ -33,9 +33,7 @@ public class Threshold implements Comparable<Threshold>
      */
     public void executeCommandList(Collection<Player> players)
     {
-        for (String rawCommand : this.commandList) {
-            ExecuteUtil.executeCommand(Placeholders.replacePlaceholders(rawCommand, players));
-        }
+        for (String rawCommand : this.commandList) ExecuteUtil.executeCommand(Placeholders.replacePlaceholders(rawCommand, players));
     }
 
     @Override

@@ -65,7 +65,7 @@ class ScaffoldSafewalkPosition extends Module
 
                 if (sneakBorder) {
                     if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_POSITION_FAILS).incrementCompareThreshold()) {
-                        DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Position)");
+                        DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Position)" + " | Face: " + face + "| xOffset: " + xOffset + " | zOffset" + zOffset);
                         return 15;
                     }
                 } else user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_POSITION_FAILS).setToZero();

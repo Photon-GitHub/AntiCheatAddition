@@ -22,8 +22,8 @@ import java.util.logging.Level;
 public final class DebugSender implements Listener
 {
     @Getter private static final DebugSender instance;
-    private static final String SENTINEL_PRE_STRING = (ChatColor.WHITE + "{player} " + ChatColor.GRAY) + " Sentinel detection: ";
-    private static final String VIOLATION_PRE_STRING = (ChatColor.WHITE + "{player} " + ChatColor.GRAY) + " module detection: ";
+    private static final String SENTINEL_PRE_STRING = (ChatColor.WHITE + "{player} " + ChatColor.GRAY) + "Sentinel detection: ";
+    private static final String VIOLATION_PRE_STRING = (ChatColor.WHITE + "{player} " + ChatColor.GRAY) + "module detection: ";
 
     static {
         instance = new DebugSender();

@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.modules.sentinel;
 
+import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
@@ -47,6 +48,7 @@ public class VapeSentinel extends SentinelModule implements Listener
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
+                           .addAllowedServerVersions(ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS)
                            .addIncomingMessageChannels(VAPE_MESSAGE_CHANNEL)
                            .build();
     }

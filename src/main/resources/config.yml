@@ -733,7 +733,7 @@ Sentinel:
   Vape:
     # Do you want to enable Vape-Sentinel?
     enabled: false
-    commands_on_detection:
+    commands:
       - "ban {player} Illegal client modification"
 
   # WorldDownloader is a popular modification to get the maps of a server

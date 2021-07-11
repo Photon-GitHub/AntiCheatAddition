@@ -57,9 +57,7 @@ public class SkinBlinker extends ViolationModule
             val newSkinComponents = event.getPacket().getIntegers().readSafely(1);
 
             // Unused skin bit used (detection)
-            if ((newSkinComponents & (1 << 7)) != 0) {
-                getManagement().flag(Flag.of(user).setAddedVl(100));
-            }
+            if ((newSkinComponents & 0x80) != 0) getManagement().flag(Flag.of(user).setAddedVl(100));
 
             // Sprinting or sneaking (detection)
             if ((event.getPlayer().isSprinting() || event.getPlayer().isSneaking())) {

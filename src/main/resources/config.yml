@@ -533,7 +533,7 @@ Scaffold:
     200: "kick {player} Scaffold"
 
 # Skinblinker detects cheats of the same name when the player sprints/sneaks.
-# Adds 50 vl.
+# Adds 50 vl normally and 100 vl for impossible (modified) packets.
 Skinblinker:
   # Do you want to enable the Skinblinker check?
   enabled: true

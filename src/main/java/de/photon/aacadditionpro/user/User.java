@@ -259,6 +259,17 @@ public class User implements Permissible
         return this.dataMap.getBoolean(DataKey.BooleanKey.SNEAKING) || this.timestampMap.at(TimestampKey.LAST_SNEAK_TOGGLE).recentlyUpdated(milliseconds);
     }
 
+    /**
+     * Checks if this {@link User} has jumped recently
+     *
+     * @param milliseconds the amount of time in milliseconds that should be considered.
+     *
+     * @return true if the player has sneaked in the specified time frame.
+     */
+    public boolean hasJumpedRecently(final long milliseconds)
+    {
+        return this.timestampMap.at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(milliseconds);
+    }
 
     // Convenience methods for much used timestamps
 

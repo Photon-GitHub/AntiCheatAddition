@@ -32,7 +32,7 @@ class ScaffoldJumping extends Module
             val failCounter = user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_JUMPING_FAILS);
 
             if (user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 500)
-                && user.getTimestampMap().at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1000))
+                && user.hasJumpedRecently(1000))
             {
                 return failCounter.incrementCompareThreshold() ? 20 : 0;
             } else {

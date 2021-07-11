@@ -9,6 +9,8 @@ public enum TimestampKey
     AUTOPOTION_DETECTION,
     AUTOPOTION_TIMEOUT,
 
+    FASTSWITCH_HOTBAR_SWITCH,
+
     INVENTORY_OPENED,
 
     LAST_COMBAT,
@@ -50,4 +52,5 @@ public enum TimestampKey
 
     TOWER_SLIME_JUMP,
     TOWER_TIMEOUT
+
 }

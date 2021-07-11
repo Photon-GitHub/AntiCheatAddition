@@ -86,7 +86,7 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                 // Labymod fp when standing still / hit in corner fp
                 user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 100) &&
                 // 1.17 false positives
-                !(user.getTimestampMap().at(TimestampKey.LAST_HOTBAR_SWITCH).recentlyUpdated(500) && user.hasSneakedRecently(500)))
+                !(user.getTimestampMap().at(TimestampKey.LAST_HOTBAR_SWITCH).recentlyUpdated(3000) && user.hasSneakedRecently(3000)))
             {
                 // Not a big performance deal as most packets have already been filtered out, now we just account for
                 // the last false positives.

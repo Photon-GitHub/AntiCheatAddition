@@ -81,7 +81,7 @@ public class Fastswitch extends ViolationModule
                 !canBeLegit(user.getPlayer().getInventory().getHeldItemSlot(), event.getPacket().getBytes().readSafely(0)))
             {
                 // Already switched in the given timeframe
-                if (user.getTimestampMap().at(TimestampKey.LAST_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds)
+                if (user.getTimestampMap().at(TimestampKey.FASTSWITCH_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds)
                     // The ping is valid and in the borders that are set in the config
                     && (maxPing < 0 || PingProvider.INSTANCE.getPing(user.getPlayer()) < maxPing))
                 {
@@ -91,7 +91,7 @@ public class Fastswitch extends ViolationModule
                                              .setEventNotCancelledAction(() -> InventoryUtil.syncUpdateInventory(user.getPlayer())));
                 }
 
-                user.getTimestampMap().at(TimestampKey.LAST_HOTBAR_SWITCH).update();
+                user.getTimestampMap().at(TimestampKey.FASTSWITCH_HOTBAR_SWITCH).update();
             }
         }
     }

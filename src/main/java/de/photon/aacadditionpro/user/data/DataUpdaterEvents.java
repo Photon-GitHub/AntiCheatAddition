@@ -29,6 +29,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -150,6 +151,13 @@ public final class DataUpdaterEvents implements Listener
     {
         val user = User.getUser(event.getPlayer().getUniqueId());
         if (user != null) user.getTimestampMap().at(TimestampKey.INVENTORY_OPENED).update();
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onItemHeld(PlayerItemHeldEvent event)
+    {
+        val user = User.getUser(event.getPlayer());
+        if (user != null) user.getTimestampMap().at(TimestampKey.LAST_HOTBAR_SWITCH).update();
     }
 
     @EventHandler

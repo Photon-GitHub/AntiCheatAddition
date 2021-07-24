@@ -5,11 +5,11 @@ import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.execute.Placeholders;
+import de.photon.aacadditionpro.util.pluginmessage.ByteBufUtil;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import de.photon.aacadditionpro.util.reflection.FieldReflect;
 import de.photon.aacadditionpro.util.reflection.Reflect;
-import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.UnpooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,8 +18,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.nio.CharBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 public class BrandHider extends Module implements Listener
@@ -48,11 +46,12 @@ public class BrandHider extends Module implements Listener
 
     private static void updateBrand(final Player player)
     {
-        val charBuffer = CharBuffer.wrap(Placeholders.replacePlaceholders(brand, Collections.singleton(player)));
-        val buffer = ByteBufUtil.encodeString(UnpooledByteBufAllocator.DEFAULT, charBuffer, StandardCharsets.UTF_8);
+        val buf = Unpooled.buffer();
 
-        player.sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel(), buffer.array());
-        buffer.release();
+        ByteBufUtil.writeString(Placeholders.replacePlaceholders(BrandHider.brand, Collections.singleton(player)), buf);
+
+        player.sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel(), ByteBufUtil.toArray(buf));
+        buf.release();
     }
 
     @Override

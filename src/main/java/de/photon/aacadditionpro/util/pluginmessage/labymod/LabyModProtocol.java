@@ -2,7 +2,7 @@ package de.photon.aacadditionpro.util.pluginmessage.labymod;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.photon.aacadditionpro.util.packetwrappers.sentbyclient.WrapperPlayClientCustomPayload;
+import de.photon.aacadditionpro.util.packetwrappers.sentbyserver.WrapperPlayServerCustomPayload;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -62,7 +62,7 @@ public class LabyModProtocol
      */
     public static void sendLabyModMessage(Player player, String key, JsonElement messageContent)
     {
-        val payload = new WrapperPlayClientCustomPayload();
+        val payload = new WrapperPlayServerCustomPayload();
         payload.setContents(getBytesToSend(key, messageContent.toString()));
         payload.setChannel(MessageChannel.LABYMOD_CHANNEL);
         payload.sendPacket(player);

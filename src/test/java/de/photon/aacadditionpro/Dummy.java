@@ -6,6 +6,7 @@ import de.photon.aacadditionpro.user.data.DataMap;
 import de.photon.aacadditionpro.user.data.TimestampMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -19,6 +20,13 @@ public class Dummy
         Mockito.when(mockAACAdditionPro.getConfig()).thenReturn(config);
         AACAdditionPro.setInstance(mockAACAdditionPro);
         return mockAACAdditionPro;
+    }
+
+    public static Player mockPlayer()
+    {
+        Player player = Mockito.mock(Player.class);
+        Mockito.when(player.getName()).thenReturn("TestPlayer");
+        return player;
     }
 
     public static User mockUser()

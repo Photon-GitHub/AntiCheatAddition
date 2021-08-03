@@ -67,7 +67,7 @@ public enum ServerVersion
         val viaAPI = AACAdditionPro.getInstance().getViaAPI();
         if (viaAPI == null) return activeServerVersion;
 
-        val clientVersion = ProtocolVersion.getByVersionNumber(viaAPI.getPlayerVersion(player));
+        val clientVersion = ProtocolVersion.getByVersionNumber(viaAPI.getPlayerVersion(player.getUniqueId()));
         return clientVersion == null ? activeServerVersion : clientVersion.getEquivalentServerVersion();
     }
 

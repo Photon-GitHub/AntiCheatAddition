@@ -2,20 +2,18 @@ package de.photon.aacadditionpro.modules.checks.pingspoof;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
-import de.photon.aacadditionpro.modules.ModulePacketAdapter;
 import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.protocol.ModulePacketAdapter;
+import de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver.WrapperPlayServerTransaction;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
-import de.photon.aacadditionpro.util.packetwrappers.sentbyserver.WrapperPlayServerTransaction;
 import de.photon.aacadditionpro.util.server.ping.PingProvider;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -117,11 +115,18 @@ public class Pingspoof extends ViolationModule implements Listener
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val adapter = new PingspoofPacketAdapter(this);
         return ModuleLoader.builder(this)
                            //TODO: 1.17 is not yet compatible.
                            .addAllowedServerVersions(ServerVersion.ALL_VERSIONS_TO_116)
-                           .addPacketListeners(adapter)
+                           .addPacketListeners(ModulePacketAdapter.of(this, PacketType.Play.Client.TRANSACTION)
+                                                                  .priority(ListenerPriority.HIGH)
+                                                                  .onReceiving(event -> {
+                                                                      val user = User.safeGetUserFromPacketEvent(event);
+                                                                      if (User.isUserInvalid(user, this)) return;
+
+                                                                      // We have now received the answer.
+                                                                      user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).update();
+                                                                  }).build())
                            .build();
     }
 
@@ -129,23 +134,5 @@ public class Pingspoof extends ViolationModule implements Listener
     protected ViolationManagement createViolationManagement()
     {
         return ViolationLevelManagement.builder(this).withDecay(300, 2).build();
-    }
-
-    private static class PingspoofPacketAdapter extends ModulePacketAdapter
-    {
-        public PingspoofPacketAdapter(Module module)
-        {
-            super(module, ListenerPriority.HIGH, PacketType.Play.Client.TRANSACTION);
-        }
-
-        @Override
-        public void onPacketReceiving(PacketEvent event)
-        {
-            val user = User.safeGetUserFromPacketEvent(event);
-            if (User.isUserInvalid(user, this.getModule())) return;
-
-            // We have now received the answer.
-            user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).update();
-        }
     }
 }

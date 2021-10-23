@@ -22,7 +22,8 @@ import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysisEqua
 import de.photon.aacadditionpro.modules.checks.packetanalysis.PacketAnalysisIllegalPitch;
 import de.photon.aacadditionpro.modules.checks.pingspoof.Pingspoof;
 import de.photon.aacadditionpro.modules.checks.scaffold.Scaffold;
-import de.photon.aacadditionpro.modules.checks.skinblinker.SkinBlinker;
+import de.photon.aacadditionpro.modules.checks.skinblinker.SkinBlinkerSprinting;
+import de.photon.aacadditionpro.modules.checks.skinblinker.SkinBlinkerUnusedBit;
 import de.photon.aacadditionpro.modules.checks.teaming.Teaming;
 import de.photon.aacadditionpro.modules.checks.tower.Tower;
 import de.photon.aacadditionpro.modules.sentinel.BetterSprintingSentinel;
@@ -89,7 +90,9 @@ public final class ModuleManager
 
         val scaffold = new Scaffold();
 
-        val skinBlinker = new SkinBlinker();
+        val skinBlinkerUnusedBit = new SkinBlinkerUnusedBit();
+        val skinBlinkerSprinting = new SkinBlinkerSprinting();
+        val skinBlinker = ViolationModule.parentOf("Skinblinker", skinBlinkerUnusedBit, skinBlinkerSprinting);
 
         val teaming = new Teaming();
 
@@ -150,6 +153,8 @@ public final class ModuleManager
                 scaffold.getScaffoldSprinting(),
                 scaffold,
 
+                skinBlinkerUnusedBit,
+                skinBlinkerSprinting,
                 skinBlinker,
 
                 teaming,

@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.util.visibility;
 import com.comphenix.protocol.PacketType;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.util.packetwrappers.sentbyserver.WrapperPlayServerEntityEquipment;
+import de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver.WrapperPlayServerEntityEquipment;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

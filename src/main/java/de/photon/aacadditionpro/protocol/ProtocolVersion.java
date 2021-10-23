@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.protocol;
+package de.photon.aacadditionpro.protocol;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;

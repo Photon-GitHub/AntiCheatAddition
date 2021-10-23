@@ -14,17 +14,14 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.world.EntityUtil;
 import lombok.val;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Wither;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 
 public class DamageIndicator extends Module
 {
@@ -135,10 +132,7 @@ public class DamageIndicator extends Module
                             throw new IllegalStateException("Unregistered packet type.");
                         }
 
-                        val spoofedHealth = ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
-                                            Float.NaN :
-                                            (float) Objects.requireNonNull(((LivingEntity) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH), "Tried to get health of entity without health.").getValue();
-
+                        val spoofedHealth = ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ? Float.NaN : 1.0F;
                         spoofHealth(read, spoofedHealth);
                     }
                 }).build();

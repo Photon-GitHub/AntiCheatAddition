@@ -6,7 +6,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.protocol.ModulePacketAdapter;
+import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
 import de.photon.aacadditionpro.protocol.packetwrappers.sentbyclient.WrapperPlayClientUseEntity;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
@@ -34,10 +34,9 @@ public class PacketAnalysisAnimation extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetAdapter = ModulePacketAdapter
-                .of(this,
-                    // THIS IS IN THE ORDER OF HOW THE PACKETS ARE SUPPOSED TO ARRIVE.
-                    PacketType.Play.Client.USE_ENTITY,
+        val packetAdapter = PacketAdapterBuilder
+                // THIS IS IN THE ORDER OF HOW THE PACKETS ARE SUPPOSED TO ARRIVE.
+                .of(PacketType.Play.Client.USE_ENTITY,
                     PacketType.Play.Client.ARM_ANIMATION)
                 .priority(ListenerPriority.LOW)
                 .onReceiving(event -> {

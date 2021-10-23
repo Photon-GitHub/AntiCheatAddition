@@ -6,7 +6,7 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.protocol.ModulePacketAdapter;
+import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
 import de.photon.aacadditionpro.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
@@ -38,8 +38,8 @@ public class PacketAnalysisEqualRotation extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetAdapter = ModulePacketAdapter
-                .of(this, PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK)
+        val packetAdapter = PacketAdapterBuilder
+                .of(PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK)
                 .priority(ListenerPriority.LOW)
                 .onReceiving(event -> {
                     val user = User.safeGetUserFromPacketEvent(event);

@@ -6,7 +6,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.protocol.ModulePacketAdapter;
+import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
 import de.photon.aacadditionpro.protocol.packetwrappers.IWrapperPlayPosition;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
@@ -66,10 +66,9 @@ public class InventoryMove extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetAdapter = ModulePacketAdapter
-                .of(this,
-                    // Look
-                    PacketType.Play.Client.LOOK,
+        val packetAdapter = PacketAdapterBuilder
+                // Look
+                .of(PacketType.Play.Client.LOOK,
                     // Move
                     PacketType.Play.Client.POSITION,
                     PacketType.Play.Client.POSITION_LOOK)

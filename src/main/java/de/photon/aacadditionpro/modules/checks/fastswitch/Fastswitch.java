@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.modules.checks.fastswitch;
 import com.comphenix.protocol.PacketType;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.protocol.ModulePacketAdapter;
+import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
@@ -46,8 +46,8 @@ public class Fastswitch extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetAdapter = ModulePacketAdapter
-                .of(this, PacketType.Play.Client.HELD_ITEM_SLOT)
+        val packetAdapter = PacketAdapterBuilder
+                .of(PacketType.Play.Client.HELD_ITEM_SLOT)
                 .onReceiving(event -> {
                     val user = User.safeGetUserFromPacketEvent(event);
                     if (User.isUserInvalid(user, this)) return;

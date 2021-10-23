@@ -6,7 +6,7 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.protocol.ModulePacketAdapter;
+import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
 import de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver.WrapperPlayServerTransaction;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
@@ -118,9 +118,9 @@ public class Pingspoof extends ViolationModule implements Listener
         return ModuleLoader.builder(this)
                            //TODO: 1.17 is not yet compatible.
                            .addAllowedServerVersions(ServerVersion.ALL_VERSIONS_TO_116)
-                           .addPacketListeners(ModulePacketAdapter.of(this, PacketType.Play.Client.TRANSACTION)
-                                                                  .priority(ListenerPriority.HIGH)
-                                                                  .onReceiving(event -> {
+                           .addPacketListeners(PacketAdapterBuilder.of(PacketType.Play.Client.TRANSACTION)
+                                                                   .priority(ListenerPriority.HIGH)
+                                                                   .onReceiving(event -> {
                                                                       val user = User.safeGetUserFromPacketEvent(event);
                                                                       if (User.isUserInvalid(user, this)) return;
 

@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.modules.checks.skinblinker;
 import com.comphenix.protocol.PacketType;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.protocol.ModulePacketAdapter;
+import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -18,7 +18,7 @@ public class SkinBlinkerSprinting extends ViolationModule
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addPacketListeners(ModulePacketAdapter.of(this, PacketType.Play.Client.SETTINGS).onReceiving(event -> {
+                           .addPacketListeners(PacketAdapterBuilder.of(PacketType.Play.Client.SETTINGS).onReceiving(event -> {
                                /*
                                 * A unmodified client can only send such packets if the player is in the menu
                                 * -> he obviously cannot Sprint or Sneak when doing this.

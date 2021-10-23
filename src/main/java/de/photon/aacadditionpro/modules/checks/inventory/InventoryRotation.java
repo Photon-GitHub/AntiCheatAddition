@@ -4,7 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.protocol.ModulePacketAdapter;
+import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
 import de.photon.aacadditionpro.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
@@ -29,8 +29,8 @@ public class InventoryRotation extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetAdapter = ModulePacketAdapter
-                .of(this, PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK)
+        val packetAdapter = PacketAdapterBuilder
+                .of(PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK)
                 .priority(ListenerPriority.LOWEST)
                 .onReceiving(event -> {
                     val user = User.safeGetUserFromPacketEvent(event);

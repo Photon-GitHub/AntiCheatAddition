@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import de.photon.aacadditionpro.protocol.packetwrappers.IWrapperPlayEntity;
@@ -10,6 +11,7 @@ import de.photon.aacadditionpro.protocol.packetwrappers.IWrapperPlayPosition;
 import de.photon.aacadditionpro.protocol.packetwrappers.MetadataPacket;
 import org.bukkit.util.Vector;
 
+import java.util.List;
 import java.util.UUID;
 
 public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements IWrapperPlayEntity, IWrapperPlayPosition, IWrapperPlayServerLook
@@ -195,5 +197,11 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
     public void setMetadata(WrappedDataWatcher value)
     {
         handle.getDataWatcherModifier().write(0, value);
+    }
+
+    @Override
+    public List<WrappedWatchableObject> getRawMetadata()
+    {
+        return getMetadata().getWatchableObjects();
     }
 }

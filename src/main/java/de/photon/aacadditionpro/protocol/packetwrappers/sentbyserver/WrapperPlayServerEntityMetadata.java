@@ -43,4 +43,10 @@ public class WrapperPlayServerEntityMetadata extends MetadataPacket implements I
     {
         handle.getWatchableCollectionModifier().write(0, value);
     }
+
+    @Override
+    public List<WrappedWatchableObject> getRawMetadata()
+    {
+        return getMetadata();
+    }
 }

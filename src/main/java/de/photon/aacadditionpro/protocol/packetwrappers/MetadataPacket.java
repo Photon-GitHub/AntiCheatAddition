@@ -6,6 +6,8 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
+import de.photon.aacadditionpro.protocol.EntityMetadataIndex;
+import lombok.val;
 
 import java.util.List;
 
@@ -20,6 +22,26 @@ public abstract class MetadataPacket extends AbstractPacket
     protected MetadataPacket(PacketContainer handle, PacketType type)
     {
         super(handle, type);
+    }
+
+    public abstract List<WrappedWatchableObject> getRawMetadata();
+
+    /**
+     * Searches for an index in the metadata as it is unsorted.
+     *
+     * @return the {@link WrappedWatchableObject}.
+     *
+     * @throws IllegalArgumentException if the index was not found.
+     */
+    public WrappedWatchableObject getMetadataIndex(int index)
+    {
+        val rawMetadata = getRawMetadata();
+        for (WrappedWatchableObject watch : rawMetadata) {
+            if (watch.getIndex() == index) {
+                return watch;
+            }
+        }
+        throw new IllegalArgumentException("Index " + index + " could not be found in entity metadata.");
     }
 
     public MetadataBuilder builder()
@@ -77,21 +99,7 @@ public abstract class MetadataPacket extends AbstractPacket
          */
         public MetadataBuilder setHealthMetadata(final float health)
         {
-            switch (ServerVersion.getActiveServerVersion()) {
-                case MC18:
-                    return this.setMetadata(6, Float.class, health);
-                case MC112:
-                case MC113:
-                    return this.setMetadata(7, Float.class, health);
-                case MC114:
-                case MC115:
-                case MC116:
-                    return this.setMetadata(8, Float.class, health);
-                case MC117:
-                    return this.setMetadata(9, Float.class, health);
-                default:
-                    throw new UnknownMinecraftException();
-            }
+            return this.setMetadata(EntityMetadataIndex.HEALTH, Float.class, health);
         }
 
         /**
@@ -101,22 +109,10 @@ public abstract class MetadataPacket extends AbstractPacket
          */
         public MetadataBuilder setArrowInEntityMetadata(final int arrows)
         {
-            switch (ServerVersion.getActiveServerVersion()) {
-                case MC18:
-                    // IN 1.8.8 THIS IS A BYTE, NOT AN INTEGER!
-                    return this.setMetadata(10, Byte.class, (byte) arrows);
-                case MC112:
-                case MC113:
-                    return this.setMetadata(10, Integer.class, arrows);
-                case MC114:
-                case MC115:
-                case MC116:
-                    return this.setMetadata(11, Integer.class, arrows);
-                case MC117:
-                    return this.setMetadata(12, Integer.class, arrows);
-                default:
-                    throw new UnknownMinecraftException();
-            }
+            return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+                   // IN 1.8.8 THIS IS A BYTE, NOT AN INTEGER!
+                   this.setMetadata(EntityMetadataIndex.ARROWS_IN_ENTITY, Byte.class, (byte) arrows) :
+                   this.setMetadata(EntityMetadataIndex.ARROWS_IN_ENTITY, Integer.class, arrows);
         }
 
         // ------------------------------------------------- Player ------------------------------------------------- //
@@ -128,21 +124,7 @@ public abstract class MetadataPacket extends AbstractPacket
          */
         public MetadataBuilder setSkinMetadata(final byte skinParts)
         {
-            switch (ServerVersion.getActiveServerVersion()) {
-                case MC18:
-                    return this.setMetadata(10, Byte.class, skinParts);
-                case MC112:
-                case MC113:
-                case MC114:
-                    return this.setMetadata(13, Byte.class, skinParts);
-                case MC115:
-                case MC116:
-                    return this.setMetadata(16, Byte.class, skinParts);
-                case MC117:
-                    return this.setMetadata(17, Byte.class, skinParts);
-                default:
-                    throw new UnknownMinecraftException();
-            }
+            return this.setMetadata(EntityMetadataIndex.SKIN_PARTS, Byte.class, skinParts);
         }
 
         /**

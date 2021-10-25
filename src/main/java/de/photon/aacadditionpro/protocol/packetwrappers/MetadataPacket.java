@@ -10,6 +10,7 @@ import de.photon.aacadditionpro.protocol.EntityMetadataIndex;
 import lombok.val;
 
 import java.util.List;
+import java.util.Optional;
 
 public abstract class MetadataPacket extends AbstractPacket
 {
@@ -28,20 +29,19 @@ public abstract class MetadataPacket extends AbstractPacket
 
     /**
      * Searches for an index in the metadata as it is unsorted.
+     * An index is not necessarily found, even if it is defined in entity metadata.
      *
-     * @return the {@link WrappedWatchableObject}.
-     *
-     * @throws IllegalArgumentException if the index was not found.
+     * @return the {@link WrappedWatchableObject} wrapped in an {@link Optional} or {@link Optional#empty()} if the index was not found.
      */
-    public WrappedWatchableObject getMetadataIndex(int index)
+    public Optional<WrappedWatchableObject> getMetadataIndex(int index)
     {
         val rawMetadata = getRawMetadata();
         for (WrappedWatchableObject watch : rawMetadata) {
             if (watch.getIndex() == index) {
-                return watch;
+                return Optional.of(watch);
             }
         }
-        throw new IllegalArgumentException("Index " + index + " could not be found in entity metadata.");
+        return Optional.empty();
     }
 
     public MetadataBuilder builder()

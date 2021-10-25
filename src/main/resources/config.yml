@@ -534,6 +534,8 @@ Scaffold:
 
 # Skinblinker detects cheats of the same name when the player sprints/sneaks.
 Skinblinker:
+  # Do you want to enable the Skinblinker check?
+  enabled: true
   # Control the different parts of Skinblinker
   parts:
     # This flags settings packets that are sent while sprinting or sneaking which is not possible to do in the game.

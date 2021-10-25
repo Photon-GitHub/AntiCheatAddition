@@ -16,7 +16,6 @@ import de.photon.aacadditionpro.util.world.EntityUtil;
 import lombok.val;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Monster;
 
 public class DamageIndicator extends Module
@@ -56,18 +55,13 @@ public class DamageIndicator extends Module
                     // Should spoof?
                     // Entity has health to begin with.
                     if (entityType.isAlive() &&
-
-                        // Potential performance problems as an armor stand is living for some reason.
-                        // TODO: IS THIS ACTUALLY NEEDED?
-                        entityType != EntityType.ARMOR_STAND &&
-
                         // Bossbar problems
                         // Cannot use Boss interface as that doesn't exist on 1.8.8
                         entityType != EntityType.ENDER_DRAGON &&
                         entityType != EntityType.WITHER &&
 
                         // Entity must be living to have health; all categories extend LivingEntity.
-                        ((entity instanceof HumanEntity && spoofPlayers) ||
+                        ((entityType == EntityType.PLAYER && spoofPlayers) ||
                          (entity instanceof Monster && spoofMonsters) ||
                          (entity instanceof Animals && spoofAnimals)) &&
 
@@ -93,10 +87,11 @@ public class DamageIndicator extends Module
                             throw new IllegalStateException("Unregistered packet type.");
                         }
 
-                        val health = read.getMetadataIndex(EntityMetadataIndex.HEALTH);
-                        // Only set it if the entity is not yet dead to prevent problems on the clientside.
-                        // Set the health to 1.0F as that is the default value.
-                        if (((Float) health.getValue() > 0.0F)) health.setValue(1.0F);
+                        read.getMetadataIndex(EntityMetadataIndex.HEALTH).ifPresent(health -> {
+                            // Only set it if the entity is not yet dead to prevent problems on the clientside.
+                            // Set the health to 1.0F as that is the default value.
+                            if (((Float) health.getValue() > 0.0F)) health.setValue(1.0F);
+                        });
                     }
                 }).build();
 

@@ -476,7 +476,7 @@ Scaffold:
     # This part detects suspicious placement positions.
     # Adds 30 vl.
     Position:
-      # Do you want to enable the Position?
+      # Do you want to enable Position?
       enabled: true
     # This part analyzes the rotations of a player while scaffolding
     Rotation:
@@ -533,10 +533,21 @@ Scaffold:
     200: "kick {player} Scaffold"
 
 # Skinblinker detects cheats of the same name when the player sprints/sneaks.
-# Adds 50 vl normally and 100 vl for impossible (modified) packets.
 Skinblinker:
   # Do you want to enable the Skinblinker check?
   enabled: true
+  # Control the different parts of Skinblinker
+  parts:
+    # This flags settings packets that are sent while sprinting or sneaking which is not possible to do in the game.
+    # Adds 50 vl.
+    Sprinting:
+      # Do you want to enable Sprinting?
+      enabled: true
+    # The current protocol has an unused bit in the skin packet that is often toggled by skinblinkers.
+    # Please note that some custom clients might use this bit which can lead to false positives.
+    UnusedBit:
+      # Do you want to enable UnusedBit?
+      enabled: true
   # This message will appear in AAC's status when AAC is used.
   aacfeatureinfo: "[AACAdditionPro] Player changes skin parts while actively moving"
   # Map of violation levels to command

@@ -2,7 +2,7 @@ package de.photon.aacadditionpro;
 
 import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
-import de.photon.aacadditionpro.util.protocol.ProtocolVersion;
+import de.photon.aacadditionpro.protocol.ProtocolVersion;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -67,7 +67,7 @@ public enum ServerVersion
         val viaAPI = AACAdditionPro.getInstance().getViaAPI();
         if (viaAPI == null) return activeServerVersion;
 
-        val clientVersion = ProtocolVersion.getByVersionNumber(viaAPI.getPlayerVersion(player));
+        val clientVersion = ProtocolVersion.getByVersionNumber(viaAPI.getPlayerVersion(player.getUniqueId()));
         return clientVersion == null ? activeServerVersion : clientVersion.getEquivalentServerVersion();
     }
 

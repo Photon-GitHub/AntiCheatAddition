@@ -1,12 +1,9 @@
 package de.photon.aacadditionpro.modules.checks.fastswitch;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketEvent;
-import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
-import de.photon.aacadditionpro.modules.ModulePacketAdapter;
 import de.photon.aacadditionpro.modules.ViolationModule;
+import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
@@ -49,9 +46,35 @@ public class Fastswitch extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val adapter = new FastswitchPacketAdapter(this);
+        val packetAdapter = PacketAdapterBuilder
+                .of(PacketType.Play.Client.HELD_ITEM_SLOT)
+                .onReceiving(event -> {
+                    val user = User.safeGetUserFromPacketEvent(event);
+                    if (User.isUserInvalid(user, this)) return;
+
+                    // Tps are high enough
+                    if (TPSProvider.getTPS() > 19 &&
+                        event.getPacket().getBytes().readSafely(0) != null &&
+                        // Prevent the detection of scrolling
+                        !canBeLegit(user.getPlayer().getInventory().getHeldItemSlot(), event.getPacket().getBytes().readSafely(0)))
+                    {
+                        // Already switched in the given timeframe
+                        if (user.getTimestampMap().at(TimestampKey.FASTSWITCH_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds)
+                            // The ping is valid and in the borders that are set in the config
+                            && (maxPing < 0 || PingProvider.INSTANCE.getPing(user.getPlayer()) < maxPing))
+                        {
+                            getManagement().flag(Flag.of(user)
+                                                     .setAddedVl(25)
+                                                     .setCancelAction(cancelVl, () -> event.setCancelled(true))
+                                                     .setEventNotCancelledAction(() -> InventoryUtil.syncUpdateInventory(user.getPlayer())));
+                        }
+
+                        user.getTimestampMap().at(TimestampKey.FASTSWITCH_HOTBAR_SWITCH).update();
+                    }
+                }).build();
+
         return ModuleLoader.builder(this)
-                           .addPacketListeners(adapter)
+                           .addPacketListeners(packetAdapter)
                            .build();
     }
 
@@ -59,40 +82,5 @@ public class Fastswitch extends ViolationModule
     protected ViolationManagement createViolationManagement()
     {
         return ViolationLevelManagement.builder(this).withDecay(120, 25).build();
-    }
-
-    private class FastswitchPacketAdapter extends ModulePacketAdapter
-    {
-        public FastswitchPacketAdapter(Module module)
-        {
-            super(module, ListenerPriority.NORMAL, PacketType.Play.Client.HELD_ITEM_SLOT);
-        }
-
-        @Override
-        public void onPacketReceiving(final PacketEvent event)
-        {
-            val user = User.safeGetUserFromPacketEvent(event);
-            if (User.isUserInvalid(user, this.getModule())) return;
-
-            // Tps are high enough
-            if (TPSProvider.getTPS() > 19 &&
-                event.getPacket().getBytes().readSafely(0) != null &&
-                // Prevent the detection of scrolling
-                !canBeLegit(user.getPlayer().getInventory().getHeldItemSlot(), event.getPacket().getBytes().readSafely(0)))
-            {
-                // Already switched in the given timeframe
-                if (user.getTimestampMap().at(TimestampKey.FASTSWITCH_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds)
-                    // The ping is valid and in the borders that are set in the config
-                    && (maxPing < 0 || PingProvider.INSTANCE.getPing(user.getPlayer()) < maxPing))
-                {
-                    getManagement().flag(Flag.of(user)
-                                             .setAddedVl(25)
-                                             .setCancelAction(cancelVl, () -> event.setCancelled(true))
-                                             .setEventNotCancelledAction(() -> InventoryUtil.syncUpdateInventory(user.getPlayer())));
-                }
-
-                user.getTimestampMap().at(TimestampKey.FASTSWITCH_HOTBAR_SWITCH).update();
-            }
-        }
     }
 }

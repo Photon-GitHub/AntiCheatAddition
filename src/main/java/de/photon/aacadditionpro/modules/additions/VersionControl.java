@@ -4,9 +4,9 @@ import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
+import de.photon.aacadditionpro.protocol.ProtocolVersion;
 import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
-import de.photon.aacadditionpro.util.protocol.ProtocolVersion;
 import lombok.val;
 
 import java.util.Arrays;

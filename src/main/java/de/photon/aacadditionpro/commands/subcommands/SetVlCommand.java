@@ -5,6 +5,7 @@ import de.photon.aacadditionpro.commands.CommandAttributes;
 import de.photon.aacadditionpro.commands.InternalCommand;
 import de.photon.aacadditionpro.commands.TabCompleteSupplier;
 import de.photon.aacadditionpro.modules.ModuleManager;
+import de.photon.aacadditionpro.util.violationlevels.Flag;
 import lombok.val;
 import org.bukkit.command.CommandSender;
 
@@ -38,6 +39,7 @@ public class SetVlCommand extends InternalCommand
         val vl = parseIntElseSend(vlString, sender, "Please specify a valid integer as vl.");
         if (vl == null) return;
 
-        module.getManagement().setVL(player, vl);
+        // Actually flag the player for debug messages.
+        module.getManagement().flag(Flag.of(player).setAddedVl(vl));
     }
 }

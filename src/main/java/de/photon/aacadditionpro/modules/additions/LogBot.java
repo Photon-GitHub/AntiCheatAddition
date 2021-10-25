@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class LogBot extends Module
@@ -40,26 +41,19 @@ public class LogBot extends Module
                         if (timeToDelete >= 0) {
                             // The folder exists.
                             if (logFolder.exists()) {
-                                val files = logFolder.listFiles();
+                                val files = Optional.ofNullable(logFolder.listFiles()).orElse(new File[0]);
 
-                                if (files != null) {
-                                    // The folder is not empty
-                                    String nameOfFile;
-                                    for (val file : files) {
-                                        nameOfFile = file.getName();
-                                        // Be sure it is a log file of AAC or AACAdditionPro (.log) or a log file of the server (.log.gz)
-                                        if ((nameOfFile.endsWith(".log") || nameOfFile.endsWith(".log.gz")) &&
-                                            // Minimum time
-                                            currentTime - file.lastModified() > timeToDelete)
-                                        {
-                                            val result = file.delete();
-                                            DebugSender.getInstance().sendDebug((result ? "Deleted " : "Could not delete old file ") + nameOfFile, true, !result);
-                                        }
+                                for (val file : files) {
+                                    val fileName = file.getName();
+                                    // Be sure it is a log file of AACAdditionPro (.log) or a log file of the server (.log.gz)
+                                    if ((fileName.endsWith(".log") || fileName.endsWith(".log.gz")) &&
+                                        currentTime - file.lastModified() > timeToDelete)
+                                    {
+                                        val result = file.delete();
+                                        DebugSender.getInstance().sendDebug((result ? "Deleted " : "Could not delete old file ") + fileName, true, !result);
                                     }
                                 }
-                            } else {
-                                DebugSender.getInstance().sendDebug("Could not find log folder " + logFolder.getName(), true, true);
-                            }
+                            } else DebugSender.getInstance().sendDebug("Could not find log folder " + logFolder.getName(), true, true);
                         }
                     });
         }, 1, TimeUnit.DAYS.toSeconds(1) * 20);

@@ -16,10 +16,10 @@ import lombok.Setter;
 import lombok.val;
 import me.konsolas.aac.api.AACAPI;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,7 +38,7 @@ public class AACAdditionPro extends JavaPlugin
     @Getter private static AACAdditionPro instance;
 
     @Getter(lazy = true) private final FileConfiguration config = generateConfig();
-    private ViaAPI<Player> viaAPI;
+    private ViaAPI<?> viaAPI;
     private AACAPI aacapi = null;
 
     private boolean bungeecord = false;
@@ -98,16 +98,11 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Call is correct here as Bukkit always has a player api.
-            if (this.getServer().getPluginManager().isPluginEnabled("ViaVersion")) {
-                //noinspection unchecked
-                viaAPI = Via.getAPI();
-                metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Used"));
-                DebugSender.getInstance().sendDebug("ViaVersion hooked", true, false);
-            } else {
-                metrics.addCustomChart(new Metrics.SimplePie("viaversion", () -> "Not used"));
-                DebugSender.getInstance().sendDebug("ViaVersion not found", true, false);
-            }
+            val viaEnabled = this.getServer().getPluginManager().isPluginEnabled("ViaVersion");
+            DebugSender.getInstance().sendDebug("ViaVersion " + (viaEnabled ? "hooked" : "not found"), true, false);
+            if (viaEnabled) viaAPI = Via.getAPI();
 
+            metrics.addCustomChart(new SimplePie("viaversion", () -> viaEnabled ? "Used" : "Not used"));
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //
@@ -129,13 +124,13 @@ public class AACAdditionPro extends JavaPlugin
                     this.aacapi = Preconditions.checkNotNull(Bukkit.getServicesManager().load(AACAPI.class), "Did not find AAC API while hooking.");
                     this.aacapi.registerCustomFeatureProvider(ModuleManager.getCustomFeatureProvider());
                     DebugSender.getInstance().sendDebug("AAC hooked", true, false);
-                    metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Hooked"));
+                    metrics.addCustomChart(new SimplePie("aac", () -> "Hooked"));
                 } else {
-                    metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Used"));
+                    metrics.addCustomChart(new SimplePie("aac", () -> "Used"));
                     DebugSender.getInstance().sendDebug("AAC found, but not hooked", true, false);
                 }
             } else {
-                metrics.addCustomChart(new Metrics.SimplePie("aac", () -> "Not used"));
+                metrics.addCustomChart(new SimplePie("aac", () -> "Not used"));
                 DebugSender.getInstance().sendDebug("AAC not found", true, false);
             }
 

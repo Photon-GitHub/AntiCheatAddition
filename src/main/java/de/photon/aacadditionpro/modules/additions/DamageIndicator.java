@@ -76,7 +76,7 @@ public class DamageIndicator extends Module
                         event.setPacket(event.getPacket().deepClone());
 
                         final MetadataPacket read;
-                        if (event.getPacket().getType() == PacketType.Play.Server.ENTITY_METADATA) {
+                        if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) {
                             read = new WrapperPlayServerEntityMetadata(event.getPacket());
                             // Only set it on 1.8.8, otherwise it will just be at the max health.
                             // Automatically excluded on later versions as the PacketType is not registered.

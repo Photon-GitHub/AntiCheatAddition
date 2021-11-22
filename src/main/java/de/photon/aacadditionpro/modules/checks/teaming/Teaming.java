@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.modules.checks.teaming;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
@@ -23,6 +22,7 @@ import org.bukkit.event.Listener;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Teaming extends ViolationModule implements Listener
 {
@@ -46,17 +46,13 @@ public class Teaming extends ViolationModule implements Listener
         // Square it
         proximityRangeSquared *= proximityRangeSquared;
 
-        final ImmutableSet.Builder<World> worldBuilder = new ImmutableSet.Builder<>();
-        final ImmutableSet.Builder<Region> safeZoneBuilder = new ImmutableSet.Builder<>();
+        val enabledWorlds = ConfigUtils.loadImmutableStringOrStringList(this.getConfigString() + ".enabled_worlds").stream()
+                                       .map(key -> Preconditions.checkNotNull(Bukkit.getWorld(key), "Config loading error: Unable to identify world for the teaming check. Please check your world names listed in the config."))
+                                       .collect(Collectors.toUnmodifiableSet());
 
-        ConfigUtils.loadImmutableStringOrStringList(this.getConfigString() + ".enabled_worlds").stream()
-                   .map(Bukkit::getWorld)
-                   .forEach(world -> worldBuilder.add(Preconditions.checkNotNull(world, "Config loading error: Unable to identify world for the teaming check. Please check your world names listed in the config.")));
-
-        ConfigUtils.loadImmutableStringOrStringList(this.getConfigString() + ".safe_zones").stream().map(Region::parseRegion).forEach(safeZoneBuilder::add);
-
-        final Set<World> enabledWorlds = worldBuilder.build();
-        final Set<Region> safeZones = safeZoneBuilder.build();
+        val safeZones = ConfigUtils.loadImmutableStringOrStringList(this.getConfigString() + ".safe_zones").stream()
+                                   .map(Region::parseRegion)
+                                   .collect(Collectors.toUnmodifiableSet());
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
@@ -97,7 +93,7 @@ public class Teaming extends ViolationModule implements Listener
                             }
 
                             // Team is too big
-                            if (teamingList.size() > this.allowedSize) this.getManagement().flag(Flag.of(ImmutableSet.copyOf(teamingList)));
+                            if (teamingList.size() > this.allowedSize) this.getManagement().flag(Flag.of(Set.copyOf(teamingList)));
                         }
                         teamingList.clear();
                     }

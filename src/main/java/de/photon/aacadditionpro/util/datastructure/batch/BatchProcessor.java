@@ -34,8 +34,6 @@ public abstract class BatchProcessor<T> implements BroadcastReceiver<Batch.Snaps
 
         Preconditions.checkArgument(broadcasters != null, "Tried to create BatchProcessor with null broadcasters.");
         Preconditions.checkArgument(!broadcasters.isEmpty(), "Tried to create BatchProcessor with empty broadcasters.");
-        // The wrapping with ImmutableSet.copyOf does not reduce performance when broadcasters is already an
-        // ImmutableSet (see copyOf() method).
         this.broadcasters = Set.copyOf(broadcasters);
     }
 

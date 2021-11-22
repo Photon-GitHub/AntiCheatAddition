@@ -113,7 +113,7 @@ public class TabCompleteSupplier
 
             if (!this.constants.isEmpty()) {
                 // Explicitly compute the constants here to make sure that we only compute this list once.
-                val immutableConstants = ImmutableList.copyOf(this.constants);
+                val immutableConstants = List.copyOf(this.constants);
                 this.supplierBuilder.add(() -> immutableConstants);
             }
             return new TabCompleteSupplier(this.supplierBuilder.build());

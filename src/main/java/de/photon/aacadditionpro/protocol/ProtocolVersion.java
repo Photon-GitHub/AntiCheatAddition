@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.protocol;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.ServerVersion;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -61,7 +60,7 @@ public enum ProtocolVersion
     {
         this.name = name;
         this.equivalentServerVersion = equivalentServerVersion;
-        this.versionNumbers = ImmutableSet.copyOf(versionNumbers);
+        this.versionNumbers = Set.of(versionNumbers);
     }
 
     /**

@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.util.config;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
 import lombok.AccessLevel;
@@ -101,7 +100,7 @@ public final class ConfigUtils
      *
      * @param path the path which should be loaded
      *
-     * @return an {@link ImmutableList} of {@link String}s with the path as entries.
+     * @return an {@link List} of {@link String}s with the path as entries.
      */
     @NotNull
     public static List<String> loadImmutableStringOrStringList(@NotNull final String path)

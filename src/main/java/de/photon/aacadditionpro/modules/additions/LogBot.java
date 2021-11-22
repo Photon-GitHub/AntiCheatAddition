@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.modules.additions;
 
-import com.google.common.collect.ImmutableMap;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
@@ -15,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 public class LogBot extends Module
 {
-    private final Map<File, Long> logDeletionTimes = ImmutableMap.of(
+    private final Map<File, Long> logDeletionTimes = Map.of(
             // Put the respective times in milliseconds into the map.
             new File("plugins/AACAdditionPro", "logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".AACAdditionPro")),
             new File("logs"), TimeUnit.DAYS.toMillis(AACAdditionPro.getInstance().getConfig().getLong(this.getConfigString() + ".Server")));

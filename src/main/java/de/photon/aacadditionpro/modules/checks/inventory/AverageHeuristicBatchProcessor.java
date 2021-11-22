@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.modules.checks.inventory;
 
-import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
@@ -14,6 +13,7 @@ import de.photon.aacadditionpro.util.violationlevels.Flag;
 import lombok.val;
 
 import java.util.List;
+import java.util.Set;
 
 public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<InventoryBatch.InventoryClick>
 {
@@ -21,7 +21,7 @@ public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<Inventor
 
     protected AverageHeuristicBatchProcessor(ViolationModule module)
     {
-        super(module, ImmutableSet.of(InventoryBatch.INVENTORY_BATCH_BROADCASTER));
+        super(module, Set.of(InventoryBatch.INVENTORY_BATCH_BROADCASTER));
     }
 
     @Override

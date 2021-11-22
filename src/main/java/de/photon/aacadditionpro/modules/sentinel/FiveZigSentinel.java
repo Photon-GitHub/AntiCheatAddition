@@ -40,7 +40,7 @@ public class FiveZigSentinel extends SentinelModule implements Listener
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] message)
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] message)
     {
         val user = User.getUser(player);
         if (User.isUserInvalid(user, this)) return;

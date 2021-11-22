@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.modules.checks.scaffold;
 
-import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
@@ -15,20 +14,20 @@ import de.photon.aacadditionpro.util.violationlevels.Flag;
 import lombok.val;
 
 import java.util.List;
+import java.util.Set;
 
 class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.ScaffoldBlockPlace>
 {
     private static final Polynomial VL_CALCULATOR = new Polynomial(1.2222222, 20);
-    private final int cancelVl = AACAdditionPro.getInstance().getConfig().getInt(this.getModule().getConfigString() + ".cancel_vl");
-
     public final double normalDelay = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.normal");
     public final double sneakingAddition = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.sneaking_addition");
     public final double sneakingSlowAddition = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.sneaking_slow_addition");
     public final double diagonalDelay = AACAdditionPro.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.diagonal");
+    private final int cancelVl = AACAdditionPro.getInstance().getConfig().getInt(this.getModule().getConfigString() + ".cancel_vl");
 
     ScaffoldAverageBatchProcessor(ViolationModule module)
     {
-        super(module, ImmutableSet.of(ScaffoldBatch.SCAFFOLD_BATCH_BROADCASTER));
+        super(module, Set.of(ScaffoldBatch.SCAFFOLD_BATCH_BROADCASTER));
     }
 
     @Override

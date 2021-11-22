@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.util.world;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
@@ -23,7 +22,7 @@ public final class MaterialUtil
                                                                                                                                                       Material.getMaterial("THIN_GLASS"),
                                                                                                                                                       Material.getMaterial("IRON_FENCE"),
                                                                                                                                                       Material.CHEST,
-                                                                                                                                                      Material.ANVIL) : ImmutableSet.of();
+                                                                                                                                                      Material.ANVIL) : Set.of();
 
     public static final Material EXPERIENCE_BOTTLE;
 

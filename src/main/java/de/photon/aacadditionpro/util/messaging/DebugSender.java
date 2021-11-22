@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.util.messaging;
 
-import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.events.SentinelEvent;
 import de.photon.aacadditionpro.events.ViolationEvent;
@@ -16,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.logging.Level;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -82,12 +82,12 @@ public final class DebugSender implements Listener
     @EventHandler
     public void onAdditionViolation(final ViolationEvent event)
     {
-        this.sendDebug(Placeholders.replacePlaceholders(VIOLATION_PRE_STRING + event.getModuleId() + " | added vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", ImmutableSet.of(event.getPlayer())));
+        this.sendDebug(Placeholders.replacePlaceholders(VIOLATION_PRE_STRING + event.getModuleId() + " | added vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", Set.of(event.getPlayer())));
     }
 
     @EventHandler
     public void onClientControl(final SentinelEvent event)
     {
-        this.sendDebug(Placeholders.replacePlaceholders(SENTINEL_PRE_STRING + event.getModuleId(), ImmutableSet.of(event.getPlayer())));
+        this.sendDebug(Placeholders.replacePlaceholders(SENTINEL_PRE_STRING + event.getModuleId(), Set.of(event.getPlayer())));
     }
 }

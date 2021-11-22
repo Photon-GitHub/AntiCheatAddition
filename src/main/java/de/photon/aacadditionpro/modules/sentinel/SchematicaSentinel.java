@@ -62,7 +62,7 @@ public class SchematicaSentinel extends SentinelModule implements Listener
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] message)
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] message)
     {
         // Ignore.
     }

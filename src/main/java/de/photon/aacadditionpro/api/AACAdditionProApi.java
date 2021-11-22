@@ -10,6 +10,7 @@ import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.pluginmessage.labymod.LabyModProtocol;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
+import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
@@ -17,9 +18,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 @SuppressWarnings({
-                          "unused",
-                          "WeakerAccess"
-                  })
+        "unused",
+        "WeakerAccess"
+})
 public final class AACAdditionProApi
 {
     private AACAdditionProApi() {}
@@ -69,7 +70,9 @@ public final class AACAdditionProApi
     public static boolean getStateOfModule(final String moduleId)
     {
         Preconditions.checkNotNull(moduleId, "Tried to get state of null moduleId.");
-        return ModuleManager.getModuleMap().getModule(moduleId).isEnabled();
+        val module = ModuleManager.getModuleMap().getModule(moduleId);
+        Preconditions.checkNotNull(module, "Tried to get state of unknown module.");
+        return module.isEnabled();
     }
 
     /**
@@ -83,7 +86,9 @@ public final class AACAdditionProApi
     public static void setStateOfModule(final String moduleId, final boolean enabled)
     {
         Preconditions.checkNotNull(moduleId, "Tried to set state of null moduleId.");
-        ModuleManager.getModuleMap().getModule(moduleId).setEnabled(enabled);
+        val module = ModuleManager.getModuleMap().getModule(moduleId);
+        Preconditions.checkNotNull(module, "Tried to set state of unknown module.");
+        module.setEnabled(enabled);
     }
 
     /**

@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.modules.sentinel;
 
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
@@ -10,6 +9,8 @@ import io.netty.buffer.Unpooled;
 import lombok.val;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 // API_DOCS of BetterSprinting:
 /*
@@ -47,8 +48,8 @@ public class BetterSprintingSentinel extends SentinelModule
     {
         super("BetterSprinting");
 
-        val featureList = ImmutableList.of(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.survival_fly_boost"),
-                                           !AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.enable_all_dirs"));
+        val featureList = List.of(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.survival_fly_boost"),
+                                  !AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.enable_all_dirs"));
 
         val settingsBuffer = Unpooled.buffer();
         settingsBuffer.writeByte(0);
@@ -66,7 +67,7 @@ public class BetterSprintingSentinel extends SentinelModule
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull final String channel, @NotNull final Player player, @NotNull final byte[] message)
+    public void onPluginMessageReceived(@NotNull final String channel, @NotNull final Player player, final byte[] message)
     {
         val user = User.getUser(player);
         if (User.isUserInvalid(user, this)) return;

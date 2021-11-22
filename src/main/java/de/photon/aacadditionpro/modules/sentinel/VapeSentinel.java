@@ -28,7 +28,7 @@ public class VapeSentinel extends SentinelModule implements Listener
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull final String channel, final Player player, @NotNull final byte[] message)
+    public void onPluginMessageReceived(@NotNull final String channel, @NotNull final Player player, final byte[] message)
     {
         val user = User.getUser(player);
         if (User.isUserInvalid(user, this)) return;

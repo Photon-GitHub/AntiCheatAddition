@@ -115,13 +115,13 @@ public final class ConfigUtils
 
             // No-command indicator or null
             return possibleCommand == null || "{}".equals(possibleCommand) ?
-                   ImmutableList.of() :
-                   ImmutableList.of(possibleCommand);
+                   List.of() :
+                   List.of(possibleCommand);
         }
 
         // Input is not empty
         // No-command indicator
-        return "{}".equals(input.get(0)) ? ImmutableList.of() : ImmutableList.copyOf(input);
+        return "{}".equals(input.get(0)) ? List.of() : ImmutableList.copyOf(input);
     }
 
     /**

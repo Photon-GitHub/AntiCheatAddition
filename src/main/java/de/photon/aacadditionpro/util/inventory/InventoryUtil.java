@@ -29,9 +29,9 @@ public final class InventoryUtil
     public static List<ItemStack> getHandContents(final Player player)
     {
         return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
-               ImmutableList.of(player.getInventory().getItemInHand()) :
-               ImmutableList.of(player.getInventory().getItemInMainHand(),
-                                player.getInventory().getItemInOffHand());
+               List.of(player.getInventory().getItemInHand()) :
+               List.of(player.getInventory().getItemInMainHand(),
+                       player.getInventory().getItemInOffHand());
 
     }
 

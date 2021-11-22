@@ -38,15 +38,15 @@ class CanSee
         final Vector[] cameraVectors = Esp.CAMERA_VECTOR_SUPPLIER.apply(observer);
 
         // Get the Vectors of the hitbox to check.
-        final Hitbox hitbox = watched.isSneaking() ? Hitbox.ESP_SNEAKING_PLAYER : Hitbox.ESP_PLAYER;
+        val hitbox = watched.isSneaking() ? Hitbox.ESP_SNEAKING_PLAYER : Hitbox.ESP_PLAYER;
         final Vector[] watchedHitboxVectors = hitbox.getLowResolutionCalculationVectors(watched.getLocation());
 
         // The needed variables for the calculation.
         // Use ResetLocation to reduce the amount of object creations to a minimum.
-        final ResetLocation cameraLocation = new ResetLocation();
+        val cameraLocation = new ResetLocation();
         // Another ResetLocation for a computation to reduce the amount of clone() operation.
-        final ResetLocation cameraLocationPlusBetween = new ResetLocation();
-        final ResetVector observerLocationVector = new ResetVector(observer.getLocation().toVector());
+        val cameraLocationPlusBetween = new ResetLocation();
+        val observerLocationVector = new ResetVector(observer.getLocation().toVector());
 
         Vector between;
         for (final Vector cameraVector : cameraVectors) {

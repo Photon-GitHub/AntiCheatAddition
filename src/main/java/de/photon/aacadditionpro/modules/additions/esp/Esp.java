@@ -74,6 +74,7 @@ public class Esp extends Module
         Bukkit.getScheduler().runTaskTimerAsynchronously(AACAdditionPro.getInstance(), () -> {
             final Deque<Player> players = new ArrayDeque<>();
             Player observer;
+
             for (World world : Bukkit.getWorlds()) {
                 for (Player player : world.getPlayers()) {
                     //noinspection ConstantConditions

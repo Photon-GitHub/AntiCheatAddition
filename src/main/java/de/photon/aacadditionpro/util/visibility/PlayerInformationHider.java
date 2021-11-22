@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import de.photon.aacadditionpro.AACAdditionPro;
@@ -35,7 +34,7 @@ abstract class PlayerInformationHider implements Listener
 
     protected PlayerInformationHider(@NotNull PacketType... affectedPackets)
     {
-        informationPacketListener = new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, ImmutableSet.copyOf(affectedPackets))
+        informationPacketListener = new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, Set.of(affectedPackets))
         {
             @Override
             public void onPacketSending(final PacketEvent event)

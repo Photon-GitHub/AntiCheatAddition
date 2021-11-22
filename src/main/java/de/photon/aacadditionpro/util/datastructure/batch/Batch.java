@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.util.datastructure.batch;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
 import lombok.Value;
@@ -80,7 +79,7 @@ public class Batch<T>
 
         protected static <T> Snapshot<T> of(@NotNull Batch<T> batch)
         {
-            return new Snapshot<>(batch.user, ImmutableList.copyOf(batch.values));
+            return new Snapshot<>(batch.user, List.of(batch.values));
         }
     }
 }

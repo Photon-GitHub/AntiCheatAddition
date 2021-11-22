@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.user.User;
 import lombok.Getter;
 import org.bukkit.entity.Player;
@@ -54,7 +53,7 @@ public class Flag
      */
     public static Flag of(Player... team)
     {
-        return new Flag(ImmutableSet.copyOf(team));
+        return new Flag(Set.of(team));
     }
 
 
@@ -63,7 +62,7 @@ public class Flag
      */
     public static Flag of(Set<Player> team)
     {
-        return new Flag(ImmutableSet.copyOf(team));
+        return new Flag(Set.copyOf(team));
     }
 
     /**

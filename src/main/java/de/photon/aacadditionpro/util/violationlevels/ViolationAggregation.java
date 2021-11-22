@@ -2,7 +2,6 @@ package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ConcurrentHashMultiset;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multiset;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
@@ -24,7 +23,7 @@ public abstract class ViolationAggregation extends ViolationManagement
 
         Preconditions.checkNotNull(children, "Tried to construct ViolationAggregation with null children.");
         Preconditions.checkArgument(!children.isEmpty(), "Tried to construct ViolationAggregation with no children.");
-        this.children = ImmutableSet.copyOf(children);
+        this.children = Set.copyOf(children);
     }
 
     @Override

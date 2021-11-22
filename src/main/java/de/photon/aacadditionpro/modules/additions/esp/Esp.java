@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.modules.additions.esp;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
@@ -9,6 +8,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
+import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.visibility.PlayerVisibility;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -19,7 +19,9 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Esp extends Module
 {
@@ -33,7 +35,7 @@ public class Esp extends Module
     private static final String DEFAULT_WORLD_NAME = "default";
 
     private int defaultTrackingRange;
-    private ImmutableMap<World, Integer> playerTrackingRanges;
+    private Map<World, Integer> playerTrackingRanges;
 
 
     @LoadFromConfiguration(configPath = ".inverval")
@@ -52,22 +54,17 @@ public class Esp extends Module
     {
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
         val worlds = Preconditions.checkNotNull(Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings"), "World settings are not present. Aborting ESP enable.");
-        final ImmutableMap.Builder<World, Integer> rangeBuilder = ImmutableMap.builder();
-
         val worldKeys = worlds.getKeys(false);
+
         defaultTrackingRange = worldKeys.contains(DEFAULT_WORLD_NAME) ? worlds.getInt(DEFAULT_WORLD_NAME + ".entity-tracking-range.players") : MAX_TRACKING_RANGE;
 
-        worldKeys.stream()
-                 .filter(key -> !DEFAULT_WORLD_NAME.equals(key))
-                 .map(key -> {
-                     val trackingRange = worlds.getInt(key + ".entity-tracking-range.players");
-                     // Squared distance.
-                     return ImmutablePair.of(Bukkit.getWorld(key), trackingRange * trackingRange);
-                 })
-                 .filter(pair -> pair.getSecond() < MAX_TRACKING_RANGE)
-                 .forEach(pair -> rangeBuilder.put(pair.getFirst(), pair.getSecond()));
-
-        this.playerTrackingRanges = rangeBuilder.build();
+        this.playerTrackingRanges = worldKeys.stream()
+                                             .filter(key -> !DEFAULT_WORLD_NAME.equals(key))
+                                             // Squared distance.
+                                             .map(key -> ImmutablePair.of(Bukkit.getWorld(key), MathUtil.square(worlds.getInt(key + ".entity-tracking-range.players"))))
+                                             // After MAX_TRACKING_RANGE, we do not need to check the full tracking range anymore.
+                                             .filter(pair -> pair.getSecond() < MAX_TRACKING_RANGE)
+                                             .collect(Collectors.toUnmodifiableMap(ImmutablePair::getFirst, ImmutablePair::getSecond));
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 

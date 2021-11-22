@@ -96,4 +96,20 @@ public final class MathUtil
     {
         return Math.sqrt(a * a + b * b);
     }
+
+    /**
+     * Fast squaring for streams.
+     */
+    public static int square(final int n)
+    {
+        return n * n;
+    }
+
+    /**
+     * Fast squaring for streams.
+     */
+    public static double square(final double d)
+    {
+        return d * d;
+    }
 }

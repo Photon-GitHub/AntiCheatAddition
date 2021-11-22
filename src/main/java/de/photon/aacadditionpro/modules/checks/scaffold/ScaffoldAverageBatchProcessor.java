@@ -15,6 +15,7 @@ import lombok.val;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.ScaffoldBlockPlace>
 {
@@ -33,7 +34,7 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
     @Override
     public void processBatch(User user, List<ScaffoldBatch.ScaffoldBlockPlace> batch)
     {
-        val moonwalk = batch.stream().filter(blockPlace -> !blockPlace.isSneaked()).count() >= batch.size() / 2;
+        val moonwalk = batch.stream().filter(Predicate.not(ScaffoldBatch.ScaffoldBlockPlace::isSneaked)).count() >= batch.size() / 2;
         val delays = BatchPreprocessors.zipReduceToDoubleStatistics(batch,
                                                                     (old, cur) -> old.getSpeedModifier() * cur.timeOffset(old),
                                                                     (old, cur) -> calculateMinExpectedDelay(old, cur, moonwalk));

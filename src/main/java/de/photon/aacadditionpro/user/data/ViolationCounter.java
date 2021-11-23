@@ -1,15 +1,21 @@
 package de.photon.aacadditionpro.user.data;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Value;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongUnaryOperator;
 
+@Value
+@Getter(value = AccessLevel.NONE)
 public class ViolationCounter
 {
     private static final LongUnaryOperator DECREMENT_ABOVE_ZERO_FUNCTION = l -> (l > 0 ? l - 1 : 0);
-    private final AtomicLong counter = new AtomicLong(0);
-    private final long threshold;
+
+    AtomicLong counter = new AtomicLong(0);
+    long threshold;
 
     public ViolationCounter(long threshold)
     {

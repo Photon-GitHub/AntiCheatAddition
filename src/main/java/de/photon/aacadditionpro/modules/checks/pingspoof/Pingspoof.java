@@ -14,7 +14,7 @@ import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
-import de.photon.aacadditionpro.util.server.ping.PingProvider;
+import de.photon.aacadditionpro.util.minecraft.ping.PingProvider;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;

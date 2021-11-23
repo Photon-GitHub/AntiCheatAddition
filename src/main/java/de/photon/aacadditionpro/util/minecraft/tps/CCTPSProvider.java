@@ -1,9 +1,7 @@
-package de.photon.aacadditionpro.util.server;
+package de.photon.aacadditionpro.util.minecraft.tps;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.val;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -11,8 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 /**
  * This util provides methods to get information from the server that is usually hidden.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TPSProvider
+class CCTPSProvider implements TPSProvider
 {
     private static final TPS TPS = new TPS(AACAdditionPro.getInstance());
 
@@ -41,7 +38,7 @@ public final class TPSProvider
     /**
      * Gets the current TPS of the server.
      */
-    public static double getTPS()
+    public double getTPS()
     {
         return TPS.getCurrentTPS();
     }

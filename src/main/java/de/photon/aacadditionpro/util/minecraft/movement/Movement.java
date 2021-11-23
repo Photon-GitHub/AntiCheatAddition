@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.server;
+package de.photon.aacadditionpro.util.minecraft.movement;
 
 import lombok.Getter;
 import org.bukkit.util.Vector;

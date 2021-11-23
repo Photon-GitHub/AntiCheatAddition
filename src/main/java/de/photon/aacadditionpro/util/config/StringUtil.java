@@ -3,24 +3,12 @@ package de.photon.aacadditionpro.util.config;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import org.jetbrains.annotations.NotNull;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StringUtil
 {
-    /**
-     * Constructs a new {@link String} from a byte array according to the {@link StandardCharsets#UTF_8}.
-     * This is used in various plugin messages.
-     */
-    @NotNull
-    public static String fromUTF8Bytes(final byte[] bytes)
-    {
-        return new String(bytes, StandardCharsets.UTF_8);
-    }
-
     /**
      * Counts the leading whitespaces of a {@link String}
      *

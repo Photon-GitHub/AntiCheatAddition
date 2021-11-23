@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.util.mathematics;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.util.world.MaterialUtil;
+import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;

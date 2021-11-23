@@ -5,7 +5,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import de.photon.aacadditionpro.protocol.EntityMetadataIndex;
 import lombok.val;
 
@@ -60,22 +59,8 @@ public abstract class MetadataPacket extends AbstractPacket
          */
         public MetadataBuilder setMetadata(final int index, final Class classOfValue, final Object value)
         {
-            switch (ServerVersion.getActiveServerVersion()) {
-                case MC18:
-                    dataWatcher.setObject(index, value);
-                    break;
-                case MC112:
-                case MC113:
-                case MC114:
-                case MC115:
-                case MC116:
-                case MC117:
-                    dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(classOfValue)), value);
-                    break;
-                default:
-                    throw new UnknownMinecraftException();
-            }
-
+            if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) dataWatcher.setObject(index, value);
+            else dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(classOfValue)), value);
             return this;
         }
 

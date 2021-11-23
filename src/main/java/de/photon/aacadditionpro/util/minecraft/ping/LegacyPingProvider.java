@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.server.ping;
+package de.photon.aacadditionpro.util.minecraft.ping;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.reflection.ClassReflect;
@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
 
-public class LegacyPingProvider implements PingProvider
+class LegacyPingProvider implements PingProvider
 {
     private final ClassReflect craftPlayerReflect = Reflect.fromOBC("entity.CraftPlayer");
 

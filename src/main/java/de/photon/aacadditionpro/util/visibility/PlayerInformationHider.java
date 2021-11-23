@@ -39,16 +39,15 @@ abstract class PlayerInformationHider implements Listener
             @Override
             public void onPacketSending(final PacketEvent event)
             {
+                if (event.isPlayerTemporary()) return;
                 val entityID = event.getPacket().getIntegers().read(0);
-                if (!event.isPlayerTemporary()) {
-                    final boolean hidden;
 
-                    synchronized (hiddenFromPlayerMap) {
-                        hidden = hiddenFromPlayerMap.containsEntry(event.getPlayer().getEntityId(), entityID);
-                    }
-
-                    if (hidden) event.setCancelled(true);
+                final boolean hidden;
+                synchronized (hiddenFromPlayerMap) {
+                    hidden = hiddenFromPlayerMap.containsEntry(event.getPlayer().getEntityId(), entityID);
                 }
+
+                if (hidden) event.setCancelled(true);
             }
         };
 

@@ -8,11 +8,11 @@ import de.photon.aacadditionpro.user.data.batch.TowerBatch;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
+import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
+import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
+import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
-import de.photon.aacadditionpro.util.world.BlockUtil;
-import de.photon.aacadditionpro.util.world.InternalPotion;
-import de.photon.aacadditionpro.util.world.MaterialUtil;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.block.BlockFace;
@@ -65,7 +65,7 @@ public class Tower extends ViolationModule implements Listener
                 user.getTimestampMap().at(TimestampKey.TOWER_SLIME_JUMP).passedTime() > 0 &&
                 // Check if the block is placed against one block (face) only
                 // Only one block that is not a liquid is allowed (the one which the Block is placed against).
-                BlockUtil.countBlocksAround(blockPlaced, BlockUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&
+                WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&
                 // User is not in water which can cause false positives due to faster swimming on newer versions.
                 !Hitbox.PLAYER.isInLiquids(user.getPlayer().getLocation()))
             {

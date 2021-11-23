@@ -1,8 +1,8 @@
 package de.photon.aacadditionpro.util.execute;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.util.server.TPSProvider;
-import de.photon.aacadditionpro.util.server.ping.PingProvider;
+import de.photon.aacadditionpro.util.minecraft.ping.PingProvider;
+import de.photon.aacadditionpro.util.minecraft.tps.TPSProvider;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -153,7 +153,7 @@ public final class Placeholders
         DATE(() -> LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)),
         TIME(() -> StringUtils.left(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME), 8)),
         SERVER(() -> Bukkit.getServer().getName()),
-        TPS(() -> StringUtils.left(String.valueOf(TPSProvider.getTPS()), 5));
+        TPS(() -> StringUtils.left(String.valueOf(TPSProvider.INSTANCE.getTPS()), 5));
 
         private final Supplier<String> supplier;
 

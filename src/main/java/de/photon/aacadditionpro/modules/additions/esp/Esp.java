@@ -26,12 +26,12 @@ import java.util.stream.Collectors;
 public class Esp extends Module
 {
     // This defines the max tracking range supported by Esp.
-    // Also the max distance of a BlockIterator.
+    // Also, the max distance of a BlockIterator.
     public static final Function<Player, Vector[]> CAMERA_VECTOR_SUPPLIER = AACAdditionPro.getInstance().getConfig().getBoolean("Esp.calculate_third_person_modes", true) ?
                                                                             new CanSeeThirdPerson() :
                                                                             new CanSeeNoThirdPerson();
 
-    private static final int MAX_TRACKING_RANGE = 139 * 139;
+    private static final int MAX_TRACKING_RANGE = MathUtil.pow(139, 2);
     private static final String DEFAULT_WORLD_NAME = "default";
 
     private int defaultTrackingRange;
@@ -40,9 +40,6 @@ public class Esp extends Module
 
     @LoadFromConfiguration(configPath = ".inverval")
     private long interval;
-
-    @LoadFromConfiguration(configPath = ".calculate_third_person_modes")
-    private boolean thirdPerson;
 
     public Esp()
     {
@@ -61,7 +58,7 @@ public class Esp extends Module
         this.playerTrackingRanges = worldKeys.stream()
                                              .filter(key -> !DEFAULT_WORLD_NAME.equals(key))
                                              // Squared distance.
-                                             .map(key -> ImmutablePair.of(Bukkit.getWorld(key), MathUtil.square(worlds.getInt(key + ".entity-tracking-range.players"))))
+                                             .map(key -> ImmutablePair.of(Bukkit.getWorld(key), MathUtil.pow(worlds.getInt(key + ".entity-tracking-range.players"), 2)))
                                              // After MAX_TRACKING_RANGE, we do not need to check the full tracking range anymore.
                                              .filter(pair -> pair.getSecond() < MAX_TRACKING_RANGE)
                                              .collect(Collectors.toUnmodifiableMap(ImmutablePair::getFirst, ImmutablePair::getSecond));

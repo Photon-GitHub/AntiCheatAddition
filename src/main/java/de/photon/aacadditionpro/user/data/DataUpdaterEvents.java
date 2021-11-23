@@ -9,8 +9,8 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.protocol.packetwrappers.IWrapperPlayPosition;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
-import de.photon.aacadditionpro.util.world.BlockUtil;
-import de.photon.aacadditionpro.util.world.MaterialUtil;
+import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
+import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import lombok.val;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -108,7 +108,7 @@ public final class DataUpdaterEvents implements Listener
         if (user == null || event.getAction() != Action.RIGHT_CLICK_BLOCK || clickedBlock == null) return;
 
         // One can open the block.
-        if (BlockUtil.isInventoryOpenable(clickedBlock)) {
+        if (WorldUtil.INSTANCE.isInventoryOpenable(clickedBlock)) {
             // Make sure that the container is opened and the player doesn't just place a block next to it.
             // Check if the material is a placeable block
             val blockInHand = InventoryUtil.getHandContents(event.getPlayer()).stream().map(ItemStack::getType).anyMatch(Material::isBlock);

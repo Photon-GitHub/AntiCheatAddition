@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.world;
+package de.photon.aacadditionpro.util.minecraft.world;
 
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.util.mathematics.AxisAlignedBB;

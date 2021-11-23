@@ -9,7 +9,7 @@ import de.photon.aacadditionpro.commands.InternalCommand;
 import de.photon.aacadditionpro.commands.TabCompleteSupplier;
 import de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver.WrapperPlayServerPlayerInfo;
 import de.photon.aacadditionpro.util.messaging.ChatMessage;
-import de.photon.aacadditionpro.util.server.ping.PingProvider;
+import de.photon.aacadditionpro.util.minecraft.ping.PingProvider;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

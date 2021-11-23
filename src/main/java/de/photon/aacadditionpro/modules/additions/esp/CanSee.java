@@ -4,9 +4,9 @@ import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.mathematics.ResetLocation;
 import de.photon.aacadditionpro.util.mathematics.ResetVector;
-import de.photon.aacadditionpro.util.world.ChunkUtils;
-import de.photon.aacadditionpro.util.world.InternalPotion;
-import de.photon.aacadditionpro.util.world.MaterialUtil;
+import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
+import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
+import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
@@ -73,7 +73,7 @@ class CanSee
 
                 // Make sure the chunks are loaded.
                 // If the chunks are not loaded assume the players can see each other.
-                if (!ChunkUtils.areChunksLoadedBetweenLocations(cameraLocation, cameraLocationPlusBetween.resetToBase().add(between))) return true;
+                if (!WorldUtil.INSTANCE.areChunksLoadedBetweenLocations(cameraLocation, cameraLocationPlusBetween.resetToBase().add(between))) return true;
 
                 // --------------------------------------- Normal Calculation --------------------------------------- //
                 // No intersection found

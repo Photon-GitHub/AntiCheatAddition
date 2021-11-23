@@ -9,7 +9,7 @@ import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
-import de.photon.aacadditionpro.util.server.TPSProvider;
+import de.photon.aacadditionpro.util.minecraft.tps.TPSProvider;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -40,7 +40,7 @@ public class InventoryPerfectExit extends ViolationModule implements Listener
         // Creative-clear might trigger this.
         if (user.inAdventureOrSurvivalMode() &&
             // Minimum TPS before the check is activated as of a huge amount of fps
-            TPSProvider.getTPS() > minTps &&
+            TPSProvider.INSTANCE.getTPS() > minTps &&
             // Inventory is empty
             InventoryUtil.isInventoryEmpty(event.getInventory()))
         {

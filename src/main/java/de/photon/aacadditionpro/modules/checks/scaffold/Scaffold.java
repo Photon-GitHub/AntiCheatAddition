@@ -8,13 +8,12 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.user.data.batch.ScaffoldBatch;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
+import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
+import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
+import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
-import de.photon.aacadditionpro.util.world.BlockUtil;
-import de.photon.aacadditionpro.util.world.InternalPotion;
-import de.photon.aacadditionpro.util.world.LocationUtil;
-import de.photon.aacadditionpro.util.world.MaterialUtil;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.Material;
@@ -77,7 +76,7 @@ public class Scaffold extends ViolationModule implements Listener
         val blockPlaced = event.getBlockPlaced();
 
         // Short distance between player and the block (at most 2 Blocks)
-        if (LocationUtil.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D) &&
+        if (WorldUtil.INSTANCE.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D) &&
             // Not flying
             !user.getPlayer().isFlying() &&
             // Above the block
@@ -90,14 +89,14 @@ public class Scaffold extends ViolationModule implements Listener
             event.getBlockPlaced().getType() != Material.LADDER && event.getBlockPlaced().getType() != Material.VINE &&
             // Check if the block is placed against one block face only, also implies no blocks above and below.
             // Only one block that is not a liquid is allowed (the one which the Block is placed against).
-            BlockUtil.countBlocksAround(blockPlaced, BlockUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&
+            WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&
             // In between check to make sure it is somewhat a scaffold movement as the buffering does not work.
-            BlockUtil.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
+            WorldUtil.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
         {
 
             val lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().getBlock();
             // This checks if the block was placed against the expected block for scaffolding.
-            val newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !BlockUtil.isNext(lastScaffoldBlock, event.getBlockPlaced(), BlockUtil.HORIZONTAL_FACES);
+            val newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !WorldUtil.INSTANCE.isNext(lastScaffoldBlock, event.getBlockPlaced(), WorldUtil.HORIZONTAL_FACES);
 
             // ---------------------------------------------- Average ---------------------------------------------- //
 

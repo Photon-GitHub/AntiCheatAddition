@@ -10,6 +10,7 @@ import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
 import lombok.val;
 
 import java.util.Arrays;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class VersionControl extends Module
@@ -38,7 +39,7 @@ public class VersionControl extends Module
 
         val allowedVersions = configValues.stream().filter(ImmutablePair::getSecond).map(ImmutablePair::getFirst).collect(Collectors.joining(", "));
         val blockedProtocolNumbers = configValues.stream()
-                                                 .filter(pair -> !pair.getSecond())
+                                                 .filter(Predicate.not(ImmutablePair::getSecond))
                                                  // Get the ProtocolVersion of a key.
                                                  .map(pair -> Preconditions.checkNotNull(ProtocolVersion.getByName(pair.getFirst()), "A Unknown protocol version \"" + pair.getFirst() + "\" in version control. Please fix your config."))
                                                  // Get all the actual version numbers.

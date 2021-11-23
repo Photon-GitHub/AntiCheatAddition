@@ -23,14 +23,9 @@ public class LogFile
     public LogFile(LocalDateTime now)
     {
         this.dayOfTheYear = now.getDayOfYear();
-        File createdFile = null;
-        try {
-            createdFile = new File(AACAdditionPro.getInstance().getDataFolder().getPath() + "/logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
-            createdFile.getParentFile().mkdirs();
-            createdFile.createNewFile();
-        } catch (IOException e) {
-            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Something went wrong while trying to create the log file", e);
-        }
+        val createdFile = new File(AACAdditionPro.getInstance().getDataFolder().getPath() + "/logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
+        // Create parent folders here, but not the file itself as it is created on write (StandardOpenOption.CREATE)
+        createdFile.getParentFile().mkdirs();
         this.backingFile = createdFile;
     }
 
@@ -53,7 +48,7 @@ public class LogFile
 
         try {
             // Log the message
-            Files.writeString(this.backingFile.toPath(), debugMessage.toString(), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+            Files.writeString(this.backingFile.toPath(), debugMessage.toString(), StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
         } catch (final IOException e) {
             AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Something went wrong while trying to write to the log file", e);
         }

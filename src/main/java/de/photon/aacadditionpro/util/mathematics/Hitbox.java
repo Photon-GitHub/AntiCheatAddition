@@ -187,7 +187,7 @@ public enum Hitbox
     }
 
     /**
-     * Checks whether or not any {@link Block}s that are partially inside this {@link Hitbox} are liquids as defined in {@link MaterialUtil#LIQUIDS}
+     * Checks whether any {@link Block}s that are partially inside this {@link Hitbox} are liquids as defined in {@link MaterialUtil#LIQUIDS}
      */
     public boolean isInLiquids(@NotNull final Location location)
     {

@@ -174,40 +174,39 @@ class ModernWorldUtil implements WorldUtil
     @Override
     public boolean isInventoryOpenable(Block block)
     {
-        // The block actually is holding an inventory (and therefore is not e.g. dirt)
-        if (block.getState() instanceof InventoryHolder) {
-            // Additional checks for cats and occluding blocks necessary?
-            if (MaterialUtil.FREE_SPACE_CONTAINERS.contains(block.getType())) {
-                final Block aboveBlock = block.getRelative(BlockFace.UP);
-                final Location checkForCatLocation = aboveBlock.getLocation().add(0.5, 0.5, 0.5);
+        // The block is actually holding an inventory (and therefore is not e.g. dirt)
+        if (!(block.getState() instanceof InventoryHolder)) return false;
 
-                switch (ServerVersion.getActiveServerVersion()) {
-                    case MC18:
-                    case MC112:
-                        // 1.8.8 and 1.12 doesn't provide isPassable.
-                        // Make sure that the block above is not obstructed by blocks
-                        // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
-                        return MaterialUtil.FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType());
-                    case MC113:
-                        // Make sure that the block above is not obstructed by blocks
-                        return (aboveBlock.isPassable() || MaterialUtil.FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()))
-                               // Make sure that the block above is not obstructed by cats
-                               && aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.INSTANCE.ofType(EntityType.OCELOT)).isEmpty();
-                    case MC114:
-                    case MC115:
-                    case MC116:
-                    case MC117:
-                        // Make sure that the block above is not obstructed by blocks
-                        return (aboveBlock.isPassable() || MaterialUtil.FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()))
-                               // Make sure that the block above is not obstructed by cats
-                               && aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.INSTANCE.ofType(EntityType.CAT)).isEmpty();
-                    default:
-                        throw new UnknownMinecraftException();
-                }
+        // Additional checks for cats and occluding blocks necessary?
+        if (MaterialUtil.FREE_SPACE_CONTAINERS.contains(block.getType())) {
+            val aboveBlock = block.getRelative(BlockFace.UP);
+            val checkForCatLocation = aboveBlock.getLocation().add(0.5, 0.5, 0.5);
+
+            switch (ServerVersion.getActiveServerVersion()) {
+                case MC18:
+                case MC112:
+                    // 1.8.8 and 1.12 doesn't provide isPassable.
+                    // Make sure that the block above is not obstructed by blocks
+                    // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
+                    return MaterialUtil.FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType());
+                case MC113:
+                    // Make sure that the block above is not obstructed by blocks
+                    return (aboveBlock.isPassable() || MaterialUtil.FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()))
+                           // Make sure that the block above is not obstructed by cats
+                           && aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.INSTANCE.ofType(EntityType.OCELOT)).isEmpty();
+                case MC114:
+                case MC115:
+                case MC116:
+                case MC117:
+                    // Make sure that the block above is not obstructed by blocks
+                    return (aboveBlock.isPassable() || MaterialUtil.FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()))
+                           // Make sure that the block above is not obstructed by cats
+                           && aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.INSTANCE.ofType(EntityType.CAT)).isEmpty();
+                default:
+                    throw new UnknownMinecraftException();
             }
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Override

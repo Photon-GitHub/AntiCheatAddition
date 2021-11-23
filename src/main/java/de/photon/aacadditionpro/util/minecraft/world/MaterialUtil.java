@@ -110,9 +110,7 @@ public final class MaterialUtil
      */
     public static boolean containsMaterials(@NotNull final Collection<Material> searchFor, @NotNull final Collection<Material> toBeSearched)
     {
-        for (Material material : searchFor) {
-            if (toBeSearched.contains(material)) return true;
-        }
+        for (Material material : searchFor) if (toBeSearched.contains(material)) return true;
         return false;
     }
 

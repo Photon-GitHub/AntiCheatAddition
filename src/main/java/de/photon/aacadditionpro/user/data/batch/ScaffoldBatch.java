@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.user.data.batch;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructure.batch.Batch;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
-import de.photon.aacadditionpro.util.world.InternalPotion;
+import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
 import lombok.Value;
 import lombok.val;
 import org.bukkit.Location;

@@ -6,6 +6,7 @@ import lombok.val;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
@@ -22,22 +23,17 @@ public class LogFile
     public LogFile(LocalDateTime now)
     {
         this.dayOfTheYear = now.getDayOfYear();
-        File createdFile = null;
-        try {
-            createdFile = new File(AACAdditionPro.getInstance().getDataFolder().getPath() + "/logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
-            createdFile.getParentFile().mkdirs();
-            createdFile.createNewFile();
-        } catch (IOException e) {
-            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Something went wrong while trying to create the log file", e);
-        }
+        val createdFile = new File(AACAdditionPro.getInstance().getDataFolder().getPath() + "/logs/" + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log");
+        // Create parent folders here, but not the file itself as it is created on write (StandardOpenOption.CREATE)
+        createdFile.getParentFile().mkdirs();
         this.backingFile = createdFile;
     }
 
     public void write(String logMessage, LocalDateTime now)
     {
         // Reserve the required builder size.
-        // Time length is always 12, together with 2 brackets and one space this will result in 15.
-        val debugMessage = new StringBuilder(15 + logMessage.length());
+        // Time length is always 12, together with 2 brackets, one space and string end this will result in 16.
+        val debugMessage = new StringBuilder(16 + logMessage.length());
         // Add the beginning of the PREFIX
         debugMessage.append('[');
         // Get the current time
@@ -52,7 +48,7 @@ public class LogFile
 
         try {
             // Log the message
-            Files.write(this.backingFile.toPath(), debugMessage.toString().getBytes(), StandardOpenOption.APPEND);
+            Files.writeString(this.backingFile.toPath(), debugMessage.toString(), StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
         } catch (final IOException e) {
             AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Something went wrong while trying to write to the log file", e);
         }

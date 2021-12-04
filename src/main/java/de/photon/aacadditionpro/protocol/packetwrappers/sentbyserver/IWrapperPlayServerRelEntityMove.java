@@ -13,20 +13,10 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
      */
     default double getDx()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-                return getHandle().getBytes().read(0) / 32D;
-            case MC112:
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-            case MC117:
-                // Integers are ok, even though wiki.vg says short
-                return getHandle().getIntegers().read(1) / 4096D;
-            default:
-                throw new UnknownMinecraftException();
-        }
+        return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+               getHandle().getBytes().read(0) / 32D :
+               // Integers are ok, even though wiki.vg says short
+               getHandle().getIntegers().read(1) / 4096D;
     }
 
     /**
@@ -35,22 +25,10 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
     default void setDx(double value)
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative x: " + value + " blocks when teleport is needed.");
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-                getHandle().getBytes().write(0, (byte) (value * 32));
-                break;
-            case MC112:
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-            case MC117:
-                // Integers are ok, even though wiki.vg says short
-                getHandle().getIntegers().write(1, (int) (value * 4096));
-                break;
-            default:
-                throw new UnknownMinecraftException();
-        }
+
+        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) getHandle().getBytes().write(0, (byte) (value * 32));
+            // Integers are ok, even though wiki.vg says short
+        else getHandle().getIntegers().write(1, (int) (value * 4096));
     }
 
     /**
@@ -58,20 +36,10 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
      */
     default double getDy()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-                return getHandle().getBytes().read(1) / 32D;
-            case MC112:
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-            case MC117:
-                // Integers are ok, even though wiki.vg says short
-                return getHandle().getIntegers().read(2) / 4096D;
-            default:
-                throw new UnknownMinecraftException();
-        }
+        return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+               getHandle().getBytes().read(1) / 32D :
+               // Integers are ok, even though wiki.vg says short
+               getHandle().getIntegers().read(2) / 4096D;
     }
 
     /**
@@ -80,22 +48,10 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
     default void setDy(double value)
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative y: " + value + " blocks when teleport is needed.");
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-                getHandle().getBytes().write(1, (byte) (value * 32));
-                break;
-            case MC112:
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-            case MC117:
-                // Integers are ok, even though wiki.vg says short
-                getHandle().getIntegers().write(2, (int) (value * 4096));
-                break;
-            default:
-                throw new UnknownMinecraftException();
-        }
+
+        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) getHandle().getBytes().write(1, (byte) (value * 32));
+            // Integers are ok, even though wiki.vg says short
+        else getHandle().getIntegers().write(2, (int) (value * 4096));
     }
 
     /**
@@ -103,20 +59,10 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
      */
     default double getDz()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-                return getHandle().getBytes().read(2) / 32D;
-            case MC112:
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-            case MC117:
-                // Integers are ok, even though wiki.vg says short
-                return getHandle().getIntegers().read(3) / 4096D;
-            default:
-                throw new UnknownMinecraftException();
-        }
+        return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+               getHandle().getBytes().read(2) / 32D :
+               // Integers are ok, even though wiki.vg says short
+               getHandle().getIntegers().read(3) / 4096D;
     }
 
     /**
@@ -125,6 +71,11 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
     default void setDz(double value)
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative z: " + value + " blocks when teleport is needed.");
+
+        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) getHandle().getBytes().write(1, (byte) (value * 32));
+            // Integers are ok, even though wiki.vg says short
+        else getHandle().getIntegers().write(2, (int) (value * 4096));
+
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
                 getHandle().getBytes().write(2, (byte) (value * 32));
@@ -135,6 +86,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
             case MC115:
             case MC116:
             case MC117:
+            case MC118:
                 // Integers are ok, even though wiki.vg says short
                 getHandle().getIntegers().write(3, (int) (value * 4096));
                 break;

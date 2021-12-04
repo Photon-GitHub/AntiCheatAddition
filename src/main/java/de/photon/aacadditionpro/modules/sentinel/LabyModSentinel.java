@@ -8,6 +8,7 @@ import io.netty.buffer.Unpooled;
 import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
 public class LabyModSentinel extends SentinelModule implements Listener
 {
@@ -25,7 +26,7 @@ public class LabyModSentinel extends SentinelModule implements Listener
     }
 
     @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] message)
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] message)
     {
         val byteBuf = Unpooled.wrappedBuffer(message);
         val key = LabyModProtocol.readString(byteBuf, Short.MAX_VALUE);

@@ -14,12 +14,12 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
-import de.photon.aacadditionpro.util.server.TPSProvider;
+import de.photon.aacadditionpro.util.minecraft.entity.EntityUtil;
+import de.photon.aacadditionpro.util.minecraft.tps.TPSProvider;
+import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
-import de.photon.aacadditionpro.util.world.ChunkUtils;
-import de.photon.aacadditionpro.util.world.EntityUtil;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -93,7 +93,7 @@ public class InventoryMove extends ViolationModule
                         // Not flying (may trigger some fps)
                         !user.getPlayer().isFlying() &&
                         // Not using an Elytra
-                        !EntityUtil.isFlyingWithElytra(user.getPlayer()) &&
+                        !EntityUtil.INSTANCE.isFlyingWithElytra(user.getPlayer()) &&
                         // Player is in an inventory
                         user.hasOpenInventory() &&
                         // Player has not been hit recently
@@ -105,11 +105,11 @@ public class InventoryMove extends ViolationModule
                         // world add errors.
                         // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load
                         // errors.
-                        ChunkUtils.isChunkLoaded(user.getPlayer().getLocation()) &&
+                        WorldUtil.INSTANCE.isChunkLoaded(user.getPlayer().getLocation()) &&
                         // The player is currently not in a liquid (liquids push)
                         !Hitbox.PLAYER.isInLiquids(knownPosition) &&
                         // Auto-Disable if TPS are too low
-                        TPSProvider.getTPS() > minTps)
+                        TPSProvider.INSTANCE.getTPS() > minTps)
                     {
                         val positiveVelocity = knownPosition.getY() < moveTo.getY();
 
@@ -140,7 +140,7 @@ public class InventoryMove extends ViolationModule
                             // No nearby entities that could push the player
                             try {
                                 // Needs to be called synchronously.
-                                if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> EntityUtil.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()).get())) {
+                                if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()).get())) {
                                     getManagement().flag(Flag.of(user)
                                                              .setAddedVl(5)
                                                              .setCancelAction(cancelVl, () -> cancelAction(user, event))

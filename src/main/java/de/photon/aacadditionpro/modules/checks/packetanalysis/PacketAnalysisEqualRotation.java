@@ -13,10 +13,10 @@ import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
+import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
-import de.photon.aacadditionpro.util.world.MaterialUtil;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -61,13 +61,12 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                         currentPitch == user.getDataMap().getFloat(DataKey.FloatKey.LAST_PACKET_PITCH) &&
                         // 1.17 client false positive when throwing exp bottles.
                         !user.getTimestampMap().at(TimestampKey.LAST_EXPERIENCE_BOTTLE_THROWN).recentlyUpdated(5000) &&
-                        // Labymod fp when standing still / hit in corner fp
+                        // LabyMod fp when standing still / hit in corner fp
                         user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 100) &&
                         // 1.17 false positives
                         !(user.getTimestampMap().at(TimestampKey.LAST_HOTBAR_SWITCH).recentlyUpdated(3000) && user.hasSneakedRecently(3000)))
                     {
-                        // Not a big performance deal as most packets have already been filtered out, now we just account for
-                        // the last false positives.
+                        // Not a big performance deal as most packets have already been filtered out, now we just account for the last false positives.
                         // Sync call because the isHitboxInLiquids method will load chunks (prevent errors).
                         try {
                             if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () ->

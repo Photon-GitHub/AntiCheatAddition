@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro;
 
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.util.datastructure.buffer.FixedSizeBuffer;
 import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
 import lombok.val;
@@ -40,8 +39,8 @@ class BufferTest
         buffer.add("11");
         buffer.add("12");
 
-        List<String> expectedForgotten = ImmutableList.of("1", "2");
-        List<String> expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
+        List<String> expectedForgotten = List.of("1", "2");
+        List<String> expected = List.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
 
         Assertions.assertSame(expectedForgotten.size(), forgottenList.size(), "Different forgotten sizes: EXPECTED: " + expectedForgotten.size() + " ACTUAL: " + forgottenList.size());
         for (String s : forgottenList) {
@@ -65,7 +64,7 @@ class BufferTest
         buffer.add("4");
 
 
-        List<String> expected = ImmutableList.of("1", "2", "3", "4");
+        List<String> expected = List.of("1", "2", "3", "4");
         int i = 0;
         for (String s : buffer) {
             Assertions.assertEquals(expected.get(i++), s);
@@ -80,7 +79,7 @@ class BufferTest
         buffer.add("11");
         buffer.add("12");
 
-        expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
+        expected = List.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
         i = 0;
         for (String s : buffer) {
             Assertions.assertEquals(expected.get(i++), s);
@@ -135,7 +134,7 @@ class BufferTest
         buffer.add("11");
         buffer.add("12");
 
-        val expected = ImmutableList.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12").toArray(new String[0]);
+        val expected = List.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12").toArray(new String[0]);
         val actual = buffer.toArray(new String[0]);
         Assertions.assertArrayEquals(expected, actual);
     }

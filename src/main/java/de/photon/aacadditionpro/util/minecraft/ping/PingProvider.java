@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.server.ping;
+package de.photon.aacadditionpro.util.minecraft.ping;
 
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.user.User;

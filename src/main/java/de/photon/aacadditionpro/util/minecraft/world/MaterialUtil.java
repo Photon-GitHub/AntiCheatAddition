@@ -1,6 +1,5 @@
-package de.photon.aacadditionpro.util.world;
+package de.photon.aacadditionpro.util.minecraft.world;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.exception.UnknownMinecraftException;
@@ -23,7 +22,7 @@ public final class MaterialUtil
                                                                                                                                                       Material.getMaterial("THIN_GLASS"),
                                                                                                                                                       Material.getMaterial("IRON_FENCE"),
                                                                                                                                                       Material.CHEST,
-                                                                                                                                                      Material.ANVIL) : ImmutableSet.of();
+                                                                                                                                                      Material.ANVIL) : Set.of();
 
     public static final Material EXPERIENCE_BOTTLE;
 
@@ -61,6 +60,7 @@ public final class MaterialUtil
             case MC115:
             case MC116:
             case MC117:
+            case MC118:
                 allowedMaterials.addAll(getMaterialsEndingWith("_SIGN"));
 
                 allowedMaterials.add(Material.CAVE_AIR);
@@ -100,6 +100,7 @@ public final class MaterialUtil
             case MC115:
             case MC116:
             case MC117:
+            case MC118:
                 return material != Material.BARRIER && material != Material.SPAWNER && material.isOccluding();
             default:
                 throw new UnknownMinecraftException();
@@ -111,9 +112,7 @@ public final class MaterialUtil
      */
     public static boolean containsMaterials(@NotNull final Collection<Material> searchFor, @NotNull final Collection<Material> toBeSearched)
     {
-        for (Material material : searchFor) {
-            if (toBeSearched.contains(material)) return true;
-        }
+        for (Material material : searchFor) if (toBeSearched.contains(material)) return true;
         return false;
     }
 

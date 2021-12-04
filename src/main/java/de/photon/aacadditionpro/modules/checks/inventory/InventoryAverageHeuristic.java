@@ -6,8 +6,8 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.batch.InventoryBatch;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.server.TPSProvider;
-import de.photon.aacadditionpro.util.server.ping.PingProvider;
+import de.photon.aacadditionpro.util.minecraft.ping.PingProvider;
+import de.photon.aacadditionpro.util.minecraft.tps.TPSProvider;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.Getter;
@@ -45,7 +45,7 @@ public class InventoryAverageHeuristic extends ViolationModule implements Listen
             // Creative-clear might trigger this.
             user.inAdventureOrSurvivalMode() &&
             // Minimum TPS before the check is activated as of a huge amount of fps
-            TPSProvider.getTPS() > minTps &&
+            TPSProvider.INSTANCE.getTPS() > minTps &&
             // Minimum ping
             (maxPing < 0 || PingProvider.INSTANCE.getPing(user.getPlayer()) <= maxPing))
         {

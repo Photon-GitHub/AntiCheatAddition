@@ -7,10 +7,10 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
+import de.photon.aacadditionpro.util.minecraft.entity.EntityUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
-import de.photon.aacadditionpro.util.world.EntityUtil;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.event.EventHandler;
@@ -38,7 +38,7 @@ public class InventorySprinting extends ViolationModule implements Listener
         // Flight may trigger this
         if (!user.getPlayer().getAllowFlight() &&
             // Not using an Elytra
-            !EntityUtil.isFlyingWithElytra(user.getPlayer()) &&
+            !EntityUtil.INSTANCE.isFlyingWithElytra(user.getPlayer()) &&
             // Sprinting and Sneaking as detection
             (user.getPlayer().isSprinting() || user.getPlayer().isSneaking()) &&
             // The player opened the inventory at least a quarter second ago

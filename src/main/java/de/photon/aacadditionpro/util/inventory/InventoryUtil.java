@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.util.inventory;
 
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
@@ -24,14 +23,14 @@ public final class InventoryUtil
     /**
      * Gets the content of the main hand for version 1.8.8 or the content of both hands in higher versions.
      *
-     * @return an {@link ImmutableList} which contains all the {@link ItemStack}s a player has: 1 in MC 1.8.8 and 2 in higher versions.
+     * @return an {@link List} which contains all the {@link ItemStack}s a player has: 1 in MC 1.8.8 and 2 in higher versions.
      */
     public static List<ItemStack> getHandContents(final Player player)
     {
         return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
-               ImmutableList.of(player.getInventory().getItemInHand()) :
-               ImmutableList.of(player.getInventory().getItemInMainHand(),
-                                player.getInventory().getItemInOffHand());
+               List.of(player.getInventory().getItemInHand()) :
+               List.of(player.getInventory().getItemInMainHand(),
+                       player.getInventory().getItemInOffHand());
 
     }
 

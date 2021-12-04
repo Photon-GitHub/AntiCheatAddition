@@ -12,7 +12,7 @@ import de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver.WrapperPlay
 import de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver.WrapperPlayServerNamedEntitySpawn;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.world.EntityUtil;
+import de.photon.aacadditionpro.util.minecraft.entity.EntityUtil;
 import lombok.val;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
@@ -70,7 +70,7 @@ public class DamageIndicator extends Module
                         event.getPlayer().getEntityId() != entity.getEntityId() &&
 
                         // Entity has no passengers.
-                        EntityUtil.getPassengers(entity).isEmpty())
+                        EntityUtil.INSTANCE.getPassengers(entity).isEmpty())
                     {
                         // Clone the packet to prevent a serversided connection of the health.
                         event.setPacket(event.getPacket().deepClone());

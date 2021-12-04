@@ -6,8 +6,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import de.photon.aacadditionpro.AACAdditionPro;
@@ -26,6 +24,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 abstract class PlayerInformationHider implements Listener
@@ -35,21 +34,20 @@ abstract class PlayerInformationHider implements Listener
 
     protected PlayerInformationHider(@NotNull PacketType... affectedPackets)
     {
-        informationPacketListener = new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, ImmutableSet.copyOf(affectedPackets))
+        informationPacketListener = new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, Set.of(affectedPackets))
         {
             @Override
             public void onPacketSending(final PacketEvent event)
             {
+                if (event.isPlayerTemporary()) return;
                 val entityID = event.getPacket().getIntegers().read(0);
-                if (!event.isPlayerTemporary()) {
-                    final boolean hidden;
 
-                    synchronized (hiddenFromPlayerMap) {
-                        hidden = hiddenFromPlayerMap.containsEntry(event.getPlayer().getEntityId(), entityID);
-                    }
-
-                    if (hidden) event.setCancelled(true);
+                final boolean hidden;
+                synchronized (hiddenFromPlayerMap) {
+                    hidden = hiddenFromPlayerMap.containsEntry(event.getPlayer().getEntityId(), entityID);
                 }
+
+                if (hidden) event.setCancelled(true);
             }
         };
 
@@ -153,7 +151,7 @@ abstract class PlayerInformationHider implements Listener
 
         // Resend packets
         if (ProtocolLibrary.getProtocolManager() != null && hiddenBefore) {
-            Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> ProtocolLibrary.getProtocolManager().updateEntity(playerToReveal, ImmutableList.of(observer)));
+            Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> ProtocolLibrary.getProtocolManager().updateEntity(playerToReveal, List.of(observer)));
         }
     }
 }

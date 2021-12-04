@@ -1,7 +1,5 @@
 package de.photon.aacadditionpro.modules.checks.tower;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
@@ -12,14 +10,15 @@ import de.photon.aacadditionpro.util.datastructure.batch.BatchPreprocessors;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
-import de.photon.aacadditionpro.util.server.Movement;
-import de.photon.aacadditionpro.util.server.MovementSimulator;
+import de.photon.aacadditionpro.util.minecraft.movement.Movement;
+import de.photon.aacadditionpro.util.minecraft.movement.MovementSimulator;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import java.util.List;
+import java.util.Set;
 
 public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlockPlace>
 {
@@ -29,7 +28,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
      * This {@link java.util.List} provides usually used and tested values to speed up performance and possibly low-
      * quality simulation results.
      */
-    private static final List<Double> FIRST_DELAYS = ImmutableList.of(
+    private static final List<Double> FIRST_DELAYS = List.of(
             // 478.4 * 0.925
             // No jump boost
             442.52D,
@@ -52,7 +51,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
 
     public TowerBatchProcessor(ViolationModule module)
     {
-        super(module, ImmutableSet.of(TowerBatch.TOWER_BATCH_BROADCASTER));
+        super(module, Set.of(TowerBatch.TOWER_BATCH_BROADCASTER));
     }
 
     @Override

@@ -96,4 +96,42 @@ public final class MathUtil
     {
         return Math.sqrt(a * a + b * b);
     }
+
+    /**
+     * Fast squaring for streams.
+     */
+    public static int square(final int n)
+    {
+        return n * n;
+    }
+
+    /**
+     * Fast squaring for streams.
+     */
+    public static double square(final double d)
+    {
+        return d * d;
+    }
+
+    public static int pow(int base, int power)
+    {
+        switch (power) {
+            // Default cases for fast normal usages.
+            case 0: return 1;
+            case 1: return base;
+            case 2: return base * base;
+            case 3: return base * base * base;
+            // Fast exponentiation algorithm.
+            default:
+                int result = base;
+                while (power > 1) {
+                    if ((power & 1) == 1) {
+                        result *= base;
+                    }
+                    base *= base;
+                    power >>= 1;
+                }
+                return result;
+        }
+    }
 }

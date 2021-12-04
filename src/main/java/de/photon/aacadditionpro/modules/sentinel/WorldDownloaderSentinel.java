@@ -36,7 +36,7 @@ public class WorldDownloaderSentinel extends SentinelModule
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull final String channel, @NotNull final Player player, @NotNull final byte[] message)
+    public void onPluginMessageReceived(@NotNull final String channel, @NotNull final Player player, final byte[] message)
     {
         /*Documentation:
          * https://github.com/Pokechu22/WorldDownloader-Serverside-Companion/blob/master/src/main/java/wdl/WDLPackets.java

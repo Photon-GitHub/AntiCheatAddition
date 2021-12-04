@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.commands;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedMap;
 import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
@@ -170,7 +169,7 @@ public class CommandAttributes
             if (!this.childCommands.isEmpty()) {
                 this.addCommandHelpLine("Subcommands of this command are: " + String.join(", ", this.childCommands.keySet()));
             }
-            return new CommandAttributes(ImmutableSortedMap.copyOfSorted(childCommands), ImmutableList.copyOf(commandHelp), permission, minArguments, maxArguments);
+            return new CommandAttributes(ImmutableSortedMap.copyOfSorted(childCommands), List.copyOf(commandHelp), permission, minArguments, maxArguments);
         }
     }
 }

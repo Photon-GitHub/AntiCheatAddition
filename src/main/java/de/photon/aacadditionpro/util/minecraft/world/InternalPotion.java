@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.world;
+package de.photon.aacadditionpro.util.minecraft.world;
 
 import de.photon.aacadditionpro.ServerVersion;
 import lombok.AllArgsConstructor;
@@ -190,7 +190,7 @@ public enum InternalPotion
     }
 
     /**
-     * Checks if this PotionEffectType is already availabe on this ServerVersion.
+     * Checks if this PotionEffectType is already available on this ServerVersion.
      */
     public boolean isAvailable()
     {
@@ -198,7 +198,7 @@ public enum InternalPotion
     }
 
     /**
-     * Checks if a {@link LivingEntity} has a this potion effect.
+     * Checks if a {@link LivingEntity} has this potion effect.
      *
      * @param livingEntity the {@link LivingEntity} which should be tested
      *
@@ -221,7 +221,7 @@ public enum InternalPotion
     {
         if (!this.isAvailable()) return PotentialPotionEffect.EMPTY;
 
-        // Workaroud for missing method in MC 1.8.8
+        // Workaround for missing method in MC 1.8.8
         if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) {
             for (PotionEffect effect : livingEntity.getActivePotionEffects()) {
                 if (effect.getType().equals(this.mapping)) {

@@ -14,7 +14,7 @@ import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
-import de.photon.aacadditionpro.util.server.ping.PingProvider;
+import de.photon.aacadditionpro.util.minecraft.ping.PingProvider;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -121,18 +121,18 @@ public class Pingspoof extends ViolationModule implements Listener
                            .addPacketListeners(PacketAdapterBuilder.of(PacketType.Play.Client.TRANSACTION)
                                                                    .priority(ListenerPriority.HIGH)
                                                                    .onReceiving(event -> {
-                                                                      val user = User.safeGetUserFromPacketEvent(event);
-                                                                      if (User.isUserInvalid(user, this)) return;
+                                                                       val user = User.safeGetUserFromPacketEvent(event);
+                                                                       if (User.isUserInvalid(user, this)) return;
 
-                                                                      // We have now received the answer.
-                                                                      user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).update();
-                                                                  }).build())
+                                                                       // We have now received the answer.
+                                                                       user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).update();
+                                                                   }).build())
                            .build();
     }
 
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(300, 2).build();
+        return ViolationLevelManagement.builder(this).loadThresholdsToManagement().withDecay(300, 2).build();
     }
 }

@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.modules;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.violationlevels.ViolationAggregateManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -35,7 +34,7 @@ public abstract class ViolationModule extends Module
             @Override
             protected ViolationManagement createViolationManagement()
             {
-                return new ViolationAggregateManagement(this, ThresholdManagement.loadThresholds(this.getConfigString() + ".thresholds"), Arrays.stream(children).map(ViolationModule::getManagement).collect(Collectors.toSet()));
+                return new ViolationAggregateManagement(this, ThresholdManagement.loadThresholds(this.getConfigString() + ".thresholds"), Arrays.stream(children).map(ViolationModule::getManagement).collect(Collectors.toUnmodifiableSet()));
             }
 
             @Override
@@ -53,7 +52,7 @@ public abstract class ViolationModule extends Module
 
     public Map<String, String> getAACTooltip(UUID uuid, double score)
     {
-        return ImmutableMap.of("Score:", Double.toString(score));
+        return Map.of("Score:", Double.toString(score));
     }
 
     protected abstract ViolationManagement createViolationManagement();

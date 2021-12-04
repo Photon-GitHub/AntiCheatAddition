@@ -4,9 +4,9 @@ import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.mathematics.ResetLocation;
 import de.photon.aacadditionpro.util.mathematics.ResetVector;
-import de.photon.aacadditionpro.util.world.ChunkUtils;
-import de.photon.aacadditionpro.util.world.InternalPotion;
-import de.photon.aacadditionpro.util.world.MaterialUtil;
+import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
+import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
+import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
@@ -38,15 +38,15 @@ class CanSee
         final Vector[] cameraVectors = Esp.CAMERA_VECTOR_SUPPLIER.apply(observer);
 
         // Get the Vectors of the hitbox to check.
-        final Hitbox hitbox = watched.isSneaking() ? Hitbox.ESP_SNEAKING_PLAYER : Hitbox.ESP_PLAYER;
+        val hitbox = watched.isSneaking() ? Hitbox.ESP_SNEAKING_PLAYER : Hitbox.ESP_PLAYER;
         final Vector[] watchedHitboxVectors = hitbox.getLowResolutionCalculationVectors(watched.getLocation());
 
         // The needed variables for the calculation.
         // Use ResetLocation to reduce the amount of object creations to a minimum.
-        final ResetLocation cameraLocation = new ResetLocation();
+        val cameraLocation = new ResetLocation();
         // Another ResetLocation for a computation to reduce the amount of clone() operation.
-        final ResetLocation cameraLocationPlusBetween = new ResetLocation();
-        final ResetVector observerLocationVector = new ResetVector(observer.getLocation().toVector());
+        val cameraLocationPlusBetween = new ResetLocation();
+        val observerLocationVector = new ResetVector(observer.getLocation().toVector());
 
         Vector between;
         for (final Vector cameraVector : cameraVectors) {
@@ -73,7 +73,7 @@ class CanSee
 
                 // Make sure the chunks are loaded.
                 // If the chunks are not loaded assume the players can see each other.
-                if (!ChunkUtils.areChunksLoadedBetweenLocations(cameraLocation, cameraLocationPlusBetween.resetToBase().add(between))) return true;
+                if (!WorldUtil.INSTANCE.areChunksLoadedBetweenLocations(cameraLocation, cameraLocationPlusBetween.resetToBase().add(between))) return true;
 
                 // --------------------------------------- Normal Calculation --------------------------------------- //
                 // No intersection found

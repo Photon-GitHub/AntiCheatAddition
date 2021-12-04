@@ -11,7 +11,6 @@ import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.datastructure.batch.BatchProcessor;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -111,7 +110,6 @@ public class ModuleLoader
         for (MessageChannel messageChannel : outgoing) messageChannel.unregisterOutgoingChannel();
     }
 
-    @RequiredArgsConstructor
     public static class Builder
     {
         private final Module module;
@@ -124,6 +122,8 @@ public class ModuleLoader
         private final Set<ServerVersion> allowedServerVersions = EnumSet.noneOf(ServerVersion.class);
         private boolean bungeecordForbidden = false;
         private BatchProcessor<?> batchProcessor = null;
+
+        public Builder(Module module) {this.module = module;}
 
         public Builder disallowBungeeCord()
         {

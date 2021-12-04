@@ -34,17 +34,18 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket implements 
      */
     public static void clearAllSlots(int entityId, Player observer)
     {
+        WrapperPlayServerEntityEquipment equipmentWrapper;
         for (final ItemSlot slot : ItemSlot.values()) {
             //Update the equipment with fake-packets
-            final WrapperPlayServerEntityEquipment wrapperPlayServerEntityEquipment = new WrapperPlayServerEntityEquipment();
+            equipmentWrapper = new WrapperPlayServerEntityEquipment();
 
-            wrapperPlayServerEntityEquipment.setEntityID(entityId);
-            wrapperPlayServerEntityEquipment.setItem(new ItemStack(Material.AIR));
+            equipmentWrapper.setEntityID(entityId);
+            equipmentWrapper.setItem(new ItemStack(Material.AIR));
 
             // 1.8.8 is automatically included as of the bukkit-handling, therefore server-version specific handling
             // as of the different server classes / enums and the null-removal above.
-            wrapperPlayServerEntityEquipment.setSlot(slot);
-            wrapperPlayServerEntityEquipment.sendPacket(observer);
+            equipmentWrapper.setSlot(slot);
+            equipmentWrapper.sendPacket(observer);
         }
     }
 

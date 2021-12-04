@@ -1,8 +1,8 @@
-package de.photon.aacadditionpro.util.server.ping;
+package de.photon.aacadditionpro.util.minecraft.ping;
 
 import org.bukkit.entity.Player;
 
-public class ModernPingProvider implements PingProvider
+class ModernPingProvider implements PingProvider
 {
     public int getPing(final Player player)
     {

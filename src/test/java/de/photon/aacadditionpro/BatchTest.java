@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro;
 
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
@@ -78,7 +77,7 @@ class BatchTest
 
         for (int i = 0; i < 6; ++i) batch.addDataPoint(String.valueOf(i));
 
-        Assertions.assertIterableEquals(ImmutableList.of("0", "1", "2", "3", "4", "5"), output);
+        Assertions.assertIterableEquals(List.of("0", "1", "2", "3", "4", "5"), output);
     }
 
     @SneakyThrows
@@ -108,9 +107,9 @@ class BatchTest
 
         // Make sure to respect the race condition.
         if ("0".equals(output.get(0))) {
-            Assertions.assertIterableEquals(ImmutableList.of("0", "1", "2", "3", "4", "5"), output);
+            Assertions.assertIterableEquals(List.of("0", "1", "2", "3", "4", "5"), output);
         } else {
-            Assertions.assertIterableEquals(ImmutableList.of("3", "4", "5", "0", "1", "2"), output);
+            Assertions.assertIterableEquals(List.of("3", "4", "5", "0", "1", "2"), output);
         }
     }
 }

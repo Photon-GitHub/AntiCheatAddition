@@ -118,7 +118,7 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
     @Override
     public Iterator<T> iterator()
     {
-        return new Iterator<T>()
+        return new Iterator<>()
         {
             private int index = tail.get();
             // An element counter to limit the iterated elements.

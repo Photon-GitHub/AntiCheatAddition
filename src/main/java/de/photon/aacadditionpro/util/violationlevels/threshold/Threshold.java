@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.util.violationlevels.threshold;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.util.execute.ExecuteUtil;
 import de.photon.aacadditionpro.util.execute.Placeholders;
 import lombok.EqualsAndHashCode;
@@ -25,7 +24,7 @@ public class Threshold implements Comparable<Threshold>
         Preconditions.checkArgument(!commandList.isEmpty(), "Tried to define Threshold without commands.");
 
         this.vl = vl;
-        this.commandList = ImmutableList.copyOf(commandList);
+        this.commandList = List.copyOf(commandList);
     }
 
     /**

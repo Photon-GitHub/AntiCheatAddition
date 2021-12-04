@@ -339,7 +339,7 @@ public class User implements Permissible
 
 
     /**
-     * Gets the debug state (determines whether or not an {@link User} gets debug messages).
+     * Gets the debug state (determines whether an {@link User} gets debug messages).
      */
     public boolean hasDebug()
     {
@@ -347,7 +347,7 @@ public class User implements Permissible
     }
 
     /**
-     * Sets the debug state (determines whether or not an {@link User} gets debug messages).
+     * Sets the debug state (determines whether an {@link User} gets debug messages).
      */
     public void setDebug(boolean debug)
     {

@@ -9,8 +9,8 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
-import de.photon.aacadditionpro.util.server.TPSProvider;
-import de.photon.aacadditionpro.util.server.ping.PingProvider;
+import de.photon.aacadditionpro.util.minecraft.ping.PingProvider;
+import de.photon.aacadditionpro.util.minecraft.tps.TPSProvider;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -53,7 +53,7 @@ public class Fastswitch extends ViolationModule
                     if (User.isUserInvalid(user, this)) return;
 
                     // Tps are high enough
-                    if (TPSProvider.getTPS() > 19 &&
+                    if (TPSProvider.INSTANCE.getTPS() > 19 &&
                         event.getPacket().getBytes().readSafely(0) != null &&
                         // Prevent the detection of scrolling
                         !canBeLegit(user.getPlayer().getInventory().getHeldItemSlot(), event.getPacket().getBytes().readSafely(0)))
@@ -81,6 +81,6 @@ public class Fastswitch extends ViolationModule
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(120, 25).build();
+        return ViolationLevelManagement.builder(this).loadThresholdsToManagement().withDecay(120, 25).build();
     }
 }

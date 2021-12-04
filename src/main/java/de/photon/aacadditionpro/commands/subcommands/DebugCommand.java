@@ -44,11 +44,11 @@ public class DebugCommand extends InternalPlayerCommand
                     toggleTo = false;
                     break;
                 default:
-                    toggleTo = user.hasDebug();
+                    toggleTo = !user.hasDebug();
                     break;
             }
         } else {
-            toggleTo = user.hasDebug();
+            toggleTo = !user.hasDebug();
         }
 
         user.setDebug(toggleTo);

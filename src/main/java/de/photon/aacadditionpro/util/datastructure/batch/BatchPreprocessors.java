@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.util.datastructure.batch;
 
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
 import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import lombok.AccessLevel;
@@ -19,7 +18,7 @@ public final class BatchPreprocessors
     /**
      * This will zip neighboring elements of the list.
      * This returns (0, 1), (2, 3), (4, 5) ...
-     * Therefore every element is at most in one pair.
+     * Therefore, every element is at most in one pair.
      * <p>
      * The last element may be ignored if a pair cannot fully be formed.
      */
@@ -40,7 +39,7 @@ public final class BatchPreprocessors
     /**
      * This will zip neighboring elements of the list.
      * This returns (0, 1), (1, 2), (2, 3) ...
-     * Therefore elements can appear multiple times in the list!
+     * Therefore, elements can appear multiple times in the list!
      * <p>
      * The last element may be ignored if a pair cannot fully be formed.
      */
@@ -56,17 +55,18 @@ public final class BatchPreprocessors
     @SafeVarargs
     public static <T> List<DoubleStatistics> reducePairToDoubleStatistics(List<ImmutablePair<T, T>> input, ToDoubleBiFunction<T, T>... mappers)
     {
-        val builder = ImmutableList.<DoubleStatistics>builder();
-        for (int i = 0; i < mappers.length; ++i) builder.add(new DoubleStatistics());
-        val statistics = builder.build();
+        val statistics = new DoubleStatistics[mappers.length];
+        for (int i = 0; i < statistics.length; i++) {
+            statistics[i] = new DoubleStatistics();
+        }
 
         for (val pair : input) {
             for (int i = 0; i < mappers.length; ++i) {
-                statistics.get(i).accept(mappers[i].applyAsDouble(pair.getFirst(), pair.getSecond()));
+                statistics[i].accept(mappers[i].applyAsDouble(pair.getFirst(), pair.getSecond()));
             }
         }
 
-        return statistics;
+        return List.of(statistics);
     }
 
     /**
@@ -76,23 +76,26 @@ public final class BatchPreprocessors
     @SafeVarargs
     public static <T> List<DoubleStatistics> zipReduceToDoubleStatistics(List<T> input, ToDoubleBiFunction<T, T>... mappers)
     {
-        val builder = ImmutableList.<DoubleStatistics>builder();
-        for (int i = 0; i < mappers.length; ++i) builder.add(new DoubleStatistics());
-        val statistics = builder.build();
+        val statistics = new DoubleStatistics[mappers.length];
+        for (int i = 0; i < statistics.length; i++) {
+            statistics[i] = new DoubleStatistics();
+        }
 
         if (!input.isEmpty()) {
             T old = input.get(0);
             T current;
-            final ListIterator<T> iterator = input.listIterator(1);
+            val iterator = input.listIterator(1);
             while (iterator.hasNext()) {
                 current = iterator.next();
 
-                for (int i = 0; i < mappers.length; ++i) statistics.get(i).accept(mappers[i].applyAsDouble(old, current));
+                for (int i = 0; i < mappers.length; ++i) {
+                    statistics[i].accept(mappers[i].applyAsDouble(old, current));
+                }
 
                 old = current;
             }
         }
-        return statistics;
+        return List.of(statistics);
     }
 
     /**

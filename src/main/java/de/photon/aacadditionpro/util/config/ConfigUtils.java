@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.util.config;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
 import lombok.AccessLevel;
@@ -101,7 +100,7 @@ public final class ConfigUtils
      *
      * @param path the path which should be loaded
      *
-     * @return an {@link ImmutableList} of {@link String}s with the path as entries.
+     * @return an {@link List} of {@link String}s with the path as entries.
      */
     @NotNull
     public static List<String> loadImmutableStringOrStringList(@NotNull final String path)
@@ -115,13 +114,13 @@ public final class ConfigUtils
 
             // No-command indicator or null
             return possibleCommand == null || "{}".equals(possibleCommand) ?
-                   ImmutableList.of() :
-                   ImmutableList.of(possibleCommand);
+                   List.of() :
+                   List.of(possibleCommand);
         }
 
         // Input is not empty
         // No-command indicator
-        return "{}".equals(input.get(0)) ? ImmutableList.of() : ImmutableList.copyOf(input);
+        return "{}".equals(input.get(0)) ? List.of() : List.copyOf(input);
     }
 
     /**

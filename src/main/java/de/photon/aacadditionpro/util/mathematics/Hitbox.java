@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.util.mathematics;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.util.world.MaterialUtil;
+import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -187,7 +187,7 @@ public enum Hitbox
     }
 
     /**
-     * Checks whether or not any {@link Block}s that are partially inside this {@link Hitbox} are liquids as defined in {@link MaterialUtil#LIQUIDS}
+     * Checks whether any {@link Block}s that are partially inside this {@link Hitbox} are liquids as defined in {@link MaterialUtil#LIQUIDS}
      */
     public boolean isInLiquids(@NotNull final Location location)
     {

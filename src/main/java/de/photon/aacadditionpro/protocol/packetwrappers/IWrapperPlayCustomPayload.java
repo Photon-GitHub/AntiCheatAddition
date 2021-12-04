@@ -2,7 +2,6 @@ package de.photon.aacadditionpro.protocol.packetwrappers;
 
 import com.comphenix.protocol.utility.MinecraftReflection;
 import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 import de.photon.aacadditionpro.util.pluginmessage.KeyMessageChannel;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import io.netty.buffer.ByteBuf;
@@ -19,19 +18,9 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
      */
     default MessageChannel getChannel()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-            case MC112:
-                return MessageChannel.of("minecraft", "placeholder", getHandle().getStrings().read(0));
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-            case MC117:
-                return MessageChannel.of(getHandle().getMinecraftKeys().read(0));
-            default:
-                throw new UnknownMinecraftException();
-        }
+        return ServerVersion.LEGACY_EVENT_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ?
+               MessageChannel.of("minecraft", "placeholder", getHandle().getStrings().read(0)) :
+               MessageChannel.of(getHandle().getMinecraftKeys().read(0));
     }
 
     /**
@@ -40,20 +29,10 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
      */
     default void setChannel(KeyMessageChannel value)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-            case MC112:
-                getHandle().getStrings().write(0, value.getChannel());
-                break;
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-            case MC117:
-                getHandle().getMinecraftKeys().write(0, value);
-                break;
-            default:
-                throw new UnknownMinecraftException();
+        if (ServerVersion.LEGACY_EVENT_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
+            getHandle().getStrings().write(0, value.getChannel());
+        } else {
+            getHandle().getMinecraftKeys().write(0, value);
         }
     }
 
@@ -63,20 +42,10 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
      */
     default void setChannel(MessageChannel value)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-            case MC112:
-                getHandle().getStrings().write(0, value.getChannel());
-                break;
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-            case MC117:
-                getHandle().getMinecraftKeys().write(0, (KeyMessageChannel) value);
-                break;
-            default:
-                throw new UnknownMinecraftException();
+        if (ServerVersion.LEGACY_EVENT_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
+            getHandle().getStrings().write(0, value.getChannel());
+        } else {
+            getHandle().getMinecraftKeys().write(0, (KeyMessageChannel) value);
         }
     }
 

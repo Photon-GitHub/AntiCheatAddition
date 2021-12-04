@@ -39,6 +39,7 @@ public final class EntityMetadataIndex
                 SKIN_PARTS = 16;
                 break;
             case MC117:
+            case MC118:
                 // index 9 in 1.17+
                 HEALTH = 9;
                 ARROWS_IN_ENTITY = 12;

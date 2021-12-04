@@ -3,7 +3,6 @@ package de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.exception.UnknownMinecraftException;
 
 public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEntityMove implements IWrapperPlayServerLook
 {
@@ -23,19 +22,7 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
     @Override
     public int getByteOffset()
     {
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-                return 3;
-            case MC112:
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-            case MC117:
-                return 0;
-            default:
-                throw new UnknownMinecraftException();
-        }
+        return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ? 3 : 0;
     }
 
     @Override

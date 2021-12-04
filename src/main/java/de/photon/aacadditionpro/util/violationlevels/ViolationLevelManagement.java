@@ -89,6 +89,12 @@ public class ViolationLevelManagement extends ViolationManagement
             return this;
         }
 
+        public Builder loadThresholdsToManagement()
+        {
+            this.management = ThresholdManagement.loadThresholds(this.module);
+            return this;
+        }
+
         /**
          * Allows to define decay.
          * Not calling this method indicates no decay.
@@ -104,7 +110,7 @@ public class ViolationLevelManagement extends ViolationManagement
 
         public ViolationLevelManagement build()
         {
-            if (this.management == null) management = ThresholdManagement.loadThresholds(this.module);
+            Preconditions.checkNotNull(management, "Tried to create module without specifying threshold management.");
             return new ViolationLevelManagement(this.module, management, decayTicks, decayAmount);
         }
     }

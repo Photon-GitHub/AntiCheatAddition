@@ -81,6 +81,6 @@ public class Fastswitch extends ViolationModule
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(120, 25).build();
+        return ViolationLevelManagement.builder(this).loadThresholdsToManagement().withDecay(120, 25).build();
     }
 }

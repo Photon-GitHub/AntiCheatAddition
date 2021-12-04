@@ -151,6 +151,6 @@ public class Scaffold extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(80, 1).build();
+        return ViolationLevelManagement.builder(this).loadThresholdsToManagement().withDecay(80, 1).build();
     }
 }

@@ -42,6 +42,8 @@ public class SkinBlinkerUnusedBit extends ViolationModule
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(200, 50).build();
+        return ViolationLevelManagement.builder(this)
+                                       .emptyThresholdManagement()
+                                       .withDecay(200, 50).build();
     }
 }

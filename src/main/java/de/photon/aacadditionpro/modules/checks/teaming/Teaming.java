@@ -109,6 +109,6 @@ public class Teaming extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(300, 1).build();
+        return ViolationLevelManagement.builder(this).loadThresholdsToManagement().withDecay(300, 1).build();
     }
 }

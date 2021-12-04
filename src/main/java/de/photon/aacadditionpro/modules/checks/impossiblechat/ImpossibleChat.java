@@ -51,6 +51,6 @@ public class ImpossibleChat extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(600, 25).build();
+        return ViolationLevelManagement.builder(this).loadThresholdsToManagement().withDecay(600, 25).build();
     }
 }

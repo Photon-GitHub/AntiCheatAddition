@@ -121,18 +121,18 @@ public class Pingspoof extends ViolationModule implements Listener
                            .addPacketListeners(PacketAdapterBuilder.of(PacketType.Play.Client.TRANSACTION)
                                                                    .priority(ListenerPriority.HIGH)
                                                                    .onReceiving(event -> {
-                                                                      val user = User.safeGetUserFromPacketEvent(event);
-                                                                      if (User.isUserInvalid(user, this)) return;
+                                                                       val user = User.safeGetUserFromPacketEvent(event);
+                                                                       if (User.isUserInvalid(user, this)) return;
 
-                                                                      // We have now received the answer.
-                                                                      user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).update();
-                                                                  }).build())
+                                                                       // We have now received the answer.
+                                                                       user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).update();
+                                                                   }).build())
                            .build();
     }
 
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(300, 2).build();
+        return ViolationLevelManagement.builder(this).loadThresholdsToManagement().withDecay(300, 2).build();
     }
 }

@@ -44,6 +44,8 @@ public class SkinBlinkerSprinting extends ViolationModule
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).withDecay(200, 25).build();
+        return ViolationLevelManagement.builder(this)
+                                       .emptyThresholdManagement()
+                                       .withDecay(200, 25).build();
     }
 }

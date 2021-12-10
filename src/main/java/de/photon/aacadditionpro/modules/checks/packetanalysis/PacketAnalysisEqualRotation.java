@@ -74,7 +74,7 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                                     !(Hitbox.PLAYER.isInLiquids(user.getPlayer().getLocation()) &&
                                       user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SLIME_BLOCK) &&
                                     // Fixes false positives on versions 1.9+ because of changed hitboxes
-                                    !(ServerVersion.getActiveServerVersion() == ServerVersion.MC18 &&
+                                    !(ServerVersion.is18() &&
                                       ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC18 &&
                                       MaterialUtil.containsMaterials(Hitbox.PLAYER.getPartiallyIncludedMaterials(user.getPlayer().getLocation()), MaterialUtil.CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS)))
                             {

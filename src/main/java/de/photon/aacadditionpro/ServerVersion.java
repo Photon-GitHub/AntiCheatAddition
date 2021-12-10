@@ -59,6 +59,16 @@ public enum ServerVersion
     private final boolean supported;
 
     /**
+     * Shorthand for activeServerVersion == MC18.
+     * Checks if the current ServerVersion is minecraft 1.8.8.
+     * This method reduces both code and improves the maintainability as activeServerVersion is only used by those statements that might need changes for a new version.
+     */
+    public static boolean is18()
+    {
+        return activeServerVersion == MC18;
+    }
+
+    /**
      * Used to get the client version. Might only differ from {@link #getActiveServerVersion()} if ViaVersion is installed.
      */
     @NotNull

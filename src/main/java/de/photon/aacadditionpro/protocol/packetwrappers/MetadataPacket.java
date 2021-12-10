@@ -59,7 +59,7 @@ public abstract class MetadataPacket extends AbstractPacket
          */
         public MetadataBuilder setMetadata(final int index, final Class classOfValue, final Object value)
         {
-            if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) dataWatcher.setObject(index, value);
+            if (ServerVersion.is18()) dataWatcher.setObject(index, value);
             else dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(classOfValue)), value);
             return this;
         }
@@ -94,7 +94,7 @@ public abstract class MetadataPacket extends AbstractPacket
          */
         public MetadataBuilder setArrowInEntityMetadata(final int arrows)
         {
-            return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+            return ServerVersion.is18() ?
                    // IN 1.8.8 THIS IS A BYTE, NOT AN INTEGER!
                    this.setMetadata(EntityMetadataIndex.ARROWS_IN_ENTITY, Byte.class, (byte) arrows) :
                    this.setMetadata(EntityMetadataIndex.ARROWS_IN_ENTITY, Integer.class, arrows);

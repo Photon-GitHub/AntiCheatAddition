@@ -28,7 +28,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
     @Override
     public double getDx()
     {
-        return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+        return ServerVersion.is18() ?
                handle.getBytes().read(0) / 32D :
                // Integers are ok, even though wiki.vg says short
                handle.getIntegers().read(1) / 4096D;
@@ -39,7 +39,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
 
-        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) handle.getBytes().write(0, (byte) (value * 32));
+        if (ServerVersion.is18()) handle.getBytes().write(0, (byte) (value * 32));
             // Integers are ok, even though wiki.vg says short
         else handle.getIntegers().write(1, (int) (value * 4096));
     }
@@ -47,7 +47,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
     @Override
     public double getDy()
     {
-        return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+        return ServerVersion.is18() ?
                handle.getBytes().read(1) / 32D :
                // Integers are ok, even though wiki.vg says short
                handle.getIntegers().read(2) / 4096D;
@@ -58,7 +58,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
 
-        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) handle.getBytes().write(1, (byte) (value * 32));
+        if (ServerVersion.is18()) handle.getBytes().write(1, (byte) (value * 32));
             // Integers are ok, even though wiki.vg says short
         else handle.getIntegers().write(2, (int) (value * 4096));
     }
@@ -66,7 +66,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
     @Override
     public double getDz()
     {
-        return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+        return ServerVersion.is18() ?
                handle.getBytes().read(2) / 32D :
                // Integers are ok, even though wiki.vg says short
                handle.getIntegers().read(3) / 4096D;
@@ -77,7 +77,7 @@ public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity impl
     {
         Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
 
-        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) handle.getBytes().write(2, (byte) (value * 32));
+        if (ServerVersion.is18()) handle.getBytes().write(2, (byte) (value * 32));
             // Integers are ok, even though wiki.vg says short
         else handle.getIntegers().write(3, (int) (value * 4096));
     }

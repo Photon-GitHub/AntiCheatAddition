@@ -35,7 +35,7 @@ public class DamageIndicator extends Module
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetTypes = ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+        val packetTypes = ServerVersion.is18() ?
                           // Only register NAMED_ENTITY_SPAWN on 1.8 as it doesn't work on newer versions.
                           new PacketType[]{PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN} :
                           new PacketType[]{PacketType.Play.Server.ENTITY_METADATA};

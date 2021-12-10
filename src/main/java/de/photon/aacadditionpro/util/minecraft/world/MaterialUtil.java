@@ -18,11 +18,11 @@ import java.util.Set;
 public final class MaterialUtil
 {
     // A set of materials which hitboxes changed in minecraft 1.9
-    public static final Set<Material> CHANGED_HITBOX_MATERIALS = ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ? Sets.immutableEnumSet(Material.getMaterial("STAINED_GLASS_PANE"),
-                                                                                                                                                      Material.getMaterial("THIN_GLASS"),
-                                                                                                                                                      Material.getMaterial("IRON_FENCE"),
-                                                                                                                                                      Material.CHEST,
-                                                                                                                                                      Material.ANVIL) : Set.of();
+    public static final Set<Material> CHANGED_HITBOX_MATERIALS = ServerVersion.is18() ? Sets.immutableEnumSet(Material.getMaterial("STAINED_GLASS_PANE"),
+                                                                                                              Material.getMaterial("THIN_GLASS"),
+                                                                                                              Material.getMaterial("IRON_FENCE"),
+                                                                                                              Material.CHEST,
+                                                                                                              Material.ANVIL) : Set.of();
 
     public static final Material EXPERIENCE_BOTTLE;
 

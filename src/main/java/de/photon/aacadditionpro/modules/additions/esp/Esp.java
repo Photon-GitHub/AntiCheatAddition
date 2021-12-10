@@ -96,11 +96,11 @@ public class Esp extends Module
         // Less than 1 block distance
         // Everything (smaller than 1)^2 will result in something smaller than 1
         if (pairDistanceSquared < 1) {
-            PlayerVisibility.revealPlayer(first, second);
-            PlayerVisibility.revealPlayer(second, first);
+            PlayerVisibility.INSTANCE.revealPlayer(first, second);
+            PlayerVisibility.INSTANCE.revealPlayer(second, first);
         } else if (pairDistanceSquared >= playerTrackingRange) {
-            PlayerVisibility.fullyHidePlayer(first, second);
-            PlayerVisibility.fullyHidePlayer(second, first);
+            PlayerVisibility.INSTANCE.fullyHidePlayer(first, second);
+            PlayerVisibility.INSTANCE.fullyHidePlayer(second, first);
         } else {
             handleDirection(first, second);
             handleDirection(second, first);
@@ -110,10 +110,10 @@ public class Esp extends Module
     private void handleDirection(Player observer, Player watched)
     {
         // Is the user visible
-        if (CanSee.canSee(observer, watched)) PlayerVisibility.revealPlayer(observer, watched);
+        if (CanSee.canSee(observer, watched)) PlayerVisibility.INSTANCE.revealPlayer(observer, watched);
         else {
-            if (watched.isSneaking()) PlayerVisibility.fullyHidePlayer(observer, watched);
-            else PlayerVisibility.hideEquipment(observer, watched);
+            if (watched.isSneaking()) PlayerVisibility.INSTANCE.fullyHidePlayer(observer, watched);
+            else PlayerVisibility.INSTANCE.hideEquipment(observer, watched);
         }
     }
 

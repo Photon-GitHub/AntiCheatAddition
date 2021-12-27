@@ -21,7 +21,8 @@ public enum ProtocolVersion
     MC114("1.14", ServerVersion.MC114, 477, 480, 485, 490, 498),
     MC115("1.15", ServerVersion.MC115, 573, 575),
     MC116("1.16", ServerVersion.MC116, 735, 736, 751, 753, 754),
-    MC117("1.17", ServerVersion.MC117, 755);
+    MC117("1.17", ServerVersion.MC117, 755, 756),
+    MC118("1.18", ServerVersion.MC118, 757);
 
     private static final Map<String, ProtocolVersion> NAME_MAP;
     private static final Map<Integer, ProtocolVersion> VERSION_NUMBER_MAP;

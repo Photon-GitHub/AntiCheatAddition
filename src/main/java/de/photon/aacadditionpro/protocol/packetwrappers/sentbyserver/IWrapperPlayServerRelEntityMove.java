@@ -81,8 +81,6 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
                 getHandle().getBytes().write(2, (byte) (value * 32));
                 break;
             case MC112:
-            case MC113:
-            case MC114:
             case MC115:
             case MC116:
             case MC117:

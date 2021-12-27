@@ -29,8 +29,6 @@ public abstract class WrapperPlayKeepAlive extends AbstractPacket
             case MC18:
                 return handle.getIntegers().read(0);
             case MC112:
-            case MC113:
-            case MC114:
             case MC115:
             case MC116:
             case MC117:
@@ -53,8 +51,6 @@ public abstract class WrapperPlayKeepAlive extends AbstractPacket
                 handle.getIntegers().write(0, (int) value);
                 break;
             case MC112:
-            case MC113:
-            case MC114:
             case MC115:
             case MC116:
             case MC117:

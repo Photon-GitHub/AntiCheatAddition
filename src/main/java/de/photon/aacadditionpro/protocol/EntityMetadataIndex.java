@@ -22,15 +22,9 @@ public final class EntityMetadataIndex
                 SKIN_PARTS = 10;
                 break;
             case MC112:
-            case MC113:
                 HEALTH = 7;
                 ARROWS_IN_ENTITY = 10;
                 SKIN_PARTS = 13;
-                break;
-            case MC114:
-                HEALTH = 8;
-                ARROWS_IN_ENTITY = 11;
-                SKIN_PARTS = 15;
                 break;
             case MC115:
             case MC116:

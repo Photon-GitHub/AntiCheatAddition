@@ -189,12 +189,6 @@ class ModernWorldUtil implements WorldUtil
                     // Make sure that the block above is not obstructed by blocks
                     // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
                     return MaterialUtil.FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType());
-                case MC113:
-                    // Make sure that the block above is not obstructed by blocks
-                    return (aboveBlock.isPassable() || MaterialUtil.FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS.contains(aboveBlock.getType()))
-                           // Make sure that the block above is not obstructed by cats
-                           && aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.INSTANCE.ofType(EntityType.OCELOT)).isEmpty();
-                case MC114:
                 case MC115:
                 case MC116:
                 case MC117:

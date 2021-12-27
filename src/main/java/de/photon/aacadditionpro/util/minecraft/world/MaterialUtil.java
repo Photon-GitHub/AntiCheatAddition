@@ -8,11 +8,14 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MaterialUtil
@@ -35,33 +38,29 @@ public final class MaterialUtil
     public static final Set<Material> FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS;
 
     static {
-        val freeSpaceMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
-        freeSpaceMaterials.addAll(getMaterialsEndingWith("SHULKER_BOK"));
-
+        val freeSpaceContainers = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
         val allowedMaterials = EnumSet.of(Material.AIR, Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST, Material.ANVIL);
-        allowedMaterials.addAll(getMaterialsEndingWith("_SLAB", "_STAIRS"));
 
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
             case MC112:
-                EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
+                allowedMaterials.addAll(getMaterialsEndingWith("_SLAB", "_STAIRS", "SIGN"));
+
+                freeSpaceContainers.addAll(getMaterialsEndingWith("SHULKER_BOK"));
                 allowedMaterials.add(Material.getMaterial("ENCHANTMENT_TABLE"));
 
+                EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA, Material.getMaterial("STATIONARY_WATER"), Material.getMaterial("STATIONARY_LAVA"));
                 break;
-            case MC113:
-                allowedMaterials.add(Material.CAVE_AIR);
-                allowedMaterials.add(Material.ENCHANTING_TABLE);
-
-                EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
-                LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA);
-                break;
-            case MC114:
             case MC115:
             case MC116:
             case MC117:
             case MC118:
-                allowedMaterials.addAll(getMaterialsEndingWith("_SIGN"));
+                allowedMaterials.addAll(ofTags(Tag.STANDING_SIGNS, Tag.WALL_SIGNS, Tag.SIGNS,
+                                               Tag.SLABS,
+                                               Tag.STAIRS, Tag.WOODEN_STAIRS));
+
+                freeSpaceContainers.addAll(ofTags(Tag.SHULKER_BOXES));
 
                 allowedMaterials.add(Material.CAVE_AIR);
                 allowedMaterials.add(Material.ENCHANTING_TABLE);
@@ -73,7 +72,7 @@ public final class MaterialUtil
                 throw new UnknownMinecraftException();
         }
 
-        FREE_SPACE_CONTAINERS = Sets.immutableEnumSet(freeSpaceMaterials);
+        FREE_SPACE_CONTAINERS = Sets.immutableEnumSet(freeSpaceContainers);
         FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS = Sets.immutableEnumSet(allowedMaterials);
     }
 
@@ -86,25 +85,22 @@ public final class MaterialUtil
         return materials;
     }
 
+    @SafeVarargs
+    public static Set<Material> ofTags(Tag<Material>... tags)
+    {
+        return Sets.immutableEnumSet(Arrays.stream(tags)
+                                           .flatMap(tag -> tag.getValues().stream())
+                                           .collect(Collectors.toUnmodifiableSet()));
+    }
+
     /**
      * Fix for Spigot's broken occluding method.
      */
     public static boolean isReallyOccluding(Material material)
     {
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-            case MC112:
-                return material != Material.BARRIER && material != Material.getMaterial("MOB_SPAWNER") && material.isOccluding();
-            case MC113:
-            case MC114:
-            case MC115:
-            case MC116:
-            case MC117:
-            case MC118:
-                return material != Material.BARRIER && material != Material.SPAWNER && material.isOccluding();
-            default:
-                throw new UnknownMinecraftException();
-        }
+        return material != Material.BARRIER && material.isOccluding()
+               // Pre-1.13 versions have a different spawner material.
+               && ServerVersion.getActiveServerVersion().compareTo(ServerVersion.MC113) < 0 ? material != Material.getMaterial("MOB_SPAWNER") : material != Material.SPAWNER;
     }
 
     /**

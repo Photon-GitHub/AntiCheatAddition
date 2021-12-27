@@ -18,13 +18,15 @@ import java.util.Set;
 @Getter
 public enum ServerVersion
 {
+    // As we compare the versions these MUST be sorted.
+
     MC18("1.8.8", true),
     MC19("1.9", false),
     MC110("1.10", false),
     MC111("1.11.2", false),
     MC112("1.12.2", true),
-    MC113("1.13.2", true),
-    MC114("1.14.4", true),
+    MC113("1.13", false),
+    MC114("1.14", false),
     MC115("1.15.2", true),
     MC116("1.16.5", true),
     MC117("1.17", true),

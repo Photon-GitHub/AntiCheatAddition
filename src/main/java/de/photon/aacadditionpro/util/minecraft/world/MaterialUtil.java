@@ -35,19 +35,14 @@ public final class MaterialUtil
      * Contains all containers that need a free space of any kind above the container (e.g. chests with a stair above)
      */
     public static final Set<Material> FREE_SPACE_CONTAINERS;
-    public static final Set<Material> FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS;
 
     static {
         val freeSpaceContainers = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
-        val allowedMaterials = EnumSet.of(Material.AIR, Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST, Material.ANVIL);
 
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
             case MC112:
-                allowedMaterials.addAll(getMaterialsEndingWith("_SLAB", "_STAIRS", "SIGN"));
-
                 freeSpaceContainers.addAll(getMaterialsEndingWith("SHULKER_BOK"));
-                allowedMaterials.add(Material.getMaterial("ENCHANTMENT_TABLE"));
 
                 EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA, Material.getMaterial("STATIONARY_WATER"), Material.getMaterial("STATIONARY_LAVA"));
@@ -56,14 +51,7 @@ public final class MaterialUtil
             case MC116:
             case MC117:
             case MC118:
-                allowedMaterials.addAll(ofTags(Tag.STANDING_SIGNS, Tag.WALL_SIGNS, Tag.SIGNS,
-                                               Tag.SLABS,
-                                               Tag.STAIRS, Tag.WOODEN_STAIRS));
-
                 freeSpaceContainers.addAll(ofTags(Tag.SHULKER_BOXES));
-
-                allowedMaterials.add(Material.CAVE_AIR);
-                allowedMaterials.add(Material.ENCHANTING_TABLE);
 
                 EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA);
@@ -73,7 +61,6 @@ public final class MaterialUtil
         }
 
         FREE_SPACE_CONTAINERS = Sets.immutableEnumSet(freeSpaceContainers);
-        FREE_SPACE_CONTAINERS_ALLOWED_MATERIALS = Sets.immutableEnumSet(allowedMaterials);
     }
 
     public static Set<Material> getMaterialsEndingWith(String... ends)

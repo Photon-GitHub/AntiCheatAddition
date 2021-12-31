@@ -6,7 +6,6 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.protocol.EntityMetadataIndex;
-import lombok.val;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +33,7 @@ public abstract class MetadataPacket extends AbstractPacket
      */
     public Optional<WrappedWatchableObject> getMetadataIndex(int index)
     {
-        val rawMetadata = getRawMetadata();
-        for (WrappedWatchableObject watch : rawMetadata) {
+        for (WrappedWatchableObject watch : getRawMetadata()) {
             if (watch.getIndex() == index) {
                 return Optional.of(watch);
             }
@@ -59,7 +57,7 @@ public abstract class MetadataPacket extends AbstractPacket
          */
         public MetadataBuilder setMetadata(final int index, final Class classOfValue, final Object value)
         {
-            if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) dataWatcher.setObject(index, value);
+            if (ServerVersion.is18()) dataWatcher.setObject(index, value);
             else dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(classOfValue)), value);
             return this;
         }
@@ -94,7 +92,7 @@ public abstract class MetadataPacket extends AbstractPacket
          */
         public MetadataBuilder setArrowInEntityMetadata(final int arrows)
         {
-            return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+            return ServerVersion.is18() ?
                    // IN 1.8.8 THIS IS A BYTE, NOT AN INTEGER!
                    this.setMetadata(EntityMetadataIndex.ARROWS_IN_ENTITY, Byte.class, (byte) arrows) :
                    this.setMetadata(EntityMetadataIndex.ARROWS_IN_ENTITY, Integer.class, arrows);

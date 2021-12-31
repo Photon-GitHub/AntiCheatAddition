@@ -1,10 +1,12 @@
 package de.photon.aacadditionpro.util.minecraft.tps;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
-import lombok.val;
+import de.photon.aacadditionpro.util.mathematics.DataUtil;
+import de.photon.aacadditionpro.util.mathematics.ModularInteger;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Arrays;
 
 /**
  * This util provides methods to get information from the server that is usually hidden.
@@ -38,6 +40,7 @@ class CCTPSProvider implements TPSProvider
     /**
      * Gets the current TPS of the server.
      */
+    @Override
     public double getTPS()
     {
         return TPS.getCurrentTPS();
@@ -46,40 +49,41 @@ class CCTPSProvider implements TPSProvider
     private static class TPS extends BukkitRunnable
     {
         private static final int RESOLUTION = 40;
-        private final RingBuffer<Long> tickIntervals;
+        private final long[] tickIntervals = new long[RESOLUTION];
+
+        private final ModularInteger currentIndex = new ModularInteger(0, RESOLUTION);
         private long lastTick;
 
         private TPS(final Plugin plugin)
         {
             this.lastTick = System.currentTimeMillis();
-            this.tickIntervals = new RingBuffer<>(RESOLUTION);
             // Init the RingBuffer with 50 millis for 20 TPS.
-            for (int i = 0; i < RESOLUTION; ++i) this.tickIntervals.add(50L);
+            Arrays.fill(tickIntervals, 50L);
             this.runTaskTimer(plugin, 1L, 1L);
         }
 
         double getCurrentTPS()
         {
-            val delta = this.getDelta();
-            if (delta == 0) return 20.0;
+            final double average = this.getAverage();
+            if (average <= 0) return 20.0;
 
-            // 1000 milliseconds per second, delta is also milliseconds -> ticks. As the maximum of ticks is 20, allow no value above 20.
-            return Math.min(1000.0 / delta, 20.0);
+            // 1000 milliseconds per second, average is also milliseconds -> ticks. As the maximum of ticks is 20, allow no value above 20.
+            return Math.min(1000.0 / average, 20.0);
         }
 
+        @Override
         public void run()
         {
-            val curr = System.currentTimeMillis();
-            val delta = curr - this.lastTick;
+            final long curr = System.currentTimeMillis();
+            final long delta = curr - this.lastTick;
+
             this.lastTick = curr;
-            this.tickIntervals.add(delta);
+            tickIntervals[currentIndex.getAndIncrement()] = delta;
         }
 
-        private double getDelta()
+        private double getAverage()
         {
-            long base = 0;
-            for (final long delta : this.tickIntervals) base += delta;
-            return (double) (base / RESOLUTION);
+            return DataUtil.average(this.tickIntervals);
         }
     }
 }

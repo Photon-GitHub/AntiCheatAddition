@@ -35,7 +35,7 @@ public class DamageIndicator extends Module
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetTypes = ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+        val packetTypes = ServerVersion.is18() ?
                           // Only register NAMED_ENTITY_SPAWN on 1.8 as it doesn't work on newer versions.
                           new PacketType[]{PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN} :
                           new PacketType[]{PacketType.Play.Server.ENTITY_METADATA};
@@ -80,7 +80,7 @@ public class DamageIndicator extends Module
                             read = new WrapperPlayServerEntityMetadata(event.getPacket());
                             // Only set it on 1.8.8, otherwise it will just be at the max health.
                             // Automatically excluded on later versions as the PacketType is not registered.
-                            // This packetwrapper doesn't currently work with 1.15+.
+                            // This PacketWrapper doesn't currently work with 1.15+.
                         } else if (event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
                             read = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
                         } else {

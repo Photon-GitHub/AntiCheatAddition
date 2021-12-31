@@ -222,7 +222,7 @@ public enum InternalPotion
         if (!this.isAvailable()) return PotentialPotionEffect.EMPTY;
 
         // Workaround for missing method in MC 1.8.8
-        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) {
+        if (ServerVersion.is18()) {
             for (PotionEffect effect : livingEntity.getActivePotionEffects()) {
                 if (effect.getType().equals(this.mapping)) {
                     return new PotentialPotionEffect(effect);

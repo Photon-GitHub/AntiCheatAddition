@@ -57,7 +57,7 @@ public class WrapperPlayServerEntityEquipment extends AbstractPacket implements 
     public void setSlot(final ItemSlot value)
     {
         // Player = null will return the server version.
-        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) {
+        if (ServerVersion.is18()) {
             int index = value.ordinal();
 
             // Reduce by one if index greater 0 as the offhand (index 1) doesn't exist.

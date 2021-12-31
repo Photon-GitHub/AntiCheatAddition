@@ -34,7 +34,7 @@ public class AutoPotion extends ViolationModule implements Listener
     private double angleOffset;
 
     @LoadFromConfiguration(configPath = ".initial_pitch_difference")
-    private double initalPitchDifference;
+    private double initialPitchDifference;
 
     @LoadFromConfiguration(configPath = ".look_down_angle")
     private double lookDownAngle;
@@ -66,7 +66,7 @@ public class AutoPotion extends ViolationModule implements Listener
             }
         } else {
             // The initial_pitch_difference is reached
-            if (event.getTo().getPitch() - event.getFrom().getPitch() > this.initalPitchDifference &&
+            if (event.getTo().getPitch() - event.getFrom().getPitch() > this.initialPitchDifference &&
                 // The previous pitch is not representing looking down
                 event.getFrom().getPitch() < lookDownAngle &&
                 // The pitch is beyond the lookdown angle

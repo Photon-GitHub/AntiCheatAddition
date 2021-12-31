@@ -27,7 +27,7 @@ public final class InventoryUtil
      */
     public static List<ItemStack> getHandContents(final Player player)
     {
-        return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+        return ServerVersion.is18() ?
                List.of(player.getInventory().getItemInHand()) :
                List.of(player.getInventory().getItemInMainHand(),
                        player.getInventory().getItemInOffHand());

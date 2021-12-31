@@ -65,7 +65,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
     @Override
     public double getX()
     {
-        return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+        return ServerVersion.is18() ?
                handle.getIntegers().read(1) / 32.0D :
                handle.getDoubles().read(0);
     }
@@ -73,14 +73,14 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
     @Override
     public void setX(double value)
     {
-        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) handle.getIntegers().write(1, (int) (value * 32));
+        if (ServerVersion.is18()) handle.getIntegers().write(1, (int) (value * 32));
         else handle.getDoubles().write(0, value);
     }
 
     @Override
     public double getY()
     {
-        return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+        return ServerVersion.is18() ?
                handle.getIntegers().read(2) / 32.0D :
                handle.getDoubles().read(1);
     }
@@ -88,14 +88,14 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
     @Override
     public void setY(double value)
     {
-        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) handle.getIntegers().write(2, (int) (value * 32));
+        if (ServerVersion.is18()) handle.getIntegers().write(2, (int) (value * 32));
         else handle.getDoubles().write(1, value);
     }
 
     @Override
     public double getZ()
     {
-        return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ?
+        return ServerVersion.is18() ?
                handle.getIntegers().read(3) / 32.0D :
                handle.getDoubles().read(2);
     }
@@ -103,7 +103,7 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
     @Override
     public void setZ(double value)
     {
-        if (ServerVersion.getActiveServerVersion() == ServerVersion.MC18) handle.getIntegers().write(3, (int) (value * 32));
+        if (ServerVersion.is18()) handle.getIntegers().write(3, (int) (value * 32));
         else handle.getDoubles().write(2, value);
     }
 

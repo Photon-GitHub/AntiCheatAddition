@@ -232,7 +232,13 @@ public final class DataUpdaterEvents implements Listener
 
         val sneak = event.isSneaking();
         user.getDataMap().setBoolean(DataKey.BooleanKey.SNEAKING, sneak);
-        if (!sneak) user.getDataMap().setLong(DataKey.LongKey.LAST_SNEAK_DURATION, user.getTimestampMap().at(TimestampKey.LAST_SNEAK_TOGGLE).passedTime());
+        if (sneak) {
+            user.getTimestampMap().at(TimestampKey.LAST_SNEAK_ENABLE).update();
+        } else {
+            user.getTimestampMap().at(TimestampKey.LAST_SNEAK_DISABLE).update();
+            user.getDataMap().setLong(DataKey.LongKey.LAST_SNEAK_DURATION, user.getTimestampMap().at(TimestampKey.LAST_SNEAK_TOGGLE).passedTime());
+        }
+
         user.getTimestampMap().at(TimestampKey.LAST_SNEAK_TOGGLE).update();
     }
 

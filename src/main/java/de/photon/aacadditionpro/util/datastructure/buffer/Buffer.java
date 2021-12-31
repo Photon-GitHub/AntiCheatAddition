@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.util.datastructure.buffer;
 
 import com.google.common.base.Preconditions;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -52,7 +53,7 @@ public interface Buffer<T> extends Collection<T>
     default void forEachDescending(Consumer<? super T> action)
     {
         Preconditions.checkNotNull(action);
-        final Iterator<T> descendingIterator = this.descendingIterator();
+        val descendingIterator = this.descendingIterator();
         while (descendingIterator.hasNext()) action.accept(descendingIterator.next());
     }
 

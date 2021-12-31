@@ -1,53 +1,28 @@
 package de.photon.aacadditionpro.util.visibility;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.bukkit.entity.Player;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PlayerVisibility
+public interface PlayerVisibility
 {
-    private static final PlayerInformationHider equipmentHider = new PlayerEquipmentHider();
-    private static final PlayerInformationHider playerHider = new PlayerHider();
+    // In 1.18 there is a new draft api to handle this directly.
+    PlayerVisibility INSTANCE = new LegacyPlayerVisibility();
 
     /**
      * This method will fully hide the toBeHidden {@link Player} from the observer {@link Player}
      */
-    public static void fullyHidePlayer(Player observer, Player toBeHidden)
-    {
-        playerHider.hidePlayer(observer, toBeHidden);
-        equipmentHider.revealPlayer(observer, toBeHidden);
-    }
+    void fullyHidePlayer(Player observer, Player toBeHidden);
 
     /**
      * This method will hide the equipment of the hideEquipment {@link Player} from the observer {@link Player}
      */
-    public static void hideEquipment(Player observer, Player hideEquipment)
-    {
-        equipmentHider.hidePlayer(observer, hideEquipment);
-        playerHider.revealPlayer(observer, hideEquipment);
-    }
+    void hideEquipment(Player observer, Player hideEquipment);
 
     /**
      * This method will fully reveal the toBeRevealed {@link Player} from the observer {@link Player}
      */
-    public static void revealPlayer(Player observer, Player toBeRevealed)
-    {
-        playerHider.revealPlayer(observer, toBeRevealed);
-        equipmentHider.revealPlayer(observer, toBeRevealed);
-    }
+    void revealPlayer(Player observer, Player toBeRevealed);
 
-    public static void enable()
-    {
-        equipmentHider.registerListeners();
-        playerHider.registerListeners();
-    }
+    void enable();
 
-    public static void disable()
-    {
-        equipmentHider.unregisterListeners();
-        equipmentHider.clear();
-        playerHider.unregisterListeners();
-        playerHider.clear();
-    }
+    void disable();
 }

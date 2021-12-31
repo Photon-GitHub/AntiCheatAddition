@@ -31,13 +31,19 @@ public class VersionControl extends Module
     @Override
     public void enable()
     {
+        // Get the kick message AACAdditionPro should write into ViaVersion's config.
         val viaVersionKickMessage = Preconditions.checkNotNull(AACAdditionPro.getInstance().getConfig().getString(this.getConfigString() + ".message"), "VersionControl message is null. Please fix your config.");
+
+        // What Minecraft versions are allowed?
         val configValues = Arrays.stream(ProtocolVersion.values())
                                  .map(ProtocolVersion::getName)
                                  .map(key -> ImmutablePair.of(key, AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".allowedVersions." + key)))
-                                 .collect(Collectors.toSet());
+                                 .collect(Collectors.toUnmodifiableSet());
 
+        // Format those versions for displaying.
         val allowedVersions = configValues.stream().filter(ImmutablePair::getSecond).map(ImmutablePair::getFirst).collect(Collectors.joining(", "));
+
+        // Get the actual protocol numbers we need to put into ViaVersion's config.
         val blockedProtocolNumbers = configValues.stream()
                                                  .filter(Predicate.not(ImmutablePair::getSecond))
                                                  // Get the ProtocolVersion of a key.
@@ -46,7 +52,7 @@ public class VersionControl extends Module
                                                  .flatMap(protocolVersion -> protocolVersion.getVersionNumbers().stream())
                                                  // Make the display more visually appealing.
                                                  .sorted()
-                                                 .collect(Collectors.toList());
+                                                 .collect(Collectors.toUnmodifiableList());
 
         // Set the kick message.
         // Construct the message and replace special placeholder.

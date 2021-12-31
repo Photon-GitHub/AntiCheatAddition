@@ -22,7 +22,7 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
     @Override
     public int getByteOffset()
     {
-        return ServerVersion.getActiveServerVersion() == ServerVersion.MC18 ? 3 : 0;
+        return ServerVersion.is18() ? 3 : 0;
     }
 
     @Override

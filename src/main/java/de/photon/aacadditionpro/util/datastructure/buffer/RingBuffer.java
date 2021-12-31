@@ -169,7 +169,7 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
     @Override
     public Iterator<T> descendingIterator()
     {
-        return new Iterator<T>()
+        return new Iterator<>()
         {
             // Start at head - 1 as head is the position at which will be written next, but right now there is no
             // element there, or the oldest element.
@@ -180,7 +180,7 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
             @Override
             public boolean hasNext()
             {
-                return elements < maxSize;
+                return elements < size;
             }
 
             @Override

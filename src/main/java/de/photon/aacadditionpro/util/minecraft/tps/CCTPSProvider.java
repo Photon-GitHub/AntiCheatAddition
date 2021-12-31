@@ -65,7 +65,7 @@ class CCTPSProvider implements TPSProvider
         double getCurrentTPS()
         {
             val delta = this.getDelta();
-            if (delta == 0) return 20.0;
+            if (delta <= 0) return 20.0;
 
             // 1000 milliseconds per second, delta is also milliseconds -> ticks. As the maximum of ticks is 20, allow no value above 20.
             return Math.min(1000.0 / delta, 20.0);

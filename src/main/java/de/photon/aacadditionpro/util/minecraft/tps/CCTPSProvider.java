@@ -51,7 +51,7 @@ class CCTPSProvider implements TPSProvider
         private static final int RESOLUTION = 40;
         private final long[] tickIntervals = new long[RESOLUTION];
 
-        private int currentIndex = 0;
+        private final ModularInteger currentIndex = new ModularInteger(0, RESOLUTION);
         private long lastTick;
 
         private TPS(final Plugin plugin)
@@ -78,8 +78,7 @@ class CCTPSProvider implements TPSProvider
             final long delta = curr - this.lastTick;
 
             this.lastTick = curr;
-            tickIntervals[currentIndex] = delta;
-            currentIndex = ModularInteger.increment(currentIndex, RESOLUTION);
+            tickIntervals[currentIndex.getAndIncrement()] = delta;
         }
 
         private double getAverage()

@@ -16,6 +16,7 @@ import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.entity.EntityUtil;
 import de.photon.aacadditionpro.util.minecraft.tps.TPSProvider;
+import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
 import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -118,6 +119,9 @@ public class InventoryMove extends ViolationModule
                                 user.getDataMap().setBoolean(DataKey.BooleanKey.ALLOWED_TO_JUMP, false);
                                 return;
                             }
+
+                            // Jumping false positive when stepping up a stair or slabs.
+                            if (MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getType())) return;
 
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(20)

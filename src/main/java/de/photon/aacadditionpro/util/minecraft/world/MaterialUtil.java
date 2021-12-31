@@ -26,9 +26,12 @@ public final class MaterialUtil
                                                                                                               Material.getMaterial("IRON_FENCE"),
                                                                                                               Material.CHEST,
                                                                                                               Material.ANVIL) : Set.of();
+    /**
+     * Materials which can cause an automatic step upwards (e.g. slabs and stairs)
+     */
+    public static final Set<Material> AUTO_STEP_MATERIALS;
 
     public static final Material EXPERIENCE_BOTTLE;
-
     public static final Set<Material> LIQUIDS;
 
     /**
@@ -42,6 +45,7 @@ public final class MaterialUtil
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
             case MC112:
+                AUTO_STEP_MATERIALS = Sets.immutableEnumSet(getMaterialsEndingWith("_STAIRS", "_SLABS"));
                 freeSpaceContainers.addAll(getMaterialsEndingWith("SHULKER_BOK"));
 
                 EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
@@ -51,6 +55,7 @@ public final class MaterialUtil
             case MC116:
             case MC117:
             case MC118:
+                AUTO_STEP_MATERIALS = Sets.immutableEnumSet(ofTags(Tag.SLABS, Tag.WOODEN_SLABS, Tag.STAIRS, Tag.WOODEN_STAIRS));
                 freeSpaceContainers.addAll(ofTags(Tag.SHULKER_BOXES));
 
                 EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;

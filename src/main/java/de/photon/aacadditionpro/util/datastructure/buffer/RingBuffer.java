@@ -180,7 +180,7 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
             @Override
             public boolean hasNext()
             {
-                return elements < maxSize;
+                return elements < size;
             }
 
             @Override

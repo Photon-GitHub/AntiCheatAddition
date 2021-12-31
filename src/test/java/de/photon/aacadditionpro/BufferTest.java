@@ -89,8 +89,8 @@ class BufferTest
         Assertions.assertSame(expected.size(), buffer.size(), "Different sizes: EXPECTED: " + expected.size() + " ACTUAL: " + buffer.size());
         int dotSize = 0;
         for (String s : buffer) {
+            Assertions.assertEquals(expected.get(dotSize), s, "Wrong element: " + s);
             ++dotSize;
-            Assertions.assertTrue(expected.contains(s), "Wrong element: " + s);
         }
         Assertions.assertSame(expected.size(), dotSize, "Different dot sizes: EXPECTED: " + expected.size() + " ACTUAL: " + dotSize);
 
@@ -99,9 +99,9 @@ class BufferTest
         String next;
         while (ascendingIterator.hasNext()) {
             next = ascendingIterator.next();
-            ++ascSize;
 
-            Assertions.assertTrue(expected.contains(next), "Wrong element: " + next);
+            Assertions.assertEquals(expected.get(ascSize), next, "Wrong element: " + next);
+            ++ascSize;
         }
         Assertions.assertSame(expected.size(), ascSize, "Wrong amount of elements ASC.");
 
@@ -109,9 +109,9 @@ class BufferTest
         int desSize = 0;
         while (descendingIterator.hasNext()) {
             next = descendingIterator.next();
-            ++desSize;
 
-            Assertions.assertTrue(expected.contains(next), "Wrong element: " + next);
+            Assertions.assertEquals(expected.get(expected.size() - 1 - desSize), next, "Wrong element: " + next);
+            ++desSize;
         }
         Assertions.assertSame(expected.size(), desSize, "Wrong amount of elements DESC.");
     }

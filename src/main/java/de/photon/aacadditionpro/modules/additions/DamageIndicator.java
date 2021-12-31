@@ -80,7 +80,7 @@ public class DamageIndicator extends Module
                             read = new WrapperPlayServerEntityMetadata(event.getPacket());
                             // Only set it on 1.8.8, otherwise it will just be at the max health.
                             // Automatically excluded on later versions as the PacketType is not registered.
-                            // This packetwrapper doesn't currently work with 1.15+.
+                            // This PacketWrapper doesn't currently work with 1.15+.
                         } else if (event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
                             read = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
                         } else {

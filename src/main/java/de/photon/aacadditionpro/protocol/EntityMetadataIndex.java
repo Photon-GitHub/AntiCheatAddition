@@ -14,7 +14,6 @@ public final class EntityMetadataIndex
 
 
     static {
-        // Passenger problems
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
                 HEALTH = 6;
@@ -34,7 +33,6 @@ public final class EntityMetadataIndex
                 break;
             case MC117:
             case MC118:
-                // index 9 in 1.17+
                 HEALTH = 9;
                 ARROWS_IN_ENTITY = 12;
                 SKIN_PARTS = 17;

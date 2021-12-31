@@ -147,7 +147,6 @@ public class InventoryMove extends ViolationModule
                             // Do the entity pushing stuff here (performance impact)
                             // No nearby entities that could push the player
 
-                            DebugSender.getInstance().sendDebug("Inventory Speed: " + user.getTimestampMap().at(TimestampKey.INVENTORY_OPENED).passedTime());
                             try {
                                 // Needs to be called synchronously.
                                 if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()).get())) {

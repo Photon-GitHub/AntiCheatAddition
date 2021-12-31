@@ -1,10 +1,13 @@
 package de.photon.aacadditionpro.util.minecraft.tps;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
+import de.photon.aacadditionpro.util.mathematics.DataUtil;
+import de.photon.aacadditionpro.util.mathematics.ModularInteger;
 import lombok.val;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Arrays;
 
 /**
  * This util provides methods to get information from the server that is usually hidden.
@@ -46,15 +49,16 @@ class CCTPSProvider implements TPSProvider
     private static class TPS extends BukkitRunnable
     {
         private static final int RESOLUTION = 40;
-        private final RingBuffer<Long> tickIntervals;
+        private final long[] tickIntervals = new long[RESOLUTION];
+
+        private int currentIndex = 0;
         private long lastTick;
 
         private TPS(final Plugin plugin)
         {
             this.lastTick = System.currentTimeMillis();
-            this.tickIntervals = new RingBuffer<>(RESOLUTION);
             // Init the RingBuffer with 50 millis for 20 TPS.
-            for (int i = 0; i < RESOLUTION; ++i) this.tickIntervals.add(50L);
+            Arrays.fill(tickIntervals, 50L);
             this.runTaskTimer(plugin, 1L, 1L);
         }
 
@@ -71,15 +75,15 @@ class CCTPSProvider implements TPSProvider
         {
             val curr = System.currentTimeMillis();
             val delta = curr - this.lastTick;
+
             this.lastTick = curr;
-            this.tickIntervals.add(delta);
+            tickIntervals[currentIndex] = delta;
+            currentIndex = ModularInteger.increment(currentIndex, RESOLUTION);
         }
 
         private double getDelta()
         {
-            long base = 0;
-            for (final long delta : this.tickIntervals) base += delta;
-            return (double) (base / RESOLUTION);
+            return DataUtil.average(this.tickIntervals);
         }
     }
 }

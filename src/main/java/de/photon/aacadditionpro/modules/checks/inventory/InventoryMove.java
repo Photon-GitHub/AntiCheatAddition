@@ -16,6 +16,7 @@ import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.entity.EntityUtil;
 import de.photon.aacadditionpro.util.minecraft.tps.TPSProvider;
+import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
 import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
 import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
@@ -24,6 +25,7 @@ import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.Bukkit;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 
@@ -120,8 +122,9 @@ public class InventoryMove extends ViolationModule
                                 return;
                             }
 
-                            // Jumping false positive when stepping up a stair or slabs.
-                            if (MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getType())) return;
+                            // Jumping onto a stair or slabs false positive
+                            if (MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getType()) ||
+                                MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getRelative(BlockFace.DOWN).getType())) return;
 
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(20)
@@ -130,18 +133,21 @@ public class InventoryMove extends ViolationModule
                             return;
                         }
 
-                        // Make sure that the last jump is a little bit ago (same "breaking" effect that needs compensation.)
-                        if (user.getTimestampMap().at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850)) return;
+                        // Make sure that the last jump is a little ago (same "breaking" effect that needs compensation.)
+                        if (user.getTimestampMap().at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) ||
+                            // No Y change anymore. AAC and the rule above makes sure that people cannot jump again.
+                            // While falling down people can modify their inventories.
+                            knownPosition.getY() == moveTo.getY()) return;
 
-                        // No Y change anymore. AAC and the rule above makes sure that people cannot jump again.
-                        // While falling down people can modify their inventories.
-                        if (knownPosition.getY() == moveTo.getY() &&
-                            // 230 is a little compensation for the "breaking" when sprinting previously (value has been established
-                            // by local tests).
-                            user.notRecentlyOpenedInventory(240L + lenienceMillis))
-                        {
+                        // The break period is longer with the speed effect.
+                        val speedEffect = InternalPotion.SPEED.getPotionEffect(user.getPlayer()).getAmplifier();
+                        val speedMillis = speedEffect == null ? 0L : Math.max(100, speedEffect + 1) * 50L;
+
+                        if (user.notRecentlyOpenedInventory(240L + speedMillis + lenienceMillis)) {
                             // Do the entity pushing stuff here (performance impact)
                             // No nearby entities that could push the player
+
+                            DebugSender.getInstance().sendDebug("Inventory Speed: " + user.getTimestampMap().at(TimestampKey.INVENTORY_OPENED).passedTime());
                             try {
                                 // Needs to be called synchronously.
                                 if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()).get())) {

@@ -40,12 +40,13 @@ public final class MaterialUtil
     public static final Set<Material> FREE_SPACE_CONTAINERS;
 
     static {
+        val autoStepMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
         val freeSpaceContainers = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
 
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
             case MC112:
-                AUTO_STEP_MATERIALS = Sets.immutableEnumSet(getMaterialsEndingWith("_STAIRS", "_SLABS"));
+                autoStepMaterials.addAll(getMaterialsEndingWith("_STAIRS", "_SLABS"));
                 freeSpaceContainers.addAll(getMaterialsEndingWith("SHULKER_BOK"));
 
                 EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
@@ -55,7 +56,7 @@ public final class MaterialUtil
             case MC116:
             case MC117:
             case MC118:
-                AUTO_STEP_MATERIALS = Sets.immutableEnumSet(ofTags(Tag.SLABS, Tag.WOODEN_SLABS, Tag.STAIRS, Tag.WOODEN_STAIRS));
+                autoStepMaterials.addAll(ofTags(Tag.SLABS, Tag.WOODEN_SLABS, Tag.STAIRS, Tag.WOODEN_STAIRS));
                 freeSpaceContainers.addAll(ofTags(Tag.SHULKER_BOXES));
 
                 EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
@@ -65,6 +66,7 @@ public final class MaterialUtil
                 throw new UnknownMinecraftException();
         }
 
+        AUTO_STEP_MATERIALS = Sets.immutableEnumSet(autoStepMaterials);
         FREE_SPACE_CONTAINERS = Sets.immutableEnumSet(freeSpaceContainers);
     }
 

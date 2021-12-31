@@ -188,13 +188,13 @@ class ModernWorldUtil implements WorldUtil
                     // 1.8.8 and 1.12 doesn't provide isPassable.
                     // Make sure that the block above is not obstructed by blocks
                     // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
-                    return aboveBlock.getType().isOccluding();
+                    return !aboveBlock.getType().isOccluding();
                 case MC115:
                 case MC116:
                 case MC117:
                 case MC118:
                     // Make sure that the block above is not obstructed by blocks
-                    return aboveBlock.getType().isOccluding()
+                    return !aboveBlock.getType().isOccluding()
                            // Make sure that the block above is not obstructed by cats
                            && aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.INSTANCE.ofType(EntityType.CAT)).isEmpty();
                 default:

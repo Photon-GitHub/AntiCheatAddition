@@ -3,7 +3,6 @@ package de.photon.aacadditionpro.util.minecraft.tps;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.util.mathematics.DataUtil;
 import de.photon.aacadditionpro.util.mathematics.ModularInteger;
-import lombok.val;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -41,6 +40,7 @@ class CCTPSProvider implements TPSProvider
     /**
      * Gets the current TPS of the server.
      */
+    @Override
     public double getTPS()
     {
         return TPS.getCurrentTPS();
@@ -64,24 +64,25 @@ class CCTPSProvider implements TPSProvider
 
         double getCurrentTPS()
         {
-            val delta = this.getDelta();
-            if (delta <= 0) return 20.0;
+            final double average = this.getAverage();
+            if (average <= 0) return 20.0;
 
-            // 1000 milliseconds per second, delta is also milliseconds -> ticks. As the maximum of ticks is 20, allow no value above 20.
-            return Math.min(1000.0 / delta, 20.0);
+            // 1000 milliseconds per second, average is also milliseconds -> ticks. As the maximum of ticks is 20, allow no value above 20.
+            return Math.min(1000.0 / average, 20.0);
         }
 
+        @Override
         public void run()
         {
-            val curr = System.currentTimeMillis();
-            val delta = curr - this.lastTick;
+            final long curr = System.currentTimeMillis();
+            final long delta = curr - this.lastTick;
 
             this.lastTick = curr;
             tickIntervals[currentIndex] = delta;
             currentIndex = ModularInteger.increment(currentIndex, RESOLUTION);
         }
 
-        private double getDelta()
+        private double getAverage()
         {
             return DataUtil.average(this.tickIntervals);
         }

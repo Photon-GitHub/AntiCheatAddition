@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public abstract class ViolationManagement
@@ -74,7 +74,7 @@ public abstract class ViolationManagement
     {
         // Only schedule the command execution if the plugin is loaded and when we do not use AAC's feature handling.
         if (AACAdditionPro.getInstance().isEnabled() && AACAdditionPro.getInstance().getAacapi() == null) {
-            this.thresholds.executeThresholds(fromVl, toVl, Collections.singleton(player));
+            this.thresholds.executeThresholds(fromVl, toVl, Set.of(player));
         }
     }
 }

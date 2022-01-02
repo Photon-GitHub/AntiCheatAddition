@@ -6,7 +6,7 @@ import org.bukkit.ChatColor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
+import java.util.Set;
 
 class PlaceholderTest
 {
@@ -14,7 +14,7 @@ class PlaceholderTest
     void noPlaceholder()
     {
         val empty = "";
-        val playerSingleton = Collections.singleton(Dummy.mockPlayer());
+        val playerSingleton = Set.of(Dummy.mockPlayer());
         Assertions.assertEquals(empty, Placeholders.replacePlaceholders(empty, playerSingleton));
 
         val string = "Some Spigot";

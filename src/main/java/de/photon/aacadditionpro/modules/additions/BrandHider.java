@@ -18,7 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.Collections;
+import java.util.Set;
 
 public class BrandHider extends Module implements Listener
 {
@@ -48,7 +48,7 @@ public class BrandHider extends Module implements Listener
     {
         val buf = Unpooled.buffer();
 
-        ByteBufUtil.writeString(Placeholders.replacePlaceholders(BrandHider.brand, Collections.singleton(player)), buf);
+        ByteBufUtil.writeString(Placeholders.replacePlaceholders(BrandHider.brand, Set.of(player)), buf);
 
         player.sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel(), ByteBufUtil.toArray(buf));
         buf.release();

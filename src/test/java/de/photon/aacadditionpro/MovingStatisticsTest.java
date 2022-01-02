@@ -25,6 +25,12 @@ class MovingStatisticsTest
     }
 
     @Test
+    void MovingStatisticsDefaultOverflowTest()
+    {
+        Assertions.assertThrows(ArithmeticException.class, () -> new MovingDoubleStatistics(2, Long.MAX_VALUE), "Can create default overflowing MovingLongStatistics");
+    }
+
+    @Test
     void MovingStatisticsNoDefaultTest()
     {
         val capacity = 10;

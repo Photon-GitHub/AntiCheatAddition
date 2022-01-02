@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.util.datastructure.statistics;
 
 import com.google.common.base.Preconditions;
+import de.photon.aacadditionpro.util.mathematics.DataUtil;
 import de.photon.aacadditionpro.util.mathematics.ModularInteger;
 import lombok.Getter;
 
@@ -35,6 +36,9 @@ public class MovingDoubleStatistics
         this.average = defaultValue;
     }
 
+    /**
+     * This method adds a new datapoint to the floating sum and average.
+     */
     public void add(long value)
     {
         final int effIndex = index.getAndIncrement();
@@ -47,5 +51,15 @@ public class MovingDoubleStatistics
 
         // Update the average.
         average = sum / data.length;
+    }
+
+    /**
+     * Method to reload the sum and average after floating-point-error accumulation.
+     * O(n) runtime.
+     */
+    public void reloadData()
+    {
+        this.sum = DataUtil.sum(this.data);
+        this.average = sum / data.length;
     }
 }

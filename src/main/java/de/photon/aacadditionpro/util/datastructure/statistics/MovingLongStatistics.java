@@ -31,14 +31,19 @@ public class MovingLongStatistics
     {
         this(capacity);
         Arrays.fill(this.data, defaultValue);
-        this.sum = capacity * defaultValue;
+        this.sum = Math.multiplyExact(capacity, defaultValue);
         this.average = defaultValue;
     }
 
+    /**
+     * This method adds a new datapoint to the floating sum and average.
+     * Long overflows are not detected by this method!
+     */
     public void add(long value)
     {
         final int effIndex = index.getAndIncrement();
         // Remove the overwritten element from the sum
+
         sum -= data[effIndex];
         // Actually overwrite.
         data[effIndex] = value;

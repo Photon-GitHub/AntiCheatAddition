@@ -13,7 +13,7 @@ import de.photon.aacadditionpro.user.data.batch.InventoryBatch;
 import de.photon.aacadditionpro.user.data.batch.ScaffoldBatch;
 import de.photon.aacadditionpro.user.data.batch.TowerBatch;
 import de.photon.aacadditionpro.user.data.subdata.LookPacketData;
-import de.photon.aacadditionpro.util.mathematics.FloatingAverage;
+import de.photon.aacadditionpro.util.datastructure.statistics.MovingDoubleStatistics;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -61,7 +61,7 @@ public class User implements Permissible
 
     private final LookPacketData lookPacketData = new LookPacketData();
 
-    private final FloatingAverage pingspoofPing = new FloatingAverage(4, 200D);
+    private final MovingDoubleStatistics pingspoofPing = new MovingDoubleStatistics(4, 200D);
 
     /**
      * Creates an {@link User} from a {@link Player}.

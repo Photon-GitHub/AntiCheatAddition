@@ -73,7 +73,7 @@ public class Pingspoof extends ViolationModule implements Listener
                         DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to bypass pingspoof check.");
                         this.getManagement().flag(Flag.of(user).setAddedVl(35));
                     } else {
-                        user.getPingspoofPing().addDataPoint(MathUtil.absDiff(received, sent));
+                        user.getPingspoofPing().add(MathUtil.absDiff(received, sent));
                         echoPing = PingProvider.INSTANCE.getEchoPing(user);
 
                         // The player has not sent the received packet.

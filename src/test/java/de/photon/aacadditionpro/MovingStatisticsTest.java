@@ -28,6 +28,7 @@ class MovingStatisticsTest
     void MovingStatisticsDefaultOverflowTest()
     {
         Assertions.assertThrows(ArithmeticException.class, () -> new MovingLongStatistics(2, Long.MAX_VALUE), "Can create default overflowing MovingLongStatistics");
+        Assertions.assertThrows(ArithmeticException.class, () -> new MovingLongStatistics(2, Long.MIN_VALUE), "Can create default overflowing MovingLongStatistics");
     }
 
     @Test

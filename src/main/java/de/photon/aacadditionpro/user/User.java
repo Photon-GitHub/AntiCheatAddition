@@ -160,15 +160,21 @@ public class User implements Permissible
     }
 
     /**
-     * This determines and returnes the correct {@link Hitbox} for this {@link User}.
+     * This determines and returns the correct {@link Hitbox} for this {@link User}.
      *
      * @return {@link Hitbox#SNEAKING_PLAYER} or {@link Hitbox#PLAYER}.
      */
     public Hitbox getHitbox()
     {
-        return this.player.isSneaking() ?
-               Hitbox.SNEAKING_PLAYER :
-               Hitbox.PLAYER;
+        return this.player.isSneaking() ? Hitbox.SNEAKING_PLAYER : Hitbox.PLAYER;
+    }
+
+    /**
+     * Checks if the {@link User} is currently in any liquid.
+     */
+    public boolean isInLiquids()
+    {
+        return this.getHitbox().isInLiquids(this.getPlayer().getLocation());
     }
 
 

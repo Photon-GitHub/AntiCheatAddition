@@ -12,7 +12,6 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.entity.EntityUtil;
 import de.photon.aacadditionpro.util.minecraft.tps.TPSProvider;
@@ -110,7 +109,7 @@ public class InventoryMove extends ViolationModule
                         // errors.
                         WorldUtil.INSTANCE.isChunkLoaded(user.getPlayer().getLocation()) &&
                         // The player is currently not in a liquid (liquids push)
-                        !Hitbox.PLAYER.isInLiquids(knownPosition) &&
+                        !user.getHitbox().isInLiquids(knownPosition) &&
                         // Auto-Disable if TPS are too low
                         TPSProvider.INSTANCE.getTPS() > minTps)
                     {

@@ -11,7 +11,6 @@ import de.photon.aacadditionpro.protocol.packetwrappers.sentbyclient.IWrapperPla
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
-import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
@@ -71,12 +70,12 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                         try {
                             if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () ->
                                     // False positive when jumping from great heights into a pool with slime blocks on the bottom.
-                                    !(Hitbox.PLAYER.isInLiquids(user.getPlayer().getLocation()) &&
+                                    !(user.isInLiquids() &&
                                       user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SLIME_BLOCK) &&
                                     // Fixes false positives on versions 1.9+ because of changed hitboxes
                                     !(ServerVersion.is18() &&
                                       ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC18 &&
-                                      MaterialUtil.containsMaterials(Hitbox.PLAYER.getPartiallyIncludedMaterials(user.getPlayer().getLocation()), MaterialUtil.CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS)))
+                                      MaterialUtil.containsMaterials(user.getHitbox().getPartiallyIncludedMaterials(user.getPlayer().getLocation()), MaterialUtil.CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS)))
                             {
                                 // Cancelled packets may cause problems.
                                 if (user.getDataMap().getBoolean(DataKey.BooleanKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED)) {

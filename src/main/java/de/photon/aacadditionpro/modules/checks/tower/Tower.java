@@ -62,7 +62,7 @@ public class Tower extends ViolationModule implements Listener
                 //
                 // Custom formula when setting -> Will return negative value when in protected timeframe.
                 user.getTimestampMap().at(TimestampKey.TOWER_SLIME_JUMP).passedTime() > 0 &&
-                // Check if the block is placed against one block (face) only
+                // Check if the block is placed against only one block (face).
                 // Only one block that is not a liquid is allowed (the one which the Block is placed against).
                 WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&
                 // User is not in water which can cause false positives due to faster swimming on newer versions.

@@ -33,7 +33,6 @@ import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -98,13 +97,6 @@ public class User implements Permissible
         // Special handling here as a player could potentially log out after this and therefore cause a NPE.
         val player = event.getPlayer();
         return event.isCancelled() || event.isPlayerTemporary() || player == null ? null : getUser(player);
-    }
-
-    public static Collection<Player> getPlayers(Collection<User> users)
-    {
-        val players = new ArrayList<Player>();
-        for (User user : users) players.add(user.player);
-        return players;
     }
 
     /**

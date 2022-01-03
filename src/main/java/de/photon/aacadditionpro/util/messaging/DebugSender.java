@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DebugSender implements Listener
@@ -75,7 +76,9 @@ public final class DebugSender implements Listener
 
         // Prevent errors on disable as of scheduling
         if (allowedToRegisterTasks && writeToPlayers) {
-            ChatMessage.sendSyncMessage(User.getPlayers(User.getDebugUsers()), s);
+            ChatMessage.sendSyncMessage(User.getDebugUsers().stream()
+                                            .map(User::getPlayer)
+                                            .collect(Collectors.toUnmodifiableList()), s);
         }
     }
 

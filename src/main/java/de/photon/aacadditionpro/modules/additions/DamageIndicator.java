@@ -18,6 +18,8 @@ import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
 
+import java.util.Set;
+
 public class DamageIndicator extends Module
 {
     @LoadFromConfiguration(configPath = ".spoof.players")
@@ -37,8 +39,8 @@ public class DamageIndicator extends Module
     {
         val packetTypes = ServerVersion.is18() ?
                           // Only register NAMED_ENTITY_SPAWN on 1.8 as it doesn't work on newer versions.
-                          new PacketType[]{PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN} :
-                          new PacketType[]{PacketType.Play.Server.ENTITY_METADATA};
+                          Set.of(PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN) :
+                          Set.of(PacketType.Play.Server.ENTITY_METADATA);
 
         val adapter = PacketAdapterBuilder
                 .of(packetTypes)

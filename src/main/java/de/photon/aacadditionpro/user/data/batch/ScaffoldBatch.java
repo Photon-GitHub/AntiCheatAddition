@@ -3,9 +3,9 @@ package de.photon.aacadditionpro.user.data.batch;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructure.batch.Batch;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
+import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
 import lombok.Value;
-import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -33,8 +33,7 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
 
         public long timeOffset(@NotNull ScaffoldBlockPlace other)
         {
-            val otime = other.getTime();
-            return time < otime ? otime - time : time - otime;
+            return MathUtil.absDiff(time, other.getTime());
         }
 
         public double getSpeedModifier()

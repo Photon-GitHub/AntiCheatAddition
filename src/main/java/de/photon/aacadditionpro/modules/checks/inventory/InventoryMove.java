@@ -103,10 +103,8 @@ public class InventoryMove extends ViolationModule
                         // Recent teleports can cause bugs
                         !user.hasTeleportedRecently(teleportBypassTime) &&
                         !user.hasChangedWorldsRecently(worldChangeBypassTime) &&
-                        // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
-                        // world add errors.
-                        // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load
-                        // errors.
+                        // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity world add errors.
+                        // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load errors.
                         WorldUtil.INSTANCE.isChunkLoaded(user.getPlayer().getLocation()) &&
                         // The player is currently not in a liquid (liquids push)
                         !user.getHitbox().isInLiquids(knownPosition) &&
@@ -122,6 +120,7 @@ public class InventoryMove extends ViolationModule
                             }
 
                             // Jumping onto a stair or slabs false positive
+                            // TODO: Make sure that bypasses are disabled by checking positiveVelocity.
                             if (MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getType()) ||
                                 MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getRelative(BlockFace.DOWN).getType())) return;
 

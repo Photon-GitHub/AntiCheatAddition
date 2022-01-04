@@ -6,6 +6,7 @@ import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -34,7 +35,10 @@ class ScaffoldJumping extends Module
             if (user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 500)
                 && user.hasJumpedRecently(1000))
             {
-                return failCounter.incrementCompareThreshold() ? 20 : 0;
+                if (failCounter.incrementCompareThreshold()) {
+                    DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + event.getPlayer().getName() + " jumped while scaffolding.");
+                    return 20;
+                }
             } else {
                 // Decrease only every 10 blocks to make sure one cannot easily bypass this check by jumping only every other block.
                 val legitCounter = user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_JUMPING_LEGIT);
@@ -42,8 +46,8 @@ class ScaffoldJumping extends Module
                     failCounter.decrementAboveZero();
                     legitCounter.setToZero();
                 }
-                return 0;
             }
+            return 0;
         };
     }
 

@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.util.reflection;
 
 import de.photon.aacadditionpro.AACAdditionPro;
+import org.bukkit.Bukkit;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,6 +13,7 @@ import java.util.logging.Level;
  */
 public class Reflect
 {
+    private static final String BUKKIT_VERSION_NUMBER = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
     private static final Map<String, ClassReflect> REFLECTION_CACHE = new ConcurrentHashMap<>();
 
     public static ClassReflect from(Class clazz)
@@ -33,11 +35,11 @@ public class Reflect
 
     public static ClassReflect fromNMS(String classPath)
     {
-        return from(("net.minecraft.server." + ReflectionUtils.getVersionString()) + "." + classPath);
+        return from(("net.minecraft.server." + BUKKIT_VERSION_NUMBER) + "." + classPath);
     }
 
     public static ClassReflect fromOBC(String classPath)
     {
-        return from(("org.bukkit.craftbukkit." + ReflectionUtils.getVersionString()) + "." + classPath);
+        return from(("org.bukkit.craftbukkit." + BUKKIT_VERSION_NUMBER) + "." + classPath);
     }
 }

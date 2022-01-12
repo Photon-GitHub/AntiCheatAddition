@@ -119,10 +119,17 @@ public class InventoryMove extends ViolationModule
                                 return;
                             }
 
+                            DebugSender.getInstance().sendDebug("Inventory JUMP: " + knownPosition.getY() + " | " + moveTo.getY() + " | " + positiveVelocity);
+
                             // Jumping onto a stair or slabs false positive
-                            // TODO: Make sure that bypasses are disabled by checking positiveVelocity.
-                            if (MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getType()) ||
-                                MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getRelative(BlockFace.DOWN).getType())) return;
+                            // Prevent false positives by checking for positive velocity and the moved distance.
+                            if (positiveVelocity &&
+                                (MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getType()) ||
+                                 MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getRelative(BlockFace.DOWN).getType())))
+                            {
+                                DebugSender.getInstance().sendDebug("Inventory AUTO_STEP");
+                                return;
+                            }
 
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(20)

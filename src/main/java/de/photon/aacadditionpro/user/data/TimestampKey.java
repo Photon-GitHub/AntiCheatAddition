@@ -52,7 +52,7 @@ public enum TimestampKey
 
     TEAMING_COMBAT_TAG,
 
-    TOWER_SLIME_JUMP,
+    TOWER_BOUNCE,
     TOWER_TIMEOUT
 
 }

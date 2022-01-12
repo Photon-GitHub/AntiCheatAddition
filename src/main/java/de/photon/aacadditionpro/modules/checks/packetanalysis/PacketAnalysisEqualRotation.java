@@ -11,7 +11,6 @@ import de.photon.aacadditionpro.protocol.packetwrappers.sentbyclient.IWrapperPla
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
-import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
@@ -19,7 +18,6 @@ import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.val;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
 import java.util.concurrent.ExecutionException;
@@ -70,13 +68,13 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                         // Sync call because the isHitboxInLiquids method will load chunks (prevent errors).
                         try {
                             if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () ->
-                                    // False positive when jumping from great heights into a pool with slime blocks on the bottom.
-                                    !(Hitbox.PLAYER.isInLiquids(user.getPlayer().getLocation()) &&
-                                      user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SLIME_BLOCK) &&
+                                    // False positive when jumping from great heights into a pool with slime blocks / beds on the bottom.
+                                    !(user.isInLiquids() &&
+                                      MaterialUtil.BOUNCE_MATERIALS.contains(user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) &&
                                     // Fixes false positives on versions 1.9+ because of changed hitboxes
                                     !(ServerVersion.is18() &&
                                       ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC18 &&
-                                      MaterialUtil.containsMaterials(Hitbox.PLAYER.getPartiallyIncludedMaterials(user.getPlayer().getLocation()), MaterialUtil.CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS)))
+                                      MaterialUtil.containsMaterials(user.getHitbox().getPartiallyIncludedMaterials(user.getPlayer().getLocation()), MaterialUtil.CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS)))
                             {
                                 // Cancelled packets may cause problems.
                                 if (user.getDataMap().getBoolean(DataKey.BooleanKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED)) {

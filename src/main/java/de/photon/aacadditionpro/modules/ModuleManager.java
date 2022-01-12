@@ -53,7 +53,7 @@ public final class ModuleManager
 
     static {
         // Additions
-        val brandHider = new BrandHider();
+        val brandHider = BrandHider.INSTANCE;
         val damageIndicator = new DamageIndicator();
         val logBot = new LogBot();
         val versionControl = new VersionControl();

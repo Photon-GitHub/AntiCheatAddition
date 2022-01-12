@@ -97,7 +97,7 @@ public final class AACAdditionProApi
     public static void setBrandHiderBrand(final String string)
     {
         Preconditions.checkNotNull(string, "Tried to set BrandHider brand to null.");
-        BrandHider.setBrand(string);
+        BrandHider.INSTANCE.setBrand(string);
     }
 
 

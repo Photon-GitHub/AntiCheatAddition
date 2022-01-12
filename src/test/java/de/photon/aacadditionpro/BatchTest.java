@@ -16,9 +16,11 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 class BatchTest
 {
+    // Do not remove this unused variable, it is needed for initialization of mocking.
     private static final AACAdditionPro mock = Dummy.mockAACAdditionPro();
     private static final User dummy = Dummy.mockUser();
     private static final ViolationModule dummyVlModule = Dummy.mockViolationModule();
@@ -61,7 +63,7 @@ class BatchTest
         val output = new ArrayList<String>();
         val batchSize = 3;
 
-        val batchProcessor = new SyncBatchProcessor<String>(dummyVlModule, Collections.singleton(stringBroadcaster))
+        val batchProcessor = new SyncBatchProcessor<>(dummyVlModule, Set.of(stringBroadcaster))
         {
             @Override
             public void processBatch(User user, List<String> batch)
@@ -87,7 +89,7 @@ class BatchTest
         val output = Collections.synchronizedList(new ArrayList<String>());
         val batchSize = 3;
 
-        val batchProcessor = new AsyncBatchProcessor<String>(dummyVlModule, Collections.singleton(stringBroadcaster))
+        val batchProcessor = new AsyncBatchProcessor<>(dummyVlModule, Set.of(stringBroadcaster))
         {
             @Override
             public void processBatch(User user, List<String> batch)

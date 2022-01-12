@@ -13,7 +13,7 @@ import de.photon.aacadditionpro.user.data.batch.InventoryBatch;
 import de.photon.aacadditionpro.user.data.batch.ScaffoldBatch;
 import de.photon.aacadditionpro.user.data.batch.TowerBatch;
 import de.photon.aacadditionpro.user.data.subdata.LookPacketData;
-import de.photon.aacadditionpro.util.mathematics.FloatingAverage;
+import de.photon.aacadditionpro.util.datastructure.statistics.MovingDoubleStatistics;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -33,7 +33,6 @@ import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -61,7 +60,7 @@ public class User implements Permissible
 
     private final LookPacketData lookPacketData = new LookPacketData();
 
-    private final FloatingAverage pingspoofPing = new FloatingAverage(4, 200D);
+    private final MovingDoubleStatistics pingspoofPing = new MovingDoubleStatistics(4, 200D);
 
     /**
      * Creates an {@link User} from a {@link Player}.
@@ -98,13 +97,6 @@ public class User implements Permissible
         // Special handling here as a player could potentially log out after this and therefore cause a NPE.
         val player = event.getPlayer();
         return event.isCancelled() || event.isPlayerTemporary() || player == null ? null : getUser(player);
-    }
-
-    public static Collection<Player> getPlayers(Collection<User> users)
-    {
-        val players = new ArrayList<Player>();
-        for (User user : users) players.add(user.player);
-        return players;
     }
 
     /**
@@ -168,15 +160,21 @@ public class User implements Permissible
     }
 
     /**
-     * This determines and returnes the correct {@link Hitbox} for this {@link User}.
+     * This determines and returns the correct {@link Hitbox} for this {@link User}.
      *
      * @return {@link Hitbox#SNEAKING_PLAYER} or {@link Hitbox#PLAYER}.
      */
     public Hitbox getHitbox()
     {
-        return this.player.isSneaking() ?
-               Hitbox.SNEAKING_PLAYER :
-               Hitbox.PLAYER;
+        return this.player.isSneaking() ? Hitbox.SNEAKING_PLAYER : Hitbox.PLAYER;
+    }
+
+    /**
+     * Checks if the {@link User} is currently in any liquid.
+     */
+    public boolean isInLiquids()
+    {
+        return this.getHitbox().isInLiquids(this.getPlayer().getLocation());
     }
 
 

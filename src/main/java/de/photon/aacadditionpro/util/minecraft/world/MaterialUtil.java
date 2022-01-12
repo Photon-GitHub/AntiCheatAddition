@@ -31,6 +31,11 @@ public final class MaterialUtil
      */
     public static final Set<Material> AUTO_STEP_MATERIALS;
 
+    /**
+     * Materials which bounce the player up when jumping or landing on them.
+     */
+    public static final Set<Material> BOUNCE_MATERIALS;
+
     public static final Material EXPERIENCE_BOTTLE;
     public static final Set<Material> LIQUIDS;
 
@@ -41,12 +46,15 @@ public final class MaterialUtil
 
     static {
         val autoStepMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
+        val bounceMaterials = EnumSet.of(Material.SLIME_BLOCK);
         val freeSpaceContainers = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
 
         switch (ServerVersion.getActiveServerVersion()) {
             case MC18:
             case MC112:
                 autoStepMaterials.addAll(getMaterialsEndingWith("_STAIRS", "_SLABS"));
+                // This will automatically exclude the "BED" on 1.8.8, as jumping was introduced in 1.12.
+                bounceMaterials.addAll(getMaterialsEndingWith("_BED"));
                 freeSpaceContainers.addAll(getMaterialsEndingWith("SHULKER_BOK"));
 
                 EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
@@ -57,6 +65,7 @@ public final class MaterialUtil
             case MC117:
             case MC118:
                 autoStepMaterials.addAll(ofTags(Tag.SLABS, Tag.WOODEN_SLABS, Tag.STAIRS, Tag.WOODEN_STAIRS));
+                bounceMaterials.addAll(ofTags(Tag.BEDS));
                 freeSpaceContainers.addAll(ofTags(Tag.SHULKER_BOXES));
 
                 EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
@@ -67,6 +76,7 @@ public final class MaterialUtil
         }
 
         AUTO_STEP_MATERIALS = Sets.immutableEnumSet(autoStepMaterials);
+        BOUNCE_MATERIALS = Sets.immutableEnumSet(bounceMaterials);
         FREE_SPACE_CONTAINERS = Sets.immutableEnumSet(freeSpaceContainers);
     }
 

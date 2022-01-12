@@ -7,7 +7,6 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.user.data.batch.TowerBatch;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
-import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
 import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
 import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
@@ -62,12 +61,12 @@ public class Tower extends ViolationModule implements Listener
                 blockPlaced.getType().isSolid() &&
                 //
                 // Custom formula when setting -> Will return negative value when in protected timeframe.
-                user.getTimestampMap().at(TimestampKey.TOWER_SLIME_JUMP).passedTime() > 0 &&
-                // Check if the block is placed against one block (face) only
+                user.getTimestampMap().at(TimestampKey.TOWER_BOUNCE).passedTime() > 0 &&
+                // Check if the block is placed against only one block (face).
                 // Only one block that is not a liquid is allowed (the one which the Block is placed against).
                 WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&
                 // User is not in water which can cause false positives due to faster swimming on newer versions.
-                !Hitbox.PLAYER.isInLiquids(user.getPlayer().getLocation()))
+                !user.isInLiquids())
             {
                 // Make sure that the player is still towering in the same position.
                 if (!event.getBlockAgainst().getLocation().equals(user.getTowerBatch().peekLastAdded().getLocationOfBlock())) user.getTowerBatch().clear();

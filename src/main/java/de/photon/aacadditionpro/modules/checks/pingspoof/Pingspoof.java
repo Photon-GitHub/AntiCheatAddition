@@ -73,13 +73,16 @@ public class Pingspoof extends ViolationModule implements Listener
                         DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to bypass pingspoof check.");
                         this.getManagement().flag(Flag.of(user).setAddedVl(35));
                     } else {
-                        user.getPingspoofPing().addDataPoint(MathUtil.absDiff(received, sent));
+                        user.getPingspoofPing().add(MathUtil.absDiff(received, sent));
                         echoPing = PingProvider.INSTANCE.getEchoPing(user);
 
                         // The player has not sent the received packet.
                         difference = Math.abs(serverPing - echoPing);
 
                         if (difference > pingLeniency) {
+                            // Make sure we do not have continuous false positives due to floating point errors.
+                            user.getPingspoofPing().reloadData();
+
                             DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to spoof ping. Spoofed: " + serverPing + " | Actual: " + echoPing);
                             this.getManagement().flag(Flag.of(user).setAddedVl(difference > 500 ?
                                                                                VL_CALCULATOR_ABOVE_500.apply(difference).intValue() :

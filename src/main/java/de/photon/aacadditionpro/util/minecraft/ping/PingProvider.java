@@ -15,7 +15,7 @@ public interface PingProvider
      */
     default long getEchoPing(final User user)
     {
-        return (long) user.getPingspoofPing().getFloatingAverage();
+        return (long) user.getPingspoofPing().getAverage();
     }
 
     /**

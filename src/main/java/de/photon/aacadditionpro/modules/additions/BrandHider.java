@@ -18,37 +18,40 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.Collections;
+import java.util.Set;
 
 public class BrandHider extends Module implements Listener
 {
+    public static final BrandHider INSTANCE = new BrandHider();
+
     private static final FieldReflect PLAYER_CHANNELS_FIELD = Reflect.fromOBC("entity.CraftPlayer").field("channels");
-    private static String brand;
 
     @LoadFromConfiguration(configPath = ".refresh_rate")
     private long refreshRate;
+
+    private String brand;
 
     public BrandHider()
     {
         super("BrandHider");
     }
 
-    public static void setBrand(String brand)
+    public void setBrand(String brand)
     {
-        BrandHider.brand = ChatColor.translateAlternateColorCodes('&', brand) + ChatColor.RESET;
-        updateAllBrands();
+        this.brand = ChatColor.translateAlternateColorCodes('&', brand) + ChatColor.RESET;
+        this.updateAllBrands();
     }
 
-    private static void updateAllBrands()
+    private void updateAllBrands()
     {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) updateBrand(onlinePlayer);
     }
 
-    private static void updateBrand(final Player player)
+    private void updateBrand(final Player player)
     {
         val buf = Unpooled.buffer();
 
-        ByteBufUtil.writeString(Placeholders.replacePlaceholders(BrandHider.brand, Collections.singleton(player)), buf);
+        ByteBufUtil.writeString(Placeholders.replacePlaceholders(this.brand, Set.of(player)), buf);
 
         player.sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel(), ByteBufUtil.toArray(buf));
         buf.release();
@@ -64,8 +67,8 @@ public class BrandHider extends Module implements Listener
     public void enable()
     {
         Bukkit.getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel());
-        setBrand(AACAdditionPro.getInstance().getConfig().getString(this.getConfigString() + ".brand"));
-        if (refreshRate > 0) Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), BrandHider::updateAllBrands, 20, refreshRate);
+        this.setBrand(AACAdditionPro.getInstance().getConfig().getString(this.getConfigString() + ".brand"));
+        if (refreshRate > 0) Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::updateAllBrands, 20, refreshRate);
     }
 
     @EventHandler

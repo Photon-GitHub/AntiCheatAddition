@@ -4,9 +4,9 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.Constants;
 import de.photon.aacadditionpro.util.datastructure.batch.Batch;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
+import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
 import lombok.Value;
-import lombok.val;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,8 +30,7 @@ public class TowerBatch extends Batch<TowerBatch.TowerBlockPlace>
 
         public long timeOffset(@NotNull TowerBlockPlace other)
         {
-            val otime = other.getTime();
-            return time < otime ? otime - time : time - otime;
+            return MathUtil.absDiff(time, other.getTime());
         }
     }
 }

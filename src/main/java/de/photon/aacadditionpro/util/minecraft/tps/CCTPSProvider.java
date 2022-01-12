@@ -1,12 +1,9 @@
 package de.photon.aacadditionpro.util.minecraft.tps;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.util.mathematics.DataUtil;
-import de.photon.aacadditionpro.util.mathematics.ModularInteger;
+import de.photon.aacadditionpro.util.datastructure.statistics.MovingLongStatistics;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.Arrays;
 
 /**
  * This util provides methods to get information from the server that is usually hidden.
@@ -49,22 +46,21 @@ class CCTPSProvider implements TPSProvider
     private static class TPS extends BukkitRunnable
     {
         private static final int RESOLUTION = 40;
-        private final long[] tickIntervals = new long[RESOLUTION];
 
-        private final ModularInteger currentIndex = new ModularInteger(0, RESOLUTION);
+        // Init the RingBuffer with 50 millis for 20 TPS.
+        private final MovingLongStatistics tickIntervals = new MovingLongStatistics(RESOLUTION, 50L);
+
         private long lastTick;
 
         private TPS(final Plugin plugin)
         {
             this.lastTick = System.currentTimeMillis();
-            // Init the RingBuffer with 50 millis for 20 TPS.
-            Arrays.fill(tickIntervals, 50L);
             this.runTaskTimer(plugin, 1L, 1L);
         }
 
         double getCurrentTPS()
         {
-            final double average = this.getAverage();
+            final double average = this.tickIntervals.getAverage();
             if (average <= 0) return 20.0;
 
             // 1000 milliseconds per second, average is also milliseconds -> ticks. As the maximum of ticks is 20, allow no value above 20.
@@ -75,15 +71,9 @@ class CCTPSProvider implements TPSProvider
         public void run()
         {
             final long curr = System.currentTimeMillis();
-            final long delta = curr - this.lastTick;
-
+            // Add the tick time difference as a data point.
+            tickIntervals.add(curr - this.lastTick);
             this.lastTick = curr;
-            tickIntervals[currentIndex.getAndIncrement()] = delta;
-        }
-
-        private double getAverage()
-        {
-            return DataUtil.average(this.tickIntervals);
         }
     }
 }

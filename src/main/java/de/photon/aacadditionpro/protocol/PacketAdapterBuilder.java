@@ -9,12 +9,13 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 public class PacketAdapterBuilder
 {
-    @NotNull private final PacketType[] types;
+    @NotNull private final Set<PacketType> types;
 
     private ListenerPriority priority = ListenerPriority.NORMAL;
     private Consumer<PacketEvent> onReceiving = null;
@@ -22,8 +23,13 @@ public class PacketAdapterBuilder
 
     public static PacketAdapterBuilder of(@NotNull PacketType... types)
     {
+        return of(Set.of(types));
+    }
+
+    public static PacketAdapterBuilder of(@NotNull Set<PacketType> types)
+    {
         Preconditions.checkNotNull(types, "Tried to create PacketAdapterBuilder with null types.");
-        Preconditions.checkArgument(types.length > 0, "Tried to create PacketAdapterBuilder without types.");
+        Preconditions.checkArgument(!types.isEmpty(), "Tried to create PacketAdapterBuilder without types.");
         return new PacketAdapterBuilder(types);
     }
 

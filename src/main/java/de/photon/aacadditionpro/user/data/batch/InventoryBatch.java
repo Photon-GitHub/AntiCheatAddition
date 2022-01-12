@@ -5,6 +5,7 @@ import de.photon.aacadditionpro.util.datastructure.batch.Batch;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
 import de.photon.aacadditionpro.util.datastructure.dummy.DummyInventory;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
+import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import lombok.Value;
 import lombok.val;
 import org.bukkit.event.inventory.ClickType;
@@ -43,8 +44,7 @@ public class InventoryBatch extends Batch<InventoryBatch.InventoryClick>
 
         public long timeOffset(@NotNull InventoryClick other)
         {
-            val otime = other.getTime();
-            return time < otime ? otime - time : time - otime;
+            return MathUtil.absDiff(time, other.getTime());
         }
     }
 }

@@ -12,7 +12,6 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.entity.EntityUtil;
 import de.photon.aacadditionpro.util.minecraft.tps.TPSProvider;
@@ -25,10 +24,13 @@ import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class InventoryMove extends ViolationModule
@@ -64,6 +66,12 @@ public class InventoryMove extends ViolationModule
             // Teleport back the next tick.
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> user.getPlayer().teleport(knownPosition, PlayerTeleportEvent.TeleportCause.UNKNOWN));
         }
+    }
+
+    private boolean checkLocationForMaterials(Location location, Set<Material> materials)
+    {
+        return materials.contains(location.getBlock().getType()) ||
+               materials.contains(location.getBlock().getRelative(BlockFace.DOWN).getType());
     }
 
     @Override
@@ -104,17 +112,16 @@ public class InventoryMove extends ViolationModule
                         // Recent teleports can cause bugs
                         !user.hasTeleportedRecently(teleportBypassTime) &&
                         !user.hasChangedWorldsRecently(worldChangeBypassTime) &&
-                        // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity
-                        // world add errors.
-                        // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load
-                        // errors.
+                        // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity world add errors.
+                        // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load errors.
                         WorldUtil.INSTANCE.isChunkLoaded(user.getPlayer().getLocation()) &&
                         // The player is currently not in a liquid (liquids push)
-                        !Hitbox.PLAYER.isInLiquids(knownPosition) &&
+                        !user.getHitbox().isInLiquids(knownPosition) &&
                         // Auto-Disable if TPS are too low
                         TPSProvider.INSTANCE.getTPS() > minTps)
                     {
                         val positiveVelocity = knownPosition.getY() < moveTo.getY();
+                        val noMovement = knownPosition.getY() == moveTo.getY();
 
                         if (positiveVelocity != user.getDataMap().getBoolean(DataKey.BooleanKey.POSITIVE_VELOCITY)) {
                             if (user.getDataMap().getBoolean(DataKey.BooleanKey.ALLOWED_TO_JUMP)) {
@@ -122,9 +129,14 @@ public class InventoryMove extends ViolationModule
                                 return;
                             }
 
-                            // Jumping onto a stair or slabs false positive
-                            if (MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getType()) ||
-                                MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getRelative(BlockFace.DOWN).getType())) return;
+                            // Bouncing can lead to false positives.
+                            if (checkLocationForMaterials(knownPosition, MaterialUtil.BOUNCE_MATERIALS)) return;
+
+                            // Prevent bypasses by checking for positive velocity and the moved distance.
+                            // Distance is not the same as some packets are sent with 0 distance.
+                            if ((positiveVelocity || noMovement) &&
+                                // Jumping onto a stair or slabs false positive
+                                checkLocationForMaterials(knownPosition, MaterialUtil.AUTO_STEP_MATERIALS)) return;
 
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(20)

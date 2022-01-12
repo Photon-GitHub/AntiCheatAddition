@@ -115,7 +115,7 @@ public class Scaffold extends ViolationModule implements Listener
 
             // All these checks may have false positives in new situations.
             if (!newScaffoldLocation) {
-                // False positive when wall jumping.
+                // Do not check jumping for new locations as of wall-building / jumping.
                 vl += this.scaffoldJumping.getApplyingConsumer().applyAsInt(user, event);
 
                 val angleInformation = user.getLookPacketData().getAngleInformation();

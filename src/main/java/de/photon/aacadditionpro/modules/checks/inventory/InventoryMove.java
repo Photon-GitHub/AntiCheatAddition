@@ -24,10 +24,13 @@ import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class InventoryMove extends ViolationModule
@@ -63,6 +66,12 @@ public class InventoryMove extends ViolationModule
             // Teleport back the next tick.
             Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> user.getPlayer().teleport(knownPosition, PlayerTeleportEvent.TeleportCause.UNKNOWN));
         }
+    }
+
+    private boolean checkLocationForMaterials(Location location, Set<Material> materials)
+    {
+        return materials.contains(location.getBlock().getType()) ||
+               materials.contains(location.getBlock().getRelative(BlockFace.DOWN).getType());
     }
 
     @Override
@@ -112,6 +121,7 @@ public class InventoryMove extends ViolationModule
                         TPSProvider.INSTANCE.getTPS() > minTps)
                     {
                         val positiveVelocity = knownPosition.getY() < moveTo.getY();
+                        val noMovement = knownPosition.getY() == moveTo.getY();
 
                         if (positiveVelocity != user.getDataMap().getBoolean(DataKey.BooleanKey.POSITIVE_VELOCITY)) {
                             if (user.getDataMap().getBoolean(DataKey.BooleanKey.ALLOWED_TO_JUMP)) {
@@ -119,17 +129,14 @@ public class InventoryMove extends ViolationModule
                                 return;
                             }
 
-                            DebugSender.getInstance().sendDebug("Inventory JUMP: " + knownPosition.getY() + " | " + moveTo.getY() + " | " + positiveVelocity);
+                            // Bouncing can lead to false positives.
+                            if (checkLocationForMaterials(knownPosition, MaterialUtil.BOUNCE_MATERIALS)) return;
 
-                            // Jumping onto a stair or slabs false positive
-                            // Prevent false positives by checking for positive velocity and the moved distance.
-                            if (positiveVelocity &&
-                                (MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getType()) ||
-                                 MaterialUtil.AUTO_STEP_MATERIALS.contains(knownPosition.getBlock().getRelative(BlockFace.DOWN).getType())))
-                            {
-                                DebugSender.getInstance().sendDebug("Inventory AUTO_STEP");
-                                return;
-                            }
+                            // Prevent bypasses by checking for positive velocity and the moved distance.
+                            // Distance is not the same as some packets are sent with 0 distance.
+                            if ((positiveVelocity || noMovement) &&
+                                // Jumping onto a stair or slabs false positive
+                                checkLocationForMaterials(knownPosition, MaterialUtil.AUTO_STEP_MATERIALS)) return;
 
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(20)

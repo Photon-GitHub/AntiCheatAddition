@@ -18,7 +18,6 @@ import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.val;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
 import java.util.concurrent.ExecutionException;
@@ -69,9 +68,9 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                         // Sync call because the isHitboxInLiquids method will load chunks (prevent errors).
                         try {
                             if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () ->
-                                    // False positive when jumping from great heights into a pool with slime blocks on the bottom.
+                                    // False positive when jumping from great heights into a pool with slime blocks / beds on the bottom.
                                     !(user.isInLiquids() &&
-                                      user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SLIME_BLOCK) &&
+                                      MaterialUtil.BOUNCE_MATERIALS.contains(user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) &&
                                     // Fixes false positives on versions 1.9+ because of changed hitboxes
                                     !(ServerVersion.is18() &&
                                       ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC18 &&

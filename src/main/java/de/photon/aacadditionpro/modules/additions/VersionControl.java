@@ -6,7 +6,7 @@ import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.protocol.ProtocolVersion;
 import de.photon.aacadditionpro.util.config.Configs;
-import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
+import de.photon.aacadditionpro.util.datastructure.Pair;
 import lombok.val;
 
 import java.util.Arrays;
@@ -37,15 +37,15 @@ public class VersionControl extends Module
         // What Minecraft versions are allowed?
         val configValues = Arrays.stream(ProtocolVersion.values())
                                  .map(ProtocolVersion::getName)
-                                 .map(key -> ImmutablePair.of(key, AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".allowedVersions." + key)))
+                                 .map(key -> Pair.of(key, AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".allowedVersions." + key)))
                                  .collect(Collectors.toUnmodifiableSet());
 
         // Format those versions for displaying.
-        val allowedVersions = configValues.stream().filter(ImmutablePair::getSecond).map(ImmutablePair::getFirst).collect(Collectors.joining(", "));
+        val allowedVersions = configValues.stream().filter(Pair::getSecond).map(Pair::getFirst).collect(Collectors.joining(", "));
 
         // Get the actual protocol numbers we need to put into ViaVersion's config.
         val blockedProtocolNumbers = configValues.stream()
-                                                 .filter(Predicate.not(ImmutablePair::getSecond))
+                                                 .filter(Predicate.not(Pair::getSecond))
                                                  // Get the ProtocolVersion of a key.
                                                  .map(pair -> Preconditions.checkNotNull(ProtocolVersion.getByName(pair.getFirst()), "A Unknown protocol version \"" + pair.getFirst() + "\" in version control. Please fix your config."))
                                                  // Get all the actual version numbers.

@@ -2,8 +2,11 @@ package de.photon.aacadditionpro.util.datastructure;
 
 import lombok.Value;
 
+/**
+ * This defines a generic, immutable pair of values.
+ */
 @Value(staticConstructor = "of")
-public class ImmutablePair<E, F>
+public class Pair<E, F>
 {
     E first;
     F second;

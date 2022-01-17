@@ -1,6 +1,6 @@
 package de.photon.aacadditionpro.util.datastructure.batch;
 
-import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
+import de.photon.aacadditionpro.util.datastructure.Pair;
 import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -22,14 +22,14 @@ public final class BatchPreprocessors
      * <p>
      * The last element may be ignored if a pair cannot fully be formed.
      */
-    public static <T> List<ImmutablePair<T, T>> zipToPairs(List<T> input)
+    public static <T> List<Pair<T, T>> zipToPairs(List<T> input)
     {
-        final List<ImmutablePair<T, T>> output = new ArrayList<>(input.size());
+        final List<Pair<T, T>> output = new ArrayList<>(input.size());
         T last = null;
         for (T t : input) {
             if (last == null) last = t;
             else {
-                output.add(ImmutablePair.of(last, t));
+                output.add(Pair.of(last, t));
                 last = null;
             }
         }
@@ -43,17 +43,17 @@ public final class BatchPreprocessors
      * <p>
      * The last element may be ignored if a pair cannot fully be formed.
      */
-    public static <T> List<ImmutablePair<T, T>> zipOffsetOne(List<T> input)
+    public static <T> List<Pair<T, T>> zipOffsetOne(List<T> input)
     {
-        return combineTwoObjectsToEnd(input, ImmutablePair::of);
+        return combineTwoObjectsToEnd(input, Pair::of);
     }
 
     /**
-     * This method allows for the reduction from a {@link List} of {@link ImmutablePair}s to an {@link ImmutablePair} of {@link DoubleStatistics}, which is often used in {@link BatchProcessor}s to
+     * This method allows for the reduction from a {@link List} of {@link Pair}s to an {@link Pair} of {@link DoubleStatistics}, which is often used in {@link BatchProcessor}s to
      * calculate both the expected and the actual delays.
      */
     @SafeVarargs
-    public static <T> List<DoubleStatistics> reducePairToDoubleStatistics(List<ImmutablePair<T, T>> input, ToDoubleBiFunction<T, T>... mappers)
+    public static <T> List<DoubleStatistics> reducePairToDoubleStatistics(List<Pair<T, T>> input, ToDoubleBiFunction<T, T>... mappers)
     {
         val statistics = new DoubleStatistics[mappers.length];
         for (int i = 0; i < statistics.length; i++) {

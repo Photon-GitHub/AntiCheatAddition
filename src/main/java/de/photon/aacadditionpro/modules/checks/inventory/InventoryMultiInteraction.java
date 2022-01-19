@@ -87,9 +87,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                     // No false positives to check for.
                     addedVl = 8;
 
-                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
-                                    1 :
-                                    5;
+                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ? 1 : 5;
                     break;
 
                 case DROP_ALL_CURSOR:
@@ -104,9 +102,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                     if (event.getCurrentItem() == null || user.getDataMap().getObject(DataKey.ObjectKey.LAST_MATERIAL_CLICKED) == event.getCurrentItem().getType()) return;
 
                     // Depending on the distance of the clicks.
-                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
-                                    1 :
-                                    2;
+                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ? 1 : 2;
                     break;
 
                 case SWAP_WITH_CURSOR:

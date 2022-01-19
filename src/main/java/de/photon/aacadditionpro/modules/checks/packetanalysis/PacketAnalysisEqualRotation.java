@@ -58,7 +58,7 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                         currentYaw == user.getDataMap().getFloat(DataKey.FloatKey.LAST_PACKET_YAW) &&
                         currentPitch == user.getDataMap().getFloat(DataKey.FloatKey.LAST_PACKET_PITCH) &&
                         // 1.17 client false positive when throwing exp bottles.
-                        !user.getTimestampMap().at(TimestampKey.LAST_EXPERIENCE_BOTTLE_THROWN).recentlyUpdated(5000) &&
+                        user.getTimestampMap().at(TimestampKey.LAST_EXPERIENCE_BOTTLE_THROWN).notRecentlyUpdated(5000) &&
                         // LabyMod fp when standing still / hit in corner fp
                         user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 100) &&
                         // 1.17 false positives

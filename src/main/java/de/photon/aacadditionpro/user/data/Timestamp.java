@@ -57,4 +57,12 @@ public class Timestamp
     {
         return this.passedTime() <= time;
     }
+
+    /**
+     * Opposite of {@link #recentlyUpdated(long)}
+     */
+    public boolean notRecentlyUpdated(long time)
+    {
+        return this.passedTime() > time;
+    }
 }

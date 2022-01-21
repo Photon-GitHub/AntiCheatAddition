@@ -103,7 +103,7 @@ public final class DataUpdaterEvents implements Listener
         val user = User.getUser(event.getPlayer());
         val clickedBlock = event.getClickedBlock();
 
-        // Make sure that we right click a block.
+        // Make sure that we right-click a block.
         // clickedBlock == null should be impossible when the action is RIGHT_CLICK_BLOCK, but better ensure that.
         if (user == null || event.getAction() != Action.RIGHT_CLICK_BLOCK || clickedBlock == null) return;
 
@@ -266,7 +266,7 @@ public final class DataUpdaterEvents implements Listener
     }
 
     /**
-     * A singleton class to reduce the reqired {@link Listener}s to a minimum.
+     * A singleton class to reduce the required {@link Listener}s to a minimum.
      */
     private static class VelocityChangeDataUpdater extends PacketAdapter
     {

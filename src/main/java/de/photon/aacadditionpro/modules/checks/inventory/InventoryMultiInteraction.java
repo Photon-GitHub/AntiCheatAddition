@@ -61,7 +61,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                 case NOTHING:
                     // Nothing happens, therefore exempted
                 case UNKNOWN:
-                    // Unknown reason might not be save to handle
+                    // Unknown reason might not be safe to handle
                 case COLLECT_TO_CURSOR:
                     // False positive with collecting all items of one type in the inventory
                 case DROP_ALL_SLOT:
@@ -107,7 +107,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
 
                 case SWAP_WITH_CURSOR:
                     switch (event.getSlotType()) {
-                        // Armor slots are not eligible for less ticks as of quick change problems with the feet slot.
+                        // Armor slots are not eligible for fewer ticks as of quick change problems with the feet slot.
                         // No false positives possible in fuel or crafting slot as it is only one slot which is separated from others
                         case FUEL:
                         case RESULT:

@@ -78,7 +78,7 @@ public abstract class InternalCommand
     }
 
     /**
-     * Tries to parse an long. If the long could not be parsed, send the message to the recipient.
+     * Tries to parse a long. If the long could not be parsed, send the message to the recipient.
      *
      * @return null if the string was not a valid long, else the parsed value
      */

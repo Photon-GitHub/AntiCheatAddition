@@ -33,7 +33,7 @@ public abstract class ViolationManagement
     protected ViolationManagement(@NotNull ViolationModule module, @NotNull ThresholdManagement thresholds)
     {
         this.module = Preconditions.checkNotNull(module, "Tried to construct ViolationManagement with null module.");
-        this.thresholds = Preconditions.checkNotNull(thresholds, "Tried to construct ViolationManagement with null ThresholdManagemen.");
+        this.thresholds = Preconditions.checkNotNull(thresholds, "Tried to construct ViolationManagement with null ThresholdManagement.");
     }
 
     /**

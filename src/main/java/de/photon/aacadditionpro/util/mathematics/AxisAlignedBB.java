@@ -281,7 +281,7 @@ public class AxisAlignedBB implements Cloneable
     }
 
     /**
-     * Get the offset in y axis
+     * Get the offset in y-axis
      *
      * @param bb the bounding box from which we want to know the offset to
      * @param y  default or maximum offset allowed

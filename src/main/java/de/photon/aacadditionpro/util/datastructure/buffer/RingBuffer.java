@@ -101,7 +101,7 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
     @Override
     public void clear()
     {
-        // We don't need to specifically clear the array as the values will be overwritten anyways.
+        // We don't need to specifically clear the array as the values will be overwritten anyway.
         this.head.setToZero();
         this.tail.setToZero();
         this.size = 0;

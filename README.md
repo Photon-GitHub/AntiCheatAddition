@@ -12,7 +12,7 @@ The current JDK version for this project is 8.
 
 ### Installing
 
-As maven automatically handles all dependencies for you you just need to clone the project and add it as a maven project.
+As maven automatically handles all dependencies for you, you just need to clone the project and add it as a maven project.
 
 ## Deployment
 

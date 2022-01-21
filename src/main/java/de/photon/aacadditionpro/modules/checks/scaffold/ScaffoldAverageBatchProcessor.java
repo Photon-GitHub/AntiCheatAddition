@@ -65,7 +65,7 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
                    normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * current.getLocation().getYaw()))) :
                    // Moonwalking.
                    normalDelay;
-            // Not the same blockfaces means that something is built diagonally or a new build position which means higher actual delay anyways and can be ignored.
+            // Not the same blockfaces means that something is built diagonally or a new build position which means higher actual delay anyway and can be ignored.
         } else return diagonalDelay;
     }
 }

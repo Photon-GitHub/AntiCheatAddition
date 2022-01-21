@@ -77,7 +77,7 @@ public final class InventoryUtil
     @Nullable
     public static SlotLocation locateSlot(int rawSlot, final InventoryType inventoryType) throws IllegalArgumentException
     {
-        // Invalid slot (including the -999 outside rawslot constant)
+        // Invalid slot (including the -999 outside raw slot constant)
         if (rawSlot < 0) return null;
 
         double x;
@@ -86,7 +86,7 @@ public final class InventoryUtil
             case CHEST:
             case ENDER_CHEST:
                 // TODO: MAKE SURE THAT THE PLAYER IS NOT RIDING A HORSE, THAT IS ALSO COUNTED AS CHEST.
-                // Chest and Enderchest have the same layout
+                // Chest and enderchest have the same layout
                 /*
                  * 0                         -                       8
                  *

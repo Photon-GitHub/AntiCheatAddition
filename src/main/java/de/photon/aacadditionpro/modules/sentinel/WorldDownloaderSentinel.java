@@ -45,7 +45,7 @@ public class WorldDownloaderSentinel extends SentinelModule
          *
          * https://wiki.vg/User:Pokechu22/World_downloader
          *
-         * The first packet specifies, whether or not new functions are allowed, the second what current functions are allowed.*/
+         * The first packet specifies, whether new functions are allowed, the second what current functions are allowed.*/
         val packetZero = ByteStreams.newDataOutput();
         packetZero.writeInt(0);
         packetZero.writeBoolean(!disableFuture);

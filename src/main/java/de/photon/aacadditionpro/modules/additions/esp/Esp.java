@@ -38,7 +38,7 @@ public class Esp extends Module
     private Map<World, Integer> playerTrackingRanges;
 
 
-    @LoadFromConfiguration(configPath = ".inverval")
+    @LoadFromConfiguration(configPath = ".interval")
     private long interval;
 
     public Esp()

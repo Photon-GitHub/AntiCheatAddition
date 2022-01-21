@@ -4,6 +4,7 @@ import de.photon.aacadditionpro.modules.additions.BrandHider;
 import de.photon.aacadditionpro.modules.additions.DamageIndicator;
 import de.photon.aacadditionpro.modules.additions.LogBot;
 import de.photon.aacadditionpro.modules.additions.VersionControl;
+import de.photon.aacadditionpro.modules.additions.esp.Esp;
 import de.photon.aacadditionpro.modules.checks.autoeat.AutoEat;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishConsistency;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishInhumanReaction;
@@ -56,6 +57,7 @@ public final class ModuleManager
         // Additions
         val brandHider = BrandHider.INSTANCE;
         val damageIndicator = new DamageIndicator();
+        val esp = new Esp();
         val logBot = new LogBot();
         val versionControl = new VersionControl();
 
@@ -111,6 +113,7 @@ public final class ModuleManager
                 // Additions
                 brandHider,
                 damageIndicator,
+                esp,
                 logBot,
                 versionControl,
 

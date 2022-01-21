@@ -59,8 +59,8 @@ public class Batch<T>
     }
 
     /**
-     * Clears the {@link Batch} by setting the write index to 0.
-     * This will make any newly added datapoints overwrite the currently present data.
+     * Clears the {@link Batch} by setting the write-index to 0.
+     * This will make any newly added data-points overwrite the currently present data.
      */
     public synchronized void clear()
     {

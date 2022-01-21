@@ -176,7 +176,6 @@ public class DoubleStatistics implements DoubleConsumer
     public void reset()
     {
         this.count = 0;
-        this.max = 0;
         this.simpleSum = 0;
         this.sum = 0;
         this.sumCompensation = 0;

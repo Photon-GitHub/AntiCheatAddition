@@ -70,7 +70,7 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
-            if (ServerVersion.getActiveServerVersion() == null || !ServerVersion.getActiveServerVersion().isSupported()) {
+            if (!ServerVersion.getActiveServerVersion().isSupported()) {
                 DebugSender.getInstance().sendDebug("Server version is not supported.", true, true);
                 DebugSender.getInstance().sendDebug("Supported versions: " + Arrays.stream(ServerVersion.values()).filter(ServerVersion::isSupported).map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
                                                     true, true);

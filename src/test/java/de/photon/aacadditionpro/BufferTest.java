@@ -17,7 +17,7 @@ class BufferTest
     {
         List<String> forgottenList = new ArrayList<>();
 
-        FixedSizeBuffer<String> buffer = new RingBuffer<String>(10)
+        FixedSizeBuffer<String> buffer = new RingBuffer<>(10)
         {
             @Override
             public void onForget(String forgotten)

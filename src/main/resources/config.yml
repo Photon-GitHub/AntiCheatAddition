@@ -50,7 +50,7 @@ DamageIndicator:
 # This module uses advanced mathematics to determine if players can see each other.
 # If the players cannot see each other several actions will be taken to hide information on packet-level.
 # Due to abysmal performance of block lookups on newer minecraft versions 1.13+ ESP does no longer actually check the
-# entire distance between two players. Instead it will use an heuristic to check the most relevant blocks. This can
+# entire distance between two players. Instead, it will use an heuristic to check the most relevant blocks. This can
 # lead to players being shown even though they are not visible.
 #
 # MAIN FUNCTIONS:
@@ -73,13 +73,13 @@ Esp:
   # How many milliseconds shall be waited between two ESP cycles. Setting this too low may result in performance issues,
   # setting it too high may result in players being hidden too long and popping up.
   interval: 50
-  # This determines whether minecrafts 3rd person modes should be considered for calculation as well.
+  # This determines whether minecraft's 3rd person modes should be considered for calculation as well.
   # Disabling this will reduce the required number of block queries by two thirds.
   # Especially useful if you have gamemodes in which players are not supposed to use the third person mode.
   calculate_third_person_modes: false
 
 # This automatically deletes old log files of both AAC and AACAdditionPro
-# It activates automatically on restart and after that in a 12 hour cycle.
+# It activates automatically on restart and after that in a 12-hour cycle.
 LogBot:
   # Do you want to enable LogBot?
   enabled: false
@@ -154,7 +154,7 @@ AutoFish:
   # This message will appear in AAC's status when AAC hooking is used.
   aac_status_message: "[AACAdditionPro] Player has botlike fishing behaviour"
   # Violation before AACAdditionPro starts to cancel the fishing.
-  # Please think of potential luck, because of this I do not recommend to set this to a value smaller than 7.
+  # Please think of potential luck, because of this I do not recommend setting this to a value smaller than 7.
   # Set this to 0 to never cancel fishing.
   cancel_vl: 100
   # Control the different parts of AutoFish
@@ -172,7 +172,7 @@ AutoFish:
       # reacts, the more vl they will get.
       human_reaction_time: 145.0
     # The consistency part recognizes unchanging times between a successful catch and fishing again as simple bots have
-    # constant reaction times, whereas human players reaction varies a little bit each time they fish.
+    # constant reaction times, whereas human players' reaction varies a little each time they fish.
     # Depending on how accurate the consistency is players will receive between 1 and 160 vl.
     consistency:
       # Do you want to enable the consistency part?
@@ -181,7 +181,7 @@ AutoFish:
       aac_status_message: "[AACAdditionPro] The player's fishing times are inhumanly constant."
       # How many fishing attempts should be checked by the consistency check
       fishing_attempt_count: 5
-      # The minimum variation a player has to have in their reaction times to count as non cheating (in milliseconds)
+      # The minimum variation a player has to have in their reaction times to count as non-cheating (in milliseconds)
       min_variation: 30
       # After how many failed attempts to fish between two successful attempts should a player be exempted from the
       # consistency part?
@@ -286,7 +286,7 @@ Inventory:
     # This part will add 20-70 vl (this check is quite slow and is only processed every 16 clicks on items) depending on
     # the amount of misclicks and the time between. This will ensure that players which click excessively fast - e.g. in
     # the beginning of SurvivalGames will not get as many vls as they click on a lot of empty slots. Slow clicking
-    # also results in less vl as a slow click rate does not give you an huge advantage and is likely a false positive.
+    # also results in less vl as a slow click rate does not give you a huge advantage and is likely a false positive.
     AverageHeuristic:
       # Do you want to enable the AverageHeuristic part?
       enabled: true
@@ -380,8 +380,8 @@ Inventory:
     160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for inventory cheats."
     200: "kick {player} Inventory cheats."
 
-# PacketAnalysis is a general check which aims to detect some of the modifications that are closely linked to
-# interfering with the protocol directly, such as derp, freecam, killauras, aimbots and other rotation-based modules.
+# PacketAnalysis is a general check which aims to detect some modifications that are closely linked to interfering with
+# the protocol directly, such as derp, freecam, killauras, aimbots and other rotation-based modules.
 PacketAnalysis:
   # Do you want to enable the PacketAnalysis?
   enabled: true
@@ -606,7 +606,7 @@ Tower:
   cancel_vl: 6
   # If you have false positives decrease this SLIGHTLY.
   # The Tower check has its own leniency-curve which makes it very effective.
-  # Therefore please only touch this if you have false positives.
+  # Therefore, please only touch this if you have false positives.
   tower_leniency: 1
   # Special leniency which is only applied if the player has the levitation effect
   levitation_leniency: 0.95
@@ -668,13 +668,13 @@ Sentinel:
     enabled: false
     # This allows you to show LabyMod players a banner image in their tablist.
     # As specified in their documentation (https://docs.labymod.net/pages/server/displays/tablist/)
-    # it the image ratio must be 5:1 and the recommended resolution is 1280x256 pixels.
+    # the image ratio must be 5:1 and the recommended resolution is 1280x256 pixels.
     TablistBanner:
       # Do you want to enable LabyModServerInfo?
       enabled: false
       # Please specify the URL to get the image here.
       url: ""
-    # This setting determines whether or not the LabyMod-Voicechat is allowed on your server (true means allowed).
+    # This setting determines whether the LabyMod-Voicechat is allowed on your server (true means allowed).
     Voicechat: true
     # This mod provides a method to disable parts of it.
     # Set the corresponding value to true if you want to block a part of the mod
@@ -695,7 +695,7 @@ Sentinel:
       gui_potion_effects: false
       # This displays the current armour of a player (including durability) in a HUD
       gui_armor_hud: false
-      # This allows the client to additionally render the current weapon as well as the number of arrows in ones inventory.
+      # This allows the client to additionally render the current weapon as well as the number of arrows in one's inventory.
       gui_item_hud: false
       # Brings back old building animations
       # Not recommended to disable as it is a purely cosmetic feature
@@ -923,7 +923,7 @@ Sentinel:
 # You can use this to change the multiplier of checks.
 UseAACFeatureSystem: true
 
-# Allows to define where to send debus messages to. Please note that when reporting bugs, you will need to provide the
+# Allows defining where to send debug messages to. Please note that when reporting bugs, you will need to provide the
 # debug file of AACAdditionPro, therefore this setting is enabled here.
 Debug:
   # Do you want AACAdditionPro to log into a log-file?

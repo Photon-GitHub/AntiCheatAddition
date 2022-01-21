@@ -205,14 +205,14 @@ public class DummyInventory implements Inventory
     @Override
     public ListIterator<ItemStack> iterator()
     {
-        return new ArrayList().listIterator();
+        return new ArrayList<ItemStack>().listIterator();
     }
 
     @NotNull
     @Override
     public ListIterator<ItemStack> iterator(int index)
     {
-        return new ArrayList().listIterator();
+        return new ArrayList<ItemStack>().listIterator();
     }
 
     @Nullable

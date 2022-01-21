@@ -13,9 +13,9 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InventoryUtil
@@ -59,7 +59,7 @@ public final class InventoryUtil
         val first = InventoryUtil.locateSlot(rawSlotOne, inventoryType);
         val second = InventoryUtil.locateSlot(rawSlotTwo, inventoryType);
 
-        return first == null || second == null ? -1 : first.distance(second);
+        return first.isPresent() && second.isPresent() ? first.get().distance(second.get()) : -1;
     }
 
     /**
@@ -74,11 +74,10 @@ public final class InventoryUtil
      * @return the coordinates of a slot or null if it is invalid.
      */
     @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-    @Nullable
-    public static SlotLocation locateSlot(int rawSlot, final InventoryType inventoryType) throws IllegalArgumentException
+    public static Optional<SlotLocation> locateSlot(int rawSlot, final InventoryType inventoryType) throws IllegalArgumentException
     {
         // Invalid slot (including the -999 outside raw slot constant)
-        if (rawSlot < 0) return null;
+        if (rawSlot < 0) return Optional.empty();
 
         double x;
         double y;
@@ -109,7 +108,7 @@ public final class InventoryUtil
                 y = (rawSlot / 9);
                 if (rawSlot >= 27) y += 0.5D; // Player inventory
                 if (rawSlot >= 54) y += 0.25D; // Quickbar
-                return new SlotLocation(x, y);
+                return Optional.of(new SlotLocation(x, y));
             case DISPENSER:
             case DROPPER:
                 // Dispenser and Dropper have the same layout
@@ -131,14 +130,14 @@ public final class InventoryUtil
                  * 36                        -                       44
                  */
                 // In the dispenser - part
-                if (rawSlot < 9) return new SlotLocation(4 + rawSlot % 3, rawSlot / 3);
+                if (rawSlot < 9) return Optional.of(new SlotLocation(4 + rawSlot % 3, rawSlot / 3));
 
                 x = rawSlot % 9;
                 // 3.5D is normal offset, but the rawslots in the player inventory start with 9, which will
                 // automatically add 1 in the division -> offset 2.5.
                 y = (rawSlot / 9) + 2.5D;
                 if (rawSlot >= 36) y += 0.25D; // Quickbar
-                return new SlotLocation(x, y);
+                return Optional.of(new SlotLocation(x, y));
             case FURNACE:
                 /*
                  *                 0
@@ -159,16 +158,16 @@ public final class InventoryUtil
                  */
                 switch (rawSlot) {
                     case 0:
-                        return new SlotLocation(2.5D, 0D);
+                        return Optional.of(new SlotLocation(2.5D, 0D));
                     case 1:
-                        return new SlotLocation(2.5D, 2D);
+                        return Optional.of(new SlotLocation(2.5D, 2D));
                     case 2:
-                        return new SlotLocation(6D, 1D);
+                        return Optional.of(new SlotLocation(6D, 1D));
                     default:
                         x = (rawSlot - 3) % 9;
                         y = ((rawSlot - 3) / 9) + 3.5D;
                         if (rawSlot >= 30) y += 0.25D; // Quickbar
-                        return new SlotLocation(x, y);
+                        return Optional.of(new SlotLocation(x, y));
                 }
             case WORKBENCH:
                 /*
@@ -189,18 +188,18 @@ public final class InventoryUtil
                  * 37                        -                       45
                  */
 
-                if (rawSlot == 0) return new SlotLocation(6.5D, 1D);
+                if (rawSlot == 0) return Optional.of(new SlotLocation(6.5D, 1D));
 
                 if (rawSlot <= 9) {
                     x = ((rawSlot - 1) % 3) + 1.25D;
                     y = ((rawSlot - 1) / 3);
-                    return new SlotLocation(x, y);
+                    return Optional.of(new SlotLocation(x, y));
                 }
 
                 x = (rawSlot - 1) % 9;
                 y = ((rawSlot - 1) / 9) + 2.5D;
                 if (rawSlot >= 37) y += 0.25D; // Quickbar
-                return new SlotLocation(x, y);
+                return Optional.of(new SlotLocation(x, y));
 
             case ENCHANTING:
                 /*
@@ -292,11 +291,11 @@ public final class InventoryUtil
                  * 32                        -                       40
                  */
                 // Start at y = 1 as the inventory is smaller
-                if (rawSlot <= 4) return new SlotLocation(2D + rawSlot, 1D);
+                if (rawSlot <= 4) return Optional.of(new SlotLocation(2D + rawSlot, 1D));
                 x = (rawSlot - 5) % 9;
                 y = ((rawSlot - 5) / 9) + 2.5D;
                 if (rawSlot >= 32) y += 0.25D; // Quickbar
-                return new SlotLocation(x, y);
+                return Optional.of(new SlotLocation(x, y));
 
             case CRAFTING:
             case PLAYER:
@@ -318,26 +317,26 @@ public final class InventoryUtil
                  * */
 
                 // Result slot
-                if (rawSlot == 0) return new SlotLocation(7.5D, 1.5D);
+                if (rawSlot == 0) return Optional.of(new SlotLocation(7.5D, 1.5D));
 
                 // Crafting slots
-                if (rawSlot <= 4) return new SlotLocation(5.5D - (rawSlot % 2), rawSlot <= 2 ? 1D : 2D);
+                if (rawSlot <= 4) return Optional.of(new SlotLocation(5.5D - (rawSlot % 2), rawSlot <= 2 ? 1D : 2D));
 
                 // Armor slots
-                if (rawSlot <= 8) return new SlotLocation(0D, rawSlot - 5);
+                if (rawSlot <= 8) return Optional.of(new SlotLocation(0D, rawSlot - 5));
 
                 x = (rawSlot - 9) % 9;
                 y = ((rawSlot - 9) / 9) + 4.25D;
                 if (rawSlot >= 36) y += 0.25D; // Quickbar
-                return new SlotLocation(x, y);
+                return Optional.of(new SlotLocation(x, y));
             case CREATIVE:
             case SHULKER_BOX:
                 break;
             default:
                 // CREATIVE (false positives), PLAYER, SHULKER_BOX, BREWING_STAND (version compatibility)
-                return null;
+                return Optional.empty();
         }
-        return null;
+        return Optional.empty();
     }
 
     /**

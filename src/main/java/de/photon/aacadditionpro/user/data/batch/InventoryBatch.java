@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.user.data.batch;
 
+import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.datastructure.batch.Batch;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
@@ -12,8 +13,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
 
 public class InventoryBatch extends Batch<InventoryBatch.InventoryClick>
 {
@@ -38,7 +37,10 @@ public class InventoryBatch extends Batch<InventoryBatch.InventoryClick>
 
         public static InventoryClick fromClickEvent(final InventoryClickEvent event)
         {
-            val slotLocation = Optional.ofNullable(InventoryUtil.locateSlot(event.getRawSlot(), event.getClickedInventory().getType()));
+            Preconditions.checkNotNull(event, "Tried to create InventoryClick from null event.");
+            Preconditions.checkNotNull(event.getClickedInventory(), "Tried to create InventoryClick from null event clickedInventory.");
+
+            val slotLocation = InventoryUtil.locateSlot(event.getRawSlot(), event.getClickedInventory().getType());
             return new InventoryClick(event.getInventory(), slotLocation.orElse(InventoryUtil.SlotLocation.DUMMY), event.getClick());
         }
 

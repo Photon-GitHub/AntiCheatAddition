@@ -15,7 +15,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,12 +52,13 @@ class ModernWorldUtil implements WorldUtil
         Preconditions.checkNotNull(faces, "Tried to get surrounding blocks of block at null faces.");
         Preconditions.checkNotNull(faces, "Tried to get surrounding blocks of block will null ignore (use empty set).");
 
-        val result = new ArrayList<Block>();
-        for (BlockFace face : faces) {
-            val b = block.getRelative(face);
-            if (!b.isEmpty() && !ignored.contains(b.getType())) result.add(b);
-        }
-        return List.copyOf(result);
+        return faces.stream()
+                    .map(block::getRelative)
+                    // Actual block there, not air.
+                    .filter(b -> !b.isEmpty())
+                    // Ignored materials.
+                    .filter(b -> !ignored.contains(b.getType()))
+                    .collect(Collectors.toUnmodifiableList());
     }
 
     @Override

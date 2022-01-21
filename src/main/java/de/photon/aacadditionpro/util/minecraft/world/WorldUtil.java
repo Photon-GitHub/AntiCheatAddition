@@ -53,7 +53,7 @@ public interface WorldUtil
      * @return the amount of {@link Block}s which were counted
      */
     @Contract("null, _, _ -> fail; _, null, _ -> fail; _, _, null -> fail")
-    byte countBlocksAround(final Block block, final Set<BlockFace> faces, final Set<Material> ignored);
+    long countBlocksAround(final Block block, final Set<BlockFace> faces, final Set<Material> ignored);
 
 
     /**

@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.modules;
 
 import de.photon.aacadditionpro.modules.additions.BrandHider;
 import de.photon.aacadditionpro.modules.additions.DamageIndicator;
+import de.photon.aacadditionpro.modules.additions.EnchantmentHider;
 import de.photon.aacadditionpro.modules.additions.LogBot;
 import de.photon.aacadditionpro.modules.additions.esp.Esp;
 import de.photon.aacadditionpro.modules.checks.autoeat.AutoEat;
@@ -56,6 +57,7 @@ public final class ModuleManager
         // Additions
         val brandHider = BrandHider.INSTANCE;
         val damageIndicator = new DamageIndicator();
+        val enchantmentHider = new EnchantmentHider();
         val esp = new Esp();
         val logBot = new LogBot();
 
@@ -111,6 +113,7 @@ public final class ModuleManager
                 // Additions
                 brandHider,
                 damageIndicator,
+                enchantmentHider,
                 esp,
                 logBot,
 

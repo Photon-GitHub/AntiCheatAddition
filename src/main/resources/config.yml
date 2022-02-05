@@ -47,6 +47,20 @@ DamageIndicator:
     animals: true
     monsters: true
 
+# Various resource packs allow displaying enchantment information that a normal player would not be able to see, i.e.
+# the type and level of any enchantment.
+# EnchantmentHider replaces all enchantments in packets sent to a player with infinity, therefore obfuscating the
+# actual enchantments. Normal players can still see the enchantment glow, but players using ESP or texture packs will
+# not see any additional information.
+EnchantmentHider:
+  # Do you want to enable EnchantmentHider?
+  enabled: true
+  # Spoof the health of the following entity categories.
+  # Please note that spoofing all enchantments might cause performance issues if you use a custom mob equipment system.
+  spoof:
+    players: true
+    others: false
+
 # This module uses advanced mathematics to determine if players can see each other.
 # If the players cannot see each other several actions will be taken to hide information on packet-level.
 # Due to abysmal performance of block lookups on newer minecraft versions 1.13+ ESP does no longer actually check the

@@ -103,13 +103,13 @@ VersionControl:
   # THIS WILL OVERRIDE THE block-protocols OPTION IN THE VIAVERSION CONFIG!
   allowedVersions:
     '1.8': true
-    # Versions 1.9 - 1.11 are not officially supported by this plugin. Issues can occur.
+    # Versions 1.9 - 1.11, 1.13 - 1.14 are not officially supported by this plugin. Issues can occur.
     '1.9': false
     '1.10': false
     '1.11': false
     '1.12': true
-    '1.13': true
-    '1.14': true
+    '1.13': false
+    '1.14': false
     '1.15': true
     '1.16': true
     '1.17': true

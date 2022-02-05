@@ -98,6 +98,9 @@ public class ConfigurationRepresentation
         String path;
         Object value;
 
+        /**
+         * Searches for the first config line the path points to.
+         */
         public int lineIndexOfPath(@NotNull List<String> lines)
         {
             val pathParts = path.trim().split("\\.");

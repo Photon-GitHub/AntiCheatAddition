@@ -47,7 +47,7 @@ public final class ConfigUtils
             // Get the type of the field.
             val type = field.getType();
 
-            Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(path, true), "Path to load does not exist.");
+            Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(path, true), "Path " + path + " does not exist.");
 
             // The different classes
             try {

@@ -26,12 +26,6 @@ public class ConfigurationRepresentation
         this.configFile = Preconditions.checkNotNull(configFile, "Tried to create ConfigurationRepresentation of null config file.");
     }
 
-    private static boolean isComment(final String string)
-    {
-        // <= Because a '#' at a later point indicates some data before as leading whitespaces are removed.
-        return string == null || string.isEmpty() || string.trim().indexOf('#') <= 0;
-    }
-
     private static void deleteLines(final List<String> lines, int startPosition, int lineCount)
     {
         while (lineCount-- > 0) lines.remove(startPosition);
@@ -71,7 +65,7 @@ public class ConfigurationRepresentation
 
             trimmed = line.trim();
             // New "deeper" subpart found?
-            if (!isComment(trimmed) && trimmed.startsWith(pathParts[partIndex])) {
+            if (!StringUtil.isConfigComment(trimmed) && trimmed.startsWith(pathParts[partIndex])) {
                 partDepth = lineDepth;
                 // Whole path found.
                 if (++partIndex == pathParts.length) return lineIndex;

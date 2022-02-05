@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.util.config;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.Value;
 import lombok.val;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,15 +12,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ConfigurationRepresentation
 {
     @NotNull private final File configFile;
     @Getter(lazy = true) private final YamlConfiguration yamlConfiguration = loadYaml();
-    private final Map<String, Object> requestedChanges = new HashMap<>();
+    private final List<ConfigChange> requestedChanges = new ArrayList<>();
 
     public ConfigurationRepresentation(@NotNull File configFile)
     {
@@ -48,36 +47,9 @@ public class ConfigurationRepresentation
         return YamlConfiguration.loadConfiguration(this.configFile);
     }
 
-    private int searchForPath(@NotNull List<String> lines, @NotNull String path)
-    {
-        val pathParts = path.trim().split("\\.");
-        int partIndex = 0;
-        int lineIndex = 0;
-        int partDepth = 0;
-        int lineDepth;
-
-        String trimmed;
-        for (String line : lines) {
-            lineDepth = StringUtil.depth(line);
-
-            // The sub-part we search for does not exist.
-            Preconditions.checkArgument(partDepth <= lineDepth, "Path " + path + " could not be found.");
-
-            trimmed = line.trim();
-            // New "deeper" subpart found?
-            if (!StringUtil.isConfigComment(trimmed) && trimmed.startsWith(pathParts[partIndex])) {
-                partDepth = lineDepth;
-                // Whole path found.
-                if (++partIndex == pathParts.length) return lineIndex;
-            }
-            ++lineIndex;
-        }
-        throw new IllegalArgumentException("Path " + path + " could not be found (full iteration).");
-    }
-
     public synchronized void requestValueChange(final String path, final Object value)
     {
-        this.requestedChanges.put(path, value);
+        this.requestedChanges.add(new ConfigChange(path, value));
     }
 
     public synchronized void save() throws IOException
@@ -88,8 +60,10 @@ public class ConfigurationRepresentation
         // Load the whole config.
         val configLines = new ArrayList<>(Files.readAllLines(this.configFile.toPath()));
 
-        requestedChanges.forEach((path, value) -> {
-            val lineIndexOfKey = searchForPath(configLines, path);
+        for (ConfigChange requestedChange : requestedChanges) {
+            val value = requestedChange.getValue();
+
+            val lineIndexOfKey = requestedChange.lineIndexOfPath(configLines);
             val originalLine = configLines.get(lineIndexOfKey);
             val affectedLines = linesOfKey(configLines, lineIndexOfKey);
 
@@ -113,8 +87,42 @@ public class ConfigurationRepresentation
             }
 
             configLines.set(lineIndexOfKey, replacementLine.toString());
-        });
+        }
 
         Files.write(this.configFile.toPath(), configLines);
+    }
+
+    @Value
+    private static class ConfigChange
+    {
+        String path;
+        Object value;
+
+        public int lineIndexOfPath(@NotNull List<String> lines)
+        {
+            val pathParts = path.trim().split("\\.");
+            int partIndex = 0;
+            int lineIndex = 0;
+            int partDepth = 0;
+            int lineDepth;
+
+            String trimmed;
+            for (String line : lines) {
+                lineDepth = StringUtil.depth(line);
+
+                // The sub-part we search for does not exist.
+                if (partDepth > lineDepth) throw new IllegalArgumentException("Path " + path + " could not be found.");
+
+                trimmed = line.trim();
+                // New "deeper" subpart found?
+                if (!StringUtil.isConfigComment(trimmed) && trimmed.startsWith(pathParts[partIndex])) {
+                    partDepth = lineDepth;
+                    // Whole path found.
+                    if (++partIndex == pathParts.length) return lineIndex;
+                }
+                ++lineIndex;
+            }
+            throw new IllegalArgumentException("Path " + path + " could not be found (full iteration).");
+        }
     }
 }

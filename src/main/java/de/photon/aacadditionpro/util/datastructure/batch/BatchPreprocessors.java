@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.datastructure.batch;
 
+import com.google.common.collect.Lists;
 import de.photon.aacadditionpro.util.datastructure.Pair;
 import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import lombok.AccessLevel;
@@ -7,8 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.function.BiFunction;
 import java.util.function.ToDoubleBiFunction;
 
@@ -77,23 +78,21 @@ public final class BatchPreprocessors
     public static <T> List<DoubleStatistics> zipReduceToDoubleStatistics(List<T> input, ToDoubleBiFunction<T, T>... mappers)
     {
         val statistics = new DoubleStatistics[mappers.length];
-        for (int i = 0; i < statistics.length; i++) {
-            statistics[i] = new DoubleStatistics();
-        }
+        for (int i = 0; i < statistics.length; i++) statistics[i] = new DoubleStatistics();
 
-        if (!input.isEmpty()) {
-            T old = input.get(0);
-            T current;
-            val iterator = input.listIterator(1);
-            while (iterator.hasNext()) {
-                current = iterator.next();
+        if (input.isEmpty()) return List.of(statistics);
 
-                for (int i = 0; i < mappers.length; ++i) {
-                    statistics[i].accept(mappers[i].applyAsDouble(old, current));
-                }
+        final Iterator<T> iterator = input.iterator();
+        T old = iterator.next();
+        T current;
+        while (iterator.hasNext()) {
+            current = iterator.next();
 
-                old = current;
+            for (int i = 0; i < mappers.length; ++i) {
+                statistics[i].accept(mappers[i].applyAsDouble(old, current));
             }
+
+            old = current;
         }
         return List.of(statistics);
     }
@@ -114,17 +113,16 @@ public final class BatchPreprocessors
      */
     public static <T, U> List<U> combineTwoObjectsToEnd(List<T> input, BiFunction<T, T, U> combiner)
     {
-        final List<U> output = new ArrayList<>(input.size());
+        if (input.isEmpty()) return List.of();
 
-        if (!input.isEmpty()) {
-            T old = input.get(0);
-            T current;
-            final ListIterator<T> iterator = input.listIterator(1);
-            while (iterator.hasNext()) {
-                current = iterator.next();
-                output.add(combiner.apply(old, current));
-                old = current;
-            }
+        final List<U> output = new ArrayList<>(input.size());
+        final Iterator<T> iterator = input.iterator();
+        T old = iterator.next();
+        T current;
+        while (iterator.hasNext()) {
+            current = iterator.next();
+            output.add(combiner.apply(old, current));
+            old = current;
         }
         return output;
     }
@@ -145,16 +143,6 @@ public final class BatchPreprocessors
      */
     public static <T, U> List<U> combineTwoObjectsToStart(List<T> input, BiFunction<T, T, U> combiner)
     {
-        final List<U> output = new ArrayList<>(input.size());
-
-        if (!input.isEmpty()) {
-            T old = input.get(input.size() - 1);
-            for (int i = input.size() - 2; i >= 0; --i) {
-                T current = input.get(i);
-                output.add(combiner.apply(old, current));
-                old = current;
-            }
-        }
-        return output;
+        return combineTwoObjectsToEnd(Lists.reverse(input), combiner);
     }
 }

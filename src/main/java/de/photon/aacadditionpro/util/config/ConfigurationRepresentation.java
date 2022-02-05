@@ -102,6 +102,7 @@ public class ConfigurationRepresentation
         {
             val pathParts = path.trim().split("\\.");
             int partIndex = 0;
+
             int lineIndex = 0;
             int partDepth = 0;
             int lineDepth;

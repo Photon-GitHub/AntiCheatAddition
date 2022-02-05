@@ -106,14 +106,9 @@ public class ConfigurationRepresentation
             val replacementLine = new StringBuilder(StringUtils.substringBeforeLast(originalLine, ":")).append(':');
 
             // Set the new value.
-            // Simple sets
-            if (value instanceof Boolean ||
-                value instanceof Number)
-            {
-                replacementLine.append(' ').append(value);
-            } else if (value instanceof String) {
-                replacementLine.append(" \"").append(value).append('\"');
-            } else if (value instanceof List) {
+            if (value instanceof Boolean || value instanceof Number) replacementLine.append(' ').append(value);
+            else if (value instanceof String) replacementLine.append(" \"").append(value).append('\"');
+            else if (value instanceof List) {
                 val list = (List<?>) value;
 
                 if (list.isEmpty()) replacementLine.append(" []");

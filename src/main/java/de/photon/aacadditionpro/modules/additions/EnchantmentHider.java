@@ -2,15 +2,20 @@ package de.photon.aacadditionpro.modules.additions;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.Pair;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
-import de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver.WrapperPlayServerEntityEquipment;
+import de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver.equipment.IWrapperPlayEquipment;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import lombok.val;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.Map;
 
 public class EnchantmentHider extends Module
 {
@@ -34,7 +39,7 @@ public class EnchantmentHider extends Module
                     val user = User.safeGetUserFromPacketEvent(event);
                     if (User.isUserInvalid(user, this)) return;
 
-                    val wrapper = new WrapperPlayServerEntityEquipment(event.getPacket());
+                    val wrapper = IWrapperPlayEquipment.of(event.getPacket());
                     val entity = wrapper.getEntity(event);
 
                     // Do not modify the players' own enchantments.
@@ -46,19 +51,28 @@ public class EnchantmentHider extends Module
                     if (spoofPlayers && entityType == EntityType.PLAYER ||
                         spoofOthers && entityType != EntityType.PLAYER)
                     {
-                        // Clone item to prevent a serversided connection of the equipment.
-                        val item = wrapper.getItem().clone();
-                        if (item.getEnchantments().isEmpty()) return;
+                        // If all items do not have any enchantments, skip.
+                        if (wrapper.getSlotStackPairs().stream().map(Pair::getSecond).map(ItemStack::getEnchantments).allMatch(Map::isEmpty)) return;
 
                         // Clone the packet to prevent a serversided connection of the equipment.
                         event.setPacket(event.getPacket().deepClone());
 
-                        for (Enchantment enchantment : item.getEnchantments().keySet()) {
-                            item.removeEnchantment(enchantment);
-                        }
+                        val pairs = wrapper.getSlotStackPairs();
 
-                        item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
-                        wrapper.setItem(item);
+                        // Remove all enchantments.
+                        for (Pair<EnumWrappers.ItemSlot, ItemStack> pair : pairs) {
+                            val stack = pair.getSecond();
+                            val enchantments = stack.getEnchantments();
+
+                            if (enchantments.isEmpty()) continue;
+
+                            // Remove all enchantments.
+                            enchantments.keySet().forEach(stack::removeEnchantment);
+
+                            // Add dummy enchantment.
+                            stack.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+                            wrapper.setSlotStackPair(pair.getFirst(), stack);
+                        }
                     }
                 }).build();
 

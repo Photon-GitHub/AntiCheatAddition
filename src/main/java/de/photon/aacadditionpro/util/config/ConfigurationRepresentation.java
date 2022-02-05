@@ -117,7 +117,7 @@ public class ConfigurationRepresentation
                 // The sub-part we search for does not exist.
                 if (partDepth > lineDepth) throw new IllegalArgumentException("Path " + path + " could not be found.");
 
-                trimmed = line.trim();
+                trimmed = line.strip();
                 // New "deeper" subpart found?
                 if (!StringUtil.isConfigComment(trimmed) && trimmed.startsWith(pathParts[partIndex])) {
                     partDepth = lineDepth;

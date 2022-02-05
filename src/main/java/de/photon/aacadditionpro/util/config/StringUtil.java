@@ -14,8 +14,8 @@ public final class StringUtil
      */
     public static boolean isConfigComment(final String string)
     {
-        // <= Because a '#' at a later point indicates some data before as leading whitespaces are removed.
-        return string == null || string.isEmpty() || string.trim().indexOf('#') <= 0;
+        // If the first letter after whitespaces is not # assume that some data/key comes first.
+        return string == null || string.isEmpty() || string.strip().indexOf('#') == 0;
     }
 
     /**

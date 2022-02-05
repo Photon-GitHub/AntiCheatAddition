@@ -60,5 +60,7 @@ public class VersionControl extends Module
 
         // Block the affected protocol numbers.
         Configs.VIAVERSION.getConfigurationRepresentation().requestValueChange("block-protocols", blockedProtocolNumbers);
+
+        Configs.VIAVERSION.saveChanges();
     }
 }

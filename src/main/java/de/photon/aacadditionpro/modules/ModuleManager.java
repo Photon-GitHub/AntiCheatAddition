@@ -3,7 +3,6 @@ package de.photon.aacadditionpro.modules;
 import de.photon.aacadditionpro.modules.additions.BrandHider;
 import de.photon.aacadditionpro.modules.additions.DamageIndicator;
 import de.photon.aacadditionpro.modules.additions.LogBot;
-import de.photon.aacadditionpro.modules.additions.VersionControl;
 import de.photon.aacadditionpro.modules.additions.esp.Esp;
 import de.photon.aacadditionpro.modules.checks.autoeat.AutoEat;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishConsistency;
@@ -59,7 +58,6 @@ public final class ModuleManager
         val damageIndicator = new DamageIndicator();
         val esp = new Esp();
         val logBot = new LogBot();
-        val versionControl = new VersionControl();
 
         // Checks
         val autoEat = new AutoEat();
@@ -115,7 +113,6 @@ public final class ModuleManager
                 damageIndicator,
                 esp,
                 logBot,
-                versionControl,
 
                 // Checks
                 autoEat,

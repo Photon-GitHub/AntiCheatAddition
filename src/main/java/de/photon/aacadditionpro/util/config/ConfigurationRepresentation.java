@@ -39,20 +39,14 @@ public class ConfigurationRepresentation
 
     private static int linesOfKey(final List<String> lines, int firstLineOfKey)
     {
-        // 1 as the first line is always there.
-        int affectedLines = 1;
-        val depthOfKey = StringUtil.depth(lines.get(firstLineOfKey));
-
-        // + 1 as the initial line should not be iterated over.
-        val listIterator = lines.listIterator(firstLineOfKey + 1);
-        String line;
-        while (listIterator.hasNext()) {
-            line = listIterator.next();
-            // ":" is the indicator of a new value
-            if (StringUtil.depth(line) <= depthOfKey) break;
-            ++affectedLines;
-        }
-        return affectedLines;
+        final int depthOfKey = StringUtil.depth(lines.get(firstLineOfKey));
+        return (int) lines.stream()
+                          // Skip firstLineOfKey to get to the first line and 1 as the initial line should not be iterated over.
+                          .skip(firstLineOfKey + 1L)
+                          // Smaller or equal depth is the indicator of a new key, and we only want the lines of the current key.
+                          .takeWhile(line -> StringUtil.depth(line) > depthOfKey)
+                          // + 1 as the first line is always there.
+                          .count() + 1;
     }
 
     private YamlConfiguration loadYaml()
@@ -98,7 +92,6 @@ public class ConfigurationRepresentation
         if (requestedChanges.isEmpty()) return;
 
         // Load the whole config.
-        // Use LinkedList for fast mid-config tampering.
         val configLines = new ArrayList<>(Files.readAllLines(this.configFile.toPath()));
 
         requestedChanges.forEach((path, value) -> {
@@ -115,12 +108,7 @@ public class ConfigurationRepresentation
             // Set the new value.
             // Simple sets
             if (value instanceof Boolean ||
-                value instanceof Byte ||
-                value instanceof Short ||
-                value instanceof Integer ||
-                value instanceof Long ||
-                value instanceof Float ||
-                value instanceof Double)
+                value instanceof Number)
             {
                 replacementLine.append(' ').append(value);
             } else if (value instanceof String) {
@@ -128,15 +116,10 @@ public class ConfigurationRepresentation
             } else if (value instanceof List) {
                 val list = (List<?>) value;
 
-                if (list.isEmpty()) {
-                    replacementLine.append(" []");
-                } else {
+                if (list.isEmpty()) replacementLine.append(" []");
+                else {
                     val preString = StringUtils.leftPad("- ", StringUtil.depth(originalLine));
                     for (Object o : list) configLines.add(lineIndexOfKey + 1, preString + o);
-                }
-            } else if (value instanceof ConfigActions) {
-                if (value == ConfigActions.DELETE_KEYS) {
-                    replacementLine.append(" {}");
                 }
             }
 
@@ -144,10 +127,5 @@ public class ConfigurationRepresentation
         });
 
         Files.write(this.configFile.toPath(), configLines);
-    }
-
-    public enum ConfigActions
-    {
-        DELETE_KEYS
     }
 }

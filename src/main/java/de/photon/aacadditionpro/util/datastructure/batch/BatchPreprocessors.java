@@ -80,19 +80,19 @@ public final class BatchPreprocessors
         val statistics = new DoubleStatistics[mappers.length];
         for (int i = 0; i < statistics.length; i++) statistics[i] = new DoubleStatistics();
 
-        if (input.isEmpty()) return List.of(statistics);
+        if (!input.isEmpty()) {
+            final Iterator<T> iterator = input.iterator();
+            T old = iterator.next();
+            T current;
+            while (iterator.hasNext()) {
+                current = iterator.next();
 
-        final Iterator<T> iterator = input.iterator();
-        T old = iterator.next();
-        T current;
-        while (iterator.hasNext()) {
-            current = iterator.next();
+                for (int i = 0; i < mappers.length; ++i) {
+                    statistics[i].accept(mappers[i].applyAsDouble(old, current));
+                }
 
-            for (int i = 0; i < mappers.length; ++i) {
-                statistics[i].accept(mappers[i].applyAsDouble(old, current));
+                old = current;
             }
-
-            old = current;
         }
         return List.of(statistics);
     }

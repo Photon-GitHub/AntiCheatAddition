@@ -41,7 +41,7 @@ public class ConfigurationRepresentation
     {
         final int depthOfKey = StringUtil.depth(lines.get(firstLineOfKey));
         return (int) lines.stream()
-                          // Skip firstLineOfKey to get to the first line and 1 as the initial line should not be iterated over.
+                          // Skip firstLineOfKey to get to the first line and 1 as the initial line should not be iterated over to avoid stopping there in takeWhile.
                           .skip(firstLineOfKey + 1L)
                           // Smaller or equal depth is the indicator of a new key, and we only want the lines of the current key.
                           .takeWhile(line -> StringUtil.depth(line) > depthOfKey)

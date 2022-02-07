@@ -39,7 +39,7 @@ public class EnchantmentHider extends Module
                     val user = User.safeGetUserFromPacketEvent(event);
                     if (User.isUserInvalid(user, this)) return;
 
-                    val wrapper = IWrapperPlayEquipment.of(event.getPacket());
+                    var wrapper = IWrapperPlayEquipment.of(event.getPacket());
                     val entity = wrapper.getEntity(event);
 
                     // Do not modify the players' own enchantments.
@@ -56,6 +56,8 @@ public class EnchantmentHider extends Module
 
                         // Clone the packet to prevent a serversided connection of the equipment.
                         event.setPacket(event.getPacket().deepClone());
+                        // The cloned packet needs a new wrapper!
+                        wrapper = IWrapperPlayEquipment.of(event.getPacket());
 
                         val pairs = wrapper.getSlotStackPairs();
 

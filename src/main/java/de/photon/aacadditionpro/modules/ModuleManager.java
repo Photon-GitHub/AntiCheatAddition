@@ -2,8 +2,9 @@ package de.photon.aacadditionpro.modules;
 
 import de.photon.aacadditionpro.modules.additions.BrandHider;
 import de.photon.aacadditionpro.modules.additions.DamageIndicator;
+import de.photon.aacadditionpro.modules.additions.EnchantmentHider;
 import de.photon.aacadditionpro.modules.additions.LogBot;
-import de.photon.aacadditionpro.modules.additions.VersionControl;
+import de.photon.aacadditionpro.modules.additions.esp.Esp;
 import de.photon.aacadditionpro.modules.checks.autoeat.AutoEat;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishConsistency;
 import de.photon.aacadditionpro.modules.checks.autofish.AutoFishInhumanReaction;
@@ -34,6 +35,7 @@ import de.photon.aacadditionpro.modules.sentinel.SentinelChannelModule;
 import de.photon.aacadditionpro.modules.sentinel.VapeSentinel;
 import de.photon.aacadditionpro.modules.sentinel.WorldDownloaderSentinel;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
+import de.photon.aacadditionpro.util.datastructure.Pair;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,8 +57,9 @@ public final class ModuleManager
         // Additions
         val brandHider = BrandHider.INSTANCE;
         val damageIndicator = new DamageIndicator();
+        val enchantmentHider = new EnchantmentHider();
+        val esp = new Esp();
         val logBot = new LogBot();
-        val versionControl = new VersionControl();
 
         // Checks
         val autoEat = new AutoEat();
@@ -110,8 +113,9 @@ public final class ModuleManager
                 // Additions
                 brandHider,
                 damageIndicator,
+                enchantmentHider,
+                esp,
                 logBot,
-                versionControl,
 
                 // Checks
                 autoEat,
@@ -192,17 +196,14 @@ public final class ModuleManager
     public static AACCustomFeatureProvider getCustomFeatureProvider()
     {
         return offlinePlayer -> {
-            val featureList = new ArrayList<AACCustomFeature>(violationModuleMap.size());
             val uuid = offlinePlayer.getUniqueId();
-            double score;
-            for (ViolationModule module : violationModuleMap.values()) {
-                // Only add enabled modules
-                if (module.isEnabled() && module.getAacInfo() != null) {
-                    score = module.getAACScore(uuid);
-                    featureList.add(new AACCustomFeature(module.getConfigString(), module.getAacInfo(), score, module.getAACTooltip(uuid, score)));
-                }
-            }
-            return featureList;
+            return violationModuleMap.values().stream()
+                                     .filter(Module::isEnabled)
+                                     .filter(module -> module.getAacInfo() != null)
+                                     // Map the module and its AACScore to an AACCustomFeature.
+                                     .map(module -> Pair.map(module, module.getAACScore(uuid),
+                                                             (m, score) -> new AACCustomFeature(m.getConfigString(), m.getAacInfo(), score, m.getAACTooltip(uuid, score))))
+                                     .collect(Collectors.toList());
         };
     }
 }

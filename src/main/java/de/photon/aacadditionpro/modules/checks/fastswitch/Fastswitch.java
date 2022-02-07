@@ -21,10 +21,10 @@ public class Fastswitch extends ViolationModule
     @LoadFromConfiguration(configPath = ".cancel_vl")
     private int cancelVl;
 
-    @LoadFromConfiguration(configPath = "max_ping")
+    @LoadFromConfiguration(configPath = ".max_ping")
     private double maxPing;
 
-    @LoadFromConfiguration(configPath = "switch_milliseconds")
+    @LoadFromConfiguration(configPath = ".switch_milliseconds")
     private int switchMilliseconds;
 
     public Fastswitch()

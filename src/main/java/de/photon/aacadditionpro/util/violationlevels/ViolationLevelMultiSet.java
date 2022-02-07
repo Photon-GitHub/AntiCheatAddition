@@ -24,12 +24,12 @@ class ViolationLevelMultiSet implements Listener
         this(decayMilliseconds, 1);
     }
 
-    ViolationLevelMultiSet(final long decayMilliseconds, final int occurences)
+    ViolationLevelMultiSet(final long decayMilliseconds, final int occurrences)
     {
         // Might need to have a vl manager without vl decrease
         if (decayMilliseconds > 0) {
             // Schedule the decay with 3000 milliseconds to free startup.
-            scheduler.scheduleAtFixedRate(() -> this.decay(occurences), 3000, decayMilliseconds, TimeUnit.MILLISECONDS);
+            scheduler.scheduleAtFixedRate(() -> this.decay(occurrences), 3000, decayMilliseconds, TimeUnit.MILLISECONDS);
         }
     }
 

@@ -48,7 +48,7 @@ class CanSeeThirdPerson implements Function<Player, Vector[]>
             // There is an intersection
             if (intersections[i] != 0) {
                 // Now we need to make sure the vectors are not inside of blocks as the method above returns.
-                // The 0.05 factor makes sure that we are outside of the block and not on the edge.
+                // The 0.05 factor makes sure that we are outside the block and not on the edge.
                 intersections[i] -= 0.05 +
                                     // Calculate the distance to the middle of the block
                                     (0.5 / Math.sin(vectors[i + 1].angle(vectors[i + 1].clone().setY(0))));

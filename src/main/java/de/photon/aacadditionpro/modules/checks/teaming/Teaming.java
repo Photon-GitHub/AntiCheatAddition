@@ -72,7 +72,7 @@ public class Teaming extends ViolationModule implements Listener
                                 // Correct gamemodes
                                 user.inAdventureOrSurvivalMode() &&
                                 // Not engaged in pvp
-                                !user.getTimestampMap().at(TimestampKey.TEAMING_COMBAT_TAG).recentlyUpdated(noPvpTime) &&
+                                user.getTimestampMap().at(TimestampKey.TEAMING_COMBAT_TAG).notRecentlyUpdated(noPvpTime) &&
                                 // Not in a bypassed region
                                 safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(player.getLocation())))
                             {

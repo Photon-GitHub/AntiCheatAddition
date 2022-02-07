@@ -240,7 +240,7 @@ public class AxisAlignedBB implements Cloneable
     }
 
     /**
-     * Get the offset in x axis
+     * Get the offset in x-axis
      *
      * @param bb the bounding box from which we want to know the offset to
      * @param x  default or maximum offset allowed
@@ -249,12 +249,12 @@ public class AxisAlignedBB implements Cloneable
      */
     public double calculateXOffset(AxisAlignedBB bb, double x)
     {
-        // Check if we are outside of Y bounds
+        // Check if we are outside the Y bounds
         if (bb.maxY <= this.minY || bb.minY >= this.maxY) {
             return x;
         }
 
-        // Check if we are outside of Z bounds
+        // Check if we are outside the Z bounds
         if (bb.maxZ <= this.minZ || bb.minZ >= this.maxZ) {
             return x;
         }
@@ -281,7 +281,7 @@ public class AxisAlignedBB implements Cloneable
     }
 
     /**
-     * Get the offset in y axis
+     * Get the offset in y-axis
      *
      * @param bb the bounding box from which we want to know the offset to
      * @param y  default or maximum offset allowed
@@ -290,12 +290,12 @@ public class AxisAlignedBB implements Cloneable
      */
     public double calculateYOffset(AxisAlignedBB bb, double y)
     {
-        // Check if we are outside of X bounds
+        // Check if we are outside the X bounds
         if (bb.maxX <= this.minX || bb.minX >= this.maxX) {
             return y;
         }
 
-        // Check if we are outside of Z bounds
+        // Check if we are outside the Z bounds
         if (bb.maxZ <= this.minZ || bb.minZ >= this.maxZ) {
             return y;
         }
@@ -331,12 +331,12 @@ public class AxisAlignedBB implements Cloneable
      */
     public double calculateZOffset(AxisAlignedBB bb, double z)
     {
-        // Check if we are outside of X bounds
+        // Check if we are outside the X bounds
         if (bb.maxX <= this.minX || bb.minX >= this.maxX) {
             return z;
         }
 
-        // Check if we are outside of Y bounds
+        // Check if we are outside the Y bounds
         if (bb.maxY <= this.minY || bb.minY >= this.maxY) {
             return z;
         }

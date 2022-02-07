@@ -29,7 +29,7 @@ public enum ServerVersion
     MC114("1.14", false),
     MC115("1.15.2", true),
     MC116("1.16.5", true),
-    MC117("1.17", true),
+    MC117("1.17.1", true),
     MC118("1.18", true);
 
 

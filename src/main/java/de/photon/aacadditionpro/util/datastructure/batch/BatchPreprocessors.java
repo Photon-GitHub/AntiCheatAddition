@@ -1,14 +1,15 @@
 package de.photon.aacadditionpro.util.datastructure.batch;
 
-import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
+import com.google.common.collect.Lists;
+import de.photon.aacadditionpro.util.datastructure.Pair;
 import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.val;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.function.BiFunction;
 import java.util.function.ToDoubleBiFunction;
 
@@ -22,14 +23,14 @@ public final class BatchPreprocessors
      * <p>
      * The last element may be ignored if a pair cannot fully be formed.
      */
-    public static <T> List<ImmutablePair<T, T>> zipToPairs(List<T> input)
+    public static <T> List<Pair<T, T>> zipToPairs(List<T> input)
     {
-        final List<ImmutablePair<T, T>> output = new ArrayList<>(input.size());
+        final List<Pair<T, T>> output = new ArrayList<>(input.size());
         T last = null;
         for (T t : input) {
             if (last == null) last = t;
             else {
-                output.add(ImmutablePair.of(last, t));
+                output.add(Pair.of(last, t));
                 last = null;
             }
         }
@@ -43,17 +44,17 @@ public final class BatchPreprocessors
      * <p>
      * The last element may be ignored if a pair cannot fully be formed.
      */
-    public static <T> List<ImmutablePair<T, T>> zipOffsetOne(List<T> input)
+    public static <T> List<Pair<T, T>> zipOffsetOne(List<T> input)
     {
-        return combineTwoObjectsToEnd(input, ImmutablePair::of);
+        return combineTwoObjectsToEnd(input, Pair::of);
     }
 
     /**
-     * This method allows for the reduction from a {@link List} of {@link ImmutablePair}s to an {@link ImmutablePair} of {@link DoubleStatistics}, which is often used in {@link BatchProcessor}s to
+     * This method allows for the reduction from a {@link List} of {@link Pair}s to an {@link Pair} of {@link DoubleStatistics}, which is often used in {@link BatchProcessor}s to
      * calculate both the expected and the actual delays.
      */
     @SafeVarargs
-    public static <T> List<DoubleStatistics> reducePairToDoubleStatistics(List<ImmutablePair<T, T>> input, ToDoubleBiFunction<T, T>... mappers)
+    public static <T> List<DoubleStatistics> reducePairToDoubleStatistics(List<Pair<T, T>> input, ToDoubleBiFunction<T, T>... mappers)
     {
         val statistics = new DoubleStatistics[mappers.length];
         for (int i = 0; i < statistics.length; i++) {
@@ -77,14 +78,12 @@ public final class BatchPreprocessors
     public static <T> List<DoubleStatistics> zipReduceToDoubleStatistics(List<T> input, ToDoubleBiFunction<T, T>... mappers)
     {
         val statistics = new DoubleStatistics[mappers.length];
-        for (int i = 0; i < statistics.length; i++) {
-            statistics[i] = new DoubleStatistics();
-        }
+        for (int i = 0; i < statistics.length; i++) statistics[i] = new DoubleStatistics();
 
         if (!input.isEmpty()) {
-            T old = input.get(0);
+            final Iterator<T> iterator = input.iterator();
+            T old = iterator.next();
             T current;
-            val iterator = input.listIterator(1);
             while (iterator.hasNext()) {
                 current = iterator.next();
 
@@ -114,17 +113,16 @@ public final class BatchPreprocessors
      */
     public static <T, U> List<U> combineTwoObjectsToEnd(List<T> input, BiFunction<T, T, U> combiner)
     {
-        final List<U> output = new ArrayList<>(input.size());
+        if (input.isEmpty()) return List.of();
 
-        if (!input.isEmpty()) {
-            T old = input.get(0);
-            T current;
-            final ListIterator<T> iterator = input.listIterator(1);
-            while (iterator.hasNext()) {
-                current = iterator.next();
-                output.add(combiner.apply(old, current));
-                old = current;
-            }
+        final List<U> output = new ArrayList<>(input.size());
+        final Iterator<T> iterator = input.iterator();
+        T old = iterator.next();
+        T current;
+        while (iterator.hasNext()) {
+            current = iterator.next();
+            output.add(combiner.apply(old, current));
+            old = current;
         }
         return output;
     }
@@ -145,16 +143,6 @@ public final class BatchPreprocessors
      */
     public static <T, U> List<U> combineTwoObjectsToStart(List<T> input, BiFunction<T, T, U> combiner)
     {
-        final List<U> output = new ArrayList<>(input.size());
-
-        if (!input.isEmpty()) {
-            T old = input.get(input.size() - 1);
-            for (int i = input.size() - 2; i >= 0; --i) {
-                T current = input.get(i);
-                output.add(combiner.apply(old, current));
-                old = current;
-            }
-        }
-        return output;
+        return combineTwoObjectsToEnd(Lists.reverse(input), combiner);
     }
 }

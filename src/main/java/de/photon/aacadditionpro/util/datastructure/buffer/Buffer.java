@@ -28,7 +28,7 @@ public interface Buffer<T> extends Collection<T>
     T head();
 
     /**
-     * @return whether or not the {@link Buffer} is empty.
+     * @return whether the {@link Buffer} is empty.
      */
     boolean isEmpty();
 

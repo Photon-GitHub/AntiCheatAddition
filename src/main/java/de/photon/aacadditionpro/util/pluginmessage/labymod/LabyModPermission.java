@@ -36,7 +36,7 @@ public enum LabyModPermission
     private final boolean configValue;
 
     /**
-     * @param defaultEnabled whether or not this permission is enabled/activated by default
+     * @param defaultEnabled whether this permission is enabled/activated by default
      */
     LabyModPermission(boolean defaultEnabled)
     {

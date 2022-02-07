@@ -2,6 +2,7 @@ package de.photon.aacadditionpro;
 
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -13,8 +14,8 @@ class PolynomialTest
     @Test
     void zeroTest()
     {
-        final Random random = new Random();
-        final double[] results = new double[5];
+        val random = new Random();
+        val results = new double[5];
         results[0] = new Polynomial(0).apply(0);
         results[1] = new Polynomial(0).apply(random.nextDouble());
         results[2] = new Polynomial(random.nextDouble(), 0).apply(0);
@@ -28,11 +29,11 @@ class PolynomialTest
     @Test
     void constantTest()
     {
-        final int samples = 10;
-        final Random random = new Random();
+        val samples = 10;
+        val random = new Random();
 
-        final double[] actual = new double[samples];
-        final double[] expected = new double[samples];
+        val actual = new double[samples];
+        val expected = new double[samples];
 
         for (int i = 0; i < samples; i++) {
             double coefficient = random.nextDouble();
@@ -49,8 +50,7 @@ class PolynomialTest
         final int samples = 10;
         final double epsilon = 0.000001D;
 
-        final Random random = new Random();
-        final Polynomial polynomial = new Polynomial(7, 5, 1, 9);
+        val polynomial = new Polynomial(7, 5, 1, 9);
 
         double actual;
         double expected;

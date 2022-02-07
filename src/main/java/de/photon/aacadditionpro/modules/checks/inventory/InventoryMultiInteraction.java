@@ -61,7 +61,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                 case NOTHING:
                     // Nothing happens, therefore exempted
                 case UNKNOWN:
-                    // Unknown reason might not be save to handle
+                    // Unknown reason might not be safe to handle
                 case COLLECT_TO_CURSOR:
                     // False positive with collecting all items of one type in the inventory
                 case DROP_ALL_SLOT:
@@ -87,9 +87,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                     // No false positives to check for.
                     addedVl = 8;
 
-                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
-                                    1 :
-                                    5;
+                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ? 1 : 5;
                     break;
 
                 case DROP_ALL_CURSOR:
@@ -104,14 +102,12 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                     if (event.getCurrentItem() == null || user.getDataMap().getObject(DataKey.ObjectKey.LAST_MATERIAL_CLICKED) == event.getCurrentItem().getType()) return;
 
                     // Depending on the distance of the clicks.
-                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
-                                    1 :
-                                    2;
+                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ? 1 : 2;
                     break;
 
                 case SWAP_WITH_CURSOR:
                     switch (event.getSlotType()) {
-                        // Armor slots are not eligible for less ticks as of quick change problems with the feet slot.
+                        // Armor slots are not eligible for fewer ticks as of quick change problems with the feet slot.
                         // No false positives possible in fuel or crafting slot as it is only one slot which is separated from others
                         case FUEL:
                         case RESULT:

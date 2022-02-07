@@ -15,7 +15,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,18 +31,19 @@ class ModernWorldUtil implements WorldUtil
     }
 
     @Override
-    public byte countBlocksAround(Block block, Set<BlockFace> faces, Set<Material> ignored)
+    public long countBlocksAround(Block block, Set<BlockFace> faces, Set<Material> ignored)
     {
         Preconditions.checkNotNull(block, "Tried to count surrounding blocks of null block.");
         Preconditions.checkNotNull(faces, "Tried to count surrounding blocks of block at null faces.");
         Preconditions.checkNotNull(faces, "Tried to count surrounding blocks of block will null ignore (use empty set).");
 
-        byte count = 0;
-        for (BlockFace face : faces) {
-            val b = block.getRelative(face);
-            if (!b.isEmpty() && !ignored.contains(b.getType())) ++count;
-        }
-        return count;
+        return faces.stream()
+                    .map(block::getRelative)
+                    // Actual block there, not air.
+                    .filter(b -> !b.isEmpty())
+                    // Ignored materials.
+                    .filter(b -> !ignored.contains(b.getType()))
+                    .count();
     }
 
     @Override
@@ -53,12 +53,13 @@ class ModernWorldUtil implements WorldUtil
         Preconditions.checkNotNull(faces, "Tried to get surrounding blocks of block at null faces.");
         Preconditions.checkNotNull(faces, "Tried to get surrounding blocks of block will null ignore (use empty set).");
 
-        val result = new ArrayList<Block>();
-        for (BlockFace face : faces) {
-            val b = block.getRelative(face);
-            if (!b.isEmpty() && !ignored.contains(b.getType())) result.add(b);
-        }
-        return List.copyOf(result);
+        return faces.stream()
+                    .map(block::getRelative)
+                    // Actual block there, not air.
+                    .filter(b -> !b.isEmpty())
+                    // Ignored materials.
+                    .filter(b -> !ignored.contains(b.getType()))
+                    .collect(Collectors.toUnmodifiableList());
     }
 
     @Override
@@ -93,7 +94,8 @@ class ModernWorldUtil implements WorldUtil
         Preconditions.checkArgument(inSameWorld(one, two), "Tried to check chunks between worlds.");
 
         // Basic starting location check
-        if (!isChunkLoaded(one.getWorld(), one.getBlockX(), one.getBlockZ())) return false;
+        val world = Preconditions.checkNotNull(one.getWorld(), "Tried to check chunks in null world.");
+        if (!isChunkLoaded(world, one.getBlockX(), one.getBlockZ())) return false;
 
         final boolean modifyX;
 
@@ -156,7 +158,7 @@ class ModernWorldUtil implements WorldUtil
                     currentChunkCoords[0] = chunkX;
                     currentChunkCoords[1] = chunkZ;
 
-                    if (!one.getWorld().isChunkLoaded(chunkX, chunkZ)) return false;
+                    if (!world.isChunkLoaded(chunkX, chunkZ)) return false;
                 }
             }
         }

@@ -96,7 +96,7 @@ public class ViolationLevelManagement extends ViolationManagement
         }
 
         /**
-         * Allows to define decay.
+         * Allows defining decay.
          * Not calling this method indicates no decay.
          */
         public Builder withDecay(long decayTicks, int decayAmount)

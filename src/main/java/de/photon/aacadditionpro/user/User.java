@@ -197,7 +197,7 @@ public class User implements Permissible
      */
     public boolean notRecentlyOpenedInventory(final long milliseconds)
     {
-        return !this.getTimestampMap().at(TimestampKey.INVENTORY_OPENED).recentlyUpdated(milliseconds);
+        return this.getTimestampMap().at(TimestampKey.INVENTORY_OPENED).notRecentlyUpdated(milliseconds);
     }
 
     /**

@@ -112,7 +112,7 @@ public class InventoryMove extends ViolationModule
                         // Recent teleports can cause bugs
                         !user.hasTeleportedRecently(teleportBypassTime) &&
                         !user.hasChangedWorldsRecently(worldChangeBypassTime) &&
-                        // Make sure the current chunk of the player is loaded so the liquids method does not cause async entity world add errors.
+                        // Make sure the current chunk of the player is loaded so isInLiquids does not cause async entity world add errors.
                         // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load errors.
                         WorldUtil.INSTANCE.isChunkLoaded(user.getPlayer().getLocation()) &&
                         // The player is currently not in a liquid (liquids push)

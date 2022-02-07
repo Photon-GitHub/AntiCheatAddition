@@ -53,7 +53,7 @@ public interface WorldUtil
      * @return the amount of {@link Block}s which were counted
      */
     @Contract("null, _, _ -> fail; _, null, _ -> fail; _, _, null -> fail")
-    byte countBlocksAround(final Block block, final Set<BlockFace> faces, final Set<Material> ignored);
+    long countBlocksAround(final Block block, final Set<BlockFace> faces, final Set<Material> ignored);
 
 
     /**
@@ -64,7 +64,7 @@ public interface WorldUtil
      * @param ignored the {@link Set} of {@link Material}s which shall be ignored.
      *                Empty blocks are automatically ignored.
      *
-     * @return an immmutable {@link List} of {@link Block}s around the {@link Block}
+     * @return an immutable {@link List} of {@link Block}s around the {@link Block}
      */
     @Contract("null, _, _ -> fail; _, null, _ -> fail; _, _, null -> fail")
     List<Block> getBlocksAround(final Block block, final Set<BlockFace> faces, final Set<Material> ignored);

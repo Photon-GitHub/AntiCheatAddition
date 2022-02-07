@@ -7,7 +7,7 @@ import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.datastructure.ImmutablePair;
+import de.photon.aacadditionpro.util.datastructure.Pair;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.visibility.PlayerVisibility;
 import lombok.val;
@@ -38,7 +38,7 @@ public class Esp extends Module
     private Map<World, Integer> playerTrackingRanges;
 
 
-    @LoadFromConfiguration(configPath = ".inverval")
+    @LoadFromConfiguration(configPath = ".interval")
     private long interval;
 
     public Esp()
@@ -58,10 +58,10 @@ public class Esp extends Module
         this.playerTrackingRanges = worldKeys.stream()
                                              .filter(key -> !DEFAULT_WORLD_NAME.equals(key))
                                              // Squared distance.
-                                             .map(key -> ImmutablePair.of(Bukkit.getWorld(key), MathUtil.pow(worlds.getInt(key + ".entity-tracking-range.players"), 2)))
+                                             .map(key -> Pair.of(Bukkit.getWorld(key), MathUtil.pow(worlds.getInt(key + ".entity-tracking-range.players"), 2)))
                                              // After MAX_TRACKING_RANGE, we do not need to check the full tracking range anymore.
                                              .filter(pair -> pair.getSecond() < MAX_TRACKING_RANGE)
-                                             .collect(Collectors.toUnmodifiableMap(ImmutablePair::getFirst, ImmutablePair::getSecond));
+                                             .collect(Collectors.toUnmodifiableMap(Pair::getFirst, Pair::getSecond));
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 

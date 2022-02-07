@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.Pair;
+import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
@@ -80,6 +81,7 @@ public class EnchantmentHider extends Module
 
         return ModuleLoader.builder(this)
                            .addPacketListeners(adapter)
+                           .addAllowedServerVersions(ServerVersion.NON_188_VERSIONS)
                            .build();
     }
 }

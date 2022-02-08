@@ -37,6 +37,7 @@ public final class MaterialUtil
     public static final Set<Material> BOUNCE_MATERIALS;
 
     public static final Material EXPERIENCE_BOTTLE;
+    public static final Material SPAWNER;
     public static final Set<Material> LIQUIDS;
 
     /**
@@ -58,6 +59,7 @@ public final class MaterialUtil
                 freeSpaceContainers.addAll(getMaterialsEndingWith("SHULKER_BOK"));
 
                 EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
+                SPAWNER = Material.getMaterial("MOB_SPAWNER");
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA, Material.getMaterial("STATIONARY_WATER"), Material.getMaterial("STATIONARY_LAVA"));
                 break;
             case MC115:
@@ -69,6 +71,7 @@ public final class MaterialUtil
                 freeSpaceContainers.addAll(ofTags(Tag.SHULKER_BOXES));
 
                 EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
+                SPAWNER = Material.SPAWNER;
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA);
                 break;
             default:
@@ -102,9 +105,9 @@ public final class MaterialUtil
      */
     public static boolean isReallyOccluding(Material material)
     {
-        return material != Material.BARRIER && material.isOccluding()
-               // Pre-1.13 versions have a different spawner material.
-               && ServerVersion.getActiveServerVersion().compareTo(ServerVersion.MC113) < 0 ? material != Material.getMaterial("MOB_SPAWNER") : material != Material.SPAWNER;
+        return material != Material.BARRIER &&
+               material.isOccluding() &&
+               material != SPAWNER;
     }
 
     /**

@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.util.config;
 
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.Module;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -47,7 +48,8 @@ public final class ConfigUtils
             // Get the type of the field.
             val type = field.getType();
 
-            Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(path, true), "Path " + path + " does not exist.");
+            // The contains method does not exist on MC 1.8.8.
+            if (!ServerVersion.is18()) Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(path, true), "Path " + path + " does not exist.");
 
             // The different classes
             try {

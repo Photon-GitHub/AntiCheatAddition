@@ -799,7 +799,7 @@ Sentinel:
       containsAll: [ ]
       # At least one string in this list will need to be included in the message sent in the channels above to trigger
       # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
-      containyAny: [ "forge", "fml" ]
+      containsAny: [ "forge", "fml" ]
       # What commands will be executed if the mod is detected.
       commands:
         - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses Forge"

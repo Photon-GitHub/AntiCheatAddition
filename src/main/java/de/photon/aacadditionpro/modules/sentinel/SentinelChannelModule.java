@@ -3,7 +3,6 @@ package de.photon.aacadditionpro.modules.sentinel;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
-import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import lombok.val;
 import org.bukkit.entity.Player;
@@ -15,11 +14,8 @@ import java.util.stream.Collectors;
 
 public class SentinelChannelModule extends SentinelModule implements PluginMessageListener
 {
-    @LoadFromConfiguration(configPath = ".containsAll")
-    private List<String> containsAll;
-
-    @LoadFromConfiguration(configPath = ".containsAll")
-    private List<String> containsAny;
+    private final List<String> containsAll = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".containsAll");
+    private final List<String> containsAny = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".containsAny");
 
     public SentinelChannelModule(String configString)
     {

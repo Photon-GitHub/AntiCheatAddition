@@ -1,6 +1,5 @@
-package de.photon.aacadditionpro;
+package de.photon.aacadditionpro.util.datastructure;
 
-import de.photon.aacadditionpro.util.datastructure.Pair;
 import de.photon.aacadditionpro.util.datastructure.batch.BatchPreprocessors;
 import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import lombok.val;

@@ -29,10 +29,13 @@ public class SentinelChannelModule extends SentinelModule implements PluginMessa
         if (User.isUserInvalid(user, this)) return;
 
         val stringMessage = new String(message);
-        if (!containsAll.isEmpty() && !containsAll.stream().allMatch(stringMessage::contains)) return;
-        if (!containsAny.isEmpty() && containsAny.stream().noneMatch(stringMessage::contains)) return;
 
-        this.detection(user.getPlayer());
+        // If containsAll or containsAny is empty, skip the respective check.
+        if ((containsAll.isEmpty() || containsAll.stream().allMatch(stringMessage::contains)) &&
+            (containsAny.isEmpty() || containsAny.stream().anyMatch(stringMessage::contains)))
+        {
+            this.detection(user.getPlayer());
+        }
     }
 
     @Override

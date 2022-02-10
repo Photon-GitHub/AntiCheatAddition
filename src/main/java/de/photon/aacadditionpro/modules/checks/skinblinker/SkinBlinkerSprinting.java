@@ -21,8 +21,8 @@ public class SkinBlinkerSprinting extends ViolationModule
                            .addPacketListeners(PacketAdapterBuilder.of(PacketType.Play.Client.SETTINGS).onReceiving(event -> {
                                /*
                                 * An unmodified client can only send such packets if the player is in the menu
-                                * -> he obviously cannot Sprint or Sneak when doing this.
-                                * -> he can move, especially in MC 1.9 and upward because of entity-collision, etc.
+                                * -> They obviously cannot sprint or sneak while doing this.
+                                * -> They can move, especially in MC 1.9+ because of entity-collision, etc.
                                 * -> As of the render-debug-cycle which can be done in the game (F3 + F) I need to check for the change of the skin.
                                 */
                                val user = User.safeGetUserFromPacketEvent(event);

@@ -1,5 +1,6 @@
-package de.photon.aacadditionpro;
+package de.photon.aacadditionpro.util;
 
+import de.photon.aacadditionpro.Dummy;
 import de.photon.aacadditionpro.util.execute.Placeholders;
 import lombok.val;
 import org.bukkit.ChatColor;

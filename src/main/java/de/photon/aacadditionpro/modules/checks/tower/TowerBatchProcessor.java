@@ -91,7 +91,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
         if (!blockPlace.getJumpBoost().exists()) return FIRST_DELAYS.get(0);
 
         val jumpBoost = blockPlace.getJumpBoost().getAmplifier();
-        // Negative Jump Boost -> Not allowed to place blocks -> Very high delay
+        // Negative Jump Boost -> Player is not allowed to place blocks -> Very high delay
         if (jumpBoost < 0) return 1500;
 
         // Normal Jump Boost in cache

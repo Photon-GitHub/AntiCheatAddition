@@ -626,13 +626,13 @@ Sentinel:
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   BetterSprinting:
     # Do you want to enable BetterSprinting?
-    enabled: false
+    enabled: true
     # This mod provides a method to disable parts of it.
     disable:
       # The mod provides a method to disable it.
       # Other options will be ignored if this is set to true.
       # If you want to completely disable the mod set this to true.
-      general: true
+      general: false
       # This gives players a configurable speed boost when flying in creative or survival mode.
       survival_fly_boost: true
       enable_all_dirs: true
@@ -702,6 +702,7 @@ Sentinel:
       # Even though this is sometimes considered as an unfair advantage it is often just handy information
       # which is not really affecting the gameplay.
       saturation_bar: false
+    # What commands will be executed if the mod is detected.
     commands:
       - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses LabyMod"
 
@@ -723,6 +724,7 @@ Sentinel:
       save: true
       # This allows to load a schematic on your server for printing or a hologram.
       load: false
+    # What commands will be executed if the mod is detected.
     commands:
       - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses Schematica"
 
@@ -734,9 +736,11 @@ Sentinel:
   # large API changes in 1.13.
   Vape:
     # Do you want to enable Vape-Sentinel?
-    enabled: false
+    enabled: true
+    # What commands will be executed if the mod is detected.
+    # Automatic banning can be considered.
     commands:
-      - "ban {player} Illegal client modification"
+      - "kick {player} Illegal client modification"
 
   # WorldDownloader is a popular modification to get the maps of a server
   WorldDownloader:
@@ -764,6 +768,7 @@ Sentinel:
       # This will disable saving containers and their inventories.
       # If tile_entity_saving is disabled, this has no effect.
       container_saving: true
+    # What commands will be executed if the mod is detected.
     commands:
       - "kick {player} WorldDownloader"
 
@@ -799,7 +804,7 @@ Sentinel:
       containsAll: [ ]
       # At least one string in this list will need to be included in the message sent in the channels above to trigger
       # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
-      containyAny: [ "forge", "fml" ]
+      containsAny: [ "forge", "fml" ]
       # What commands will be executed if the mod is detected.
       commands:
         - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses Forge"
@@ -879,7 +884,7 @@ Sentinel:
     # This will detect Winterware.
     Winterware:
       # Do you want to enable Winterware-Sentinel?
-      enabled: false
+      enabled: true
       # The channels AACAdditionPro will listen to.
       incoming_channels:
         - "lc:brand"
@@ -891,8 +896,9 @@ Sentinel:
       # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
       containsAny: [ ]
       # What commands will be executed if the mod is detected.
+      # Automatic banning can be considered.
       commands:
-        - "ban {player} in {world} Illegal Client Modifications"
+        - "kick {player} Illegal Client Modifications"
 # ------------------------------------------------------------------------------------------------------------------- #
 #                                               ___      _                                                            #
 #                                              |   \ ___| |__ _  _ __ _                                               #

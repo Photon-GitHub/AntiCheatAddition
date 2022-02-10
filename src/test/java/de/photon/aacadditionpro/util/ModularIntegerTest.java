@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro;
+package de.photon.aacadditionpro.util;
 
 import de.photon.aacadditionpro.util.mathematics.ModularInteger;
 import lombok.val;

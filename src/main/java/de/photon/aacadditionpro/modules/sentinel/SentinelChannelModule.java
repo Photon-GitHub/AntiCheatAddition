@@ -9,10 +9,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class SentinelChannelModule extends SentinelModule implements PluginMessageListener
 {
+    private final List<String> containsAll = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".containsAll");
+    private final List<String> containsAny = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".containsAny");
+
     public SentinelChannelModule(String configString)
     {
         super(configString);
@@ -23,7 +27,15 @@ public class SentinelChannelModule extends SentinelModule implements PluginMessa
     {
         val user = User.getUser(player);
         if (User.isUserInvalid(user, this)) return;
-        this.detection(user.getPlayer());
+
+        val stringMessage = new String(message);
+
+        // If containsAll or containsAny is empty, skip the respective check.
+        if ((containsAll.isEmpty() || containsAll.stream().allMatch(stringMessage::contains)) &&
+            (containsAny.isEmpty() || containsAny.stream().anyMatch(stringMessage::contains)))
+        {
+            this.detection(user.getPlayer());
+        }
     }
 
     @Override
@@ -33,8 +45,8 @@ public class SentinelChannelModule extends SentinelModule implements PluginMessa
         val incoming = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".incoming_channels");
         val outgoing = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".outgoing_channels");
 
-        if (!incoming.isEmpty()) builder.addIncomingMessageChannels(incoming.stream().map(MessageChannel::of).collect(Collectors.toSet()));
-        if (!outgoing.isEmpty()) builder.addOutgoingMessageChannels(outgoing.stream().map(MessageChannel::of).collect(Collectors.toSet()));
+        if (!incoming.isEmpty()) builder.addIncomingMessageChannels(incoming.stream().map(MessageChannel::of).collect(Collectors.toUnmodifiableSet()));
+        if (!outgoing.isEmpty()) builder.addOutgoingMessageChannels(outgoing.stream().map(MessageChannel::of).collect(Collectors.toUnmodifiableSet()));
         return builder.build();
     }
 }

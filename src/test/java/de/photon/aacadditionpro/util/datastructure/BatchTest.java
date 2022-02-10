@@ -1,5 +1,7 @@
-package de.photon.aacadditionpro;
+package de.photon.aacadditionpro.util.datastructure;
 
+import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.Dummy;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
@@ -23,7 +25,7 @@ class BatchTest
     // Do not remove this unused variable, it is needed for initialization of mocking.
     private static final AACAdditionPro mock = Dummy.mockAACAdditionPro();
     private static final User dummy = Dummy.mockUser();
-    private static final ViolationModule dummyVlModule = Dummy.mockViolationModule();
+    private static final ViolationModule dummyVlModule = Dummy.mockViolationModule("Inventory");
     private static final Broadcaster<Batch.Snapshot<String>> stringBroadcaster = new Broadcaster<>();
 
     @Test

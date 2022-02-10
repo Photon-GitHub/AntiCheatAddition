@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro;
+package de.photon.aacadditionpro.util.datastructure;
 
 
 import de.photon.aacadditionpro.util.datastructure.statistics.MovingDoubleStatistics;

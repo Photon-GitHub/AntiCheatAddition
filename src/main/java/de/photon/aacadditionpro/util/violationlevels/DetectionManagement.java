@@ -42,23 +42,20 @@ public class DetectionManagement extends ViolationManagement
     @Override
     public void setVL(@NotNull Player player, int newVl)
     {
-        Preconditions.checkArgument(newVl <= 1, "A Sentinel detection management only supports the vls 0 (no detection) and 1 (detection).");
+        Preconditions.checkArgument(newVl == 0 || newVl == 1, "A Sentinel detection management only supports the vls 0 (no detection) and 1 (detection).");
 
         if (newVl == 0) {
             this.detectionSet.remove(player.getUniqueId());
-        } else {
-            this.addVL(player, 1);
+            // Only punish if the detection is new.
+        } else if (detectionSet.add(player.getUniqueId())) {
+            this.punishPlayer(player, 0, 1);
         }
     }
 
     @Override
     protected void addVL(@NotNull Player player, int vl)
     {
-        Preconditions.checkArgument(vl <= 1, "A Sentinel detection management only supports the vls 0 (no detection) and 1 (detection).");
-
-        // Only punish if the detection is new.
-        if (detectionSet.add(player.getUniqueId())) {
-            this.punishPlayer(player, 0, 1);
-        }
+        // If vl is 0, just return as no change is supposed to happen (would otherwise set the vl to 0).
+        if (vl != 0) this.setVL(player, vl);
     }
 }

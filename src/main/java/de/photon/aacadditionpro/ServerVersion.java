@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Getter
@@ -33,12 +34,11 @@ public enum ServerVersion
     MC118("1.18", true);
 
 
-    public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS;
-    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = Sets.immutableEnumSet(MC18, MC19, MC110, MC111, MC112);
-    public static final Set<ServerVersion> LEGACY_EVENT_VERSIONS = Sets.immutableEnumSet(MC18, MC19, MC110, MC111, MC112, MC113);
-    public static final Set<ServerVersion> ALL_VERSIONS_TO_115 = Sets.immutableEnumSet(MC18, MC19, MC110, MC111, MC112, MC113, MC114, MC115);
-    public static final Set<ServerVersion> ALL_VERSIONS_TO_116 = Sets.immutableEnumSet(MC18, MC19, MC110, MC111, MC112, MC113, MC114, MC115, MC116);
-    public static final Set<ServerVersion> NON_188_VERSIONS;
+    public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = MC18.getVersionsFrom();
+    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = MC112.getVersionsTo();
+    public static final Set<ServerVersion> LEGACY_EVENT_VERSIONS = MC113.getVersionsTo();
+    public static final Set<ServerVersion> NON_188_VERSIONS = MC19.getVersionsFrom();
+
     /**
      * The server version of the currently running {@link Bukkit} instance.
      */
@@ -49,16 +49,13 @@ public enum ServerVersion
                                                                    .findFirst()
                                                                    .orElseThrow(UnknownMinecraftException::new);
 
-    static {
-        val allSup = EnumSet.noneOf(ServerVersion.class);
-        for (ServerVersion s : ServerVersion.values()) if (s.supported) allSup.add(s);
-        ALL_SUPPORTED_VERSIONS = Sets.immutableEnumSet(allSup);
-        allSup.remove(MC18);
-        NON_188_VERSIONS = Sets.immutableEnumSet(allSup);
-    }
-
     private final String versionOutputString;
     private final boolean supported;
+
+    // Lazy getting as most versions are not supported or used.
+    @Getter(lazy = true) private final Set<ServerVersion> versionsTo = generateVersionsTo();
+    @Getter(lazy = true) private final Set<ServerVersion> versionsFrom = generateVersionsFrom();
+
 
     /**
      * Shorthand for activeServerVersion == MC18.
@@ -94,5 +91,21 @@ public enum ServerVersion
     public static boolean containsActiveServerVersion(Set<ServerVersion> supportedServerVersions)
     {
         return supportedServerVersions.contains(activeServerVersion);
+    }
+
+    private Set<ServerVersion> generateVersionsTo()
+    {
+        return Sets.immutableEnumSet(Arrays.stream(values())
+                                           .filter(ServerVersion::isSupported)
+                                           .filter(version -> this.compareTo(version) >= 0)
+                                           .collect(Collectors.toCollection(() -> EnumSet.noneOf(ServerVersion.class))));
+    }
+
+    private Set<ServerVersion> generateVersionsFrom()
+    {
+        return Sets.immutableEnumSet(Arrays.stream(values())
+                                           .filter(ServerVersion::isSupported)
+                                           .filter(version -> this.compareTo(version) <= 0)
+                                           .collect(Collectors.toCollection(() -> EnumSet.noneOf(ServerVersion.class))));
     }
 }

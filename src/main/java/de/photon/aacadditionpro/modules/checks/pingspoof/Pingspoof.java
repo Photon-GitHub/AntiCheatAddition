@@ -120,7 +120,7 @@ public class Pingspoof extends ViolationModule implements Listener
     {
         return ModuleLoader.builder(this)
                            //TODO: 1.17 is not yet compatible.
-                           .addAllowedServerVersions(ServerVersion.ALL_VERSIONS_TO_116)
+                           .addAllowedServerVersions(ServerVersion.MC116.getVersionsTo())
                            .addPacketListeners(PacketAdapterBuilder.of(PacketType.Play.Client.TRANSACTION)
                                                                    .priority(ListenerPriority.HIGH)
                                                                    .onReceiving(event -> {

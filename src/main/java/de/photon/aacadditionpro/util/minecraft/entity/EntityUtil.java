@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 
 public interface EntityUtil
 {
-    EntityUtil INSTANCE = ServerVersion.containsActiveServerVersion(ServerVersion.ALL_VERSIONS_TO_115) ? new LegacyEntityUtil() : new ModernEntityUtil();
+    EntityUtil INSTANCE = ServerVersion.containsActiveServerVersion(ServerVersion.MC115.getVersionsTo()) ? new LegacyEntityUtil() : new ModernEntityUtil();
 
     /**
      * Creates a {@link Predicate} that maps to <code>true</code> only for a certain {@link EntityType}.

@@ -34,7 +34,10 @@ import de.photon.aacadditionpro.modules.sentinel.SchematicaSentinel;
 import de.photon.aacadditionpro.modules.sentinel.SentinelChannelModule;
 import de.photon.aacadditionpro.modules.sentinel.VapeSentinel;
 import de.photon.aacadditionpro.modules.sentinel.WorldDownloaderSentinel;
-import de.photon.aacadditionpro.modules.sentinel.exploits.ImpossiblePotionSentinel;
+import de.photon.aacadditionpro.modules.sentinel.exploits.CommandBlockSentinel;
+import de.photon.aacadditionpro.modules.sentinel.exploits.CreativeKillPotionSentinel;
+import de.photon.aacadditionpro.modules.sentinel.exploits.SelfDamageSentinel;
+import de.photon.aacadditionpro.modules.sentinel.exploits.TrollPotionSentinel;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.datastructure.Pair;
 import lombok.AccessLevel;
@@ -103,7 +106,10 @@ public final class ModuleManager
         val tower = new Tower();
 
         // Sentinel
-        val impossiblePotionSentinel = new ImpossiblePotionSentinel();
+        val commandBlockSentinel = new CommandBlockSentinel();
+        val creativeKillPotionSentinel = new CreativeKillPotionSentinel();
+        val selfDamageSentinel = new SelfDamageSentinel();
+        val trollPotionSentinel = new TrollPotionSentinel();
 
         val betterSprintingSentinel = new BetterSprintingSentinel();
         val fiveZigSentinel = new FiveZigSentinel();
@@ -168,8 +174,11 @@ public final class ModuleManager
 
                 tower,
 
-                //Sentinel
-                impossiblePotionSentinel,
+                // Sentinel
+                commandBlockSentinel,
+                creativeKillPotionSentinel,
+                selfDamageSentinel,
+                trollPotionSentinel,
 
                 betterSprintingSentinel,
                 fiveZigSentinel,

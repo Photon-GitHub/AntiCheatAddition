@@ -627,15 +627,54 @@ Sentinel:
   # Sentinel tries to identify and prevent various exploits on your server.
   # These are usually safe to ban automatically.
   Exploits:
-    # Various cheat clients allow for the creation of "creative kill potions", exploiting a bug in Minecraft in which
-    # high instant health potion effects kill a player. This detects the creation and usage of such potions, cancelling
-    # any effects, and tries to delete the potions from the inventory.
-    ImpossiblePotion:
-      # Do you want to enable the ImpossiblePotion exploit detection?
+    # Even if you have command blocks disabled on your server (as you should), it might be good to know (and ban)
+    # players that used some exploit to get a command block. This will also delete any command blocks found in the
+    # player's inventory.
+    CommandBlock:
+      # Do you want to enable the CommandBlock exploit detection?
       enabled: true
       # What commands will be executed if the mod is detected.
+      # Automatic banning can be considered.
+      commands:
+        - "kick {player} Command block."
+
+    # Various cheat clients allow for the creation of "creative kill potions", exploiting a bug in Minecraft in which
+    # high instant health potion effects kill a player. This detects the creation and usage of such potions, cancels
+    # any effects, and tries to delete the potions from the inventory.
+    CreativeKillPotion:
+      # Do you want to enable the CreativeKillPotion exploit detection?
+      enabled: true
+      # What commands will be executed if an illegal potion is detected.
+      # Automatic banning can be considered.
       commands:
         - "kick {player} Illegal Potion."
+
+    # Various cheat clients allow a player to attack themselves, giving them an advantage in some scenarios, like
+    # abusing a game's death mechanics.
+    SelfDamage:
+      # Do you want to enable the SelfDamage exploit detection?
+      enabled: true
+      # What commands will be executed if a self-attack is detected.
+      # Automatic banning can be considered.
+      commands:
+        - "kick {player} Self damage."
+
+    # This sentinel detects all potions that have one of the following features:
+    # + Blindness for at least min_effect_time seconds
+    # + Nausea for at least min_effect_time seconds
+    # Such potions are not available by brewing and unless a core feature on your server, should not be available to
+    # your players due to the detrimental effect for a player's experience. This detects the creation and usage of such
+    # potions, cancels any effects, and tries to delete the potions from the inventory.
+    TrollPotion:
+      # Do you want to enable the TrollPotion exploit detection?
+      enabled: true
+      # The minimum time in seconds of the effects to trigger a detection.
+      # Measured in seconds, must be greater than or equal to 0.
+      min_effect_time: 300
+      # What commands will be executed if an illegal potion is detected.
+      # Automatic banning can be considered.
+      commands:
+        - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} had a troll potion"
 
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   BetterSprinting:

@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 public interface PingProvider
 {
-    PingProvider INSTANCE = ServerVersion.containsActiveServerVersion(ServerVersion.ALL_VERSIONS_TO_115) ? new LegacyPingProvider() : new ModernPingProvider();
+    PingProvider INSTANCE = ServerVersion.containsActiveServerVersion(ServerVersion.MC115.getVersionsTo()) ? new LegacyPingProvider() : new ModernPingProvider();
 
     /**
      * Tries to get the player ping via a ping command on the system.

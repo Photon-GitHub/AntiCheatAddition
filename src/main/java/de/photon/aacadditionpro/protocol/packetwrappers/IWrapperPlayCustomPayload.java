@@ -18,7 +18,7 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
      */
     default MessageChannel getChannel()
     {
-        return ServerVersion.LEGACY_EVENT_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ?
+        return ServerVersion.MC113.getVersionsTo().contains(ServerVersion.getActiveServerVersion()) ?
                MessageChannel.of("minecraft", "placeholder", getHandle().getStrings().read(0)) :
                MessageChannel.of(getHandle().getMinecraftKeys().read(0));
     }
@@ -29,7 +29,7 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
      */
     default void setChannel(KeyMessageChannel value)
     {
-        if (ServerVersion.LEGACY_EVENT_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
+        if (ServerVersion.MC113.getVersionsTo().contains(ServerVersion.getActiveServerVersion())) {
             getHandle().getStrings().write(0, value.getChannel());
         } else {
             getHandle().getMinecraftKeys().write(0, value);
@@ -42,7 +42,7 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
      */
     default void setChannel(MessageChannel value)
     {
-        if (ServerVersion.LEGACY_EVENT_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
+        if (ServerVersion.MC113.getVersionsTo().contains(ServerVersion.getActiveServerVersion())) {
             getHandle().getStrings().write(0, value.getChannel());
         } else {
             getHandle().getMinecraftKeys().write(0, (KeyMessageChannel) value);

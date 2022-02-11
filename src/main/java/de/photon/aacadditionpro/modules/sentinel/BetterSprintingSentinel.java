@@ -8,6 +8,7 @@ import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import io.netty.buffer.Unpooled;
 import lombok.val;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -36,7 +37,7 @@ import java.util.List;
  *** Re-enables basic functionality of the mod on client side.
  *** Sent to all players with the mod after using the '/bettersprinting disablemod false' command.
  */
-public class BetterSprintingSentinel extends SentinelModule
+public class BetterSprintingSentinel extends SentinelModule implements PluginMessageListener
 {
     private final byte[] settingsBufArray;
     private final byte[] disableBufArray;

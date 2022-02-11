@@ -6,11 +6,10 @@ import de.photon.aacadditionpro.util.violationlevels.DetectionManagement;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.util.UUID;
 
-public abstract class SentinelModule extends ViolationModule implements PluginMessageListener
+public abstract class SentinelModule extends ViolationModule
 {
     private static final int AAC_FEATURE_SCORE = AACAdditionPro.getInstance().getConfig().getInt("Sentinel.AACFeatureScore");
 

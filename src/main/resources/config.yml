@@ -617,11 +617,25 @@ Tower:
 
 
 # Sentinel watches over your server detecting mods and sometimes certain cheat clients on join without false detections.
+# Also, it tries to identify various exploits and illegal items that are safe to ban.
 # It does so by listening for certain messages that clients and mods can send over channels invisible to the user.
 # You can define your own checks in the listening section.
 Sentinel:
   # If AAC's feature system is used every detection will show up as with this score in AAC's status.
   AACFeatureScore: 100
+
+  # Sentinel tries to identify and prevent various exploits on your server.
+  # These are usually safe to ban automatically.
+  Exploits:
+    # Various cheat clients allow for the creation of "creative kill potions", exploiting a bug in Minecraft in which
+    # high instant health potion effects kill a player. This detects the creation and usage of such potions, cancelling
+    # any effects, and tries to delete the potions from the inventory.
+    ImpossiblePotion:
+      # Do you want to enable the ImpossiblePotion exploit detection?
+      enabled: true
+      # What commands will be executed if the mod is detected.
+      commands:
+        - "kick {player} Illegal Potion."
 
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   BetterSprinting:

@@ -10,9 +10,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
-public class FiveZigSentinel extends SentinelModule implements Listener
+public class FiveZigSentinel extends SentinelModule implements Listener, PluginMessageListener
 {
     private static final int FIVE_ZIG_API_VERSION = 4;
     private static final String REGISTER_SEND_CHANNEL = "the5zigmod:5zig_reg";

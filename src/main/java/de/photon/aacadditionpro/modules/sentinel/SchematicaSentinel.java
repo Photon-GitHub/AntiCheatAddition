@@ -6,11 +6,9 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import io.netty.buffer.Unpooled;
 import lombok.val;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.jetbrains.annotations.NotNull;
 
 public class SchematicaSentinel extends SentinelModule implements Listener
 {
@@ -59,11 +57,5 @@ public class SchematicaSentinel extends SentinelModule implements Listener
         return ModuleLoader.builder(this)
                            .addOutgoingMessageChannels(SCHEMATICA_CHANNEL)
                            .build();
-    }
-
-    @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] message)
-    {
-        // Ignore.
     }
 }

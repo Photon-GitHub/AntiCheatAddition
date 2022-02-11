@@ -8,9 +8,10 @@ import io.netty.buffer.Unpooled;
 import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
-public class LabyModSentinel extends SentinelModule implements Listener
+public class LabyModSentinel extends SentinelModule implements Listener, PluginMessageListener
 {
     @LoadFromConfiguration(configPath = ".TablistBanner.enabled")
     private boolean tablistBanner;

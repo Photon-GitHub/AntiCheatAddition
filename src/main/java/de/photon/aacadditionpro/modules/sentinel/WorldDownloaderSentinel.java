@@ -7,9 +7,10 @@ import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import lombok.val;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
-public class WorldDownloaderSentinel extends SentinelModule
+public class WorldDownloaderSentinel extends SentinelModule implements PluginMessageListener
 {
     private static final MessageChannel WDL_CONTROL_CHANNEL = MessageChannel.of("wdl", "control", "WDL|CONTROL");
 

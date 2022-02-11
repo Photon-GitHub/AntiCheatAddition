@@ -34,6 +34,7 @@ import de.photon.aacadditionpro.modules.sentinel.SchematicaSentinel;
 import de.photon.aacadditionpro.modules.sentinel.SentinelChannelModule;
 import de.photon.aacadditionpro.modules.sentinel.VapeSentinel;
 import de.photon.aacadditionpro.modules.sentinel.WorldDownloaderSentinel;
+import de.photon.aacadditionpro.modules.sentinel.exploits.ImpossiblePotionSentinel;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.datastructure.Pair;
 import lombok.AccessLevel;
@@ -102,6 +103,8 @@ public final class ModuleManager
         val tower = new Tower();
 
         // Sentinel
+        val impossiblePotionSentinel = new ImpossiblePotionSentinel();
+
         val betterSprintingSentinel = new BetterSprintingSentinel();
         val fiveZigSentinel = new FiveZigSentinel();
         val labyModSentinel = new LabyModSentinel();
@@ -166,6 +169,8 @@ public final class ModuleManager
                 tower,
 
                 //Sentinel
+                impossiblePotionSentinel,
+
                 betterSprintingSentinel,
                 fiveZigSentinel,
                 labyModSentinel,

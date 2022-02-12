@@ -116,7 +116,7 @@ public final class DataKey
 
         PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION(Location.class, null);
 
-        private final Class clazz;
+        private final Class<?> clazz;
         private final Object defaultValue;
     }
 }

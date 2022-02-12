@@ -17,14 +17,26 @@ public class EmptyMessageChannel implements MessageChannel
     }
 
     @Override
-    public void registerIncomingChannel(PluginMessageListener listener) {}
+    public void registerIncomingChannel(PluginMessageListener listener)
+    {
+        // Do nothing here as this channel is empty and does not represent a "real" channel.
+    }
 
     @Override
-    public void unregisterIncomingChannel(PluginMessageListener listener) {}
+    public void unregisterIncomingChannel(PluginMessageListener listener)
+    {
+        // Do nothing here as this channel is empty and does not represent a "real" channel.
+    }
 
     @Override
-    public void registerOutgoingChannel() {}
+    public void registerOutgoingChannel()
+    {
+        // Do nothing here as this channel is empty and does not represent a "real" channel.
+    }
 
     @Override
-    public void unregisterOutgoingChannel() {}
+    public void unregisterOutgoingChannel()
+    {
+        // Do nothing here as this channel is empty and does not represent a "real" channel.
+    }
 }

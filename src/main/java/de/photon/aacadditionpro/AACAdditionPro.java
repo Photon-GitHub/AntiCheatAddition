@@ -32,6 +32,16 @@ import java.util.stream.Collectors;
 @Getter
 public class AACAdditionPro extends JavaPlugin
 {
+    /**
+     * The expected players to be on the entire server across all worlds.
+     */
+    public static final int SERVER_EXPECTED_PLAYERS = 150;
+
+    /**
+     * The expected player to be in a world.
+     */
+    public static final int WORLD_EXPECTED_PLAYERS = 35;
+
     private static final int BSTATS_PLUGIN_ID = 3265;
 
     @Setter(AccessLevel.PROTECTED)

@@ -32,7 +32,7 @@ public class DummyInventory implements Inventory
     @Override
     public void setMaxStackSize(int size)
     {
-
+        // Dummy
     }
 
     @Nullable
@@ -45,7 +45,7 @@ public class DummyInventory implements Inventory
     @Override
     public void setItem(int index, @Nullable ItemStack item)
     {
-
+        // Dummy
     }
 
     @NotNull
@@ -72,7 +72,7 @@ public class DummyInventory implements Inventory
     @Override
     public void setContents(@NotNull ItemStack[] items) throws IllegalArgumentException
     {
-
+        // Dummy
     }
 
     @NotNull
@@ -85,7 +85,7 @@ public class DummyInventory implements Inventory
     @Override
     public void setStorageContents(@NotNull ItemStack[] items) throws IllegalArgumentException
     {
-
+        // Dummy
     }
 
     @Override
@@ -159,25 +159,25 @@ public class DummyInventory implements Inventory
     @Override
     public void remove(@NotNull Material material) throws IllegalArgumentException
     {
-
+        // Dummy
     }
 
     @Override
     public void remove(@NotNull ItemStack item)
     {
-
+        // Dummy
     }
 
     @Override
     public void clear(int index)
     {
-
+        // Dummy
     }
 
     @Override
     public void clear()
     {
-
+        // Dummy
     }
 
     @NotNull

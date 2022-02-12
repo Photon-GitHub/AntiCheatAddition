@@ -40,7 +40,7 @@ public class EnchantmentHider extends Module
                     val user = User.safeGetUserFromPacketEvent(event);
                     if (User.isUserInvalid(user, this)) return;
 
-                    var wrapper = IWrapperPlayEquipment.of(event.getPacket());
+                    val wrapper = IWrapperPlayEquipment.of(event.getPacket());
                     val entity = wrapper.getEntity(event);
 
                     // Do not modify the players' own enchantments.
@@ -58,24 +58,7 @@ public class EnchantmentHider extends Module
                         // Clone the packet to prevent a serversided connection of the equipment.
                         event.setPacket(event.getPacket().deepClone());
                         // The cloned packet needs a new wrapper!
-                        wrapper = IWrapperPlayEquipment.of(event.getPacket());
-
-                        val pairs = wrapper.getSlotStackPairs();
-
-                        // Remove all enchantments.
-                        for (Pair<EnumWrappers.ItemSlot, ItemStack> pair : pairs) {
-                            val stack = pair.getSecond();
-                            val enchantments = stack.getEnchantments();
-
-                            if (enchantments.isEmpty()) continue;
-
-                            // Remove all enchantments.
-                            enchantments.keySet().forEach(stack::removeEnchantment);
-
-                            // Add dummy enchantment.
-                            stack.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
-                            wrapper.setSlotStackPair(pair.getFirst(), stack);
-                        }
+                        obfuscateEnchantments(IWrapperPlayEquipment.of(event.getPacket()));
                     }
                 }).build();
 
@@ -83,5 +66,27 @@ public class EnchantmentHider extends Module
                            .addPacketListeners(adapter)
                            .addAllowedServerVersions(ServerVersion.NON_188_VERSIONS)
                            .build();
+    }
+
+    private void obfuscateEnchantments(IWrapperPlayEquipment wrapper)
+    {
+        val pairs = wrapper.getSlotStackPairs();
+
+        ItemStack stack;
+        Map<Enchantment, Integer> enchantments;
+        for (Pair<EnumWrappers.ItemSlot, ItemStack> pair : pairs) {
+            stack = pair.getSecond();
+            enchantments = stack.getEnchantments();
+
+            if (enchantments.isEmpty()) continue;
+
+            // Remove all enchantments.
+            // The enchantments are an immutable map -> forEach.
+            for (Enchantment enchantment : enchantments.keySet()) stack.removeEnchantment(enchantment);
+
+            // Add dummy enchantment.
+            stack.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+            wrapper.setSlotStackPair(pair.getFirst(), stack);
+        }
     }
 }

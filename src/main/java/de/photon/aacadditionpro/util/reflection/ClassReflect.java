@@ -26,7 +26,7 @@ public class ClassReflect
     @Getter
     private final Class<?> clazz;
 
-    ClassReflect(Class clazz)
+    ClassReflect(Class<?> clazz)
     {
         this.clazz = clazz;
     }

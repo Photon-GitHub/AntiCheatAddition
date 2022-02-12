@@ -1,9 +1,9 @@
 package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.base.Preconditions;
+import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.events.SentinelEvent;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.user.data.Constants;
 import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DetectionManagement extends ViolationManagement
 {
-    private final Set<UUID> detectionSet = ConcurrentHashMap.newKeySet(Constants.SERVER_EXPECTED_PLAYERS);
+    private final Set<UUID> detectionSet = ConcurrentHashMap.newKeySet(AACAdditionPro.SERVER_EXPECTED_PLAYERS);
 
     public DetectionManagement(ViolationModule module)
     {

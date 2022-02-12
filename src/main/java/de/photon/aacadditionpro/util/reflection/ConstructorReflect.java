@@ -10,9 +10,9 @@ import java.util.logging.Level;
 public class ConstructorReflect
 {
     @Getter
-    private final Constructor constructor;
+    private final Constructor<?> constructor;
 
-    ConstructorReflect(Constructor constructor)
+    ConstructorReflect(Constructor<?> constructor)
     {
         this.constructor = constructor;
     }

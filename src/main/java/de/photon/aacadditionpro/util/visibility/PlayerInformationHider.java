@@ -10,7 +10,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
-import de.photon.aacadditionpro.user.data.Constants;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -51,7 +50,7 @@ abstract class PlayerInformationHider implements Listener
             }
         };
 
-        hiddenFromPlayerMap = MultimapBuilder.hashKeys(Constants.SERVER_EXPECTED_PLAYERS).hashSetValues(Constants.WORLD_EXPECTED_PLAYERS).build();
+        hiddenFromPlayerMap = MultimapBuilder.hashKeys(AACAdditionPro.SERVER_EXPECTED_PLAYERS).hashSetValues(AACAdditionPro.WORLD_EXPECTED_PLAYERS).build();
     }
 
     public void clear()

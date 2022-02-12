@@ -55,7 +55,7 @@ public abstract class MetadataPacket extends AbstractPacket
         /**
          * Sets a metadata.
          */
-        public MetadataBuilder setMetadata(final int index, final Class classOfValue, final Object value)
+        public MetadataBuilder setMetadata(final int index, final Class<?> classOfValue, final Object value)
         {
             if (ServerVersion.is18()) dataWatcher.setObject(index, value);
             else dataWatcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(classOfValue)), value);

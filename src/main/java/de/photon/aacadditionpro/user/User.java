@@ -283,16 +283,6 @@ public class User implements Permissible
     }
 
     /**
-     * Determines if this {@link User} has recently respawned.
-     *
-     * @param milliseconds the amount of time in milliseconds that should be considered.
-     */
-    public boolean hasRespawnedRecently(final long milliseconds)
-    {
-        return this.timestampMap.at(TimestampKey.LAST_RESPAWN).recentlyUpdated(milliseconds);
-    }
-
-    /**
      * Determines if this {@link User} has recently changed worlds.
      *
      * @param milliseconds the amount of time in milliseconds that should be considered.
@@ -300,16 +290,6 @@ public class User implements Permissible
     public boolean hasChangedWorldsRecently(final long milliseconds)
     {
         return this.timestampMap.at(TimestampKey.LAST_WORLD_CHANGE).recentlyUpdated(milliseconds);
-    }
-
-    /**
-     * Determines if this {@link User} has recently logged in.
-     *
-     * @param milliseconds the amount of time in milliseconds that should be considered.
-     */
-    public boolean hasLoggedInRecently(final long milliseconds)
-    {
-        return this.timestampMap.at(TimestampKey.LOGIN_TIME).recentlyUpdated(milliseconds);
     }
 
 

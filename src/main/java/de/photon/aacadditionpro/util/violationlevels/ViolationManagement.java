@@ -5,10 +5,8 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.util.violationlevels.threshold.Threshold;
 import de.photon.aacadditionpro.util.violationlevels.threshold.ThresholdManagement;
-import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -24,11 +22,6 @@ public abstract class ViolationManagement
      * A {@link List} of {@link Threshold}s which is guaranteed to be sorted.
      */
     @NotNull protected final ThresholdManagement thresholds;
-
-    /**
-     * Parent {@link ViolationAggregation} of this {@link ViolationManagement}
-     */
-    @Nullable @Setter protected ViolationAggregation parent = null;
 
     protected ViolationManagement(@NotNull ViolationModule module, @NotNull ThresholdManagement thresholds)
     {

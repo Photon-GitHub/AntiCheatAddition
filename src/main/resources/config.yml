@@ -37,7 +37,7 @@ BrandHider:
 
 # This will spoof the health of all players on your server so that DamageIndicators (and any other mod to that tries
 # to show other players' health, like HealthTags and ESP) becomes useless.
-# This is a clientsided spoof, meaning that your plugins are able to get the correct health.
+# This is a clientside spoof, meaning that your plugins are able to get the correct health.
 DamageIndicator:
   # Do you want to enable DamageIndicator?
   enabled: true
@@ -64,7 +64,7 @@ EnchantmentHider:
 # This module uses advanced mathematics to determine if players can see each other.
 # If the players cannot see each other several actions will be taken to hide information on packet-level.
 # Due to abysmal performance of block lookups on newer minecraft versions 1.13+ ESP does no longer actually check the
-# entire distance between two players. Instead, it will use an heuristic to check the most relevant blocks. This can
+# entire distance between two players. Instead, it will use a heuristic to check the most relevant blocks. This can
 # lead to players being shown even though they are not visible.
 #
 # MAIN FUNCTIONS:
@@ -73,8 +73,8 @@ EnchantmentHider:
 #                    is supposed to be shown is sneaking)
 #
 # - Equipment-Hider: If a player cannot be directly seen by another player his equipment (hand, armour) will be hidden
-#                    from the observer. (This will make the life of cheaters harder as they cannot properly estimate
-#                    the combat strength of a player)
+#                    from the observer. (This will make the life of cheaters harder because they cannot properly
+#                    estimate the combat strength of a player)
 #                    This part will automatically disable itself on servers with MC versions below 1.11.
 Esp:
   # Do you want to enable anti - ESP?
@@ -89,7 +89,7 @@ Esp:
   interval: 50
   # This determines whether minecraft's 3rd person modes should be considered for calculation as well.
   # Disabling this will reduce the required number of block queries by two thirds.
-  # Especially useful if you have gamemodes in which players are not supposed to use the third person mode.
+  # Especially useful if you have games in which players are not supposed to use the third person mode.
   calculate_third_person_modes: false
 
 # This automatically deletes old log files of both AAC and AACAdditionPro
@@ -120,7 +120,7 @@ AutoEat:
   # Do you want to enable the AutoEat check?
   enabled: true
   # This message will appear in AAC's status when AAC is used.
-  aacfeatureinfo: "[AACAdditionPro] Player has botlike eating behaviour"
+  aacfeatureinfo: "[AACAdditionPro] Player has bot-like eating behaviour"
   # Violation before AACAdditionPro starts to cancel the consume events.
   # Set this to 0 to never cancel the events.
   cancel_vl: 80
@@ -141,7 +141,7 @@ AutoEat:
 # versions and auto-disables itself accordingly.
 AutoFish:
   # This message will appear in AAC's status when AAC hooking is used.
-  aac_status_message: "[AACAdditionPro] Player has botlike fishing behaviour"
+  aac_status_message: "[AACAdditionPro] Player has bot-like fishing behaviour"
   # Violation before AACAdditionPro starts to cancel the fishing.
   # Please think of potential luck, because of this I do not recommend setting this to a value smaller than 7.
   # Set this to 0 to never cancel fishing.

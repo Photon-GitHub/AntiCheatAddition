@@ -55,11 +55,11 @@ public class ClassReflect
         return fieldReflect;
     }
 
-    public ConstructorReflect constructor(Class... classes)
+    public ConstructorReflect constructor(Class<?>... classes)
     {
         // Build the key first
         StringBuilder key = new StringBuilder();
-        for (Class aClass : classes) {
+        for (Class<?> aClass : classes) {
             key.append(aClass.getName());
         }
 

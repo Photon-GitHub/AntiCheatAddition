@@ -25,7 +25,7 @@ public class SchematicaSentinel extends SentinelModule implements Listener
 
         /*
          * This array holds what features of schematica should be disabled.
-         * SENDING A 1 MEANS ALLOWING THE FEATURE -> NEGATION.
+         * SENDING 1 MEANS ALLOWING THE FEATURE -> NEGATION.
          * Link to the original plugin: https://www.spigotmc.org/resources/schematicaplugin.14411/
          */
         byteBuf.writeBoolean(!AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.printer"));

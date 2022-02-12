@@ -14,5 +14,5 @@ public @interface LoadFromConfiguration
 {
     String configPath();
 
-    Class listType() default Object.class;
+    Class<?> listType() default Object.class;
 }

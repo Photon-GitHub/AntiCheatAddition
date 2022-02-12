@@ -15,7 +15,7 @@ import java.util.List;
 
 // API_DOCS of BetterSprinting:
 /*
- * OUTCOMING PACKETS
+ * OUTGOING PACKETS
  * =================
  *
  *** [byte 0] [bool <enableSurvivalFlyBoost>] [bool <enableAllDirs>]

@@ -137,7 +137,7 @@ abstract class PlayerInformationHider implements Listener
     protected abstract void onHide(@NotNull Player observer, @NotNull Player playerToHide);
 
     /**
-     * Unhides a {@link Player} from another {@link Player}.
+     * Reveals a {@link Player} from another {@link Player}.
      */
     public void revealPlayer(final Player observer, final Player playerToReveal)
     {

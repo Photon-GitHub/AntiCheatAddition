@@ -64,7 +64,7 @@ public class Batch<T>
      */
     public synchronized void clear()
     {
-        // No synchronized is needed as we only perform one write operation.
+        // No synchronization is needed as we only perform one write operation.
         this.index = 0;
     }
 

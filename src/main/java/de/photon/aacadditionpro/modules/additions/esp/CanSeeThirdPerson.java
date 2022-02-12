@@ -15,7 +15,7 @@ class CanSeeThirdPerson implements Function<Player, Vector[]>
     {
         /*
             All the vectors
-            [0] = normal (eyeposition vector)
+            [0] = normal (eye position vector)
             [1] = front
             [2] = behind
         */

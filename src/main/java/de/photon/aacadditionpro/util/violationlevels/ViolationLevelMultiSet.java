@@ -19,27 +19,22 @@ class ViolationLevelMultiSet implements Listener
     @Getter
     private final Multiset<UUID> multiset = ConcurrentHashMultiset.create();
 
-    ViolationLevelMultiSet(final long decayMilliseconds)
-    {
-        this(decayMilliseconds, 1);
-    }
-
-    ViolationLevelMultiSet(final long decayMilliseconds, final int occurrences)
+    ViolationLevelMultiSet(final long decayMilliseconds, final int vlDecayAmount)
     {
         // Might need to have a vl manager without vl decrease
         if (decayMilliseconds > 0) {
             // Schedule the decay with 3000 milliseconds to free startup.
-            scheduler.scheduleAtFixedRate(() -> this.decay(occurrences), 3000, decayMilliseconds, TimeUnit.MILLISECONDS);
+            scheduler.scheduleAtFixedRate(() -> this.decay(vlDecayAmount), 3000, decayMilliseconds, TimeUnit.MILLISECONDS);
         }
     }
 
     /**
      * Decrements the vl of every player.
      */
-    private void decay(int occurences)
+    private void decay(int vlDecayAmount)
     {
         // Decrement the vl of every player.
-        for (UUID uuid : multiset.elementSet()) multiset.remove(uuid, occurences);
+        for (UUID uuid : multiset.elementSet()) multiset.remove(uuid, vlDecayAmount);
     }
 
     @EventHandler

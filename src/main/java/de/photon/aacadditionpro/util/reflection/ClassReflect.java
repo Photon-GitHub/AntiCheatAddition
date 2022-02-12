@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.util.reflection;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import lombok.Getter;
+import org.apache.commons.lang.reflect.FieldUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -33,20 +34,7 @@ public class ClassReflect
 
     public FieldReflect field(String name)
     {
-        FieldReflect fieldReflect = this.cache.get(name);
-        if (fieldReflect == null) {
-            try {
-                Field field = this.clazz.getDeclaredField(name);
-                field.setAccessible(true);
-                fieldReflect = new FieldReflect(field);
-                this.cache.putIfAbsent(name, fieldReflect);
-            } catch (NoSuchFieldException e) {
-                AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to find field via reflection", e);
-                return null;
-            }
-        }
-
-        return fieldReflect;
+        return this.cache.computeIfAbsent(name, fileName -> new FieldReflect(FieldUtils.getDeclaredField(this.clazz, fileName, true)));
     }
 
     public FieldReflect field(int index)

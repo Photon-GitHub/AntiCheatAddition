@@ -10,7 +10,7 @@ import java.util.Random;
 class ModularIntegerTest
 {
     @Test
-    public void IntegerSetTest()
+    void IntegerSetTest()
     {
         val random = new Random();
 
@@ -31,7 +31,7 @@ class ModularIntegerTest
     }
 
     @Test
-    public void IntegerIncrementTest()
+    void IntegerIncrementTest()
     {
         val random = new Random();
         Assertions.assertEquals(0, ModularInteger.increment(Integer.MAX_VALUE - 1, Integer.MAX_VALUE));
@@ -44,7 +44,7 @@ class ModularIntegerTest
     }
 
     @Test
-    public void IntegerDecrementTest()
+    void IntegerDecrementTest()
     {
         final Random random = new Random();
         Assertions.assertEquals(Integer.MAX_VALUE - 1, ModularInteger.decrement(0, Integer.MAX_VALUE));

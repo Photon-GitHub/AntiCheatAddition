@@ -50,7 +50,7 @@ public abstract class AbstractPacket implements IWrapperPlay
         try {
             ProtocolLibrary.getProtocolManager().sendServerPacket(receiver, getHandle());
         } catch (InvocationTargetException e) {
-            throw new RuntimeException("Cannot send packet.", e);
+            throw new IllegalStateException("Cannot send packet.", e);
         }
     }
 
@@ -74,7 +74,7 @@ public abstract class AbstractPacket implements IWrapperPlay
         try {
             ProtocolLibrary.getProtocolManager().recieveClientPacket(sender, getHandle());
         } catch (Exception e) {
-            throw new RuntimeException("Cannot receive packet.", e);
+            throw new IllegalStateException("Cannot receive packet.", e);
         }
     }
 }

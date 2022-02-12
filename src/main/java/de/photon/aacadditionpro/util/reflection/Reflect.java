@@ -1,6 +1,7 @@
 package de.photon.aacadditionpro.util.reflection;
 
 import de.photon.aacadditionpro.AACAdditionPro;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 
@@ -12,7 +13,7 @@ import java.util.logging.Level;
  * @author geNAZt
  * @version 1.0
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Reflect
 {
     private static final String BUKKIT_VERSION_NUMBER = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];

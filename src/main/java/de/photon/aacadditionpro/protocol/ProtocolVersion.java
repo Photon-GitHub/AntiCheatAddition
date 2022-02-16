@@ -1,13 +1,15 @@
 package de.photon.aacadditionpro.protocol;
 
-import com.google.common.collect.ImmutableMap;
 import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.util.datastructure.Pair;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 public enum ProtocolVersion
@@ -24,21 +26,11 @@ public enum ProtocolVersion
     MC117("1.17", ServerVersion.MC117, 755, 756),
     MC118("1.18", ServerVersion.MC118, 757);
 
-    private static final Map<String, ProtocolVersion> NAME_MAP;
-    private static final Map<Integer, ProtocolVersion> VERSION_NUMBER_MAP;
-
-    static {
-        ImmutableMap.Builder<String, ProtocolVersion> nameBuilder = ImmutableMap.builder();
-        ImmutableMap.Builder<Integer, ProtocolVersion> versionBuilder = ImmutableMap.builder();
-
-        for (ProtocolVersion value : ProtocolVersion.values()) {
-            nameBuilder.put(value.name, value);
-            for (Integer versionNumber : value.versionNumbers) versionBuilder.put(versionNumber, value);
-        }
-
-        NAME_MAP = nameBuilder.build();
-        VERSION_NUMBER_MAP = versionBuilder.build();
-    }
+    private static final Map<Integer, ProtocolVersion> VERSION_NUMBER_MAP = Arrays.stream(ProtocolVersion.values())
+                                                                                  // Map each ProtocolVersion to pairs of (Version Number, ProtocolVersion)
+                                                                                  .flatMap(pv -> pv.getVersionNumbers().stream().map(vn -> Pair.of(vn, pv)))
+                                                                                  // Create a Map from version number to ProtocolVersion.
+                                                                                  .collect(Collectors.toUnmodifiableMap(Pair::getFirst, Pair::getSecond));
 
     /**
      * The name of the {@link ProtocolVersion}. Intended to be equivalent to minecraft versions.
@@ -67,18 +59,8 @@ public enum ProtocolVersion
     /**
      * This gets the respective {@link ProtocolVersion} for a version number as returned by the {@link com.viaversion.viaversion.api.ViaAPI}
      */
-    @Nullable
-    public static ProtocolVersion getByVersionNumber(int versionNumber)
+    public static Optional<ProtocolVersion> getByVersionNumber(int versionNumber)
     {
-        return VERSION_NUMBER_MAP.get(versionNumber);
-    }
-
-    /**
-     * This gets the respective {@link ProtocolVersion} for a name.
-     */
-    @Nullable
-    public static ProtocolVersion getByName(String name)
-    {
-        return NAME_MAP.get(name);
+        return Optional.ofNullable(VERSION_NUMBER_MAP.get(versionNumber));
     }
 }

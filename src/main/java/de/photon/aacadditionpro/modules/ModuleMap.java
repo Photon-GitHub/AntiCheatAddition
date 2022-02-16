@@ -1,21 +1,23 @@
 package de.photon.aacadditionpro.modules;
 
-import com.google.common.collect.ImmutableMap;
+import lombok.val;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ModuleMap<T extends Module>
 {
     private Map<String, T> backingMap;
 
-    public ModuleMap(Iterable<T> modules)
+    public ModuleMap(Collection<T> modules)
     {
-        final ImmutableMap.Builder<String, T> builder = ImmutableMap.builder();
-        for (T module : modules) builder.put(module.getModuleId(), module);
-        this.backingMap = builder.build();
+        // Collect an unmodifiable map from moduleId to module.
+        this.backingMap = modules.stream().collect(Collectors.toUnmodifiableMap(Module::getModuleId, Function.identity()));
     }
 
     @Nullable
@@ -26,10 +28,9 @@ public class ModuleMap<T extends Module>
 
     public void addModule(T module)
     {
-        final ImmutableMap.Builder<String, T> builder = ImmutableMap.builder();
-        builder.putAll(backingMap);
-        builder.put(module.getModuleId(), module);
-        this.backingMap = builder.build();
+        val copyMap = new HashMap<>(backingMap);
+        copyMap.put(module.getModuleId(), module);
+        backingMap = Map.copyOf(copyMap);
     }
 
     public int size()

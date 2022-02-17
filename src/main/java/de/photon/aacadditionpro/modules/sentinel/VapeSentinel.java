@@ -10,10 +10,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
-public class VapeSentinel extends SentinelModule implements Listener, PluginMessageListener
+public class VapeSentinel extends SentinelModule implements Listener, ParsedPluginMessageListener
 {
     private static final MessageChannel VAPE_MESSAGE_CHANNEL = MessageChannel.ofLegacy("LOLIMAHCKER");
 
@@ -42,6 +41,16 @@ public class VapeSentinel extends SentinelModule implements Listener, PluginMess
         }
 
         DebugSender.getInstance().sendDebug("Player " + player.getName() + " joined with Vape | Data: " + clientData);
+        detection(player);
+    }
+
+    @Override
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull String message)
+    {
+        val user = User.getUser(player);
+        if (User.isUserInvalid(user, this)) return;
+
+        DebugSender.getInstance().sendDebug("Player " + player.getName() + " joined with Vape | Data: " + message);
         detection(player);
     }
 

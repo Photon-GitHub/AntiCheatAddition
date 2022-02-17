@@ -12,9 +12,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class SchematicaSentinel extends SentinelModule implements Listener
 {
-    private static final String SCHEMATICA = "schematica";
-    private static final MessageChannel SCHEMATICA_CHANNEL = MessageChannel.ofLegacy(SCHEMATICA);
-
     private final byte[] sentMessage;
 
     public SchematicaSentinel()
@@ -43,9 +40,9 @@ public class SchematicaSentinel extends SentinelModule implements Listener
         if (User.isUserInvalid(user, this)) return;
 
         for (String channel : user.getPlayer().getListeningPluginChannels()) {
-            if (channel.equals(SCHEMATICA)) {
+            if (channel.equals(MessageChannel.SCHEMATICA_CHANNEL.getChannel())) {
                 detection(user.getPlayer());
-                user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), SCHEMATICA_CHANNEL.getChannel(), sentMessage);
+                user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.SCHEMATICA_CHANNEL.getChannel(), sentMessage);
                 return;
             }
         }
@@ -55,7 +52,7 @@ public class SchematicaSentinel extends SentinelModule implements Listener
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addOutgoingMessageChannels(SCHEMATICA_CHANNEL)
+                           .addOutgoingMessageChannels(MessageChannel.SCHEMATICA_CHANNEL)
                            .build();
     }
 }

@@ -12,6 +12,8 @@ public interface MessageChannel
 {
     MessageChannel MC_BRAND_CHANNEL = MessageChannel.of("minecraft", "brand", "MC|Brand");
     MessageChannel LABYMOD_CHANNEL = MessageChannel.of("labymod3", "main", "LMC");
+    MessageChannel SCHEMATICA_CHANNEL = MessageChannel.ofLegacy("schematica");
+    MessageChannel BETTER_SPRINTING_CHANNEL = MessageChannel.of("bsm", "settings", "BSM");
 
     @NotNull
     static MessageChannel of(final MinecraftKey channel)
@@ -65,7 +67,7 @@ public interface MessageChannel
     }
 
     /**
-     * Gets the channel for the current {@link ServerVersion} or null if it doesn't support the current {@link ServerVersion}
+     * Gets the channel for the current {@link ServerVersion} or an empty {@link String} if it doesn't support the current {@link ServerVersion}
      */
     @NotNull
     String getChannel();

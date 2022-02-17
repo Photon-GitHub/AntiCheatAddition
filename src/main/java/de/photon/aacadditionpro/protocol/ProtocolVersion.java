@@ -4,10 +4,10 @@ import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.datastructure.Pair;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -59,8 +59,9 @@ public enum ProtocolVersion
     /**
      * This gets the respective {@link ProtocolVersion} for a version number as returned by the {@link com.viaversion.viaversion.api.ViaAPI}
      */
-    public static Optional<ProtocolVersion> getByVersionNumber(int versionNumber)
+    @Nullable
+    public static ProtocolVersion getByVersionNumber(int versionNumber)
     {
-        return Optional.ofNullable(VERSION_NUMBER_MAP.get(versionNumber));
+        return VERSION_NUMBER_MAP.get(versionNumber);
     }
 }

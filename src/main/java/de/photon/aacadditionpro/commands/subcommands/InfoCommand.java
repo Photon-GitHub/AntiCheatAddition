@@ -6,7 +6,7 @@ import de.photon.aacadditionpro.commands.InternalCommand;
 import de.photon.aacadditionpro.commands.TabCompleteSupplier;
 import de.photon.aacadditionpro.modules.ModuleManager;
 import de.photon.aacadditionpro.modules.ViolationModule;
-import de.photon.aacadditionpro.util.messaging.ChatMessage;
+import de.photon.aacadditionpro.util.oldmessaging.ChatMessage;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.val;

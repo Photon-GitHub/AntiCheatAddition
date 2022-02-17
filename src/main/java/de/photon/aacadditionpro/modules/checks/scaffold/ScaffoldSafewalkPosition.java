@@ -6,7 +6,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
+import de.photon.aacadditionpro.util.oldmessaging.DebugSender;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.event.block.BlockPlaceEvent;

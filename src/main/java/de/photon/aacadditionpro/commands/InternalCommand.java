@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.commands;
 
 import com.google.common.base.Preconditions;
-import de.photon.aacadditionpro.util.messaging.ChatMessage;
+import de.photon.aacadditionpro.util.oldmessaging.ChatMessage;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.val;

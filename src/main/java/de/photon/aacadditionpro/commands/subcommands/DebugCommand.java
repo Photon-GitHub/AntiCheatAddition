@@ -5,7 +5,7 @@ import de.photon.aacadditionpro.commands.CommandAttributes;
 import de.photon.aacadditionpro.commands.InternalPlayerCommand;
 import de.photon.aacadditionpro.commands.TabCompleteSupplier;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.util.messaging.ChatMessage;
+import de.photon.aacadditionpro.util.oldmessaging.ChatMessage;
 import lombok.val;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

@@ -9,7 +9,7 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.datastructure.batch.BatchProcessor;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
+import de.photon.aacadditionpro.util.oldmessaging.DebugSender;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import lombok.Value;
 import lombok.val;

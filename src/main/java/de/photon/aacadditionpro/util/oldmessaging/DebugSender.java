@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.messaging;
+package de.photon.aacadditionpro.util.oldmessaging;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.events.SentinelEvent;
@@ -37,7 +37,7 @@ public final class DebugSender implements Listener
 
     @Setter private volatile boolean allowedToRegisterTasks = true;
     // The File the debug messages are written to.
-    private LogFile logFile = new LogFile(LocalDateTime.now());
+    private OldLogFile logFile = new OldLogFile(LocalDateTime.now());
 
     /**
      * Sets off a standard debug message (no console forcing and not flagged as an error).
@@ -64,7 +64,7 @@ public final class DebugSender implements Listener
         if (writeToFile) {
             // Get the logfile that is in use currently or create a new one if needed.
             val now = LocalDateTime.now();
-            if (!this.logFile.isValid(now)) this.logFile = new LogFile(now);
+            if (!this.logFile.isValid(now)) this.logFile = new OldLogFile(now);
             this.logFile.write(logMessage, now);
         }
 

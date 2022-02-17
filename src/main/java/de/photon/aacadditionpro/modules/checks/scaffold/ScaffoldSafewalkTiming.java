@@ -5,7 +5,7 @@ import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
+import de.photon.aacadditionpro.util.oldmessaging.DebugSender;
 import lombok.Getter;
 
 import java.util.function.ToIntFunction;

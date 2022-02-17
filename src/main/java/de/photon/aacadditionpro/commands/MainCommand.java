@@ -5,7 +5,7 @@ import de.photon.aacadditionpro.commands.subcommands.DebugCommand;
 import de.photon.aacadditionpro.commands.subcommands.InfoCommand;
 import de.photon.aacadditionpro.commands.subcommands.SetVlCommand;
 import de.photon.aacadditionpro.commands.subcommands.TabListRemoveCommand;
-import de.photon.aacadditionpro.util.messaging.ChatMessage;
+import de.photon.aacadditionpro.util.oldmessaging.ChatMessage;
 import lombok.Getter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

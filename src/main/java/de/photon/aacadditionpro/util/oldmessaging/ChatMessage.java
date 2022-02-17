@@ -1,4 +1,4 @@
-package de.photon.aacadditionpro.util.messaging;
+package de.photon.aacadditionpro.util.oldmessaging;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import lombok.AccessLevel;

@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.modules.checks.scaffold;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
+import de.photon.aacadditionpro.util.oldmessaging.DebugSender;
 import lombok.Getter;
 
 import java.util.function.ToIntBiFunction;

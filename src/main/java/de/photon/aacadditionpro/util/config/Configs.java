@@ -1,7 +1,7 @@
 package de.photon.aacadditionpro.util.config;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
+import de.photon.aacadditionpro.util.oldmessaging.DebugSender;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 

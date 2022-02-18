@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
 public interface MessageChannel
 {
     MessageChannel MC_BRAND_CHANNEL = MessageChannel.of("minecraft", "brand", "MC|Brand");
@@ -69,15 +71,14 @@ public interface MessageChannel
     /**
      * Gets the channel for the current {@link ServerVersion} or an empty {@link String} if it doesn't support the current {@link ServerVersion}
      */
-    @NotNull
-    String getChannel();
+    Optional<String> getChannel();
 
     /**
      * Registers the incoming channel for a certain {@link PluginMessageListener}
      */
     default void registerIncomingChannel(final PluginMessageListener listener)
     {
-        Bukkit.getMessenger().registerIncomingPluginChannel(AACAdditionPro.getInstance(), this.getChannel(), listener);
+        this.getChannel().ifPresent(channel -> Bukkit.getMessenger().registerIncomingPluginChannel(AACAdditionPro.getInstance(), channel, listener));
     }
 
     /**
@@ -85,7 +86,7 @@ public interface MessageChannel
      */
     default void unregisterIncomingChannel(final PluginMessageListener listener)
     {
-        Bukkit.getMessenger().unregisterIncomingPluginChannel(AACAdditionPro.getInstance(), this.getChannel(), listener);
+        this.getChannel().ifPresent(channel -> Bukkit.getMessenger().unregisterIncomingPluginChannel(AACAdditionPro.getInstance(), channel, listener));
     }
 
     /**
@@ -93,7 +94,7 @@ public interface MessageChannel
      */
     default void registerOutgoingChannel()
     {
-        Bukkit.getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
+        this.getChannel().ifPresent(channel -> Bukkit.getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), channel));
     }
 
     /**
@@ -101,6 +102,6 @@ public interface MessageChannel
      */
     default void unregisterOutgoingChannel()
     {
-        Bukkit.getMessenger().unregisterOutgoingPluginChannel(AACAdditionPro.getInstance(), this.getChannel());
+        this.getChannel().ifPresent(channel -> Bukkit.getMessenger().unregisterOutgoingPluginChannel(AACAdditionPro.getInstance(), channel));
     }
 }

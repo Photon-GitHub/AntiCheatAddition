@@ -39,13 +39,12 @@ public class SchematicaSentinel extends SentinelModule implements Listener
         val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
-        for (String channel : user.getPlayer().getListeningPluginChannels()) {
-            if (channel.equals(MessageChannel.SCHEMATICA_CHANNEL.getChannel())) {
+        MessageChannel.SCHEMATICA_CHANNEL.getChannel().ifPresent(schematicaChannel -> {
+            if (user.getPlayer().getListeningPluginChannels().contains(schematicaChannel)) {
                 detection(user.getPlayer());
-                user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.SCHEMATICA_CHANNEL.getChannel(), sentMessage);
-                return;
+                user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), schematicaChannel, sentMessage);
             }
-        }
+        });
     }
 
     @Override

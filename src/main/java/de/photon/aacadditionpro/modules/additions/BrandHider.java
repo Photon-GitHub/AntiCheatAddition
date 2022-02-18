@@ -53,7 +53,7 @@ public class BrandHider extends Module implements Listener
 
         ByteBufUtil.writeString(Placeholders.replacePlaceholders(this.brand, Set.of(player)), buf);
 
-        player.sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel(), ByteBufUtil.toArray(buf));
+        player.sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow(), ByteBufUtil.toArray(buf));
         buf.release();
     }
 
@@ -66,7 +66,7 @@ public class BrandHider extends Module implements Listener
     @Override
     public void enable()
     {
-        Bukkit.getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel());
+        Bukkit.getMessenger().registerOutgoingPluginChannel(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow());
         this.setBrand(AACAdditionPro.getInstance().getConfig().getString(this.getConfigString() + ".brand"));
         if (refreshRate > 0) Bukkit.getScheduler().scheduleSyncRepeatingTask(AACAdditionPro.getInstance(), this::updateAllBrands, 20, refreshRate);
     }
@@ -75,7 +75,7 @@ public class BrandHider extends Module implements Listener
     public void onJoin(PlayerJoinEvent event)
     {
         // Add the mc brand channel to the player's channels.
-        PLAYER_CHANNELS_FIELD.from(event.getPlayer()).asSet(String.class).add(MessageChannel.MC_BRAND_CHANNEL.getChannel());
+        PLAYER_CHANNELS_FIELD.from(event.getPlayer()).asSet(String.class).add(MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow());
         updateBrand(event.getPlayer());
     }
 }

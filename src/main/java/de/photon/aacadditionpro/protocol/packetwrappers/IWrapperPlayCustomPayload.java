@@ -27,23 +27,10 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
      * Starting in 1.13, channel names need to be lower case, in the new identifier format,
      * i.e. {@code minecraft:brand}. The previously standard {@code |} is no longer allowed.
      */
-    default void setChannel(KeyMessageChannel value)
-    {
-        if (ServerVersion.MC113.getVersionsTo().contains(ServerVersion.getActiveServerVersion())) {
-            getHandle().getStrings().write(0, value.getChannel());
-        } else {
-            getHandle().getMinecraftKeys().write(0, value);
-        }
-    }
-
-    /**
-     * Starting in 1.13, channel names need to be lower case, in the new identifier format,
-     * i.e. {@code minecraft:brand}. The previously standard {@code |} is no longer allowed.
-     */
     default void setChannel(MessageChannel value)
     {
         if (ServerVersion.MC113.getVersionsTo().contains(ServerVersion.getActiveServerVersion())) {
-            getHandle().getStrings().write(0, value.getChannel());
+            value.getChannel().ifPresent(channel -> getHandle().getStrings().write(0, channel));
         } else {
             getHandle().getMinecraftKeys().write(0, (KeyMessageChannel) value);
         }

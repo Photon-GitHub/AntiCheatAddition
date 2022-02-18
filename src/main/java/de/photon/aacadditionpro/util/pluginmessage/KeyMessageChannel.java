@@ -6,6 +6,7 @@ import de.photon.aacadditionpro.ServerVersion;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class KeyMessageChannel extends MinecraftKey implements MessageChannel
 {
@@ -16,9 +17,9 @@ public class KeyMessageChannel extends MinecraftKey implements MessageChannel
     }
 
     @Override
-    public @NotNull String getChannel()
+    public Optional<String> getChannel()
     {
-        return this.getFullKey();
+        return Optional.of(this.getFullKey());
     }
 
     @Override

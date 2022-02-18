@@ -3,7 +3,8 @@ package de.photon.aacadditionpro.util.pluginmessage;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EmptyMessageChannel implements MessageChannel
@@ -11,9 +12,9 @@ public class EmptyMessageChannel implements MessageChannel
     public static final EmptyMessageChannel EMPTY = new EmptyMessageChannel();
 
     @Override
-    public @NotNull String getChannel()
+    public Optional<String> getChannel()
     {
-        return "";
+        return Optional.empty();
     }
 
     @Override

@@ -39,6 +39,9 @@ public class WorldDownloaderSentinel extends SentinelModule implements PluginMes
     @Override
     public void onPluginMessageReceived(@NotNull final String channel, @NotNull final Player player, final byte[] message)
     {
+        // This must not be empty as we defined our channel with both a full key and a legacy string.
+        val sendChannel = WDL_CONTROL_CHANNEL.getChannel().orElseThrow();
+
         /*Documentation:
          * https://github.com/Pokechu22/WorldDownloader-Serverside-Companion/blob/master/src/main/java/wdl/WDLPackets.java
          *
@@ -50,7 +53,7 @@ public class WorldDownloaderSentinel extends SentinelModule implements PluginMes
         val packetZero = ByteStreams.newDataOutput();
         packetZero.writeInt(0);
         packetZero.writeBoolean(!disableFuture);
-        player.sendPluginMessage(AACAdditionPro.getInstance(), WDL_CONTROL_CHANNEL.getChannel(), packetZero.toByteArray());
+        player.sendPluginMessage(AACAdditionPro.getInstance(), sendChannel, packetZero.toByteArray());
 
         val packetOne = ByteStreams.newDataOutput();
         packetOne.writeInt(1);
@@ -61,7 +64,7 @@ public class WorldDownloaderSentinel extends SentinelModule implements PluginMes
         packetOne.writeBoolean(!disableEntitySaving);
         packetOne.writeBoolean(!disableTileEntitySaving);
         packetOne.writeBoolean(!disableContainerSaving);
-        player.sendPluginMessage(AACAdditionPro.getInstance(), WDL_CONTROL_CHANNEL.getChannel(), packetOne.toByteArray());
+        player.sendPluginMessage(AACAdditionPro.getInstance(), sendChannel, packetOne.toByteArray());
 
         detection(player);
     }

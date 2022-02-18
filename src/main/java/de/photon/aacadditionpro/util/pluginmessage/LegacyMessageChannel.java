@@ -5,6 +5,8 @@ import de.photon.aacadditionpro.ServerVersion;
 import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
 public class LegacyMessageChannel implements MessageChannel
 {
@@ -17,8 +19,8 @@ public class LegacyMessageChannel implements MessageChannel
     }
 
     @Override
-    public @NotNull String getChannel()
+    public Optional<String> getChannel()
     {
-        return legacyString;
+        return Optional.of(legacyString);
     }
 }

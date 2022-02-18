@@ -41,9 +41,11 @@ public class LogFile
         }
     }
 
+    /**
+     * Check if the log file is still valid, i.e. it exists and the date is still the same.
+     */
     public boolean isValid(LocalDateTime now)
     {
-        val dayOfYear = now.getDayOfYear();
-        return this.dayOfTheYear == dayOfYear && this.backingFile.exists();
+        return this.dayOfTheYear == now.getDayOfYear() && this.backingFile.exists();
     }
 }

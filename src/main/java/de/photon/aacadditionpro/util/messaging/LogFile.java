@@ -42,7 +42,7 @@ public class LogFile
     }
 
     /**
-     * Check if the log file is still valid, i.e. it exists and the date is still the same.
+     * Check if the log file is still valid, i.e. it exists and the date is still the same because a log file is used for one day.
      */
     public boolean isValid(LocalDateTime now)
     {

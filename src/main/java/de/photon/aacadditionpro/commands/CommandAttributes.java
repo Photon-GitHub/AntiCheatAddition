@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.commands;
 import com.google.common.collect.ImmutableSortedMap;
 import de.photon.aacadditionpro.InternalPermission;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
-import de.photon.aacadditionpro.util.oldmessaging.ChatMessage;
+import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

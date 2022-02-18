@@ -1,6 +1,6 @@
 package de.photon.aacadditionpro.commands;
 
-import de.photon.aacadditionpro.util.oldmessaging.ChatMessage;
+import de.photon.aacadditionpro.util.messaging.ChatMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

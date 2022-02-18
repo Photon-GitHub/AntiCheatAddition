@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.modules.sentinel;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.util.oldmessaging.DebugSender;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import lombok.val;
 import org.bukkit.entity.Player;

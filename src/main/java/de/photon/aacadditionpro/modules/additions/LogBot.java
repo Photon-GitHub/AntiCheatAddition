@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.modules.additions;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.modules.ModuleLoader;
-import de.photon.aacadditionpro.util.oldmessaging.DebugSender;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
 import lombok.val;
 import org.bukkit.Bukkit;
 

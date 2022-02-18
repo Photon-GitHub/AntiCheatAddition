@@ -28,23 +28,6 @@ public class VapeSentinel extends SentinelModule implements Listener, ParsedPlug
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull final String channel, @NotNull final Player player, final byte[] message)
-    {
-        val user = User.getUser(player);
-        if (User.isUserInvalid(user, this)) return;
-
-        String clientData;
-        try {
-            clientData = new String(message);
-        } catch (Exception e) {
-            clientData = "";
-        }
-
-        DebugSender.getInstance().sendDebug("Player " + player.getName() + " joined with Vape | Data: " + clientData);
-        detection(player);
-    }
-
-    @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull String message)
     {
         val user = User.getUser(player);

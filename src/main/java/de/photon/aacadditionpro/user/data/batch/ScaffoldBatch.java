@@ -9,6 +9,7 @@ import lombok.Value;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
 
 public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
@@ -18,7 +19,7 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
 
     public ScaffoldBatch(@NotNull User user)
     {
-        super(SCAFFOLD_BATCH_BROADCASTER, user, SCAFFOLD_BATCH_SIZE, new ScaffoldBlockPlace(null, null, InternalPotion.PotentialPotionEffect.EMPTY, new Location(null, 0, 0, 0), false));
+        super(SCAFFOLD_BATCH_BROADCASTER, user, SCAFFOLD_BATCH_SIZE, new ScaffoldBlockPlace(null, null, user));
     }
 
     @Value
@@ -27,20 +28,27 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
         long time = System.currentTimeMillis();
         Block block;
         BlockFace blockFace;
-        InternalPotion.PotentialPotionEffect speed;
         Location location;
         boolean sneaked;
+        double speedModifier;
+
+        public ScaffoldBlockPlace(Block block, BlockFace blockFace, User user)
+        {
+            this.block = block;
+            this.blockFace = blockFace;
+            this.location = user.getPlayer().getLocation();
+            this.sneaked = user.hasSneakedRecently(175);
+            this.speedModifier = InternalPotion.SPEED.getPotionEffect(user.getPlayer()).map(this::calcSpeedModifier).orElse(1.0D);
+        }
 
         public long timeOffset(@NotNull ScaffoldBlockPlace other)
         {
             return MathUtil.absDiff(time, other.getTime());
         }
 
-        public double getSpeedModifier()
+        public double calcSpeedModifier(@NotNull PotionEffect potionEffect)
         {
-            if (!speed.exists()) return 1.0D;
-
-            switch (speed.getAmplifier()) {
+            switch (potionEffect.getAmplifier()) {
                 case 0:
                     return 1.01D;
                 case 1:

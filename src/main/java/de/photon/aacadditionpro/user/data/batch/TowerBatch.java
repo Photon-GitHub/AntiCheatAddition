@@ -7,7 +7,11 @@ import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
 import lombok.Value;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public class TowerBatch extends Batch<TowerBatch.TowerBlockPlace>
 {
@@ -18,16 +22,24 @@ public class TowerBatch extends Batch<TowerBatch.TowerBlockPlace>
 
     public TowerBatch(@NotNull User user)
     {
-        super(TOWER_BATCH_BROADCASTER, user, TOWER_BATCH_SIZE, new TowerBlockPlace(DUMMY_LOCATION, InternalPotion.PotentialPotionEffect.EMPTY, InternalPotion.PotentialPotionEffect.EMPTY));
+        super(TOWER_BATCH_BROADCASTER, user, TOWER_BATCH_SIZE, new TowerBlockPlace(DUMMY_LOCATION, user.getPlayer()));
     }
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     @Value
     public static class TowerBlockPlace
     {
         long time = System.currentTimeMillis();
         Location locationOfBlock;
-        InternalPotion.PotentialPotionEffect jumpBoost;
-        InternalPotion.PotentialPotionEffect levitation;
+        Optional<PotionEffect> jumpBoost;
+        Optional<PotionEffect> levitation;
+
+        public TowerBlockPlace(Location locationOfBlock, Player player)
+        {
+            this.locationOfBlock = locationOfBlock;
+            this.jumpBoost = InternalPotion.JUMP.getPotionEffect(player);
+            this.levitation = InternalPotion.LEVITATION.getPotionEffect(player);
+        }
 
         public long timeOffset(@NotNull TowerBlockPlace other)
         {

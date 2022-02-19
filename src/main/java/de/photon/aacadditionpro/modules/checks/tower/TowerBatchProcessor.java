@@ -81,15 +81,15 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
     public double calculateDelay(TowerBatch.TowerBlockPlace blockPlace)
     {
         // Levitation handling.
-        if (blockPlace.getLevitation().exists()) {
+        if (blockPlace.getLevitation().isPresent()) {
             // 0.9 Blocks per second per levitation level.
-            return (900 / (blockPlace.getLevitation().getAmplifier() + 1D)) * towerLeniency * levitationLeniency;
+            return (900 / (blockPlace.getLevitation().get().getAmplifier() + 1D)) * towerLeniency * levitationLeniency;
         }
 
         // No Jump Boost
-        if (!blockPlace.getJumpBoost().exists()) return FIRST_DELAYS.get(0);
+        if (blockPlace.getJumpBoost().isEmpty()) return FIRST_DELAYS.get(0);
 
-        val jumpBoost = blockPlace.getJumpBoost().getAmplifier();
+        val jumpBoost = blockPlace.getJumpBoost().get().getAmplifier();
         // Negative Jump Boost -> Player is not allowed to place blocks -> Very high delay
         if (jumpBoost < 0) return 1500;
 

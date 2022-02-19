@@ -27,6 +27,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
 import java.util.Set;
@@ -150,8 +151,11 @@ public class InventoryMove extends ViolationModule
                             knownPosition.getY() == moveTo.getY()) return;
 
                         // The break period is longer with the speed effect.
-                        val speedEffect = InternalPotion.SPEED.getPotionEffect(user.getPlayer()).getAmplifier();
-                        val speedMillis = speedEffect == null ? 0L : Math.max(100, speedEffect + 1) * 50L;
+                        final long speedMillis = InternalPotion.SPEED.getPotionEffect(user.getPlayer())
+                                                                     .map(PotionEffect::getAmplifier)
+                                                                     // If a speed effect exists calculate the speed millis, otherwise the speedMillis are 0.
+                                                                     .map(amplifier -> Math.max(100, amplifier + 1) * 50L)
+                                                                     .orElse(0L);
 
                         if (user.notRecentlyOpenedInventory(240L + speedMillis + lenienceMillis) &&
                             // Do the entity pushing stuff here (performance impact)

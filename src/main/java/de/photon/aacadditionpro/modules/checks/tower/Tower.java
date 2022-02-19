@@ -7,12 +7,10 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.user.data.batch.TowerBatch;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
-import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
 import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
 import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
-import lombok.Getter;
 import lombok.val;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
@@ -23,10 +21,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class Tower extends ViolationModule implements Listener
 {
-    @Getter
-    @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancelVl;
-
     @LoadFromConfiguration(configPath = ".timeout")
     private int timeout;
 
@@ -71,9 +65,7 @@ public class Tower extends ViolationModule implements Listener
                 // Make sure that the player is still towering in the same position.
                 if (!event.getBlockAgainst().getLocation().equals(user.getTowerBatch().peekLastAdded().getLocationOfBlock())) user.getTowerBatch().clear();
 
-                user.getTowerBatch().addDataPoint(new TowerBatch.TowerBlockPlace(blockPlaced.getLocation(),
-                                                                                 InternalPotion.JUMP.getPotionEffect(user.getPlayer()),
-                                                                                 InternalPotion.LEVITATION.getPotionEffect(user.getPlayer())));
+                user.getTowerBatch().addDataPoint(new TowerBatch.TowerBlockPlace(blockPlaced.getLocation(), user.getPlayer()));
             }
         }
     }

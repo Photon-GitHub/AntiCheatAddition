@@ -1,13 +1,13 @@
 package de.photon.aacadditionpro.util.minecraft.world;
 
 import de.photon.aacadditionpro.ServerVersion;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Value;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public enum InternalPotion
 {
@@ -217,62 +217,17 @@ public enum InternalPotion
      * @return the {@link PotionEffect} with the provided {@link PotionEffectType} or null if the {@link LivingEntity}
      * doesn't have such a {@link PotionEffect}.
      */
-    public PotentialPotionEffect getPotionEffect(@NotNull final LivingEntity livingEntity)
+    public Optional<PotionEffect> getPotionEffect(@NotNull final LivingEntity livingEntity)
     {
-        if (!this.isAvailable()) return PotentialPotionEffect.EMPTY;
+        if (!this.isAvailable()) return Optional.empty();
 
         // Workaround for missing method in MC 1.8.8
         if (ServerVersion.is18()) {
             for (PotionEffect effect : livingEntity.getActivePotionEffects()) {
-                if (effect.getType().equals(this.mapping)) {
-                    return new PotentialPotionEffect(effect);
-                }
+                if (effect.getType().equals(this.mapping)) return Optional.of(effect);
             }
-            return new PotentialPotionEffect();
+            return Optional.empty();
         }
-
-        return new PotentialPotionEffect(livingEntity.getPotionEffect(this.mapping));
-    }
-
-    /**
-     * Wrapper for a potential {@link PotionEffect}.
-     */
-    @Value
-    @AllArgsConstructor
-    public static class PotentialPotionEffect
-    {
-        public static final PotentialPotionEffect EMPTY = new PotentialPotionEffect(null);
-
-        PotionEffect underlying;
-
-        public PotentialPotionEffect()
-        {
-            this.underlying = null;
-        }
-
-        public boolean exists()
-        {
-            return this.underlying != null;
-        }
-
-        public Boolean getAmbient()
-        {
-            return underlying == null ? null : underlying.isAmbient();
-        }
-
-        public Boolean hasParticles()
-        {
-            return underlying == null ? null : underlying.hasParticles();
-        }
-
-        public Integer getDuration()
-        {
-            return underlying == null ? null : underlying.getDuration();
-        }
-
-        public Integer getAmplifier()
-        {
-            return underlying == null ? null : underlying.getAmplifier();
-        }
+        return Optional.ofNullable(livingEntity.getPotionEffect(this.mapping));
     }
 }

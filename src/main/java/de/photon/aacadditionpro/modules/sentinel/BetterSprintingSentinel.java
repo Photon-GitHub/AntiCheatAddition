@@ -3,7 +3,6 @@ package de.photon.aacadditionpro.modules.sentinel;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
-import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.pluginmessage.MessageChannel;
 import io.netty.buffer.Unpooled;
 import lombok.val;
@@ -42,9 +41,6 @@ public class BetterSprintingSentinel extends SentinelModule implements PluginMes
     private final byte[] settingsBufArray;
     private final byte[] disableBufArray;
 
-    @LoadFromConfiguration(configPath = ".disable.general")
-    private boolean disable;
-
     public BetterSprintingSentinel()
     {
         super("BetterSprinting");
@@ -62,7 +58,8 @@ public class BetterSprintingSentinel extends SentinelModule implements PluginMes
         val disableBuffer = Unpooled.buffer();
         // Bypassed players are already filtered out.
         // The mod provides a method to disable it
-        disableBuffer.writeByte(this.disable ? 1 : 2);
+        val disableGeneral = AACAdditionPro.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.general");
+        disableBuffer.writeByte(disableGeneral ? 1 : 2);
         this.disableBufArray = disableBuffer.array();
         disableBuffer.release();
     }

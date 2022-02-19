@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.user.data.batch.ScaffoldBatch;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
-import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
 import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
 import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
@@ -104,9 +103,7 @@ public class Scaffold extends ViolationModule implements Listener
 
             user.getScaffoldBatch().addDataPoint(new ScaffoldBatch.ScaffoldBlockPlace(event.getBlockPlaced(),
                                                                                       event.getBlockPlaced().getFace(event.getBlockAgainst()),
-                                                                                      InternalPotion.SPEED.getPotionEffect(event.getPlayer()),
-                                                                                      event.getPlayer().getLocation(),
-                                                                                      user.hasSneakedRecently(175)));
+                                                                                      user));
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
 

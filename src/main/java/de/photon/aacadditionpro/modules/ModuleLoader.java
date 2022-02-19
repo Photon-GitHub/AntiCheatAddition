@@ -66,7 +66,7 @@ public class ModuleLoader
             return false;
         }
 
-        val loadedIncompatibilities = pluginIncompatibilities.stream().filter(dependency -> Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)).sorted().collect(Collectors.joining(", "));
+        val loadedIncompatibilities = pluginIncompatibilities.stream().filter(incompatibility -> Bukkit.getServer().getPluginManager().isPluginEnabled(incompatibility)).sorted().collect(Collectors.joining(", "));
         if (!loadedIncompatibilities.isEmpty()) {
             DebugSender.getInstance().sendDebug(module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + loadedIncompatibilities, true, false);
             return false;
@@ -119,7 +119,7 @@ public class ModuleLoader
         private final ImmutableSet.Builder<String> pluginIncompatibilities = ImmutableSet.builder();
         private final ImmutableSet.Builder<MessageChannel> incoming = ImmutableSet.builder();
         private final ImmutableSet.Builder<MessageChannel> outgoing = ImmutableSet.builder();
-        private final Set<ServerVersion> allowedServerVersions = EnumSet.noneOf(ServerVersion.class);
+        private final Set<ServerVersion> allowedServerVersions = EnumSet.allOf(ServerVersion.class);
         private boolean bungeecordForbidden = false;
         private BatchProcessor<?> batchProcessor = null;
 
@@ -155,9 +155,9 @@ public class ModuleLoader
             return this;
         }
 
-        public Builder addIncomingMessageChannels(MessageChannel... channels)
+        public Builder addIncomingMessageChannel(MessageChannel channel)
         {
-            this.incoming.add(channels);
+            this.incoming.add(channel);
             return this;
         }
 
@@ -167,9 +167,9 @@ public class ModuleLoader
             return this;
         }
 
-        public Builder addOutgoingMessageChannels(MessageChannel... channels)
+        public Builder addOutgoingMessageChannel(MessageChannel channel)
         {
-            this.outgoing.add(channels);
+            this.outgoing.add(channel);
             return this;
         }
 
@@ -179,14 +179,16 @@ public class ModuleLoader
             return this;
         }
 
-        public Builder addAllowedServerVersions(ServerVersion... serverVersions)
+        public Builder setAllowedServerVersions(ServerVersion... serverVersions)
         {
+            this.allowedServerVersions.clear();
             Collections.addAll(this.allowedServerVersions, serverVersions);
             return this;
         }
 
-        public Builder addAllowedServerVersions(Collection<ServerVersion> serverVersions)
+        public Builder setAllowedServerVersions(Collection<ServerVersion> serverVersions)
         {
+            this.allowedServerVersions.clear();
             this.allowedServerVersions.addAll(serverVersions);
             return this;
         }
@@ -205,12 +207,12 @@ public class ModuleLoader
             Preconditions.checkArgument((module instanceof PluginMessageListener) == !(incomingChannels.isEmpty() && outgoingChannels.isEmpty()), "Channels have to be registered in a PluginMessageListener Module and cannot be registered otherwise.");
 
             if (module instanceof Listener) this.listeners.add((Listener) module);
-            val resultingVersionSet = allowedServerVersions.isEmpty() ? ServerVersion.ALL_SUPPORTED_VERSIONS : allowedServerVersions;
+
             return new ModuleLoader(module,
                                     bungeecordForbidden,
                                     pluginDependencies.build(),
                                     pluginIncompatibilities.build(),
-                                    Sets.immutableEnumSet(resultingVersionSet),
+                                    Sets.immutableEnumSet(allowedServerVersions),
                                     batchProcessor,
                                     incomingChannels,
                                     outgoingChannels,

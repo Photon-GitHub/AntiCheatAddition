@@ -41,8 +41,8 @@ public class VapeSentinel extends SentinelModule implements Listener, ParsedPlug
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addAllowedServerVersions(ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS)
-                           .addIncomingMessageChannels(VAPE_MESSAGE_CHANNEL)
+                           .setAllowedServerVersions(ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS)
+                           .addIncomingMessageChannel(VAPE_MESSAGE_CHANNEL)
                            .build();
     }
 }

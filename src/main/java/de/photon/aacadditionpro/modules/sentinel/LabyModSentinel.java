@@ -53,8 +53,8 @@ public class LabyModSentinel extends SentinelModule implements Listener, PluginM
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addIncomingMessageChannels(MessageChannel.LABYMOD_CHANNEL)
-                           .addOutgoingMessageChannels(MessageChannel.LABYMOD_CHANNEL)
+                           .addIncomingMessageChannel(MessageChannel.LABYMOD_CHANNEL)
+                           .addOutgoingMessageChannel(MessageChannel.LABYMOD_CHANNEL)
                            .build();
     }
 }

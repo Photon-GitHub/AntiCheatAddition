@@ -52,8 +52,8 @@ public class FiveZigSentinel extends SentinelModule implements Listener, PluginM
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addIncomingMessageChannels(MessageChannel.of(RESPONSE_CHANNEL))
-                           .addOutgoingMessageChannels(MessageChannel.of(REGISTER_SEND_CHANNEL))
+                           .addIncomingMessageChannel(MessageChannel.of(RESPONSE_CHANNEL))
+                           .addOutgoingMessageChannel(MessageChannel.of(REGISTER_SEND_CHANNEL))
                            .build();
     }
 }

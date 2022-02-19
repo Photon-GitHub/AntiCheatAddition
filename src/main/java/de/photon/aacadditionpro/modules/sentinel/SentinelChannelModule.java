@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SentinelChannelModule extends SentinelModule implements ParsedPluginMessageListener
 {
@@ -42,8 +41,9 @@ public class SentinelChannelModule extends SentinelModule implements ParsedPlugi
         val incoming = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".incoming_channels");
         val outgoing = ConfigUtils.loadImmutableStringOrStringList(this.configString + ".outgoing_channels");
 
-        if (!incoming.isEmpty()) builder.addIncomingMessageChannels(incoming.stream().map(MessageChannel::of).collect(Collectors.toUnmodifiableSet()));
-        if (!outgoing.isEmpty()) builder.addOutgoingMessageChannels(outgoing.stream().map(MessageChannel::of).collect(Collectors.toUnmodifiableSet()));
+
+        if (!incoming.isEmpty()) incoming.stream().map(MessageChannel::of).forEach(builder::addIncomingMessageChannel);
+        if (!outgoing.isEmpty()) incoming.stream().map(MessageChannel::of).forEach(builder::addOutgoingMessageChannel);
         return builder.build();
     }
 }

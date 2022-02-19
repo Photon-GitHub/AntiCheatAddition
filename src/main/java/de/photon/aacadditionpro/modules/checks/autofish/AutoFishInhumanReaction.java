@@ -66,7 +66,7 @@ public class AutoFishInhumanReaction extends ViolationModule implements Listener
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addAllowedServerVersions(ServerVersion.NON_188_VERSIONS)
+                           .setAllowedServerVersions(ServerVersion.NON_188_VERSIONS)
                            .build();
     }
 

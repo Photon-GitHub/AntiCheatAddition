@@ -62,7 +62,7 @@ public class PacketAnalysisAnimation extends ViolationModule
                 }).build();
 
         return ModuleLoader.builder(this)
-                           .addAllowedServerVersions(ServerVersion.NON_188_VERSIONS)
+                           .setAllowedServerVersions(ServerVersion.NON_188_VERSIONS)
                            .addPacketListeners(packetAdapter)
                            .build();
     }

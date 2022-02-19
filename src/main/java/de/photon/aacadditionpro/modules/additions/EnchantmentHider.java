@@ -64,7 +64,7 @@ public class EnchantmentHider extends Module
 
         return ModuleLoader.builder(this)
                            .addPacketListeners(adapter)
-                           .addAllowedServerVersions(ServerVersion.NON_188_VERSIONS)
+                           .setAllowedServerVersions(ServerVersion.NON_188_VERSIONS)
                            .build();
     }
 

@@ -75,7 +75,7 @@ public class BetterSprintingSentinel extends SentinelModule implements PluginMes
 
         detection(user.getPlayer());
 
-        val sendChannel = "BSprint".equals(channel) ? "BSM" : MessageChannel.BETTER_SPRINTING_CHANNEL.getChannel();
+        val sendChannel = "BSprint".equals(channel) ? "BSM" : MessageChannel.BETTER_SPRINTING_CHANNEL.getChannel().orElseThrow();
 
         user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), sendChannel, this.settingsBufArray);
         user.getPlayer().sendPluginMessage(AACAdditionPro.getInstance(), sendChannel, this.disableBufArray);
@@ -85,10 +85,10 @@ public class BetterSprintingSentinel extends SentinelModule implements PluginMes
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addIncomingMessageChannels(MessageChannel.BETTER_SPRINTING_CHANNEL,
-                                                       MessageChannel.ofLegacy("BSprint"))
+                           .addIncomingMessageChannel(MessageChannel.BETTER_SPRINTING_CHANNEL)
+                           .addIncomingMessageChannel(MessageChannel.ofLegacy("BSprint"))
                            // No message is sent in BSprint.
-                           .addOutgoingMessageChannels(MessageChannel.BETTER_SPRINTING_CHANNEL)
+                           .addOutgoingMessageChannel(MessageChannel.BETTER_SPRINTING_CHANNEL)
                            .build();
     }
 }

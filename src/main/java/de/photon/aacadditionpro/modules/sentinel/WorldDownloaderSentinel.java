@@ -73,8 +73,8 @@ public class WorldDownloaderSentinel extends SentinelModule implements PluginMes
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addIncomingMessageChannels(MessageChannel.of("wdl", "init", "WDL|INIT"))
-                           .addOutgoingMessageChannels(WDL_CONTROL_CHANNEL)
+                           .addIncomingMessageChannel(MessageChannel.of("wdl", "init", "WDL|INIT"))
+                           .addOutgoingMessageChannel(WDL_CONTROL_CHANNEL)
                            .build();
     }
 }

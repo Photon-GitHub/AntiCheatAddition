@@ -51,7 +51,7 @@ public class SchematicaSentinel extends SentinelModule implements Listener
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addOutgoingMessageChannels(MessageChannel.SCHEMATICA_CHANNEL)
+                           .addOutgoingMessageChannel(MessageChannel.SCHEMATICA_CHANNEL)
                            .build();
     }
 }

@@ -6,7 +6,6 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.ping.PingProvider;
 import de.photon.aacadditionpro.util.minecraft.tps.TPSProvider;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
@@ -128,7 +127,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                 this.getManagement().flag(Flag.of(user).setAddedVl(addedVl).setCancelAction(cancelVl, () -> {
                     event.setCancelled(true);
                     InventoryUtil.syncUpdateInventory(user.getPlayer());
-                }).setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " moved items too quickly.")));
+                }).setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " moved items too quickly."));
             }
         }
     }

@@ -6,7 +6,6 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.entity.EntityUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -52,7 +51,7 @@ public class InventorySprinting extends ViolationModule implements Listener
                                               event.setCancelled(true);
                                               InventoryUtil.syncUpdateInventory(user.getPlayer());
                                           })
-                                          .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " interacted with an inventory while sprinting or sneaking.")));
+                                          .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " interacted with an inventory while sprinting or sneaking."));
         }
     }
 

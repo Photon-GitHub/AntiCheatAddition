@@ -9,7 +9,6 @@ import de.photon.aacadditionpro.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.aacadditionpro.util.datastructure.batch.BatchPreprocessors;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import lombok.val;
 
@@ -51,9 +50,9 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
                                                           user.getTimestampMap().at(TimestampKey.SCAFFOLD_TIMEOUT).update();
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
-                                                      .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() +
-                                                                                                                            " enforced delay: " + minExpectedAverage + " | real: " + actualAverage +
-                                                                                                                            " | vl increase: " + vlIncrease)));
+                                                      .setDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() +
+                                                                " enforced delay: " + minExpectedAverage + " | real: " + actualAverage +
+                                                                " | vl increase: " + vlIncrease));
         }
     }
 

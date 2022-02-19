@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
 import de.photon.aacadditionpro.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -41,7 +40,7 @@ public class PacketAnalysisIllegalPitch extends ViolationModule
 
                     final IWrapperPlayClientLook lookWrapper = event::getPacket;
                     if (!MathUtil.inRange(-90, 90, lookWrapper.getPitch())) {
-                        getManagement().flag(Flag.of(user).setAddedVl(150).setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent illegal pitch value.")));
+                        getManagement().flag(Flag.of(user).setAddedVl(150).setDebug("PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent illegal pitch value."));
                     }
                 }).build();
 

@@ -12,7 +12,6 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.entity.EntityUtil;
 import de.photon.aacadditionpro.util.minecraft.tps.TPSProvider;
 import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
@@ -140,7 +139,7 @@ public class InventoryMove extends ViolationModule
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(20)
                                                      .setCancelAction(cancelVl, () -> cancelAction(user, event))
-                                                     .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory.")));
+                                                     .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory."));
                             return;
                         }
 
@@ -162,7 +161,7 @@ public class InventoryMove extends ViolationModule
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(5)
                                                      .setCancelAction(cancelVl, () -> cancelAction(user, event))
-                                                     .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory.")));
+                                                     .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory."));
                         }
                     } else {
                         user.getDataMap().setBoolean(DataKey.BooleanKey.ALLOWED_TO_JUMP, true);

@@ -10,7 +10,6 @@ import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
 import de.photon.aacadditionpro.protocol.packetwrappers.sentbyclient.WrapperPlayClientUseEntity;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -51,7 +50,7 @@ public class PacketAnalysisAnimation extends ViolationModule
                         // Expected Animation after attack, but didn't arrive.
                         if (user.getDataMap().getBoolean(DataKey.BooleanKey.PACKET_ANALYSIS_ANIMATION_EXPECTED)) {
                             user.getDataMap().setBoolean(DataKey.BooleanKey.PACKET_ANALYSIS_ANIMATION_EXPECTED, false);
-                            getManagement().flag(Flag.of(user).setAddedVl(30).setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " did not send animation packet after an attack.")));
+                            getManagement().flag(Flag.of(user).setAddedVl(30).setDebug("PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " did not send animation packet after an attack."));
                         }
 
                         // Make sure an arm animation packet is sent directly after an attack as it is the next packet in the client code.

@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.inventory.InventoryUtil;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.tps.TPSProvider;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -48,7 +47,7 @@ public class InventoryPerfectExit extends ViolationModule implements Listener
             if (user.getDataMap().getCounter(DataKey.CounterKey.INVENTORY_PERFECT_EXIT_FAILS).conditionallyIncDec(passedTime <= 70)) {
                 this.getManagement().flag(Flag.of(user)
                                               .setAddedVl(VL_CALCULATOR.apply(passedTime).intValue())
-                                              .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')')));
+                                              .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')'));
             }
         }
     }

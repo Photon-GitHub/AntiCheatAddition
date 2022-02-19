@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.user.User;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
@@ -17,6 +18,7 @@ public class Flag
     private final Set<Player> team;
     private int addedVl = 1;
     private int cancelVl = -1;
+    private String debug = null;
     private Runnable onCancel = null;
     private Runnable eventNotCancelled = null;
 
@@ -99,10 +101,20 @@ public class Flag
     }
 
     /**
+     * Any debug will be sent if the event was not cancelled.
+     */
+    public Flag setDebug(String debug)
+    {
+        this.debug = debug;
+        return this;
+    }
+
+    /**
      * This method will execute the runnables when applicable.
      */
-    public void executeRunnablesIfNeeded(int currentVl)
+    public void callNotCancelledActions(int currentVl)
     {
+        if (this.debug != null) DebugSender.getInstance().sendDebug(this.debug);
         if (this.cancelVl >= 0 && currentVl >= this.cancelVl) this.onCancel.run();
         if (this.eventNotCancelled != null) this.eventNotCancelled.run();
     }

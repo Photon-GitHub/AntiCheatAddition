@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.protocol.PacketAdapterBuilder;
 import de.photon.aacadditionpro.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -51,7 +50,7 @@ public class InventoryRotation extends ViolationModule
                         // The player has opened his inventory for at least one second.
                         user.notRecentlyOpenedInventory(1000))
                     {
-                        getManagement().flag(Flag.of(user).setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " sent new rotations while having an open inventory.")));
+                        getManagement().flag(Flag.of(user).setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " sent new rotations while having an open inventory."));
                     }
                 }).build();
 

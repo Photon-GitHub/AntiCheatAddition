@@ -4,7 +4,6 @@ import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -47,7 +46,7 @@ public class InventoryHit extends ViolationModule implements Listener
                 this.getManagement().flag(Flag.of(user)
                                               .setAddedVl(20)
                                               .setCancelAction(cancelVl, () -> event.setCancelled(true))
-                                              .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " hit an entity while having an open inventory.")));
+                                              .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " hit an entity while having an open inventory."));
             }
         }
     }

@@ -10,7 +10,6 @@ import de.photon.aacadditionpro.protocol.packetwrappers.sentbyclient.IWrapperPla
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.user.data.TimestampKey;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -71,7 +70,7 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                             return;
                         }
 
-                        getManagement().flag(Flag.of(user).setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent equal rotations.")));
+                        getManagement().flag(Flag.of(user).setDebug("PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent equal rotations."));
                     }
                 }).build();
 

@@ -7,10 +7,17 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.AACAdditionPro;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public class PacketAdapterBuilder
@@ -20,6 +27,34 @@ public class PacketAdapterBuilder
     private ListenerPriority priority = ListenerPriority.NORMAL;
     private Consumer<PacketEvent> onReceiving = null;
     private Consumer<PacketEvent> onSending = null;
+
+    public static boolean checkSync(@NotNull Callable<Boolean> task)
+    {
+        // Dummy timeout that will be caught in the method.
+        return checkSync(-1, TimeUnit.NANOSECONDS, task);
+    }
+
+    /**
+     * This method uses the {@link org.bukkit.scheduler.BukkitScheduler#callSyncMethod(Plugin, Callable)} method to calculate a certain boolean expression on the main server thread.
+     * This is necessary for all potentially chunk-loading operations.
+     *
+     * @param task    the boolean expression to evaluate
+     * @param timeout the timeout after which the calculation shall be stopped. Negative timeout will wait indefinitely.
+     * @param unit    the {@link TimeUnit} for timeout.
+     */
+    public static boolean checkSync(long timeout, TimeUnit unit, @NotNull Callable<Boolean> task)
+    {
+        try {
+            // If the timeout is smaller than or equal to 0, wait indefinitely.
+            return timeout <= 0 ? Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), task).get()) : Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), task).get(timeout, unit));
+        } catch (InterruptedException | ExecutionException e) {
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to complete the synchronous calculations.", e);
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException e) {
+            AACAdditionPro.getInstance().getLogger().log(Level.SEVERE, "Unable to finish synchronous calculations. If this message appears frequently please consider upgrading your server.");
+        }
+        return false;
+    }
 
     public static PacketAdapterBuilder of(@NotNull PacketType... types)
     {

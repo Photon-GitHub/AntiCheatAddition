@@ -2,7 +2,6 @@ package de.photon.aacadditionpro.modules.checks.packetanalysis;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
-import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
@@ -17,14 +16,9 @@ import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
 import lombok.val;
-import org.bukkit.Bukkit;
 import org.bukkit.block.BlockFace;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import static java.util.logging.Level.SEVERE;
 
 public class PacketAnalysisEqualRotation extends ViolationModule
 {
@@ -62,34 +56,22 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                         // LabyMod fp when standing still / hit in corner fp
                         user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 100) &&
                         // 1.17 false positives
-                        !(user.getTimestampMap().at(TimestampKey.LAST_HOTBAR_SWITCH).recentlyUpdated(3000) && user.hasSneakedRecently(3000)))
+                        !(user.getTimestampMap().at(TimestampKey.LAST_HOTBAR_SWITCH).recentlyUpdated(3000) && user.hasSneakedRecently(3000)) &&
+                        PacketAdapterBuilder.checkSync(10, TimeUnit.SECONDS,
+                                                       // False positive when jumping from great heights into a pool with slime blocks / beds on the bottom.
+                                                       () -> !(user.isInLiquids() && MaterialUtil.BOUNCE_MATERIALS.contains(user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) &&
+                                                             // Fixes false positives on versions 1.9+ because of changed hitboxes
+                                                             !(ServerVersion.is18() &&
+                                                               ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC18 &&
+                                                               MaterialUtil.containsMaterials(user.getHitbox().getPartiallyIncludedMaterials(user.getPlayer().getLocation()), MaterialUtil.CHANGED_HITBOX_MATERIALS))))
                     {
-                        // Not a big performance deal as most packets have already been filtered out, now we just account for the last false positives.
-                        // Sync call because the isHitboxInLiquids method will load chunks (prevent errors).
-                        try {
-                            if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () ->
-                                    // False positive when jumping from great heights into a pool with slime blocks / beds on the bottom.
-                                    !(user.isInLiquids() &&
-                                      MaterialUtil.BOUNCE_MATERIALS.contains(user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) &&
-                                    // Fixes false positives on versions 1.9+ because of changed hitboxes
-                                    !(ServerVersion.is18() &&
-                                      ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC18 &&
-                                      MaterialUtil.containsMaterials(user.getHitbox().getPartiallyIncludedMaterials(user.getPlayer().getLocation()), MaterialUtil.CHANGED_HITBOX_MATERIALS))).get(10, TimeUnit.SECONDS)))
-                            {
-                                // Cancelled packets may cause problems.
-                                if (user.getDataMap().getBoolean(DataKey.BooleanKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED)) {
-                                    user.getDataMap().setBoolean(DataKey.BooleanKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED, false);
-                                    return;
-                                }
-
-                                getManagement().flag(Flag.of(user).setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent equal rotations.")));
-                            }
-                        } catch (InterruptedException | ExecutionException e) {
-                            AACAdditionPro.getInstance().getLogger().log(SEVERE, "Unable to complete the EqualRotation calculations.", e);
-                            Thread.currentThread().interrupt();
-                        } catch (TimeoutException e) {
-                            AACAdditionPro.getInstance().getLogger().log(SEVERE, "Discard packet check due to high server load. If this message appears frequently please consider upgrading your server.");
+                        // Cancelled packets may cause problems.
+                        if (user.getDataMap().getBoolean(DataKey.BooleanKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED)) {
+                            user.getDataMap().setBoolean(DataKey.BooleanKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED, false);
+                            return;
                         }
+
+                        getManagement().flag(Flag.of(user).setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent equal rotations.")));
                     }
                 }).build();
 

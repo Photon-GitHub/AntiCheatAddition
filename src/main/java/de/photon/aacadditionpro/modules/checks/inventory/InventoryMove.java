@@ -31,7 +31,6 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 public class InventoryMove extends ViolationModule
 {
@@ -155,23 +154,15 @@ public class InventoryMove extends ViolationModule
                         val speedEffect = InternalPotion.SPEED.getPotionEffect(user.getPlayer()).getAmplifier();
                         val speedMillis = speedEffect == null ? 0L : Math.max(100, speedEffect + 1) * 50L;
 
-                        if (user.notRecentlyOpenedInventory(240L + speedMillis + lenienceMillis)) {
+                        if (user.notRecentlyOpenedInventory(240L + speedMillis + lenienceMillis) &&
                             // Do the entity pushing stuff here (performance impact)
                             // No nearby entities that could push the player
-
-                            try {
-                                // Needs to be called synchronously.
-                                if (Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AACAdditionPro.getInstance(), () -> WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()).get())) {
-                                    getManagement().flag(Flag.of(user)
-                                                             .setAddedVl(5)
-                                                             .setCancelAction(cancelVl, () -> cancelAction(user, event))
-                                                             .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory.")));
-                                }
-                            } catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                            } catch (ExecutionException e) {
-                                // Ignore
-                            }
+                            PacketAdapterBuilder.checkSync(() -> WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()))
+                        {
+                            getManagement().flag(Flag.of(user)
+                                                     .setAddedVl(5)
+                                                     .setCancelAction(cancelVl, () -> cancelAction(user, event))
+                                                     .setEventNotCancelledAction(() -> DebugSender.getInstance().sendDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory.")));
                         }
                     } else {
                         user.getDataMap().setBoolean(DataKey.BooleanKey.ALLOWED_TO_JUMP, true);

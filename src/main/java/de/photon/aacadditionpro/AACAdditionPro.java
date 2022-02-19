@@ -44,6 +44,7 @@ public class AACAdditionPro extends JavaPlugin
 
     private static final int BSTATS_PLUGIN_ID = 3265;
 
+
     @Setter(AccessLevel.PROTECTED)
     @Getter private static AACAdditionPro instance;
 

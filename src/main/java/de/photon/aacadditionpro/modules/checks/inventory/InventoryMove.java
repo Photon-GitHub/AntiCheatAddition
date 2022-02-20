@@ -117,7 +117,7 @@ public class InventoryMove extends ViolationModule
                         // The player is currently not in a liquid (liquids push)
                         !user.getHitbox().isInLiquids(knownPosition) &&
                         // Auto-Disable if TPS are too low
-                        TPSProvider.INSTANCE.getTPS() > minTps)
+                        TPSProvider.INSTANCE.atLeastTPS(minTps))
                     {
                         val positiveVelocity = knownPosition.getY() < moveTo.getY();
                         val noMovement = knownPosition.getY() == moveTo.getY();

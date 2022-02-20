@@ -25,7 +25,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
     private int cancelVl;
 
     @LoadFromConfiguration(configPath = ".max_ping")
-    private double maxPing;
+    private int maxPing;
     @LoadFromConfiguration(configPath = ".min_tps")
     private double minTps;
 
@@ -44,9 +44,9 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
             // Creative-clear might trigger this.
             user.inAdventureOrSurvivalMode() &&
             // Minimum TPS before the check is activated as of a huge amount of fps
-            TPSProvider.INSTANCE.getTPS() > minTps &&
+            TPSProvider.INSTANCE.atLeastTPS(minTps) &&
             // Minimum ping
-            (maxPing < 0 || PingProvider.INSTANCE.getPing(user.getPlayer()) <= maxPing) &&
+            PingProvider.INSTANCE.maxPingHandling(user.getPlayer(), maxPing) &&
             // False positive: Click-spamming on the same slot
             event.getRawSlot() != user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED))
         {

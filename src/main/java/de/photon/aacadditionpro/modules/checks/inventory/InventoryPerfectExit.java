@@ -39,7 +39,7 @@ public class InventoryPerfectExit extends ViolationModule implements Listener
         // Creative-clear might trigger this.
         if (user.inAdventureOrSurvivalMode() &&
             // Minimum TPS before the check is activated as of a huge amount of fps
-            TPSProvider.INSTANCE.getTPS() > minTps &&
+            TPSProvider.INSTANCE.atLeastTPS(minTps) &&
             // Inventory is empty
             InventoryUtil.isInventoryEmpty(event.getInventory()))
         {

@@ -13,7 +13,7 @@ public interface PingProvider
      *
      * @return the floating average of the ping of the player. If the player has just joined, 200ms are the default value for the ping.
      */
-    default long getEchoPing(final User user)
+    default long getEchoPing(User user)
     {
         return (long) user.getPingspoofPing().getAverage();
     }
@@ -25,5 +25,16 @@ public interface PingProvider
      *
      * @return the ping of the player or 0 if an exception is thrown.
      */
-    int getPing(final Player player);
+    int getPing(Player player);
+
+    /**
+     * Checks if a player's ping is at most maxPing or the maxPing is negative.
+     *
+     * @param maxPing the maximum ping a player may have to make this method return true.
+     *                A negative ping will always return true.
+     */
+    default boolean maxPingHandling(Player player, int maxPing)
+    {
+        return maxPing < 0 || this.getPing(player) <= maxPing;
+    }
 }

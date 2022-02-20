@@ -22,7 +22,7 @@ public class Fastswitch extends ViolationModule
     private int cancelVl;
 
     @LoadFromConfiguration(configPath = ".max_ping")
-    private double maxPing;
+    private int maxPing;
 
     @LoadFromConfiguration(configPath = ".switch_milliseconds")
     private int switchMilliseconds;
@@ -53,15 +53,15 @@ public class Fastswitch extends ViolationModule
                     if (User.isUserInvalid(user, this)) return;
 
                     // Tps are high enough
-                    if (TPSProvider.INSTANCE.getTPS() > 19 &&
+                    if (TPSProvider.INSTANCE.atLeastTPS(19) &&
                         event.getPacket().getBytes().readSafely(0) != null &&
                         // Prevent the detection of scrolling
                         !canBeLegit(user.getPlayer().getInventory().getHeldItemSlot(), event.getPacket().getBytes().readSafely(0)))
                     {
                         // Already switched in the given timeframe
-                        if (user.getTimestampMap().at(TimestampKey.FASTSWITCH_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds)
+                        if (user.getTimestampMap().at(TimestampKey.FASTSWITCH_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds) &&
                             // The ping is valid and in the borders that are set in the config
-                            && (maxPing < 0 || PingProvider.INSTANCE.getPing(user.getPlayer()) < maxPing))
+                            PingProvider.INSTANCE.maxPingHandling(user.getPlayer(), maxPing))
                         {
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(25)

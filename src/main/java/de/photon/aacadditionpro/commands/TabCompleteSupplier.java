@@ -39,7 +39,8 @@ public class TabCompleteSupplier
         val lowerCaseArgument = partialArgument.toLowerCase(Locale.ENGLISH);
 
         return this.tabPossibilities.stream()
-                                    .flatMap(listSupplier -> listSupplier.get().stream())
+                                    .map(Supplier::get)
+                                    .flatMap(List::stream)
                                     .filter(potentialTab -> potentialTab.toLowerCase(Locale.ENGLISH).startsWith(lowerCaseArgument))
                                     .sorted()
                                     .collect(Collectors.toList());
@@ -51,7 +52,8 @@ public class TabCompleteSupplier
     public List<String> getTabPossibilities()
     {
         return this.tabPossibilities.stream()
-                                    .flatMap(listSupplier -> listSupplier.get().stream())
+                                    .map(Supplier::get)
+                                    .flatMap(List::stream)
                                     .sorted()
                                     .collect(Collectors.toList());
     }

@@ -85,18 +85,17 @@ public final class MaterialUtil
 
     public static Set<Material> getMaterialsEndingWith(String... ends)
     {
-        val materials = EnumSet.noneOf(Material.class);
-        for (Material material : Material.values()) {
-            if (StringUtils.endsWithAny(material.name(), ends)) materials.add(material);
-        }
-        return materials;
+        return Arrays.stream(Material.values())
+                     .filter(material -> StringUtils.endsWithAny(material.name(), ends))
+                     .collect(Collectors.toCollection(() -> EnumSet.noneOf(Material.class)));
     }
 
     @SafeVarargs
     public static Set<Material> ofTags(Tag<Material>... tags)
     {
         return Sets.immutableEnumSet(Arrays.stream(tags)
-                                           .flatMap(tag -> tag.getValues().stream())
+                                           .map(Tag::getValues)
+                                           .flatMap(Set::stream)
                                            .collect(Collectors.toUnmodifiableSet()));
     }
 

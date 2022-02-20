@@ -33,7 +33,7 @@ class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.Sc
     @Override
     public void processBatch(User user, List<ScaffoldBatch.ScaffoldBlockPlace> batch)
     {
-        val moonwalk = batch.stream().filter(Predicate.not(ScaffoldBatch.ScaffoldBlockPlace::isSneaked)).count() >= batch.size() / 2;
+        final boolean moonwalk = batch.stream().filter(Predicate.not(ScaffoldBatch.ScaffoldBlockPlace::isSneaked)).count() >= batch.size() / 2;
         val delays = BatchPreprocessors.zipReduceToDoubleStatistics(batch,
                                                                     (old, cur) -> old.getSpeedModifier() * cur.timeOffset(old),
                                                                     (old, cur) -> calculateMinExpectedDelay(old, cur, moonwalk));

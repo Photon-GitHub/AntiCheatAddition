@@ -50,10 +50,10 @@ public class AutoPotion extends ViolationModule implements Listener
         val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this) || event.getTo() == null) return;
 
-        if (user.getDataMap().getBoolean(DataKey.BooleanKey.AUTOPOTION_ALREADY_THROWN)) {
+        if (user.getDataMap().getBoolean(DataKey.Bool.AUTOPOTION_ALREADY_THROWN)) {
             // The pitch and yaw values are nearly the same as before
-            if (MathUtil.roughlyEquals(event.getTo().getPitch(), user.getDataMap().getFloat(DataKey.FloatKey.AUTOPOTION_LAST_SUDDEN_PITCH), angleOffset) &&
-                MathUtil.roughlyEquals(event.getTo().getYaw(), user.getDataMap().getFloat(DataKey.FloatKey.AUTOPOTION_LAST_SUDDEN_YAW), angleOffset) &&
+            if (MathUtil.roughlyEquals(event.getTo().getPitch(), user.getDataMap().getFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_PITCH), angleOffset) &&
+                MathUtil.roughlyEquals(event.getTo().getYaw(), user.getDataMap().getFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_YAW), angleOffset) &&
                 // Happened in a short time frame
                 user.getTimestampMap().at(TimestampKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
             {
@@ -72,9 +72,9 @@ public class AutoPotion extends ViolationModule implements Listener
                 // The pitch is beyond the lookdown angle
                 event.getTo().getPitch() >= lookDownAngle)
             {
-                user.getDataMap().setFloat(DataKey.FloatKey.AUTOPOTION_LAST_SUDDEN_PITCH, event.getFrom().getPitch());
-                user.getDataMap().setFloat(DataKey.FloatKey.AUTOPOTION_LAST_SUDDEN_YAW, event.getFrom().getYaw());
-                user.getDataMap().setBoolean(DataKey.BooleanKey.AUTOPOTION_ALREADY_THROWN, false);
+                user.getDataMap().setFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_PITCH, event.getFrom().getPitch());
+                user.getDataMap().setFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_YAW, event.getFrom().getYaw());
+                user.getDataMap().setBoolean(DataKey.Bool.AUTOPOTION_ALREADY_THROWN, false);
 
                 user.getTimestampMap().at(TimestampKey.AUTOPOTION_DETECTION).update();
             }
@@ -101,7 +101,7 @@ public class AutoPotion extends ViolationModule implements Listener
             // The last sudden movement was not long ago
             user.getTimestampMap().at(TimestampKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
         {
-            user.getDataMap().setBoolean(DataKey.BooleanKey.AUTOPOTION_ALREADY_THROWN, true);
+            user.getDataMap().setBoolean(DataKey.Bool.AUTOPOTION_ALREADY_THROWN, true);
             // Here the timestamp is used to contain the data of the last splash
             user.getTimestampMap().at(TimestampKey.AUTOPOTION_DETECTION).update();
         }

@@ -10,7 +10,6 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.datastructure.statistics.DoubleStatistics;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -45,12 +44,12 @@ public class AutoFishConsistency extends ViolationModule implements Listener
             case FISHING:
                 // Not too many failed attempts in between (afk fish farm false positives)
                 // Negative maximum_fails indicate not allowing afk fishing farms.
-                if (user.getDataMap().getCounter(DataKey.CounterKey.AUTOFISH_FAILED).compareThreshold() &&
+                if (user.getDataMap().getCounter(DataKey.Count.AUTOFISH_FAILED).compareThreshold() &&
                     // If the last attempt was a fail do not check (false positives)
                     user.getTimestampMap().at(TimestampKey.AUTOFISH_DETECTION).getTime() != 0)
                 {
                     // Buffer the data.
-                    val consistencyData = (DoubleStatistics) user.getDataMap().getObject(DataKey.ObjectKey.AUTOFISH_CONSISTENCY_DATA);
+                    val consistencyData = (DoubleStatistics) user.getDataMap().getObject(DataKey.Obj.AUTOFISH_CONSISTENCY_DATA);
                     consistencyData.accept(user.getTimestampMap().at(TimestampKey.AUTOFISH_DETECTION).passedTime());
 
                     // Check that we have enough data.
@@ -63,17 +62,16 @@ public class AutoFishConsistency extends ViolationModule implements Listener
                         // (maxOffset / minVariation) will be at most 1 and at least 0
                         val flagOffset = 160 - (159 * (maxOffset / minVariation));
 
-                        DebugSender.getInstance().sendDebug("AutoFish-Debug | Player " +
-                                                            user.getPlayer().getName() +
-                                                            " failed consistency | average time: " +
-                                                            StringUtils.left(String.valueOf(consistencyData.getAverage()), 7) +
-                                                            " | maximum offset: " +
-                                                            StringUtils.left(String.valueOf(maxOffset), 7) +
-                                                            " | flag offset: " +
-                                                            StringUtils.left(String.valueOf(flagOffset), 7));
-
                         this.getManagement().flag(Flag.of(event.getPlayer())
                                                       .setAddedVl((int) flagOffset)
+                                                      .setDebug("AutoFish-Debug | Player " +
+                                                                user.getPlayer().getName() +
+                                                                " failed consistency | average time: " +
+                                                                StringUtils.left(String.valueOf(consistencyData.getAverage()), 7) +
+                                                                " | maximum offset: " +
+                                                                StringUtils.left(String.valueOf(maxOffset), 7) +
+                                                                " | flag offset: " +
+                                                                StringUtils.left(String.valueOf(flagOffset), 7))
                                                       .setCancelAction(cancelVl, () -> event.setCancelled(true)));
                     }
 
@@ -82,13 +80,13 @@ public class AutoFishConsistency extends ViolationModule implements Listener
                 }
 
                 // Reset the fail counter as just now there was a fishing success.
-                user.getDataMap().getCounter(DataKey.CounterKey.AUTOFISH_FAILED).setToZero();
+                user.getDataMap().getCounter(DataKey.Count.AUTOFISH_FAILED).setToZero();
                 break;
             // No consistency when not fishing / failed fishing
             case IN_GROUND:
             case FAILED_ATTEMPT:
                 user.getTimestampMap().at(TimestampKey.AUTOFISH_DETECTION).setToZero();
-                user.getDataMap().getCounter(DataKey.CounterKey.AUTOFISH_FAILED).increment();
+                user.getDataMap().getCounter(DataKey.Count.AUTOFISH_FAILED).increment();
                 break;
             case CAUGHT_FISH:
                 // CAUGHT_FISH covers all forms of items from the water.

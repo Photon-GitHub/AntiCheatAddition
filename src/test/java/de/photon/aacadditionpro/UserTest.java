@@ -16,8 +16,8 @@ class UserTest
         val obsidian = Material.OBSIDIAN;
         val user = Dummy.mockUser();
 
-        user.getDataMap().setObject(DataKey.ObjectKey.LAST_MATERIAL_CLICKED, obsidian);
-        Assertions.assertSame(user.getDataMap().getObject(DataKey.ObjectKey.LAST_MATERIAL_CLICKED), obsidian);
+        user.getDataMap().setObject(DataKey.Obj.LAST_MATERIAL_CLICKED, obsidian);
+        Assertions.assertSame(user.getDataMap().getObject(DataKey.Obj.LAST_MATERIAL_CLICKED), obsidian);
     }
 
     @Test
@@ -25,7 +25,7 @@ class UserTest
     {
         Dummy.mockAACAdditionPro();
         val user = Dummy.mockUser();
-        val counter = user.getDataMap().getCounter(DataKey.CounterKey.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS);
+        val counter = user.getDataMap().getCounter(DataKey.Count.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS);
 
         counter.setToZero();
         Assertions.assertSame(0L, counter.getCounter());

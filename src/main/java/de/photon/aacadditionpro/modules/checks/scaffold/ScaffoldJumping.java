@@ -29,7 +29,7 @@ class ScaffoldJumping extends Module
     public void enable()
     {
         applyingConsumer = (user, event) -> {
-            val failCounter = user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_JUMPING_FAILS);
+            val failCounter = user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_JUMPING_FAILS);
 
             if (user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 500)
                 && user.hasJumpedRecently(1000))
@@ -40,7 +40,7 @@ class ScaffoldJumping extends Module
                 }
             } else {
                 // Decrease only every 10 blocks to make sure one cannot easily bypass this check by jumping only every other block.
-                val legitCounter = user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_JUMPING_LEGIT);
+                val legitCounter = user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_JUMPING_LEGIT);
                 if (legitCounter.incrementCompareThreshold()) {
                     failCounter.decrementAboveZero();
                     legitCounter.setToZero();

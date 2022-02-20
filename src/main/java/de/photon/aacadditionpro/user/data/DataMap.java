@@ -8,72 +8,72 @@ import java.util.Map;
 
 public class DataMap
 {
-    private final Map<DataKey.BooleanKey, Boolean> boolMap = Collections.synchronizedMap(new EnumMap<>(DataKey.BooleanKey.class));
-    private final Map<DataKey.IntegerKey, Integer> intMap = Collections.synchronizedMap(new EnumMap<>(DataKey.IntegerKey.class));
-    private final Map<DataKey.LongKey, Long> longMap = Collections.synchronizedMap(new EnumMap<>(DataKey.LongKey.class));
-    private final Map<DataKey.FloatKey, Float> floatMap = Collections.synchronizedMap(new EnumMap<>(DataKey.FloatKey.class));
-    private final Map<DataKey.DoubleKey, Double> doubleMap = Collections.synchronizedMap(new EnumMap<>(DataKey.DoubleKey.class));
-    private final Map<DataKey.CounterKey, ViolationCounter> counterMap = Collections.synchronizedMap(new EnumMap<>(DataKey.CounterKey.class));
-    private final Map<DataKey.ObjectKey, Object> objectMap = Collections.synchronizedMap(new EnumMap<>(DataKey.ObjectKey.class));
+    private final Map<DataKey.Bool, Boolean> boolMap = Collections.synchronizedMap(new EnumMap<>(DataKey.Bool.class));
+    private final Map<DataKey.Int, Integer> intMap = Collections.synchronizedMap(new EnumMap<>(DataKey.Int.class));
+    private final Map<DataKey.Long, Long> longMap = Collections.synchronizedMap(new EnumMap<>(DataKey.Long.class));
+    private final Map<DataKey.Float, Float> floatMap = Collections.synchronizedMap(new EnumMap<>(DataKey.Float.class));
+    private final Map<DataKey.Double, Double> doubleMap = Collections.synchronizedMap(new EnumMap<>(DataKey.Double.class));
+    private final Map<DataKey.Count, ViolationCounter> counterMap = Collections.synchronizedMap(new EnumMap<>(DataKey.Count.class));
+    private final Map<DataKey.Obj, Object> objectMap = Collections.synchronizedMap(new EnumMap<>(DataKey.Obj.class));
 
-    public Boolean getBoolean(DataKey.BooleanKey key)
+    public Boolean getBoolean(DataKey.Bool key)
     {
-        return this.boolMap.computeIfAbsent(key, DataKey.BooleanKey::getDefaultValue);
+        return this.boolMap.computeIfAbsent(key, DataKey.Bool::getDefaultValue);
     }
 
-    public Integer getInt(DataKey.IntegerKey key)
+    public Integer getInt(DataKey.Int key)
     {
-        return this.intMap.computeIfAbsent(key, DataKey.IntegerKey::getDefaultValue);
+        return this.intMap.computeIfAbsent(key, DataKey.Int::getDefaultValue);
     }
 
-    public Long getLong(DataKey.LongKey key)
+    public Long getLong(DataKey.Long key)
     {
-        return this.longMap.computeIfAbsent(key, DataKey.LongKey::getDefaultValue);
+        return this.longMap.computeIfAbsent(key, DataKey.Long::getDefaultValue);
     }
 
-    public Float getFloat(DataKey.FloatKey key)
+    public Float getFloat(DataKey.Float key)
     {
-        return this.floatMap.computeIfAbsent(key, DataKey.FloatKey::getDefaultValue);
+        return this.floatMap.computeIfAbsent(key, DataKey.Float::getDefaultValue);
     }
 
-    public Double getDouble(DataKey.DoubleKey key)
+    public Double getDouble(DataKey.Double key)
     {
-        return this.doubleMap.computeIfAbsent(key, DataKey.DoubleKey::getDefaultValue);
+        return this.doubleMap.computeIfAbsent(key, DataKey.Double::getDefaultValue);
     }
 
-    public ViolationCounter getCounter(DataKey.CounterKey key) {return this.counterMap.computeIfAbsent(key, DataKey.CounterKey::getCounter);}
+    public ViolationCounter getCounter(DataKey.Count key) {return this.counterMap.computeIfAbsent(key, DataKey.Count::getCounter);}
 
-    public Object getObject(DataKey.ObjectKey key)
+    public Object getObject(DataKey.Obj key)
     {
-        return this.objectMap.computeIfAbsent(key, DataKey.ObjectKey::getDefaultValue);
+        return this.objectMap.computeIfAbsent(key, DataKey.Obj::getDefaultValue);
     }
 
-    public void setBoolean(DataKey.BooleanKey key, Boolean b)
+    public void setBoolean(DataKey.Bool key, Boolean b)
     {
         this.boolMap.put(key, b);
     }
 
-    public void setInt(DataKey.IntegerKey key, Integer i)
+    public void setInt(DataKey.Int key, Integer i)
     {
         this.intMap.put(key, i);
     }
 
-    public void setLong(DataKey.LongKey key, Long l)
+    public void setLong(DataKey.Long key, Long l)
     {
         this.longMap.put(key, l);
     }
 
-    public void setFloat(DataKey.FloatKey key, Float f)
+    public void setFloat(DataKey.Float key, Float f)
     {
         this.floatMap.put(key, f);
     }
 
-    public void setFloat(DataKey.DoubleKey key, Double d)
+    public void setFloat(DataKey.Double key, Double d)
     {
         this.doubleMap.put(key, d);
     }
 
-    public void setObject(DataKey.ObjectKey key, Object o)
+    public void setObject(DataKey.Obj key, Object o)
     {
         Preconditions.checkArgument(key.getClazz().isAssignableFrom(o.getClass()), "Tried to assign wrong type to key");
         this.objectMap.put(key, o);

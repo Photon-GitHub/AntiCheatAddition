@@ -56,6 +56,7 @@ public class Teaming extends ViolationModule implements Listener
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
                 () -> {
+                    // TODO: USE KD-TREE HERE.
                     final LinkedList<Player> playersOfWorld = new LinkedList<>();
                     final List<Player> teamingList = new LinkedList<>();
 

@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.mathematics.Polynomial;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -43,11 +42,10 @@ public class AutoFishInhumanReaction extends ViolationModule implements Listener
                 val vl = VL_CALCULATOR.apply(passedBiteTime / humanReactionTime).intValue();
 
                 if (vl > 0) {
-                    DebugSender.getInstance().sendDebug("AutoFish-Debug | Player " + user.getPlayer().getName() + " failed inhuman reaction");
-
                     // Flag for vl = b + 1 because there would otherwise be a "0-vl"
                     this.getManagement().flag(Flag.of(user)
                                                   .setAddedVl(vl)
+                                                  .setDebug("AutoFish-Debug | Player " + user.getPlayer().getName() + " failed inhuman reaction")
                                                   .setCancelAction(cancelVl, () -> event.setCancelled(true)));
                 }
 

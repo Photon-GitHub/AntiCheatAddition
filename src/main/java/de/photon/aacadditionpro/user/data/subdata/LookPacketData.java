@@ -137,15 +137,15 @@ public class LookPacketData
 
             // Huge angle change
             // Use the map values here to because the other ones are already updated.
-            if (RotationUtil.getDirection(user.getDataMap().getFloat(DataKey.FloatKey.LAST_PACKET_YAW), user.getDataMap().getFloat(DataKey.FloatKey.LAST_PACKET_PITCH))
+            if (RotationUtil.getDirection(user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_YAW), user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_PITCH))
                             .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
             {
                 user.getTimestampMap().at(TimestampKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
             }
 
             // Update the values here so the RotationUtil calculation is functional.
-            user.getDataMap().setFloat(DataKey.FloatKey.LAST_PACKET_YAW, lookWrapper.getYaw());
-            user.getDataMap().setFloat(DataKey.FloatKey.LAST_PACKET_PITCH, lookWrapper.getPitch());
+            user.getDataMap().setFloat(DataKey.Float.LAST_PACKET_YAW, lookWrapper.getYaw());
+            user.getDataMap().setFloat(DataKey.Float.LAST_PACKET_PITCH, lookWrapper.getPitch());
         }
     }
 }

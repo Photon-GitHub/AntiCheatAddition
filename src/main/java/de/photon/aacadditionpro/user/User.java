@@ -242,7 +242,7 @@ public class User implements Permissible
      */
     public boolean hasSprintedRecently(final long milliseconds)
     {
-        return this.dataMap.getBoolean(DataKey.BooleanKey.SPRINTING) || this.timestampMap.at(TimestampKey.LAST_SPRINT_TOGGLE).recentlyUpdated(milliseconds);
+        return this.dataMap.getBoolean(DataKey.Bool.SPRINTING) || this.timestampMap.at(TimestampKey.LAST_SPRINT_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -254,7 +254,7 @@ public class User implements Permissible
      */
     public boolean hasSneakedRecently(final long milliseconds)
     {
-        return this.dataMap.getBoolean(DataKey.BooleanKey.SNEAKING) || this.timestampMap.at(TimestampKey.LAST_SNEAK_TOGGLE).recentlyUpdated(milliseconds);
+        return this.dataMap.getBoolean(DataKey.Bool.SNEAKING) || this.timestampMap.at(TimestampKey.LAST_SNEAK_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -302,16 +302,16 @@ public class User implements Permissible
      */
     public boolean updateSkinComponents(int newSkinComponents)
     {
-        val oldSkin = this.getDataMap().getInt(DataKey.IntegerKey.SKIN_COMPONENTS);
+        val oldSkin = this.getDataMap().getInt(DataKey.Int.SKIN_COMPONENTS);
 
         if (oldSkin == null) {
-            this.getDataMap().setInt(DataKey.IntegerKey.SKIN_COMPONENTS, newSkinComponents);
+            this.getDataMap().setInt(DataKey.Int.SKIN_COMPONENTS, newSkinComponents);
             return false;
         }
 
         if (oldSkin == newSkinComponents) return false;
 
-        this.getDataMap().setInt(DataKey.IntegerKey.SKIN_COMPONENTS, newSkinComponents);
+        this.getDataMap().setInt(DataKey.Int.SKIN_COMPONENTS, newSkinComponents);
         return true;
     }
 

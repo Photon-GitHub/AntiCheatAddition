@@ -26,13 +26,13 @@ class ScaffoldSafewalkTiming extends Module
     public void enable()
     {
         applyingConsumer = user -> {
-            if (user.getDataMap().getCounter(DataKey.CounterKey.SCAFFOLD_SAFEWALK_TIMING_FAILS).conditionallyIncDec(
+            if (user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_SAFEWALK_TIMING_FAILS).conditionallyIncDec(
                     // Moved recently
                     user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 355) &&
                     // Suddenly stopped
                     !user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 175) &&
                     // Has not sneaked recently
-                    !(user.hasSneakedRecently(175) && user.getDataMap().getLong(DataKey.LongKey.LAST_SNEAK_DURATION) > 148)))
+                    !(user.hasSneakedRecently(175) && user.getDataMap().getLong(DataKey.Long.LAST_SNEAK_DURATION) > 148)))
             {
                 DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Timing)");
                 return 20;

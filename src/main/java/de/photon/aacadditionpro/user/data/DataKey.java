@@ -16,7 +16,7 @@ public final class DataKey
 {
     @Getter
     @AllArgsConstructor
-    public enum BooleanKey
+    public enum Bool
     {
         ALLOWED_TO_JUMP(true),
         AUTOPOTION_ALREADY_THROWN(false),
@@ -31,7 +31,7 @@ public final class DataKey
 
     @Getter
     @AllArgsConstructor
-    public enum IntegerKey
+    public enum Int
     {
         LAST_RAW_SLOT_CLICKED(0),
         SKIN_COMPONENTS(null);
@@ -41,38 +41,38 @@ public final class DataKey
 
     @Getter
     @AllArgsConstructor
-    public enum LongKey
+    public enum Long
     {
-        LAST_SNEAK_DURATION(Long.MAX_VALUE),
-        LAST_SPRINT_DURATION(Long.MAX_VALUE),
+        LAST_SNEAK_DURATION(java.lang.Long.MAX_VALUE),
+        LAST_SPRINT_DURATION(java.lang.Long.MAX_VALUE),
 
         PACKET_ANALYSIS_COMPARE_FAILS(0L);
 
-        private final Long defaultValue;
+        private final java.lang.Long defaultValue;
     }
 
     @Getter
     @AllArgsConstructor
-    public enum FloatKey
+    public enum Float
     {
         AUTOPOTION_LAST_SUDDEN_PITCH(0F),
         AUTOPOTION_LAST_SUDDEN_YAW(0F),
         LAST_PACKET_PITCH(-1F),
         LAST_PACKET_YAW(-1F);
 
-        private final Float defaultValue;
+        private final java.lang.Float defaultValue;
     }
 
     @Getter
     @AllArgsConstructor
-    public enum DoubleKey
+    public enum Double
     {
         ;
-        private final Double defaultValue;
+        private final java.lang.Double defaultValue;
     }
 
     @Getter
-    public enum CounterKey
+    public enum Count
     {
         AUTOFISH_FAILED("AutoFish.parts.consistency.maximum_fails"),
         INVENTORY_AVERAGE_HEURISTICS_MISCLICKS(0),
@@ -87,12 +87,12 @@ public final class DataKey
 
         private final ViolationCounter counter;
 
-        CounterKey(long threshold)
+        Count(long threshold)
         {
             this.counter = new ViolationCounter(threshold);
         }
 
-        CounterKey(String configPath)
+        Count(String configPath)
         {
             Preconditions.checkArgument(AACAdditionPro.getInstance().getConfig().contains(configPath), "Tried to load ViolationCounter from nonexistent path " + configPath);
             this.counter = new ViolationCounter(AACAdditionPro.getInstance().getConfig().getLong(configPath));
@@ -101,7 +101,7 @@ public final class DataKey
 
     @Getter
     @AllArgsConstructor
-    public enum ObjectKey
+    public enum Obj
     {
         AUTOFISH_CONSISTENCY_DATA(DoubleStatistics.class, new DoubleStatistics()),
 

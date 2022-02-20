@@ -47,7 +47,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
             // Minimum ping
             PingProvider.INSTANCE.maxPingHandling(user.getPlayer(), maxPing) &&
             // False positive: Click-spamming on the same slot
-            event.getRawSlot() != user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED))
+            event.getRawSlot() != user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED))
         {
             // Default vl to 6
             int addedVl = 6;
@@ -72,7 +72,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                     addedVl = 1;
                     enforcedTicks = 1;
                     // Enough distance to keep false positives at bay.
-                    if (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) >= 3) return;
+                    if (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) >= 3) return;
                     break;
 
                 case PICKUP_ALL:
@@ -85,7 +85,7 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                     // No false positives to check for.
                     addedVl = 8;
 
-                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ? 1 : 5;
+                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ? 1 : 5;
                     break;
 
                 case DROP_ALL_CURSOR:
@@ -97,10 +97,10 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
 
                 case MOVE_TO_OTHER_INVENTORY:
                     // Last material false positive due to the fast move all items shortcut.
-                    if (event.getCurrentItem() == null || user.getDataMap().getObject(DataKey.ObjectKey.LAST_MATERIAL_CLICKED) == event.getCurrentItem().getType()) return;
+                    if (event.getCurrentItem() == null || user.getDataMap().getObject(DataKey.Obj.LAST_MATERIAL_CLICKED) == event.getCurrentItem().getType()) return;
 
                     // Depending on the distance of the clicks.
-                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ? 1 : 2;
+                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ? 1 : 2;
                     break;
 
                 case SWAP_WITH_CURSOR:

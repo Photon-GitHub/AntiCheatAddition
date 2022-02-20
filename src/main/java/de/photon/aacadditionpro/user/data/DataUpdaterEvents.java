@@ -66,7 +66,7 @@ public final class DataUpdaterEvents implements Listener
         if (user == null) return;
 
         user.getTimestampMap().at(TimestampKey.LAST_CONSUME_EVENT).update();
-        user.getDataMap().setObject(DataKey.ObjectKey.LAST_CONSUMED_ITEM_STACK, event.getItem());
+        user.getDataMap().setObject(DataKey.Obj.LAST_CONSUMED_ITEM_STACK, event.getItem());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -133,10 +133,10 @@ public final class DataUpdaterEvents implements Listener
         if (event.getCurrentItem() != null) user.getTimestampMap().at(TimestampKey.LAST_INVENTORY_CLICK_ON_ITEM).update();
 
 
-        user.getDataMap().setInt(DataKey.IntegerKey.LAST_RAW_SLOT_CLICKED, event.getRawSlot());
-        user.getDataMap().setObject(DataKey.ObjectKey.LAST_MATERIAL_CLICKED, event.getCurrentItem() == null ?
-                                                                             Material.AIR :
-                                                                             event.getCurrentItem().getType());
+        user.getDataMap().setInt(DataKey.Int.LAST_RAW_SLOT_CLICKED, event.getRawSlot());
+        user.getDataMap().setObject(DataKey.Obj.LAST_MATERIAL_CLICKED, event.getCurrentItem() == null ?
+                                                                       Material.AIR :
+                                                                       event.getCurrentItem().getType());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -231,12 +231,12 @@ public final class DataUpdaterEvents implements Listener
         if (user == null) return;
 
         val sneak = event.isSneaking();
-        user.getDataMap().setBoolean(DataKey.BooleanKey.SNEAKING, sneak);
+        user.getDataMap().setBoolean(DataKey.Bool.SNEAKING, sneak);
         if (sneak) {
             user.getTimestampMap().at(TimestampKey.LAST_SNEAK_ENABLE).update();
         } else {
             user.getTimestampMap().at(TimestampKey.LAST_SNEAK_DISABLE).update();
-            user.getDataMap().setLong(DataKey.LongKey.LAST_SNEAK_DURATION, user.getTimestampMap().at(TimestampKey.LAST_SNEAK_TOGGLE).passedTime());
+            user.getDataMap().setLong(DataKey.Long.LAST_SNEAK_DURATION, user.getTimestampMap().at(TimestampKey.LAST_SNEAK_TOGGLE).passedTime());
         }
 
         user.getTimestampMap().at(TimestampKey.LAST_SNEAK_TOGGLE).update();
@@ -249,8 +249,8 @@ public final class DataUpdaterEvents implements Listener
         if (user == null) return;
 
         val sprint = event.isSprinting();
-        user.getDataMap().setBoolean(DataKey.BooleanKey.SPRINTING, sprint);
-        if (!sprint) user.getDataMap().setLong(DataKey.LongKey.LAST_SPRINT_DURATION, user.getTimestampMap().at(TimestampKey.LAST_SPRINT_TOGGLE).passedTime());
+        user.getDataMap().setBoolean(DataKey.Bool.SPRINTING, sprint);
+        if (!sprint) user.getDataMap().setLong(DataKey.Long.LAST_SPRINT_DURATION, user.getTimestampMap().at(TimestampKey.LAST_SPRINT_TOGGLE).passedTime());
         user.getTimestampMap().at(TimestampKey.LAST_SPRINT_TOGGLE).update();
     }
 
@@ -291,8 +291,8 @@ public final class DataUpdaterEvents implements Listener
                 final IWrapperPlayPosition position = event::getPacket;
                 val updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
 
-                if (updatedPositiveVelocity != user.getDataMap().getBoolean(DataKey.BooleanKey.POSITIVE_VELOCITY)) {
-                    user.getDataMap().setBoolean(DataKey.BooleanKey.POSITIVE_VELOCITY, updatedPositiveVelocity);
+                if (updatedPositiveVelocity != user.getDataMap().getBoolean(DataKey.Bool.POSITIVE_VELOCITY)) {
+                    user.getDataMap().setBoolean(DataKey.Bool.POSITIVE_VELOCITY, updatedPositiveVelocity);
                     user.getTimestampMap().at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).update();
                 }
             }

@@ -28,34 +28,30 @@ public class InventoryRotation extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetAdapter = PacketAdapterBuilder
-                .of(PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK)
-                .priority(ListenerPriority.LOWEST)
-                .onReceiving(event -> {
-                    val user = User.safeGetUserFromPacketEvent(event);
-                    if (User.isUserInvalid(user, this)) return;
-
-                    final IWrapperPlayClientLook lookWrapper = event::getPacket;
-
-                    // Not flying (may trigger some fps)
-                    if (!user.getPlayer().getAllowFlight() &&
-                        // Player is in an inventory
-                        user.hasOpenInventory() &&
-                        // Head-Rotation has changed (detection)
-                        (user.getPlayer().getLocation().getYaw() != lookWrapper.getYaw() ||
-                         user.getPlayer().getLocation().getPitch() != lookWrapper.getPitch()) &&
-                        // No recently tp
-                        !user.hasTeleportedRecently(teleportTime) &&
-                        !user.hasChangedWorldsRecently(worldChangeTime) &&
-                        // The player has opened his inventory for at least one second.
-                        user.notRecentlyOpenedInventory(1000))
-                    {
-                        getManagement().flag(Flag.of(user).setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " sent new rotations while having an open inventory."));
-                    }
-                }).build();
 
         return ModuleLoader.builder(this)
-                           .addPacketListeners(packetAdapter)
+                           .addPacketListeners(PacketAdapterBuilder.of(PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK).priority(ListenerPriority.LOWEST).onReceiving(event -> {
+                               val user = User.safeGetUserFromPacketEvent(event);
+                               if (User.isUserInvalid(user, this)) return;
+
+                               final IWrapperPlayClientLook lookWrapper = event::getPacket;
+
+                               // Not flying (may trigger some fps)
+                               if (!user.getPlayer().getAllowFlight() &&
+                                   // Player is in an inventory
+                                   user.hasOpenInventory() &&
+                                   // Head-Rotation has changed (detection)
+                                   (user.getPlayer().getLocation().getYaw() != lookWrapper.getYaw() ||
+                                    user.getPlayer().getLocation().getPitch() != lookWrapper.getPitch()) &&
+                                   // No recently tp
+                                   !user.hasTeleportedRecently(teleportTime) &&
+                                   !user.hasChangedWorldsRecently(worldChangeTime) &&
+                                   // The player has opened his inventory for at least one second.
+                                   user.notRecentlyOpenedInventory(1000))
+                               {
+                                   getManagement().flag(Flag.of(user).setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " sent new rotations while having an open inventory."));
+                               }
+                           }).build())
                            .build();
     }
 

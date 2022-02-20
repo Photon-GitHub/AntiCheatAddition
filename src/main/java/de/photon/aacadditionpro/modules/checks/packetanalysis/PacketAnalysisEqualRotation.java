@@ -48,8 +48,8 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                         !user.hasTeleportedRecently(5000) &&
                         // Same rotation values
                         // LookPacketData automatically updates its values.
-                        currentYaw == user.getDataMap().getFloat(DataKey.FloatKey.LAST_PACKET_YAW) &&
-                        currentPitch == user.getDataMap().getFloat(DataKey.FloatKey.LAST_PACKET_PITCH) &&
+                        currentYaw == user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_YAW) &&
+                        currentPitch == user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_PITCH) &&
                         // 1.17 client false positive when throwing exp bottles.
                         user.getTimestampMap().at(TimestampKey.LAST_EXPERIENCE_BOTTLE_THROWN).notRecentlyUpdated(5000) &&
                         // LabyMod fp when standing still / hit in corner fp
@@ -65,8 +65,8 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                                                                MaterialUtil.containsMaterials(user.getHitbox().getPartiallyIncludedMaterials(user.getPlayer().getLocation()), MaterialUtil.CHANGED_HITBOX_MATERIALS))))
                     {
                         // Cancelled packets may cause problems.
-                        if (user.getDataMap().getBoolean(DataKey.BooleanKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED)) {
-                            user.getDataMap().setBoolean(DataKey.BooleanKey.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED, false);
+                        if (user.getDataMap().getBoolean(DataKey.Bool.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED)) {
+                            user.getDataMap().setBoolean(DataKey.Bool.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED, false);
                             return;
                         }
 

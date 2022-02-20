@@ -25,7 +25,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -83,7 +82,7 @@ public class AACAdditionPro extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             if (!ServerVersion.getActiveServerVersion().isSupported()) {
                 DebugSender.getInstance().sendDebug("Server version is not supported.", true, true);
-                DebugSender.getInstance().sendDebug("Supported versions: " + Arrays.stream(ServerVersion.values()).filter(ServerVersion::isSupported).map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
+                DebugSender.getInstance().sendDebug("Supported versions: " + ServerVersion.ALL_SUPPORTED_VERSIONS.stream().map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
                                                     true, true);
                 return;
             }

@@ -34,10 +34,10 @@ public enum ServerVersion
     MC118("1.18", true);
 
 
-    public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = MC18.getVersionsFrom();
-    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = MC112.getVersionsTo();
-    public static final Set<ServerVersion> LEGACY_EVENT_VERSIONS = MC113.getVersionsTo();
-    public static final Set<ServerVersion> NON_188_VERSIONS = MC19.getVersionsFrom();
+    public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = MC18.getSupVersionsFrom();
+    public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = MC112.getSupVersionsTo();
+    public static final Set<ServerVersion> LEGACY_EVENT_VERSIONS = MC113.getSupVersionsTo();
+    public static final Set<ServerVersion> NON_188_VERSIONS = MC19.getSupVersionsFrom();
 
     /**
      * The server version of the currently running {@link Bukkit} instance.
@@ -53,8 +53,8 @@ public enum ServerVersion
     private final boolean supported;
 
     // Lazy getting as most versions are not supported or used.
-    @Getter(lazy = true) private final Set<ServerVersion> versionsTo = generateVersionsTo();
-    @Getter(lazy = true) private final Set<ServerVersion> versionsFrom = generateVersionsFrom();
+    @Getter(lazy = true) private final Set<ServerVersion> supVersionsTo = generateVersionsTo();
+    @Getter(lazy = true) private final Set<ServerVersion> supVersionsFrom = generateVersionsFrom();
 
 
     /**

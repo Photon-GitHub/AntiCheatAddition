@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.modules.checks.inventory;
 
-import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
@@ -130,12 +129,6 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                 }).setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " moved items too quickly."));
             }
         }
-    }
-
-    @Override
-    protected ModuleLoader createModuleLoader()
-    {
-        return ModuleLoader.builder(this).build();
     }
 
     @Override

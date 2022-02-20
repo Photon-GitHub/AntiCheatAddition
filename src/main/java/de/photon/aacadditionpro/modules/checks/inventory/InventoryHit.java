@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.modules.checks.inventory;
 
-import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
@@ -49,12 +48,6 @@ public class InventoryHit extends ViolationModule implements Listener
                                               .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " hit an entity while having an open inventory."));
             }
         }
-    }
-
-    @Override
-    protected ModuleLoader createModuleLoader()
-    {
-        return ModuleLoader.builder(this).build();
     }
 
     @Override

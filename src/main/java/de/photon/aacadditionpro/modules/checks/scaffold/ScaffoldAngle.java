@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.Module;
-import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.DataKey;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
@@ -45,11 +44,5 @@ class ScaffoldAngle extends Module
     public void disable()
     {
         applyingConsumer = (user, event) -> 0;
-    }
-
-    @Override
-    protected ModuleLoader createModuleLoader()
-    {
-        return ModuleLoader.builder(this).build();
     }
 }

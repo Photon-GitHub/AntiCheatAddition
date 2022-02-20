@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.modules.checks.scaffold;
 
 import de.photon.aacadditionpro.modules.Module;
-import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.messaging.DebugSender;
 import lombok.Getter;
@@ -40,11 +39,5 @@ class ScaffoldRotationSecondDerivative extends Module
     public void disable()
     {
         applyingConsumer = (user, angleInformation) -> 0;
-    }
-
-    @Override
-    protected ModuleLoader createModuleLoader()
-    {
-        return ModuleLoader.builder(this).build();
     }
 }

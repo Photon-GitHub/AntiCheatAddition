@@ -36,12 +36,6 @@ public abstract class ViolationModule extends Module
             {
                 return new ViolationAggregateManagement(this, ThresholdManagement.loadThresholds(this.getConfigString() + ".thresholds"), Arrays.stream(children).map(ViolationModule::getManagement).collect(Collectors.toUnmodifiableSet()));
             }
-
-            @Override
-            protected ModuleLoader createModuleLoader()
-            {
-                return ModuleLoader.builder(this).build();
-            }
         };
     }
 

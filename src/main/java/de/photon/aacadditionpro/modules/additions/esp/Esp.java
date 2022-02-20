@@ -3,7 +3,6 @@ package de.photon.aacadditionpro.modules.additions.esp;
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
-import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
@@ -115,12 +114,6 @@ public class Esp extends Module
             if (watched.isSneaking()) PlayerVisibility.INSTANCE.fullyHidePlayer(observer, watched);
             else PlayerVisibility.INSTANCE.hideEquipment(observer, watched);
         }
-    }
-
-    @Override
-    protected ModuleLoader createModuleLoader()
-    {
-        return ModuleLoader.builder(this).build();
     }
 }
 

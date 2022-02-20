@@ -52,7 +52,10 @@ public abstract class Module
         }
     }
 
-    protected abstract ModuleLoader createModuleLoader();
+    protected ModuleLoader createModuleLoader()
+    {
+        return ModuleLoader.builder(this).build();
+    }
 
     protected void enable() {}
 

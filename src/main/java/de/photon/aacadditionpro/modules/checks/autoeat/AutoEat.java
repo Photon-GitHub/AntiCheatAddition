@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.modules.checks.autoeat;
 
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
@@ -45,12 +44,6 @@ public class AutoEat extends ViolationModule implements Listener
 
         // Timeout
         if (user.getTimestampMap().at(TimestampKey.AUTOEAT_TIMEOUT).recentlyUpdated(timeout)) event.setCancelled(true);
-    }
-
-    @Override
-    protected ModuleLoader createModuleLoader()
-    {
-        return ModuleLoader.builder(this).build();
     }
 
     @Override

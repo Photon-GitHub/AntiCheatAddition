@@ -2,7 +2,6 @@ package de.photon.aacadditionpro.modules.checks.teaming;
 
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.AACAdditionPro;
-import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
@@ -98,12 +97,6 @@ public class Teaming extends ViolationModule implements Listener
                         teamingList.clear();
                     }
                 }, 1L, period);
-    }
-
-    @Override
-    protected ModuleLoader createModuleLoader()
-    {
-        return ModuleLoader.builder(this).build();
     }
 
     @Override

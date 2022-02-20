@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.modules.checks.impossiblechat;
 
-import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.modules.ViolationModule;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
@@ -28,24 +27,15 @@ public class ImpossibleChat extends ViolationModule implements Listener
         val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
-        // Is in Inventory (Detection)
         if (user.getPlayer().isSprinting() ||
             user.getPlayer().isSneaking() ||
             user.getPlayer().isBlocking() ||
             user.getPlayer().isDead() ||
-            (user.hasOpenInventory() &&
-             // Have the inventory opened for some time
-             user.notRecentlyOpenedInventory(1000)
-            ))
+            // Have the inventory opened for some time
+            (user.hasOpenInventory() && user.notRecentlyOpenedInventory(1000)))
         {
             this.getManagement().flag(Flag.of(user).setAddedVl(25).setCancelAction(cancelVl, () -> event.setCancelled(true)));
         }
-    }
-
-    @Override
-    protected ModuleLoader createModuleLoader()
-    {
-        return ModuleLoader.builder(this).build();
     }
 
     @Override

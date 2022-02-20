@@ -2,7 +2,6 @@ package de.photon.aacadditionpro.modules.additions;
 
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
-import de.photon.aacadditionpro.modules.ModuleLoader;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.execute.Placeholders;
 import de.photon.aacadditionpro.util.pluginmessage.ByteBufUtil;
@@ -55,12 +54,6 @@ public class BrandHider extends Module implements Listener
 
         player.sendPluginMessage(AACAdditionPro.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow(), ByteBufUtil.toArray(buf));
         buf.release();
-    }
-
-    @Override
-    protected ModuleLoader createModuleLoader()
-    {
-        return ModuleLoader.builder(this).build();
     }
 
     @Override

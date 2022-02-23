@@ -1,28 +1,72 @@
 package de.photon.aacadditionpro.util.datastructure.kdtree;
 
-import java.util.Map;
-import java.util.TreeMap;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
+import lombok.val;
 
+import java.util.NavigableMap;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+
+/**
+ * A simple implementation of a kd-tree of 2 dimensions with 2 {@link TreeMap}s.
+ * This is not an optimal implementation.
+ */
 public class Simple2dTree<T>
 {
-    private final TreeMap<Double, T> xTree = new TreeMap<>();
-    private final TreeMap<Double, T> yTree = new TreeMap<>();
+    private final Random random = new Random();
+    private final NavigableMap<Double, TreeNode<T>> xTree = new TreeMap<>();
+    private final NavigableMap<Double, TreeNode<T>> yTree = new TreeMap<>();
 
     public void add(double x, double y, T value)
     {
-        xTree.put(x, value);
-        yTree.put(y, value);
+        val node = new TreeNode<>(x, y, value);
+        xTree.put(x, node);
+        yTree.put(y, node);
     }
 
-    public void remove(double x, double y)
+    public void add(double x, double y, double offset, int tries, T value)
     {
-        xTree.remove(x);
-        yTree.remove(y);
+        boolean containsX = true;
+        boolean containsY = true;
+        for (int i = 0; i < tries && (containsX || containsY); i++) {
+            containsX = xTree.containsKey(x);
+            containsY = yTree.containsKey(y);
+            if (containsX) x = x + random.nextDouble() * offset;
+            if (containsY) y = y + random.nextDouble() * offset;
+        }
+
+        // Could not insert.
+        if (containsX || containsY) return;
+        val node = new TreeNode<T>(x, y, value);
+        xTree.put(x, node);
+        yTree.put(y, node);
     }
 
-    public void remove(Map.Entry<Double, T> entry)
+    public void remove(TreeNode<T> node)
     {
-        xTree.remove(entry.getKey(), entry.getValue());
-        yTree.remove(entry.getKey(), entry.getValue());
+        xTree.remove(node.x);
+        yTree.remove(node.y);
+    }
+
+    public void removeAll(Iterable<TreeNode<T>> nodes)
+    {
+        for (TreeNode<T> node : nodes) remove(node);
+    }
+
+    public Set<TreeNode<T>> getSquare(double x, double y, double radius)
+    {
+        val xCol = xTree.subMap(x - radius, x + radius).values();
+        return yTree.subMap(y - radius, y + radius).values().stream().filter(xCol::contains).collect(Collectors.toUnmodifiableSet());
+    }
+
+    @Value
+    private static class TreeNode<T>
+    {
+        double x;
+        double y;
+        @EqualsAndHashCode.Exclude T value;
     }
 }

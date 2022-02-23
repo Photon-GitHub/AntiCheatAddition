@@ -20,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class Teaming extends ViolationModule implements Listener
@@ -99,11 +98,6 @@ public class Teaming extends ViolationModule implements Listener
                         }
                     }
                 }, 1L, period);
-    }
-
-    private void insertPlayer(TreeMap<Double, Player> playersOfWorld, Player player)
-    {
-
     }
 
     @Override

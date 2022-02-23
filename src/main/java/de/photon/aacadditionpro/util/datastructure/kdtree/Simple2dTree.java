@@ -20,6 +20,11 @@ public class Simple2dTree<T>
     private final NavigableMap<Double, TreeNode<T>> xTree = new TreeMap<>();
     private final NavigableMap<Double, TreeNode<T>> yTree = new TreeMap<>();
 
+    public boolean isEmpty()
+    {
+        return xTree.isEmpty();
+    }
+
     public void add(double x, double y, T value)
     {
         val node = new TreeNode<>(x, y, value);
@@ -56,6 +61,21 @@ public class Simple2dTree<T>
         for (TreeNode<T> node : nodes) remove(node);
     }
 
+    public TreeNode<T> getFirstX()
+    {
+        return xTree.firstEntry().getValue();
+    }
+
+    public TreeNode<T> getFirstY()
+    {
+        return yTree.firstEntry().getValue();
+    }
+
+    public Set<TreeNode<T>> getSquare(TreeNode<T> node, double radius)
+    {
+        return getSquare(node.x, node.y, radius);
+    }
+
     public Set<TreeNode<T>> getSquare(double x, double y, double radius)
     {
         val xCol = xTree.subMap(x - radius, x + radius).values();
@@ -63,7 +83,7 @@ public class Simple2dTree<T>
     }
 
     @Value
-    private static class TreeNode<T>
+    public static class TreeNode<T>
     {
         double x;
         double y;

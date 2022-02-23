@@ -7,6 +7,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
+import de.photon.aacadditionpro.util.datastructure.kdtree.Simple2dTree;
 import de.photon.aacadditionpro.util.minecraft.world.Region;
 import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
@@ -17,12 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -67,7 +63,7 @@ public class Teaming extends ViolationModule implements Listener
                 AACAdditionPro.getInstance(),
                 () -> {
                     // TODO: USE KD-TREE HERE.
-                    val playersOfWorld = new TeamingSet();
+                    val playersOfWorld = new Simple2dTree<Player>();
 
                     for (World world : enabledWorlds) {
                         // No need to clear playersOfWorld here, that is automatically done below.
@@ -85,31 +81,21 @@ public class Teaming extends ViolationModule implements Listener
                                 // Not in a bypassed region
                                 !playerNotInSafeZone(player))
                             {
-                                playersOfWorld.addPlayer(player);
+                                playersOfWorld.add(player.getLocation().getX(), player.getLocation().getY(), 0.1, 10, player);
                             }
                         }
 
-                        val teamingList = new ArrayList<Player>();
                         while (!playersOfWorld.isEmpty()) {
-                            teamingList.clear();
-
-                            var entry = playersOfWorld.removeFirst();
-                            teamingList.add(entry.getValue());
-
-                            // Now, the first iterator element is the entry above our "first" entry above.
-                            // Use nextEntries to automatically ignore all entries after the proximityRange.
-                            var iterator = playersOfWorld.nextEntries(entry.getKey(), proximityRange).iterator();
-                            while (iterator.hasNext()) {
-                                var higherEntry = iterator.next();
-
-                                if (WorldUtil.INSTANCE.areLocationsInRange(entry.getValue().getLocation(), higherEntry.getValue().getLocation(), proximityRange)) {
-                                    teamingList.add(higherEntry.getValue());
-                                    iterator.remove();
-                                }
-                            }
+                            var firstNode = playersOfWorld.getFirstX();
+                            val team = playersOfWorld.getSquare(firstNode, proximityRange).stream()
+                                                     .filter(node -> WorldUtil.INSTANCE.areLocationsInRange(firstNode.getValue().getLocation(), node.getValue().getLocation(), proximityRange))
+                                                     // Remove the entries.
+                                                     .peek(playersOfWorld::remove)
+                                                     .map(Simple2dTree.TreeNode::getValue)
+                                                     .collect(Collectors.toUnmodifiableSet());
 
                             // Team is too big
-                            if (teamingList.size() > this.allowedSize) this.getManagement().flag(Flag.of(Set.copyOf(teamingList)));
+                            if (team.size() > this.allowedSize) this.getManagement().flag(Flag.of(team));
                         }
                     }
                 }, 1L, period);
@@ -124,46 +110,5 @@ public class Teaming extends ViolationModule implements Listener
     protected ViolationManagement createViolationManagement()
     {
         return ViolationLevelManagement.builder(this).loadThresholdsToManagement().withDecay(300, 1).build();
-    }
-
-    private static class TeamingSet implements Iterable<Map.Entry<Double, Player>>
-    {
-        private final Random random = new Random();
-        private final TreeMap<Double, Player> playerMap = new TreeMap<>();
-
-        public boolean isEmpty()
-        {
-            return playerMap.isEmpty();
-        }
-
-        public void addPlayer(Player player)
-        {
-            val x = player.getLocation().getX();
-            var old = playerMap.put(x, player);
-            // If equal, place somewhere near.
-            // If the randomness is not sufficient, stop after 10 iterations.
-            for (int i = 0; i < 10 && old != null; i++) {
-                old = playerMap.put(x + (this.random.nextDouble() / 10), old);
-            }
-        }
-
-        public Map.Entry<Double, Player> removeFirst()
-        {
-            var entry = playerMap.firstEntry();
-            this.playerMap.remove(entry.getKey());
-            return entry;
-        }
-
-        public Set<Map.Entry<Double, Player>> nextEntries(double fromKey, double range)
-        {
-            return this.playerMap.headMap(fromKey + range).entrySet();
-        }
-
-        @NotNull
-        @Override
-        public Iterator<Map.Entry<Double, Player>> iterator()
-        {
-            return this.playerMap.entrySet().iterator();
-        }
     }
 }

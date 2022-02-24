@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +30,7 @@ import java.util.Set;
 abstract class PlayerInformationHider implements Listener
 {
     private final PacketListener informationPacketListener;
-    private final Multimap<Integer, Integer> hiddenFromPlayerMap;
+    private final Multimap<Entity, Entity> hiddenFromPlayerMap;
 
     protected PlayerInformationHider(@NotNull PacketType... affectedPackets)
     {
@@ -43,7 +44,7 @@ abstract class PlayerInformationHider implements Listener
 
                 final boolean hidden;
                 synchronized (hiddenFromPlayerMap) {
-                    hidden = hiddenFromPlayerMap.containsEntry(event.getPlayer().getEntityId(), entityID);
+                    hidden = hiddenFromPlayerMap.get(event.getPlayer()).stream().map(Entity::getEntityId).anyMatch(i -> i.equals(entityID));
                 }
 
                 if (hidden) event.setCancelled(true);
@@ -82,13 +83,13 @@ abstract class PlayerInformationHider implements Listener
     }
 
     @EventHandler
-    public void onEntityDeath(final EntityDeathEvent event)
+    public void onEntityDeath(EntityDeathEvent event)
     {
         removeEntity(event.getEntity());
     }
 
     @EventHandler
-    public void onChunkUnload(final ChunkUnloadEvent event)
+    public void onChunkUnload(ChunkUnloadEvent event)
     {
         // Cache entities for performance reasons so the server doesn't need to load them again when the
         // task is executed.
@@ -98,59 +99,59 @@ abstract class PlayerInformationHider implements Listener
     }
 
     @EventHandler
-    public void onQuit(final PlayerQuitEvent event)
+    public void onQuit(PlayerQuitEvent event)
     {
         removeEntity(event.getPlayer());
     }
-
 
     /**
      * Remove the given entity from the underlying map.
      *
      * @param entity - the entity to remove.
      */
-    private void removeEntity(final Entity entity)
+    private void removeEntity(Entity entity)
     {
-        val entityId = entity.getEntityId();
         synchronized (hiddenFromPlayerMap) {
-            hiddenFromPlayerMap.removeAll(entityId);
+            hiddenFromPlayerMap.removeAll(entity);
             // Remove all the instances of entity from the values.
             //noinspection StatementWithEmptyBody
-            while (hiddenFromPlayerMap.values().remove(entityId)) ;
+            while (hiddenFromPlayerMap.values().remove(entity)) ;
         }
     }
 
     /**
      * Hides a {@link Player} from another {@link Player}.
      */
-    public void hidePlayer(final Player observer, final Player playerToHide)
+    public void setHiddenEntities(@NotNull Player observer, @NotNull Collection<Entity> toHide)
     {
-        if (observer == null || playerToHide == null) return;
-
+        Collection<Entity> oldEntities;
         synchronized (hiddenFromPlayerMap) {
-            hiddenFromPlayerMap.put(observer.getEntityId(), playerToHide.getEntityId());
+            oldEntities = hiddenFromPlayerMap.replaceValues(observer, toHide);
         }
 
-        this.onHide(observer, playerToHide);
+        if (ProtocolLibrary.getProtocolManager() != null) {
+            for (Entity entity : oldEntities) {
+                if (!toHide.contains(entity)) updateEntity(observer, entity);
+            }
+        }
+
+        this.onHide(observer, toHide);
     }
 
-    protected abstract void onHide(@NotNull Player observer, @NotNull Player playerToHide);
-
-    /**
-     * Reveals a {@link Player} from another {@link Player}.
-     */
-    public void revealPlayer(final Player observer, final Player playerToReveal)
+    public void revealAllEntities(@NotNull Player observer)
     {
-        if (observer == null || playerToReveal == null) return;
-
-        boolean hiddenBefore;
+        Collection<Entity> oldEntities;
         synchronized (hiddenFromPlayerMap) {
-            hiddenBefore = hiddenFromPlayerMap.remove(observer.getEntityId(), playerToReveal.getEntityId());
+            oldEntities = hiddenFromPlayerMap.removeAll(observer);
         }
 
-        // Resend packets
-        if (ProtocolLibrary.getProtocolManager() != null && hiddenBefore) {
-            Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> ProtocolLibrary.getProtocolManager().updateEntity(playerToReveal, List.of(observer)));
-        }
+        for (Entity oldEntity : oldEntities) updateEntity(observer, oldEntity);
     }
+
+    public void updateEntity(@NotNull Player observer, @NotNull Entity entity)
+    {
+        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> ProtocolLibrary.getProtocolManager().updateEntity(entity, List.of(observer)));
+    }
+
+    protected abstract void onHide(@NotNull Player observer, @NotNull Collection<Entity> toHide);
 }

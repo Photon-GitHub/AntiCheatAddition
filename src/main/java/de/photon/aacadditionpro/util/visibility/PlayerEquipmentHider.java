@@ -5,9 +5,11 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver.equipment.IWrapperPlayEquipment;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Set;
 
 class PlayerEquipmentHider extends PlayerInformationHider
@@ -18,9 +20,9 @@ class PlayerEquipmentHider extends PlayerInformationHider
     }
 
     @Override
-    protected void onHide(@NotNull Player observer, @NotNull Player playerToHide)
+    protected void onHide(@NotNull Player observer, @NotNull Collection<Entity> toHide)
     {
-        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> IWrapperPlayEquipment.clearAllSlots(playerToHide.getEntityId(), observer));
+        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> toHide.stream().map(Entity::getEntityId).forEach(id -> IWrapperPlayEquipment.clearAllSlots(id, observer)));
     }
 
     @Override

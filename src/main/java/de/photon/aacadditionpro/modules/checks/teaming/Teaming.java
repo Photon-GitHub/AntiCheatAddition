@@ -7,7 +7,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.datastructure.kdtree.Simple2dTree;
+import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeIteration;
 import de.photon.aacadditionpro.util.minecraft.world.Region;
 import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
@@ -61,8 +61,7 @@ public class Teaming extends ViolationModule implements Listener
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
                 () -> {
-                    // TODO: USE KD-TREE HERE.
-                    val playersOfWorld = new Simple2dTree<Player>();
+                    val players = new QuadTreeIteration<Player>();
 
                     for (World world : enabledWorlds) {
                         // No need to clear playersOfWorld here, that is automatically done below.
@@ -80,18 +79,19 @@ public class Teaming extends ViolationModule implements Listener
                                 // Not in a bypassed region
                                 !playerNotInSafeZone(player))
                             {
-                                playersOfWorld.add(player.getLocation().getX(), player.getLocation().getY(), 0.1, 10, player);
+                                players.add(player.getLocation().getX(), player.getLocation().getY(), player);
                             }
                         }
 
-                        while (!playersOfWorld.isEmpty()) {
-                            var firstNode = playersOfWorld.getFirstX();
-                            val team = playersOfWorld.getSquare(firstNode, proximityRange).stream()
-                                                     .filter(node -> WorldUtil.INSTANCE.areLocationsInRange(firstNode.getValue().getLocation(), node.getValue().getLocation(), proximityRange))
-                                                     // Remove the entries.
-                                                     .peek(playersOfWorld::remove)
-                                                     .map(Simple2dTree.TreeNode::getValue)
-                                                     .collect(Collectors.toUnmodifiableSet());
+                        for (var iterator = players.iterator(); iterator.hasNext(); ) {
+                            var firstNode = iterator.next();
+                            val team = players.querySquare(firstNode, proximityRange).stream()
+                                              .filter(node -> WorldUtil.INSTANCE.areLocationsInRange(firstNode.getElement().getLocation(), node.getElement().getLocation(), proximityRange))
+                                              .peek(players::remove)
+                                              .map(QuadTreeIteration.Node::getElement)
+                                              .collect(Collectors.toUnmodifiableSet());
+
+                            iterator.remove();
 
                             // Team is too big
                             if (team.size() > this.allowedSize) this.getManagement().flag(Flag.of(team));

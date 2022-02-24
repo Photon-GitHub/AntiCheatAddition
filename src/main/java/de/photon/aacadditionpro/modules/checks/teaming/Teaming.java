@@ -9,7 +9,6 @@ import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeIteration;
 import de.photon.aacadditionpro.util.minecraft.world.Region;
-import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
 import de.photon.aacadditionpro.util.violationlevels.ViolationManagement;
@@ -83,15 +82,12 @@ public class Teaming extends ViolationModule implements Listener
                             }
                         }
 
-                        for (var iterator = players.iterator(); iterator.hasNext(); ) {
-                            var firstNode = iterator.next();
-                            val team = players.querySquare(firstNode, proximityRange).stream()
-                                              .filter(node -> WorldUtil.INSTANCE.areLocationsInRange(firstNode.getElement().getLocation(), node.getElement().getLocation(), proximityRange))
+                        while (!players.isEmpty()) {
+                            var firstNode = players.getAny();
+                            val team = players.queryCircle(firstNode, proximityRange).stream()
                                               .peek(players::remove)
                                               .map(QuadTreeIteration.Node::getElement)
                                               .collect(Collectors.toUnmodifiableSet());
-
-                            iterator.remove();
 
                             // Team is too big
                             if (team.size() > this.allowedSize) this.getManagement().flag(Flag.of(team));

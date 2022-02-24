@@ -29,4 +29,22 @@ class TestQuadTreeIteration
         var expected = new QuadTreeIteration.Node<>(1, 1, false);
         Assertions.assertEquals(expected, list.get(0));
     }
+
+    @Test
+    void removeIterationTest()
+    {
+        var quad = new QuadTreeIteration<Boolean>();
+
+        for (int i = 0; i < 100; ++i) {
+            quad.add(i, i, false);
+        }
+
+        int x = quad.size();
+        while (!quad.isEmpty()) {
+            --x;
+            var any = quad.getAny();
+            quad.remove(any);
+            Assertions.assertEquals(x, quad.size());
+        }
+    }
 }

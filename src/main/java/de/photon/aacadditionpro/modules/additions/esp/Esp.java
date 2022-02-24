@@ -114,8 +114,8 @@ public class Esp extends Module
         // The users are always in the same world (see above)
         val pairDistanceSquared = observer.getLocation().distanceSquared(hidden.getLocation());
 
-        // Less than 1.42 blocks distance
-        if (pairDistanceSquared < 2 || CanSee.canSee(observer, hidden)) return Hidden.NONE;
+        // Less than 1 block distance
+        if (pairDistanceSquared < 1 || CanSee.canSee(observer, hidden)) return Hidden.NONE;
         return hidden.isSneaking() ? Hidden.EQUIP : Hidden.FULL;
     }
 

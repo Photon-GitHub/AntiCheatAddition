@@ -8,11 +8,10 @@ import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.util.Vector;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -42,74 +41,55 @@ public enum Hitbox
     private final double offsetZ;
     private final double height;
 
-    public Vector[] getLowResolutionCalculationVectors(final Location location)
+    public static Hitbox fromPlayer(Player player)
     {
+        return player.isSneaking() ? SNEAKING_PLAYER : PLAYER;
+    }
+
+    public Location[] getEspLocations(final Location location)
+    {
+        val cullX = (location.getBlockX() - (int) (location.getX() + offsetX)) == 0 && (location.getBlockX() - (int) (location.getX() - offsetX)) == 0;
+        val cullZ = (location.getBlockZ() - (int) (location.getZ() + offsetZ)) == 0 && (location.getBlockZ() - (int) (location.getZ() - offsetZ)) == 0;
+
+        val world = location.getWorld();
+
+        val x = location.getX();
 
         val lowerY = location.getY();
         val upperY = lowerY + this.height;
 
-        val cullX = (location.getBlockX() - (int) (location.getX() + offsetX)) == 0 && (location.getBlockX() - (int) (location.getX() - offsetX)) == 0;
-        val cullZ = (location.getBlockZ() - (int) (location.getZ() + offsetZ)) == 0 && (location.getBlockZ() - (int) (location.getZ() - offsetZ)) == 0;
+        val z = location.getZ();
 
-        if (cullX && cullZ) {
-            val vectors = new Vector[2];
-            vectors[0] = (new Vector(location.getX(), lowerY, location.getZ()));
-            vectors[1] = (new Vector(location.getX(), upperY, location.getZ()));
-            return vectors;
-        } else if (cullX) {
-            val vectors = new Vector[4];
-            vectors[0] = (new Vector(location.getX(), lowerY, location.getZ() + this.offsetZ));
-            vectors[1] = (new Vector(location.getX(), lowerY, location.getZ() - this.offsetZ));
-            vectors[2] = (new Vector(location.getX(), upperY, location.getZ() + this.offsetZ));
-            vectors[3] = (new Vector(location.getX(), upperY, location.getZ() - this.offsetZ));
-            return vectors;
-        } else if (cullZ) {
-            val vectors = new Vector[4];
-            vectors[0] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ()));
-            vectors[1] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ()));
-            vectors[2] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ()));
-            vectors[3] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ()));
-            return vectors;
-        } else {
-            val vectors = new Vector[8];
+        if (cullX && cullZ) return new Location[]{
+                new Location(world, x, lowerY, z),
+                new Location(world, x, upperY, z)
+        };
+        else if (cullX) return new Location[]{
+                new Location(world, x, lowerY, z + this.offsetZ),
+                new Location(world, x, lowerY, z - this.offsetZ),
+                new Location(world, x, upperY, z + this.offsetZ),
+                new Location(world, x, upperY, z - this.offsetZ)
+        };
+        else if (cullZ) return new Location[]{
+                new Location(world, x + this.offsetX, lowerY, z),
+                new Location(world, x - this.offsetX, lowerY, z),
+                new Location(world, x + this.offsetX, upperY, z),
+                new Location(world, x - this.offsetX, upperY, z)
+        };
 
-            // Lower corners
-            vectors[0] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ() + this.offsetZ));
-            vectors[1] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ() + this.offsetZ));
-            vectors[2] = (new Vector(location.getX() + this.offsetX, lowerY, location.getZ() - this.offsetZ));
-            vectors[3] = (new Vector(location.getX() - this.offsetX, lowerY, location.getZ() - this.offsetZ));
+        return new Location[]{
+                // Lower corners
+                new Location(world, x + this.offsetX, lowerY, z + this.offsetZ),
+                new Location(world, x - this.offsetX, lowerY, z + this.offsetZ),
+                new Location(world, x + this.offsetX, lowerY, z - this.offsetZ),
+                new Location(world, x - this.offsetX, lowerY, z - this.offsetZ),
 
-            // Upper corners
-            vectors[4] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ() + this.offsetZ));
-            vectors[5] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ() + this.offsetZ));
-            vectors[6] = (new Vector(location.getX() + this.offsetX, upperY, location.getZ() - this.offsetZ));
-            vectors[7] = (new Vector(location.getX() - this.offsetX, upperY, location.getZ() - this.offsetZ));
-            return vectors;
-        }
-    }
-
-    /**
-     * Creates an array of {@link Vector}s that indicates essential positions of the hitbox which are helpful for
-     * raytracing.
-     *
-     * @param location the initial {@link Location} of the {@link org.bukkit.entity.Entity}, thus the basis of the {@link Hitbox}.
-     *
-     * @return an array of all the constructed {@link Vector}s.
-     */
-    public Vector[] getCalculationVectors(final Location location)
-    {
-        val vectors = new ArrayList<Vector>(13);
-        Collections.addAll(vectors, getLowResolutionCalculationVectors(location));
-
-        val upperY = location.getY() + this.height;
-
-        Vector start = location.toVector();
-        while (start.getY() < upperY) {
-            vectors.add(start);
-            // 0.47 as a factor as of slabs and other irregular block models.
-            start = start.clone().setY(start.getY() + 0.47);
-        }
-        return vectors.toArray(new Vector[0]);
+                // Upper corners
+                new Location(world, x + this.offsetX, upperY, z + this.offsetZ),
+                new Location(world, x - this.offsetX, upperY, z + this.offsetZ),
+                new Location(world, x + this.offsetX, upperY, z - this.offsetZ),
+                new Location(world, x - this.offsetX, upperY, z - this.offsetZ)
+        };
     }
 
     /**

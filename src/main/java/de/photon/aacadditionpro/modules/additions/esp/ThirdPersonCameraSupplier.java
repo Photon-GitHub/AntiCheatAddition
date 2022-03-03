@@ -1,17 +1,15 @@
 package de.photon.aacadditionpro.modules.additions.esp;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
-import java.util.function.Function;
-
-class CanSeeThirdPerson implements Function<Player, Vector[]>
+class ThirdPersonCameraSupplier implements CameraVectorSupplier
 {
     private static final double THIRD_PERSON_OFFSET = 5D;
 
     @Override
-    public Vector[] apply(Player player)
+    public Location[] getCameraLocations(Player player)
     {
         /*
             All the vectors
@@ -19,20 +17,21 @@ class CanSeeThirdPerson implements Function<Player, Vector[]>
             [1] = front
             [2] = behind
         */
-        final Vector[] vectors = new Vector[3];
+        final Location[] locations = new Location[3];
+        final World world = player.getWorld();
 
         // Front vector : The 3rd person perspective in front of the player
         // Use THIRD_PERSON_OFFSET to get the maximum positions
         // No cloning or normalizing as a new unit-vector instance is returned.
-        vectors[1] = player.getLocation().getDirection().multiply(THIRD_PERSON_OFFSET);
+        locations[1] = player.getLocation().getDirection().multiply(THIRD_PERSON_OFFSET).toLocation(world);
 
         // Behind vector : The 3rd person perspective behind the player
-        vectors[2] = vectors[1].clone().multiply(-1);
+        locations[2] = locations[1].clone().multiply(-1);
 
         final Location eyeLocation = player.getEyeLocation();
 
         // Normal
-        vectors[0] = eyeLocation.toVector();
+        locations[0] = eyeLocation;
 
         // Do the Cameras intersect with Blocks
         // Get the length of the first intersection or 0 if there is none
@@ -40,8 +39,8 @@ class CanSeeThirdPerson implements Function<Player, Vector[]>
         // [0] = frontIntersection
         // [1] = behindIntersection
         final double[] intersections = new double[]{
-                CanSee.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[1]),
-                CanSee.getDistanceToFirstIntersectionWithBlock(eyeLocation, vectors[2])
+                CameraVectorSupplier.getDistanceToFirstIntersectionWithBlock(eyeLocation, locations[1].toVector()),
+                CameraVectorSupplier.getDistanceToFirstIntersectionWithBlock(eyeLocation, locations[2].toVector())
         };
 
         for (int i = 0; i < intersections.length; ++i) {
@@ -51,15 +50,15 @@ class CanSeeThirdPerson implements Function<Player, Vector[]>
                 // The 0.05 factor makes sure that we are outside the block and not on the edge.
                 intersections[i] -= 0.05 +
                                     // Calculate the distance to the middle of the block
-                                    (0.5 / Math.sin(vectors[i + 1].angle(vectors[i + 1].clone().setY(0))));
+                                    (0.5 / Math.sin(locations[i + 1].toVector().angle(locations[i + 1].toVector().clone().setY(0))));
 
                 // Add the correct position.
-                vectors[i + 1].normalize().multiply(intersections[i]);
+                locations[i + 1].toVector().normalize().multiply(intersections[i]);
             }
 
             // Add the eye location for a correct starting point.
-            vectors[i + 1].add(vectors[0]);
+            locations[i + 1].add(locations[0]);
         }
-        return vectors;
+        return locations;
     }
 }

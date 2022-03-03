@@ -16,21 +16,13 @@ import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 import java.util.HashSet;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Esp extends Module
 {
-    // This defines the max tracking range supported by Esp.
-    // Also, the max distance of a BlockIterator.
-    public static final Function<Player, Vector[]> CAMERA_VECTOR_SUPPLIER = AACAdditionPro.getInstance().getConfig().getBoolean("Esp.calculate_third_person_modes", true) ?
-                                                                            new CanSeeThirdPerson() :
-                                                                            new CanSeeNoThirdPerson();
-
     private static final int MAX_TRACKING_RANGE = MathUtil.pow(139, 2);
     private static final String DEFAULT_WORLD_NAME = "default";
 
@@ -69,7 +61,7 @@ public class Esp extends Module
             val equipHiddenPlayers = new HashSet<Entity>();
 
             for (World world : Bukkit.getWorlds()) {
-                final int playerTrackingRange = playerTrackingRanges.getOrDefault(world, defaultTrackingRange);
+                var playerTrackingRange = playerTrackingRanges.getOrDefault(world, defaultTrackingRange);
 
                 var worldPlayers = world.getPlayers();
                 for (Player player : worldPlayers) {

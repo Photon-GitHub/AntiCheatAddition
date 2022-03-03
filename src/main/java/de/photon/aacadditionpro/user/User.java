@@ -166,7 +166,7 @@ public class User implements Permissible
      */
     public Hitbox getHitbox()
     {
-        return this.player.isSneaking() ? Hitbox.SNEAKING_PLAYER : Hitbox.PLAYER;
+        return Hitbox.fromPlayer(this.player);
     }
 
     /**

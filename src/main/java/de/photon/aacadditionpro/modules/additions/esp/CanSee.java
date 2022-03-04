@@ -11,6 +11,7 @@ import de.photon.aacadditionpro.util.minecraft.world.MaterialUtil;
 import de.photon.aacadditionpro.util.minecraft.world.WorldUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -50,10 +51,10 @@ class CanSee
         final Vector viewDirection = observer.getLocation().getDirection();
 
         for (Location cameraLocation : CameraVectorSupplier.INSTANCE.getCameraLocations(observer)) {
-            ResetVector between = new ResetVector(cameraLocation.toVector());
+            var between = new ResetVector(cameraLocation.toVector().multiply(-1));
             for (Location hitLoc : Hitbox.fromPlayer(watched).getEspLocations(watched.getLocation())) {
-                // Effectively hitLoc - cameraLocation without a clone.
-                between.resetToBase().multiply(-1).add(hitLoc.toVector());
+                // Effectively hitLoc - cameraLocation because of the multiply(-1) above.
+                between.resetToBase().add(hitLoc.toVector());
 
                 // Ignore directions that cannot be seen by the player due to FOV.
                 if (viewDirection.angle(between) > MAX_FOV) continue;
@@ -77,8 +78,8 @@ class CanSee
      */
     public static boolean canSeeHeuristic(Location from, Vector between, Location to)
     {
-        final ResetLocation resetFrom = new ResetLocation(from);
-        final ResetVector normalBetween = new ResetVector(between.normalize());
+        val resetFrom = new ResetLocation(from);
+        val normalBetween = new ResetVector(between.normalize());
         for (double d : heuristicScalars(from.distance(to))) {
             // An occluding block exists.
             if (Boolean.TRUE.equals(BLOCK_CACHE.getUnchecked(resetFrom.add(normalBetween.multiply(d))))) return false;

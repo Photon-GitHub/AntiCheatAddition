@@ -204,7 +204,7 @@ public class ModuleLoader
         {
             val incomingChannels = incoming.build();
             val outgoingChannels = outgoing.build();
-            Preconditions.checkArgument((module instanceof PluginMessageListener) == !(incomingChannels.isEmpty() && outgoingChannels.isEmpty()), "Channels have to be registered in a PluginMessageListener Module and cannot be registered otherwise.");
+            Preconditions.checkArgument((module instanceof PluginMessageListener) == !(incomingChannels.isEmpty()), "Incoming channels have to be registered in a PluginMessageListener Module and cannot be registered otherwise.");
 
             if (module instanceof Listener) this.listeners.add((Listener) module);
 

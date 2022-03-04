@@ -1,5 +1,8 @@
 package de.photon.aacadditionpro.modules.additions.esp;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import de.photon.aacadditionpro.util.mathematics.Hitbox;
 import de.photon.aacadditionpro.util.mathematics.ResetLocation;
 import de.photon.aacadditionpro.util.mathematics.ResetVector;
@@ -12,10 +15,28 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+
+import java.time.Duration;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 class CanSee
 {
+    // This cache reduces the required getBlock() calls.
+    public static final LoadingCache<Location, Boolean> BLOCK_CACHE = CacheBuilder.newBuilder()
+                                                                                  // About 32000 locations can be cached at most.
+                                                                                  .maximumSize(1L << 14)
+                                                                                  .expireAfterWrite(Duration.ofMillis(Esp.ESP_INTERVAL))
+                                                                                  .build(new CacheLoader<>()
+                                                                                  {
+                                                                                      @Override
+                                                                                      public @NotNull Boolean load(@NotNull Location key)
+                                                                                      {
+                                                                                          final Block block = key.getBlock();
+                                                                                          return block != null && !block.isEmpty() && MaterialUtil.isReallyOccluding(block.getType());
+                                                                                      }
+                                                                                  });
+
     // The real MAX_FOV is 110 (quake pro), which results in 150° according to tests.
     // 150° + 15° (compensation) = 165°
     public static final double MAX_FOV = Math.toRadians(165D);
@@ -54,12 +75,9 @@ class CanSee
     {
         final ResetLocation resetFrom = new ResetLocation(from);
         final ResetVector normalBetween = new ResetVector(between.normalize());
-        Block block;
         for (double d : heuristicScalars(from.distance(to))) {
-            block = resetFrom.add(normalBetween.multiply(d)).getBlock();
             // An occluding block exists.
-            //noinspection ConstantConditions
-            if (block != null && !block.isEmpty() && MaterialUtil.isReallyOccluding(block.getType())) return false;
+            if (Boolean.TRUE.equals(BLOCK_CACHE.getUnchecked(resetFrom.add(normalBetween.multiply(d))))) return false;
 
             resetFrom.resetToBase();
             normalBetween.resetToBase();

@@ -5,7 +5,6 @@ import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.Configs;
-import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.datastructure.Pair;
 import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeIteration;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
@@ -23,12 +22,10 @@ import java.util.stream.Collectors;
 
 public class Esp extends Module
 {
+    public static final long ESP_INTERVAL = AACAdditionPro.getInstance().getConfig().getLong("Esp.interval", 50L);
+
     private static final int MAX_TRACKING_RANGE = MathUtil.pow(139, 2);
     private static final String DEFAULT_WORLD_NAME = "default";
-
-
-    @LoadFromConfiguration(configPath = ".interval")
-    private long interval;
 
     public Esp()
     {
@@ -98,7 +95,7 @@ public class Esp extends Module
                     PlayerVisibility.INSTANCE.setEquipmentHidden(observer.getElement(), equipHiddenPlayers);
                 }
             }
-        }, 100, interval);
+        }, 100, ESP_INTERVAL);
     }
 
     private Hidden handlePair(Player observer, Player hidden)

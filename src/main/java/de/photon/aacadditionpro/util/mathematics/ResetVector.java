@@ -1,10 +1,7 @@
 package de.photon.aacadditionpro.util.mathematics;
 
-import lombok.EqualsAndHashCode;
 import org.bukkit.util.Vector;
 
-// Do not call super, as we only want to check the base vector.
-@EqualsAndHashCode(callSuper = false)
 public class ResetVector extends Vector
 {
     private final double resetX;

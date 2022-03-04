@@ -1,13 +1,10 @@
 package de.photon.aacadditionpro.util.mathematics;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-// Do not call super, as we only want to check the base vector.
-@EqualsAndHashCode(callSuper = false)
 public class ResetLocation extends Location
 {
     @Getter

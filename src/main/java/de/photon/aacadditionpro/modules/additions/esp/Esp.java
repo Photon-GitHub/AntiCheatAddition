@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Esp extends Module
@@ -54,9 +55,6 @@ public class Esp extends Module
         Bukkit.getScheduler().runTaskTimerAsynchronously(AACAdditionPro.getInstance(), () -> {
             val players = new QuadTreeQueue<Player>();
 
-            val fullHiddenPlayers = new HashSet<Entity>();
-            val equipHiddenPlayers = new HashSet<Entity>();
-
             for (World world : Bukkit.getWorlds()) {
                 final int playerTrackingRange = playerTrackingRanges.getOrDefault(world, defaultTrackingRange);
 
@@ -72,9 +70,8 @@ public class Esp extends Module
                     // Remove the last object for better array performance.
                     var observer = players.removeAny();
 
-                    equipHiddenPlayers.clear();
-                    fullHiddenPlayers.clear();
-                    fullHiddenPlayers.addAll(worldPlayers);
+                    final Set<Entity> equipHiddenPlayers = new HashSet<>();
+                    final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
 
                     for (var playerNode : players.queryCircle(observer, playerTrackingRange)) {
                         var player = playerNode.getElement();

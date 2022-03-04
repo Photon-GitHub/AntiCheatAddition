@@ -17,7 +17,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,13 +41,13 @@ public class Esp extends Module
 
         final int defaultTrackingRange = worldKeys.contains(DEFAULT_WORLD_NAME) ? worlds.getInt(DEFAULT_WORLD_NAME + ".entity-tracking-range.players") : MAX_TRACKING_RANGE;
 
-        final Map<World, Integer> playerTrackingRanges = worldKeys.stream()
-                                                                  .filter(key -> !DEFAULT_WORLD_NAME.equals(key))
-                                                                  // Squared distance.
-                                                                  .map(key -> Pair.of(Bukkit.getWorld(key), MathUtil.pow(worlds.getInt(key + ".entity-tracking-range.players"), 2)))
-                                                                  // After MAX_TRACKING_RANGE, we do not need to check the full tracking range anymore.
-                                                                  .filter(pair -> pair.getSecond() < MAX_TRACKING_RANGE)
-                                                                  .collect(Collectors.toUnmodifiableMap(Pair::getFirst, Pair::getSecond));
+        val playerTrackingRanges = worldKeys.stream()
+                                            .filter(key -> !DEFAULT_WORLD_NAME.equals(key))
+                                            // Squared distance.
+                                            .map(key -> Pair.of(Bukkit.getWorld(key), MathUtil.pow(worlds.getInt(key + ".entity-tracking-range.players"), 2)))
+                                            // After MAX_TRACKING_RANGE, we do not need to check the full tracking range anymore.
+                                            .filter(pair -> pair.getSecond() < MAX_TRACKING_RANGE)
+                                            .collect(Collectors.toUnmodifiableMap(Pair::getFirst, Pair::getSecond));
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
@@ -68,48 +67,32 @@ public class Esp extends Module
                     // Remove the finished player to reduce the amount of added entries.
                     // This makes sure the player won't have a connection with himself.
                     // Remove the last object for better array performance.
-                    var observer = players.removeAny();
+                    var observerNode = players.removeAny();
 
                     final Set<Entity> equipHiddenPlayers = new HashSet<>();
                     final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
 
-                    for (var playerNode : players.queryCircle(observer, playerTrackingRange)) {
-                        var player = playerNode.getElement();
+                    for (var playerNode : players.queryCircle(observerNode, playerTrackingRange)) {
+                        var observer = observerNode.getElement();
+                        var watched = playerNode.getElement();
 
-                        switch (handlePair(observer.getElement(), player)) {
-                            case FULL: break;
-                            case EQUIP:
-                                fullHiddenPlayers.remove(player);
-                                equipHiddenPlayers.add(player);
-                                break;
-                            case NONE:
-                                fullHiddenPlayers.remove(player);
-                                break;
+                        // Less than 1 block distance
+                        if (observer.getLocation().distanceSquared(watched.getLocation()) < 1 || CanSee.canSee(observer, watched)) {
+                            // No hiding case
+                            fullHiddenPlayers.remove(watched);
+                        } else if (!watched.isSneaking()) {
+                            // Equip hiding
+                            fullHiddenPlayers.remove(watched);
+                            equipHiddenPlayers.add(watched);
                         }
+                        // Full hiding (due to the default adding to fullHiddenPlayers.)
                     }
 
-                    PlayerVisibility.INSTANCE.setFullyHidden(observer.getElement(), fullHiddenPlayers);
-                    PlayerVisibility.INSTANCE.setEquipmentHidden(observer.getElement(), equipHiddenPlayers);
+                    PlayerVisibility.INSTANCE.setFullyHidden(observerNode.getElement(), fullHiddenPlayers);
+                    PlayerVisibility.INSTANCE.setEquipmentHidden(observerNode.getElement(), equipHiddenPlayers);
                 }
             }
         }, 100, ESP_INTERVAL);
-    }
-
-    private Hidden handlePair(Player observer, Player hidden)
-    {
-        // The users are always in the same world (see above)
-        val pairDistanceSquared = observer.getLocation().distanceSquared(hidden.getLocation());
-
-        // Less than 1 block distance
-        if (pairDistanceSquared < 1 || CanSee.canSee(observer, hidden)) return Hidden.NONE;
-        return hidden.isSneaking() ? Hidden.EQUIP : Hidden.FULL;
-    }
-
-    private enum Hidden
-    {
-        FULL,
-        EQUIP,
-        NONE
     }
 }
 

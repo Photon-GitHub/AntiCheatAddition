@@ -138,12 +138,6 @@ public class RingBuffer<T> implements Collection<T>
         this.size = 0;
     }
 
-    public void fullClear()
-    {
-        this.clear();
-        Arrays.fill(this.array, null);
-    }
-
     @NotNull
     @Override
     public Iterator<T> iterator()

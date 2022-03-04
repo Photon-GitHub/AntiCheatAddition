@@ -147,7 +147,7 @@ public abstract class QuadTreeCollection<T> extends AbstractCollection<QuadTreeC
 
     @NotNull
     @Override
-    public <T> T[] toArray(@NotNull T[] a)
+    public <T1> T1 @NotNull [] toArray(T1 @NotNull [] a)
     {
         return getBackingCollection().toArray(a);
     }

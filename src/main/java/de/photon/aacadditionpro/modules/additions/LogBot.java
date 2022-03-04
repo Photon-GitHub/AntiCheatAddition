@@ -36,22 +36,23 @@ public class LogBot extends Module
                     (logFolder, timeToDelete) ->
                     {
                         // Not disabled
-                        if (timeToDelete >= 0) {
-                            // The folder exists.
-                            if (logFolder.exists()) {
-                                val files = Optional.ofNullable(logFolder.listFiles()).orElse(new File[0]);
+                        if (timeToDelete < 0) return;
 
-                                for (val file : files) {
-                                    val fileName = file.getName();
-                                    // Be sure it is a log file of AACAdditionPro (.log) or a log file of the server (.log.gz)
-                                    if ((fileName.endsWith(".log") || fileName.endsWith(".log.gz")) &&
-                                        currentTime - file.lastModified() > timeToDelete)
-                                    {
-                                        val result = file.delete();
-                                        DebugSender.getInstance().sendDebug((result ? "Deleted " : "Could not delete old file ") + fileName, true, !result);
-                                    }
-                                }
-                            } else DebugSender.getInstance().sendDebug("Could not find log folder " + logFolder.getName(), true, true);
+                        // The folder exists.
+                        if (!logFolder.exists()) {
+                            DebugSender.getInstance().sendDebug("Could not find log folder " + logFolder.getName(), true, true);
+                            return;
+                        }
+
+                        val files = Optional.ofNullable(logFolder.listFiles()).orElse(new File[0]);
+
+                        for (val file : files) {
+                            val fileName = file.getName();
+                            // Be sure it is a log file of AACAdditionPro (.log) or a log file of the server (.log.gz)
+                            if ((fileName.endsWith(".log") || fileName.endsWith(".log.gz")) && currentTime - file.lastModified() > timeToDelete) {
+                                val result = file.delete();
+                                DebugSender.getInstance().sendDebug((result ? "Deleted " : "Could not delete old file ") + fileName, true, !result);
+                            }
                         }
                     });
         }, 1, TimeUnit.DAYS.toSeconds(1) * 20);

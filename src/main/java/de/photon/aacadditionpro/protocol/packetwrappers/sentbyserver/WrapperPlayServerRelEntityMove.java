@@ -4,8 +4,9 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.base.Preconditions;
 import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.protocol.packetwrappers.AbstractPacket;
 
-public class WrapperPlayServerRelEntityMove extends WrapperPlayServerEntity implements IWrapperPlayServerRelEntityMove
+public class WrapperPlayServerRelEntityMove extends AbstractPacket implements IWrapperPlayServerRelEntityMove
 {
     public static final PacketType TYPE = PacketType.Play.Server.REL_ENTITY_MOVE;
 

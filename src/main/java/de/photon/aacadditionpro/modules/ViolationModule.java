@@ -18,7 +18,7 @@ public abstract class ViolationModule extends Module
     @Getter private final String aacInfo;
     private final double aacScoreMultiplier;
 
-    public ViolationModule(String configString)
+    protected ViolationModule(String configString)
     {
         super(configString);
         this.aacInfo = AACAdditionPro.getInstance().getConfig().getString(configString + ".aac_status_message", null);

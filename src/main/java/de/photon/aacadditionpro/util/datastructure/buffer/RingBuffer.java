@@ -68,7 +68,10 @@ public class RingBuffer<T> extends AbstractCollection<T> implements Collection<T
         return true;
     }
 
-    public void onForget(T t) {}
+    protected void onForget(T t)
+    {
+        // This can be extended by subclasses to listen to overwritten elements.
+    }
 
     @Override
     public boolean remove(Object o)

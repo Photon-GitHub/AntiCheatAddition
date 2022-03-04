@@ -2,7 +2,6 @@ package de.photon.aacadditionpro.modules.additions;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.Pair;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.modules.Module;
@@ -70,13 +69,9 @@ public class EnchantmentHider extends Module
 
     private void obfuscateEnchantments(IWrapperPlayEquipment wrapper)
     {
-        val pairs = wrapper.getSlotStackPairs();
-
-        ItemStack stack;
-        Map<Enchantment, Integer> enchantments;
-        for (Pair<EnumWrappers.ItemSlot, ItemStack> pair : pairs) {
-            stack = pair.getSecond();
-            enchantments = stack.getEnchantments();
+        for (var pair : wrapper.getSlotStackPairs()) {
+            val stack = pair.getSecond();
+            val enchantments = stack.getEnchantments();
 
             if (enchantments.isEmpty()) continue;
 

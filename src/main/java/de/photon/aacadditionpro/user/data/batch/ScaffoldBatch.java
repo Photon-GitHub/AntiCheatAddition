@@ -5,6 +5,8 @@ import de.photon.aacadditionpro.util.datastructure.batch.Batch;
 import de.photon.aacadditionpro.util.datastructure.broadcast.Broadcaster;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.minecraft.world.InternalPotion;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -19,10 +21,11 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
 
     public ScaffoldBatch(@NotNull User user)
     {
-        super(SCAFFOLD_BATCH_BROADCASTER, user, SCAFFOLD_BATCH_SIZE, new ScaffoldBlockPlace(null, null, user));
+        super(SCAFFOLD_BATCH_BROADCASTER, user, SCAFFOLD_BATCH_SIZE, new ScaffoldBlockPlace(null, null, new Location(null, 0, 0, 0), true, 1));
     }
 
     @Value
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class ScaffoldBlockPlace
     {
         long time = System.currentTimeMillis();
@@ -38,15 +41,10 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
             this.blockFace = blockFace;
             this.location = user.getPlayer().getLocation();
             this.sneaked = user.hasSneakedRecently(175);
-            this.speedModifier = InternalPotion.SPEED.getPotionEffect(user.getPlayer()).map(this::calcSpeedModifier).orElse(1.0D);
+            this.speedModifier = InternalPotion.SPEED.getPotionEffect(user.getPlayer()).map(ScaffoldBlockPlace::calcSpeedModifier).orElse(1.0D);
         }
 
-        public long timeOffset(@NotNull ScaffoldBlockPlace other)
-        {
-            return MathUtil.absDiff(time, other.getTime());
-        }
-
-        public double calcSpeedModifier(@NotNull PotionEffect potionEffect)
+        private static double calcSpeedModifier(@NotNull PotionEffect potionEffect)
         {
             switch (potionEffect.getAmplifier()) {
                 case 0:
@@ -65,6 +63,11 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
                     // Everything above 8 should have a speed_modifier of 3
                     return 3.0D;
             }
+        }
+
+        public long timeOffset(@NotNull ScaffoldBlockPlace other)
+        {
+            return MathUtil.absDiff(time, other.getTime());
         }
     }
 }

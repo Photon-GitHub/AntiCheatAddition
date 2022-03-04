@@ -6,6 +6,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
+import java.util.AbstractCollection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -20,7 +21,7 @@ import java.util.NoSuchElementException;
  * Make sure to properly synchronize access if iteration needs to be
  * stable.
  */
-public class RingBuffer<T> implements Collection<T>
+public class RingBuffer<T> extends AbstractCollection<T> implements Collection<T>
 {
     private final int maxSize;
     private final T[] array;
@@ -76,20 +77,6 @@ public class RingBuffer<T> implements Collection<T>
     }
 
     @Override
-    public boolean containsAll(@NotNull Collection<?> c)
-    {
-        for (Object element : c) if (!this.contains(element)) return false;
-        return true;
-    }
-
-    @Override
-    public boolean addAll(@NotNull Collection<? extends T> c)
-    {
-        for (T t : c) this.add(t);
-        return true;
-    }
-
-    @Override
     public boolean removeAll(@NotNull Collection<?> c)
     {
         throw new UnsupportedOperationException();
@@ -115,12 +102,6 @@ public class RingBuffer<T> implements Collection<T>
     public int size()
     {
         return this.size;
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return this.size == 0;
     }
 
     @Override

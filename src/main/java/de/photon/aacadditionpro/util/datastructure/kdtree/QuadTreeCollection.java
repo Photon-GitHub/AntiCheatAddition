@@ -7,12 +7,13 @@ import org.danilopianini.util.FlexibleQuadTree;
 import org.danilopianini.util.SpatialIndex;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class QuadTreeCollection<T> implements Collection<QuadTreeCollection.Node<T>>
+public abstract class QuadTreeCollection<T> extends AbstractCollection<QuadTreeCollection.Node<T>> implements Collection<QuadTreeCollection.Node<T>>
 {
     protected final SpatialIndex<Node<T>> quadTree = new FlexibleQuadTree<>();
 
@@ -74,30 +75,10 @@ public abstract class QuadTreeCollection<T> implements Collection<QuadTreeCollec
     }
 
     @Override
-    public boolean addAll(@NotNull Collection<? extends Node<T>> c)
-    {
-        for (Node<T> tNode : c) this.add(tNode);
-        return true;
-    }
-
-    @Override
     public boolean removeAll(@NotNull Collection<?> c)
     {
         boolean changed = false;
         for (Object o : c) changed |= this.remove(o);
-        return changed;
-    }
-
-    @Override
-    public boolean retainAll(@NotNull Collection<?> c)
-    {
-        boolean changed = false;
-        for (Node<T> n : this) {
-            if (!c.contains(n)) {
-                changed = true;
-                remove(n);
-            }
-        }
         return changed;
     }
 

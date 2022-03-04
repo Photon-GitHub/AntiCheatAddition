@@ -6,7 +6,7 @@ import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionpro.util.datastructure.Pair;
-import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeSet;
+import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeQueue;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.visibility.PlayerVisibility;
 import lombok.val;
@@ -52,7 +52,7 @@ public class Esp extends Module
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(AACAdditionPro.getInstance(), () -> {
-            val players = new QuadTreeSet<Player>();
+            val players = new QuadTreeQueue<Player>();
 
             val fullHiddenPlayers = new HashSet<Entity>();
             val equipHiddenPlayers = new HashSet<Entity>();
@@ -70,8 +70,7 @@ public class Esp extends Module
                     // Remove the finished player to reduce the amount of added entries.
                     // This makes sure the player won't have a connection with himself.
                     // Remove the last object for better array performance.
-                    var observer = players.getAny();
-                    players.remove(observer);
+                    var observer = players.removeAny();
 
                     equipHiddenPlayers.clear();
                     fullHiddenPlayers.clear();
@@ -79,6 +78,7 @@ public class Esp extends Module
 
                     for (var playerNode : players.queryCircle(observer, playerTrackingRange)) {
                         var player = playerNode.getElement();
+
                         switch (handlePair(observer.getElement(), player)) {
                             case FULL: break;
                             case EQUIP:

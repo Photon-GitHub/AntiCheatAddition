@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.util.visibility;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
+import java.util.Set;
 
 class LegacyPlayerVisibility implements PlayerVisibility
 {
@@ -11,13 +11,13 @@ class LegacyPlayerVisibility implements PlayerVisibility
     private final PlayerInformationHider playerHider = new PlayerHider();
 
     @Override
-    public void setFullyHidden(Player observer, Collection<Entity> toBeHidden)
+    public void setFullyHidden(Player observer, Set<Entity> toBeHidden)
     {
         playerHider.setHiddenEntities(observer, toBeHidden);
     }
 
     @Override
-    public void setEquipmentHidden(Player observer, Collection<Entity> hideEquipment)
+    public void setEquipmentHidden(Player observer, Set<Entity> hideEquipment)
     {
         equipmentHider.setHiddenEntities(observer, hideEquipment);
     }

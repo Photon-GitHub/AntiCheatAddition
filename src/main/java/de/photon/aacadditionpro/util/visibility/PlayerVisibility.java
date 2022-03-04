@@ -3,7 +3,7 @@ package de.photon.aacadditionpro.util.visibility;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
+import java.util.Set;
 
 public interface PlayerVisibility
 {
@@ -13,12 +13,12 @@ public interface PlayerVisibility
     /**
      * This method will fully hide the toBeHidden {@link Player} from the observer {@link Player}
      */
-    void setFullyHidden(Player observer, Collection<Entity> toBeHidden);
+    void setFullyHidden(Player observer, Set<Entity> toBeHidden);
 
     /**
      * This method will hide the equipment of the hideEquipment {@link Player} from the observer {@link Player}
      */
-    void setEquipmentHidden(Player observer, Collection<Entity> hideEquipment);
+    void setEquipmentHidden(Player observer, Set<Entity> hideEquipment);
 
     void clearPlayer(Player observer);
 

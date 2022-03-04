@@ -7,7 +7,7 @@ import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
-import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeIteration;
+import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeSet;
 import de.photon.aacadditionpro.util.minecraft.world.Region;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -60,7 +60,7 @@ public class Teaming extends ViolationModule implements Listener
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
                 () -> {
-                    val players = new QuadTreeIteration<Player>();
+                    val players = new QuadTreeSet<Player>();
 
                     for (World world : enabledWorlds) {
                         // No need to clear playersOfWorld here, that is automatically done below.
@@ -86,7 +86,7 @@ public class Teaming extends ViolationModule implements Listener
                             var firstNode = players.getAny();
                             val team = players.queryCircle(firstNode, proximityRange).stream()
                                               .peek(players::remove)
-                                              .map(QuadTreeIteration.Node::getElement)
+                                              .map(QuadTreeSet.Node::getElement)
                                               .collect(Collectors.toUnmodifiableSet());
 
                             // Team is too big

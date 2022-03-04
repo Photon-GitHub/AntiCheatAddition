@@ -47,13 +47,11 @@ class CanSee
         if (InternalPotion.GLOWING.hasPotionEffect(watched)) return true;
 
         // ----------------------------------- Calculation ---------------------------------- //
-        final Location[] cameraLocations = CameraVectorSupplier.INSTANCE.getCameraLocations(observer);
-        final Location[] watchedHitboxLocations = Hitbox.fromPlayer(watched).getEspLocations(watched.getLocation());
         final Vector viewDirection = observer.getLocation().getDirection();
 
-        for (Location cameraLocation : cameraLocations) {
+        for (Location cameraLocation : CameraVectorSupplier.INSTANCE.getCameraLocations(observer)) {
             ResetVector between = new ResetVector(cameraLocation.toVector());
-            for (Location hitLoc : watchedHitboxLocations) {
+            for (Location hitLoc : Hitbox.fromPlayer(watched).getEspLocations(watched.getLocation())) {
                 // Effectively hitLoc - cameraLocation without a clone.
                 between.resetToBase().multiply(-1).add(hitLoc.toVector());
 
@@ -71,6 +69,12 @@ class CanSee
         return false;
     }
 
+    /**
+     * This uses the heuristic scalars as defined in {@link #heuristicScalars(double)} to check if one can see the "to" {@link Location} from the "from" {@link Location}.
+     *
+     * @return <code>true</code> if no occluding blocks are found at the heuristic scalars, so one MAY see the "to" location.<br></br>
+     * <code>false</code> if an occluding block has been found. In this case one cannot see the "to" location.
+     */
     public static boolean canSeeHeuristic(Location from, Vector between, Location to)
     {
         final ResetLocation resetFrom = new ResetLocation(from);

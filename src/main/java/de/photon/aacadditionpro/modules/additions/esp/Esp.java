@@ -6,7 +6,7 @@ import de.photon.aacadditionpro.modules.Module;
 import de.photon.aacadditionpro.user.User;
 import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionpro.util.datastructure.Pair;
-import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeIteration;
+import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeSet;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import de.photon.aacadditionpro.util.visibility.PlayerVisibility;
 import lombok.val;
@@ -52,15 +52,15 @@ public class Esp extends Module
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(AACAdditionPro.getInstance(), () -> {
-            val players = new QuadTreeIteration<Player>();
+            val players = new QuadTreeSet<Player>();
 
             val fullHiddenPlayers = new HashSet<Entity>();
             val equipHiddenPlayers = new HashSet<Entity>();
 
             for (World world : Bukkit.getWorlds()) {
-                var playerTrackingRange = playerTrackingRanges.getOrDefault(world, defaultTrackingRange);
+                final int playerTrackingRange = playerTrackingRanges.getOrDefault(world, defaultTrackingRange);
 
-                var worldPlayers = world.getPlayers();
+                val worldPlayers = world.getPlayers();
                 for (Player player : worldPlayers) {
                     //noinspection ConstantConditions
                     if (player.getWorld() != null && player.getGameMode() != GameMode.SPECTATOR && !User.isUserInvalid(User.getUser(player), this)) players.add(player.getLocation().getX(), player.getLocation().getY(), player);

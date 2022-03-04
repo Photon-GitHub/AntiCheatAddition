@@ -59,7 +59,8 @@ public class Esp extends Module
 
                 val worldPlayers = world.getPlayers();
                 for (Player player : worldPlayers) {
-                    if (player.getGameMode() != GameMode.SPECTATOR && !User.isUserInvalid(User.getUser(player), this)) players.add(player.getLocation().getX(), player.getLocation().getZ(), player);
+                    //noinspection ConstantConditions
+                    if (player.getWorld() != null && player.getGameMode() != GameMode.SPECTATOR && !User.isUserInvalid(User.getUser(player), this)) players.add(player.getLocation().getX(), player.getLocation().getZ(), player);
                 }
 
                 while (!players.isEmpty()) {

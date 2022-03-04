@@ -1,6 +1,5 @@
 package de.photon.aacadditionpro.util.datastructure;
 
-import de.photon.aacadditionpro.util.datastructure.buffer.FixedSizeBuffer;
 import de.photon.aacadditionpro.util.datastructure.buffer.RingBuffer;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
@@ -17,7 +16,7 @@ class BufferTest
     {
         List<String> forgottenList = new ArrayList<>();
 
-        FixedSizeBuffer<String> buffer = new RingBuffer<>(10)
+        val buffer = new RingBuffer<String>(10)
         {
             @Override
             public void onForget(String forgotten)
@@ -57,7 +56,7 @@ class BufferTest
     void RingBufferIterationTest()
     {
 
-        FixedSizeBuffer<String> buffer = new RingBuffer<>(10);
+        val buffer = new RingBuffer<String>(10);
         buffer.add("1");
         buffer.add("2");
         buffer.add("3");

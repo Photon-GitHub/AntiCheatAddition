@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -19,7 +20,7 @@ import java.util.NoSuchElementException;
  * Make sure to properly synchronize access if iteration needs to be
  * stable.
  */
-public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
+public class RingBuffer<T> implements Collection<T>
 {
     private final int maxSize;
     private final T[] array;
@@ -51,7 +52,6 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
         Arrays.fill(array, defaultObject);
     }
 
-    @Override
     public int getMaxSize()
     {
         return this.maxSize;
@@ -68,6 +68,40 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
 
         this.array[head.getAndIncrement()] = elem;
         return true;
+    }
+
+    public void onForget(T t) {}
+
+    @Override
+    public boolean remove(Object o)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean containsAll(@NotNull Collection<?> c)
+    {
+        for (Object element : c) if (!this.contains(element)) return false;
+        return true;
+    }
+
+    @Override
+    public boolean addAll(@NotNull Collection<? extends T> c)
+    {
+        for (T t : c) this.add(t);
+        return true;
+    }
+
+    @Override
+    public boolean removeAll(@NotNull Collection<?> c)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean retainAll(@NotNull Collection<?> c)
+    {
+        throw new UnsupportedOperationException();
     }
 
     public T head()
@@ -107,7 +141,6 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
         this.size = 0;
     }
 
-    @Override
     public void fullClear()
     {
         this.clear();
@@ -165,8 +198,6 @@ public class RingBuffer<T> implements FixedSizeBuffer<T>, Forgettable<T>
         return elements;
     }
 
-
-    @Override
     public Iterator<T> descendingIterator()
     {
         return new Iterator<>()

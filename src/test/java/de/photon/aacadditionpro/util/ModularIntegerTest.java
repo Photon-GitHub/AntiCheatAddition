@@ -1,7 +1,6 @@
 package de.photon.aacadditionpro.util;
 
 import de.photon.aacadditionpro.util.mathematics.ModularInteger;
-import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -9,11 +8,11 @@ import java.util.Random;
 
 class ModularIntegerTest
 {
+    private final Random random = new Random();
+
     @Test
     void IntegerSetTest()
     {
-        val random = new Random();
-
         int x;
         int mod;
         for (int i = 0; i < 1000; ++i) {
@@ -33,7 +32,6 @@ class ModularIntegerTest
     @Test
     void IntegerIncrementTest()
     {
-        val random = new Random();
         Assertions.assertEquals(0, ModularInteger.increment(Integer.MAX_VALUE - 1, Integer.MAX_VALUE));
 
         random.ints(1000, 2, Integer.MAX_VALUE).forEach(x -> {
@@ -46,7 +44,6 @@ class ModularIntegerTest
     @Test
     void IntegerDecrementTest()
     {
-        final Random random = new Random();
         Assertions.assertEquals(Integer.MAX_VALUE - 1, ModularInteger.decrement(0, Integer.MAX_VALUE));
 
         random.ints(1000, 2, Integer.MAX_VALUE).forEach(x -> {

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 class ViolationLevelMultiSet implements Listener
 {
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(1);
 
     @Getter
     private final Multiset<UUID> multiset = ConcurrentHashMultiset.create();
@@ -24,7 +24,7 @@ class ViolationLevelMultiSet implements Listener
         // Might need to have a vl manager without vl decrease
         if (decayMilliseconds > 0) {
             // Schedule the decay with 3000 milliseconds to free startup.
-            scheduler.scheduleAtFixedRate(() -> this.decay(vlDecayAmount), 3000, decayMilliseconds, TimeUnit.MILLISECONDS);
+            SCHEDULER.scheduleAtFixedRate(() -> this.decay(vlDecayAmount), 3000, decayMilliseconds, TimeUnit.MILLISECONDS);
         }
     }
 

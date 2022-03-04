@@ -78,7 +78,7 @@ public class Teaming extends ViolationModule implements Listener
                                 // Not in a bypassed region
                                 !playerNotInSafeZone(player))
                             {
-                                players.add(player.getLocation().getX(), player.getLocation().getY(), player);
+                                players.add(player.getLocation().getX(), player.getLocation().getZ(), player);
                             }
                         }
 

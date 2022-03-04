@@ -195,7 +195,9 @@ public final class ModuleManager
                                                       .filter(ViolationModule.class::isInstance)
                                                       .map(ViolationModule.class::cast)
                                                       .collect(Collectors.toList()));
-        moduleMap.values().forEach(Module::enableModule);
+
+        // Use moduleList to make sure the initial enabling log is sorted.
+        for (Module module : moduleList) module.enableModule();
     }
 
     public static void addExternalModule(final Module externalModule)

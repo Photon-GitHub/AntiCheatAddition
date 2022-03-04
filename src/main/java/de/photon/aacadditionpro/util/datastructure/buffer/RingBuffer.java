@@ -60,11 +60,8 @@ public class RingBuffer<T> implements Collection<T>
     @Override
     public boolean add(T elem)
     {
-        if (this.size == maxSize) {
-            this.onForget(array[tail.getAndIncrement()]);
-        } else {
-            ++this.size;
-        }
+        if (this.size == maxSize) this.onForget(array[tail.getAndIncrement()]);
+        else ++this.size;
 
         this.array[head.getAndIncrement()] = elem;
         return true;
@@ -191,9 +188,7 @@ public class RingBuffer<T> implements Collection<T>
     {
         val elements = a.length < size ? (T1[]) Array.newInstance(a.getClass().getComponentType(), size) : a;
         int i = 0;
-        for (T t : this) {
-            elements[i++] = (T1) t;
-        }
+        for (T t : this) elements[i++] = (T1) t;
         if (a.length > size) elements[size - 1] = null;
         return elements;
     }

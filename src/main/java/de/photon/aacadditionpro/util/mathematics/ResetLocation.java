@@ -36,4 +36,16 @@ public class ResetLocation extends Location
         this.setZ(this.baseLocation.getZ());
         return this;
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return super.hashCode();
+    }
 }

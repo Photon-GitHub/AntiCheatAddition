@@ -65,8 +65,7 @@ class TestQuadTreeSet
         int x = quad.size();
         while (!quad.isEmpty()) {
             --x;
-            var any = quad.getAny();
-            quad.remove(any);
+            var any = quad.removeAny();
             Assertions.assertEquals(x, quad.size());
         }
     }
@@ -83,8 +82,7 @@ class TestQuadTreeSet
         int x = quad.size();
         while (!quad.isEmpty()) {
             --x;
-            var any = quad.getAny();
-            quad.remove(any);
+            var any = quad.removeAny();
             Assertions.assertEquals(x, quad.size());
         }
     }

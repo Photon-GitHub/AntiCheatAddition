@@ -639,8 +639,9 @@ Sentinel:
         - "kick {player} Command block."
 
     # Various cheat clients allow for the creation of "creative kill potions", exploiting a bug in Minecraft in which
-    # high instant health potion effects kill a player. This detects the creation and usage of such potions, cancels
-    # any effects, and tries to delete the potions from the inventory.
+    # high instant health potion effects kill a player. Moreover, equally high instant damage potions can kill any
+    # undead mobs. This Sentinel detects the creation and usage of such potions, cancels any effects, and tries to
+    # delete the potions from the inventory and world on interaction.
     CreativeKillPotion:
       # Do you want to enable the CreativeKillPotion exploit detection?
       enabled: true
@@ -670,7 +671,7 @@ Sentinel:
       enabled: true
       # The minimum time in seconds of the effects to trigger a detection.
       # Measured in seconds, must be greater than or equal to 0.
-      min_effect_time: 300
+      min_effect_time: 500
       # What commands will be executed if an illegal potion is detected.
       # Automatic banning can be considered.
       commands:

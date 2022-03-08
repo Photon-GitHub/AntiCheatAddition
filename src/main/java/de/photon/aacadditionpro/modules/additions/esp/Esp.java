@@ -68,12 +68,13 @@ public class Esp extends Module
                     // This makes sure the player won't have a connection with himself.
                     // Remove the last object for better array performance.
                     val observerNode = players.removeAny();
+                    val observer = observerNode.getElement();
 
                     final Set<Entity> equipHiddenPlayers = new HashSet<>();
                     final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
+                    fullHiddenPlayers.remove(observer);
 
                     for (var playerNode : players.queryCircle(observerNode, playerTrackingRange)) {
-                        val observer = observerNode.getElement();
                         val watched = playerNode.getElement();
 
                         // Less than 1 block distance

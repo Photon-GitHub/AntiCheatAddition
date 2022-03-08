@@ -1,17 +1,14 @@
 package de.photon.aacadditionpro.util.visibility;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketContainer;
-import de.photon.aacadditionpro.AACAdditionPro;
+import de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver.entitydestroy.IWrapperServerEntityDestroy;
 import lombok.val;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 class PlayerHider extends PlayerInformationHider
 {
@@ -38,17 +35,8 @@ class PlayerHider extends PlayerInformationHider
     @Override
     protected void onHide(@NotNull Player observer, @NotNull Collection<Entity> toHide)
     {
-        for (Entity hidden : toHide) {
-            //Create new packet which destroys the entity
-            val destroyEntity = new PacketContainer(PacketType.Play.Server.ENTITY_DESTROY);
-            destroyEntity.getIntegerArrays().write(0, new int[]{hidden.getEntityId()});
-
-            // Make the entity disappear
-            try {
-                ProtocolLibrary.getProtocolManager().sendServerPacket(observer, destroyEntity);
-            } catch (InvocationTargetException e) {
-                AACAdditionPro.getInstance().getLogger().log(Level.WARNING, "Could not send packet:", e);
-            }
-        }
+        val destroyEntity = IWrapperServerEntityDestroy.create();
+        destroyEntity.setEntityIds(toHide.stream().map(Entity::getEntityId).collect(Collectors.toList()));
+        destroyEntity.sendPacket(observer);
     }
 }

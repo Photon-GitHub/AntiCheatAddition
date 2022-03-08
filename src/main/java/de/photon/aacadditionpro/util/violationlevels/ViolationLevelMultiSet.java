@@ -2,6 +2,7 @@ package de.photon.aacadditionpro.util.violationlevels;
 
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
+import de.photon.aacadditionpro.AACAdditionPro;
 import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,6 +27,8 @@ class ViolationLevelMultiSet implements Listener
             // Schedule the decay with 3000 milliseconds to free startup.
             SCHEDULER.scheduleAtFixedRate(() -> this.decay(vlDecayAmount), 3000, decayMilliseconds, TimeUnit.MILLISECONDS);
         }
+
+        AACAdditionPro.getInstance().registerListener(this);
     }
 
     /**

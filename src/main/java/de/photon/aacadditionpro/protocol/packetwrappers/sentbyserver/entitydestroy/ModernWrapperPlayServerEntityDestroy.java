@@ -26,6 +26,7 @@ public class ModernWrapperPlayServerEntityDestroy extends AbstractPacket impleme
     @Override
     public void setEntityIds(List<Integer> value)
     {
+        handle.getIntegers().write(0, value.size());
         handle.getIntLists().write(0, value);
     }
 }

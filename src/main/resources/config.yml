@@ -43,9 +43,9 @@ DamageIndicator:
   enabled: true
   # Spoof the health of the following entity categories.
   spoof:
-    players: true
     animals: false
     monsters: true
+    players: true
 
 # Various resource packs allow displaying enchantment information that a normal player would not be able to see, i.e.
 # the type and level of any enchantment.

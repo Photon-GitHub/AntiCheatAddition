@@ -23,7 +23,10 @@ public interface IWrapperServerEntityDestroy extends IWrapperPlayEntity
      *
      * @return The current Count
      */
-    int getCount();
+    default int getCount()
+    {
+        return getEntityIDs().size();
+    }
 
     /**
      * Retrieve Entity IDs.

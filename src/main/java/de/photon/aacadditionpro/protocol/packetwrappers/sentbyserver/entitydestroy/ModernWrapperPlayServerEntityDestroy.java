@@ -13,11 +13,6 @@ public class ModernWrapperPlayServerEntityDestroy extends AbstractPacket impleme
         handle.getModifier().writeDefaults();
     }
 
-    public int getCount()
-    {
-        return handle.getIntegers().read(0);
-    }
-
     public List<Integer> getEntityIDs()
     {
         return handle.getIntLists().read(0);
@@ -26,7 +21,6 @@ public class ModernWrapperPlayServerEntityDestroy extends AbstractPacket impleme
     @Override
     public void setEntityIds(List<Integer> value)
     {
-        handle.getIntegers().write(0, value.size());
         handle.getIntLists().write(0, value);
     }
 }

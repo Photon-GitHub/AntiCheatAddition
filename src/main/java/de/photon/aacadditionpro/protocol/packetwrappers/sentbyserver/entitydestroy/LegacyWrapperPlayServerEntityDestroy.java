@@ -20,11 +20,6 @@ public class LegacyWrapperPlayServerEntityDestroy extends AbstractPacket impleme
         super(packet, TYPE);
     }
 
-    public int getCount()
-    {
-        return handle.getIntegers().read(0);
-    }
-
     public List<Integer> getEntityIDs()
     {
         return Arrays.stream(handle.getIntegerArrays().read(0)).boxed().collect(Collectors.toUnmodifiableList());
@@ -32,7 +27,6 @@ public class LegacyWrapperPlayServerEntityDestroy extends AbstractPacket impleme
 
     public void setEntityIds(List<Integer> value)
     {
-        handle.getIntegers().write(0, value.size());
         handle.getIntegerArrays().write(0, value.stream().mapToInt(Integer::intValue).toArray());
     }
 }

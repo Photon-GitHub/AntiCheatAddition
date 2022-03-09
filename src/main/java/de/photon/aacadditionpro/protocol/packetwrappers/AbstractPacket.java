@@ -18,7 +18,7 @@ public abstract class AbstractPacket implements IWrapperPlay
     protected AbstractPacket(PacketContainer handle, PacketType type)
     {
         // Make sure we're given a valid packet
-        // No Preconditions here, this is a performance critical constructor.
+        // No Preconditions here, this is a performance critical constructor as of profiling.
         if (handle == null) throw new NullPointerException("Packet handle cannot be NULL.");
         if (!Objects.equal(handle.getType(), type)) throw new IllegalArgumentException(handle.getHandle() + " is not a packet of type " + type);
         this.handle = handle;

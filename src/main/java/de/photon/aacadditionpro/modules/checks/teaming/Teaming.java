@@ -8,6 +8,7 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeSet;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.world.Region;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -45,11 +46,7 @@ public class Teaming extends ViolationModule implements Listener
 
     private boolean playerNotInSafeZone(Player player)
     {
-        val location = player.getLocation();
-        for (Region safeZone : this.safeZones) {
-            if (safeZone.isInsideRegion(location)) return false;
-        }
-        return true;
+        return this.safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(player.getLocation()));
     }
 
     @Override
@@ -67,6 +64,9 @@ public class Teaming extends ViolationModule implements Listener
                         // Add the users of the world.
                         for (Player player : world.getPlayers()) {
                             val user = User.getUser(player);
+                            DebugSender.getInstance().sendDebug("Player: " + user.getPlayer().getName() + " IN " + !User.isUserInvalid(user, this) +
+                                                                " GM " + user.getPlayer().getGameMode().name() + " TS " + user.getTimestampMap().at(TimestampKey.TEAMING_COMBAT_TAG).passedTime() +
+                                                                " SZ " + playerNotInSafeZone(player));
 
                             // Only add users if they meet the preconditions
                             // User has to be online and not bypassed
@@ -76,8 +76,9 @@ public class Teaming extends ViolationModule implements Listener
                                 // Not engaged in pvp
                                 user.getTimestampMap().at(TimestampKey.TEAMING_COMBAT_TAG).notRecentlyUpdated(noPvpTime) &&
                                 // Not in a bypassed region
-                                !playerNotInSafeZone(player))
+                                playerNotInSafeZone(player))
                             {
+                                DebugSender.getInstance().sendDebug("Add: " + player.getName());
                                 players.add(player.getLocation().getX(), player.getLocation().getZ(), player);
                             }
                         }
@@ -85,10 +86,15 @@ public class Teaming extends ViolationModule implements Listener
                         while (!players.isEmpty()) {
                             // Use getAny() so the node itself is contained in the team below.
                             var firstNode = players.getAny();
+                            val proximityRangeSquared = proximityRange * proximityRange;
                             val team = players.queryCircle(firstNode, proximityRange).stream()
+                                              // Check for y-distance.
+                                              .filter(node -> node.getElement().getLocation().distanceSquared(firstNode.getElement().getLocation()) <= proximityRangeSquared)
                                               .peek(players::remove)
                                               .map(QuadTreeSet.Node::getElement)
                                               .collect(Collectors.toUnmodifiableSet());
+
+                            DebugSender.getInstance().sendDebug("Team: " + team.stream().map(Player::getName).collect(Collectors.joining(", ")));
 
                             // Team is too big
                             if (team.size() > this.allowedSize) this.getManagement().flag(Flag.of(team));
@@ -100,6 +106,10 @@ public class Teaming extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).loadThresholdsToManagement().withDecay(300, 1).build();
+        return ViolationLevelManagement.builder(this)
+                                       .teamVl()
+                                       .loadThresholdsToManagement()
+                                       .withDecay(300, 1)
+                                       .build();
     }
 }

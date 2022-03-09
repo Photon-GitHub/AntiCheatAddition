@@ -15,10 +15,8 @@ import org.bukkit.entity.Player;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Placeholders
@@ -30,11 +28,10 @@ public final class Placeholders
      *
      * @return original with the placeholder replaced.
      */
-    public static String replacePlaceholders(String original, Collection<Player> players)
+    public static String replacePlaceholders(String original, Player player)
     {
-        Preconditions.checkArgument(!players.isEmpty(), "Tried to replace placeholders without players.");
+        Preconditions.checkNotNull(player, "Tried to replace placeholders without player.");
 
-        val player = players.iterator().next();
         val world = player.getWorld();
 
         val placeholderBuilder = new StringBuilder();
@@ -63,9 +60,6 @@ public final class Placeholders
                         break;
                     case "ping":
                         result.append(PlayerPlaceholders.PING.getReplacement(player));
-                        break;
-                    case "team":
-                        result.append(TeamPlaceholders.TEAM.getReplacement(players));
                         break;
                     case "world":
                         result.append(WorldPlaceholders.WORLD.getReplacement(world));
@@ -113,20 +107,6 @@ public final class Placeholders
         public String getReplacement(Player player)
         {
             return this.function.apply(player);
-        }
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    public enum TeamPlaceholders
-    {
-        TEAM(players -> players.stream().distinct().map(Player::getName).collect(Collectors.joining(", ")));
-
-        private final Function<Collection<Player>, String> function;
-
-        public String getReplacement(Collection<Player> players)
-        {
-            return this.function.apply(players);
         }
     }
 

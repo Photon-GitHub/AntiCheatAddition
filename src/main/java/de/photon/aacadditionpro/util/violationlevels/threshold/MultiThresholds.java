@@ -6,7 +6,6 @@ import lombok.val;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.NavigableMap;
 
@@ -22,9 +21,9 @@ class MultiThresholds implements ThresholdManagement
     }
 
     @Override
-    public void executeThresholds(int fromVl, int toVl, @NotNull Collection<Player> players)
+    public void executeThresholds(int fromVl, int toVl, @NotNull Player player)
     {
         val toExecute = thresholdMap.subMap(fromVl, false, toVl, true).values();
-        for (Threshold threshold : toExecute) threshold.executeCommandList(players);
+        for (Threshold threshold : toExecute) threshold.executeCommandList(player);
     }
 }

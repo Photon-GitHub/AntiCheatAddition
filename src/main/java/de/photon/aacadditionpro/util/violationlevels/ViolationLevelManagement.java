@@ -69,6 +69,7 @@ public class ViolationLevelManagement extends ViolationManagement
         private ThresholdManagement management = null;
         private long decayTicks = -1;
         private int decayAmount = 0;
+        private boolean team = false;
 
         /**
          * This will set the {@link ThresholdManagement} to {@link ThresholdManagement#EMPTY}
@@ -108,9 +109,33 @@ public class ViolationLevelManagement extends ViolationManagement
             return this;
         }
 
+        public Builder teamVl()
+        {
+            this.team = true;
+            return this;
+        }
+
         public ViolationLevelManagement build()
         {
             Preconditions.checkNotNull(management, "Tried to create module without specifying threshold management.");
+            if (team) {
+                return new ViolationLevelManagement(this.module, management, decayTicks, decayAmount)
+                {
+                    @Override
+                    public void flag(@NotNull Flag flag)
+                    {
+                        Preconditions.checkNotNull(flag.getTeam(), "Tried to flag null team.");
+                        Preconditions.checkArgument(!flag.getTeam().isEmpty(), "Tried to flag empty team.");
+
+                        for (Player player : flag.getTeam()) {
+                            if (!ViolationEvent.build(player, this.module.getModuleId(), flag.getAddedVl()).call().isCancelled()) {
+                                this.addVL(player, flag.getAddedVl());
+                                flag.callNotCancelledActions(this.getVL(player.getUniqueId()));
+                            }
+                        }
+                    }
+                };
+            }
             return new ViolationLevelManagement(this.module, management, decayTicks, decayAmount);
         }
     }

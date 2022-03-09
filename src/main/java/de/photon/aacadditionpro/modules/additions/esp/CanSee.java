@@ -39,9 +39,9 @@ class CanSee
                                                                                   });
 
     // The real MAX_FOV is 110 (quake pro), which results in 137° according to https://minecraft.fandom.com/wiki/Options
-    // + Compensation -> 160°
-    // Now, as we use the view direction vector, only half of that is actually achievable.
-    public static final double MAX_FOV = Math.toRadians(160D / 2);
+    // + Compensation -> 165°
+    // Now, as we use the view direction vector, only half of that is actually achievable as the vector is the "middle".
+    public static final double MAX_FOV = Math.toRadians(165D / 2);
 
     public static boolean canSee(Player observer, Player watched)
     {

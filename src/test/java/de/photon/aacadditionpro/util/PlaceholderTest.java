@@ -7,21 +7,19 @@ import org.bukkit.ChatColor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Set;
-
 class PlaceholderTest
 {
     @Test
     void noPlaceholder()
     {
         val empty = "";
-        val playerSingleton = Set.of(Dummy.mockPlayer());
-        Assertions.assertEquals(empty, Placeholders.replacePlaceholders(empty, playerSingleton));
+        val player = Dummy.mockPlayer();
+        Assertions.assertEquals(empty, Placeholders.replacePlaceholders(empty, player));
 
         val string = "Some Spigot";
-        Assertions.assertEquals(string, Placeholders.replacePlaceholders(string, playerSingleton));
+        Assertions.assertEquals(string, Placeholders.replacePlaceholders(string, player));
 
         val color = ChatColor.translateAlternateColorCodes('&', "&4Some Spigot") + ChatColor.RESET;
-        Assertions.assertEquals(color, Placeholders.replacePlaceholders(color, playerSingleton));
+        Assertions.assertEquals(color, Placeholders.replacePlaceholders(color, player));
     }
 }

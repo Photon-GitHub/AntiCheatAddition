@@ -8,7 +8,6 @@ import lombok.val;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.stream.Collectors;
 
 public interface ThresholdManagement
@@ -16,7 +15,7 @@ public interface ThresholdManagement
     /**
      * Empty {@link ThresholdManagement} that doesn't have any {@link Threshold}s.
      */
-    ThresholdManagement EMPTY = (fromVl, toVl, players) -> {};
+    ThresholdManagement EMPTY = (fromVl, toVl, player) -> {};
 
     @NotNull
     static ThresholdManagement loadThresholds(ViolationModule module)
@@ -53,5 +52,5 @@ public interface ThresholdManagement
     /**
      * Used to execute the commands of the {@link Threshold}s in this  {@link MultiThresholds}.
      */
-    void executeThresholds(int fromVl, int toVl, @NotNull Collection<Player> players);
+    void executeThresholds(int fromVl, int toVl, @NotNull Player players);
 }

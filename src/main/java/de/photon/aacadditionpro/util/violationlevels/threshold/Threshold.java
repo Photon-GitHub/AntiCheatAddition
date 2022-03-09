@@ -8,7 +8,6 @@ import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.List;
 
 @EqualsAndHashCode(doNotUseGetters = true, onlyExplicitlyIncluded = true)
@@ -30,9 +29,9 @@ public class Threshold implements Comparable<Threshold>
     /**
      * This executes the commands of this {@link Threshold}.
      */
-    public void executeCommandList(Collection<Player> players)
+    public void executeCommandList(Player player)
     {
-        for (String rawCommand : this.commandList) ExecuteUtil.executeCommand(Placeholders.replacePlaceholders(rawCommand, players));
+        for (String rawCommand : this.commandList) ExecuteUtil.executeCommand(Placeholders.replacePlaceholders(rawCommand, player));
     }
 
     @Override

@@ -15,7 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -85,12 +84,12 @@ public final class DebugSender implements Listener
     @EventHandler
     public void onAdditionViolation(final ViolationEvent event)
     {
-        this.sendDebug(Placeholders.replacePlaceholders(VIOLATION_PRE_STRING + event.getModuleId() + " | added vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", Set.of(event.getPlayer())));
+        this.sendDebug(Placeholders.replacePlaceholders(VIOLATION_PRE_STRING + event.getModuleId() + " | added vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer()));
     }
 
     @EventHandler
     public void onClientControl(final SentinelEvent event)
     {
-        this.sendDebug(Placeholders.replacePlaceholders(SENTINEL_PRE_STRING + event.getModuleId(), Set.of(event.getPlayer())));
+        this.sendDebug(Placeholders.replacePlaceholders(SENTINEL_PRE_STRING + event.getModuleId(), event.getPlayer()));
     }
 }

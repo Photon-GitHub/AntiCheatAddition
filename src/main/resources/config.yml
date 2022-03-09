@@ -572,15 +572,15 @@ Teaming:
     - "world"
   # Here you can define zones in which the check should not be run
   # An entry is formatted as following:
-  # - <affected_world> <x1> <z1> <x2> <z2>
+  # - "<affected_world> <x1> <z1> <x2> <z2>"
   safe_zones:
     - "world -15 -15 15 15"
   # These ViolationLevel are cumulative for a team.
   # E.g. a potential team of 6 members will generate 6 vl after every delay.
   thresholds:
-    4: "<YOUR_STAFFCHAT_COMMAND> {team} in {world} may be Teaming"
-    10: "<YOUR_STAFFCHAT_COMMAND> {team} in {world} are suspected for Teaming"
-    15: "<YOUR_STAFFCHAT_COMMAND> {team} in {world} are highly suspected for Teaming"
+    4: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} may be Teaming"
+    10: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} are suspected for Teaming"
+    15: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} are highly suspected for Teaming"
 
 # The Tower check detects cheats of the same name, modifications which allow you to build straight up (towering)
 # very fast.

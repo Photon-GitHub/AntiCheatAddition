@@ -156,7 +156,8 @@ public class User implements Permissible
      */
     public boolean inAdventureOrSurvivalMode()
     {
-        return this.player.getGameMode() == GameMode.ADVENTURE || this.player.getGameMode() == GameMode.SURVIVAL;
+        final GameMode gameMode = this.player.getGameMode();
+        return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
     }
 
     /**

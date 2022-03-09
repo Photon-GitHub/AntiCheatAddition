@@ -22,7 +22,9 @@ class PlayerEquipmentHider extends PlayerInformationHider
     @Override
     protected void onHide(@NotNull Player observer, @NotNull Collection<Entity> toHide)
     {
-        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> toHide.stream().map(Entity::getEntityId).forEach(id -> IWrapperPlayEquipment.clearAllSlots(id, observer)));
+        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
+            for (Entity entity : toHide) IWrapperPlayEquipment.clearAllSlots(entity.getEntityId(), observer);
+        });
     }
 
     @Override

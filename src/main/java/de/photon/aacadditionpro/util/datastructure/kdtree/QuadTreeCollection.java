@@ -1,5 +1,6 @@
 package de.photon.aacadditionpro.util.datastructure.kdtree;
 
+import de.photon.aacadditionpro.util.mathematics.MathUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.val;
@@ -85,7 +86,7 @@ public abstract class QuadTreeCollection<T> extends AbstractCollection<QuadTreeC
     @Override
     public void clear()
     {
-        for (Node<T> node : this) quadTree.remove(node);
+        for (Node<T> node : this) quadTree.remove(node, node.x, node.y);
         this.getBackingCollection().clear();
     }
 
@@ -165,11 +166,21 @@ public abstract class QuadTreeCollection<T> extends AbstractCollection<QuadTreeC
         protected double y;
         @EqualsAndHashCode.Exclude protected T element;
 
-        public boolean inRadius(QuadTreeCollection.Node<T> center, double squaredRadius)
+        public boolean inRadius(Node<T> center, double squaredRadius)
         {
             double cX = this.x - center.x;
             double cY = this.y - center.y;
             return (cX * cX + cY * cY) <= squaredRadius;
+        }
+
+        public double distanceSquared(Node<T> other)
+        {
+            return MathUtil.square(this.x - other.x) + MathUtil.square(this.y - other.y);
+        }
+
+        public double distance(Node<T> other)
+        {
+            return MathUtil.fastHypot(this.x - other.x, this.y - other.y);
         }
     }
 }

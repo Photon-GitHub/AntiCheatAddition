@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-class TestQuadTreeSet
+class TestQuadTreeCollection
 {
     @Test
     void emptySetTest()
@@ -23,6 +23,38 @@ class TestQuadTreeSet
         var quad = new QuadTreeQueue<Boolean>();
         Assertions.assertFalse(quad.iterator().hasNext());
         Assertions.assertEquals(0, quad.size());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    void clearSetTest()
+    {
+        var quad = new QuadTreeSet<Boolean>();
+
+        for (int i = 0; i < 100; ++i) {
+            quad.add(i, i, false);
+        }
+
+        Assertions.assertEquals(100, quad.size());
+        quad.clear();
+        Assertions.assertEquals(0, quad.size());
+        Assertions.assertTrue(quad.isEmpty());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    void clearQueueTest()
+    {
+        var quad = new QuadTreeQueue<Boolean>();
+
+        for (int i = 0; i < 100; ++i) {
+            quad.add(i, i, false);
+        }
+
+        Assertions.assertEquals(100, quad.size());
+        quad.clear();
+        Assertions.assertEquals(0, quad.size());
+        Assertions.assertTrue(quad.isEmpty());
     }
 
     @Test

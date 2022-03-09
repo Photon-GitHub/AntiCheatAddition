@@ -2,7 +2,6 @@ package de.photon.aacadditionpro.util.visibility;
 
 import com.comphenix.protocol.PacketType;
 import de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver.entitydestroy.IWrapperServerEntityDestroy;
-import lombok.val;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -35,8 +34,6 @@ class PlayerHider extends PlayerInformationHider
     @Override
     protected void onHide(@NotNull Player observer, @NotNull Collection<Entity> toHide)
     {
-        val destroyEntity = IWrapperServerEntityDestroy.create();
-        destroyEntity.setEntityIds(toHide.stream().map(Entity::getEntityId).collect(Collectors.toList()));
-        destroyEntity.sendPacket(observer);
+        IWrapperServerEntityDestroy.sendDestroyEntities(observer, toHide.stream().map(Entity::getEntityId).collect(Collectors.toList()));
     }
 }

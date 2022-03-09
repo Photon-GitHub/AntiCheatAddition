@@ -8,6 +8,7 @@ import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionpro.util.datastructure.Pair;
 import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeQueue;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
+import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.visibility.PlayerVisibility;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -16,6 +17,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,22 +65,16 @@ public class Esp extends Module
                     if (player.getWorld() != null && player.getGameMode() != GameMode.SPECTATOR && !User.isUserInvalid(User.getUser(player), this)) players.add(player.getLocation().getX(), player.getLocation().getZ(), player);
                 }
 
-                while (!players.isEmpty()) {
-                    // Remove the finished player to reduce the amount of added entries.
-                    // This makes sure the player won't have a connection with himself.
-                    // Remove the last object for better array performance.
-                    val observerNode = players.removeAny();
-                    val observer = observerNode.getElement();
-
+                for (var observerNode : players) {
                     final Set<Entity> equipHiddenPlayers = new HashSet<>();
                     final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
-                    fullHiddenPlayers.remove(observer);
+                    final Player observer = observerNode.getElement();
 
                     for (var playerNode : players.queryCircle(observerNode, playerTrackingRange)) {
                         val watched = playerNode.getElement();
 
-                        // Less than 1 block distance
-                        if (observer.getLocation().distanceSquared(watched.getLocation()) < 1 || CanSee.canSee(observer, watched)) {
+                        // Less than 1 block distance (removes the player themselves and any very close player)
+                        if (observerNode.distanceSquared(playerNode) < 1 || CanSee.canSee(observer, watched)) {
                             // No hiding case
                             fullHiddenPlayers.remove(watched);
                         } else if (!watched.isSneaking()) {
@@ -89,9 +85,13 @@ public class Esp extends Module
                         // Full hiding (due to the default adding to fullHiddenPlayers.)
                     }
 
+                    DebugSender.getInstance().sendDebug("Obs: " + observer.getName() + " Full: " + Arrays.toString(fullHiddenPlayers.toArray(Entity[]::new)));
+                    DebugSender.getInstance().sendDebug("Obs: " + observer.getName() + " Equip: " + Arrays.toString(equipHiddenPlayers.toArray(Entity[]::new)));
+
                     PlayerVisibility.INSTANCE.setFullyHidden(observerNode.getElement(), fullHiddenPlayers);
                     PlayerVisibility.INSTANCE.setEquipmentHidden(observerNode.getElement(), equipHiddenPlayers);
                 }
+                players.clear();
             }
         }, 100, ESP_INTERVAL);
     }

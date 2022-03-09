@@ -129,6 +129,7 @@ abstract class PlayerInformationHider implements Listener
             oldEntities = hiddenFromPlayerMap.replaceValues(observer, toHide);
         }
 
+        // ProtocolManager check is needed to prevent errors.
         if (ProtocolLibrary.getProtocolManager() != null) {
             for (Entity entity : oldEntities) {
                 if (!toHide.contains(entity)) updateEntity(observer, entity);

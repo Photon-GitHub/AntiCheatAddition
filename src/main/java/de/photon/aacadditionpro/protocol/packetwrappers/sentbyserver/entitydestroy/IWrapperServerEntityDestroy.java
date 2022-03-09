@@ -3,6 +3,7 @@ package de.photon.aacadditionpro.protocol.packetwrappers.sentbyserver.entitydest
 import com.comphenix.protocol.PacketType;
 import de.photon.aacadditionpro.ServerVersion;
 import de.photon.aacadditionpro.protocol.packetwrappers.IWrapperPlayEntity;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -14,6 +15,13 @@ public interface IWrapperServerEntityDestroy extends IWrapperPlayEntity
     {
         return ServerVersion.containsActiveServerVersion(ServerVersion.MC117.getSupVersionsTo()) ?
                new LegacyWrapperPlayServerEntityDestroy() : new ModernWrapperPlayServerEntityDestroy();
+    }
+
+    static void sendDestroyEntities(Player player, List<Integer> entities)
+    {
+        var wrapper = create();
+        wrapper.setEntityIds(entities);
+        wrapper.sendPacket(player);
     }
 
     /**

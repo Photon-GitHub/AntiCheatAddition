@@ -576,7 +576,7 @@ Teaming:
   safe_zones:
     - "world -15 -15 15 15"
   # These ViolationLevel are cumulative for a team.
-  # E.g. a potential team of 6 members will generate 6 vl after every delay.
+  # That means that every team member gets (actual team size) - (allowed team size) vl per interval.
   thresholds:
     4: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} may be Teaming"
     10: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} are suspected for Teaming"

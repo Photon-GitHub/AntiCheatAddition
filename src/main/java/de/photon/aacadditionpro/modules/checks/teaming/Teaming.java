@@ -52,6 +52,7 @@ public class Teaming extends ViolationModule implements Listener
     public void enable()
     {
         val period = (AACAdditionPro.getInstance().getConfig().getInt(this.getConfigString() + ".delay") * 20L) / 1000L;
+        Preconditions.checkArgument(allowedSize > 0, "The Teaming allowed_size must be greater than 0.");
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AACAdditionPro.getInstance(),
@@ -91,7 +92,7 @@ public class Teaming extends ViolationModule implements Listener
 
                             // Team is too big
                             if (team.size() > this.allowedSize) {
-                                for (Player player : team) this.getManagement().flag(Flag.of(player));
+                                for (Player player : team) this.getManagement().flag(Flag.of(player).setAddedVl(team.size() - this.allowedSize));
                             }
                         }
                     }

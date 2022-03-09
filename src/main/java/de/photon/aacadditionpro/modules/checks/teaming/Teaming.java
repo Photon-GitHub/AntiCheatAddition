@@ -8,7 +8,6 @@ import de.photon.aacadditionpro.user.data.TimestampKey;
 import de.photon.aacadditionpro.util.config.ConfigUtils;
 import de.photon.aacadditionpro.util.config.LoadFromConfiguration;
 import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeSet;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.minecraft.world.Region;
 import de.photon.aacadditionpro.util.violationlevels.Flag;
 import de.photon.aacadditionpro.util.violationlevels.ViolationLevelManagement;
@@ -64,9 +63,6 @@ public class Teaming extends ViolationModule implements Listener
                         // Add the users of the world.
                         for (Player player : world.getPlayers()) {
                             val user = User.getUser(player);
-                            DebugSender.getInstance().sendDebug("Player: " + user.getPlayer().getName() + " IN " + !User.isUserInvalid(user, this) +
-                                                                " GM " + user.getPlayer().getGameMode().name() + " TS " + user.getTimestampMap().at(TimestampKey.TEAMING_COMBAT_TAG).passedTime() +
-                                                                " SZ " + playerNotInSafeZone(player));
 
                             // Only add users if they meet the preconditions
                             // User has to be online and not bypassed
@@ -78,7 +74,6 @@ public class Teaming extends ViolationModule implements Listener
                                 // Not in a bypassed region
                                 playerNotInSafeZone(player))
                             {
-                                DebugSender.getInstance().sendDebug("Add: " + player.getName());
                                 players.add(player.getLocation().getX(), player.getLocation().getZ(), player);
                             }
                         }
@@ -93,8 +88,6 @@ public class Teaming extends ViolationModule implements Listener
                                               .peek(players::remove)
                                               .map(QuadTreeSet.Node::getElement)
                                               .collect(Collectors.toUnmodifiableSet());
-
-                            DebugSender.getInstance().sendDebug("Team: " + team.stream().map(Player::getName).collect(Collectors.joining(", ")));
 
                             // Team is too big
                             if (team.size() > this.allowedSize) this.getManagement().flag(Flag.of(team));

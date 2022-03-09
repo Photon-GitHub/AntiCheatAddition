@@ -6,8 +6,6 @@ import de.photon.aacadditionpro.util.messaging.DebugSender;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
-import java.util.Set;
-
 /**
  * This class presents options for the flagging process.
  */
@@ -15,7 +13,6 @@ import java.util.Set;
 public class Flag
 {
     private final Player player;
-    private final Set<Player> team;
     private int addedVl = 1;
     private int cancelVl = -1;
     private String debug = null;
@@ -25,13 +22,6 @@ public class Flag
     private Flag(Player player)
     {
         this.player = player;
-        this.team = null;
-    }
-
-    private Flag(Set<Player> team)
-    {
-        this.player = null;
-        this.team = team;
     }
 
     /**
@@ -48,23 +38,6 @@ public class Flag
     public static Flag of(Player player)
     {
         return new Flag(player);
-    }
-
-    /**
-     * Creates a new flag concerning multiple {@link Player}s.
-     */
-    public static Flag of(Player... team)
-    {
-        return new Flag(Set.of(team));
-    }
-
-
-    /**
-     * Creates a new flag concerning multiple {@link Player}s.
-     */
-    public static Flag of(Set<Player> team)
-    {
-        return new Flag(Set.copyOf(team));
     }
 
     /**

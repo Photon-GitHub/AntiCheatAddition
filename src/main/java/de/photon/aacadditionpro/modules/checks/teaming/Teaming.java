@@ -90,7 +90,9 @@ public class Teaming extends ViolationModule implements Listener
                                               .collect(Collectors.toUnmodifiableSet());
 
                             // Team is too big
-                            if (team.size() > this.allowedSize) this.getManagement().flag(Flag.of(team));
+                            if (team.size() > this.allowedSize) {
+                                for (Player player : team) this.getManagement().flag(Flag.of(player));
+                            }
                         }
                     }
                 }, 1L, period);
@@ -100,7 +102,6 @@ public class Teaming extends ViolationModule implements Listener
     protected ViolationManagement createViolationManagement()
     {
         return ViolationLevelManagement.builder(this)
-                                       .teamVl()
                                        .loadThresholdsToManagement()
                                        .withDecay(300, 1)
                                        .build();

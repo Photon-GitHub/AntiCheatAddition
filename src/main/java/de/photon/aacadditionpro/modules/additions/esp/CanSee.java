@@ -27,7 +27,7 @@ class CanSee
     public static final LoadingCache<Location, Boolean> BLOCK_CACHE = CacheBuilder.newBuilder()
                                                                                   // About 32000 locations can be cached at most.
                                                                                   .maximumSize(1L << 14)
-                                                                                  .expireAfterWrite(Duration.ofMillis(Esp.ESP_INTERVAL))
+                                                                                  .expireAfterWrite(Duration.ofMillis(Esp.ESP_INTERVAL_TICKS * 50))
                                                                                   .build(new CacheLoader<>()
                                                                                   {
                                                                                       @Override
@@ -38,9 +38,10 @@ class CanSee
                                                                                       }
                                                                                   });
 
-    // The real MAX_FOV is 110 (quake pro), which results in 150° according to tests.
-    // 150° + 15° (compensation) = 165°
-    public static final double MAX_FOV = Math.toRadians(165D);
+    // The real MAX_FOV is 110 (quake pro), which results in 137° according to https://minecraft.fandom.com/wiki/Options
+    // + Compensation -> 160°
+    // Now, as we use the view direction vector, only half of that is actually achievable.
+    public static final double MAX_FOV = Math.toRadians(160D / 2);
 
     public static boolean canSee(Player observer, Player watched)
     {

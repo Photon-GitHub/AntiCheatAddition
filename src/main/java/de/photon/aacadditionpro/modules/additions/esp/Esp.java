@@ -8,23 +8,20 @@ import de.photon.aacadditionpro.util.config.Configs;
 import de.photon.aacadditionpro.util.datastructure.Pair;
 import de.photon.aacadditionpro.util.datastructure.kdtree.QuadTreeQueue;
 import de.photon.aacadditionpro.util.mathematics.MathUtil;
-import de.photon.aacadditionpro.util.messaging.DebugSender;
 import de.photon.aacadditionpro.util.visibility.PlayerVisibility;
 import lombok.val;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Esp extends Module
 {
-    public static final long ESP_INTERVAL = AACAdditionPro.getInstance().getConfig().getLong("Esp.interval", 50L);
+    public static final long ESP_INTERVAL_TICKS = AACAdditionPro.getInstance().getConfig().getLong("Esp.interval_ticks", 2L);
 
     private static final int MAX_TRACKING_RANGE = MathUtil.pow(139, 2);
     private static final String DEFAULT_WORLD_NAME = "default";
@@ -54,23 +51,26 @@ public class Esp extends Module
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(AACAdditionPro.getInstance(), () -> {
-            val players = new QuadTreeQueue<Player>();
-
             for (World world : Bukkit.getWorlds()) {
                 final int playerTrackingRange = playerTrackingRanges.getOrDefault(world, defaultTrackingRange);
 
-                val worldPlayers = world.getPlayers();
-                for (Player player : worldPlayers) {
-                    //noinspection ConstantConditions
-                    if (player.getWorld() != null && player.getGameMode() != GameMode.SPECTATOR && !User.isUserInvalid(User.getUser(player), this)) players.add(player.getLocation().getX(), player.getLocation().getZ(), player);
-                }
+                val worldPlayers = world.getPlayers().stream()
+                                        .filter(player -> player.getWorld() != null)
+                                        .map(User::getUser)
+                                        .filter(user -> !User.isUserInvalid(user, this))
+                                        .filter(User::inAdventureOrSurvivalMode)
+                                        .map(User::getPlayer)
+                                        .collect(Collectors.toUnmodifiableSet());
 
-                for (var observerNode : players) {
+                val playerQuadTree = new QuadTreeQueue<Player>();
+                for (Player player : worldPlayers) playerQuadTree.add(player.getLocation().getX(), player.getLocation().getZ(), player);
+
+                for (var observerNode : playerQuadTree) {
                     final Set<Entity> equipHiddenPlayers = new HashSet<>();
                     final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
                     final Player observer = observerNode.getElement();
 
-                    for (var playerNode : players.queryCircle(observerNode, playerTrackingRange)) {
+                    for (var playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
                         val watched = playerNode.getElement();
 
                         // Less than 1 block distance (removes the player themselves and any very close player)
@@ -85,15 +85,12 @@ public class Esp extends Module
                         // Full hiding (due to the default adding to fullHiddenPlayers.)
                     }
 
-                    DebugSender.getInstance().sendDebug("Obs: " + observer.getName() + " Full: " + Arrays.toString(fullHiddenPlayers.toArray(Entity[]::new)));
-                    DebugSender.getInstance().sendDebug("Obs: " + observer.getName() + " Equip: " + Arrays.toString(equipHiddenPlayers.toArray(Entity[]::new)));
-
                     PlayerVisibility.INSTANCE.setFullyHidden(observerNode.getElement(), fullHiddenPlayers);
                     PlayerVisibility.INSTANCE.setEquipmentHidden(observerNode.getElement(), equipHiddenPlayers);
                 }
-                players.clear();
+                playerQuadTree.clear();
             }
-        }, 100, ESP_INTERVAL);
+        }, 100, ESP_INTERVAL_TICKS);
     }
 }
 

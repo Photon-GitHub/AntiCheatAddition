@@ -84,9 +84,9 @@ Esp:
   #
   # If you create new worlds make sure to restart your server to make ESP cover the new worlds.
   enabled: false
-  # How many milliseconds shall be waited between two ESP cycles. Setting this too low may result in performance issues,
+  # How many ticks shall be waited between two ESP cycles. Setting this too low may result in performance issues,
   # setting it too high may result in players being hidden too long and popping up.
-  interval: 50
+  interval_ticks: 2
   # This determines whether minecraft's 3rd person modes should be considered for calculation as well.
   # Disabling this will reduce the required number of block queries by two thirds.
   # Especially useful if you have games in which players are not supposed to use the third person mode.

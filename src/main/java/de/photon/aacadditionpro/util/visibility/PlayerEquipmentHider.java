@@ -9,7 +9,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.Set;
 
 class PlayerEquipmentHider extends PlayerInformationHider
@@ -20,7 +19,7 @@ class PlayerEquipmentHider extends PlayerInformationHider
     }
 
     @Override
-    protected void onHide(@NotNull Player observer, @NotNull Collection<Entity> toHide)
+    protected void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide)
     {
         Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
             for (Entity entity : toHide) IWrapperPlayEquipment.clearAllSlots(entity.getEntityId(), observer);

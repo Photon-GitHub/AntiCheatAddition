@@ -6,7 +6,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 class PlayerHider extends PlayerInformationHider
@@ -32,7 +32,7 @@ class PlayerHider extends PlayerInformationHider
     }
 
     @Override
-    protected void onHide(@NotNull Player observer, @NotNull Collection<Entity> toHide)
+    protected void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide)
     {
         IWrapperServerEntityDestroy.sendDestroyEntities(observer, toHide.stream().map(Entity::getEntityId).collect(Collectors.toList()));
     }

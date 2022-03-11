@@ -22,8 +22,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -79,29 +79,36 @@ abstract class PlayerInformationHider implements Listener
 
     public void unregisterListeners()
     {
-        HandlerList.unregisterAll(this);
-        ProtocolLibrary.getProtocolManager().removePacketListener(this.informationPacketListener);
+        // Only stop if the ServerVersion is supported
+        if (ServerVersion.containsActiveServerVersion(this.getSupportedVersions())) {
+            HandlerList.unregisterAll(this);
+            ProtocolLibrary.getProtocolManager().removePacketListener(this.informationPacketListener);
+        }
     }
 
     protected Set<ServerVersion> getSupportedVersions()
     {
-        return EnumSet.allOf(ServerVersion.class);
+        return ServerVersion.ALL_SUPPORTED_VERSIONS;
+    }
+
+    @EventHandler
+    public void onChunkUnload(ChunkUnloadEvent event)
+    {
+        // Cache entities for performance reasons so the server doesn't need to load them again when the task is executed.
+        var entities = Arrays.asList(event.getChunk().getEntities());
+        synchronized (hiddenFromPlayerMap) {
+            // All the entities that are keys in the map, do this first to reduce the amount of values in the call below.
+            for (final Entity entity : entities) hiddenFromPlayerMap.removeAll(entity);
+
+            // Any entities that are values in the map.
+            hiddenFromPlayerMap.values().removeAll(entities);
+        }
     }
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event)
     {
         removeEntity(event.getEntity());
-    }
-
-    @EventHandler
-    public void onChunkUnload(ChunkUnloadEvent event)
-    {
-        // Cache entities for performance reasons so the server doesn't need to load them again when the
-        // task is executed.
-        synchronized (hiddenFromPlayerMap) {
-            for (final Entity entity : event.getChunk().getEntities()) removeEntity(entity);
-        }
     }
 
     @EventHandler
@@ -169,5 +176,5 @@ abstract class PlayerInformationHider implements Listener
         });
     }
 
-    protected abstract void onHide(@NotNull Player observer, @NotNull Collection<Entity> toHide);
+    protected abstract void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide);
 }

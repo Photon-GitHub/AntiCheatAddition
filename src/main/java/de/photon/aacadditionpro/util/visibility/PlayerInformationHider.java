@@ -47,18 +47,15 @@ abstract class PlayerInformationHider implements Listener
                 final int entityId = event.getPacket().getIntegers().read(0);
 
                 // Get all hidden entities
-                final Collection<Entity> hiddenEntities;
+                final boolean hidden;
                 synchronized (hiddenFromPlayerMap) {
-                    hiddenEntities = hiddenFromPlayerMap.get(event.getPlayer());
+                    // The test for the entityId must happen here in the synchronized block as get only returns a view that might change async.
+                    hidden = hiddenFromPlayerMap.get(event.getPlayer()).stream()
+                                                .mapToInt(Entity::getEntityId)
+                                                .anyMatch(i -> i == entityId);
                 }
 
-                // If the entityId of the packet is in the hidden entities, cancel the packet sending.
-                for (Entity entity : hiddenEntities) {
-                    if (entityId == entity.getEntityId()) {
-                        event.setCancelled(true);
-                        break;
-                    }
-                }
+                if (hidden) event.setCancelled(true);
             }
         };
     }

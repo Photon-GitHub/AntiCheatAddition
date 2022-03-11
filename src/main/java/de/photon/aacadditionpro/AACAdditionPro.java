@@ -39,7 +39,7 @@ public class AACAdditionPro extends JavaPlugin
     /**
      * The expected player to be in a world.
      */
-    public static final int WORLD_EXPECTED_PLAYERS = 35;
+    public static final int WORLD_EXPECTED_PLAYERS = 50;
 
     private static final int BSTATS_PLUGIN_ID = 3265;
 

@@ -29,11 +29,15 @@ import java.util.Set;
 
 abstract class PlayerInformationHider implements Listener
 {
-    private final PacketListener informationPacketListener;
     private final Multimap<Entity, Entity> hiddenFromPlayerMap;
+    private final PacketListener informationPacketListener;
 
     protected PlayerInformationHider(@NotNull PacketType... affectedPackets)
     {
+        hiddenFromPlayerMap = MultimapBuilder.hashKeys(AACAdditionPro.SERVER_EXPECTED_PLAYERS)
+                                             .hashSetValues(AACAdditionPro.WORLD_EXPECTED_PLAYERS)
+                                             .build();
+
         informationPacketListener = new PacketAdapter(AACAdditionPro.getInstance(), ListenerPriority.NORMAL, Set.of(affectedPackets))
         {
             @Override
@@ -57,8 +61,6 @@ abstract class PlayerInformationHider implements Listener
                 }
             }
         };
-
-        hiddenFromPlayerMap = MultimapBuilder.hashKeys(AACAdditionPro.SERVER_EXPECTED_PLAYERS).hashSetValues(AACAdditionPro.WORLD_EXPECTED_PLAYERS).build();
     }
 
     public void clear()
@@ -161,6 +163,7 @@ abstract class PlayerInformationHider implements Listener
 
     public void updateEntities(@NotNull Player observer, Collection<Entity> entities)
     {
+        // Performance optimization for no changes.
         if (entities.isEmpty()) return;
 
         Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {

@@ -8,9 +8,9 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -40,14 +40,21 @@ abstract class PlayerInformationHider implements Listener
             public void onPacketSending(final PacketEvent event)
             {
                 if (event.isPlayerTemporary()) return;
-                val entityID = event.getPacket().getIntegers().read(0);
+                final int entityId = event.getPacket().getIntegers().read(0);
 
-                final boolean hidden;
+                // Get all hidden entities
+                final Collection<Entity> hiddenEntities;
                 synchronized (hiddenFromPlayerMap) {
-                    hidden = hiddenFromPlayerMap.get(event.getPlayer()).stream().map(Entity::getEntityId).anyMatch(i -> i.equals(entityID));
+                    hiddenEntities = hiddenFromPlayerMap.get(event.getPlayer());
                 }
 
-                if (hidden) event.setCancelled(true);
+                // If the entityId of the packet is in the hidden entities, cancel the packet sending.
+                for (Entity entity : hiddenEntities) {
+                    if (entityId == entity.getEntityId()) {
+                        event.setCancelled(true);
+                        break;
+                    }
+                }
             }
         };
 
@@ -122,21 +129,24 @@ abstract class PlayerInformationHider implements Listener
     /**
      * Hides a {@link Player} from another {@link Player}.
      */
-    public void setHiddenEntities(@NotNull Player observer, @NotNull Collection<Entity> toHide)
+    public void setHiddenEntities(@NotNull Player observer, @NotNull Set<Entity> toHide)
     {
-        Collection<Entity> oldEntities;
+        Set<Entity> oldHidden;
         synchronized (hiddenFromPlayerMap) {
-            oldEntities = hiddenFromPlayerMap.replaceValues(observer, toHide);
+            oldHidden = Set.copyOf(hiddenFromPlayerMap.replaceValues(observer, toHide));
         }
+
+        final Set<Entity> newRevealed = Sets.difference(oldHidden, toHide);
+        final Set<Entity> newHidden = Sets.difference(toHide, oldHidden);
 
         // ProtocolManager check is needed to prevent errors.
         if (ProtocolLibrary.getProtocolManager() != null) {
-            for (Entity entity : oldEntities) {
-                if (!toHide.contains(entity)) updateEntity(observer, entity);
-            }
+            // Update the entities that have been hidden and shall now be revealed.
+            updateEntities(observer, newRevealed);
         }
 
-        this.onHide(observer, toHide);
+        // Call onHide for those entities that have been revealed and shall now be hidden.
+        this.onHide(observer, newHidden);
     }
 
     public void revealAllEntities(@NotNull Player observer)
@@ -146,12 +156,17 @@ abstract class PlayerInformationHider implements Listener
             oldEntities = hiddenFromPlayerMap.removeAll(observer);
         }
 
-        for (Entity oldEntity : oldEntities) updateEntity(observer, oldEntity);
+        updateEntities(observer, oldEntities);
     }
 
-    public void updateEntity(@NotNull Player observer, @NotNull Entity entity)
+    public void updateEntities(@NotNull Player observer, Collection<Entity> entities)
     {
-        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> ProtocolLibrary.getProtocolManager().updateEntity(entity, List.of(observer)));
+        if (entities.isEmpty()) return;
+
+        Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
+            var playerList = List.of(observer);
+            for (Entity entity : entities) ProtocolLibrary.getProtocolManager().updateEntity(entity, playerList);
+        });
     }
 
     protected abstract void onHide(@NotNull Player observer, @NotNull Collection<Entity> toHide);

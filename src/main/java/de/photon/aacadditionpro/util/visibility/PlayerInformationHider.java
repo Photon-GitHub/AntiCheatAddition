@@ -79,8 +79,11 @@ abstract class PlayerInformationHider implements Listener
 
     public void unregisterListeners()
     {
-        HandlerList.unregisterAll(this);
-        ProtocolLibrary.getProtocolManager().removePacketListener(this.informationPacketListener);
+        // Only stop if the ServerVersion is supported
+        if (ServerVersion.containsActiveServerVersion(this.getSupportedVersions())) {
+            HandlerList.unregisterAll(this);
+            ProtocolLibrary.getProtocolManager().removePacketListener(this.informationPacketListener);
+        }
     }
 
     protected Set<ServerVersion> getSupportedVersions()

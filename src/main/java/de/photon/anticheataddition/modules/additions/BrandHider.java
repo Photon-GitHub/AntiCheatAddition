@@ -2,7 +2,6 @@ package de.photon.anticheataddition.modules.additions;
 
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.execute.Placeholders;
 import de.photon.anticheataddition.util.pluginmessage.ByteBufUtil;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
@@ -23,8 +22,7 @@ public class BrandHider extends Module implements Listener
 
     private static final FieldReflect PLAYER_CHANNELS_FIELD = Reflect.fromOBC("entity.CraftPlayer").field("channels");
 
-    @LoadFromConfiguration(configPath = ".refresh_rate")
-    private long refreshRate;
+    private final long refreshRate = this.loadLong(".refresh_rate", 0);
 
     private String brand;
 

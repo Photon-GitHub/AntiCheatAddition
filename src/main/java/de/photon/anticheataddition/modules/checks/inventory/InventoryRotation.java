@@ -7,7 +7,6 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -15,10 +14,8 @@ import lombok.val;
 
 public class InventoryRotation extends ViolationModule
 {
-    @LoadFromConfiguration(configPath = ".teleport_bypass_time")
-    private int teleportTime;
-    @LoadFromConfiguration(configPath = ".world_change_bypass_time")
-    private int worldChangeTime;
+    private final int teleportTime = loadInt(".teleport_bypass_time", 900);
+    private final int worldChangeTime = loadInt(".world_change_bypass_time", 2000);
 
     public InventoryRotation()
     {

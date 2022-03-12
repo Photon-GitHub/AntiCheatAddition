@@ -5,7 +5,6 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -24,10 +23,8 @@ public class InventoryAverageHeuristic extends ViolationModule implements Listen
     @Getter
     private static final InventoryAverageHeuristic instance = new InventoryAverageHeuristic();
 
-    @LoadFromConfiguration(configPath = ".max_ping")
-    private int maxPing;
-    @LoadFromConfiguration(configPath = ".min_tps")
-    private double minTps;
+    private final int maxPing = loadInt(".max_ping", 400);
+    private final double minTps = loadDouble(".min_tps", 15.5);
 
     public InventoryAverageHeuristic()
     {

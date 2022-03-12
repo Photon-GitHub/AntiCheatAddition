@@ -5,7 +5,6 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimestampKey;
 import de.photon.anticheataddition.user.data.batch.TowerBatch;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
@@ -21,8 +20,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class Tower extends ViolationModule implements Listener
 {
-    @LoadFromConfiguration(configPath = ".timeout")
-    private int timeout;
+    private final int timeout = loadInt(".timeout", 6000);
 
     public Tower()
     {

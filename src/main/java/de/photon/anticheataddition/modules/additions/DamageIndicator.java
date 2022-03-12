@@ -11,7 +11,6 @@ import de.photon.anticheataddition.protocol.packetwrappers.MetadataPacket;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerEntityMetadata;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerNamedEntitySpawn;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
 import lombok.val;
 import org.bukkit.entity.Animals;
@@ -22,12 +21,9 @@ import java.util.Set;
 
 public class DamageIndicator extends Module
 {
-    @LoadFromConfiguration(configPath = ".spoof.players")
-    private boolean spoofPlayers;
-    @LoadFromConfiguration(configPath = ".spoof.animals")
-    private boolean spoofAnimals;
-    @LoadFromConfiguration(configPath = ".spoof.monsters")
-    private boolean spoofMonsters;
+    private final boolean spoofAnimals = loadBoolean(".spoof.animals", false);
+    private final boolean spoofMonsters = loadBoolean(".spoof.monsters", true);
+    private final boolean spoofPlayers = loadBoolean(".spoof.players", true);
 
     public DamageIndicator()
     {

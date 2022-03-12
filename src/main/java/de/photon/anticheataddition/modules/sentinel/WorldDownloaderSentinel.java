@@ -3,7 +3,6 @@ package de.photon.anticheataddition.modules.sentinel;
 import com.google.common.io.ByteStreams;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ModuleLoader;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import lombok.val;
 import org.bukkit.entity.Player;
@@ -14,22 +13,13 @@ public class WorldDownloaderSentinel extends SentinelModule implements PluginMes
 {
     private static final MessageChannel WDL_CONTROL_CHANNEL = MessageChannel.of("wdl", "control", "WDL|CONTROL");
 
-    @LoadFromConfiguration(configPath = ".disable.general")
-    private boolean disable;
-
-    @LoadFromConfiguration(configPath = ".disable.future")
-    private boolean disableFuture;
-
-    @LoadFromConfiguration(configPath = ".disable.save_radius")
-    private int saveRadius;
-    @LoadFromConfiguration(configPath = ".disable.chunk_caching")
-    private boolean disableChunkCaching;
-    @LoadFromConfiguration(configPath = ".disable.entity_saving")
-    private boolean disableEntitySaving;
-    @LoadFromConfiguration(configPath = ".disable.tile_entity_saving")
-    private boolean disableTileEntitySaving;
-    @LoadFromConfiguration(configPath = ".disable.container_saving")
-    private boolean disableContainerSaving;
+    private final boolean disable = loadBoolean(".disable.general", true);
+    private final boolean disableFuture = loadBoolean(".disable.future", true);
+    private final int saveRadius = loadInt(".disable.save_radius", 0);
+    private final boolean disableChunkCaching = loadBoolean(".disable.chunk_caching", true);
+    private final boolean disableEntitySaving = loadBoolean(".disable.entity_saving", true);
+    private final boolean disableTileEntitySaving = loadBoolean(".disable.tile_entity_saving", true);
+    private final boolean disableContainerSaving = loadBoolean(".disable.container_saving", true);
 
     public WorldDownloaderSentinel()
     {

@@ -7,7 +7,6 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimestampKey;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -23,11 +22,8 @@ public class AutoFishConsistency extends ViolationModule implements Listener
 {
     private final int cancelVl = AntiCheatAddition.getInstance().getConfig().getInt("AutoFish.cancel_vl");
 
-    @LoadFromConfiguration(configPath = ".min_variation")
-    private int minVariation;
-
-    @LoadFromConfiguration(configPath = ".fishing_attempt_count")
-    private int fishingAttemptCount;
+    private final int fishingAttemptCount = loadInt(".fishing_attempt_count", 5);
+    private final int minVariation = loadInt(".min_variation", 30);
 
     public AutoFishConsistency()
     {

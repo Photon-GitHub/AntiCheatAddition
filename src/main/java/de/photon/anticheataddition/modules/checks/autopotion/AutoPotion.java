@@ -6,7 +6,6 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimestampKey;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -21,23 +20,12 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class AutoPotion extends ViolationModule implements Listener
 {
-    @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancelVl;
-
-    @LoadFromConfiguration(configPath = ".timeout")
-    private int timeout;
-
-    @LoadFromConfiguration(configPath = ".look_restored_time")
-    private int lookRestoredTime;
-
-    @LoadFromConfiguration(configPath = ".angle_offset")
-    private double angleOffset;
-
-    @LoadFromConfiguration(configPath = ".initial_pitch_difference")
-    private double initialPitchDifference;
-
-    @LoadFromConfiguration(configPath = ".look_down_angle")
-    private double lookDownAngle;
+    private final int cancelVl = loadInt(".cancel_vl", 2);
+    private final int timeout = loadInt(".timeout", 1000);
+    private final int lookRestoredTime = loadInt(".look_restored_time", 150);
+    private final double angleOffset = loadDouble(".angle_offset", 5);
+    private final double initialPitchDifference = loadDouble(".initial_pitch_difference", 40);
+    private final double lookDownAngle = loadDouble(".look_down_angle", 80);
 
     public AutoPotion()
     {

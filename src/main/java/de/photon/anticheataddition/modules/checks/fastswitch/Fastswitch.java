@@ -6,7 +6,6 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimestampKey;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
@@ -18,14 +17,9 @@ import lombok.val;
 
 public class Fastswitch extends ViolationModule
 {
-    @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancelVl;
-
-    @LoadFromConfiguration(configPath = ".max_ping")
-    private int maxPing;
-
-    @LoadFromConfiguration(configPath = ".switch_milliseconds")
-    private int switchMilliseconds;
+    private final int cancelVl = loadInt(".cancel_vl", 50);
+    private final int maxPing = loadInt(".max_ping", 400);
+    private final int switchMilliseconds = loadInt(".switch_milliseconds", 50);
 
     public Fastswitch()
     {

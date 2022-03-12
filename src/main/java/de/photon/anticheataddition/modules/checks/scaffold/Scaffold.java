@@ -6,7 +6,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimestampKey;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
@@ -41,10 +40,8 @@ public class Scaffold extends ViolationModule implements Listener
 
     private final ScaffoldSprinting scaffoldSprinting = new ScaffoldSprinting(this.getConfigString());
 
-    @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancelVl;
-    @LoadFromConfiguration(configPath = ".timeout")
-    private int timeout;
+    private final int cancelVl = loadInt(".cancel_vl", 110);
+    private final int timeout = loadInt(".timeout", 1000);
 
     public Scaffold()
     {

@@ -6,7 +6,6 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimestampKey;
 import de.photon.anticheataddition.util.config.ConfigUtils;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
 import de.photon.anticheataddition.util.minecraft.world.Region;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -31,12 +30,9 @@ public class Teaming extends ViolationModule implements Listener
                                                         .map(key -> Preconditions.checkNotNull(Bukkit.getWorld(key), "Config loading error: Unable to identify world for the teaming check. Please check your world names listed in the config."))
                                                         .collect(Collectors.toUnmodifiableSet());
 
-    @LoadFromConfiguration(configPath = ".proximity_range")
-    private double proximityRange;
-    @LoadFromConfiguration(configPath = ".no_pvp_time")
-    private int noPvpTime;
-    @LoadFromConfiguration(configPath = ".allowed_size")
-    private int allowedSize;
+    private final double proximityRange = loadDouble(".proximity_range", 4.5);
+    private final int noPvpTime = loadInt(".no_pvp_time", 6000);
+    private final int allowedSize = loadInt(".allowed_size", 1);
 
     public Teaming()
     {

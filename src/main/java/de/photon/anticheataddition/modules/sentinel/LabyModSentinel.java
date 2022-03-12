@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.modules.sentinel;
 
 import de.photon.anticheataddition.modules.ModuleLoader;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import de.photon.anticheataddition.util.pluginmessage.labymod.LabyModProtocol;
 import io.netty.buffer.Unpooled;
@@ -13,13 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class LabyModSentinel extends SentinelModule implements Listener, PluginMessageListener
 {
-    @LoadFromConfiguration(configPath = ".TablistBanner.enabled")
-    private boolean tablistBanner;
-    @LoadFromConfiguration(configPath = ".TablistBanner.url")
-    private String tablistBannerUrl;
-
-    @LoadFromConfiguration(configPath = ".Voicechat")
-    private boolean voicechat;
+    private final boolean tablistBanner = loadBoolean(".TablistBanner.enabled", false);
+    private final String tablistBannerUrl = loadString(".TablistBanner.url", "");
+    private final boolean voicechat = loadBoolean(".Voicechat", true);
 
     public LabyModSentinel()
     {

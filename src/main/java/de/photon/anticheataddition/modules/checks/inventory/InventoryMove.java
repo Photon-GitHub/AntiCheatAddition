@@ -11,7 +11,6 @@ import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayPosition;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimestampKey;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
@@ -37,18 +36,12 @@ public class InventoryMove extends ViolationModule
     @Getter
     private static final InventoryMove instance = new InventoryMove();
 
-    @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
-    private int cancelVl;
-
-    @LoadFromConfiguration(configPath = ".min_tps")
-    private double minTps;
-    @LoadFromConfiguration(configPath = ".lenience_millis")
-    private int lenienceMillis;
-    @LoadFromConfiguration(configPath = ".teleport_bypass_time")
-    private int teleportBypassTime;
-    @LoadFromConfiguration(configPath = ".world_change_bypass_time")
-    private int worldChangeBypassTime;
+    private final int cancelVl = loadInt(".cancel_vl", 60);
+    private final double minTps = loadDouble(".min_tps", 19.5);
+    private final int lenienceMillis = loadInt(".lenience_millis", 0);
+    private final int teleportBypassTime = loadInt(".teleport_bypass_time", 900);
+    private final int worldChangeBypassTime = loadInt(".world_change_bypass_time", 2000);
 
     public InventoryMove()
     {

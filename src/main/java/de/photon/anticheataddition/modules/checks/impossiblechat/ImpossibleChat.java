@@ -2,7 +2,6 @@ package de.photon.anticheataddition.modules.checks.impossiblechat;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -13,8 +12,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ImpossibleChat extends ViolationModule implements Listener
 {
-    @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancelVl;
+    private final int cancelVl = loadInt(".cancel_vl", 75);
 
     public ImpossibleChat()
     {

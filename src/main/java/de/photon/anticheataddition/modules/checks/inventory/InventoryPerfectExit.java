@@ -4,7 +4,6 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimestampKey;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
@@ -21,8 +20,7 @@ public class InventoryPerfectExit extends ViolationModule implements Listener
 {
     private static final Polynomial VL_CALCULATOR = new Polynomial(-0.2857, 40);
 
-    @LoadFromConfiguration(configPath = ".min_tps")
-    private double minTps;
+    private final double minTps = loadDouble(".min_tps", 18.5);
 
     public InventoryPerfectExit()
     {

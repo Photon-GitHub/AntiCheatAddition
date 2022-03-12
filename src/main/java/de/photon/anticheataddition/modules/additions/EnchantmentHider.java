@@ -9,7 +9,6 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.equipment.IWrapperPlayEquipment;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import lombok.val;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -19,10 +18,8 @@ import java.util.Map;
 
 public class EnchantmentHider extends Module
 {
-    @LoadFromConfiguration(configPath = ".spoof.players")
-    private boolean spoofPlayers;
-    @LoadFromConfiguration(configPath = ".spoof.others")
-    private boolean spoofOthers;
+    private final boolean spoofPlayers = loadBoolean(".spoof.players", true);
+    private final boolean spoofOthers = loadBoolean(".spoof.others", false);
 
     public EnchantmentHider()
     {

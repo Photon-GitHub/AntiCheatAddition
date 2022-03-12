@@ -10,7 +10,6 @@ import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerTransaction;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimestampKey;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.messaging.DebugSender;
@@ -31,11 +30,10 @@ public class Pingspoof extends ViolationModule implements Listener
     private static final Polynomial VL_CALCULATOR_BELOW_500 = new Polynomial(-1.78571E-5, 0.0723572, 1.214286);
     private static final Polynomial VL_CALCULATOR_ABOVE_500 = new Polynomial(1.372434E-10, -2.53498E-6, 0.0160475, 25.7896);
 
+    private final int pingLeniency = loadInt(".ping_leniency", 150);
+    private final int interval = loadInt(".interval", 30);
+
     private BukkitTask pingSpoofTask;
-    @LoadFromConfiguration(configPath = ".ping_leniency")
-    private int pingLeniency;
-    @LoadFromConfiguration(configPath = ".interval")
-    private int interval;
 
     public Pingspoof()
     {

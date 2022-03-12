@@ -2,7 +2,6 @@ package de.photon.anticheataddition.modules.checks.inventory;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -19,9 +18,8 @@ public class InventoryHit extends ViolationModule implements Listener
     @Getter
     private static final InventoryHit instance = new InventoryHit();
 
-    @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
-    private int cancelVl;
+    private final int cancelVl = loadInt(".cancel_vl", 60);
 
     public InventoryHit()
     {

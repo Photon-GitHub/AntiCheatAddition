@@ -3,7 +3,6 @@ package de.photon.anticheataddition.modules.checks.inventory;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimestampKey;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -18,9 +17,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class InventorySprinting extends ViolationModule implements Listener
 {
-    @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
-    private int cancelVl;
+    private final int cancelVl = loadInt(".cancel_vl", 110);
 
     public InventorySprinting()
     {

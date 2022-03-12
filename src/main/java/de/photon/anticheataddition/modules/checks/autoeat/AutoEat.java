@@ -4,7 +4,6 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimestampKey;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -16,10 +15,8 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 public class AutoEat extends ViolationModule implements Listener
 {
-    @LoadFromConfiguration(configPath = ".cancel_vl")
-    private int cancelVl;
-    @LoadFromConfiguration(configPath = ".timeout")
-    private int timeout;
+    private final int cancelVl = loadInt(".cancel_vl", 80);
+    private final int timeout = loadInt(".timeout", 5000);
 
     public AutoEat()
     {

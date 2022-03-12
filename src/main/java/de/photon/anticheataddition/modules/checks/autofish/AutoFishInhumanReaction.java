@@ -6,7 +6,6 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimestampKey;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -21,8 +20,7 @@ public class AutoFishInhumanReaction extends ViolationModule implements Listener
     private static final Polynomial VL_CALCULATOR = new Polynomial(-60, 60);
     private final int cancelVl = AntiCheatAddition.getInstance().getConfig().getInt("AutoFish.cancel_vl");
 
-    @LoadFromConfiguration(configPath = ".human_reaction_time")
-    private double humanReactionTime;
+    private final double humanReactionTime = loadDouble(".human_reaction_time", 145);
 
     public AutoFishInhumanReaction()
     {
@@ -38,8 +36,8 @@ public class AutoFishInhumanReaction extends ViolationModule implements Listener
         switch (event.getState()) {
             case CAUGHT_FISH:
                 // Too few time has passed since the fish bit.
-                val passedBiteTime = user.getTimestampMap().at(TimestampKey.LAST_FISH_BITE).passedTime();
-                val vl = VL_CALCULATOR.apply(passedBiteTime / humanReactionTime).intValue();
+                final long passedBiteTime = user.getTimestampMap().at(TimestampKey.LAST_FISH_BITE).passedTime();
+                final int vl = VL_CALCULATOR.apply(passedBiteTime / humanReactionTime).intValue();
 
                 if (vl > 0) {
                     // Flag for vl = b + 1 because there would otherwise be a "0-vl"

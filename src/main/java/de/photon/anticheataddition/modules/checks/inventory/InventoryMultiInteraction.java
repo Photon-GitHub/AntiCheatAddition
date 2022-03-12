@@ -3,7 +3,6 @@ package de.photon.anticheataddition.modules.checks.inventory;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
@@ -19,14 +18,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class InventoryMultiInteraction extends ViolationModule implements Listener
 {
-    @LoadFromConfiguration(configPath = ".cancel_vl")
     @Getter
-    private int cancelVl;
-
-    @LoadFromConfiguration(configPath = ".max_ping")
-    private int maxPing;
-    @LoadFromConfiguration(configPath = ".min_tps")
-    private double minTps;
+    private final int cancelVl = loadInt(".cancel_vl", 25);
+    private final int maxPing = loadInt(".max_ping", 400);
+    private final double minTps = loadDouble(".min_tps", 18.5);
 
     public InventoryMultiInteraction()
     {

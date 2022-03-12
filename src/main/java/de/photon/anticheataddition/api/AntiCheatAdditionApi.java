@@ -6,7 +6,6 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ModuleManager;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.modules.additions.BrandHider;
-import de.photon.anticheataddition.util.config.LoadFromConfiguration;
 import de.photon.anticheataddition.util.pluginmessage.labymod.LabyModProtocol;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -135,7 +134,7 @@ public final class AntiCheatAdditionApi
      * <p>
      * <p>
      * <p>
-     * 2.1) If you want additional config values, use the {@link LoadFromConfiguration} annotation.
+     * 2.1) If you want additional config values, use the {@link Module#loadInt(String, int)} and similar methods.
      * Possible config example:
      * <p>ExampleModule:</p>
      * <p>enabled: true</p>

@@ -45,7 +45,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User implements Permissible
 {
-    private static final ConcurrentMap<UUID, User> USERS = new ConcurrentHashMap<>(1024);
+    private static final ConcurrentMap<UUID, User> USERS = new ConcurrentHashMap<>(AACAdditionPro.SERVER_EXPECTED_PLAYERS);
+    private static final Set<User> FLOODGATE_USERS = ConcurrentHashMap.newKeySet(AACAdditionPro.SERVER_EXPECTED_PLAYERS);
     private static final Set<User> DEBUG_USERS = new CopyOnWriteArraySet<>();
 
     @Delegate(types = Permissible.class)
@@ -69,6 +70,10 @@ public class User implements Permissible
     {
         val user = new User(player);
         USERS.put(player.getUniqueId(), user);
+
+        if (AACAdditionPro.getInstance().getFloodgateApi() != null &&
+            AACAdditionPro.getInstance().getFloodgateApi().isFloodgateId(player.getUniqueId())) FLOODGATE_USERS.add(user);
+
         if (InternalPermission.DEBUG.hasPermission(player)) DEBUG_USERS.add(user);
         return user;
     }
@@ -78,7 +83,9 @@ public class User implements Permissible
      */
     protected static void deleteUser(UUID uuid)
     {
-        DEBUG_USERS.remove(USERS.remove(uuid));
+        val oldUser = USERS.remove(uuid);
+        FLOODGATE_USERS.remove(oldUser);
+        DEBUG_USERS.remove(oldUser);
     }
 
     public static User getUser(Player player)
@@ -125,7 +132,7 @@ public class User implements Permissible
      */
     public static boolean isUserInvalid(@Nullable User user, @NotNull Module module)
     {
-        return user == null || user.getPlayer() == null || user.isBypassed(InternalPermission.bypassPermissionOf(module.getModuleId()));
+        return isUserInvalid(user, module.getBypassPermission());
     }
 
     /**
@@ -138,7 +145,7 @@ public class User implements Permissible
      */
     public static boolean isUserInvalid(@Nullable User user, @NotNull String bypassPermission)
     {
-        return user == null || user.getPlayer() == null || user.isBypassed(bypassPermission);
+        return user == null || user.getPlayer() == null || user.isFloodgate() || user.isBypassed(bypassPermission);
     }
 
 
@@ -149,6 +156,11 @@ public class User implements Permissible
     {
         Preconditions.checkArgument(bypassPermission.startsWith(InternalPermission.BYPASS.getRealPermission()), "Invalid bypass permission");
         return InternalPermission.hasPermission(player, bypassPermission);
+    }
+
+    public boolean isFloodgate()
+    {
+        return FLOODGATE_USERS.contains(this);
     }
 
     /**

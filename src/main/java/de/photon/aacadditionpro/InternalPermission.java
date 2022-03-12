@@ -32,14 +32,6 @@ public enum InternalPermission
     }
 
     /**
-     * Generates the bypass permission from the id of a module.
-     */
-    public static String bypassPermissionOf(String moduleId)
-    {
-        return (InternalPermission.BYPASS.getRealPermission() + '.') + moduleId;
-    }
-
-    /**
      * This checks if a {@link Permissible} has a certain permission.
      *
      * @param permissible the {@link Permissible} who should be checked

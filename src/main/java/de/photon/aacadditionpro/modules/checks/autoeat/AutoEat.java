@@ -30,7 +30,7 @@ public class AutoEat extends ViolationModule implements Listener
     public void onConsume(PlayerItemConsumeEvent event)
     {
         val user = User.getUser(event.getPlayer());
-        if (User.isUserInvalid(user, bypassPermission)) return;
+        if (User.isUserInvalid(user, this)) return;
 
         Bukkit.getScheduler().runTaskLater(AACAdditionPro.getInstance(), () -> {
             // A PlayerInteractEvent will always fire when the right mouse button is clicked, therefore a legit player will always hold his mouse a bit longer than a bot and the last right click will

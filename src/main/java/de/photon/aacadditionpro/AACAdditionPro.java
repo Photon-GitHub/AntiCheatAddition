@@ -23,6 +23,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -49,6 +50,7 @@ public class AACAdditionPro extends JavaPlugin
 
     @Getter(lazy = true) private final FileConfiguration config = generateConfig();
     private ViaAPI<?> viaAPI;
+    private FloodgateApi floodgateApi;
     private AACAPI aacapi = null;
 
     private boolean bungeecord = false;
@@ -111,6 +113,10 @@ public class AACAdditionPro extends JavaPlugin
             val viaEnabled = this.getServer().getPluginManager().isPluginEnabled("ViaVersion");
             DebugSender.getInstance().sendDebug("ViaVersion " + (viaEnabled ? "hooked" : "not found"), true, false);
             if (viaEnabled) viaAPI = Via.getAPI();
+
+            val floodgateEnabled = this.getServer().getPluginManager().isPluginEnabled("floodgate");
+            DebugSender.getInstance().sendDebug("Floodgate " + (viaEnabled ? "hooked" : "not found"), true, false);
+            if (floodgateEnabled) floodgateApi = FloodgateApi.getInstance();
 
             metrics.addCustomChart(new SimplePie("viaversion", () -> viaEnabled ? "Used" : "Not used"));
 

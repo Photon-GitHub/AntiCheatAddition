@@ -38,7 +38,7 @@ public class AutoFishConsistency extends ViolationModule implements Listener
     public void onPlayerFish(final PlayerFishEvent event)
     {
         val user = de.photon.aacadditionpro.user.User.getUser(event.getPlayer());
-        if (User.isUserInvalid(user, bypassPermission)) return;
+        if (User.isUserInvalid(user, this)) return;
 
         switch (event.getState()) {
             case FISHING:

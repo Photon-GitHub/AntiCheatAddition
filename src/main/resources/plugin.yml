@@ -6,7 +6,7 @@ api-version: 1.15
 website: https://www.spigotmc.org/resources/anticheataddition.33590/
 
 depend: [ ProtocolLib ]
-softdepend: [ ViaVersion ]
+softdepend: [ ViaVersion , Floodgate ]
 main: de.photon.anticheataddition.AntiCheatAddition
 
 commands:

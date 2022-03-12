@@ -15,7 +15,7 @@ public class LogBot extends Module
 {
     private final Map<File, Long> logDeletionTimes = Map.of(
             // Put the respective times in milliseconds into the map.
-            new File("plugins/AACAdditionPro", "logs"), TimeUnit.DAYS.toMillis(AntiCheatAddition.getInstance().getConfig().getLong(this.getConfigString() + ".AACAdditionPro")),
+            new File("plugins/AntiCheatAddition", "logs"), TimeUnit.DAYS.toMillis(AntiCheatAddition.getInstance().getConfig().getLong(this.getConfigString() + ".AntiCheatAddition")),
             new File("logs"), TimeUnit.DAYS.toMillis(AntiCheatAddition.getInstance().getConfig().getLong(this.getConfigString() + ".Server")));
 
     private int taskNumber;
@@ -48,7 +48,7 @@ public class LogBot extends Module
 
                         for (val file : files) {
                             val fileName = file.getName();
-                            // Be sure it is a log file of AACAdditionPro (.log) or a log file of the server (.log.gz)
+                            // Be sure it is a log file of AntiCheatAddition (.log) or a log file of the server (.log.gz)
                             if ((fileName.endsWith(".log") || fileName.endsWith(".log.gz")) && currentTime - file.lastModified() > timeToDelete) {
                                 val result = file.delete();
                                 DebugSender.getInstance().sendDebug((result ? "Deleted " : "Could not delete old file ") + fileName, true, !result);

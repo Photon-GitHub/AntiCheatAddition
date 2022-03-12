@@ -28,7 +28,7 @@ public class TabListRemoveCommand extends InternalCommand
                                .maxArguments(3)
                                .addCommandHelp("Removes a player from the tablist of a player and readds him after a certain time.",
                                                "Without a provided timeframe the command will add the player back to the tablist immediately.",
-                                               "Syntax: /aacadditionpro tablistremove <player whose tablist is affected> <player that will be removed> [<ticks>]")
+                                               "Syntax: /anticheataddition tablistremove <player whose tablist is affected> <player that will be removed> [<ticks>]")
                                .setPermission(InternalPermission.TABLISTREMOVE)
                                .build(),
               TabCompleteSupplier.builder().allPlayers());

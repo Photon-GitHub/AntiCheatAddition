@@ -39,13 +39,10 @@ import de.photon.anticheataddition.modules.sentinel.exploits.CreativeKillPotionS
 import de.photon.anticheataddition.modules.sentinel.exploits.SelfDamageSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.TrollPotionSentinel;
 import de.photon.anticheataddition.util.config.ConfigUtils;
-import de.photon.anticheataddition.util.datastructure.Pair;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import me.konsolas.aac.api.AACCustomFeature;
-import me.konsolas.aac.api.AACCustomFeatureProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -204,22 +201,5 @@ public final class ModuleManager
     {
         moduleMap.addModule(externalModule);
         if (externalModule instanceof ViolationModule) violationModuleMap.addModule((ViolationModule) externalModule);
-    }
-
-    /**
-     * This creates the actual hook for the AAC API.
-     */
-    public static AACCustomFeatureProvider getCustomFeatureProvider()
-    {
-        return offlinePlayer -> {
-            val uuid = offlinePlayer.getUniqueId();
-            return violationModuleMap.values().stream()
-                                     .filter(Module::isEnabled)
-                                     .filter(module -> module.getAacInfo() != null)
-                                     // Map the module and its AACScore to an AACCustomFeature.
-                                     .map(module -> Pair.map(module, module.getAACScore(uuid),
-                                                             (m, score) -> new AACCustomFeature(m.getConfigString(), m.getAacInfo(), score, m.getAACTooltip(uuid, score))))
-                                     .collect(Collectors.toList());
-        };
     }
 }

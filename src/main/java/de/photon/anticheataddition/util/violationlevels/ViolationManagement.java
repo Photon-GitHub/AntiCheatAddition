@@ -64,7 +64,7 @@ public abstract class ViolationManagement
      */
     protected void punishPlayer(@NotNull Player player, int fromVl, int toVl)
     {
-        // Only schedule the command execution if the plugin is loaded and when we do not use AAC's feature handling.
+        // Only schedule the command execution if the plugin is loaded.
         if (AntiCheatAddition.getInstance().isEnabled()) this.thresholds.executeThresholds(fromVl, toVl, player);
     }
 }

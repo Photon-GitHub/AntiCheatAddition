@@ -126,10 +126,6 @@ public class AntiCheatAddition extends JavaPlugin
             //noinspection ResultOfMethodCallIgnored
             ModuleManager.getModuleMap();
 
-            // ------------------------------------------------------------------------------------------------------ //
-            //                                                AAC hook                                                //
-            // ------------------------------------------------------------------------------------------------------ //
-
             // Data storage
             DataUpdaterEvents.INSTANCE.register();
 

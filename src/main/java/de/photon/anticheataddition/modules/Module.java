@@ -24,7 +24,7 @@ public abstract class Module
         Preconditions.checkNotNull(configString, "Tried to create Module with null configString.");
         Preconditions.checkArgument(AntiCheatAddition.getInstance().getConfig().contains(configString), "Config path " + configString + " does not exist in the config. Please regenerate your config.");
         this.configString = configString;
-        this.moduleId = "aacadditionpro_" + configString.toLowerCase(Locale.ENGLISH);
+        this.moduleId = "anticheataddition_" + configString.toLowerCase(Locale.ENGLISH);
     }
 
     public void setEnabled(boolean enabled)

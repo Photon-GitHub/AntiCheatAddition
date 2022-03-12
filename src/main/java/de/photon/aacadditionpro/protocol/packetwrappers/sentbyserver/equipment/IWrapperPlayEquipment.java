@@ -14,6 +14,8 @@ import java.util.List;
 
 public interface IWrapperPlayEquipment extends IWrapperPlayEntity
 {
+    ItemStack AIR_STACK = new ItemStack(Material.AIR);
+
     static IWrapperPlayEquipment of()
     {
         return ServerVersion.getActiveServerVersion().compareTo(ServerVersion.MC116) < 0 ? new LegacyServerEquipmentWrapper() : new ModernServerEquipmentWrapper();
@@ -32,13 +34,10 @@ public interface IWrapperPlayEquipment extends IWrapperPlayEntity
      */
     static void clearAllSlots(int entityId, Player observer)
     {
-        final ItemStack air = new ItemStack(Material.AIR);
         IWrapperPlayEquipment wrapper = of();
 
         wrapper.setEntityID(entityId);
-        for (EnumWrappers.ItemSlot slot : EnumWrappers.ItemSlot.values()) {
-            wrapper.setSlotStackPair(slot, air);
-        }
+        for (EnumWrappers.ItemSlot slot : EnumWrappers.ItemSlot.values()) wrapper.setSlotStackPair(slot, AIR_STACK);
         wrapper.sendTranslatedPackets(observer);
     }
 

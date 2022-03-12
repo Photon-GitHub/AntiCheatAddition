@@ -16,7 +16,7 @@ public interface EntityUtil
     /**
      * Creates a {@link Predicate} that maps to <code>true</code> only for a certain {@link EntityType}.
      */
-    default Predicate<Entity> ofType(EntityType type)
+    static Predicate<Entity> ofType(EntityType type)
     {
         return entity -> entity.getType() == type;
     }

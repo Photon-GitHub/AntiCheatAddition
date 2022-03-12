@@ -34,9 +34,7 @@ public abstract class MetadataPacket extends AbstractPacket
     public Optional<WrappedWatchableObject> getMetadataIndex(final int index)
     {
         for (WrappedWatchableObject watch : getRawMetadata()) {
-            if (index == watch.getIndex()) {
-                return Optional.of(watch);
-            }
+            if (index == watch.getIndex()) return Optional.of(watch);
         }
         return Optional.empty();
     }

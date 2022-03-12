@@ -198,7 +198,7 @@ class ModernWorldUtil implements WorldUtil
                     // Make sure that the block above is not obstructed by blocks
                     return !aboveBlock.getType().isOccluding()
                            // Make sure that the block above is not obstructed by cats
-                           && aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.INSTANCE.ofType(EntityType.CAT)).isEmpty();
+                           && aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.ofType(EntityType.CAT)).isEmpty();
                 default:
                     throw new UnknownMinecraftException();
             }

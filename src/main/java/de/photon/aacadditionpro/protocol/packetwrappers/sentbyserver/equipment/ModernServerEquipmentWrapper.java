@@ -55,9 +55,7 @@ public class ModernServerEquipmentWrapper extends AbstractPacket implements IWra
     public ItemStack getItem(ItemSlot slot)
     {
         for (Pair<ItemSlot, ItemStack> pair : handle.getSlotStackPairLists().read(0)) {
-            if (pair.getFirst().equals(slot)) {
-                return pair.getSecond();
-            }
+            if (pair.getFirst().equals(slot)) return pair.getSecond();
         }
         return null;
     }

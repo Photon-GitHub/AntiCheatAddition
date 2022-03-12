@@ -92,7 +92,8 @@ public class Teaming extends ViolationModule implements Listener
 
                             // Team is too big
                             if (team.size() > this.allowedSize) {
-                                for (Player player : team) this.getManagement().flag(Flag.of(player).setAddedVl(team.size() - this.allowedSize));
+                                final int vl = team.size() - this.allowedSize;
+                                for (Player player : team) this.getManagement().flag(Flag.of(player).setAddedVl(vl));
                             }
                         }
                     }

@@ -8,9 +8,9 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
-import com.google.common.collect.Sets;
 import de.photon.aacadditionpro.AACAdditionPro;
 import de.photon.aacadditionpro.ServerVersion;
+import de.photon.aacadditionpro.util.datastructure.SetUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -142,8 +142,8 @@ abstract class PlayerInformationHider implements Listener
             oldHidden = Set.copyOf(hiddenFromPlayerMap.replaceValues(observer, toHide));
         }
 
-        final Set<Entity> newRevealed = Sets.difference(oldHidden, toHide);
-        final Set<Entity> newHidden = Sets.difference(toHide, oldHidden);
+        final Set<Entity> newRevealed = SetUtil.difference(oldHidden, toHide);
+        final Set<Entity> newHidden = SetUtil.difference(toHide, oldHidden);
 
         // ProtocolManager check is needed to prevent errors.
         if (ProtocolLibrary.getProtocolManager() != null) {
@@ -170,8 +170,8 @@ abstract class PlayerInformationHider implements Listener
         // Performance optimization for no changes.
         if (entities.isEmpty()) return;
 
+        final List<Player> playerList = List.of(observer);
         Bukkit.getScheduler().runTask(AACAdditionPro.getInstance(), () -> {
-            var playerList = List.of(observer);
             for (Entity entity : entities) ProtocolLibrary.getProtocolManager().updateEntity(entity, playerList);
         });
     }

@@ -50,7 +50,7 @@
                                 <relocation>
                                     <pattern>org.bstats</pattern>
                                     <!-- Replace this with your package! -->
-                                    <shadedPattern>de.photon.aacadditionpro</shadedPattern>
+                                    <shadedPattern>de.photon.anticheataddition</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
-import de.photon.anticheataddition.util.config.ConfigUtils;
 import de.photon.anticheataddition.util.datastructure.batch.BatchProcessor;
 import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
@@ -81,9 +80,6 @@ public class ModuleLoader
             DebugSender.getInstance().sendDebug(module.getConfigString() + " has been disabled in the config.", true, false);
             return false;
         }
-
-        // Load the config values
-        ConfigUtils.processLoadFromConfiguration(module, module.getConfigString());
 
         // Handle Listeners and PacketListeners
         for (Listener listener : listeners) AntiCheatAddition.getInstance().registerListener(listener);

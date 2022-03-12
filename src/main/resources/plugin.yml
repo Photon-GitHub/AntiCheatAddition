@@ -1,82 +1,83 @@
-name: AACAdditionPro
+name: AntiCheatAddition
 version: ${project.version}
 description: ${project.description}
 author: Photon
-api-version: 1.13
-website: https://www.spigotmc.org/resources/aacadditionpro.33590/
+api-version: 1.15
+website: https://www.spigotmc.org/resources/anticheataddition.33590/
 
 depend: [ ProtocolLib ]
-softdepend: [ AAC5, ViaVersion ]
-main: de.photon.aacadditionpro.AACAdditionPro
+softdepend: [ ViaVersion , Floodgate ]
+main: de.photon.anticheataddition.AntiCheatAddition
 
 commands:
-  aacadditionpro:
-    aliases: [ aacap, aacadp ]
-    description: The main command of AACAdditionPro.
-    usage: /aacadditionpro
+  anticheataddition:
+    aliases: [ aca ]
+    description: The main command of AntiCheatAddition.
+    usage: /anticheataddition
 
 permissions:
-  aacadditionpro.*:
+  anticheataddition.*:
     description: Allows to bypass all checks and clientcontrols and gives access to all commands and the debug system.
     children:
-      aacadditionpro.bypass.*: true
-      aacadditionpro.debug: true
-      aacadditionpro.info: true
-      aacadditionpro.setvl: true
-      aacadditionpro.tablistremove: true
+      anticheataddition.bypass.*: true
+      anticheataddition.debug: true
+      anticheataddition.info: true
+      anticheataddition.setvl: true
+      anticheataddition.tablistremove: true
     default: op
 
-  aacadditionpro.bypass.*:
-    description: Players with this permission will not be checked by AACAdditionPro.
+  anticheataddition.bypass.*:
+    description: Players with this permission will not be checked by AntiCheatAddition.
     children:
-      aacadditionpro.bypass.sentinel.*: true
-      aacadditionpro.bypass.aacadditionpro_autoeat: true
-      aacadditionpro.bypass.aacadditionpro_autofish: true
-      aacadditionpro.bypass.aacadditionpro_autofish.parts.consistency: true
-      aacadditionpro.bypass.aacadditionpro_autofish.parts.inhuman_reaction: true
-      aacadditionpro.bypass.aacadditionpro_autopotion: true
-      aacadditionpro.bypass.aacadditionpro_damageindicator: true
-      aacadditionpro.bypass.aacadditionpro_esp: true
-      aacadditionpro.bypass.aacadditionpro_fastswitch: true
-      aacadditionpro.bypass.aacadditionpro_impossiblechat: true
-      aacadditionpro.bypass.aacadditionpro_inventory: true
-      aacadditionpro.bypass.aacadditionpro_inventory.parts.averageheuristic: true
-      aacadditionpro.bypass.aacadditionpro_inventory.parts.hit: true
-      aacadditionpro.bypass.aacadditionpro_inventory.parts.move: true
-      aacadditionpro.bypass.aacadditionpro_inventory.parts.multiinteraction: true
-      aacadditionpro.bypass.aacadditionpro_inventory.parts.perfectexit: true
-      aacadditionpro.bypass.aacadditionpro_inventory.parts.rotation: true
-      aacadditionpro.bypass.aacadditionpro_inventory.parts.sprinting: true
-      aacadditionpro.bypass.aacadditionpro_packetanalysis: true
-      aacadditionpro.bypass.aacadditionpro_packetanalysis.parts.animation: true
-      aacadditionpro.bypass.aacadditionpro_packetanalysis.parts.equalrotation: true
-      aacadditionpro.bypass.aacadditionpro_packetanalysis.parts.illegalpitch: true
-      aacadditionpro.bypass.aacadditionpro_pingspoof: true
-      aacadditionpro.bypass.aacadditionpro_scaffold: true
-      aacadditionpro.bypass.aacadditionpro_scaffold.parts.angle: true
-      aacadditionpro.bypass.aacadditionpro_scaffold.parts.jumping: true
-      aacadditionpro.bypass.aacadditionpro_scaffold.parts.position: true
-      aacadditionpro.bypass.aacadditionpro_scaffold.parts.rotation.derivative: true
-      aacadditionpro.bypass.aacadditionpro_scaffold.parts.rotation.fastChange: true
-      aacadditionpro.bypass.aacadditionpro_scaffold.parts.rotation.secondderivative: true
-      aacadditionpro.bypass.aacadditionpro_scaffold.parts.safewalk.type1: true
-      aacadditionpro.bypass.aacadditionpro_scaffold.parts.safewalk.type2: true
-      aacadditionpro.bypass.aacadditionpro_scaffold.parts.sprinting: true
-      aacadditionpro.bypass.aacadditionpro_skinblinker: true
-      aacadditionpro.bypass.teaming: true
-      aacadditionpro.bypass.tower: true
+      anticheataddition.bypass.sentinel.*: true
+      anticheataddition.bypass.anticheataddition_autoeat: true
+      anticheataddition.bypass.anticheataddition_autofish: true
+      anticheataddition.bypass.anticheataddition_autofish.parts.consistency: true
+      anticheataddition.bypass.anticheataddition_autofish.parts.inhuman_reaction: true
+      anticheataddition.bypass.anticheataddition_autopotion: true
+      anticheataddition.bypass.anticheataddition_damageindicator: true
+      anticheataddition.bypass.anticheataddition_enchantmenthider: true
+      anticheataddition.bypass.anticheataddition_esp: true
+      anticheataddition.bypass.anticheataddition_fastswitch: true
+      anticheataddition.bypass.anticheataddition_impossiblechat: true
+      anticheataddition.bypass.anticheataddition_inventory: true
+      anticheataddition.bypass.anticheataddition_inventory.parts.averageheuristic: true
+      anticheataddition.bypass.anticheataddition_inventory.parts.hit: true
+      anticheataddition.bypass.anticheataddition_inventory.parts.move: true
+      anticheataddition.bypass.anticheataddition_inventory.parts.multiinteraction: true
+      anticheataddition.bypass.anticheataddition_inventory.parts.perfectexit: true
+      anticheataddition.bypass.anticheataddition_inventory.parts.rotation: true
+      anticheataddition.bypass.anticheataddition_inventory.parts.sprinting: true
+      anticheataddition.bypass.anticheataddition_packetanalysis: true
+      anticheataddition.bypass.anticheataddition_packetanalysis.parts.animation: true
+      anticheataddition.bypass.anticheataddition_packetanalysis.parts.equalrotation: true
+      anticheataddition.bypass.anticheataddition_packetanalysis.parts.illegalpitch: true
+      anticheataddition.bypass.anticheataddition_pingspoof: true
+      anticheataddition.bypass.anticheataddition_scaffold: true
+      anticheataddition.bypass.anticheataddition_scaffold.parts.angle: true
+      anticheataddition.bypass.anticheataddition_scaffold.parts.jumping: true
+      anticheataddition.bypass.anticheataddition_scaffold.parts.position: true
+      anticheataddition.bypass.anticheataddition_scaffold.parts.rotation.derivative: true
+      anticheataddition.bypass.anticheataddition_scaffold.parts.rotation.fastChange: true
+      anticheataddition.bypass.anticheataddition_scaffold.parts.rotation.secondderivative: true
+      anticheataddition.bypass.anticheataddition_scaffold.parts.safewalk.type1: true
+      anticheataddition.bypass.anticheataddition_scaffold.parts.safewalk.type2: true
+      anticheataddition.bypass.anticheataddition_scaffold.parts.sprinting: true
+      anticheataddition.bypass.anticheataddition_skinblinker: true
+      anticheataddition.bypass.teaming: true
+      anticheataddition.bypass.tower: true
 
-  aacadditionpro.bypass.sentinel.*:
+  anticheataddition.bypass.sentinel.*:
     description: Bypasses all sentinel modules. Make sure to have a permission plugin to actually bypass all sentinel modules.
 
-  aacadditionpro.debug:
+  anticheataddition.debug:
     description: This allows the player to see highly detailed information about violations if enabled in the config.
 
-  aacadditionpro.info:
+  anticheataddition.info:
     description: Allows requesting an overview about a player's violation levels
 
-  aacadditionpro.setvl:
+  anticheataddition.setvl:
     description: Allows the player to execute a command which will set the vl of another player, usually used for testing.
 
-  aacadditionpro.tablistremove:
+  anticheataddition.tablistremove:
     description: Allows the player to execute a command which will temporarily hide a player from another's tablist.

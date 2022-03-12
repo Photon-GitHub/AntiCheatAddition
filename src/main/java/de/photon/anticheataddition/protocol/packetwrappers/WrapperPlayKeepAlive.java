@@ -1,0 +1,64 @@
+package de.photon.anticheataddition.protocol.packetwrappers;
+
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
+import de.photon.anticheataddition.ServerVersion;
+import de.photon.anticheataddition.exception.UnknownMinecraftException;
+
+public abstract class WrapperPlayKeepAlive extends AbstractPacket
+{
+    /**
+     * Constructs a new strongly typed wrapper for the given packet.
+     *
+     * @param handle - handle to the raw packet data.
+     * @param type   - the packet type.
+     */
+    protected WrapperPlayKeepAlive(PacketContainer handle, PacketType type)
+    {
+        super(handle, type);
+    }
+
+    /**
+     * Retrieve Keep Alive ID.
+     *
+     * @return The current Keep Alive ID
+     */
+    public long getKeepAliveId()
+    {
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC18:
+                return handle.getIntegers().read(0);
+            case MC112:
+            case MC115:
+            case MC116:
+            case MC117:
+            case MC118:
+                return handle.getLongs().read(0);
+            default:
+                throw new UnknownMinecraftException();
+        }
+    }
+
+    /**
+     * Set Keep Alive ID.
+     *
+     * @param value - new value.
+     */
+    public void setKeepAliveId(long value)
+    {
+        switch (ServerVersion.getActiveServerVersion()) {
+            case MC18:
+                handle.getIntegers().write(0, (int) value);
+                break;
+            case MC112:
+            case MC115:
+            case MC116:
+            case MC117:
+            case MC118:
+                handle.getLongs().write(0, value);
+                break;
+            default:
+                throw new UnknownMinecraftException();
+        }
+    }
+}

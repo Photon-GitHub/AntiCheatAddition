@@ -1,10 +1,11 @@
 # ------------------------------------------------------------------------------------------------------------------- #
-#                               _____               _      _  _  _    _                _____                          #
-#              /\        /\    / ____|    /\       | |    | |(_)| |  (_)              |  __ \                         #
-#             /  \      /  \  | |        /  \    __| |  __| | _ | |_  _   ___   _ __  | |__) |_ __  ___               #
-#            / /\ \    / /\ \ | |       / /\ \  / _` | / _` || || __|| | / _ \ | '_ \ |  ___/| '__|/ _ \              #
-#           / ____ \  / ____ \| |____  / ____ \| (_| || (_| || || |_ | || (_) || | | || |    | |  | (_) |             #
-#          /_/    \_\/_/    \_\\_____|/_/    \_\\__,_| \__,_||_| \__||_| \___/ |_| |_||_|    |_|   \___/              #
+#                              _   _  _____ _                _               _     _ _ _   _                          #
+#                  /\         | | (_)/ ____| |              | |     /\      | |   | (_) | (_)                         #
+#                 /  \   _ __ | |_ _| |    | |__   ___  __ _| |_   /  \   __| | __| |_| |_ _  ___  _ __               #
+#                / /\ \ | '_ \| __| | |    | '_ \ / _ \/ _` | __| / /\ \ / _` |/ _` | | __| |/ _ \| '_ \              #
+#               / ____ \| | | | |_| | |____| | | |  __/ (_| | |_ / ____ \ (_| | (_| | | |_| | (_) | | | |             #
+#              /_/    \_\_| |_|\__|_|\_____|_| |_|\___|\__,_|\__/_/    \_\__,_|\__,_|_|\__|_|\___/|_| |_|             #
+#                                                                                                                     #
 #                                                                                                                     #
 #                           __  __         _       _           ___ _        _                                         #
 #                          |  \/  |__ _ __| |___  | |__ _  _  | _ \ |_  ___| |_ ___ _ _                               #
@@ -37,15 +38,15 @@ BrandHider:
 
 # This will spoof the health of all players on your server so that DamageIndicators (and any other mod to that tries
 # to show other players' health, like HealthTags and ESP) becomes useless.
-# This is a clientsided spoof, meaning that your plugins are able to get the correct health.
+# This is a clientside spoof, meaning that your plugins are able to get the correct health.
 DamageIndicator:
   # Do you want to enable DamageIndicator?
   enabled: true
   # Spoof the health of the following entity categories.
   spoof:
-    players: true
-    animals: true
+    animals: false
     monsters: true
+    players: true
 
 # Various resource packs allow displaying enchantment information that a normal player would not be able to see, i.e.
 # the type and level of any enchantment.
@@ -64,7 +65,7 @@ EnchantmentHider:
 # This module uses advanced mathematics to determine if players can see each other.
 # If the players cannot see each other several actions will be taken to hide information on packet-level.
 # Due to abysmal performance of block lookups on newer minecraft versions 1.13+ ESP does no longer actually check the
-# entire distance between two players. Instead, it will use an heuristic to check the most relevant blocks. This can
+# entire distance between two players. Instead, it will use a heuristic to check the most relevant blocks. This can
 # lead to players being shown even though they are not visible.
 #
 # MAIN FUNCTIONS:
@@ -73,8 +74,8 @@ EnchantmentHider:
 #                    is supposed to be shown is sneaking)
 #
 # - Equipment-Hider: If a player cannot be directly seen by another player his equipment (hand, armour) will be hidden
-#                    from the observer. (This will make the life of cheaters harder as they cannot properly estimate
-#                    the combat strength of a player)
+#                    from the observer. (This will make the life of cheaters harder because they cannot properly
+#                    estimate the combat strength of a player)
 #                    This part will automatically disable itself on servers with MC versions below 1.11.
 Esp:
   # Do you want to enable anti - ESP?
@@ -84,22 +85,22 @@ Esp:
   #
   # If you create new worlds make sure to restart your server to make ESP cover the new worlds.
   enabled: false
-  # How many milliseconds shall be waited between two ESP cycles. Setting this too low may result in performance issues,
+  # How many ticks shall be waited between two ESP cycles. Setting this too low may result in performance issues,
   # setting it too high may result in players being hidden too long and popping up.
-  interval: 50
+  interval_ticks: 2
   # This determines whether minecraft's 3rd person modes should be considered for calculation as well.
   # Disabling this will reduce the required number of block queries by two thirds.
-  # Especially useful if you have gamemodes in which players are not supposed to use the third person mode.
+  # Especially useful if you have games in which players are not supposed to use the third person mode.
   calculate_third_person_modes: false
 
-# This automatically deletes old log files of both AAC and AACAdditionPro
+# This automatically deletes old log files of both AntiCheatAddition and the server.
 # It activates automatically on restart and after that in a 12-hour cycle.
 LogBot:
   # Do you want to enable LogBot?
   enabled: false
-  # After how many days should AACAdditionPro logs be deleted
+  # After how many days should AntiCheatAddition logs be deleted
   # Set to -1 to disable
-  AACAdditionPro: 10
+  AntiCheatAddition: 10
   # After how many days should server logs be deleted
   # Set to -1 to disable
   Server: 10
@@ -119,12 +120,10 @@ LogBot:
 AutoEat:
   # Do you want to enable the AutoEat check?
   enabled: true
-  # This message will appear in AAC's status when AAC is used.
-  aacfeatureinfo: "[AACAdditionPro] Player has botlike eating behaviour"
-  # Violation before AACAdditionPro starts to cancel the consume events.
+  # Violation before AntiCheatAddition starts to cancel the consume events.
   # Set this to 0 to never cancel the events.
   cancel_vl: 80
-  # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to consume an item for the
+  # After a detection which surpasses cancel_vl AntiCheatAddition cancels all attempts to consume an item for the
   # duration of timeout (in milliseconds).
   timeout: 5000
   # Map of violation levels to command
@@ -140,9 +139,7 @@ AutoEat:
 # This check does only work on minecraft versions 1.11 and beyond due to changes in the spigot API compared to older
 # versions and auto-disables itself accordingly.
 AutoFish:
-  # This message will appear in AAC's status when AAC hooking is used.
-  aac_status_message: "[AACAdditionPro] Player has botlike fishing behaviour"
-  # Violation before AACAdditionPro starts to cancel the fishing.
+  # Violation before AntiCheatAddition starts to cancel the fishing.
   # Please think of potential luck, because of this I do not recommend setting this to a value smaller than 7.
   # Set this to 0 to never cancel fishing.
   cancel_vl: 100
@@ -154,8 +151,6 @@ AutoFish:
     inhuman_reaction:
       # Do you want to enable the inhuman reaction part?
       enabled: true
-      # This message will appear in AAC's status when AAC is used.
-      aac_status_message: "[AACAdditionPro] The player's fishing reaction times are inhumanly fast."
       # How many milliseconds should have passed before a fishing action counts as legit.
       # This also influences the given vl according to a linear distribution - the faster and more inhuman someone
       # reacts, the more vl they will get.
@@ -166,8 +161,6 @@ AutoFish:
     consistency:
       # Do you want to enable the consistency part?
       enabled: true
-      # This message will appear in AAC's status when AAC is used.
-      aac_status_message: "[AACAdditionPro] The player's fishing times are inhumanly constant."
       # How many fishing attempts should be checked by the consistency check
       fishing_attempt_count: 5
       # The minimum variation a player has to have in their reaction times to count as non-cheating (in milliseconds)
@@ -193,12 +186,10 @@ AutoFish:
 AutoPotion:
   # Do you want to enable the AutoPotion check?
   enabled: true
-  # This message will appear in AAC's status when AAC is used.
-  aacfeatureinfo: "[AACAdditionPro] Player applies splash potions suspiciously"
-  # Violation before AACAdditionPro starts to cancel throwing potions.
+  # Violation before AntiCheatAddition starts to cancel throwing potions.
   # Set this to 0 to never cancel throwing potions.
   cancel_vl: 2
-  # After a detection which surpasses cancel_vl AACAdditionPro cancels all potion throws to effectively prevent the
+  # After a detection which surpasses cancel_vl AntiCheatAddition cancels all potion throws to effectively prevent the
   # cheat (in milliseconds)
   timeout: 1000
   # How fast the player must look in the initial direction once again to be regarded as having bot-like reaction speed
@@ -225,9 +216,7 @@ AutoPotion:
 Fastswitch:
   # Do you want to enable the Fastswitch check?
   enabled: true
-  # This message will appear in AAC's status when AAC is used.
-  aacfeatureinfo: "[AACAdditionPro] Player switches hotbar selection too quickly"
-  # Violation before AACAdditionPro starts to cancel the hotbar selections.
+  # Violation before AntiCheatAddition starts to cancel the hotbar selections.
   # Set this to 0 to never cancel hotbar selections.
   cancel_vl: 50
   # If a player has a ping higher than this value he bypasses the check
@@ -249,9 +238,7 @@ ImpossibleChat:
   # Do you want to enable the ImpossibleChat check?
   # Disabled by default as some servers might allow auto-chat modifications.
   enabled: false
-  # This message will appear in AAC's status when AAC is used.
-  aacfeatureinfo: "[AACAdditionPro] Player chats while being in an inventory."
-  # Violation before AACAdditionPro starts to cancel the messages.
+  # Violation before AntiCheatAddition starts to cancel the messages.
   # Set this to 0 to never cancel messages.
   cancel_vl: 75
   # Map of violation levels to command
@@ -264,8 +251,6 @@ ImpossibleChat:
 Inventory:
   # Do you want to enable the Inventory check?
   enabled: true
-  # This message will appear in AAC's status when AAC is used.
-  aacfeatureinfo: "[AACAdditionPro] Player has suspicious inventory interactions"
   # Control the different parts of Inventory
   parts:
     # This part detects bot-like behaviour with constant times between inventory clicks.
@@ -291,7 +276,7 @@ Inventory:
     Hit:
       # Do you want to enable the Hit part?
       enabled: true
-      # Violation before AACAdditionPro starts to cancel the hits.
+      # Violation before AntiCheatAddition starts to cancel the hits.
       # Set this to 0 to never cancel hits.
       cancel_vl: 60
     # The move part detects movement when a player is still in his inventory.
@@ -299,13 +284,13 @@ Inventory:
     Move:
       # Do you want to enable the Move part?
       enabled: true
-      # Violation before AACAdditionPro starts to cancel the movement.
+      # Violation before AntiCheatAddition starts to cancel the movement.
       # Set this to 0 to never cancel movement.
       cancel_vl: 60
       # The minimum TPS the server must have to activate this check
       # Low TPS will cause an extreme amount of false positives.
       min_tps: 19.5
-      # This is the time in milliseconds in which AACAdditionPro will not check a player after a teleport.
+      # This is the time in milliseconds in which AntiCheatAddition will not check a player after a teleport.
       # Increase this if you have false positive with high-ping players after teleports.
       # Please note that the definition of teleport is quite broad, including e.g. ender pearls, teleport commands,
       # respawns, etc.
@@ -321,7 +306,7 @@ Inventory:
     MultiInteraction:
       # Do you want to enable the MultiInteraction part?
       enabled: true
-      # Violation before AACAdditionPro starts to cancel the inventory interactions.
+      # Violation before AntiCheatAddition starts to cancel the inventory interactions.
       # Set this to 0 to never cancel interacts.
       cancel_vl: 25
       # If a player has a ping higher than this value he bypasses the check
@@ -348,7 +333,7 @@ Inventory:
     Rotation:
       # Do you want to enable the Rotation part?
       enabled: true
-      # This is the time in milliseconds in which AACAdditionPro will not check a player after a teleport.
+      # This is the time in milliseconds in which AntiCheatAddition will not check a player after a teleport.
       # Increase this if you have false positive with high-ping players after teleports.
       # Please note that the definition of teleport is quite broad, including e.g. ender pearls, teleport commands,
       # respawns, etc.
@@ -360,7 +345,7 @@ Inventory:
     Sprinting:
       # Do you want to enable the Sprinting part?
       enabled: true
-      # Violation before AACAdditionPro starts to cancel the inventory interactions.
+      # Violation before AntiCheatAddition starts to cancel the inventory interactions.
       # Set this to 0 to never cancel inventory interactions.
       cancel_vl: 110
   # Map of violation levels to command
@@ -374,8 +359,6 @@ Inventory:
 PacketAnalysis:
   # Do you want to enable the PacketAnalysis?
   enabled: true
-  # This message will appear in AAC's status when AAC is used.
-  aacfeatureinfo: "[AACAdditionPro] Player has suspicious packet behaviour"
   # Control the different parts of PacketAnalysis
   parts:
     # This part checks if after an attack the client sends an arm animation packet.
@@ -407,8 +390,6 @@ PacketAnalysis:
 Pingspoof:
   # Do you want to enable the Pingspoof check?
   enabled: true
-  # This message will appear in AAC's status when AAC hooking is used.
-  aac_status_message: "[AACAdditionPro] Player tries to spoof their ping"
   # How much is the player ping allowed to deviate from the tested ping (measured in ms)?
   ping_leniency: 150
   # How often should the ping be checked?
@@ -424,12 +405,10 @@ Pingspoof:
 Scaffold:
   # Do you want to enable the Scaffold check?
   enabled: true
-  # This message will appear in AAC's status when AAC is used.
-  aacfeatureinfo: "[AACAdditionPro] Player scaffolds suspiciously"
-  # Violation before AACAdditionPro starts to cancel block placement.
+  # Violation before AntiCheatAddition starts to cancel block placement.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 110
-  # After a detection which surpasses cancel_vl AACAdditionPro cancels all attempts to place a block in the given
+  # After a detection which surpasses cancel_vl AntiCheatAddition cancels all attempts to place a block in the given
   # time window to prevent further scaffolding (in milliseconds)
   timeout: 1000
   # Control the different parts of Scaffold
@@ -446,7 +425,7 @@ Scaffold:
     # This part is always enabled as it provides the basic framework.
     # The average part might add between 20 and 130 violation levels depending on the severity of the violation.
     Average:
-      # The minimum delay between block placements that will be enforced by AACAdditionPro (in milliseconds)
+      # The minimum delay between block placements that will be enforced by AntiCheatAddition (in milliseconds)
       delays:
         # This delay applies to all straight building techniques
         normal: 238
@@ -539,8 +518,6 @@ Skinblinker:
     UnusedBit:
       # Do you want to enable UnusedBit?
       enabled: true
-  # This message will appear in AAC's status when AAC is used.
-  aacfeatureinfo: "[AACAdditionPro] Player changes skin parts while actively moving"
   # Map of violation levels to command
   thresholds:
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Skinblinker"
@@ -551,10 +528,6 @@ Skinblinker:
 Teaming:
   # Do you want to enable the Teaming check?
   enabled: false
-  # This message will appear in AAC's status when AAC is used.
-  aacfeatureinfo: "[AACAdditionPro] Player might be teaming"
-  # The VL of the player is multiplied with this constant to get the score of the player used by AAC.
-  aac_score_multiplier: 10
   # How much delay should be between the check-waves
   # This must be below 15000 milliseconds.
   # Measured in milliseconds.
@@ -572,15 +545,15 @@ Teaming:
     - "world"
   # Here you can define zones in which the check should not be run
   # An entry is formatted as following:
-  # - <affected_world> <x1> <z1> <x2> <z2>
+  # - "<affected_world> <x1> <z1> <x2> <z2>"
   safe_zones:
     - "world -15 -15 15 15"
   # These ViolationLevel are cumulative for a team.
-  # E.g. a potential team of 6 members will generate 6 vl after every delay.
+  # That means that every team member gets (actual team size) - (allowed team size) vl per interval.
   thresholds:
-    4: "<YOUR_STAFFCHAT_COMMAND> {team} in {world} may be Teaming"
-    10: "<YOUR_STAFFCHAT_COMMAND> {team} in {world} are suspected for Teaming"
-    15: "<YOUR_STAFFCHAT_COMMAND> {team} in {world} are highly suspected for Teaming"
+    4: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} may be Teaming"
+    10: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} are suspected for Teaming"
+    15: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} are highly suspected for Teaming"
 
 # The Tower check detects cheats of the same name, modifications which allow you to build straight up (towering)
 # very fast.
@@ -588,9 +561,7 @@ Teaming:
 Tower:
   # Do you want to enable the Tower check?
   enabled: true
-  # This message will appear in AAC's status when AAC is used.
-  aacfeatureinfo: "[AACAdditionPro] Player builds a tower too fast"
-  # Violation before AACAdditionPro starts to cancel the block placements.
+  # Violation before AntiCheatAddition starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 6
   # If you have false positives decrease this SLIGHTLY.
@@ -599,7 +570,7 @@ Tower:
   tower_leniency: 1
   # Special leniency which is only applied if the player has the levitation effect
   levitation_leniency: 0.95
-  # After a detection which surpasses cancel_vl AACAdditionPro cancels all block placements in the given timeframe
+  # After a detection which surpasses cancel_vl AntiCheatAddition cancels all block placements in the given timeframe
   # to prevent further towering (in milliseconds)
   timeout: 6000
   # Map of violation levels to command
@@ -617,11 +588,62 @@ Tower:
 
 
 # Sentinel watches over your server detecting mods and sometimes certain cheat clients on join without false detections.
+# Also, it tries to identify various exploits and illegal items that are safe to ban.
 # It does so by listening for certain messages that clients and mods can send over channels invisible to the user.
 # You can define your own checks in the listening section.
 Sentinel:
-  # If AAC's feature system is used every detection will show up as with this score in AAC's status.
-  AACFeatureScore: 100
+  # Sentinel tries to identify and prevent various exploits on your server.
+  # These are usually safe to ban automatically.
+  Exploits:
+    # Even if you have command blocks disabled on your server (as you should), it might be good to know (and ban)
+    # players that used some exploit to get a command block. This will also delete any command blocks found in the
+    # player's inventory.
+    CommandBlock:
+      # Do you want to enable the CommandBlock exploit detection?
+      enabled: true
+      # What commands will be executed if the mod is detected.
+      # Automatic banning can be considered.
+      commands:
+        - "kick {player} Command block."
+
+    # Various cheat clients allow for the creation of "creative kill potions", exploiting a bug in Minecraft in which
+    # high instant health potion effects kill a player. Moreover, equally high instant damage potions can kill any
+    # undead mobs. This Sentinel detects the creation and usage of such potions, cancels any effects, and tries to
+    # delete the potions from the inventory and world on interaction.
+    CreativeKillPotion:
+      # Do you want to enable the CreativeKillPotion exploit detection?
+      enabled: true
+      # What commands will be executed if an illegal potion is detected.
+      # Automatic banning can be considered.
+      commands:
+        - "kick {player} Illegal Potion."
+
+    # Various cheat clients allow a player to attack themselves, giving them an advantage in some scenarios, like
+    # abusing a game's death mechanics.
+    SelfDamage:
+      # Do you want to enable the SelfDamage exploit detection?
+      enabled: true
+      # What commands will be executed if a self-attack is detected.
+      # Automatic banning can be considered.
+      commands:
+        - "kick {player} Self damage."
+
+    # This sentinel detects all potions that have one of the following features:
+    # + Blindness for at least min_effect_time seconds
+    # + Nausea for at least min_effect_time seconds
+    # Such potions are not available by brewing and unless a core feature on your server, should not be available to
+    # your players due to the detrimental effect on a player's experience. This detects the creation and usage of such
+    # potions, cancels any effects, and tries to delete the potions from the inventory.
+    TrollPotion:
+      # Do you want to enable the TrollPotion exploit detection?
+      enabled: true
+      # The minimum time in seconds of the effects to trigger a detection.
+      # Measured in seconds, must be greater than or equal to 0.
+      min_effect_time: 500
+      # What commands will be executed if an illegal potion is detected.
+      # Automatic banning can be considered.
+      commands:
+        - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} had a troll potion"
 
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   BetterSprinting:
@@ -780,8 +802,8 @@ Sentinel:
   # (1) Copy the section of PXMod
   # (2) Rename the section from PXMod to <NAME_OF_YOUR_CUSTOM_CHECK>
   # (3) Add the channels you want to listen to in incoming channels (e.g. minecraft:brand)
-  #     AACAdditionPro will automatically try to generate the legacy channel name and listen for that as well (in this
-  #     case MC|Brand). Generally, if you know the legacy name, add it as well and AACAdditionPro will automatically
+  #     AntiCheatAddition will automatically try to generate the legacy channel name and listen for that as well (in this
+  #     case MC|Brand). Generally, if you know the legacy name, add it as well and AntiCheatAddition will automatically
   #     choose the correct one for your server version.
   # (4) If needed, define what the message need to contain to trigger the check. E.g. if you are listening to
   #     minecraft:brand and superspecialmod:version to detect a mod you could define containsAny as:
@@ -795,7 +817,7 @@ Sentinel:
     Forge:
       # Do you want to enable Forge-Sentinel?
       enabled: false
-      # The channels AACAdditionPro will listen to.
+      # The channels AntiCheatAddition will listen to.
       incoming_channels:
         - "minecraft:brand"
         - "MC|Brand"
@@ -813,7 +835,7 @@ Sentinel:
     LiteLoader:
       # Do you want to enable LiteLoader-Sentinel?
       enabled: false
-      # The channels AACAdditionPro will listen to.
+      # The channels AntiCheatAddition will listen to.
       incoming_channels:
         - "minecraft:brand"
         - "MC|Brand"
@@ -831,7 +853,7 @@ Sentinel:
     PixelClient:
       # Do you want to enable PixelClient-Sentinel?
       enabled: false
-      # The channels AACAdditionPro will listen to.
+      # The channels AntiCheatAddition will listen to.
       incoming_channels:
         - "mc:pixel"
         - "MC|PIXEL"
@@ -849,7 +871,7 @@ Sentinel:
     PXMod:
       # Do you want to enable PXMod-Sentinel?
       enabled: false
-      # The channels AACAdditionPro will listen to.
+      # The channels AntiCheatAddition will listen to.
       incoming_channels:
         - "px:version"
         - "PX|Version"
@@ -867,7 +889,7 @@ Sentinel:
     Rift:
       # Do you want to enable Rift-Sentinel?
       enabled: false
-      # The channels AACAdditionPro will listen to.
+      # The channels AntiCheatAddition will listen to.
       incoming_channels:
         - "minecraft:brand"
         - "MC|Brand"
@@ -885,7 +907,7 @@ Sentinel:
     Winterware:
       # Do you want to enable Winterware-Sentinel?
       enabled: true
-      # The channels AACAdditionPro will listen to.
+      # The channels AntiCheatAddition will listen to.
       incoming_channels:
         - "lc:brand"
         - "LC|Brand"
@@ -908,23 +930,13 @@ Sentinel:
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
-
-# If this option is active and AAC is installed AACAdditionPro will not execute any commands specified above and instead
-# hooks the AAC feature system to allow you to specify punishments via the AAC config.
-# This way, AACAdditionPro's checks will also appear in AAC's status messages.
-#
-# When a module does not have the key aac_score_multiplier, it behaves like an implicit
-# aac_score_multiplier: 1.0
-# You can use this to change the multiplier of checks.
-UseAACFeatureSystem: true
-
 # Allows defining where to send debug messages to. Please note that when reporting bugs, you will need to provide the
-# debug file of AACAdditionPro, therefore this setting is enabled here.
+# debug file of AntiCheatAddition, therefore this setting is enabled here.
 Debug:
-  # Do you want AACAdditionPro to log into a log-file?
+  # Do you want AntiCheatAddition to log into a log-file?
   file: true
-  # Should players be able to get debug messages if they have the aacadditionpro.debug permission
-  # Players can toggle the debug output with the command /aacadditionpro debug
+  # Should players be able to get debug messages if they have the anticheataddition.debug permission
+  # Players can toggle the debug output with the command /anticheataddition debug
   players: false
   # Should the debug output be logged in the console (very spammy, only recommended for testing purposes)
   console: false

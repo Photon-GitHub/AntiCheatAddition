@@ -11,7 +11,7 @@ class UserTest
     @Test
     void materialTest()
     {
-        Dummy.mockAACAdditionPro();
+        Dummy.mockAntiCheatAddition();
 
         val obsidian = Material.OBSIDIAN;
         val user = Dummy.mockUser();
@@ -23,7 +23,7 @@ class UserTest
     @Test
     void counterTest()
     {
-        Dummy.mockAACAdditionPro();
+        Dummy.mockAntiCheatAddition();
         val user = Dummy.mockUser();
         val counter = user.getDataMap().getCounter(DataKey.Count.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS);
 

@@ -1,7 +1,6 @@
 package de.photon.anticheataddition;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.google.common.base.Preconditions;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.ViaAPI;
 import de.photon.anticheataddition.commands.MainCommand;
@@ -14,10 +13,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
-import me.konsolas.aac.api.AACAPI;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
@@ -42,7 +39,7 @@ public class AntiCheatAddition extends JavaPlugin
      */
     public static final int WORLD_EXPECTED_PLAYERS = 50;
 
-    private static final int BSTATS_PLUGIN_ID = 3265;
+    private static final int BSTATS_PLUGIN_ID = 14608;
 
 
     @Setter(AccessLevel.PROTECTED)
@@ -51,12 +48,11 @@ public class AntiCheatAddition extends JavaPlugin
     @Getter(lazy = true) private final FileConfiguration config = generateConfig();
     private ViaAPI<?> viaAPI;
     private FloodgateApi floodgateApi;
-    private AACAPI aacapi = null;
 
     private boolean bungeecord = false;
 
     /**
-     * Registers a new {@link Listener} for AACAdditionPro.
+     * Registers a new {@link Listener} for AntiCheatAddition.
      *
      * @param listener the {@link Listener} which should be registered in the {@link org.bukkit.plugin.PluginManager}
      */
@@ -100,7 +96,7 @@ public class AntiCheatAddition extends JavaPlugin
             //                                                Metrics                                                 //
             // ------------------------------------------------------------------------------------------------------ //
 
-            DebugSender.getInstance().sendDebug("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AACAdditionPro/3265", true, false);
+            DebugSender.getInstance().sendDebug("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608", true, false);
             val metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // The first getConfig call will automatically saveToFile and cache the config.
@@ -134,22 +130,6 @@ public class AntiCheatAddition extends JavaPlugin
             //                                                AAC hook                                                //
             // ------------------------------------------------------------------------------------------------------ //
 
-            // Call is correct here as Bukkit always has a player api.
-            if (this.getServer().getPluginManager().isPluginEnabled("AAC5")) {
-                if (this.getConfig().getBoolean("UseAACFeatureSystem", true)) {
-                    this.aacapi = Preconditions.checkNotNull(Bukkit.getServicesManager().load(AACAPI.class), "Did not find AAC API while hooking.");
-                    this.aacapi.registerCustomFeatureProvider(ModuleManager.getCustomFeatureProvider());
-                    DebugSender.getInstance().sendDebug("AAC hooked", true, false);
-                    metrics.addCustomChart(new SimplePie("aac", () -> "Hooked"));
-                } else {
-                    metrics.addCustomChart(new SimplePie("aac", () -> "Used"));
-                    DebugSender.getInstance().sendDebug("AAC found, but not hooked", true, false);
-                }
-            } else {
-                metrics.addCustomChart(new SimplePie("aac", () -> "Not used"));
-                DebugSender.getInstance().sendDebug("AAC not found", true, false);
-            }
-
             // Data storage
             DataUpdaterEvents.INSTANCE.register();
 
@@ -160,7 +140,7 @@ public class AntiCheatAddition extends JavaPlugin
             //                                           Enabled-Debug + API                                          //
             // ------------------------------------------------------------------------------------------------------ //
             this.getLogger().info(this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
-            DebugSender.getInstance().sendDebug("AACAdditionPro initialization completed.");
+            DebugSender.getInstance().sendDebug("AntiCheatAddition initialization completed.");
         } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //
@@ -181,7 +161,7 @@ public class AntiCheatAddition extends JavaPlugin
 
         DataUpdaterEvents.INSTANCE.unregister();
 
-        DebugSender.getInstance().sendDebug("AACAdditionPro disabled.", true, false);
+        DebugSender.getInstance().sendDebug("AntiCheatAddition disabled.", true, false);
         DebugSender.getInstance().sendDebug(" ", true, false);
     }
 }

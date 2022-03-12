@@ -23,7 +23,7 @@ import java.util.Set;
 class BatchTest
 {
     // Do not remove this unused variable, it is needed for initialization of mocking.
-    private static final AntiCheatAddition mock = Dummy.mockAACAdditionPro();
+    private static final AntiCheatAddition mock = Dummy.mockAntiCheatAddition();
     private static final User dummy = Dummy.mockUser();
     private static final ViolationModule dummyVlModule = Dummy.mockViolationModule("Inventory");
     private static final Broadcaster<Batch.Snapshot<String>> stringBroadcaster = new Broadcaster<>();

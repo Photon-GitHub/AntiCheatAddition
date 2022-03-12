@@ -116,16 +116,16 @@ public final class AntiCheatAdditionApi
     }
 
     /**
-     * This allows you to create your own modules, while leaving all the loading to AACAdditionPro.
+     * This allows you to create your own modules, while leaving all the loading to AntiCheatAddition.
      * PLEASE NOTE THAT YOU MIGHT USE PRIVATE APIS THAT MAY CHANGE BETWEEN VERSIONS.
-     * You can even add your own values to the config to AACAdditionPro and load them.
+     * You can even add your own values to the config to AntiCheatAddition and load them.
      * <p>
      * <p>
      * <p>
      * An in-depth tutorial is provided on the overview page of spigot, this is just the quick-start:
      * <p>1) Extend either {@link Module} or {@link ViolationModule}, depending on whether or not your Module is supposed to have a vls (ViolationModule) or not (Module)</p>
      * <p>If you know what you are doing you can also use {@link de.photon.anticheataddition.events.SentinelEvent} to create your own complex Sentinel checks.</p>
-     * <p>2) Supply the config string and add your module to the config of AACAdditionPro. Don't forget to add enabled.</p>
+     * <p>2) Supply the config string and add your module to the config of AntiCheatAddition. Don't forget to add enabled.</p>
      * <p>
      * <p>
      * <p>

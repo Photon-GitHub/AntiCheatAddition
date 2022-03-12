@@ -6,12 +6,12 @@ api-version: 1.15
 website: https://www.spigotmc.org/resources/anticheataddition.33590/
 
 depend: [ ProtocolLib ]
-softdepend: [ AAC5, ViaVersion ]
+softdepend: [ ViaVersion ]
 main: de.photon.anticheataddition.AntiCheatAddition
 
 commands:
   anticheataddition:
-    aliases: [ aacap, aacadp ]
+    aliases: [ aca ]
     description: The main command of AntiCheatAddition.
     usage: /anticheataddition
 

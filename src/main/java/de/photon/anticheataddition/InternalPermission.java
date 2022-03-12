@@ -5,11 +5,11 @@ import org.bukkit.permissions.Permissible;
 
 public enum InternalPermission
 {
-    BYPASS("aacadditionpro.bypass"),
-    DEBUG("aacadditionpro.debug"),
-    INFO("aacadditionpro.info"),
-    SETVL("aacadditionpro.setvl"),
-    TABLISTREMOVE("aacadditionpro.tablistremove");
+    BYPASS("anticheataddition.bypass"),
+    DEBUG("anticheataddition.debug"),
+    INFO("anticheataddition.info"),
+    SETVL("anticheataddition.setvl"),
+    TABLISTREMOVE("anticheataddition.tablistremove");
 
     @Getter private final String realPermission;
 

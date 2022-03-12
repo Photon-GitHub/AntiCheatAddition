@@ -11,18 +11,18 @@ import org.bukkit.command.CommandSender;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ChatMessage
 {
-    public static final String AACADDITIONPRO_PREFIX = ChatColor.AQUA + "[AACAdditionPro] " + ChatColor.GRAY;
+    public static final String ANTICHEAT_ADDITION_PREFIX = ChatColor.AQUA + "[AntiCheatAddition] " + ChatColor.GRAY;
 
     /**
-     * Sends a message with the AACAdditionPro prefix to a single recipient.
+     * Sends a message with the AntiCheatAddition prefix to a single recipient.
      */
     public static void sendMessage(CommandSender recipient, String message)
     {
-        recipient.sendMessage(AACADDITIONPRO_PREFIX + message);
+        recipient.sendMessage(ANTICHEAT_ADDITION_PREFIX + message);
     }
 
     /**
-     * Sends a message with the AACAdditionPro prefix to a single recipient.
+     * Sends a message with the AntiCheatAddition prefix to a single recipient.
      * This method should be called asynchronously, else use {@link #sendMessage(CommandSender, String)}
      */
     public static void sendSyncMessage(CommandSender recipient, String message)
@@ -31,17 +31,17 @@ public final class ChatMessage
     }
 
     /**
-     * Sends a message with the AACAdditionPro prefix to multiple recipients, caching the message for less String
+     * Sends a message with the AntiCheatAddition prefix to multiple recipients, caching the message for less String
      * concatenations.
      */
     public static void sendMessage(final Iterable<? extends CommandSender> senders, final String message)
     {
-        val prefixedMessage = AACADDITIONPRO_PREFIX + message;
+        val prefixedMessage = ANTICHEAT_ADDITION_PREFIX + message;
         for (CommandSender cs : senders) cs.sendMessage(prefixedMessage);
     }
 
     /**
-     * Sends a message with the AACAdditionPro prefix to multiple recipients, caching the message for less String
+     * Sends a message with the AntiCheatAddition prefix to multiple recipients, caching the message for less String
      * concatenations.
      * This method should be called asynchronously, else use {@link #sendMessage(Iterable, String)}
      */

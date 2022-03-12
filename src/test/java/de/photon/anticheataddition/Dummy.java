@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class Dummy
 {
-    public static AntiCheatAddition mockAACAdditionPro()
+    public static AntiCheatAddition mockAntiCheatAddition()
     {
         val config = YamlConfiguration.loadConfiguration(new File("src/main/resources/config.yml"));
         AntiCheatAddition mockAntiCheatAddition = Mockito.mock(AntiCheatAddition.class);

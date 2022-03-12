@@ -26,8 +26,8 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
 
     public MainCommand()
     {
-        super("aacadditionpro", CommandAttributes.builder()
-                                                 .addCommandHelp("The main command of AACAdditionPro", "To use a subcommands simply add it to the parent command:", "/aacadditionpro <subcommand>")
+        super("anticheataddition", CommandAttributes.builder()
+                                                 .addCommandHelp("The main command of AntiCheatAddition", "To use a subcommands simply add it to the parent command:", "/anticheataddition <subcommand>")
                                                  .addChildCommands(new DebugCommand(),
                                                                    new InfoCommand(),
                                                                    new SetVlCommand(),

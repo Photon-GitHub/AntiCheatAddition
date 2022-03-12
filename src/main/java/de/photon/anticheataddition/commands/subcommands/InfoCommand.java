@@ -22,7 +22,7 @@ public class InfoCommand extends InternalCommand
     {
         super("info", CommandAttributes.builder().exactArguments(1)
                                        .addCommandHelp("Displays all violation levels of a player.",
-                                                       "Syntax: /aacadditionpro info <player>")
+                                                       "Syntax: /anticheataddition info <player>")
                                        .setPermission(InternalPermission.INFO).build(), TabCompleteSupplier.builder().allPlayers());
     }
 

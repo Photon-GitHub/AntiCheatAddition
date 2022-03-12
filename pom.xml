@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.photon</groupId>
-    <artifactId>AACAdditionPro</artifactId>
+    <artifactId>AntiCheatAddition</artifactId>
     <version>8.0.0</version>
 
-    <name>AACAdditionPro</name>
-    <description>This plugin provides niche checks for cheats which are not covered by AAC</description>
+    <name>AntiCheatAddition</name>
+    <description>This plugin provides niche checks for cheats which are not covered by most anticheats.</description>
 
     <properties>
         <java.version>11</java.version>
@@ -27,7 +27,7 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <includes>
-                        <include>de/photon/aacadditionpro/</include>
+                        <include>de/photon/anticheataddition/</include>
                     </includes>
                     <meminitial>1024m</meminitial>
                     <maxmem>8192m</maxmem>
@@ -98,11 +98,6 @@
             <id>CodeMC</id>
             <url>https://repo.codemc.org/repository/maven-public</url>
         </repository>
-        <!-- The AAC api repo -->
-        <repository>
-            <id>janmm14-public</id>
-            <url>https://repo.janmm14.de/repository/public/</url>
-        </repository>
         <!-- Floodgate -->
         <repository>
             <id>opencollab-snapshot</id>
@@ -140,7 +135,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>
-            <version>4.1.72.Final</version>
+            <version>4.1.74.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -152,7 +147,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>2.2.1</version>
+            <version>3.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -164,13 +159,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>22.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>de.janmm14</groupId>
-            <artifactId>aac-api</artifactId>
-            <version>5.0.0</version>
+            <version>23.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

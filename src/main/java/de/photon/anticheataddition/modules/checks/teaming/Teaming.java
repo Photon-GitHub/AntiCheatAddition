@@ -5,7 +5,6 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimestampKey;
-import de.photon.anticheataddition.util.config.ConfigUtils;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
 import de.photon.anticheataddition.util.minecraft.world.Region;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -22,13 +21,15 @@ import java.util.stream.Collectors;
 
 public class Teaming extends ViolationModule implements Listener
 {
-    private final Set<Region> safeZones = ConfigUtils.loadImmutableStringOrStringList(this.getConfigString() + ".safe_zones").stream()
-                                                     .map(Region::parseRegion)
-                                                     .collect(Collectors.toUnmodifiableSet());
+    private final Set<Region> safeZones = loadStringList(".safe_zones")
+            .stream()
+            .map(Region::parseRegion)
+            .collect(Collectors.toUnmodifiableSet());
 
-    private final Set<World> enabledWorlds = ConfigUtils.loadImmutableStringOrStringList(this.getConfigString() + ".enabled_worlds").stream()
-                                                        .map(key -> Preconditions.checkNotNull(Bukkit.getWorld(key), "Config loading error: Unable to identify world for the teaming check. Please check your world names listed in the config."))
-                                                        .collect(Collectors.toUnmodifiableSet());
+    private final Set<World> enabledWorlds = loadStringList(".enabled_worlds")
+            .stream()
+            .map(key -> Preconditions.checkNotNull(Bukkit.getWorld(key), "Config loading error: Unable to identify world for the teaming check. Please check your world names listed in the config."))
+            .collect(Collectors.toUnmodifiableSet());
 
     private final double proximityRange = loadDouble(".proximity_range", 4.5);
     private final int noPvpTime = loadInt(".no_pvp_time", 6000);

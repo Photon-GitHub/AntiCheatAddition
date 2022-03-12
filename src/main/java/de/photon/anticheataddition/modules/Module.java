@@ -54,7 +54,7 @@ public abstract class Module
         return AntiCheatAddition.getInstance().getConfig().getString(configString + substring, def);
     }
 
-    protected List<String> loadStringList(String substring)
+    public List<String> loadStringList(String substring)
     {
         return ConfigUtils.loadImmutableStringOrStringList(configString + substring);
     }

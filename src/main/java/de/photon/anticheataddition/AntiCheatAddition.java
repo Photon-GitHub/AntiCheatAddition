@@ -114,7 +114,8 @@ public class AntiCheatAddition extends JavaPlugin
             DebugSender.getInstance().sendDebug("Floodgate " + (viaEnabled ? "hooked" : "not found"), true, false);
             if (floodgateEnabled) floodgateApi = FloodgateApi.getInstance();
 
-            metrics.addCustomChart(new SimplePie("viaversion", () -> viaEnabled ? "Used" : "Not used"));
+            metrics.addCustomChart(new SimplePie("viaversion", () -> viaEnabled ? "Yes" : "No"));
+            metrics.addCustomChart(new SimplePie("floodgate", () -> floodgateEnabled ? "Yes" : "No"));
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //

@@ -16,7 +16,8 @@ import java.util.logging.Level;
 @Value
 public class LogFile
 {
-    private static final DateTimeFormatter PREFIX_TIME_FORMATTER = DateTimeFormatter.ofPattern("[HH:mm:ss.SSS] ");
+    // Using the apostrophes to make sure that the String in between is not optional, but the brackets shall be printed.
+    private static final DateTimeFormatter PREFIX_TIME_FORMATTER = DateTimeFormatter.ofPattern("'['HH:mm:ss.SSS']' ");
 
     File backingFile;
     int dayOfTheYear;

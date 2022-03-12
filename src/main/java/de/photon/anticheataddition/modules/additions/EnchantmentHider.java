@@ -70,8 +70,8 @@ public class EnchantmentHider extends Module
     private void obfuscateEnchantments(IWrapperPlayEquipment wrapper)
     {
         for (var pair : wrapper.getSlotStackPairs()) {
-            val stack = pair.getSecond();
-            val enchantments = stack.getEnchantments();
+            final ItemStack stack = pair.getSecond();
+            var enchantments = stack.getEnchantments();
 
             if (enchantments.isEmpty()) continue;
 

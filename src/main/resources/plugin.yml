@@ -36,6 +36,7 @@ permissions:
       anticheataddition.bypass.anticheataddition_autofish.parts.inhuman_reaction: true
       anticheataddition.bypass.anticheataddition_autopotion: true
       anticheataddition.bypass.anticheataddition_damageindicator: true
+      anticheataddition.bypass.anticheataddition_enchantmenthider: true
       anticheataddition.bypass.anticheataddition_esp: true
       anticheataddition.bypass.anticheataddition_fastswitch: true
       anticheataddition.bypass.anticheataddition_impossiblechat: true

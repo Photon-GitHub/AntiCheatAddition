@@ -106,7 +106,7 @@ public class User implements Permissible
     {
         // Special handling here as a player could potentially log out after this and therefore cause a NPE.
         if (event.isCancelled() || event.isPlayerTemporary()) return null;
-        val player = event.getPlayer();
+        final Player player = event.getPlayer();
         return player == null ? null : getUser(player);
     }
 

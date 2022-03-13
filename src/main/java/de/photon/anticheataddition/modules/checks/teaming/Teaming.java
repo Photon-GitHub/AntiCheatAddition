@@ -64,9 +64,9 @@ public class Teaming extends ViolationModule implements Listener
 
         final double proximityRange = loadDouble(".proximity_range", 4.5);
         final int noPvpTime = loadInt(".no_pvp_time", 6000);
-        final int allowedSize = loadInt(".allowed_size", 1);
+        final long period = (loadLong(".delay", 5000) * 20L) / 1000L;
 
-        val period = (AntiCheatAddition.getInstance().getConfig().getInt(this.getConfigString() + ".delay") * 20L) / 1000L;
+        final int allowedSize = loadInt(".allowed_size", 1);
         Preconditions.checkArgument(allowedSize > 0, "The Teaming allowed_size must be greater than 0.");
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(

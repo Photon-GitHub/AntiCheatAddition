@@ -23,10 +23,6 @@ import java.util.stream.Collectors;
 
 public class Teaming extends ViolationModule implements Listener
 {
-    private final double proximityRange = loadDouble(".proximity_range", 4.5);
-    private final int noPvpTime = loadInt(".no_pvp_time", 6000);
-    private final int allowedSize = loadInt(".allowed_size", 1);
-
     public Teaming()
     {
         super("Teaming");
@@ -65,6 +61,10 @@ public class Teaming extends ViolationModule implements Listener
     {
         val safeZones = loadSafeZones();
         val enabledWorlds = loadEnabledWorlds();
+
+        final double proximityRange = loadDouble(".proximity_range", 4.5);
+        final int noPvpTime = loadInt(".no_pvp_time", 6000);
+        final int allowedSize = loadInt(".allowed_size", 1);
 
         val period = (AntiCheatAddition.getInstance().getConfig().getInt(this.getConfigString() + ".delay") * 20L) / 1000L;
         Preconditions.checkArgument(allowedSize > 0, "The Teaming allowed_size must be greater than 0.");
@@ -107,8 +107,8 @@ public class Teaming extends ViolationModule implements Listener
                                               .collect(Collectors.toUnmodifiableSet());
 
                             // Team is too big
-                            if (team.size() > this.allowedSize) {
-                                final int vl = team.size() - this.allowedSize;
+                            if (team.size() > allowedSize) {
+                                final int vl = team.size() - allowedSize;
                                 for (Player player : team) this.getManagement().flag(Flag.of(player).setAddedVl(vl));
                             }
                         }

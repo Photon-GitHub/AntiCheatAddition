@@ -72,7 +72,10 @@ public class User implements Permissible
         USERS.put(player.getUniqueId(), user);
 
         if (AntiCheatAddition.getInstance().getFloodgateApi() != null &&
-            AntiCheatAddition.getInstance().getFloodgateApi().isFloodgateId(player.getUniqueId())) FLOODGATE_USERS.add(user);
+            AntiCheatAddition.getInstance().getFloodgateApi().isFloodgateId(player.getUniqueId()))
+        {
+            FLOODGATE_USERS.add(user);
+        }
 
         if (InternalPermission.DEBUG.hasPermission(player)) DEBUG_USERS.add(user);
         return user;
@@ -102,8 +105,9 @@ public class User implements Permissible
     public static User safeGetUserFromPacketEvent(PacketEvent event)
     {
         // Special handling here as a player could potentially log out after this and therefore cause a NPE.
-        val player = event.getPlayer();
-        return event.isCancelled() || event.isPlayerTemporary() || player == null ? null : getUser(player);
+        if (event.isCancelled() || event.isPlayerTemporary()) return null;
+        final Player player = event.getPlayer();
+        return player == null ? null : getUser(player);
     }
 
     /**
@@ -342,8 +346,11 @@ public class User implements Permissible
      */
     public void setDebug(boolean debug)
     {
-        if (debug) DEBUG_USERS.add(this);
-        else DEBUG_USERS.remove(this);
+        if (debug) {
+            DEBUG_USERS.add(this);
+        } else {
+            DEBUG_USERS.remove(this);
+        }
     }
 
     public static class UserListener implements Listener

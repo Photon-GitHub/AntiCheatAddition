@@ -23,15 +23,6 @@ import java.util.stream.Collectors;
 
 public class Teaming extends ViolationModule implements Listener
 {
-    private final Set<World> enabledWorlds = loadStringList(".enabled_worlds")
-            .stream()
-            .map(key -> Preconditions.checkNotNull(Bukkit.getWorld(key), "Config loading error: Unable to identify world for the teaming check. Please check your world names listed in the config."))
-            .collect(Collectors.toUnmodifiableSet());
-
-    private final double proximityRange = loadDouble(".proximity_range", 4.5);
-    private final int noPvpTime = loadInt(".no_pvp_time", 6000);
-    private final int allowedSize = loadInt(".allowed_size", 1);
-
     public Teaming()
     {
         super("Teaming");
@@ -45,19 +36,39 @@ public class Teaming extends ViolationModule implements Listener
                 Region region = Region.parseRegion(s);
                 safeZones.add(region);
             } catch (NullPointerException e) {
-                DebugSender.getInstance().sendDebug("Unable to load safe zone \"" + s + "\" in teaming check!", true, true);
+                DebugSender.getInstance().sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, is the world correct?", true, true);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                DebugSender.getInstance().sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, are all coordinates present?", true, true);
             }
         }
         return Set.copyOf(safeZones);
     }
 
+    private Set<World> loadEnabledWorlds()
+    {
+        Set<World> worlds = new HashSet<>();
+        for (String key : loadStringList(".enabled_worlds")) {
+            World world = Bukkit.getWorld(key);
+            if (world == null) {
+                DebugSender.getInstance().sendDebug("Unable to load world \"" + key + "\" in teaming check.");
+                continue;
+            }
+            worlds.add(world);
+        }
+        return Set.copyOf(worlds);
+    }
 
     @Override
     public void enable()
     {
         val safeZones = loadSafeZones();
+        val enabledWorlds = loadEnabledWorlds();
 
-        val period = (AntiCheatAddition.getInstance().getConfig().getInt(this.getConfigString() + ".delay") * 20L) / 1000L;
+        final double proximityRange = loadDouble(".proximity_range", 4.5);
+        final int noPvpTime = loadInt(".no_pvp_time", 6000);
+        final long period = (loadLong(".delay", 5000) * 20L) / 1000L;
+
+        final int allowedSize = loadInt(".allowed_size", 1);
         Preconditions.checkArgument(allowedSize > 0, "The Teaming allowed_size must be greater than 0.");
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
@@ -98,8 +109,8 @@ public class Teaming extends ViolationModule implements Listener
                                               .collect(Collectors.toUnmodifiableSet());
 
                             // Team is too big
-                            if (team.size() > this.allowedSize) {
-                                final int vl = team.size() - this.allowedSize;
+                            if (team.size() > allowedSize) {
+                                final int vl = team.size() - allowedSize;
                                 for (Player player : team) this.getManagement().flag(Flag.of(player).setAddedVl(vl));
                             }
                         }

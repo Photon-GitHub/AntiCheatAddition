@@ -23,11 +23,6 @@ import java.util.stream.Collectors;
 
 public class Teaming extends ViolationModule implements Listener
 {
-    private final Set<World> enabledWorlds = loadStringList(".enabled_worlds")
-            .stream()
-            .map(key -> Preconditions.checkNotNull(Bukkit.getWorld(key), "Config loading error: Unable to identify world for the teaming check. Please check your world names listed in the config."))
-            .collect(Collectors.toUnmodifiableSet());
-
     private final double proximityRange = loadDouble(".proximity_range", 4.5);
     private final int noPvpTime = loadInt(".no_pvp_time", 6000);
     private final int allowedSize = loadInt(".allowed_size", 1);
@@ -51,11 +46,25 @@ public class Teaming extends ViolationModule implements Listener
         return Set.copyOf(safeZones);
     }
 
+    private Set<World> loadEnabledWorlds()
+    {
+        Set<World> worlds = new HashSet<>();
+        for (String key : loadStringList(".enabled_worlds")) {
+            World world = Bukkit.getWorld(key);
+            if (world == null) {
+                DebugSender.getInstance().sendDebug("Unable to load world \"" + key + "\" in teaming check.");
+                continue;
+            }
+            worlds.add(world);
+        }
+        return Set.copyOf(worlds);
+    }
 
     @Override
     public void enable()
     {
         val safeZones = loadSafeZones();
+        val enabledWorlds = loadEnabledWorlds();
 
         val period = (AntiCheatAddition.getInstance().getConfig().getInt(this.getConfigString() + ".delay") * 20L) / 1000L;
         Preconditions.checkArgument(allowedSize > 0, "The Teaming allowed_size must be greater than 0.");

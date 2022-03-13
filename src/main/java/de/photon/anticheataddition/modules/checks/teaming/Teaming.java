@@ -36,7 +36,9 @@ public class Teaming extends ViolationModule implements Listener
                 Region region = Region.parseRegion(s);
                 safeZones.add(region);
             } catch (NullPointerException e) {
-                DebugSender.getInstance().sendDebug("Unable to load safe zone \"" + s + "\" in teaming check!", true, true);
+                DebugSender.getInstance().sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, is the world correct?", true, true);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                DebugSender.getInstance().sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, are all coordinates present?", true, true);
             }
         }
         return Set.copyOf(safeZones);

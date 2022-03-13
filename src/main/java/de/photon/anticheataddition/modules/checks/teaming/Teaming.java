@@ -6,6 +6,7 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimestampKey;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
+import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.minecraft.world.Region;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -16,16 +17,12 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Teaming extends ViolationModule implements Listener
 {
-    private final Set<Region> safeZones = loadStringList(".safe_zones")
-            .stream()
-            .map(Region::parseRegion)
-            .collect(Collectors.toUnmodifiableSet());
-
     private final Set<World> enabledWorlds = loadStringList(".enabled_worlds")
             .stream()
             .map(key -> Preconditions.checkNotNull(Bukkit.getWorld(key), "Config loading error: Unable to identify world for the teaming check. Please check your world names listed in the config."))
@@ -40,14 +37,26 @@ public class Teaming extends ViolationModule implements Listener
         super("Teaming");
     }
 
-    private boolean playerNotInSafeZone(Player player)
+    private Set<Region> loadSafeZones()
     {
-        return this.safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(player.getLocation()));
+        Set<Region> safeZones = new HashSet<>();
+        for (String s : loadStringList(".safe_zones")) {
+            try {
+                Region region = Region.parseRegion(s);
+                safeZones.add(region);
+            } catch (NullPointerException e) {
+                DebugSender.getInstance().sendDebug("Unable to load safe zone \"" + s + "\" in teaming check!", true, true);
+            }
+        }
+        return Set.copyOf(safeZones);
     }
+
 
     @Override
     public void enable()
     {
+        val safeZones = loadSafeZones();
+
         val period = (AntiCheatAddition.getInstance().getConfig().getInt(this.getConfigString() + ".delay") * 20L) / 1000L;
         Preconditions.checkArgument(allowedSize > 0, "The Teaming allowed_size must be greater than 0.");
 
@@ -64,15 +73,16 @@ public class Teaming extends ViolationModule implements Listener
 
                             // Only add users if they meet the preconditions
                             // User has to be online and not bypassed
+                            val location = player.getLocation();
                             if (!User.isUserInvalid(user, this) &&
                                 // Correct gamemodes
                                 user.inAdventureOrSurvivalMode() &&
                                 // Not engaged in pvp
                                 user.getTimestampMap().at(TimestampKey.TEAMING_COMBAT_TAG).notRecentlyUpdated(noPvpTime) &&
                                 // Not in a bypassed region
-                                playerNotInSafeZone(player))
+                                safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(location)))
                             {
-                                players.add(player.getLocation().getX(), player.getLocation().getZ(), player);
+                                players.add(location.getX(), location.getZ(), player);
                             }
                         }
 

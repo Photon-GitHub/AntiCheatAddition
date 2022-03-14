@@ -3,17 +3,15 @@ package de.photon.anticheataddition.modules;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.InternalPermission;
-import de.photon.anticheataddition.util.config.ConfigUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.List;
 import java.util.Locale;
 
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY, onlyExplicitlyIncluded = true)
 @ToString
-public abstract class Module
+public abstract class Module implements ConfigLoading
 {
     @Getter protected final String configString;
     @Getter @EqualsAndHashCode.Include private final String moduleId;
@@ -27,36 +25,6 @@ public abstract class Module
         Preconditions.checkArgument(AntiCheatAddition.getInstance().getConfig().contains(configString), "Config path " + configString + " does not exist in the config. Please regenerate your config.");
         this.configString = configString;
         this.moduleId = "anticheataddition_" + configString.toLowerCase(Locale.ENGLISH);
-    }
-
-    public boolean loadBoolean(String substring, boolean def)
-    {
-        return AntiCheatAddition.getInstance().getConfig().getBoolean(configString + substring, def);
-    }
-
-    public int loadInt(String substring, int def)
-    {
-        return AntiCheatAddition.getInstance().getConfig().getInt(configString + substring, def);
-    }
-
-    public long loadLong(String substring, long def)
-    {
-        return AntiCheatAddition.getInstance().getConfig().getLong(configString + substring, def);
-    }
-
-    public double loadDouble(String substring, double def)
-    {
-        return AntiCheatAddition.getInstance().getConfig().getDouble(configString + substring, def);
-    }
-
-    public String loadString(String substring, String def)
-    {
-        return AntiCheatAddition.getInstance().getConfig().getString(configString + substring, def);
-    }
-
-    public List<String> loadStringList(String substring)
-    {
-        return ConfigUtils.loadImmutableStringOrStringList(configString + substring);
     }
 
     public void setEnabled(boolean enabled)

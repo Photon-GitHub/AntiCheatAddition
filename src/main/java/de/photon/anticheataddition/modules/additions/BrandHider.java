@@ -53,7 +53,7 @@ public class BrandHider extends Module implements Listener
     public void enable()
     {
         Bukkit.getMessenger().registerOutgoingPluginChannel(AntiCheatAddition.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow());
-        this.setBrand(AntiCheatAddition.getInstance().getConfig().getString(this.getConfigString() + ".brand"));
+        this.setBrand(loadString(".brand", "Some Spigot"));
 
         final long refreshRate = loadLong(".refresh_rate", 0);
         if (refreshRate > 0) Bukkit.getScheduler().scheduleSyncRepeatingTask(AntiCheatAddition.getInstance(), this::updateAllBrands, 20, refreshRate);

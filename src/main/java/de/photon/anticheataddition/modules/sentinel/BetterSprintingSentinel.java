@@ -45,8 +45,8 @@ public class BetterSprintingSentinel extends SentinelModule implements PluginMes
     {
         super("BetterSprinting");
 
-        val featureList = List.of(!AntiCheatAddition.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.survival_fly_boost"),
-                                  !AntiCheatAddition.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.enable_all_dirs"));
+        val featureList = List.of(!loadBoolean(".disable.survival_fly_boost", true),
+                                  !loadBoolean(".disable.enable_all_dirs", true));
 
         val settingsBuffer = Unpooled.buffer();
         settingsBuffer.writeByte(0);
@@ -58,7 +58,7 @@ public class BetterSprintingSentinel extends SentinelModule implements PluginMes
         val disableBuffer = Unpooled.buffer();
         // Bypassed players are already filtered out.
         // The mod provides a method to disable it
-        val disableGeneral = AntiCheatAddition.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.general");
+        final boolean disableGeneral = loadBoolean(".disable.general", false);
         disableBuffer.writeByte(disableGeneral ? 1 : 2);
         this.disableBufArray = disableBuffer.array();
         disableBuffer.release();

@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.modules.checks.tower;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimestampKey;
@@ -44,9 +43,9 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
             // Jump boost 4
             129.5);
 
-    private final int cancelVl = AntiCheatAddition.getInstance().getConfig().getInt(this.getModule().getConfigString() + ".cancel_vl");
-    private final double towerLeniency = AntiCheatAddition.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".tower_leniency");
-    private final double levitationLeniency = AntiCheatAddition.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".levitation_leniency");
+    private final int cancelVl = loadInt(".cancel_vl", 6);
+    private final double towerLeniency = loadDouble(".tower_leniency", 1);
+    private final double levitationLeniency = loadDouble(".levitation_leniency", 0.95);
 
     public TowerBatchProcessor(ViolationModule module)
     {

@@ -31,7 +31,6 @@ public class Pingspoof extends ViolationModule implements Listener
     private static final Polynomial VL_CALCULATOR_ABOVE_500 = new Polynomial(1.372434E-10, -2.53498E-6, 0.0160475, 25.7896);
 
     private final int pingLeniency = loadInt(".ping_leniency", 150);
-    private final int interval = loadInt(".interval", 30);
 
     private BukkitTask pingSpoofTask;
 
@@ -44,7 +43,7 @@ public class Pingspoof extends ViolationModule implements Listener
     public void enable()
     {
         // Seconds -> Ticks
-        val tickInterval = interval * 20;
+        val tickInterval = loadInt(".interval", 30) * 20;
 
         val transactionPacket = new WrapperPlayServerTransaction();
         transactionPacket.setAccepted(false);

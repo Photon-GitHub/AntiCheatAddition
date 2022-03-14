@@ -25,9 +25,9 @@ public class SchematicaSentinel extends SentinelModule implements Listener
          * SENDING 1 MEANS ALLOWING THE FEATURE -> NEGATION.
          * Link to the original plugin: https://www.spigotmc.org/resources/schematicaplugin.14411/
          */
-        byteBuf.writeBoolean(!AntiCheatAddition.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.printer"));
-        byteBuf.writeBoolean(!AntiCheatAddition.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.saveToFile"));
-        byteBuf.writeBoolean(!AntiCheatAddition.getInstance().getConfig().getBoolean(this.getConfigString() + ".disable.load"));
+        byteBuf.writeBoolean(!loadBoolean(".disable.printer", true));
+        byteBuf.writeBoolean(!loadBoolean(".disable.saveToFile", true));
+        byteBuf.writeBoolean(!loadBoolean(".disable.load", false));
 
         this.sentMessage = byteBuf.array();
         byteBuf.release();

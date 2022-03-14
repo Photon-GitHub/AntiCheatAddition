@@ -20,9 +20,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class InventoryAverageHeuristic extends ViolationModule implements Listener
 {
-    @Getter
-    private static final InventoryAverageHeuristic instance = new InventoryAverageHeuristic();
-
     private final int maxPing = loadInt(".max_ping", 400);
     private final double minTps = loadDouble(".min_tps", 15.5);
 

@@ -8,7 +8,6 @@ import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.Getter;
 import lombok.val;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,7 +16,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class InventorySprinting extends ViolationModule implements Listener
 {
-    @Getter
     private final int cancelVl = loadInt(".cancel_vl", 110);
 
     public InventorySprinting()

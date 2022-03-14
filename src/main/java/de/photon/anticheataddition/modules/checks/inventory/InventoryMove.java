@@ -33,10 +33,6 @@ import java.util.Set;
 
 public class InventoryMove extends ViolationModule
 {
-    @Getter
-    private static final InventoryMove instance = new InventoryMove();
-
-    @Getter
     private final int cancelVl = loadInt(".cancel_vl", 60);
     private final double minTps = loadDouble(".min_tps", 19.5);
     private final int lenienceMillis = loadInt(".lenience_millis", 0);

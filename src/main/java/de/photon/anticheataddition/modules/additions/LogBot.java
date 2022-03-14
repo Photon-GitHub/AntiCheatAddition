@@ -15,8 +15,8 @@ public class LogBot extends Module
 {
     private final Map<File, Long> logDeletionTimes = Map.of(
             // Put the respective times in milliseconds into the map.
-            new File("plugins/AntiCheatAddition", "logs"), TimeUnit.DAYS.toMillis(AntiCheatAddition.getInstance().getConfig().getLong(this.getConfigString() + ".AntiCheatAddition")),
-            new File("logs"), TimeUnit.DAYS.toMillis(AntiCheatAddition.getInstance().getConfig().getLong(this.getConfigString() + ".Server")));
+            new File("plugins/AntiCheatAddition", "logs"), TimeUnit.DAYS.toMillis(loadLong(".AntiCheatAddition", 10)),
+            new File("logs"), TimeUnit.DAYS.toMillis(loadLong(".Server", 10)));
 
     private int taskNumber;
 

@@ -18,7 +18,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class InventoryMultiInteraction extends ViolationModule implements Listener
 {
-    @Getter
     private final int cancelVl = loadInt(".cancel_vl", 25);
     private final int maxPing = loadInt(".max_ping", 400);
     private final double minTps = loadDouble(".min_tps", 18.5);

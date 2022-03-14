@@ -15,10 +15,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class InventoryHit extends ViolationModule implements Listener
 {
-    @Getter
-    private static final InventoryHit instance = new InventoryHit();
-
-    @Getter
     private final int cancelVl = loadInt(".cancel_vl", 60);
 
     public InventoryHit()

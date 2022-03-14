@@ -25,7 +25,6 @@ public class InventoryRotation extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-
         return ModuleLoader.builder(this)
                            .addPacketListeners(PacketAdapterBuilder.of(PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK).priority(ListenerPriority.LOWEST).onReceiving(event -> {
                                val user = User.safeGetUserFromPacketEvent(event);

@@ -19,6 +19,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 class CanSee
@@ -27,7 +28,8 @@ class CanSee
     public static final LoadingCache<Location, Boolean> BLOCK_CACHE = CacheBuilder.newBuilder()
                                                                                   // About 32000 locations can be cached at most.
                                                                                   .maximumSize(1L << 14)
-                                                                                  .expireAfterWrite(Duration.ofMillis(Esp.ESP_INTERVAL_TICKS * 50))
+                                                                                  // Use this expireAfterWrite method as the other is not compatible with 1.8.8.
+                                                                                  .expireAfterWrite(Esp.ESP_INTERVAL_TICKS * 50, TimeUnit.MILLISECONDS)
                                                                                   .build(new CacheLoader<>()
                                                                                   {
                                                                                       @Override

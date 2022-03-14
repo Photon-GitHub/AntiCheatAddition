@@ -26,7 +26,7 @@ public class SchematicaSentinel extends SentinelModule implements Listener
          * Link to the original plugin: https://www.spigotmc.org/resources/schematicaplugin.14411/
          */
         byteBuf.writeBoolean(!loadBoolean(".disable.printer", true));
-        byteBuf.writeBoolean(!loadBoolean(".disable.saveToFile", true));
+        byteBuf.writeBoolean(!loadBoolean(".disable.save", true));
         byteBuf.writeBoolean(!loadBoolean(".disable.load", false));
 
         this.sentMessage = byteBuf.array();

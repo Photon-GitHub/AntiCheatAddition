@@ -5,8 +5,14 @@ import de.photon.anticheataddition.util.config.ConfigUtils;
 
 import java.util.List;
 
+/**
+ * Defines methods to load values from the config.
+ */
 public interface ConfigLoading
 {
+    /**
+     * The base {@link String} the values are loaded from.
+     */
     String getConfigString();
 
     default boolean loadBoolean(String substring, boolean def)

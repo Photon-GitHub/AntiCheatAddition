@@ -103,6 +103,8 @@ public final class MathUtil
     {
         // 0^0 is defined as 1 here.
         if (power == 0) return 1;
+
+        // Some standard bases that can be calculated very fast.
         if (base == 0) return 0;
         if (base == 1) return 1;
         if (base == 2) return 1 << power;

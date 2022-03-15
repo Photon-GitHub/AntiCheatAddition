@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.modules.additions.esp;
 
-import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
@@ -40,7 +39,12 @@ public class Esp extends Module
     protected void enable()
     {
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
-        val worlds = Preconditions.checkNotNull(Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings"), "World settings are not present. Aborting ESP enable.");
+        val worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
+        if (worlds == null) {
+            DebugSender.getInstance().sendDebug("Cannot enable ESP as the world-settings in spigot.yml are not present.", true, true);
+            return;
+        }
+
         val worldKeys = worlds.getKeys(false);
 
         final int defaultTrackingRange = loadDefaultTrackingRange(worlds);
@@ -94,10 +98,10 @@ public class Esp extends Module
     private int loadDefaultTrackingRange(ConfigurationSection worlds)
     {
         if (worlds.contains(DEFAULT_WORLD_NAME + ENTITY_TRACKING_RANGE_PLAYERS)) {
-            DebugSender.getInstance().sendDebug("ESP | Default entity tracking range found.");
+            DebugSender.getInstance().sendDebug("ESP | Default entity tracking range found.", true, false);
             return worlds.getInt(DEFAULT_WORLD_NAME + ENTITY_TRACKING_RANGE_PLAYERS);
         } else {
-            DebugSender.getInstance().sendDebug("ESP | Default entity tracking range not found, using max tracking range.");
+            DebugSender.getInstance().sendDebug("ESP | Default entity tracking range not found, using max tracking range.", true, true);
             return MAX_TRACKING_RANGE;
         }
     }
@@ -113,7 +117,7 @@ public class Esp extends Module
             // Does the world exist?
             val world = Bukkit.getWorld(key);
             if (world == null || !worlds.contains(key + ENTITY_TRACKING_RANGE_PLAYERS)) {
-                DebugSender.getInstance().sendDebug("ESP | World " + key + " player tracking range could not be loaded, using default tracking range.");
+                DebugSender.getInstance().sendDebug("ESP | World " + key + " player tracking range could not be loaded, using default tracking range.", true, true);
                 continue;
             }
 

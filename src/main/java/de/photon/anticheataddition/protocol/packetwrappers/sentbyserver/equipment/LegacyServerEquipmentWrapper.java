@@ -41,16 +41,15 @@ public class LegacyServerEquipmentWrapper extends AbstractPacket implements IWra
     {
         boolean removed = slotStackPairs.removeIf(pair -> pair.getFirst().equals(slot));
         slotStackPairs.add(new Pair<>(slot, item));
-        handle.getSlotStackPairLists().write(0, slotStackPairs);
+        this.setSlot(slot);
+        this.setItem(item);
         return removed;
     }
 
     @Override
     public boolean removeSlotStackPair(ItemSlot slot)
     {
-        boolean removed = slotStackPairs.removeIf(pair -> pair.getFirst().equals(slot));
-        handle.getSlotStackPairLists().write(0, slotStackPairs);
-        return removed;
+        return slotStackPairs.removeIf(pair -> pair.getFirst().equals(slot));
     }
 
     @Override

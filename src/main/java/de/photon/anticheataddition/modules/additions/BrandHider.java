@@ -19,10 +19,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class BrandHider extends Module implements Listener
 {
     public static final BrandHider INSTANCE = new BrandHider();
-
     private static final FieldReflect PLAYER_CHANNELS_FIELD = Reflect.fromOBC("entity.CraftPlayer").field("channels");
-
-    private final long refreshRate = this.loadLong(".refresh_rate", 0);
 
     private String brand;
 
@@ -56,7 +53,9 @@ public class BrandHider extends Module implements Listener
     public void enable()
     {
         Bukkit.getMessenger().registerOutgoingPluginChannel(AntiCheatAddition.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow());
-        this.setBrand(AntiCheatAddition.getInstance().getConfig().getString(this.getConfigString() + ".brand"));
+        this.setBrand(loadString(".brand", "Some Spigot"));
+
+        final long refreshRate = loadLong(".refresh_rate", 0);
         if (refreshRate > 0) Bukkit.getScheduler().scheduleSyncRepeatingTask(AntiCheatAddition.getInstance(), this::updateAllBrands, 20, refreshRate);
     }
 

@@ -38,20 +38,6 @@ public final class MathUtil
     }
 
     /**
-     * Simple method to know if a number is close to another number
-     *
-     * @param a     The first number
-     * @param b     The second number
-     * @param range The maximum search range
-     *
-     * @return true if the numbers are in range of one another else false
-     */
-    public static boolean roughlyEquals(final double a, final double b, final double range)
-    {
-        return absDiff(a, b) <= range;
-    }
-
-    /**
      * Shortcut for number >= min && number <= max
      */
     public static boolean inRange(final int min, final int max, final int number)
@@ -115,19 +101,24 @@ public final class MathUtil
 
     public static int pow(int base, int power)
     {
+        // 0^0 is defined as 1 here.
+        if (power == 0) return 1;
+
+        // Some standard bases that can be calculated very fast.
+        if (base == 0) return 0;
+        if (base == 1) return 1;
+        if (base == 2) return 1 << power;
+
         switch (power) {
             // Default cases for fast normal usages.
-            case 0: return 1;
             case 1: return base;
             case 2: return base * base;
             case 3: return base * base * base;
             // Fast exponentiation algorithm.
             default:
-                int result = base;
-                while (power > 1) {
-                    if ((power & 1) == 1) {
-                        result *= base;
-                    }
+                int result = 1;
+                while (power > 0) {
+                    if ((power & 1) == 1) result *= base;
                     base *= base;
                     power >>= 1;
                 }

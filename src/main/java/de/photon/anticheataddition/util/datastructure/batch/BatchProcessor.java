@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.datastructure.batch;
 
 import com.google.common.base.Preconditions;
+import de.photon.anticheataddition.modules.ConfigLoading;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.broadcast.BroadcastReceiver;
@@ -20,7 +21,7 @@ import java.util.Set;
  * <p>
  * As the {@link Batch.Snapshot}s can be received asynchronously, thread safety is important.
  */
-public abstract class BatchProcessor<T> implements BroadcastReceiver<Batch.Snapshot<T>>
+public abstract class BatchProcessor<T> implements BroadcastReceiver<Batch.Snapshot<T>>, ConfigLoading
 {
     @Getter
     private final ViolationModule module;
@@ -57,4 +58,10 @@ public abstract class BatchProcessor<T> implements BroadcastReceiver<Batch.Snaps
     protected void subEnable() {}
 
     protected void subDisable() {}
+
+    @Override
+    public String getConfigString()
+    {
+        return this.module.getConfigString();
+    }
 }

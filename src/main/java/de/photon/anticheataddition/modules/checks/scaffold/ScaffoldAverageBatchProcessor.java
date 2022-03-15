@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.modules.checks.scaffold;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimestampKey;
@@ -19,11 +18,12 @@ import java.util.function.Predicate;
 class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.ScaffoldBlockPlace>
 {
     private static final Polynomial VL_CALCULATOR = new Polynomial(1.2222222, 20);
-    public final double normalDelay = AntiCheatAddition.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.normal");
-    public final double sneakingAddition = AntiCheatAddition.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.sneaking_addition");
-    public final double sneakingSlowAddition = AntiCheatAddition.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.sneaking_slow_addition");
-    public final double diagonalDelay = AntiCheatAddition.getInstance().getConfig().getDouble(this.getModule().getConfigString() + ".parts.Average.delays.diagonal");
-    private final int cancelVl = AntiCheatAddition.getInstance().getConfig().getInt(this.getModule().getConfigString() + ".cancel_vl");
+
+    public final double normalDelay = loadDouble(".parts.Average.delays.normal", 238);
+    public final double sneakingAddition = loadDouble(".parts.Average.delays.sneaking_addition", 30);
+    public final double sneakingSlowAddition = loadDouble(".parts.Average.delays.sneaking_slow_addition", 40);
+    public final double diagonalDelay = loadDouble(".parts.Average.delays.diagonal", 138);
+    private final int cancelVl = loadInt(".cancel_vl", 110);
 
     ScaffoldAverageBatchProcessor(ViolationModule module)
     {

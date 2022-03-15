@@ -34,7 +34,7 @@ public class Fastswitch extends ViolationModule
     {
         return (oldSlot == 0 && newHeldItemSlot == 8) ||
                (oldSlot == 8 && newHeldItemSlot == 0) ||
-               MathUtil.roughlyEquals(oldSlot, newHeldItemSlot, 1);
+               MathUtil.absDiff(oldSlot, newHeldItemSlot) <= 1;
     }
 
     @Override

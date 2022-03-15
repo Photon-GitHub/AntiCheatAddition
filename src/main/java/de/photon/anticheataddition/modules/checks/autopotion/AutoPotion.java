@@ -40,8 +40,8 @@ public class AutoPotion extends ViolationModule implements Listener
 
         if (user.getDataMap().getBoolean(DataKey.Bool.AUTOPOTION_ALREADY_THROWN)) {
             // The pitch and yaw values are nearly the same as before
-            if (MathUtil.roughlyEquals(event.getTo().getPitch(), user.getDataMap().getFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_PITCH), angleOffset) &&
-                MathUtil.roughlyEquals(event.getTo().getYaw(), user.getDataMap().getFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_YAW), angleOffset) &&
+            if (MathUtil.absDiff(event.getTo().getPitch(), user.getDataMap().getFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_PITCH)) <= angleOffset &&
+                MathUtil.absDiff(event.getTo().getYaw(), user.getDataMap().getFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_YAW)) <= angleOffset &&
                 // Happened in a short time frame
                 user.getTimestampMap().at(TimestampKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
             {

@@ -118,9 +118,7 @@ public final class MathUtil
             default:
                 int result = 1;
                 while (power > 0) {
-                    if ((power & 1) == 1) {
-                        result *= base;
-                    }
+                    if ((power & 1) == 1) result *= base;
                     base *= base;
                     power >>= 1;
                 }

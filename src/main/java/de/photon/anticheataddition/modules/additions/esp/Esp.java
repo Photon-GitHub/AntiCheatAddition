@@ -110,14 +110,14 @@ public class Esp extends Module
             // Skip the default world range.
             if (DEFAULT_WORLD_NAME.equals(key)) continue;
 
-            final int trackingRange = worlds.getInt(key + ENTITY_TRACKING_RANGE_PLAYERS);
-
             // Does the world exist?
             val world = Bukkit.getWorld(key);
-            if (world == null) {
-                DebugSender.getInstance().sendDebug("ESP | World " + key + " could not be loaded, using default tracking range.");
+            if (world == null || !worlds.contains(key + ENTITY_TRACKING_RANGE_PLAYERS)) {
+                DebugSender.getInstance().sendDebug("ESP | World " + key + " player tracking range could not be loaded, using default tracking range.");
                 continue;
             }
+
+            final int trackingRange = worlds.getInt(key + ENTITY_TRACKING_RANGE_PLAYERS);
 
             // Is the tracking range smaller than the max tracking range?
             if (trackingRange < MAX_TRACKING_RANGE) playerTrackingRanges.put(Bukkit.getWorld(key), trackingRange);

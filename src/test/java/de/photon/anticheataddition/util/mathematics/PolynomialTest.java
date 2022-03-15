@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.util;
+package de.photon.anticheataddition.util.mathematics;
 
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;

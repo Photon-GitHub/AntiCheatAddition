@@ -69,7 +69,7 @@ public class Esp extends Module
                     final Player observer = observerNode.getElement();
 
                     for (var playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
-                        val watched = playerNode.getElement();
+                        final Player watched = playerNode.getElement();
 
                         // Less than 1 block distance (removes the player themselves and any very close player)
                         if (observerNode.distanceSquared(playerNode) < 1 || CanSee.canSee(observer, watched)) {
@@ -105,7 +105,7 @@ public class Esp extends Module
     @NotNull
     private Map<World, Integer> loadWorldTrackingRanges(ConfigurationSection worlds, Set<String> worldKeys)
     {
-        final Map<World, Integer> playerTrackingRanges = new HashMap<>();
+        val playerTrackingRanges = new HashMap<World, Integer>();
         for (String key : worldKeys) {
             // Skip the default world range.
             if (DEFAULT_WORLD_NAME.equals(key)) continue;
@@ -113,7 +113,7 @@ public class Esp extends Module
             final int trackingRange = worlds.getInt(key + ENTITY_TRACKING_RANGE_PLAYERS);
 
             // Does the world exist?
-            final World world = Bukkit.getWorld(key);
+            val world = Bukkit.getWorld(key);
             if (world == null) {
                 DebugSender.getInstance().sendDebug("ESP | World " + key + " could not be loaded, using default tracking range.");
                 continue;

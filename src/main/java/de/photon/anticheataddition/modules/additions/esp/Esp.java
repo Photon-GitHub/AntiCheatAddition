@@ -5,17 +5,20 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.config.Configs;
-import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeQueue;
-import de.photon.anticheataddition.util.mathematics.MathUtil;
+import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.visibility.PlayerVisibility;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,8 +26,10 @@ public class Esp extends Module
 {
     public static final long ESP_INTERVAL_TICKS = AntiCheatAddition.getInstance().getConfig().getLong("Esp.interval_ticks", 2L);
 
-    private static final int MAX_TRACKING_RANGE = MathUtil.pow(139, 2);
+    public static final String ENTITY_TRACKING_RANGE_PLAYERS = ".entity-tracking-range.players";
     private static final String DEFAULT_WORLD_NAME = "default";
+
+    private static final int MAX_TRACKING_RANGE = 139;
 
     public Esp()
     {
@@ -38,15 +43,8 @@ public class Esp extends Module
         val worlds = Preconditions.checkNotNull(Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings"), "World settings are not present. Aborting ESP enable.");
         val worldKeys = worlds.getKeys(false);
 
-        final int defaultTrackingRange = worldKeys.contains(DEFAULT_WORLD_NAME) ? worlds.getInt(DEFAULT_WORLD_NAME + ".entity-tracking-range.players") : MAX_TRACKING_RANGE;
-
-        val playerTrackingRanges = worldKeys.stream()
-                                            .filter(key -> !DEFAULT_WORLD_NAME.equals(key))
-                                            // Squared distance.
-                                            .map(key -> Pair.of(Bukkit.getWorld(key), MathUtil.pow(worlds.getInt(key + ".entity-tracking-range.players"), 2)))
-                                            // After MAX_TRACKING_RANGE, we do not need to check the full tracking range anymore.
-                                            .filter(pair -> pair.getSecond() < MAX_TRACKING_RANGE)
-                                            .collect(Collectors.toUnmodifiableMap(Pair::getFirst, Pair::getSecond));
+        final int defaultTrackingRange = loadDefaultTrackingRange(worlds);
+        final Map<World, Integer> playerTrackingRanges = loadWorldTrackingRanges(worlds, worldKeys);
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
@@ -91,6 +89,40 @@ public class Esp extends Module
                 playerQuadTree.clear();
             }
         }, 100, ESP_INTERVAL_TICKS);
+    }
+
+    private int loadDefaultTrackingRange(ConfigurationSection worlds)
+    {
+        if (worlds.contains(DEFAULT_WORLD_NAME + ENTITY_TRACKING_RANGE_PLAYERS)) {
+            DebugSender.getInstance().sendDebug("ESP | Default entity tracking range found.");
+            return worlds.getInt(DEFAULT_WORLD_NAME + ENTITY_TRACKING_RANGE_PLAYERS);
+        } else {
+            DebugSender.getInstance().sendDebug("ESP | Default entity tracking range not found, using max tracking range.");
+            return MAX_TRACKING_RANGE;
+        }
+    }
+
+    @NotNull
+    private Map<World, Integer> loadWorldTrackingRanges(ConfigurationSection worlds, Set<String> worldKeys)
+    {
+        final Map<World, Integer> playerTrackingRanges = new HashMap<>();
+        for (String key : worldKeys) {
+            // Skip the default world range.
+            if (DEFAULT_WORLD_NAME.equals(key)) continue;
+
+            final int trackingRange = worlds.getInt(key + ENTITY_TRACKING_RANGE_PLAYERS);
+
+            // Does the world exist?
+            final World world = Bukkit.getWorld(key);
+            if (world == null) {
+                DebugSender.getInstance().sendDebug("ESP | World " + key + " could not be loaded, using default tracking range.");
+                continue;
+            }
+
+            // Is the tracking range smaller than the max tracking range?
+            if (trackingRange < MAX_TRACKING_RANGE) playerTrackingRanges.put(Bukkit.getWorld(key), trackingRange);
+        }
+        return Map.copyOf(playerTrackingRanges);
     }
 }
 

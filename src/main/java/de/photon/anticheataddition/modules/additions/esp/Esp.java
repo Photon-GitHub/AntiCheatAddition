@@ -25,7 +25,7 @@ public class Esp extends Module
 {
     public static final long ESP_INTERVAL_TICKS = AntiCheatAddition.getInstance().getConfig().getLong("Esp.interval_ticks", 2L);
 
-    public static final String ENTITY_TRACKING_RANGE_PLAYERS = ".entity-tracking-range.players";
+    private static final String ENTITY_TRACKING_RANGE_PLAYERS = ".entity-tracking-range.players";
     private static final String DEFAULT_WORLD_NAME = "default";
 
     private static final int MAX_TRACKING_RANGE = 139;

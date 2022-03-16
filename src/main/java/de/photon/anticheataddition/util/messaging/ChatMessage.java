@@ -51,14 +51,6 @@ public final class ChatMessage
     }
 
     /**
-     * Sends the "You don't have permission to do that." message with prefix to a recipient.
-     */
-    public static void sendNoPermissionMessage(CommandSender recipient)
-    {
-        sendMessage(recipient, "You don't have permission to do that.");
-    }
-
-    /**
      * Sends the "The specified player could not be found." message with prefix to a recipient.
      */
     public static void sendPlayerNotFoundMessage(CommandSender recipient)

@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.minecraft.movement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
@@ -27,7 +26,7 @@ public class MovementSimulator
 
     public void tickUntil(Predicate<MovementSimulator> condition, int maxTicks)
     {
-        val lastTick = tick + maxTicks;
+        final int lastTick = tick + maxTicks;
         while (tick < lastTick && !condition.test(this)) this.tick();
     }
 

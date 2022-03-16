@@ -1,5 +1,8 @@
 package de.photon.anticheataddition.util.mathematics;
 
+import com.google.common.base.Preconditions;
+
+import java.util.Arrays;
 import java.util.function.DoubleFunction;
 
 /**
@@ -20,7 +23,7 @@ public class Polynomial implements DoubleFunction<Double>
      */
     public Polynomial(double... coefficients)
     {
-        this.coefficients = coefficients;
+        this.coefficients = Preconditions.checkNotNull(coefficients, "Tried to create Polynomial with null coefficients.");
     }
 
     @Override
@@ -32,5 +35,20 @@ public class Polynomial implements DoubleFunction<Double>
             result += this.coefficients[i];
         }
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Polynomial that = (Polynomial) o;
+        return Arrays.equals(coefficients, that.coefficients);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Arrays.hashCode(coefficients);
     }
 }

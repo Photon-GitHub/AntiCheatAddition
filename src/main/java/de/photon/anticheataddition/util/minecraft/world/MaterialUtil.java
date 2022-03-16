@@ -20,30 +20,28 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MaterialUtil
 {
+
+    /**
+     * Materials which bounce the player up when jumping or landing on them.
+     */
+    public static final Set<Material> BOUNCE_MATERIALS;
+    /**
+     * Materials which can cause an automatic step upwards (e.g. slabs and stairs)
+     */
+    public static final Set<Material> AUTO_STEP_MATERIALS;
+    public static final Material EXPERIENCE_BOTTLE;
+    public static final Material SPAWNER;
+    public static final Set<Material> LIQUIDS;
+    /**
+     * Contains all containers that need a free space of any kind above the container (e.g. chests with a stair above)
+     */
+    public static final Set<Material> FREE_SPACE_CONTAINERS;
     // A set of materials which hitboxes changed in minecraft 1.9
     public static final Set<Material> CHANGED_HITBOX_MATERIALS = ServerVersion.is18() ? Sets.immutableEnumSet(Material.getMaterial("STAINED_GLASS_PANE"),
                                                                                                               Material.getMaterial("THIN_GLASS"),
                                                                                                               Material.getMaterial("IRON_FENCE"),
                                                                                                               Material.CHEST,
                                                                                                               Material.ANVIL) : Set.of();
-    /**
-     * Materials which can cause an automatic step upwards (e.g. slabs and stairs)
-     */
-    public static final Set<Material> AUTO_STEP_MATERIALS;
-
-    /**
-     * Materials which bounce the player up when jumping or landing on them.
-     */
-    public static final Set<Material> BOUNCE_MATERIALS;
-
-    public static final Material EXPERIENCE_BOTTLE;
-    public static final Material SPAWNER;
-    public static final Set<Material> LIQUIDS;
-
-    /**
-     * Contains all containers that need a free space of any kind above the container (e.g. chests with a stair above)
-     */
-    public static final Set<Material> FREE_SPACE_CONTAINERS;
 
     static {
         val autoStepMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
@@ -93,10 +91,10 @@ public final class MaterialUtil
     @SafeVarargs
     public static Set<Material> ofTags(Tag<Material>... tags)
     {
-        return Sets.immutableEnumSet(Arrays.stream(tags)
-                                           .map(Tag::getValues)
-                                           .flatMap(Set::stream)
-                                           .collect(Collectors.toUnmodifiableSet()));
+        return Arrays.stream(tags)
+                     .map(Tag::getValues)
+                     .flatMap(Set::stream)
+                     .collect(Collectors.toCollection(() -> EnumSet.noneOf(Material.class)));
     }
 
     /**

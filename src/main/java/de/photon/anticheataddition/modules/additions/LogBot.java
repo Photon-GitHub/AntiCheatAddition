@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class LogBot extends Module
@@ -30,7 +29,7 @@ public class LogBot extends Module
     {
         // Start a daily executed task to clean up the logs.
         taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(AntiCheatAddition.getInstance(), () -> {
-            val currentTime = System.currentTimeMillis();
+            final long currentTime = System.currentTimeMillis();
 
             logDeletionTimes.forEach(
                     (logFolder, timeToDelete) ->
@@ -44,9 +43,10 @@ public class LogBot extends Module
                             return;
                         }
 
-                        val files = Optional.ofNullable(logFolder.listFiles()).orElse(new File[0]);
+                        val files = logFolder.listFiles();
+                        if (files == null) return;
 
-                        for (val file : files) {
+                        for (File file : files) {
                             val fileName = file.getName();
                             // Be sure it is a log file of AntiCheatAddition (.log) or a log file of the server (.log.gz)
                             if ((fileName.endsWith(".log") || fileName.endsWith(".log.gz")) && currentTime - file.lastModified() > timeToDelete) {

@@ -20,8 +20,6 @@ public interface PlayerVisibility
      */
     void setEquipmentHidden(Player observer, Set<Entity> hideEquipment);
 
-    void clearPlayer(Player observer);
-
     void enable();
 
     void disable();

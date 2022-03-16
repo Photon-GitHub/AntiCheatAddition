@@ -155,16 +155,6 @@ abstract class PlayerInformationHider implements Listener
         this.onHide(observer, newHidden);
     }
 
-    public void revealAllEntities(@NotNull Player observer)
-    {
-        Collection<Entity> oldEntities;
-        synchronized (hiddenFromPlayerMap) {
-            oldEntities = hiddenFromPlayerMap.removeAll(observer);
-        }
-
-        updateEntities(observer, oldEntities);
-    }
-
     public void updateEntities(@NotNull Player observer, Collection<Entity> entities)
     {
         // Performance optimization for no changes.

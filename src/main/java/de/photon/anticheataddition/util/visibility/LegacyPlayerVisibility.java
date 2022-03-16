@@ -22,13 +22,6 @@ class LegacyPlayerVisibility implements PlayerVisibility
         equipmentHider.setHiddenEntities(observer, hideEquipment);
     }
 
-    @Override
-    public void clearPlayer(Player observer)
-    {
-        playerHider.revealAllEntities(observer);
-        equipmentHider.revealAllEntities(observer);
-    }
-
     public void enable()
     {
         equipmentHider.registerListeners();

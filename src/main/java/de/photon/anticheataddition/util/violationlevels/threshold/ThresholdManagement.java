@@ -31,12 +31,9 @@ public interface ThresholdManagement
         val thresholds = keys.stream().map(key -> new Threshold(Integer.parseInt(key), ConfigUtils.loadImmutableStringOrStringList(configPath + '.' + key))).collect(Collectors.toList());
 
         switch (thresholds.size()) {
-            case 0:
-                return EMPTY;
-            case 1:
-                return new SingleThresholds(thresholds.get(0));
-            default:
-                return new MultiThresholds(thresholds);
+            case 0: return EMPTY;
+            case 1: return new SingleThresholds(thresholds.get(0));
+            default: return new MultiThresholds(thresholds);
         }
     }
 

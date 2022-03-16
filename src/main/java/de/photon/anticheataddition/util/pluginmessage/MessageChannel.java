@@ -12,6 +12,8 @@ import java.util.Optional;
 
 public interface MessageChannel
 {
+    MessageChannel EMPTY = Optional::empty;
+
     MessageChannel MC_BRAND_CHANNEL = MessageChannel.of("minecraft", "brand", "MC|Brand");
     MessageChannel LABYMOD_CHANNEL = MessageChannel.of("labymod3", "main", "LMC");
     MessageChannel SCHEMATICA_CHANNEL = MessageChannel.ofLegacy("schematica");
@@ -56,16 +58,16 @@ public interface MessageChannel
     static MessageChannel of(final String prefix, final String key, final String legacyName)
     {
         if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
-            return legacyName == null ? EmptyMessageChannel.EMPTY : new LegacyMessageChannel(legacyName);
+            return legacyName == null ? MessageChannel.EMPTY : new LegacyMessageChannel(legacyName);
         } else {
-            return prefix == null || key == null ? EmptyMessageChannel.EMPTY : new KeyMessageChannel(prefix, key);
+            return prefix == null || key == null ? MessageChannel.EMPTY : new KeyMessageChannel(prefix, key);
         }
     }
 
     @NotNull
     static MessageChannel ofLegacy(final String legacyName)
     {
-        return legacyName != null && ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ? new LegacyMessageChannel(legacyName) : EmptyMessageChannel.EMPTY;
+        return legacyName != null && ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ? new LegacyMessageChannel(legacyName) : MessageChannel.EMPTY;
     }
 
     /**

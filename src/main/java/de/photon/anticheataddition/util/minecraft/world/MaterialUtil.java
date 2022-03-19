@@ -84,7 +84,7 @@ public final class MaterialUtil
     {
         return Arrays.stream(Material.values())
                      .filter(material -> StringUtils.endsWithAny(material.name(), ends))
-                     .collect(Collectors.toCollection(() -> EnumSet.noneOf(Material.class)));
+                     .collect(Sets.toImmutableEnumSet());
     }
 
     @SafeVarargs
@@ -93,7 +93,7 @@ public final class MaterialUtil
         return Arrays.stream(tags)
                      .map(Tag::getValues)
                      .flatMap(Set::stream)
-                     .collect(Collectors.toCollection(() -> EnumSet.noneOf(Material.class)));
+                     .collect(Sets.toImmutableEnumSet());
     }
 
     /**

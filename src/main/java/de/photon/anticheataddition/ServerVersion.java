@@ -11,9 +11,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Getter
@@ -53,9 +51,8 @@ public enum ServerVersion
     private final boolean supported;
 
     // Lazy getting as most versions are not supported or used.
-    @Getter(lazy = true) private final Set<ServerVersion> supVersionsTo = generateVersionsTo();
-    @Getter(lazy = true) private final Set<ServerVersion> supVersionsFrom = generateVersionsFrom();
-
+    @Getter private final Set<ServerVersion> supVersionsTo = generateVersionsTo();
+    @Getter private final Set<ServerVersion> supVersionsFrom = generateVersionsFrom();
 
     /**
      * Shorthand for activeServerVersion == MC18.
@@ -95,17 +92,17 @@ public enum ServerVersion
 
     private Set<ServerVersion> generateVersionsTo()
     {
-        return Sets.immutableEnumSet(Arrays.stream(values())
-                                           .filter(ServerVersion::isSupported)
-                                           .filter(version -> this.compareTo(version) >= 0)
-                                           .collect(Collectors.toCollection(() -> EnumSet.noneOf(ServerVersion.class))));
+        return Arrays.stream(values())
+                     .filter(ServerVersion::isSupported)
+                     .filter(version -> this.compareTo(version) >= 0)
+                     .collect(Sets.toImmutableEnumSet());
     }
 
     private Set<ServerVersion> generateVersionsFrom()
     {
-        return Sets.immutableEnumSet(Arrays.stream(values())
-                                           .filter(ServerVersion::isSupported)
-                                           .filter(version -> this.compareTo(version) <= 0)
-                                           .collect(Collectors.toCollection(() -> EnumSet.noneOf(ServerVersion.class))));
+        return Arrays.stream(values())
+                     .filter(ServerVersion::isSupported)
+                     .filter(version -> this.compareTo(version) <= 0)
+                     .collect(Sets.toImmutableEnumSet());
     }
 }

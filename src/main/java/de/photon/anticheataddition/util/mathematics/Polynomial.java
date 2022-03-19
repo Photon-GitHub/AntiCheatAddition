@@ -1,8 +1,8 @@
 package de.photon.anticheataddition.util.mathematics;
 
 import com.google.common.base.Preconditions;
+import lombok.EqualsAndHashCode;
 
-import java.util.Arrays;
 import java.util.function.DoubleFunction;
 
 /**
@@ -10,6 +10,7 @@ import java.util.function.DoubleFunction;
  * Safe to use asynchronously.
  * The evaluation will be done via Horner's method to reduce unnecessary calculations.
  */
+@EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
 public class Polynomial implements DoubleFunction<Double>
 {
     private final double[] coefficients;
@@ -35,20 +36,5 @@ public class Polynomial implements DoubleFunction<Double>
             result += this.coefficients[i];
         }
         return result;
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Polynomial that = (Polynomial) o;
-        return Arrays.equals(coefficients, that.coefficients);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Arrays.hashCode(coefficients);
     }
 }

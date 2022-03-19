@@ -346,11 +346,8 @@ public class User implements Permissible
      */
     public void setDebug(boolean debug)
     {
-        if (debug) {
-            DEBUG_USERS.add(this);
-        } else {
-            DEBUG_USERS.remove(this);
-        }
+        if (debug) DEBUG_USERS.add(this);
+        else DEBUG_USERS.remove(this);
     }
 
     public static class UserListener implements Listener

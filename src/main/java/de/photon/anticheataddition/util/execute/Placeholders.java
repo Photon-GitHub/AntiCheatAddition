@@ -115,7 +115,7 @@ public final class Placeholders
     public enum WorldPlaceholders
     {
         // Team placeholders
-        WORLD(World::getName);
+        WORLD(world -> world.getName());
 
         private final Function<World, String> function;
 

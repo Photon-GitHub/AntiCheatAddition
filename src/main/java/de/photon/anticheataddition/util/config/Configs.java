@@ -12,7 +12,6 @@ import java.util.logging.Level;
 @Getter
 public enum Configs
 {
-    AAC("plugins/AAC/config.yml"),
     SPIGOT("spigot.yml"),
     VIAVERSION("plugins/ViaVersion/config.yml");
 

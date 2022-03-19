@@ -34,6 +34,16 @@ public class TabListRemoveCommand extends InternalCommand
               TabCompleteSupplier.builder().allPlayers());
     }
 
+    private static void updatePlayerInfo(final EnumWrappers.PlayerInfoAction action, final Player affectedPlayer, final Player modifiedPlayer)
+    {
+        WrapperPlayServerPlayerInfo.updatePlayerInformation(action,
+                                                            WrappedGameProfile.fromPlayer(modifiedPlayer),
+                                                            PingProvider.INSTANCE.getPing(modifiedPlayer),
+                                                            EnumWrappers.NativeGameMode.fromBukkit(modifiedPlayer.getGameMode()),
+                                                            null,
+                                                            affectedPlayer);
+    }
+
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
@@ -59,15 +69,5 @@ public class TabListRemoveCommand extends InternalCommand
         updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, players[0], players[1]);
         if (ticks == 0) updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, players[0], players[1]);
         else Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), () -> updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, players[0], players[1]), ticks);
-    }
-
-    private void updatePlayerInfo(final EnumWrappers.PlayerInfoAction action, final Player affectedPlayer, final Player modifiedPlayer)
-    {
-        WrapperPlayServerPlayerInfo.updatePlayerInformation(action,
-                                                            WrappedGameProfile.fromPlayer(modifiedPlayer),
-                                                            PingProvider.INSTANCE.getPing(modifiedPlayer),
-                                                            EnumWrappers.NativeGameMode.fromBukkit(modifiedPlayer.getGameMode()),
-                                                            null,
-                                                            affectedPlayer);
     }
 }

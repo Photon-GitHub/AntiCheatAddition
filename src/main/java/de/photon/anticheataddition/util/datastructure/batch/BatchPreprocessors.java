@@ -3,8 +3,7 @@ package de.photon.anticheataddition.util.datastructure.batch;
 import com.google.common.collect.Lists;
 import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.ToDoubleBiFunction;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class BatchPreprocessors
 {
     /**

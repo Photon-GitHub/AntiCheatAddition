@@ -1,8 +1,7 @@
 package de.photon.anticheataddition.util.reflection;
 
 import de.photon.anticheataddition.AntiCheatAddition;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.logging.Level;
  * @author geNAZt
  * @version 1.0
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public class Reflect
 {
     private static final String BUKKIT_VERSION_NUMBER = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];

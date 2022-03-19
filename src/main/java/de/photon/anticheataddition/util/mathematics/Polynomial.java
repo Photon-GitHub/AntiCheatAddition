@@ -1,5 +1,8 @@
 package de.photon.anticheataddition.util.mathematics;
 
+import com.google.common.base.Preconditions;
+import lombok.EqualsAndHashCode;
+
 import java.util.function.DoubleFunction;
 
 /**
@@ -7,6 +10,7 @@ import java.util.function.DoubleFunction;
  * Safe to use asynchronously.
  * The evaluation will be done via Horner's method to reduce unnecessary calculations.
  */
+@EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
 public class Polynomial implements DoubleFunction<Double>
 {
     private final double[] coefficients;
@@ -20,7 +24,7 @@ public class Polynomial implements DoubleFunction<Double>
      */
     public Polynomial(double... coefficients)
     {
-        this.coefficients = coefficients;
+        this.coefficients = Preconditions.checkNotNull(coefficients, "Tried to create Polynomial with null coefficients.");
     }
 
     @Override

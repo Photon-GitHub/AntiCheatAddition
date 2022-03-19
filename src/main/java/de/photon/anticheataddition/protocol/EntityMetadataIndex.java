@@ -2,16 +2,14 @@ package de.photon.anticheataddition.protocol;
 
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.exception.UnknownMinecraftException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class EntityMetadataIndex
 {
     public static final int HEALTH;
     public static final int ARROWS_IN_ENTITY;
     public static final int SKIN_PARTS;
-
 
     static {
         switch (ServerVersion.getActiveServerVersion()) {

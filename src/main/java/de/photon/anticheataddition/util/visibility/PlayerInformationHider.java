@@ -11,6 +11,7 @@ import com.google.common.collect.MultimapBuilder;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
+import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -60,6 +61,17 @@ abstract class PlayerInformationHider implements Listener
         };
     }
 
+    public static void updateEntities(@NotNull Player observer, Collection<Entity> entities)
+    {
+        // Performance optimization for no changes.
+        if (entities.isEmpty()) return;
+
+        final List<Player> playerList = List.of(observer);
+        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
+            for (Entity entity : entities) ProtocolLibrary.getProtocolManager().updateEntity(entity, playerList);
+        });
+    }
+
     public void clear()
     {
         synchronized (hiddenFromPlayerMap) {
@@ -95,7 +107,7 @@ abstract class PlayerInformationHider implements Listener
     public void onChunkUnload(ChunkUnloadEvent event)
     {
         // Cache entities for performance reasons so the server doesn't need to load them again when the task is executed.
-        var entities = Arrays.asList(event.getChunk().getEntities());
+        val entities = Arrays.asList(event.getChunk().getEntities());
         synchronized (hiddenFromPlayerMap) {
             // All the entities that are keys in the map, do this first to reduce the amount of values in the call below.
             for (final Entity entity : entities) hiddenFromPlayerMap.removeAll(entity);
@@ -153,27 +165,6 @@ abstract class PlayerInformationHider implements Listener
 
         // Call onHide for those entities that have been revealed and shall now be hidden.
         this.onHide(observer, newHidden);
-    }
-
-    public void revealAllEntities(@NotNull Player observer)
-    {
-        Collection<Entity> oldEntities;
-        synchronized (hiddenFromPlayerMap) {
-            oldEntities = hiddenFromPlayerMap.removeAll(observer);
-        }
-
-        updateEntities(observer, oldEntities);
-    }
-
-    public void updateEntities(@NotNull Player observer, Collection<Entity> entities)
-    {
-        // Performance optimization for no changes.
-        if (entities.isEmpty()) return;
-
-        final List<Player> playerList = List.of(observer);
-        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
-            for (Entity entity : entities) ProtocolLibrary.getProtocolManager().updateEntity(entity, playerList);
-        });
     }
 
     protected abstract void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide);

@@ -2,15 +2,18 @@ package de.photon.anticheataddition.util.pluginmessage;
 
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.ServerVersion;
-import lombok.EqualsAndHashCode;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Value;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
+@Value
+@Getter(AccessLevel.NONE)
 public class LegacyMessageChannel implements MessageChannel
 {
-    @EqualsAndHashCode.Include @NotNull private final String legacyString;
+    @NotNull String legacyString;
 
     public LegacyMessageChannel(@NotNull String legacyString)
     {

@@ -2,27 +2,25 @@ package de.photon.anticheataddition.util.minecraft.world;
 
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.util.mathematics.AxisAlignedBB;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Value;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
-@EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
-@ToString
+
+@Value
 public class Region
 {
     /**
      * The {@link World} the region is a part of.
      */
-    @Getter @NotNull private final World world;
+    @NotNull World world;
 
     /**
      * The boundaries of the region are stored here.
      */
-    @NotNull private final AxisAlignedBB regionBox;
+    @NotNull AxisAlignedBB regionBox;
 
     public Region(final World world, final double x1, final double z1, final double x2, final double z2)
     {

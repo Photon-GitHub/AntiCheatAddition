@@ -26,6 +26,24 @@ public class EnchantmentHider extends Module
         super("EnchantmentHider");
     }
 
+    private static void obfuscateEnchantments(IWrapperPlayEquipment wrapper)
+    {
+        for (val pair : wrapper.getSlotStackPairs()) {
+            final ItemStack stack = pair.getSecond();
+            val enchantments = stack.getEnchantments();
+
+            if (enchantments.isEmpty()) continue;
+
+            // Remove all enchantments.
+            // The enchantments are an immutable map -> forEach.
+            for (Enchantment enchantment : enchantments.keySet()) stack.removeEnchantment(enchantment);
+
+            // Add dummy enchantment.
+            stack.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+            wrapper.setSlotStackPair(pair.getFirst(), stack);
+        }
+    }
+
     @Override
     protected ModuleLoader createModuleLoader()
     {
@@ -62,23 +80,5 @@ public class EnchantmentHider extends Module
                            .addPacketListeners(adapter)
                            .setAllowedServerVersions(ServerVersion.NON_188_VERSIONS)
                            .build();
-    }
-
-    private void obfuscateEnchantments(IWrapperPlayEquipment wrapper)
-    {
-        for (var pair : wrapper.getSlotStackPairs()) {
-            final ItemStack stack = pair.getSecond();
-            var enchantments = stack.getEnchantments();
-
-            if (enchantments.isEmpty()) continue;
-
-            // Remove all enchantments.
-            // The enchantments are an immutable map -> forEach.
-            for (Enchantment enchantment : enchantments.keySet()) stack.removeEnchantment(enchantment);
-
-            // Add dummy enchantment.
-            stack.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
-            wrapper.setSlotStackPair(pair.getFirst(), stack);
-        }
     }
 }

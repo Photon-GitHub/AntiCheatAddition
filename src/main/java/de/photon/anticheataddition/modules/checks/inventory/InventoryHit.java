@@ -5,7 +5,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.Getter;
 import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

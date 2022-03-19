@@ -9,8 +9,7 @@ import de.photon.anticheataddition.util.mathematics.ResetVector;
 import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -20,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 class CanSee
 {
     // This cache reduces the required getBlock() calls.
@@ -53,7 +52,7 @@ class CanSee
         final Vector viewDirection = observer.getLocation().getDirection();
 
         for (Location cameraLocation : CameraVectorSupplier.INSTANCE.getCameraLocations(observer)) {
-            var between = new ResetVector(cameraLocation.toVector().multiply(-1));
+            val between = new ResetVector(cameraLocation.toVector().multiply(-1));
             for (Location hitLoc : Hitbox.fromPlayer(watched).getEspLocations(watched.getLocation())) {
                 // Effectively hitLoc - cameraLocation because of the multiply(-1) above.
                 between.resetToBase().add(hitLoc.toVector());

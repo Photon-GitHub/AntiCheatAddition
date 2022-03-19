@@ -2,6 +2,7 @@ package de.photon.anticheataddition.util.datastructure;
 
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeQueue;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ class TestQuadTreeCollection
     @Test
     void emptySetTest()
     {
-        var quad = new QuadTreeSet<Boolean>();
+        val quad = new QuadTreeSet<Boolean>();
         Assertions.assertFalse(quad.iterator().hasNext());
         Assertions.assertEquals(0, quad.size());
     }
@@ -20,7 +21,7 @@ class TestQuadTreeCollection
     @Test
     void emptyQueueTest()
     {
-        var quad = new QuadTreeQueue<Boolean>();
+        val quad = new QuadTreeQueue<Boolean>();
         Assertions.assertFalse(quad.iterator().hasNext());
         Assertions.assertEquals(0, quad.size());
     }
@@ -29,7 +30,7 @@ class TestQuadTreeCollection
     @Test
     void clearSetTest()
     {
-        var quad = new QuadTreeSet<Boolean>();
+        val quad = new QuadTreeSet<Boolean>();
 
         for (int i = 0; i < 100; ++i) {
             quad.add(i, i, false);
@@ -45,7 +46,7 @@ class TestQuadTreeCollection
     @Test
     void clearQueueTest()
     {
-        var quad = new QuadTreeQueue<Boolean>();
+        val quad = new QuadTreeQueue<Boolean>();
 
         for (int i = 0; i < 100; ++i) {
             quad.add(i, i, false);
@@ -60,35 +61,35 @@ class TestQuadTreeCollection
     @Test
     void oneSetTest()
     {
-        var quad = new QuadTreeSet<Boolean>();
+        val quad = new QuadTreeSet<Boolean>();
         quad.add(1, 1, false);
         Assertions.assertTrue(quad.iterator().hasNext());
         Assertions.assertEquals(1, quad.size());
 
-        var list = new ArrayList<>(quad);
+        val list = new ArrayList<>(quad);
         Assertions.assertEquals(1, list.size());
-        var expected = new QuadTreeSet.Node<>(1, 1, false);
+        val expected = new QuadTreeSet.Node<>(1.0, 1.0, false);
         Assertions.assertEquals(expected, list.get(0));
     }
 
     @Test
     void oneQueueTest()
     {
-        var quad = new QuadTreeQueue<Boolean>();
+        val quad = new QuadTreeQueue<Boolean>();
         quad.add(1, 1, false);
         Assertions.assertTrue(quad.iterator().hasNext());
         Assertions.assertEquals(1, quad.size());
 
-        var list = new ArrayList<>(quad);
+        val list = new ArrayList<>(quad);
         Assertions.assertEquals(1, list.size());
-        var expected = new QuadTreeSet.Node<>(1, 1, false);
+        val expected = new QuadTreeSet.Node<>(1.0, 1.0, false);
         Assertions.assertEquals(expected, list.get(0));
     }
 
     @Test
     void removeSetIterationTest()
     {
-        var quad = new QuadTreeSet<Boolean>();
+        val quad = new QuadTreeSet<Boolean>();
 
         for (int i = 0; i < 100; ++i) {
             quad.add(i, i, false);
@@ -106,7 +107,7 @@ class TestQuadTreeCollection
     @Test
     void removeQueueIterationTest()
     {
-        var quad = new QuadTreeQueue<Boolean>();
+        val quad = new QuadTreeQueue<Boolean>();
 
         for (int i = 0; i < 100; ++i) {
             quad.add(i, i, false);

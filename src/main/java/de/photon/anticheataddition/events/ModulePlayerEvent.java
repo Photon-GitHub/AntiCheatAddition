@@ -6,8 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 
-import java.util.function.Consumer;
-
 @Getter
 public abstract class ModulePlayerEvent extends Event implements Cancellable
 {
@@ -40,12 +38,6 @@ public abstract class ModulePlayerEvent extends Event implements Cancellable
         Bukkit.getPluginManager().callEvent(this);
         return this;
     }
-
-    public void runIfUncancelled(Consumer<ModulePlayerEvent> consumer)
-    {
-        if (!this.isCancelled()) consumer.accept(this);
-    }
-
 
     @Override
     public void setCancelled(final boolean b)

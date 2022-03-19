@@ -9,7 +9,6 @@ import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.Getter;
 import lombok.val;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;

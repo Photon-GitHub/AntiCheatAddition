@@ -3,15 +3,14 @@ package de.photon.anticheataddition.user.data;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class DataKey
 {
     @Getter

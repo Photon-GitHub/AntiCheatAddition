@@ -45,13 +45,13 @@ public abstract class BatchProcessor<T> implements BroadcastReceiver<Batch.Snaps
 
     public final void enable()
     {
-        broadcasters.forEach(b -> b.subscribe(this));
+        for (var b : broadcasters) b.subscribe(this);
         this.subEnable();
     }
 
     public final void disable()
     {
-        broadcasters.forEach(b -> b.unsubscribe(this));
+        for (var b : broadcasters) b.unsubscribe(this);
         this.subDisable();
     }
 

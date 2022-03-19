@@ -2,8 +2,7 @@ package de.photon.anticheataddition.util.config;
 
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Set;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class ConfigUtils
 {
     /**

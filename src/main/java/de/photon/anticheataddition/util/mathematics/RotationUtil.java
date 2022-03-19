@@ -1,12 +1,11 @@
 package de.photon.anticheataddition.util.mathematics;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class RotationUtil
 {
 

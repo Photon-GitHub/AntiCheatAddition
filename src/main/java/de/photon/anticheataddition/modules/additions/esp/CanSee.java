@@ -9,8 +9,7 @@ import de.photon.anticheataddition.util.mathematics.ResetVector;
 import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -20,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 class CanSee
 {
     // This cache reduces the required getBlock() calls.

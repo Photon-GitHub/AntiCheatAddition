@@ -2,7 +2,7 @@ package de.photon.anticheataddition.modules.sentinel;
 
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
-import de.photon.anticheataddition.util.pluginmessage.labymod.LabyModProtocol;
+import de.photon.anticheataddition.util.pluginmessage.labymod.LabyProtocolUtil;
 import io.netty.buffer.Unpooled;
 import lombok.val;
 import org.bukkit.entity.Player;
@@ -25,7 +25,7 @@ public class LabyModSentinel extends SentinelModule implements Listener, PluginM
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] message)
     {
         val byteBuf = Unpooled.wrappedBuffer(message);
-        val key = LabyModProtocol.readString(byteBuf, Short.MAX_VALUE);
+        val key = LabyProtocolUtil.readString(byteBuf, Short.MAX_VALUE);
         //val json = LabyModProtocol.readString(byteBuf, Short.MAX_VALUE);
 
         // LabyMod user joins the server
@@ -34,11 +34,11 @@ public class LabyModSentinel extends SentinelModule implements Listener, PluginM
             detection(player);
 
             // Send permissions
-            LabyModProtocol.sendPermissionMessage(player);
+            LabyProtocolUtil.sendPermissionMessage(player);
 
             // Voicechat
-            if (!voicechat) LabyModProtocol.disableVoiceChat(player);
-            if (tablistBanner) LabyModProtocol.sendServerBanner(player, tablistBannerUrl);
+            if (!voicechat) LabyProtocolUtil.disableVoiceChat(player);
+            if (tablistBanner) LabyProtocolUtil.sendServerBanner(player, tablistBannerUrl);
         }
 
         byteBuf.release();

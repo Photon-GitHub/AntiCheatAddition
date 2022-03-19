@@ -1,9 +1,8 @@
 package de.photon.anticheataddition.util.mathematics;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class MathUtil
 {
     /**

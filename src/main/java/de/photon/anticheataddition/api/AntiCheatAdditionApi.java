@@ -6,7 +6,7 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ModuleManager;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.modules.additions.BrandHider;
-import de.photon.anticheataddition.util.pluginmessage.labymod.LabyModProtocol;
+import de.photon.anticheataddition.util.pluginmessage.labymod.LabyProtocolUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
@@ -111,7 +111,7 @@ public final class AntiCheatAdditionApi
     {
         Preconditions.checkNotNull(player, "Tried to send server banner to null player.");
         Preconditions.checkNotNull(imageUrl, "Tried to send null server banner.");
-        LabyModProtocol.sendServerBanner(player, imageUrl);
+        LabyProtocolUtil.sendServerBanner(player, imageUrl);
     }
 
     /**

@@ -3,8 +3,7 @@ package de.photon.anticheataddition.util.minecraft.world;
 import com.google.common.collect.Sets;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.exception.UnknownMinecraftException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
@@ -17,7 +16,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class MaterialUtil
 {
 

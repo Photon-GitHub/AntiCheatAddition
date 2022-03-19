@@ -6,15 +6,14 @@ import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperP
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.bukkit.entity.Player;
 
 import java.nio.charset.StandardCharsets;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class LabyModProtocol
+@UtilityClass
+public class LabyProtocolUtil
 {
     /**
      * Send a tablist server banner to LabyMod.
@@ -26,7 +25,7 @@ public class LabyModProtocol
     {
         val object = new JsonObject();
         object.addProperty("url", imageUrl); // Url of the image
-        LabyModProtocol.sendLabyModMessage(player, "server_banner", object);
+        sendLabyModMessage(player, "server_banner", object);
     }
 
     /**
@@ -50,7 +49,7 @@ public class LabyModProtocol
         object.addProperty("allowed", false);
 
         // Send to LabyMod using the API
-        LabyModProtocol.sendLabyModMessage(player, "voicechat", object);
+        sendLabyModMessage(player, "voicechat", object);
     }
 
     /**
@@ -124,9 +123,8 @@ public class LabyModProtocol
     {
         byte[] abyte = string.getBytes(StandardCharsets.UTF_8);
 
-        if (abyte.length > Short.MAX_VALUE) {
-            throw new IllegalArgumentException("String too big (was " + string.length() + " bytes encoded, max " + Short.MAX_VALUE + ")");
-        } else {
+        if (abyte.length > Short.MAX_VALUE) throw new IllegalArgumentException("String too big (was " + string.length() + " bytes encoded, max " + Short.MAX_VALUE + ")");
+        else {
             writeVarIntToBuffer(buf, abyte.length);
             buf.writeBytes(abyte);
         }
@@ -168,20 +166,15 @@ public class LabyModProtocol
     {
         int i = readVarIntFromBuffer(buf);
 
-        if (i > maxLength * 4) {
-            throw new IllegalArgumentException("The received encoded string buffer length is longer than maximum allowed (" + i + " > " + maxLength * 4 + ")");
-        } else if (i < 0) {
-            throw new IllegalArgumentException("The received encoded string buffer length is less than zero! Weird string!");
-        } else {
+        if (i > maxLength * 4) throw new IllegalArgumentException("The received encoded string buffer length is longer than maximum allowed (" + i + " > " + maxLength * 4 + ")");
+        else if (i < 0) throw new IllegalArgumentException("The received encoded string buffer length is less than zero! Weird string!");
+        else {
             byte[] bytes = new byte[i];
             buf.readBytes(bytes);
 
             String s = new String(bytes, StandardCharsets.UTF_8);
-            if (s.length() > maxLength) {
-                throw new IllegalArgumentException("The received string length is longer than maximum allowed (" + i + " > " + maxLength + ")");
-            } else {
-                return s;
-            }
+            if (s.length() > maxLength) throw new IllegalArgumentException("The received string length is longer than maximum allowed (" + i + " > " + maxLength + ")");
+            return s;
         }
     }
 }

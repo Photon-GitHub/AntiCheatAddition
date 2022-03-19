@@ -99,7 +99,7 @@ public class Teaming extends ViolationModule implements Listener
 
                         while (!players.isEmpty()) {
                             // Use getAny() so the node itself is contained in the team below.
-                            var firstNode = players.getAny();
+                            val firstNode = players.getAny();
                             val proximityRangeSquared = proximityRange * proximityRange;
                             val team = players.queryCircle(firstNode, proximityRange).stream()
                                               // Check for y-distance.

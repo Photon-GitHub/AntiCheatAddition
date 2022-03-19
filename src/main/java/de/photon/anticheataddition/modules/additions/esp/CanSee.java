@@ -52,7 +52,7 @@ class CanSee
         final Vector viewDirection = observer.getLocation().getDirection();
 
         for (Location cameraLocation : CameraVectorSupplier.INSTANCE.getCameraLocations(observer)) {
-            var between = new ResetVector(cameraLocation.toVector().multiply(-1));
+            val between = new ResetVector(cameraLocation.toVector().multiply(-1));
             for (Location hitLoc : Hitbox.fromPlayer(watched).getEspLocations(watched.getLocation())) {
                 // Effectively hitLoc - cameraLocation because of the multiply(-1) above.
                 between.resetToBase().add(hitLoc.toVector());

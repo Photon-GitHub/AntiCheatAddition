@@ -67,12 +67,12 @@ public class Esp extends Module
                 val playerQuadTree = new QuadTreeQueue<Player>();
                 for (Player player : worldPlayers) playerQuadTree.add(player.getLocation().getX(), player.getLocation().getZ(), player);
 
-                for (var observerNode : playerQuadTree) {
+                for (val observerNode : playerQuadTree) {
                     final Set<Entity> equipHiddenPlayers = new HashSet<>();
                     final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
                     final Player observer = observerNode.getElement();
 
-                    for (var playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
+                    for (val playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
                         final Player watched = playerNode.getElement();
 
                         // Less than 1 block distance (removes the player themselves and any very close player)

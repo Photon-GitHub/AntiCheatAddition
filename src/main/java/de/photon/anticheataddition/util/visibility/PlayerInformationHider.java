@@ -11,6 +11,7 @@ import com.google.common.collect.MultimapBuilder;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
+import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -95,7 +96,7 @@ abstract class PlayerInformationHider implements Listener
     public void onChunkUnload(ChunkUnloadEvent event)
     {
         // Cache entities for performance reasons so the server doesn't need to load them again when the task is executed.
-        var entities = Arrays.asList(event.getChunk().getEntities());
+        val entities = Arrays.asList(event.getChunk().getEntities());
         synchronized (hiddenFromPlayerMap) {
             // All the entities that are keys in the map, do this first to reduce the amount of values in the call below.
             for (final Entity entity : entities) hiddenFromPlayerMap.removeAll(entity);

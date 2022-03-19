@@ -51,8 +51,9 @@ public enum ServerVersion
     private final boolean supported;
 
     // Lazy getting as most versions are not supported or used.
-    @Getter private final Set<ServerVersion> supVersionsTo = generateVersionsTo();
-    @Getter private final Set<ServerVersion> supVersionsFrom = generateVersionsFrom();
+    // Also, this is important to avoid loading errors (as the generate methods access values() when not fully loaded)
+    @Getter(lazy = true) private final Set<ServerVersion> supVersionsTo = generateVersionsTo();
+    @Getter(lazy = true) private final Set<ServerVersion> supVersionsFrom = generateVersionsFrom();
 
     /**
      * Shorthand for activeServerVersion == MC18.

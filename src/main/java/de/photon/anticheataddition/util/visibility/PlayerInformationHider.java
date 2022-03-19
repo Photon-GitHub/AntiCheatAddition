@@ -61,6 +61,17 @@ abstract class PlayerInformationHider implements Listener
         };
     }
 
+    public static void updateEntities(@NotNull Player observer, Collection<Entity> entities)
+    {
+        // Performance optimization for no changes.
+        if (entities.isEmpty()) return;
+
+        final List<Player> playerList = List.of(observer);
+        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
+            for (Entity entity : entities) ProtocolLibrary.getProtocolManager().updateEntity(entity, playerList);
+        });
+    }
+
     public void clear()
     {
         synchronized (hiddenFromPlayerMap) {
@@ -154,17 +165,6 @@ abstract class PlayerInformationHider implements Listener
 
         // Call onHide for those entities that have been revealed and shall now be hidden.
         this.onHide(observer, newHidden);
-    }
-
-    public void updateEntities(@NotNull Player observer, Collection<Entity> entities)
-    {
-        // Performance optimization for no changes.
-        if (entities.isEmpty()) return;
-
-        final List<Player> playerList = List.of(observer);
-        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
-            for (Entity entity : entities) ProtocolLibrary.getProtocolManager().updateEntity(entity, playerList);
-        });
     }
 
     protected abstract void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide);

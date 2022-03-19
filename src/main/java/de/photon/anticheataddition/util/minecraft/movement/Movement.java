@@ -23,7 +23,7 @@ public enum Movement
      *
      * @param input the input vector (will not be cloned)
      */
-    private Vector applyAirResistance(@NotNull Vector input)
+    private static Vector applyAirResistance(@NotNull Vector input)
     {
         return input.multiply((double) 0.98F);
     }

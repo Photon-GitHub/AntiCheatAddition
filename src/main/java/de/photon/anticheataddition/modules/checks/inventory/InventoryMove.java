@@ -19,7 +19,6 @@ import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.Getter;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -56,7 +55,7 @@ public class InventoryMove extends ViolationModule
         }
     }
 
-    private boolean checkLocationForMaterials(Location location, Set<Material> materials)
+    private static boolean checkLocationForMaterials(Location location, Set<Material> materials)
     {
         return materials.contains(location.getBlock().getType()) ||
                materials.contains(location.getBlock().getRelative(BlockFace.DOWN).getType());

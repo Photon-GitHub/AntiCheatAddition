@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @UtilityClass
 public final class MaterialUtil

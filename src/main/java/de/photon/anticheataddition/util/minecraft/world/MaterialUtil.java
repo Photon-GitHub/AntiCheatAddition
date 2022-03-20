@@ -3,6 +3,7 @@ package de.photon.anticheataddition.util.minecraft.world;
 import com.google.common.collect.Sets;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.exception.UnknownMinecraftException;
+import de.photon.anticheataddition.util.datastructure.SetUtil;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.apache.commons.lang.StringUtils;
@@ -81,18 +82,16 @@ public final class MaterialUtil
 
     public static Set<Material> getMaterialsEndingWith(String... ends)
     {
-        return Arrays.stream(Material.values())
-                     .filter(material -> StringUtils.endsWithAny(material.name(), ends))
-                     .collect(Sets.toImmutableEnumSet());
+        return SetUtil.toImmutableEnumSet(Arrays.stream(Material.values())
+                                                .filter(material -> StringUtils.endsWithAny(material.name(), ends)), Material.class);
     }
 
     @SafeVarargs
     public static Set<Material> ofTags(Tag<Material>... tags)
     {
-        return Arrays.stream(tags)
-                     .map(Tag::getValues)
-                     .flatMap(Set::stream)
-                     .collect(Sets.toImmutableEnumSet());
+        return SetUtil.toImmutableEnumSet(Arrays.stream(tags)
+                                                .map(Tag::getValues)
+                                                .flatMap(Set::stream), Material.class);
     }
 
     /**

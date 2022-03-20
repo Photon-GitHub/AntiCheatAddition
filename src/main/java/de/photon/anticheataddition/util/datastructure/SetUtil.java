@@ -67,7 +67,6 @@ public class SetUtil
             }
         }
 
-
         public Set<E> toImmutableSet()
         {
             return (set == null) ? Set.of() : Sets.immutableEnumSet(set);

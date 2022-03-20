@@ -111,7 +111,7 @@ public class AntiCheatAddition extends JavaPlugin
             if (viaEnabled) viaAPI = Via.getAPI();
 
             val floodgateEnabled = this.getServer().getPluginManager().isPluginEnabled("floodgate");
-            DebugSender.getInstance().sendDebug("Floodgate " + (viaEnabled ? "hooked" : "not found"), true, false);
+            DebugSender.getInstance().sendDebug("Floodgate " + (floodgateEnabled ? "hooked" : "not found"), true, false);
             if (floodgateEnabled) floodgateApi = FloodgateApi.getInstance();
 
             metrics.addCustomChart(new SimplePie("viaversion", () -> viaEnabled ? "Yes" : "No"));

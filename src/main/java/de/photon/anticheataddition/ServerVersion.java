@@ -93,15 +93,17 @@ public enum ServerVersion
 
     private Set<ServerVersion> generateVersionsTo()
     {
-        return SetUtil.toImmutableEnumSet(Arrays.stream(values())
-                                                .filter(ServerVersion::isSupported)
-                                                .filter(version -> this.compareTo(version) >= 0), ServerVersion.class);
+        return Arrays.stream(values())
+                     .filter(ServerVersion::isSupported)
+                     .filter(version -> this.compareTo(version) >= 0)
+                     .collect(SetUtil.toImmutableEnumSet());
     }
 
     private Set<ServerVersion> generateVersionsFrom()
     {
-        return SetUtil.toImmutableEnumSet(Arrays.stream(values())
-                                                .filter(ServerVersion::isSupported)
-                                                .filter(version -> this.compareTo(version) <= 0), ServerVersion.class);
+        return Arrays.stream(values())
+                     .filter(ServerVersion::isSupported)
+                     .filter(version -> this.compareTo(version) <= 0)
+                     .collect(SetUtil.toImmutableEnumSet());
     }
 }

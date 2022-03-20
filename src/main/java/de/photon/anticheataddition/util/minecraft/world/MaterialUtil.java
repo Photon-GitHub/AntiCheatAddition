@@ -82,16 +82,18 @@ public final class MaterialUtil
 
     public static Set<Material> getMaterialsEndingWith(String... ends)
     {
-        return SetUtil.toImmutableEnumSet(Arrays.stream(Material.values())
-                                                .filter(material -> StringUtils.endsWithAny(material.name(), ends)), Material.class);
+        return Arrays.stream(Material.values())
+                     .filter(material -> StringUtils.endsWithAny(material.name(), ends))
+                     .collect(SetUtil.toImmutableEnumSet());
     }
 
     @SafeVarargs
     public static Set<Material> ofTags(Tag<Material>... tags)
     {
-        return SetUtil.toImmutableEnumSet(Arrays.stream(tags)
-                                                .map(Tag::getValues)
-                                                .flatMap(Set::stream), Material.class);
+        return Arrays.stream(tags)
+                     .map(Tag::getValues)
+                     .flatMap(Set::stream)
+                     .collect(SetUtil.toImmutableEnumSet());
     }
 
     /**

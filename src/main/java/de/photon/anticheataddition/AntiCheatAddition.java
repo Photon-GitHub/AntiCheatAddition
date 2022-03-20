@@ -106,11 +106,11 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Call is correct here as Bukkit always has a player api.
-            val viaEnabled = this.getServer().getPluginManager().isPluginEnabled("ViaVersion");
+            final boolean viaEnabled = this.getServer().getPluginManager().isPluginEnabled("ViaVersion");
             DebugSender.getInstance().sendDebug("ViaVersion " + (viaEnabled ? "hooked" : "not found"), true, false);
             if (viaEnabled) viaAPI = Via.getAPI();
 
-            val floodgateEnabled = this.getServer().getPluginManager().isPluginEnabled("floodgate");
+            final boolean floodgateEnabled = this.getServer().getPluginManager().isPluginEnabled("floodgate");
             DebugSender.getInstance().sendDebug("Floodgate " + (floodgateEnabled ? "hooked" : "not found"), true, false);
             if (floodgateEnabled) floodgateApi = FloodgateApi.getInstance();
 

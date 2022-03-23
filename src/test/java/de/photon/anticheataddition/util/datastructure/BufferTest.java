@@ -118,7 +118,6 @@ class BufferTest
     @Test
     void RingBufferArrayTest()
     {
-
         RingBuffer<String> buffer = new RingBuffer<>(10);
         buffer.add("1");
         buffer.add("2");
@@ -133,8 +132,10 @@ class BufferTest
         buffer.add("11");
         buffer.add("12");
 
-        val expected = List.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12").toArray(new String[0]);
-        val actual = buffer.toArray(new String[0]);
-        Assertions.assertArrayEquals(expected, actual);
+        Assertions.assertArrayEquals(new String[]{"3", "4", "5", "6", "7", "8", "9", "10", "11", "12"}, buffer.toArray(new String[0]));
+
+        // Clearing
+        buffer.clear();
+        Assertions.assertArrayEquals(new String[0], buffer.toArray(new String[0]));
     }
 }

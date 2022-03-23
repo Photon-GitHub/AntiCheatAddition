@@ -2,7 +2,6 @@ package de.photon.anticheataddition.protocol.packetwrappers.sentbyserver;
 
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.ServerVersion;
-import de.photon.anticheataddition.exception.UnknownMinecraftException;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayOnGround;
 import org.bukkit.util.Vector;
 
@@ -75,22 +74,6 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
         if (ServerVersion.is18()) getHandle().getBytes().write(1, (byte) (value * 32));
             // Integers are ok, even though wiki.vg says short
         else getHandle().getIntegers().write(2, (int) (value * 4096));
-
-        switch (ServerVersion.getActiveServerVersion()) {
-            case MC18:
-                getHandle().getBytes().write(2, (byte) (value * 32));
-                break;
-            case MC112:
-            case MC115:
-            case MC116:
-            case MC117:
-            case MC118:
-                // Integers are ok, even though wiki.vg says short
-                getHandle().getIntegers().write(3, (int) (value * 4096));
-                break;
-            default:
-                throw new UnknownMinecraftException();
-        }
     }
 
     /**

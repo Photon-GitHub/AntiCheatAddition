@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 import java.util.UUID;
 
-public class ViolationAggregation extends ViolationManagement
+public final class ViolationAggregation extends ViolationManagement
 {
-    @NotNull protected final Set<ViolationManagement> children;
+    @NotNull private final Set<ViolationManagement> children;
     @NotNull private final Multiset<UUID> oldVls = ConcurrentHashMultiset.create();
 
     public ViolationAggregation(@NotNull ViolationModule module, @NotNull ThresholdManagement thresholds, Set<ViolationManagement> children)

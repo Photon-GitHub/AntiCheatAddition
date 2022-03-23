@@ -72,6 +72,9 @@ public class ViolationLevelManagement extends ViolationManagement
         // setVL is also called when decreasing the vl
         // thus we must prevent double punishment
         this.punishPlayer(player, oldVl, oldVl + vl);
+
+        // Update potential aggregations.
+        this.broadcast(player);
     }
 
     @RequiredArgsConstructor

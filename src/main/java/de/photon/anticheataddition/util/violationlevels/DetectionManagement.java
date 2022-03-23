@@ -49,13 +49,14 @@ public class DetectionManagement extends ViolationManagement implements Listener
         switch (newVl) {
             case 0:
                 this.detectionSet.remove(player.getUniqueId());
+                broadcast(player);
                 return;
             case 1:
                 // Only punish if the vl actually changes (no prior detection).
                 if (detectionSet.add(player.getUniqueId())) this.punishPlayer(player, 0, 1);
+                broadcast(player);
                 return;
-            default:
-                throw new IllegalArgumentException("A Sentinel detection management only supports the vls 0 (no detection) and 1 (detection).");
+            default: throw new IllegalArgumentException("A Sentinel detection management only supports the vls 0 (no detection) and 1 (detection).");
         }
     }
 

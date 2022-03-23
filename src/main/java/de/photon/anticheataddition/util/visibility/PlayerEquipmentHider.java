@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-class PlayerEquipmentHider extends PlayerInformationHider
+final class PlayerEquipmentHider extends PlayerInformationHider
 {
     public PlayerEquipmentHider()
     {

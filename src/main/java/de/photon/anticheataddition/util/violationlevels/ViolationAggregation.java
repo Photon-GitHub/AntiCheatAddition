@@ -5,14 +5,13 @@ import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
-import lombok.val;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.UUID;
 
-public abstract class ViolationAggregation extends ViolationManagement
+public class ViolationAggregation extends ViolationManagement
 {
     @NotNull protected final Set<ViolationManagement> children;
     @NotNull private final Multiset<UUID> oldVls = ConcurrentHashMultiset.create();
@@ -24,6 +23,21 @@ public abstract class ViolationAggregation extends ViolationManagement
         Preconditions.checkNotNull(children, "Tried to construct ViolationAggregation with null children.");
         Preconditions.checkArgument(!children.isEmpty(), "Tried to construct ViolationAggregation with no children.");
         this.children = Set.copyOf(children);
+
+        // Receive updates from the children.
+        for (ViolationManagement child : this.children) {
+            child.subscribe(this);
+        }
+    }
+
+    @Override
+    public int getVL(@NotNull UUID uuid)
+    {
+        int i = 0;
+        for (ViolationManagement child : this.children) {
+            i += child.getVL(uuid);
+        }
+        return i;
     }
 
     @Override
@@ -38,21 +52,20 @@ public abstract class ViolationAggregation extends ViolationManagement
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Updates the vl aggregation of a {@link Player} and punishes when necessary.
-     */
-    public void update(@NotNull Player player)
-    {
-        val uuid = player.getUniqueId();
-        val oldVl = oldVls.count(uuid);
-        val newVl = getVL(uuid);
-        if (oldVl < newVl) punishPlayer(player, oldVl, newVl);
-        oldVls.setCount(uuid, newVl);
-    }
-
     @Override
     protected void addVL(@NotNull Player player, int vl)
     {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void receive(Player player)
+    {
+        final UUID uuid = player.getUniqueId();
+        final int oldVl = oldVls.count(uuid);
+        final int newVl = getVL(uuid);
+
+        if (oldVl < newVl) punishPlayer(player, oldVl, newVl);
+        oldVls.setCount(uuid, newVl);
     }
 }

@@ -1,7 +1,7 @@
 package de.photon.anticheataddition.modules;
 
 import com.google.common.base.Preconditions;
-import de.photon.anticheataddition.util.violationlevels.ViolationAggregateManagement;
+import de.photon.anticheataddition.util.violationlevels.ViolationAggregation;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
 import lombok.Getter;
@@ -27,7 +27,7 @@ public abstract class ViolationModule extends Module
             @Override
             protected ViolationManagement createViolationManagement()
             {
-                return new ViolationAggregateManagement(this, ThresholdManagement.loadThresholds(this.getConfigString() + ".thresholds"), Arrays.stream(children).map(ViolationModule::getManagement).collect(Collectors.toUnmodifiableSet()));
+                return new ViolationAggregation(this, ThresholdManagement.loadThresholds(this.getConfigString() + ".thresholds"), Arrays.stream(children).map(ViolationModule::getManagement).collect(Collectors.toUnmodifiableSet()));
             }
         };
     }

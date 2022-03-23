@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class PlayerHider extends PlayerInformationHider
+final class PlayerHider extends PlayerInformationHider
 {
     public PlayerHider()
     {

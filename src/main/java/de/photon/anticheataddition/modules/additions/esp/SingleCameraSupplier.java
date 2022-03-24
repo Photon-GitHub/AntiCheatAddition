@@ -10,4 +10,10 @@ class SingleCameraSupplier implements CameraVectorSupplier
     {
         return new Location[]{player.getEyeLocation()};
     }
+
+    @Override
+    public boolean ignoreFOV()
+    {
+        return false;
+    }
 }

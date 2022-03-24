@@ -48,4 +48,6 @@ public interface CameraVectorSupplier
     }
 
     Location[] getCameraLocations(Player player);
+
+    boolean ignoreFOV();
 }

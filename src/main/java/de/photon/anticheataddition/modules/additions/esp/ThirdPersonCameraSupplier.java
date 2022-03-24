@@ -61,4 +61,10 @@ class ThirdPersonCameraSupplier implements CameraVectorSupplier
         }
         return locations;
     }
+
+    @Override
+    public boolean ignoreFOV()
+    {
+        return true;
+    }
 }

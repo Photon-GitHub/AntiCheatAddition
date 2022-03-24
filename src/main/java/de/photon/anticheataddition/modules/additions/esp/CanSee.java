@@ -49,6 +49,7 @@ class CanSee
         if (InternalPotion.GLOWING.hasPotionEffect(watched)) return true;
 
         // ----------------------------------- Calculation ---------------------------------- //
+        final boolean ignoreFOV = CameraVectorSupplier.INSTANCE.ignoreFOV();
         final Vector viewDirection = observer.getLocation().getDirection();
 
         for (Location cameraLocation : CameraVectorSupplier.INSTANCE.getCameraLocations(observer)) {
@@ -58,7 +59,7 @@ class CanSee
                 between.resetToBase().add(hitLoc.toVector());
 
                 // Ignore directions that cannot be seen by the player due to FOV.
-                if (viewDirection.angle(between) > MAX_FOV) continue;
+                if (!ignoreFOV && viewDirection.angle(between) > MAX_FOV) continue;
 
                 // Make sure the chunks are loaded.
                 // If the chunks are not loaded assume the players can see each other.

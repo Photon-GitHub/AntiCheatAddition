@@ -110,7 +110,7 @@ public class Esp extends Module
                         final Player watched = playerNode.getElement();
 
                         // Less than 1 block distance (removes the player themselves and any very close player)
-                        if (observerNode.distanceSquared(playerNode) < 1 || CanSee.canSee(observer, watched)) {
+                        if (observerNode.distanceSquared(playerNode) < 1 || CanSee.INSTANCE.canSee(observer, watched)) {
                             // No hiding case
                             fullHiddenPlayers.remove(watched);
                         } else if (!watched.isSneaking()) {

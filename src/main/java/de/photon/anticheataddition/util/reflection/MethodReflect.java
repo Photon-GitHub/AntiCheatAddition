@@ -1,17 +1,16 @@
 package de.photon.anticheataddition.util.reflection;
 
 import de.photon.anticheataddition.AntiCheatAddition;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
+@Value
 public class MethodReflect
 {
-    @Getter private final Method method;
+    Method method;
 
     public Object invoke(Object obj, Object... args)
     {

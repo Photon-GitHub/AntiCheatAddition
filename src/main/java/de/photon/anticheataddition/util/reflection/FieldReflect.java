@@ -1,18 +1,18 @@
 package de.photon.anticheataddition.util.reflection;
 
 import de.photon.anticheataddition.AntiCheatAddition;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
+@Value
 public class FieldReflect
 {
-    @Getter private final Field field;
+    Field field;
 
     public TempValueReflect from(Object obj)
     {

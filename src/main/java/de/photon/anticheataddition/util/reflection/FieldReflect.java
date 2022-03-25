@@ -25,26 +25,9 @@ public class FieldReflect
         private final Field field;
         private final Object obj;
 
-        public <T> T as(Class<T> clazz)
-        {
-            try {
-                return (T) this.field.get(obj);
-            } catch (IllegalAccessException e) {
-                AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to get field as custom type via reflection", e);
-            }
-
-            return null;
-        }
-
         public byte[] asBytes()
         {
-            try {
-                return (byte[]) this.field.get(obj);
-            } catch (IllegalAccessException e) {
-                AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to get field as byte array via reflection", e);
-            }
-
-            return new byte[0];
+            return (byte[]) get();
         }
 
         public double asDouble()
@@ -58,23 +41,27 @@ public class FieldReflect
             return 0;
         }
 
+        public <T> T as(Class<T> clazz)
+        {
+            return (T) get();
+        }
+
         public <T> List<T> asList(Class<T> clazz)
         {
-            try {
-                return (List<T>) this.field.get(obj);
-            } catch (IllegalAccessException e) {
-                AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to get field as list via reflection", e);
-            }
-
-            return null;
+            return (List<T>) get();
         }
 
         public <T> Set<T> asSet(Class<T> clazz)
         {
+            return (Set<T>) get();
+        }
+
+        public Object get()
+        {
             try {
-                return (Set<T>) this.field.get(obj);
+                return this.field.get(obj);
             } catch (IllegalAccessException e) {
-                AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to get field as set via reflection", e);
+                AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to get field via reflection", e);
             }
 
             return null;

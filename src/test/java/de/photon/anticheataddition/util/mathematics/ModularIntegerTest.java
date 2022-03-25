@@ -67,6 +67,9 @@ class ModularIntegerTest
 
         Assertions.assertEquals(2, modInt.incrementAndGet());
         Assertions.assertEquals(2, modInt.getAndIncrement());
+        Assertions.assertEquals(2, modInt.decrementAndGet());
+        Assertions.assertEquals(1, modInt.decrementAndGet());
+        Assertions.assertEquals(0, modInt.decrementAndGet());
         Assertions.assertEquals(0, modInt.get());
 
 

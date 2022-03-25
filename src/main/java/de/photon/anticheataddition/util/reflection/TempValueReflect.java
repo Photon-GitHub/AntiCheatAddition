@@ -1,26 +1,18 @@
 package de.photon.anticheataddition.util.reflection;
 
 import de.photon.anticheataddition.AntiCheatAddition;
+import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-/**
- * @author geNAZt
- * @version 1.0
- */
+@RequiredArgsConstructor
 public class TempValueReflect
 {
-    private final Object obj;
     private final Field field;
-
-    TempValueReflect(Field field, Object obj)
-    {
-        this.field = field;
-        this.obj = obj;
-    }
+    private final Object obj;
 
     public <T> T as(Class<T> clazz)
     {

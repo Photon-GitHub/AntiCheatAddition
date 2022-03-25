@@ -2,104 +2,60 @@ package de.photon.anticheataddition.util.reflection;
 
 import de.photon.anticheataddition.AntiCheatAddition;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.reflect.FieldUtils;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
-/**
- * @author geNAZt
- * @version 1.0
- */
+@RequiredArgsConstructor
 public class ClassReflect
 {
-    private final Map<String, FieldReflect> cache = new ConcurrentHashMap<>();
-    private final Map<Integer, FieldReflect> cacheIndex = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, FieldReflect> fieldCache = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, ConstructorReflect> constructorCache = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, MethodReflect> methodCache = new ConcurrentHashMap<>();
 
-    private final Map<String, ConstructorReflect> constructorCache = new ConcurrentHashMap<>();
-
-    private final Map<String, MethodReflect> methodCache = new ConcurrentHashMap<>();
-
-    @Getter
-    private final Class<?> clazz;
-
-    ClassReflect(Class<?> clazz)
-    {
-        this.clazz = clazz;
-    }
+    @Getter private final Class<?> clazz;
 
     public FieldReflect field(String name)
     {
-        return this.cache.computeIfAbsent(name, fileName -> new FieldReflect(FieldUtils.getDeclaredField(this.clazz, fileName, true)));
-    }
-
-    public FieldReflect field(int index)
-    {
-        FieldReflect fieldReflect = this.cacheIndex.get(index);
-        if (fieldReflect == null) {
-            Field[] fieldArray = this.clazz.getDeclaredFields();
-            if (fieldArray.length < index + 1) {
-                return null;
-            }
-
-            Field field = fieldArray[index];
-            field.setAccessible(true);
-            fieldReflect = new FieldReflect(field);
-            this.cacheIndex.putIfAbsent(index, fieldReflect);
-        }
-
-        return fieldReflect;
+        return this.fieldCache.computeIfAbsent(name, fileName -> new FieldReflect(FieldUtils.getDeclaredField(this.clazz, fileName, true)));
     }
 
     public ConstructorReflect constructor(Class<?>... classes)
     {
         // Build the key first
-        StringBuilder key = new StringBuilder();
-        for (Class<?> aClass : classes) {
-            key.append(aClass.getName());
-        }
+        final String cacheKey = Arrays.stream(classes).map(Class::getName).collect(Collectors.joining());
 
-        String cacheKey = key.toString();
-
-        ConstructorReflect constructorReflect = this.constructorCache.get(cacheKey);
-        if (constructorReflect == null) {
+        return this.constructorCache.computeIfAbsent(cacheKey, constructorKey -> {
             // We need to search for the constructor now
             try {
-                Constructor<?> constructor = this.clazz.getConstructor(classes);
+                final Constructor<?> constructor = this.clazz.getConstructor(classes);
                 constructor.setAccessible(true);
-
-                constructorReflect = new ConstructorReflect(constructor);
-                this.constructorCache.putIfAbsent(cacheKey, constructorReflect);
+                return new ConstructorReflect(constructor);
             } catch (NoSuchMethodException e) {
                 AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to find method via reflection", e);
             }
-        }
-
-        return constructorReflect;
+            return null;
+        });
     }
 
     public MethodReflect method(String name)
     {
-        MethodReflect methodReflect = this.methodCache.get(name);
-        if (methodReflect == null) {
+        return this.methodCache.computeIfAbsent(name, methodName -> {
             for (Method method : this.clazz.getDeclaredMethods()) {
                 // We take the first method with the name
-                if (method.getName().equals(name)) {
+                if (name.equals(method.getName())) {
                     method.setAccessible(true);
-
-                    methodReflect = new MethodReflect(method);
-                    this.methodCache.putIfAbsent(name, methodReflect);
-                    return methodReflect;
+                    return new MethodReflect(method);
                 }
             }
-
             return null;
-        }
-
-        return methodReflect;
+        });
     }
 }

@@ -132,7 +132,7 @@ public final class ViolationLevelManagement extends ViolationManagement
 
     private static class ViolationLevelMultiSet implements Listener
     {
-        private static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(1);
+        private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor();
 
         @Getter
         private final Multiset<UUID> multiset = ConcurrentHashMultiset.create();

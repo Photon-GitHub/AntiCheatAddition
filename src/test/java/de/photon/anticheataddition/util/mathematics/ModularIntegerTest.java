@@ -58,7 +58,7 @@ class ModularIntegerTest
         Assertions.assertThrows(IllegalArgumentException.class, () -> new ModularInteger(0, -1));
         Assertions.assertThrows(IllegalArgumentException.class, () -> new ModularInteger(0, 0));
         Assertions.assertThrows(IllegalArgumentException.class, () -> new ModularInteger(0, 1));
-        Assertions.assertDoesNotThrow(() -> new ModularInteger(0, 1));
+        Assertions.assertDoesNotThrow(() -> new ModularInteger(0, 2));
 
         final ModularInteger modInt = new ModularInteger(0, 3);
         Assertions.assertEquals(0, modInt.getAndDecrement());

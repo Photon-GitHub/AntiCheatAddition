@@ -17,7 +17,7 @@ public abstract class Module implements ConfigLoading
     @Getter @EqualsAndHashCode.Include private final String moduleId;
     @Getter private final String bypassPermission = (InternalPermission.BYPASS.getRealPermission() + '.') + this.getModuleId();
     @Getter(lazy = true) private final ModuleLoader moduleLoader = Preconditions.checkNotNull(createModuleLoader(), "Tried to create null ModuleLoader.");
-    @Getter private boolean enabled;
+    @Getter private boolean enabled = false;
 
     protected Module(String configString)
     {
@@ -37,7 +37,7 @@ public abstract class Module implements ConfigLoading
 
     public final void enableModule()
     {
-        if (this.getModuleLoader().load()) {
+        if (!this.enabled && this.getModuleLoader().load()) {
             this.enabled = true;
             this.enable();
         }

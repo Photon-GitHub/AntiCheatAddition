@@ -78,6 +78,8 @@ class ThirdPersonCameraSupplier implements CanSee
                 // Effectively hitLoc - cameraLocation because of the multiply(-1) above.
                 between.resetToBase().add(hitLoc.toVector());
 
+                // Ignore FOV checking as 3rd person has a look back option.
+
                 // Make sure the chunks are loaded.
                 // If the chunks are not loaded assume the players can see each other.
                 if (!WorldUtil.INSTANCE.areChunksLoadedBetweenLocations(cameraLocation, hitLoc)) return true;

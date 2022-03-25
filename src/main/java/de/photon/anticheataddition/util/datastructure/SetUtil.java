@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.stream.Collector;
 
 @UtilityClass
-public class SetUtil
+public final class SetUtil
 {
     /**
      * Directly collects a stream to an immutable EnumSet.

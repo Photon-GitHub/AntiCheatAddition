@@ -3,9 +3,8 @@ package de.photon.anticheataddition.util.inventory;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.Value;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -17,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Optional;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class InventoryUtil
 {
     /**

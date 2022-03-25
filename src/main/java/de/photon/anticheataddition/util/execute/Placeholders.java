@@ -3,10 +3,8 @@ package de.photon.anticheataddition.util.execute;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -18,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class Placeholders
 {
     /**
@@ -94,7 +92,6 @@ public final class Placeholders
         return result.toString();
     }
 
-    @Getter
     @RequiredArgsConstructor
     public enum PlayerPlaceholders
     {
@@ -110,11 +107,11 @@ public final class Placeholders
         }
     }
 
-    @Getter
     @RequiredArgsConstructor
     public enum WorldPlaceholders
     {
         // Team placeholders
+        // No method reference here due to changes in spigot's world handling!
         WORLD(world -> world.getName());
 
         private final Function<World, String> function;
@@ -125,7 +122,6 @@ public final class Placeholders
         }
     }
 
-    @Getter
     @RequiredArgsConstructor
     public enum SimplePlaceholders
     {

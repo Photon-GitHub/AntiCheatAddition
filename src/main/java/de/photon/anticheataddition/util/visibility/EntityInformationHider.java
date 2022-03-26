@@ -180,4 +180,6 @@ abstract class EntityInformationHider implements Listener
     }
 
     protected abstract void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide);
+
+    protected abstract void onReveal(@NotNull Player observer, @NotNull Set<Entity> revealed);
 }

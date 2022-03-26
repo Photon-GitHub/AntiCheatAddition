@@ -1,8 +1,8 @@
 package de.photon.anticheataddition;
 
-import com.google.common.collect.Sets;
 import de.photon.anticheataddition.exception.UnknownMinecraftException;
 import de.photon.anticheataddition.protocol.ProtocolVersion;
+import de.photon.anticheataddition.util.datastructure.SetUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -96,7 +96,7 @@ public enum ServerVersion
         return Arrays.stream(values())
                      .filter(ServerVersion::isSupported)
                      .filter(version -> this.compareTo(version) >= 0)
-                     .collect(Sets.toImmutableEnumSet());
+                     .collect(SetUtil.toImmutableEnumSet());
     }
 
     private Set<ServerVersion> generateVersionsFrom()
@@ -104,6 +104,6 @@ public enum ServerVersion
         return Arrays.stream(values())
                      .filter(ServerVersion::isSupported)
                      .filter(version -> this.compareTo(version) <= 0)
-                     .collect(Sets.toImmutableEnumSet());
+                     .collect(SetUtil.toImmutableEnumSet());
     }
 }

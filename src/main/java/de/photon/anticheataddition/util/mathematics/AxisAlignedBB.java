@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.util.mathematics;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import org.bukkit.util.Vector;
@@ -8,6 +9,7 @@ import java.util.Objects;
 
 @Getter
 @ToString
+@AllArgsConstructor
 public class AxisAlignedBB implements Cloneable
 {
 
@@ -17,26 +19,6 @@ public class AxisAlignedBB implements Cloneable
     private double maxX;
     private double maxY;
     private double maxZ;
-
-    /**
-     * Construct a new BoundingBox with the min and max coordinates given
-     *
-     * @param minX Minimum X Coordinate
-     * @param minY Minimum Y Coordinate
-     * @param minZ Minimum Z Coordinate
-     * @param maxX Maximum X Coordinate
-     * @param maxY Maximum Y Coordinate
-     * @param maxZ Maximum Z Coordinate
-     */
-    public AxisAlignedBB(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
-    {
-        this.minX = minX;
-        this.minY = minY;
-        this.minZ = minZ;
-        this.maxX = maxX;
-        this.maxY = maxY;
-        this.maxZ = maxZ;
-    }
 
     /**
      * Set new bounds

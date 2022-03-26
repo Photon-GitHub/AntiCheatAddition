@@ -39,7 +39,7 @@ public abstract class MetadataPacket extends AbstractPacket
         return Optional.empty();
     }
 
-    public MetadataBuilder builder()
+    public static MetadataBuilder builder()
     {
         return new MetadataBuilder();
     }

@@ -36,7 +36,7 @@ public class SetVlCommand extends InternalCommand
         val vlString = arguments.poll();
         if (checkNotNullElseSend(vlString, sender, "Please specify the new vl you want to set for the module.")) return;
 
-        val vl = parseIntElseSend(vlString, sender, "Please specify a valid integer as vl.");
+        val vl = parseIntElseSend(vlString, sender);
         if (vl == null) return;
 
         // Actually flag the player for debug messages.

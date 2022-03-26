@@ -1,15 +1,18 @@
 package de.photon.anticheataddition.modules.additions.esp;
 
+import de.photon.anticheataddition.util.mathematics.Hitbox;
+import de.photon.anticheataddition.util.mathematics.ResetVector;
+import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
+import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-class ThirdPersonCameraSupplier implements CameraVectorSupplier
+class ThirdPersonCameraSupplier implements CanSee
 {
     private static final double THIRD_PERSON_OFFSET = 5D;
 
-    @Override
-    public Location[] getCameraLocations(Player player)
+    private static Location[] getCameraLocations(Player player)
     {
         /*
             All the vectors
@@ -39,8 +42,8 @@ class ThirdPersonCameraSupplier implements CameraVectorSupplier
         // [0] = frontIntersection
         // [1] = behindIntersection
         final double[] intersections = new double[]{
-                CameraVectorSupplier.getDistanceToFirstIntersectionWithBlock(eyeLocation, locations[1].toVector()),
-                CameraVectorSupplier.getDistanceToFirstIntersectionWithBlock(eyeLocation, locations[2].toVector())
+                CanSee.getDistanceToFirstIntersectionWithBlock(eyeLocation, locations[1].toVector()),
+                CanSee.getDistanceToFirstIntersectionWithBlock(eyeLocation, locations[2].toVector())
         };
 
         for (int i = 0; i < intersections.length; ++i) {
@@ -60,5 +63,33 @@ class ThirdPersonCameraSupplier implements CameraVectorSupplier
             locations[i + 1].add(locations[0]);
         }
         return locations;
+    }
+
+    @Override
+    public boolean canSee(Player observer, Player watched)
+    {
+        // Glowing.
+        if (InternalPotion.GLOWING.hasPotionEffect(watched)) return true;
+
+        // ----------------------------------- Calculation ---------------------------------- //
+        final Location[] watchedHitboxLocations = Hitbox.fromPlayer(watched).getEspLocations(watched.getLocation());
+
+        for (Location cameraLocation : getCameraLocations(observer)) {
+            final ResetVector between = new ResetVector(cameraLocation.toVector().multiply(-1));
+            for (Location hitLoc : watchedHitboxLocations) {
+                // Effectively hitLoc - cameraLocation because of the multiply(-1) above.
+                between.resetToBase().add(hitLoc.toVector());
+
+                // Ignore FOV checking as 3rd person has a look back option.
+
+                // Make sure the chunks are loaded.
+                // If the chunks are not loaded assume the players can see each other.
+                if (!WorldUtil.INSTANCE.areChunksLoadedBetweenLocations(cameraLocation, hitLoc)) return true;
+
+                // No intersection found
+                if (CanSee.canSeeHeuristic(cameraLocation, between, hitLoc)) return true;
+            }
+        }
+        return false;
     }
 }

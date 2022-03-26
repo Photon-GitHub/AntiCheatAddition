@@ -1,15 +1,17 @@
 package de.photon.anticheataddition.util.mathematics;
 
 import com.google.common.base.Preconditions;
+import lombok.EqualsAndHashCode;
 
 /**
  * A class able of calculations mod n.
  * It provides static methods to directly work on integers, but also allows to be used as a class to for easier handling.
  */
+@EqualsAndHashCode
 public class ModularInteger
 {
     private final int mod;
-    private final int lastInt;
+    @EqualsAndHashCode.Exclude private final int lastInt;
     private int integer;
 
     public ModularInteger(int integer, int mod)
@@ -110,31 +112,25 @@ public class ModularInteger
 
     public int incrementAndGet()
     {
-        // Avoid modulo operations as they are slow.
-        if (++this.integer == mod) this.integer = 0;
-        return this.integer;
+        return increment().get();
     }
 
     public int decrementAndGet()
     {
-        // Avoid modulo operations as they are slow.
-        if (--this.integer < 0) this.integer = this.lastInt;
-        return this.integer;
+        return decrement().get();
     }
 
     public int getAndIncrement()
     {
-        final int ret = this.integer;
-        // Avoid modulo operations as they are slow.
-        if (++this.integer == mod) this.integer = 0;
+        final int ret = get();
+        increment();
         return ret;
     }
 
     public int getAndDecrement()
     {
         final int ret = this.integer;
-        // Avoid modulo operations as they are slow.
-        if (--this.integer < 0) this.integer = this.lastInt;
+        decrement();
         return ret;
     }
 

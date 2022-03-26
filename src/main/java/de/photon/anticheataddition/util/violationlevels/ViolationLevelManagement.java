@@ -1,17 +1,26 @@
 package de.photon.anticheataddition.util.violationlevels;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ConcurrentHashMultiset;
+import com.google.common.collect.Multiset;
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.events.ViolationEvent;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class ViolationLevelManagement extends ViolationManagement
+public final class ViolationLevelManagement extends ViolationManagement
 {
     private final ViolationLevelMultiSet vlMultiSet;
 
@@ -45,21 +54,27 @@ public class ViolationLevelManagement extends ViolationManagement
     @Override
     public void setVL(@NotNull Player player, int newVl)
     {
-        val oldVl = this.vlMultiSet.getMultiset().setCount(player.getUniqueId(), newVl);
+        final int oldVl = this.vlMultiSet.getMultiset().setCount(player.getUniqueId(), newVl);
 
         // setVL is also called when decreasing the vl
         // thus we must prevent double punishment
         if (oldVl < newVl) this.punishPlayer(player, oldVl, newVl);
+
+        // Update potential aggregations.
+        this.broadcast(player);
     }
 
     @Override
     protected void addVL(@NotNull Player player, int vl)
     {
-        val oldVl = this.vlMultiSet.getMultiset().add(player.getUniqueId(), vl);
+        final int oldVl = this.vlMultiSet.getMultiset().add(player.getUniqueId(), vl);
 
         // setVL is also called when decreasing the vl
         // thus we must prevent double punishment
         this.punishPlayer(player, oldVl, oldVl + vl);
+
+        // Update potential aggregations.
+        this.broadcast(player);
     }
 
     @RequiredArgsConstructor
@@ -112,6 +127,43 @@ public class ViolationLevelManagement extends ViolationManagement
         {
             Preconditions.checkNotNull(management, "Tried to create module without specifying threshold management.");
             return new ViolationLevelManagement(this.module, management, decayTicks, decayAmount);
+        }
+    }
+
+    private static class ViolationLevelMultiSet implements Listener
+    {
+        private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor();
+
+        @Getter
+        private final Multiset<UUID> multiset = ConcurrentHashMultiset.create();
+        private final int vlDecayAmount;
+
+        ViolationLevelMultiSet(final long decayMilliseconds, final int vlDecayAmount)
+        {
+            this.vlDecayAmount = vlDecayAmount;
+
+            // Might need to have a vl manager without vl decrease
+            if (decayMilliseconds > 0) {
+                // Schedule the decay with 3000 milliseconds to free startup.
+                SCHEDULER.scheduleAtFixedRate(this::decay, 3000, decayMilliseconds, TimeUnit.MILLISECONDS);
+            }
+
+            AntiCheatAddition.getInstance().registerListener(this);
+        }
+
+        /**
+         * Decrements the vl of every player.
+         */
+        private void decay()
+        {
+            // Decrement the vl of every player.
+            for (UUID uuid : multiset.elementSet()) multiset.remove(uuid, this.vlDecayAmount);
+        }
+
+        @EventHandler
+        public void onQuit(final PlayerQuitEvent event)
+        {
+            this.multiset.setCount(event.getPlayer().getUniqueId(), 0);
         }
     }
 }

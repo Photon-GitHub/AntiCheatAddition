@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
-public class DummyInventory implements Inventory
+public final class DummyInventory implements Inventory
 {
     @Override
     public int getSize()

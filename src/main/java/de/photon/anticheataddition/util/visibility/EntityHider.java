@@ -1,17 +1,19 @@
 package de.photon.anticheataddition.util.visibility;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.entitydestroy.IWrapperServerEntityDestroy;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class PlayerHider extends PlayerInformationHider
+final class EntityHider extends EntityInformationHider
 {
-    public PlayerHider()
+    public EntityHider()
     {
         super(PacketType.Play.Server.ENTITY_EQUIPMENT,
               PacketType.Play.Server.ENTITY_EFFECT,
@@ -35,5 +37,12 @@ class PlayerHider extends PlayerInformationHider
     protected void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide)
     {
         IWrapperServerEntityDestroy.sendDestroyEntities(observer, toHide.stream().map(Entity::getEntityId).collect(Collectors.toList()));
+    }
+
+    @Override
+    protected void onReveal(@NotNull Player observer, @NotNull Set<Entity> revealed)
+    {
+        final List<Player> observerList = List.of(observer);
+        for (Entity entity : revealed) ProtocolLibrary.getProtocolManager().updateEntity(entity, observerList);
     }
 }

@@ -1,15 +1,13 @@
 package de.photon.anticheataddition.util.mathematics;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 public class ResetLocation extends Location
 {
     @Getter
-    @Setter
-    private Location baseLocation;
+    private final Location baseLocation;
 
     public ResetLocation()
     {

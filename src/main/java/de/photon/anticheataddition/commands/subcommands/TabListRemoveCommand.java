@@ -61,7 +61,7 @@ public class TabListRemoveCommand extends InternalCommand
             return;
         }
 
-        val ticks = arguments.isEmpty() ? Long.valueOf(0) : parseLongElseSend(arguments.poll(), sender, "Please specify a valid integer");
+        val ticks = arguments.isEmpty() ? Long.valueOf(0) : parseLongElseSend(arguments.poll(), sender);
         if (ticks == null) return;
 
         sender.sendMessage(ChatColor.GOLD + "Removed player " + ChatColor.RED + players[1].getName() + ChatColor.GOLD + " from " + ChatColor.RED + players[0].getName() + ChatColor.GOLD + "'s tablist for " + ChatColor.RED + ticks + ChatColor.GOLD + " ticks.");

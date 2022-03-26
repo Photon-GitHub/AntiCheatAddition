@@ -9,6 +9,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataUpdaterEvents;
 import de.photon.anticheataddition.util.config.Configs;
 import de.photon.anticheataddition.util.messaging.DebugSender;
+import de.photon.anticheataddition.util.visibility.EntityVisibility;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -106,12 +107,12 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             // Call is correct here as Bukkit always has a player api.
-            val viaEnabled = this.getServer().getPluginManager().isPluginEnabled("ViaVersion");
+            final boolean viaEnabled = this.getServer().getPluginManager().isPluginEnabled("ViaVersion");
             DebugSender.getInstance().sendDebug("ViaVersion " + (viaEnabled ? "hooked" : "not found"), true, false);
             if (viaEnabled) viaAPI = Via.getAPI();
 
-            val floodgateEnabled = this.getServer().getPluginManager().isPluginEnabled("floodgate");
-            DebugSender.getInstance().sendDebug("Floodgate " + (viaEnabled ? "hooked" : "not found"), true, false);
+            final boolean floodgateEnabled = this.getServer().getPluginManager().isPluginEnabled("floodgate");
+            DebugSender.getInstance().sendDebug("Floodgate " + (floodgateEnabled ? "hooked" : "not found"), true, false);
             if (floodgateEnabled) floodgateApi = FloodgateApi.getInstance();
 
             metrics.addCustomChart(new SimplePie("viaversion", () -> viaEnabled ? "Yes" : "No"));
@@ -123,6 +124,8 @@ public class AntiCheatAddition extends JavaPlugin
 
             // Managers
             this.registerListener(new User.UserListener());
+            EntityVisibility.INSTANCE.enable();
+
             // Load the module manager
             //noinspection ResultOfMethodCallIgnored
             ModuleManager.getModuleMap();
@@ -157,6 +160,7 @@ public class AntiCheatAddition extends JavaPlugin
         HandlerList.unregisterAll(AntiCheatAddition.getInstance());
 
         DataUpdaterEvents.INSTANCE.unregister();
+        EntityVisibility.INSTANCE.disable();
 
         DebugSender.getInstance().sendDebug("AntiCheatAddition disabled.", true, false);
         DebugSender.getInstance().sendDebug(" ", true, false);

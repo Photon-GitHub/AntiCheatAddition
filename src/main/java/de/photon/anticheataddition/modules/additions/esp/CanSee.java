@@ -1,74 +1,74 @@
 package de.photon.anticheataddition.modules.additions.esp;
 
+import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import de.photon.anticheataddition.util.mathematics.Hitbox;
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.mathematics.ResetLocation;
 import de.photon.anticheataddition.util.mathematics.ResetVector;
-import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
-import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
-import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-@UtilityClass
-class CanSee
+public interface CanSee
 {
+    CanSee INSTANCE = AntiCheatAddition.getInstance().getConfig().getBoolean("Esp.calculate_third_person_modes", false) ? new ThirdPersonCameraSupplier() : new SingleCameraSupplier();
+
     // This cache reduces the required getBlock() calls.
-    public static final LoadingCache<Location, Boolean> BLOCK_CACHE = CacheBuilder.newBuilder()
-                                                                                  // About 32000 locations can be cached at most.
-                                                                                  .maximumSize(1L << 14)
-                                                                                  // Use this expireAfterWrite method as the other is not compatible with 1.8.8.
-                                                                                  .expireAfterWrite(Esp.ESP_INTERVAL_TICKS * 50, TimeUnit.MILLISECONDS)
-                                                                                  .build(new CacheLoader<>()
-                                                                                  {
-                                                                                      @Override
-                                                                                      public @NotNull Boolean load(@NotNull Location key)
-                                                                                      {
-                                                                                          final Block block = key.getBlock();
-                                                                                          return block != null && !block.isEmpty() && MaterialUtil.isReallyOccluding(block.getType());
-                                                                                      }
-                                                                                  });
+    LoadingCache<Location, Boolean> BLOCK_CACHE = CacheBuilder.newBuilder()
+                                                              // About 32000 locations can be cached at most.
+                                                              .maximumSize(1L << 14)
+                                                              // Use this expireAfterWrite method as the other is not compatible with 1.8.8.
+                                                              .expireAfterWrite(Esp.ESP_INTERVAL_TICKS * 50, TimeUnit.MILLISECONDS)
+                                                              .build(new CacheLoader<>()
+                                                              {
+                                                                  @Override
+                                                                  public @NotNull Boolean load(@NotNull Location key)
+                                                                  {
+                                                                      final Block block = key.getBlock();
+                                                                      return block != null && !block.isEmpty() && MaterialUtil.isReallyOccluding(block.getType());
+                                                                  }
+                                                              });
 
-    // The real MAX_FOV is 110 (quake pro), which results in 137° according to https://minecraft.fandom.com/wiki/Options
-    // + Compensation -> 165°
-    // Now, as we use the view direction vector, only half of that is actually achievable as the vector is the "middle".
-    public static final double MAX_FOV = Math.toRadians(165D / 2);
-
-    public static boolean canSee(Player observer, Player watched)
+    /**
+     * Get to know where the {@link Vector} intersects with a {@link org.bukkit.block.Block}.
+     * Non-Occluding {@link Block}s as defined in {@link MaterialUtil#isReallyOccluding(Material)} are ignored.
+     *
+     * @param start     the starting {@link Location}
+     * @param direction the {@link Vector} which should be checked
+     *
+     * @return The length when the {@link Vector} intersects or 0 if no intersection was found
+     */
+    static double getDistanceToFirstIntersectionWithBlock(final Location start, final Vector direction)
     {
-        // Glowing.
-        if (InternalPotion.GLOWING.hasPotionEffect(watched)) return true;
+        Preconditions.checkNotNull(start.getWorld(), "RayTrace: Unknown start world.");
+        val length = (int) direction.length();
 
-        // ----------------------------------- Calculation ---------------------------------- //
-        final Vector viewDirection = observer.getLocation().getDirection();
-
-        for (Location cameraLocation : CameraVectorSupplier.INSTANCE.getCameraLocations(observer)) {
-            val between = new ResetVector(cameraLocation.toVector().multiply(-1));
-            for (Location hitLoc : Hitbox.fromPlayer(watched).getEspLocations(watched.getLocation())) {
-                // Effectively hitLoc - cameraLocation because of the multiply(-1) above.
-                between.resetToBase().add(hitLoc.toVector());
-
-                // Ignore directions that cannot be seen by the player due to FOV.
-                if (viewDirection.angle(between) > MAX_FOV) continue;
-
-                // Make sure the chunks are loaded.
-                // If the chunks are not loaded assume the players can see each other.
-                if (!WorldUtil.INSTANCE.areChunksLoadedBetweenLocations(cameraLocation, hitLoc)) return true;
-
-                // No intersection found
-                if (canSeeHeuristic(cameraLocation, between, hitLoc)) return true;
+        if (length >= 1) {
+            try {
+                val blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
+                Block block;
+                while (blockIterator.hasNext()) {
+                    block = blockIterator.next();
+                    // Account for a Spigot bug: BARRIER and MOB_SPAWNER are not occluding blocks
+                    // Use the middle location of the Block instead of the simple location.
+                    if (MaterialUtil.isReallyOccluding(block.getType())) return block.getLocation().clone().add(0.5, 0.5, 0.5).distance(start);
+                }
+            } catch (IllegalStateException exception) {
+                // Just in case the start block could not be found for some reason or a chunk is loaded async.
+                return 0;
             }
         }
-        return false;
+        return 0;
     }
 
     /**
@@ -77,7 +77,7 @@ class CanSee
      * @return <code>true</code> if no occluding blocks are found at the heuristic scalars, so one MAY see the "to" location.<br></br>
      * <code>false</code> if an occluding block has been found. In this case one cannot see the "to" location.
      */
-    public static boolean canSeeHeuristic(Location from, Vector between, Location to)
+    static boolean canSeeHeuristic(Location from, Vector between, Location to)
     {
         val resetFrom = new ResetLocation(from);
         val normalBetween = new ResetVector(between.normalize());
@@ -100,4 +100,6 @@ class CanSee
         if (distance <= 25) return new double[]{1, 1.5, 2, 2.5, distance / 4, distance / 2, 3 * distance / 4, distance - 2.5, distance - 2, distance - 1.5, distance - 1};
         return new double[]{1, 1.5, 2, 2.5, distance / 4, distance / 3, distance / 2, 2 * distance / 3, 3 * distance / 4, distance - 2.5, distance - 2, distance - 1.5, distance - 1};
     }
+
+    boolean canSee(Player observer, Player watched);
 }

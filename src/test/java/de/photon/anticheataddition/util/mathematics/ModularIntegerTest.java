@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.mathematics;
 
-import de.photon.anticheataddition.util.mathematics.ModularInteger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -51,5 +50,41 @@ class ModularIntegerTest
             Assertions.assertEquals(x - 1, ModularInteger.decrement(0, x));
             Assertions.assertEquals(0, ModularInteger.decrement(1, x));
         });
+    }
+
+    @Test
+    void modularIntegerBasicTest()
+    {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ModularInteger(0, -1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ModularInteger(0, 0));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ModularInteger(0, 1));
+        Assertions.assertDoesNotThrow(() -> new ModularInteger(0, 2));
+
+        final ModularInteger modInt = new ModularInteger(0, 3);
+        Assertions.assertEquals(0, modInt.getAndDecrement());
+        Assertions.assertEquals(2, modInt.getAndDecrement());
+        Assertions.assertEquals(1, modInt.get());
+
+        Assertions.assertEquals(2, modInt.incrementAndGet());
+        Assertions.assertEquals(2, modInt.getAndIncrement());
+        Assertions.assertEquals(2, modInt.decrementAndGet());
+        Assertions.assertEquals(1, modInt.decrementAndGet());
+        Assertions.assertEquals(0, modInt.decrementAndGet());
+        Assertions.assertEquals(0, modInt.get());
+
+
+        Assertions.assertEquals(2, modInt.set(2).get());
+        Assertions.assertEquals(1, modInt.mul(2).get());
+        Assertions.assertEquals(2, modInt.mul(2).get());
+
+
+        Assertions.assertEquals(2, modInt.add(3).get());
+        Assertions.assertEquals(1, modInt.add(2).get());
+        Assertions.assertEquals(0, modInt.setToZero().get());
+
+
+        Assertions.assertEquals(0, modInt.sub(30).get());
+        Assertions.assertEquals(0, modInt.add(30).get());
+        Assertions.assertEquals(1, modInt.sub(32).get());
     }
 }

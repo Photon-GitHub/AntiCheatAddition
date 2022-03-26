@@ -90,6 +90,9 @@ public class LegacyServerEquipmentWrapper extends AbstractPacket implements IWra
     {
         // Player = null will return the server version.
         if (ServerVersion.is18()) {
+            // Offhand does not exist.
+            if (value == ItemSlot.OFFHAND) return;
+
             int index = value.ordinal();
 
             // Reduce by one if index greater 0 as the offhand (index 1) doesn't exist.

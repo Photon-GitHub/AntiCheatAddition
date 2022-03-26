@@ -45,6 +45,17 @@ class BatchTest
     }
 
     @Test
+    void peekingTest()
+    {
+        final int batchSize = 3;
+        val batch = new Batch<>(stringBroadcaster, dummy, batchSize, "");
+        Assertions.assertEquals("", batch.peekLastAdded());
+
+        batch.addDataPoint("SomeString");
+        Assertions.assertEquals("SomeString", batch.peekLastAdded());
+    }
+
+    @Test
     void syncBatchProcessorTest()
     {
         val dummyVlModule = new ViolationModule("Inventory")
@@ -63,7 +74,7 @@ class BatchTest
         };
 
         val output = new ArrayList<String>();
-        val batchSize = 3;
+        final int batchSize = 3;
 
         val batchProcessor = new SyncBatchProcessor<>(dummyVlModule, Set.of(stringBroadcaster))
         {
@@ -79,7 +90,15 @@ class BatchTest
         val batch = new Batch<>(stringBroadcaster, dummy, batchSize, "");
         stringBroadcaster.subscribe(batchProcessor);
 
-        for (int i = 0; i < 6; ++i) batch.addDataPoint(String.valueOf(i));
+        for (int i = 0; i < 2 * batchSize; ++i) batch.addDataPoint(String.valueOf(i));
+
+        Assertions.assertIterableEquals(List.of("0", "1", "2", "3", "4", "5"), output);
+
+        stringBroadcaster.unsubscribe(batchProcessor);
+
+        for (int i = 0; i < 2 * batchSize; ++i) {
+            batch.addDataPoint("Test");
+        }
 
         Assertions.assertIterableEquals(List.of("0", "1", "2", "3", "4", "5"), output);
     }
@@ -89,7 +108,7 @@ class BatchTest
     void asyncBatchProcessorTest()
     {
         val output = Collections.synchronizedList(new ArrayList<String>());
-        val batchSize = 3;
+        final int batchSize = 3;
 
         val batchProcessor = new AsyncBatchProcessor<>(dummyVlModule, Set.of(stringBroadcaster))
         {

@@ -3,6 +3,8 @@ package de.photon.anticheataddition.util.violationlevels;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
+import de.photon.anticheataddition.util.datastructure.broadcast.BroadcastReceiver;
+import de.photon.anticheataddition.util.datastructure.broadcast.Broadcaster;
 import de.photon.anticheataddition.util.violationlevels.threshold.Threshold;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
 import org.bukkit.entity.Player;
@@ -11,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class ViolationManagement
+public abstract class ViolationManagement extends Broadcaster<Player> implements BroadcastReceiver<Player>
 {
     /**
      * The module id of the handler
@@ -66,5 +68,11 @@ public abstract class ViolationManagement
     {
         // Only schedule the command execution if the plugin is loaded.
         if (AntiCheatAddition.getInstance().isEnabled()) this.thresholds.executeThresholds(fromVl, toVl, player);
+    }
+
+    @Override
+    public void receive(Player value)
+    {
+        // Ignore, only important for aggregations.
     }
 }

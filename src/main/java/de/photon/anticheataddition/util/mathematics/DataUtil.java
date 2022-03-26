@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 import lombok.val;
 
 @UtilityClass
-public class DataUtil
+public final class DataUtil
 {
     public static int sum(int[] data)
     {

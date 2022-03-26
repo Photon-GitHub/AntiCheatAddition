@@ -2,14 +2,12 @@ package de.photon.anticheataddition.util.visibility;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
+import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -38,26 +36,21 @@ abstract class EntityInformationHider implements Listener
                                              .hashSetValues(AntiCheatAddition.WORLD_EXPECTED_PLAYERS)
                                              .build();
 
-        informationPacketListener = new PacketAdapter(AntiCheatAddition.getInstance(), ListenerPriority.NORMAL, Set.of(affectedPackets))
-        {
-            @Override
-            public void onPacketSending(final PacketEvent event)
-            {
-                if (event.isPlayerTemporary()) return;
-                final int entityId = event.getPacket().getIntegers().read(0);
+        informationPacketListener = PacketAdapterBuilder.of(affectedPackets).onSending(event -> {
+            if (event.isPlayerTemporary() || event.isCancelled()) return;
+            final int entityId = event.getPacket().getIntegers().read(0);
 
-                // Get all hidden entities
-                final boolean hidden;
-                synchronized (hiddenFromPlayerMap) {
-                    // The test for the entityId must happen here in the synchronized block as get only returns a view that might change async.
-                    hidden = hiddenFromPlayerMap.get(event.getPlayer()).stream()
-                                                .mapToInt(Entity::getEntityId)
-                                                .anyMatch(i -> i == entityId);
-                }
-
-                if (hidden) event.setCancelled(true);
+            // Get all hidden entities
+            final boolean hidden;
+            synchronized (hiddenFromPlayerMap) {
+                // The test for the entityId must happen here in the synchronized block as get only returns a view that might change async.
+                hidden = hiddenFromPlayerMap.get(event.getPlayer()).stream()
+                                            .mapToInt(Entity::getEntityId)
+                                            .anyMatch(i -> i == entityId);
             }
-        };
+
+            if (hidden) event.setCancelled(true);
+        }).build();
     }
 
     public void clear()
@@ -154,6 +147,8 @@ abstract class EntityInformationHider implements Listener
      */
     public Set<Entity> setHiddenEntities(@NotNull Player observer, @NotNull Set<Entity> toHide)
     {
+        onPreHide(observer, toHide);
+
         Set<Entity> oldHidden;
         synchronized (hiddenFromPlayerMap) {
             oldHidden = Set.copyOf(hiddenFromPlayerMap.replaceValues(observer, toHide));
@@ -167,7 +162,9 @@ abstract class EntityInformationHider implements Listener
         return newRevealed;
     }
 
-    protected abstract void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide);
+    protected void onPreHide(@NotNull Player observer, @NotNull Set<Entity> toHide) {}
+
+    protected void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide) {}
 
     protected abstract void onReveal(@NotNull Player observer, @NotNull Set<Entity> revealed);
 }

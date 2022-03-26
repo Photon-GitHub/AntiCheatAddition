@@ -52,7 +52,7 @@ public class EnchantmentHider extends Module
                 .priority(ListenerPriority.HIGH)
                 .onSending(event -> {
                     val user = User.safeGetUserFromPacketEvent(event);
-                    if (User.isUserInvalid(user, this)) return;
+                    if (event.isCancelled() || User.isUserInvalid(user, this)) return;
 
                     val wrapper = IWrapperPlayEquipment.of(event.getPacket());
                     val entity = wrapper.getEntity(event);

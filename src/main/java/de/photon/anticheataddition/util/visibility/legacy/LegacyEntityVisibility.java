@@ -1,7 +1,8 @@
-package de.photon.anticheataddition.util.visibility;
+package de.photon.anticheataddition.util.visibility.legacy;
 
 import com.google.common.collect.Sets;
 import de.photon.anticheataddition.AntiCheatAddition;
+import de.photon.anticheataddition.util.visibility.EntityVisibility;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -9,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Set;
 
-class LegacyEntityVisibility implements EntityVisibility
+public class LegacyEntityVisibility implements EntityVisibility
 {
     private final EntityInformationHider equipmentHider = new EntityEquipmentHider();
     private final EntityInformationHider playerHider = new EntityHider();

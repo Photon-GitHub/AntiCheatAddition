@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.util.visibility;
 
+import de.photon.anticheataddition.util.visibility.legacy.LegacyEntityVisibility;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 

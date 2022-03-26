@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.util.visibility;
+package de.photon.anticheataddition.util.visibility.legacy;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;

@@ -48,12 +48,4 @@ public final class ChatMessage
     {
         Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> ChatMessage.sendMessage(senders, message));
     }
-
-    /**
-     * Sends the "The specified player could not be found." message with prefix to a recipient.
-     */
-    public static void sendPlayerNotFoundMessage(CommandSender recipient)
-    {
-        sendMessage(recipient, "The specified player could not be found.");
-    }
 }

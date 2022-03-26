@@ -39,13 +39,12 @@ public abstract class InternalCommand
     }
 
     /**
-     * Gets a {@link Player} from their name and calls {@link ChatMessage#sendPlayerNotFoundMessage(CommandSender)}
-     * if the {@link Player} could not be found.
+     * Gets a {@link Player} from their name and sends a not found message if the {@link Player} could not be found.
      */
     protected static Player getPlayer(CommandSender sender, String nameOfPlayer)
     {
         val player = Bukkit.getServer().getPlayer(nameOfPlayer);
-        if (player == null) ChatMessage.sendPlayerNotFoundMessage(sender);
+        if (player == null) ChatMessage.sendMessage(sender, "The specified player could not be found.");
         return player;
     }
 
@@ -58,7 +57,7 @@ public abstract class InternalCommand
     protected static boolean checkNotNullElseSend(final Object notNull, final CommandSender recipient, final String message)
     {
         val n = notNull == null;
-        if (n) recipient.sendMessage(message);
+        if (n) ChatMessage.sendMessage(recipient, message);
         return n;
     }
 
@@ -67,12 +66,12 @@ public abstract class InternalCommand
      *
      * @return null if the string was not a valid integer, else the parsed value
      */
-    protected static Integer parseIntElseSend(final String toParse, final CommandSender recipient, final String message)
+    protected static Integer parseIntElseSend(final String toParse, final CommandSender recipient)
     {
         try {
             return Integer.parseInt(toParse);
         } catch (NumberFormatException e) {
-            recipient.sendMessage(message);
+            ChatMessage.sendMessage(recipient, "Please specify a valid integer.");
         }
         return null;
     }
@@ -82,12 +81,12 @@ public abstract class InternalCommand
      *
      * @return null if the string was not a valid long, else the parsed value
      */
-    protected static Long parseLongElseSend(final String toParse, final CommandSender recipient, final String message)
+    protected static Long parseLongElseSend(final String toParse, final CommandSender recipient)
     {
         try {
             return Long.parseLong(toParse);
         } catch (NumberFormatException e) {
-            recipient.sendMessage(message);
+            ChatMessage.sendMessage(recipient, "Please specify a valid integer.");
         }
         return null;
     }

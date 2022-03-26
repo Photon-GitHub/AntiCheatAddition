@@ -7,7 +7,7 @@ import de.photon.anticheataddition.util.messaging.ChatMessage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Value;
 import lombok.val;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
@@ -20,16 +20,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
 
-@Getter
+@Value
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(doNotUseGetters = true, cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
+@EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
 public class CommandAttributes
 {
-    @NotNull private final SortedMap<String, InternalCommand> childCommands;
-    @NotNull private final List<String> commandHelp;
-    @Nullable private final InternalPermission permission;
-    private final int minArguments;
-    private final int maxArguments;
+    @NotNull SortedMap<String, InternalCommand> childCommands;
+    @NotNull List<String> commandHelp;
+    @Nullable InternalPermission permission;
+    int minArguments;
+    int maxArguments;
 
     public static Builder builder()
     {
@@ -96,9 +96,7 @@ public class CommandAttributes
          */
         public Builder exactArguments(int exactArg)
         {
-            this.minArguments = exactArg;
-            this.maxArguments = exactArg;
-            return this;
+            return minArguments(exactArg).maxArguments(exactArg);
         }
 
         /**

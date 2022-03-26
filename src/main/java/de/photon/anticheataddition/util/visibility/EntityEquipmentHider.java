@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-final class PlayerEquipmentHider extends PlayerInformationHider
+final class EntityEquipmentHider extends EntityInformationHider
 {
-    public PlayerEquipmentHider()
+    public EntityEquipmentHider()
     {
         super(PacketType.Play.Server.ENTITY_EQUIPMENT);
     }

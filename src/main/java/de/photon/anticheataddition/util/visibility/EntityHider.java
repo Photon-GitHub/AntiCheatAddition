@@ -9,9 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-final class PlayerHider extends PlayerInformationHider
+final class EntityHider extends EntityInformationHider
 {
-    public PlayerHider()
+    public EntityHider()
     {
         super(PacketType.Play.Server.ENTITY_EQUIPMENT,
               PacketType.Play.Server.ENTITY_EFFECT,

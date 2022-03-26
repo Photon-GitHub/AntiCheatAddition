@@ -6,7 +6,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.config.Configs;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeQueue;
 import de.photon.anticheataddition.util.messaging.DebugSender;
-import de.photon.anticheataddition.util.visibility.PlayerVisibility;
+import de.photon.anticheataddition.util.visibility.EntityVisibility;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -121,8 +121,7 @@ public class Esp extends Module
                         // Full hiding (due to the default adding to fullHiddenPlayers.)
                     }
 
-                    PlayerVisibility.INSTANCE.setFullyHidden(observerNode.getElement(), fullHiddenPlayers);
-                    PlayerVisibility.INSTANCE.setEquipmentHidden(observerNode.getElement(), equipHiddenPlayers);
+                    EntityVisibility.INSTANCE.setHidden(observerNode.getElement(), fullHiddenPlayers, equipHiddenPlayers);
                 }
                 playerQuadTree.clear();
             }

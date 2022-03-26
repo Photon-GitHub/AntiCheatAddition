@@ -11,6 +11,7 @@ import com.google.common.collect.MultimapBuilder;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
+import de.photon.anticheataddition.util.messaging.DebugSender;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -25,16 +26,15 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-abstract class PlayerInformationHider implements Listener
+abstract class EntityInformationHider implements Listener
 {
     private final Multimap<Entity, Entity> hiddenFromPlayerMap;
     private final PacketListener informationPacketListener;
 
-    protected PlayerInformationHider(@NotNull PacketType... affectedPackets)
+    protected EntityInformationHider(@NotNull PacketType... affectedPackets)
     {
         hiddenFromPlayerMap = MultimapBuilder.hashKeys(AntiCheatAddition.SERVER_EXPECTED_PLAYERS)
                                              .hashSetValues(AntiCheatAddition.WORLD_EXPECTED_PLAYERS)
@@ -57,20 +57,12 @@ abstract class PlayerInformationHider implements Listener
                                                 .anyMatch(i -> i == entityId);
                 }
 
-                if (hidden) event.setCancelled(true);
+                if (hidden) {
+                    event.setCancelled(true);
+                    DebugSender.getInstance().sendDebug("PacketEvent " + event.getPlayer().getName() + " for entity " + entityId + " cancelled.", true, false);
+                }
             }
         };
-    }
-
-    public static void updateEntities(@NotNull Player observer, Collection<Entity> entities)
-    {
-        // Performance optimization for no changes.
-        if (entities.isEmpty()) return;
-
-        final List<Player> playerList = List.of(observer);
-        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
-            for (Entity entity : entities) ProtocolLibrary.getProtocolManager().updateEntity(entity, playerList);
-        });
     }
 
     public void clear()
@@ -109,6 +101,7 @@ abstract class PlayerInformationHider implements Listener
     {
         // Cache entities for performance reasons so the server doesn't need to load them again when the task is executed.
         val entities = Arrays.asList(event.getChunk().getEntities());
+        DebugSender.getInstance().sendDebug("ChunkUnload " + entities.stream().map(Entity::getName).collect(Collectors.joining(", ")), true, false);
         synchronized (hiddenFromPlayerMap) {
             // All the entities that are keys in the map, do this first to reduce the amount of values in the call below.
             for (final Entity entity : entities) hiddenFromPlayerMap.removeAll(entity);
@@ -121,6 +114,7 @@ abstract class PlayerInformationHider implements Listener
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event)
     {
+        DebugSender.getInstance().sendDebug("Death " + event.getEntity().getName(), true, false);
         removeEntity(event.getEntity());
     }
 
@@ -131,7 +125,10 @@ abstract class PlayerInformationHider implements Listener
         switch (event.getNewGameMode()) {
             case CREATIVE:
             case SPECTATOR:
+                DebugSender.getInstance().sendDebug("GameModeChange " + event.getPlayer().getName(), true, false);
                 removeEntity(event.getPlayer());
+                Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () ->
+                        ProtocolLibrary.getProtocolManager().updateEntity(event.getPlayer(), event.getPlayer().getWorld().getPlayers()));
                 break;
             default: break;
         }
@@ -140,6 +137,7 @@ abstract class PlayerInformationHider implements Listener
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
+        DebugSender.getInstance().sendDebug("Quit " + event.getPlayer().getName(), true, false);
         removeEntity(event.getPlayer());
     }
 
@@ -159,10 +157,15 @@ abstract class PlayerInformationHider implements Listener
     }
 
     /**
-     * Hides a {@link Player} from another {@link Player}.
+     * Hides entities from a {@link Player}.
+     *
+     * @return the {@link Set} of entities that needs updating (newly revealed).
      */
-    public void setHiddenEntities(@NotNull Player observer, @NotNull Set<Entity> toHide)
+    public Set<Entity> setHiddenEntities(@NotNull Player observer, @NotNull Set<Entity> toHide)
     {
+        if (!toHide.isEmpty())
+            DebugSender.getInstance().sendDebug("setHidden " + observer.getName() + " toHide: " + toHide.stream().map(Entity::getName).collect(Collectors.joining(", ")), true, false);
+
         Set<Entity> oldHidden;
         synchronized (hiddenFromPlayerMap) {
             oldHidden = Set.copyOf(hiddenFromPlayerMap.replaceValues(observer, toHide));
@@ -171,14 +174,9 @@ abstract class PlayerInformationHider implements Listener
         final Set<Entity> newRevealed = SetUtil.difference(oldHidden, toHide);
         final Set<Entity> newHidden = SetUtil.difference(toHide, oldHidden);
 
-        // ProtocolManager check is needed to prevent errors.
-        if (ProtocolLibrary.getProtocolManager() != null) {
-            // Update the entities that have been hidden and shall now be revealed.
-            updateEntities(observer, newRevealed);
-        }
-
         // Call onHide for those entities that have been revealed and shall now be hidden.
         this.onHide(observer, newHidden);
+        return newRevealed;
     }
 
     protected abstract void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide);

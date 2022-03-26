@@ -147,19 +147,21 @@ abstract class EntityInformationHider implements Listener
      */
     public Set<Entity> setHiddenEntities(@NotNull Player observer, @NotNull Set<Entity> toHide)
     {
-        onPreHide(observer, toHide);
-
-        Set<Entity> oldHidden;
+        final Set<Entity> oldHidden;
+        final Set<Entity> newlyHidden;
         synchronized (hiddenFromPlayerMap) {
-            oldHidden = Set.copyOf(hiddenFromPlayerMap.replaceValues(observer, toHide));
+            oldHidden = Set.copyOf(hiddenFromPlayerMap.get(observer));
+            newlyHidden = SetUtil.difference(toHide, oldHidden);
+
+            onPreHide(observer, newlyHidden);
+
+            hiddenFromPlayerMap.replaceValues(observer, toHide);
         }
 
-        final Set<Entity> newRevealed = SetUtil.difference(oldHidden, toHide);
-        final Set<Entity> newHidden = SetUtil.difference(toHide, oldHidden);
-
         // Call onHide for those entities that have been revealed and shall now be hidden.
-        this.onHide(observer, newHidden);
-        return newRevealed;
+        this.onHide(observer, newlyHidden);
+
+        return SetUtil.difference(oldHidden, toHide);
     }
 
     protected void onPreHide(@NotNull Player observer, @NotNull Set<Entity> toHide) {}

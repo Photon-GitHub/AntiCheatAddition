@@ -11,7 +11,6 @@ import com.google.common.collect.MultimapBuilder;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
-import de.photon.anticheataddition.util.messaging.DebugSender;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -27,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 abstract class EntityInformationHider implements Listener
 {
@@ -57,10 +55,7 @@ abstract class EntityInformationHider implements Listener
                                                 .anyMatch(i -> i == entityId);
                 }
 
-                if (hidden) {
-                    event.setCancelled(true);
-                    DebugSender.getInstance().sendDebug("PacketEvent " + event.getPlayer().getName() + " for entity " + entityId + " cancelled.", true, false);
-                }
+                if (hidden) event.setCancelled(true);
             }
         };
     }
@@ -101,7 +96,6 @@ abstract class EntityInformationHider implements Listener
     {
         // Cache entities for performance reasons so the server doesn't need to load them again when the task is executed.
         val entities = Arrays.asList(event.getChunk().getEntities());
-        DebugSender.getInstance().sendDebug("ChunkUnload " + entities.stream().map(Entity::getName).collect(Collectors.joining(", ")), true, false);
         synchronized (hiddenFromPlayerMap) {
             // All the entities that are keys in the map, do this first to reduce the amount of values in the call below.
             for (final Entity entity : entities) hiddenFromPlayerMap.removeAll(entity);
@@ -114,7 +108,6 @@ abstract class EntityInformationHider implements Listener
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event)
     {
-        DebugSender.getInstance().sendDebug("Death " + event.getEntity().getName(), true, false);
         removeEntity(event.getEntity());
     }
 
@@ -125,7 +118,6 @@ abstract class EntityInformationHider implements Listener
         switch (event.getNewGameMode()) {
             case CREATIVE:
             case SPECTATOR:
-                DebugSender.getInstance().sendDebug("GameModeChange " + event.getPlayer().getName(), true, false);
                 removeEntity(event.getPlayer());
                 Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () ->
                         ProtocolLibrary.getProtocolManager().updateEntity(event.getPlayer(), event.getPlayer().getWorld().getPlayers()));
@@ -137,7 +129,6 @@ abstract class EntityInformationHider implements Listener
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
-        DebugSender.getInstance().sendDebug("Quit " + event.getPlayer().getName(), true, false);
         removeEntity(event.getPlayer());
     }
 
@@ -163,9 +154,6 @@ abstract class EntityInformationHider implements Listener
      */
     public Set<Entity> setHiddenEntities(@NotNull Player observer, @NotNull Set<Entity> toHide)
     {
-        if (!toHide.isEmpty())
-            DebugSender.getInstance().sendDebug("setHidden " + observer.getName() + " toHide: " + toHide.stream().map(Entity::getName).collect(Collectors.joining(", ")), true, false);
-
         Set<Entity> oldHidden;
         synchronized (hiddenFromPlayerMap) {
             oldHidden = Set.copyOf(hiddenFromPlayerMap.replaceValues(observer, toHide));

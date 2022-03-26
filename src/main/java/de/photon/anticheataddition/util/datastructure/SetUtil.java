@@ -1,14 +1,15 @@
 package de.photon.anticheataddition.util.datastructure;
 
 import com.google.common.collect.Sets;
-import lombok.experimental.UtilityClass;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collector;
 
-@UtilityClass
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SetUtil
 {
     /**

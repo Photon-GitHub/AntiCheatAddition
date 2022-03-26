@@ -3,8 +3,9 @@ package de.photon.anticheataddition.util.execute;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -16,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@UtilityClass
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Placeholders
 {
     /**

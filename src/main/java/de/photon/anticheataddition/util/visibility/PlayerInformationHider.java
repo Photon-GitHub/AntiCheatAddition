@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.jetbrains.annotations.NotNull;
@@ -121,6 +122,19 @@ abstract class PlayerInformationHider implements Listener
     public void onEntityDeath(EntityDeathEvent event)
     {
         removeEntity(event.getEntity());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerGameModeChange(PlayerGameModeChangeEvent event)
+    {
+        // Creative and Spectator players are ignored by ESP and therefore need to be removed from hiding manually.
+        switch (event.getNewGameMode()) {
+            case CREATIVE:
+            case SPECTATOR:
+                removeEntity(event.getPlayer());
+                break;
+            default: break;
+        }
     }
 
     @EventHandler

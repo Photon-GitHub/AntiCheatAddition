@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class ModernWorldUtil implements WorldUtil
+final class ModernWorldUtil implements WorldUtil
 {
     @Override
     public boolean isNext(Block a, Block b, Set<BlockFace> faces)

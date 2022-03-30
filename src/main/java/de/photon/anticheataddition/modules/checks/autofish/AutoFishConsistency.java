@@ -18,14 +18,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 
-public class AutoFishConsistency extends ViolationModule implements Listener
+public final class AutoFishConsistency extends ViolationModule implements Listener
 {
+    public static final AutoFishConsistency INSTANCE = new AutoFishConsistency();
+
     private final int cancelVl = AntiCheatAddition.getInstance().getConfig().getInt("AutoFish.cancel_vl");
 
     private final int fishingAttemptCount = loadInt(".fishing_attempt_count", 5);
     private final int minVariation = loadInt(".min_variation", 30);
 
-    public AutoFishConsistency()
+    private AutoFishConsistency()
     {
         super("AutoFish.parts.consistency");
     }

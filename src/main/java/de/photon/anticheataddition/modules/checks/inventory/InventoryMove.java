@@ -30,15 +30,17 @@ import org.bukkit.util.Vector;
 
 import java.util.Set;
 
-public class InventoryMove extends ViolationModule
+public final class InventoryMove extends ViolationModule
 {
+    public static final InventoryMove INSTANCE = new InventoryMove();
+
     private final int cancelVl = loadInt(".cancel_vl", 60);
     private final double minTps = loadDouble(".min_tps", 19.5);
     private final int lenienceMillis = loadInt(".lenience_millis", 0);
     private final int teleportBypassTime = loadInt(".teleport_bypass_time", 900);
     private final int worldChangeBypassTime = loadInt(".world_change_bypass_time", 2000);
 
-    public InventoryMove()
+    private InventoryMove()
     {
         super("Inventory.parts.Move");
     }

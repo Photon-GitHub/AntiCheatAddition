@@ -10,14 +10,14 @@ import java.util.function.ToIntBiFunction;
 /**
  * This patterns detects very random rotations that some randomized scaffold modules might use.
  */
-class ScaffoldRotationSecondDerivative extends Module
+final class ScaffoldRotationSecondDerivative extends Module
 {
     private static final double ANGLE_OFFSET_SUM_THRESHOLD = 5.2D;
 
     @Getter
     private ToIntBiFunction<User, Double> applyingConsumer = (user, angleInformation) -> 0;
 
-    public ScaffoldRotationSecondDerivative(String scaffoldConfigString)
+    ScaffoldRotationSecondDerivative(String scaffoldConfigString)
     {
         super(scaffoldConfigString + ".parts.Rotation.SecondDerivative");
     }

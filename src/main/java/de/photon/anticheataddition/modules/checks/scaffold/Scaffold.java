@@ -23,8 +23,10 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import java.util.Objects;
 
 @Getter
-public class Scaffold extends ViolationModule implements Listener
+public final class Scaffold extends ViolationModule implements Listener
 {
+    public static final Scaffold INSTANCE = new Scaffold();
+
     private final ScaffoldAngle scaffoldAngle = new ScaffoldAngle(this.getConfigString());
 
     private final ScaffoldJumping scaffoldJumping = new ScaffoldJumping(this.getConfigString());
@@ -43,7 +45,7 @@ public class Scaffold extends ViolationModule implements Listener
     private final int cancelVl = loadInt(".cancel_vl", 110);
     private final int timeout = loadInt(".timeout", 1000);
 
-    public Scaffold()
+    private Scaffold()
     {
         super("Scaffold");
     }

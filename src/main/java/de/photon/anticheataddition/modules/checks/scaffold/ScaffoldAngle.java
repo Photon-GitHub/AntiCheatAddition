@@ -11,14 +11,14 @@ import org.bukkit.util.Vector;
 
 import java.util.function.ToIntBiFunction;
 
-class ScaffoldAngle extends Module
+final class ScaffoldAngle extends Module
 {
     private static final double MAX_ANGLE = Math.toRadians(90);
 
     @Getter
     private ToIntBiFunction<User, BlockPlaceEvent> applyingConsumer = (user, event) -> 0;
 
-    public ScaffoldAngle(String scaffoldConfigString)
+    ScaffoldAngle(String scaffoldConfigString)
     {
         super(scaffoldConfigString + ".parts.Angle");
     }

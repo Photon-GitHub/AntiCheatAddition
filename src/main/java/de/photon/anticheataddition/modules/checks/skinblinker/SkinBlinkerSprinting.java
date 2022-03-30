@@ -10,9 +10,11 @@ import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
 
-public class SkinBlinkerSprinting extends ViolationModule
+public final class SkinBlinkerSprinting extends ViolationModule
 {
-    public SkinBlinkerSprinting() {super("Skinblinker.parts.Sprinting");}
+    public static final SkinBlinkerSprinting INSTANCE = new SkinBlinkerSprinting();
+
+    private SkinBlinkerSprinting() {super("Skinblinker.parts.Sprinting");}
 
     @Override
     protected ModuleLoader createModuleLoader()

@@ -10,11 +10,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class ImpossibleChat extends ViolationModule implements Listener
+public final class ImpossibleChat extends ViolationModule implements Listener
 {
+    public static final ImpossibleChat INSTANCE = new ImpossibleChat();
+
     private final int cancelVl = loadInt(".cancel_vl", 75);
 
-    public ImpossibleChat()
+    private ImpossibleChat()
     {
         super("ImpossibleChat");
     }

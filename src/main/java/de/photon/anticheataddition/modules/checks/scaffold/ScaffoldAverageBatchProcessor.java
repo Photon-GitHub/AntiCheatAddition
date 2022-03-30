@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.ScaffoldBlockPlace>
+final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.ScaffoldBlockPlace>
 {
     private static final Polynomial VL_CALCULATOR = new Polynomial(1.2222222, 20);
 

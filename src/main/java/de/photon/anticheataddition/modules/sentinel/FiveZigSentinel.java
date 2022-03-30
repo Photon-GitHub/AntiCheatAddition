@@ -13,8 +13,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
-public class FiveZigSentinel extends SentinelModule implements Listener, PluginMessageListener
+public final class FiveZigSentinel extends SentinelModule implements Listener, PluginMessageListener
 {
+    public static final FiveZigSentinel INSTANCE = new FiveZigSentinel();
+
     private static final int FIVE_ZIG_API_VERSION = 4;
     private static final String REGISTER_SEND_CHANNEL = "the5zigmod:5zig_reg";
     private static final String RESPONSE_CHANNEL = "the5zigmod:5zig";
@@ -26,7 +28,7 @@ public class FiveZigSentinel extends SentinelModule implements Listener, PluginM
         buf.release();
     }
 
-    public FiveZigSentinel()
+    private FiveZigSentinel()
     {
         super("5Zig");
     }

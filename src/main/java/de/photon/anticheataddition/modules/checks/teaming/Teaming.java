@@ -21,9 +21,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Teaming extends ViolationModule implements Listener
+public final class Teaming extends ViolationModule implements Listener
 {
-    public Teaming()
+    public static final Teaming INSTANCE = new Teaming();
+
+    private Teaming()
     {
         super("Teaming");
     }

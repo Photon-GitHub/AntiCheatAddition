@@ -10,9 +10,11 @@ import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
 
-public class SkinBlinkerUnusedBit extends ViolationModule
+public final class SkinBlinkerUnusedBit extends ViolationModule
 {
-    public SkinBlinkerUnusedBit()
+    public static final SkinBlinkerUnusedBit INSTANCE = new SkinBlinkerUnusedBit();
+
+    private SkinBlinkerUnusedBit()
     {
         super("Skinblinker.parts.UnusedBit");
     }

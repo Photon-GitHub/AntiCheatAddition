@@ -13,12 +13,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 
-public class AutoEat extends ViolationModule implements Listener
+public final class AutoEat extends ViolationModule implements Listener
 {
+    public static final AutoEat INSTANCE = new AutoEat();
+
     private final int cancelVl = loadInt(".cancel_vl", 80);
     private final int timeout = loadInt(".timeout", 5000);
 
-    public AutoEat()
+    private AutoEat()
     {
         super("AutoEat");
     }

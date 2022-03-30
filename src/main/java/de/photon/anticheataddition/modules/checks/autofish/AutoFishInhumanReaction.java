@@ -15,14 +15,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 
-public class AutoFishInhumanReaction extends ViolationModule implements Listener
+public final class AutoFishInhumanReaction extends ViolationModule implements Listener
 {
+    public static final AutoFishInhumanReaction INSTANCE = new AutoFishInhumanReaction();
+
     private static final Polynomial VL_CALCULATOR = new Polynomial(-60, 60);
     private final int cancelVl = AntiCheatAddition.getInstance().getConfig().getInt("AutoFish.cancel_vl");
 
     private final double humanReactionTime = loadDouble(".human_reaction_time", 145);
 
-    public AutoFishInhumanReaction()
+    private AutoFishInhumanReaction()
     {
         super("AutoFish.parts.inhuman_reaction");
     }

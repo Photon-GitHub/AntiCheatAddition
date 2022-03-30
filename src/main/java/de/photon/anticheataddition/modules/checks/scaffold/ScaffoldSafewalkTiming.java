@@ -12,12 +12,12 @@ import java.util.function.ToIntFunction;
 /**
  * This detects safe-walk behaviour (stopping when not sneaking)
  */
-class ScaffoldSafewalkTiming extends Module
+final class ScaffoldSafewalkTiming extends Module
 {
     @Getter
     private ToIntFunction<User> applyingConsumer = user -> 0;
 
-    public ScaffoldSafewalkTiming(String scaffoldConfigString)
+    ScaffoldSafewalkTiming(String scaffoldConfigString)
     {
         super(scaffoldConfigString + ".parts.Safewalk.Timing");
     }

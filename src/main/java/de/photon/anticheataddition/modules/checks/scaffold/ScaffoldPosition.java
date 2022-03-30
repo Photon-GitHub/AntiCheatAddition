@@ -13,12 +13,12 @@ import java.util.function.ToIntBiFunction;
 /**
  * This pattern checks for suspicious positions when placing a block to prevent extend scaffolds.
  */
-class ScaffoldPosition extends Module
+final class ScaffoldPosition extends Module
 {
     @Getter
     private ToIntBiFunction<User, BlockPlaceEvent> applyingConsumer = (user, event) -> 0;
 
-    public ScaffoldPosition(String scaffoldConfigString)
+    ScaffoldPosition(String scaffoldConfigString)
     {
         super(scaffoldConfigString + ".parts.Position");
     }

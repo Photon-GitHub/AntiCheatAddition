@@ -15,13 +15,15 @@ import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
 
-public class Fastswitch extends ViolationModule
+public final class Fastswitch extends ViolationModule
 {
+    public static final Fastswitch INSTANCE = new Fastswitch();
+
     private final int cancelVl = loadInt(".cancel_vl", 50);
     private final int maxPing = loadInt(".max_ping", 400);
     private final int switchMilliseconds = loadInt(".switch_milliseconds", 50);
 
-    public Fastswitch()
+    private Fastswitch()
     {
         super("Fastswitch");
     }

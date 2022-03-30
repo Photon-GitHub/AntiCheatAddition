@@ -14,11 +14,11 @@ import lombok.val;
 import java.util.List;
 import java.util.Set;
 
-public class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<InventoryBatch.InventoryClick>
+public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<InventoryBatch.InventoryClick>
 {
     private static final Polynomial AVERAGE_MULTIPLIER_CALCULATOR = new Polynomial(-0.000205762, 0.0141942, -0.342254, 3.3);
 
-    protected AverageHeuristicBatchProcessor(ViolationModule module)
+    AverageHeuristicBatchProcessor(ViolationModule module)
     {
         super(module, Set.of(InventoryBatch.INVENTORY_BATCH_BROADCASTER));
     }

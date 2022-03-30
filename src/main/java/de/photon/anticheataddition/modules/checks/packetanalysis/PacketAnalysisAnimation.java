@@ -15,9 +15,11 @@ import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
 
-public class PacketAnalysisAnimation extends ViolationModule
+public final class PacketAnalysisAnimation extends ViolationModule
 {
-    public PacketAnalysisAnimation()
+    public static final PacketAnalysisAnimation INSTANCE = new PacketAnalysisAnimation();
+
+    private PacketAnalysisAnimation()
     {
         super("PacketAnalysis.parts.Animation");
     }

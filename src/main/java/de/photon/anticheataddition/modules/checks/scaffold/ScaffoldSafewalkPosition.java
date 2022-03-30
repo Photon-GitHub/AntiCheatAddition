@@ -16,14 +16,14 @@ import java.util.function.ToIntBiFunction;
  * This pattern detects suspicious stops right before the edges
  * of {@link org.bukkit.block.Block}s.
  */
-class ScaffoldSafewalkPosition extends Module
+final class ScaffoldSafewalkPosition extends Module
 {
     private static final int MIN_SNEAK_BYPASS_MILLIS = 148;
 
     @Getter
     private ToIntBiFunction<User, BlockPlaceEvent> applyingConsumer = (user, event) -> 0;
 
-    public ScaffoldSafewalkPosition(String scaffoldConfigString)
+    ScaffoldSafewalkPosition(String scaffoldConfigString)
     {
         super(scaffoldConfigString + ".parts.Safewalk.Position");
     }

@@ -15,13 +15,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class InventoryMultiInteraction extends ViolationModule implements Listener
+public final class InventoryMultiInteraction extends ViolationModule implements Listener
 {
+    public static final InventoryMultiInteraction INSTANCE = new InventoryMultiInteraction();
+
     private final int cancelVl = loadInt(".cancel_vl", 25);
     private final int maxPing = loadInt(".max_ping", 400);
     private final double minTps = loadDouble(".min_tps", 18.5);
 
-    public InventoryMultiInteraction()
+    private InventoryMultiInteraction()
     {
         super("Inventory.parts.MultiInteraction");
     }
@@ -78,7 +80,9 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                     // No false positives to check for.
                     addedVl = 8;
 
-                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ? 1 : 5;
+                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
+                                    1 :
+                                    5;
                     break;
 
                 case DROP_ALL_CURSOR:
@@ -93,7 +97,9 @@ public class InventoryMultiInteraction extends ViolationModule implements Listen
                     if (event.getCurrentItem() == null || user.getDataMap().getObject(DataKey.Obj.LAST_MATERIAL_CLICKED) == event.getCurrentItem().getType()) return;
 
                     // Depending on the distance of the clicks.
-                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ? 1 : 2;
+                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
+                                    1 :
+                                    2;
                     break;
 
                 case SWAP_WITH_CURSOR:

@@ -9,8 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
-public class WorldDownloaderSentinel extends SentinelModule implements PluginMessageListener
+public final class WorldDownloaderSentinel extends SentinelModule implements PluginMessageListener
 {
+    public static final WorldDownloaderSentinel INSTANCE = new WorldDownloaderSentinel();
+
     private static final MessageChannel WDL_CONTROL_CHANNEL = MessageChannel.of("wdl", "control", "WDL|CONTROL");
 
     private final boolean disable = loadBoolean(".disable.general", true);
@@ -21,7 +23,7 @@ public class WorldDownloaderSentinel extends SentinelModule implements PluginMes
     private final boolean disableTileEntitySaving = loadBoolean(".disable.tile_entity_saving", true);
     private final boolean disableContainerSaving = loadBoolean(".disable.container_saving", true);
 
-    public WorldDownloaderSentinel()
+    private WorldDownloaderSentinel()
     {
         super("WorldDownloader");
     }

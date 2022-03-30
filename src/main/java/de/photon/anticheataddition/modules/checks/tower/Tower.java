@@ -18,11 +18,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 
-public class Tower extends ViolationModule implements Listener
+public final class Tower extends ViolationModule implements Listener
 {
+    public static final Tower INSTANCE = new Tower();
+
     private final int timeout = loadInt(".timeout", 6000);
 
-    public Tower()
+    private Tower()
     {
         super("Tower");
     }

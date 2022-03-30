@@ -11,14 +11,14 @@ import java.util.function.ToIntBiFunction;
  * This pattern detects huge angle changes while scaffolding that
  * do not reflect legit behaviour.
  */
-class ScaffoldRotationDerivative extends Module
+final class ScaffoldRotationDerivative extends Module
 {
     private static final double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
 
     @Getter
     private ToIntBiFunction<User, Double> applyingConsumer = (user, angleInformation) -> 0;
 
-    public ScaffoldRotationDerivative(String scaffoldConfigString)
+    ScaffoldRotationDerivative(String scaffoldConfigString)
     {
         super(scaffoldConfigString + ".parts.Rotation.Derivative");
     }

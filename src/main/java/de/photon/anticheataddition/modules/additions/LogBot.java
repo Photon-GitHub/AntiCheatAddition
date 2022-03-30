@@ -12,8 +12,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class LogBot extends Module
+public final class LogBot extends Module
 {
+    public static final LogBot INSTANCE = new LogBot();
+
     private final Set<LogDeletionTime> logDeletionTimes = Stream.of(new LogDeletionTime("plugins/AntiCheatAddition/logs", ".AntiCheatAddition"),
                                                                     new LogDeletionTime("logs", ".Server"))
                                                                 // Actually active.
@@ -22,7 +24,7 @@ public class LogBot extends Module
 
     private int taskNumber;
 
-    public LogBot()
+    private LogBot()
     {
         super("LogBot");
     }

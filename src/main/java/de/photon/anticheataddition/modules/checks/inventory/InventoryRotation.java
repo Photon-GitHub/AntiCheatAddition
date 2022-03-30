@@ -12,12 +12,14 @@ import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
 
-public class InventoryRotation extends ViolationModule
+public final class InventoryRotation extends ViolationModule
 {
+    public static final InventoryRotation INSTANCE = new InventoryRotation();
+
     private final int teleportTime = loadInt(".teleport_bypass_time", 900);
     private final int worldChangeTime = loadInt(".world_change_bypass_time", 2000);
 
-    public InventoryRotation()
+    private InventoryRotation()
     {
         super("Inventory.parts.Rotation");
     }

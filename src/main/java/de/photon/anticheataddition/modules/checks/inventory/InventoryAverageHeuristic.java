@@ -17,12 +17,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class InventoryAverageHeuristic extends ViolationModule implements Listener
+public final class InventoryAverageHeuristic extends ViolationModule implements Listener
 {
+    public static final InventoryAverageHeuristic INSTANCE = new InventoryAverageHeuristic();
+
     private final int maxPing = loadInt(".max_ping", 400);
     private final double minTps = loadDouble(".min_tps", 15.5);
 
-    public InventoryAverageHeuristic()
+    private InventoryAverageHeuristic()
     {
         super("Inventory.parts.AverageHeuristic");
     }

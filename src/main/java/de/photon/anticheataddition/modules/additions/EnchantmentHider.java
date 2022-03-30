@@ -16,12 +16,14 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
-public class EnchantmentHider extends Module
+public final class EnchantmentHider extends Module
 {
+    public static final EnchantmentHider INSTANCE = new EnchantmentHider();
+
     private final boolean spoofPlayers = loadBoolean(".spoof.players", true);
     private final boolean spoofOthers = loadBoolean(".spoof.others", false);
 
-    public EnchantmentHider()
+    private EnchantmentHider()
     {
         super("EnchantmentHider");
     }

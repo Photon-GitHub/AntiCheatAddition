@@ -13,9 +13,11 @@ import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
 
-public class PacketAnalysisIllegalPitch extends ViolationModule
+public final class PacketAnalysisIllegalPitch extends ViolationModule
 {
-    public PacketAnalysisIllegalPitch()
+    public static final PacketAnalysisIllegalPitch INSTANCE = new PacketAnalysisIllegalPitch();
+
+    private PacketAnalysisIllegalPitch()
     {
         super("PacketAnalysis.parts.IllegalPitch");
     }

@@ -12,12 +12,12 @@ import java.util.function.ToIntFunction;
  * This pattern detects bursts of sprinting while scaffolding. No legit is able to properly utilize sprinting so far
  * because of the direction limitations.
  */
-class ScaffoldSprinting extends Module
+final class ScaffoldSprinting extends Module
 {
     @Getter
     private ToIntFunction<User> applyingConsumer = user -> 0;
 
-    public ScaffoldSprinting(String scaffoldConfigString)
+    ScaffoldSprinting(String scaffoldConfigString)
     {
         super(scaffoldConfigString + ".parts.Sprinting");
     }

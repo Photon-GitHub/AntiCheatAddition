@@ -19,9 +19,11 @@ import org.bukkit.block.BlockFace;
 
 import java.util.concurrent.TimeUnit;
 
-public class PacketAnalysisEqualRotation extends ViolationModule
+public final class PacketAnalysisEqualRotation extends ViolationModule
 {
-    public PacketAnalysisEqualRotation()
+    public static final PacketAnalysisEqualRotation INSTANCE = new PacketAnalysisEqualRotation();
+
+    private PacketAnalysisEqualRotation()
     {
         super("PacketAnalysis.parts.EqualRotation");
     }

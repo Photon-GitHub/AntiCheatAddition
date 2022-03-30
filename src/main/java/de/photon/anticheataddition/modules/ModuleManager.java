@@ -55,134 +55,74 @@ public final class ModuleManager
     @Getter private static final ModuleMap<ViolationModule> violationModuleMap;
 
     static {
-        // Additions
-        val brandHider = BrandHider.INSTANCE;
-        val damageIndicator = new DamageIndicator();
-        val enchantmentHider = new EnchantmentHider();
-        val esp = new Esp();
-        val logBot = new LogBot();
-
-        // Checks
-        val autoEat = new AutoEat();
-
-        val autoFishConsistency = new AutoFishConsistency();
-        val autoFishInhumanReaction = new AutoFishInhumanReaction();
-        val autoFish = ViolationModule.parentOf("AutoFish", autoFishConsistency, autoFishInhumanReaction);
-
-        val autoPotion = new AutoPotion();
-
-        val fastswitch = new Fastswitch();
-
-        val impossibleChat = new ImpossibleChat();
-
-        val inventoryAverageHeuristic = new InventoryAverageHeuristic();
-        val inventoryHit = new InventoryHit();
-        val inventoryMove = new InventoryMove();
-        val inventoryMultiInteraction = new InventoryMultiInteraction();
-        val inventoryPerfectExit = new InventoryPerfectExit();
-        val inventoryRotation = new InventoryRotation();
-        val inventorySprinting = new InventorySprinting();
-        val inventory = ViolationModule.parentOf("Inventory", inventoryAverageHeuristic, inventoryHit, inventoryMove, inventoryMultiInteraction, inventoryPerfectExit, inventoryRotation, inventorySprinting);
-
-
-        val packetAnalysisAnimation = new PacketAnalysisAnimation();
-        val packetAnalysisEqualRotation = new PacketAnalysisEqualRotation();
-        val packetAnalysisIllegalPitch = new PacketAnalysisIllegalPitch();
-        val packetAnalysis = ViolationModule.parentOf("PacketAnalysis", packetAnalysisAnimation, packetAnalysisEqualRotation, packetAnalysisIllegalPitch);
-
-        val pingspoof = new Pingspoof();
-
-        val scaffold = new Scaffold();
-
-        val skinBlinkerUnusedBit = new SkinBlinkerUnusedBit();
-        val skinBlinkerSprinting = new SkinBlinkerSprinting();
-        val skinBlinker = ViolationModule.parentOf("Skinblinker", skinBlinkerUnusedBit, skinBlinkerSprinting);
-
-        val teaming = new Teaming();
-
-        val tower = new Tower();
-
-        // Sentinel
-        val commandBlockSentinel = new CommandBlockSentinel();
-        val creativeKillPotionSentinel = new CreativeKillPotionSentinel();
-        val selfDamageSentinel = new SelfDamageSentinel();
-        val trollPotionSentinel = new TrollPotionSentinel();
-
-        val betterSprintingSentinel = new BetterSprintingSentinel();
-        val fiveZigSentinel = new FiveZigSentinel();
-        val labyModSentinel = new LabyModSentinel();
-        val schematicaSentinel = new SchematicaSentinel();
-        val vapeSentinel = new VapeSentinel();
-        val worldDownloaderSentinel = new WorldDownloaderSentinel();
-
         val moduleList = new ArrayList<>(Arrays.asList(
                 // Additions
-                brandHider,
-                damageIndicator,
-                enchantmentHider,
-                esp,
-                logBot,
+                BrandHider.INSTANCE,
+                DamageIndicator.INSTANCE,
+                EnchantmentHider.INSTANCE,
+                Esp.INSTANCE,
+                LogBot.INSTANCE,
 
                 // Checks
-                autoEat,
+                AutoEat.INSTANCE,
 
-                autoFishConsistency,
-                autoFishInhumanReaction,
-                autoFish,
+                AutoFishConsistency.INSTANCE,
+                AutoFishInhumanReaction.INSTANCE,
+                ViolationModule.parentOf("AutoFish", AutoFishConsistency.INSTANCE, AutoFishInhumanReaction.INSTANCE),
 
-                autoPotion,
+                AutoPotion.INSTANCE,
 
-                fastswitch,
+                Fastswitch.INSTANCE,
 
-                impossibleChat,
+                ImpossibleChat.INSTANCE,
 
-                inventoryAverageHeuristic,
-                inventoryHit,
-                inventoryMove,
-                inventoryMultiInteraction,
-                inventoryPerfectExit,
-                inventoryRotation,
-                inventorySprinting,
-                inventory,
+                InventoryAverageHeuristic.INSTANCE,
+                InventoryHit.INSTANCE,
+                InventoryMove.INSTANCE,
+                InventoryMultiInteraction.INSTANCE,
+                InventoryPerfectExit.INSTANCE,
+                InventoryRotation.INSTANCE,
+                InventorySprinting.INSTANCE,
+                ViolationModule.parentOf("Inventory", InventoryAverageHeuristic.INSTANCE, InventoryHit.INSTANCE, InventoryMove.INSTANCE, InventoryMultiInteraction.INSTANCE, InventoryPerfectExit.INSTANCE, InventoryRotation.INSTANCE, InventorySprinting.INSTANCE),
 
-                packetAnalysisAnimation,
-                packetAnalysisEqualRotation,
-                packetAnalysisIllegalPitch,
-                packetAnalysis,
+                PacketAnalysisAnimation.INSTANCE,
+                PacketAnalysisEqualRotation.INSTANCE,
+                PacketAnalysisIllegalPitch.INSTANCE,
+                ViolationModule.parentOf("PacketAnalysis", PacketAnalysisAnimation.INSTANCE, PacketAnalysisEqualRotation.INSTANCE, PacketAnalysisIllegalPitch.INSTANCE),
 
-                pingspoof,
+                Pingspoof.INSTANCE,
 
-                scaffold.getScaffoldAngle(),
-                scaffold.getScaffoldJumping(),
-                scaffold.getScaffoldPosition(),
-                scaffold.getScaffoldRotationDerivative(),
-                scaffold.getScaffoldRotationFastChange(),
-                scaffold.getScaffoldRotationSecondDerivative(),
-                scaffold.getScaffoldSafewalkPosition(),
-                scaffold.getScaffoldSafewalkTiming(),
-                scaffold.getScaffoldSprinting(),
-                scaffold,
+                Scaffold.INSTANCE.getScaffoldAngle(),
+                Scaffold.INSTANCE.getScaffoldJumping(),
+                Scaffold.INSTANCE.getScaffoldPosition(),
+                Scaffold.INSTANCE.getScaffoldRotationDerivative(),
+                Scaffold.INSTANCE.getScaffoldRotationFastChange(),
+                Scaffold.INSTANCE.getScaffoldRotationSecondDerivative(),
+                Scaffold.INSTANCE.getScaffoldSafewalkPosition(),
+                Scaffold.INSTANCE.getScaffoldSafewalkTiming(),
+                Scaffold.INSTANCE.getScaffoldSprinting(),
+                Scaffold.INSTANCE,
 
-                skinBlinkerUnusedBit,
-                skinBlinkerSprinting,
-                skinBlinker,
+                SkinBlinkerUnusedBit.INSTANCE,
+                SkinBlinkerSprinting.INSTANCE,
+                ViolationModule.parentOf("Skinblinker", SkinBlinkerUnusedBit.INSTANCE, SkinBlinkerSprinting.INSTANCE),
 
-                teaming,
+                Teaming.INSTANCE,
 
-                tower,
+                Tower.INSTANCE,
 
                 // Sentinel
-                commandBlockSentinel,
-                creativeKillPotionSentinel,
-                selfDamageSentinel,
-                trollPotionSentinel,
+                CommandBlockSentinel.INSTANCE,
+                CreativeKillPotionSentinel.INSTANCE,
+                SelfDamageSentinel.INSTANCE,
+                TrollPotionSentinel.INSTANCE,
 
-                betterSprintingSentinel,
-                fiveZigSentinel,
-                labyModSentinel,
-                schematicaSentinel,
-                vapeSentinel,
-                worldDownloaderSentinel));
+                BetterSprintingSentinel.INSTANCE,
+                FiveZigSentinel.INSTANCE,
+                LabyModSentinel.INSTANCE,
+                SchematicaSentinel.INSTANCE,
+                VapeSentinel.INSTANCE,
+                WorldDownloaderSentinel.INSTANCE));
 
         // Add sentinel custom modules.
         ConfigUtils.loadKeys("Sentinel.Custom").stream().map(key -> new SentinelChannelModule("Custom." + key)).forEach(moduleList::add);

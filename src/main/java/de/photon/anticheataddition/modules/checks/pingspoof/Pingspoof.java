@@ -25,8 +25,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
 
-public class Pingspoof extends ViolationModule implements Listener
+public final class Pingspoof extends ViolationModule implements Listener
 {
+    public static final Pingspoof INSTANCE = new Pingspoof();
+
     private static final Polynomial VL_CALCULATOR_BELOW_500 = new Polynomial(-1.78571E-5, 0.0723572, 1.214286);
     private static final Polynomial VL_CALCULATOR_ABOVE_500 = new Polynomial(1.372434E-10, -2.53498E-6, 0.0160475, 25.7896);
 
@@ -34,7 +36,7 @@ public class Pingspoof extends ViolationModule implements Listener
 
     private BukkitTask pingSpoofTask;
 
-    public Pingspoof()
+    private Pingspoof()
     {
         super("Pingspoof");
     }

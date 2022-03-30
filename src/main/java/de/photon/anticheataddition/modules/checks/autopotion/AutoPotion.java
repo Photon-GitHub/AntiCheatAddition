@@ -18,8 +18,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class AutoPotion extends ViolationModule implements Listener
+public final class AutoPotion extends ViolationModule implements Listener
 {
+    public static final AutoPotion INSTANCE = new AutoPotion();
+
     private final int cancelVl = loadInt(".cancel_vl", 2);
     private final int timeout = loadInt(".timeout", 1000);
     private final int lookRestoredTime = loadInt(".look_restored_time", 150);
@@ -27,7 +29,7 @@ public class AutoPotion extends ViolationModule implements Listener
     private final double initialPitchDifference = loadDouble(".initial_pitch_difference", 40);
     private final double lookDownAngle = loadDouble(".look_down_angle", 80);
 
-    public AutoPotion()
+    private AutoPotion()
     {
         super("AutoPotion");
     }

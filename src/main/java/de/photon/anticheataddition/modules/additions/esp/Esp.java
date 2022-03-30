@@ -21,8 +21,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Esp extends Module
+public final class Esp extends Module
 {
+    public static final Esp INSTANCE = new Esp();
+
     public static final long ESP_INTERVAL_TICKS = AntiCheatAddition.getInstance().getConfig().getLong("Esp.interval_ticks", 2L);
 
     private static final String ENTITY_TRACKING_RANGE_PLAYERS = ".entity-tracking-range.players";
@@ -30,7 +32,7 @@ public class Esp extends Module
 
     private static final int MAX_TRACKING_RANGE = 139;
 
-    public Esp()
+    private Esp()
     {
         super("Esp");
     }

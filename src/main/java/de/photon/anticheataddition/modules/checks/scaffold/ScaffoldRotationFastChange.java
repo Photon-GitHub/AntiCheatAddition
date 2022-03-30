@@ -12,12 +12,12 @@ import java.util.function.ToIntFunction;
 /**
  * This pattern detects significant rotation "jumps" in the last two ticks.
  */
-class ScaffoldRotationFastChange extends Module
+final class ScaffoldRotationFastChange extends Module
 {
     @Getter
     private ToIntFunction<User> applyingConsumer = user -> 0;
 
-    public ScaffoldRotationFastChange(String scaffoldConfigString)
+    ScaffoldRotationFastChange(String scaffoldConfigString)
     {
         super(scaffoldConfigString + ".parts.Rotation.FastChange");
     }

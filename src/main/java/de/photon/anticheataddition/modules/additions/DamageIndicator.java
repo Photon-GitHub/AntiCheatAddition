@@ -19,13 +19,15 @@ import org.bukkit.entity.Monster;
 
 import java.util.Set;
 
-public class DamageIndicator extends Module
+public final class DamageIndicator extends Module
 {
+    public static final DamageIndicator INSTANCE = new DamageIndicator();
+
     private final boolean spoofAnimals = loadBoolean(".spoof.animals", false);
     private final boolean spoofMonsters = loadBoolean(".spoof.monsters", true);
     private final boolean spoofPlayers = loadBoolean(".spoof.players", true);
 
-    public DamageIndicator()
+    private DamageIndicator()
     {
         super("DamageIndicator");
     }

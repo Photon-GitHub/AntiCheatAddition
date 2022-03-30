@@ -16,13 +16,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
-public class InventoryPerfectExit extends ViolationModule implements Listener
+public final class InventoryPerfectExit extends ViolationModule implements Listener
 {
+    public static final InventoryPerfectExit INSTANCE = new InventoryPerfectExit();
+
     private static final Polynomial VL_CALCULATOR = new Polynomial(-0.2857, 40);
 
     private final double minTps = loadDouble(".min_tps", 18.5);
 
-    public InventoryPerfectExit()
+    private InventoryPerfectExit()
     {
         super("Inventory.parts.PerfectExit");
     }

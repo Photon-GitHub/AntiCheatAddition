@@ -16,14 +16,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class BrandHider extends Module implements Listener
+public final class BrandHider extends Module implements Listener
 {
     public static final BrandHider INSTANCE = new BrandHider();
     private static final FieldReflect PLAYER_CHANNELS_FIELD = Reflect.fromOBC("entity.CraftPlayer").field("channels");
 
     private String brand;
 
-    public BrandHider()
+    private BrandHider()
     {
         super("BrandHider");
     }

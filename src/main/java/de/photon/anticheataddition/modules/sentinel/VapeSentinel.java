@@ -12,11 +12,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class VapeSentinel extends SentinelModule implements Listener, ParsedPluginMessageListener
+public final class VapeSentinel extends SentinelModule implements Listener, ParsedPluginMessageListener
 {
+    public static final VapeSentinel INSTANCE = new VapeSentinel();
+
     private static final MessageChannel VAPE_MESSAGE_CHANNEL = MessageChannel.ofLegacy("LOLIMAHCKER");
 
-    public VapeSentinel()
+    private VapeSentinel()
     {
         super("Vape");
     }

@@ -18,7 +18,7 @@ import org.bukkit.util.Vector;
 import java.util.List;
 import java.util.Set;
 
-public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlockPlace>
+public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlockPlace>
 {
     private static final Polynomial VL_CALCULATOR = new Polynomial(0.37125, 1);
 

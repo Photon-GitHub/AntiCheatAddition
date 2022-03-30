@@ -10,13 +10,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
-public class LabyModSentinel extends SentinelModule implements Listener, PluginMessageListener
+public final class LabyModSentinel extends SentinelModule implements Listener, PluginMessageListener
 {
+    public static final LabyModSentinel INSTANCE = new LabyModSentinel();
+
     private final boolean tablistBanner = loadBoolean(".TablistBanner.enabled", false);
     private final String tablistBannerUrl = loadString(".TablistBanner.url", "");
     private final boolean voicechat = loadBoolean(".Voicechat", true);
 
-    public LabyModSentinel()
+    private LabyModSentinel()
     {
         super("LabyMod");
     }

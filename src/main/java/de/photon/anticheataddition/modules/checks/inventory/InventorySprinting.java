@@ -14,11 +14,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class InventorySprinting extends ViolationModule implements Listener
+public final class InventorySprinting extends ViolationModule implements Listener
 {
+    public static final InventorySprinting INSTANCE = new InventorySprinting();
+
     private final int cancelVl = loadInt(".cancel_vl", 110);
 
-    public InventorySprinting()
+    private InventorySprinting()
     {
         super("Inventory.parts.Sprinting");
     }

@@ -15,14 +15,19 @@ import java.util.UUID;
 
 public class Dummy
 {
-    public static void mockEnvironment()
-    {
+    // Mock the environment.
+    static {
         val bukkitMock = Mockito.mockStatic(Bukkit.class);
         bukkitMock.when(Bukkit::getVersion).thenReturn("This server is running CraftBukkit version 3467-Spigot-ffceeae-e6cc7c7 (MC: 1.18.2) (Implementing API version 1.18.2-R0.1-SNAPSHOT)");
 
         val protocolManager = Mockito.mock(ProtocolManager.class);
         val protocolLibMock = Mockito.mockStatic(ProtocolLibrary.class);
         protocolLibMock.when(ProtocolLibrary::getProtocolManager).thenReturn(protocolManager);
+    }
+
+    public static void mockEnvironment()
+    {
+        // Do nothing, this is already done via the static constructor.
     }
 
     public static AntiCheatAddition mockAntiCheatAddition()

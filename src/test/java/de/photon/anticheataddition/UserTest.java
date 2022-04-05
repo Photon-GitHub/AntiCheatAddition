@@ -12,7 +12,6 @@ class UserTest
     @BeforeAll
     static void mockACA()
     {
-        Dummy.mockEnvironment();
         Dummy.mockAntiCheatAddition();
     }
 

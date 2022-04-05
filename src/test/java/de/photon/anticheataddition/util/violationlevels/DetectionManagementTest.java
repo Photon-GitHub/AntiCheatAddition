@@ -33,7 +33,6 @@ class DetectionManagementTest
     @BeforeAll
     static void setup()
     {
-        Dummy.mockEnvironment();
         Dummy.mockAntiCheatAddition();
         dummy = Dummy.mockUser();
     }

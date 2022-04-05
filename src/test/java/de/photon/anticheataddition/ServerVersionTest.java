@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 class ServerVersionTest
 {
     @BeforeAll
-    static void mockEnvironment()
+    static void setup()
     {
         Dummy.mockEnvironment();
     }

@@ -41,11 +41,11 @@ public class DataMap
         return this.doubleMap.computeIfAbsent(key, DataKey.Double::getDefaultValue);
     }
 
-    public ViolationCounter getCounter(DataKey.Count key) {return this.counterMap.computeIfAbsent(key, DataKey.Count::getCounter);}
+    public ViolationCounter getCounter(DataKey.Count key) {return this.counterMap.computeIfAbsent(key, DataKey.Count::createDefaultCounter);}
 
     public Object getObject(DataKey.Obj key)
     {
-        return this.objectMap.computeIfAbsent(key, DataKey.Obj::getDefaultValue);
+        return this.objectMap.computeIfAbsent(key, DataKey.Obj::createDefaultObject);
     }
 
     public void setBoolean(DataKey.Bool key, Boolean b)

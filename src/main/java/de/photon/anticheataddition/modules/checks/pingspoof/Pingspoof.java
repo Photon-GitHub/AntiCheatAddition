@@ -120,15 +120,11 @@ public final class Pingspoof extends ViolationModule implements Listener
         return ModuleLoader.builder(this)
                            //TODO: 1.17 is not yet compatible.
                            .setAllowedServerVersions(ServerVersion.MC116.getSupVersionsTo())
-                           .addPacketListeners(PacketAdapterBuilder.of(PacketType.Play.Client.TRANSACTION)
+                           .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Play.Client.TRANSACTION)
                                                                    .priority(ListenerPriority.HIGH)
-                                                                   .onReceiving(event -> {
-                                                                       val user = User.safeGetUserFromPacketEvent(event);
-                                                                       if (User.isUserInvalid(user, this)) return;
-
-                                                                       // We have now received the answer.
-                                                                       user.getTimestampMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).update();
-                                                                   }).build())
+                                                                   // We have now received the answer.
+                                                                   .onReceiving((event, user) -> user.getTimestampMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).update())
+                                                                   .build())
                            .build();
     }
 

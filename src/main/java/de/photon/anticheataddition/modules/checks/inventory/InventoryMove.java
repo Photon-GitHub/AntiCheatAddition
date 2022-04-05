@@ -68,15 +68,12 @@ public final class InventoryMove extends ViolationModule
     {
         val packetAdapter = PacketAdapterBuilder
                 // Look
-                .of(PacketType.Play.Client.LOOK,
+                .of(this, PacketType.Play.Client.LOOK,
                     // Move
                     PacketType.Play.Client.POSITION,
                     PacketType.Play.Client.POSITION_LOOK)
                 .priority(ListenerPriority.LOWEST)
-                .onReceiving(event -> {
-                    val user = User.safeGetUserFromPacketEvent(event);
-                    if (User.isUserInvalid(user, this)) return;
-
+                .onReceiving((event, user) -> {
                     final IWrapperPlayPosition positionWrapper = event::getPacket;
 
                     val moveTo = new Vector(positionWrapper.getX(),

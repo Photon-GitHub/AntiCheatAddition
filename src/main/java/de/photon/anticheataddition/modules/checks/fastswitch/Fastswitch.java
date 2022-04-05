@@ -43,11 +43,8 @@ public final class Fastswitch extends ViolationModule
     protected ModuleLoader createModuleLoader()
     {
         val packetAdapter = PacketAdapterBuilder
-                .of(PacketType.Play.Client.HELD_ITEM_SLOT)
-                .onReceiving(event -> {
-                    val user = User.safeGetUserFromPacketEvent(event);
-                    if (User.isUserInvalid(user, this)) return;
-
+                .of(this, PacketType.Play.Client.HELD_ITEM_SLOT)
+                .onReceiving((event, user) -> {
                     // Tps are high enough
                     if (TPSProvider.INSTANCE.atLeastTPS(19) &&
                         event.getPacket().getBytes().readSafely(0) != null &&

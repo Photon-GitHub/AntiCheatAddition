@@ -4,7 +4,6 @@ import com.comphenix.protocol.PacketType;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
-import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
@@ -23,14 +22,11 @@ public final class SkinBlinkerUnusedBit extends ViolationModule
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addPacketListeners(PacketAdapterBuilder.of(PacketType.Play.Client.SETTINGS).onReceiving(event -> {
+                           .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Play.Client.SETTINGS).onReceiving((event, user) -> {
                                /*
                                 * Check for the special 0x80 bit in the skin packet that is officially unused by the protocol and set to 0 in vanilla clients.
                                 * Some custom clients like LabyMod use that bit for their cosmetics.
                                 */
-                               val user = User.safeGetUserFromPacketEvent(event);
-                               if (User.isUserInvalid(user, this)) return;
-
                                val newSkinComponents = event.getPacket().getIntegers().readSafely(1);
 
                                // Unused skin bit used (detection)

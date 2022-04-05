@@ -7,7 +7,6 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
-import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
@@ -32,17 +31,14 @@ public final class PacketAnalysisEqualRotation extends ViolationModule
     protected ModuleLoader createModuleLoader()
     {
         val packetAdapter = PacketAdapterBuilder
-                .of(PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK)
+                .of(this, PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK)
                 .priority(ListenerPriority.LOW)
-                .onReceiving(event -> {
-                    val user = User.safeGetUserFromPacketEvent(event);
-                    if (User.isUserInvalid(user, this)) return;
-
+                .onReceiving((event, user) -> {
                     // Get the packet.
                     final IWrapperPlayClientLook lookWrapper = event::getPacket;
 
-                    val currentYaw = lookWrapper.getYaw();
-                    val currentPitch = lookWrapper.getPitch();
+                    final float currentYaw = lookWrapper.getYaw();
+                    final float currentPitch = lookWrapper.getPitch();
 
                     // Boat false positive (usually worse cheats in vehicles as well)
                     if (!user.getPlayer().isInsideVehicle() &&
@@ -58,7 +54,7 @@ public final class PacketAnalysisEqualRotation extends ViolationModule
                         user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 100) &&
                         // 1.17 false positives
                         !(user.getTimestampMap().at(TimeKey.HOTBAR_SWITCH).recentlyUpdated(3000) && user.hasSneakedRecently(3000)) &&
-                        !(user.getTimestampMap().at(TimeKey.RIGHT_CLICK_ITEM_EVENT).recentlyUpdated(100)) &&
+                        !(user.getTimestampMap().at(TimeKey.RIGHT_CLICK_ITEM_EVENT).recentlyUpdated(200)) &&
                         PacketAdapterBuilder.checkSync(10, TimeUnit.SECONDS,
                                                        // False positive when jumping from great heights into a pool with slime blocks / beds on the bottom.
                                                        () -> !(user.isInLiquids() && MaterialUtil.BOUNCE_MATERIALS.contains(user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) &&

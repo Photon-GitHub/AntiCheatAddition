@@ -10,7 +10,6 @@ import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.MetadataPacket;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerEntityMetadata;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerNamedEntitySpawn;
-import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
 import lombok.val;
 import org.bukkit.entity.Animals;
@@ -41,12 +40,9 @@ public final class DamageIndicator extends Module
                           Set.of(PacketType.Play.Server.ENTITY_METADATA);
 
         val adapter = PacketAdapterBuilder
-                .of(packetTypes)
+                .of(this, packetTypes)
                 .priority(ListenerPriority.HIGH)
-                .onSending(event -> {
-                    val user = User.safeGetUserFromPacketEvent(event);
-                    if (User.isUserInvalid(user, this)) return;
-
+                .onSending((event, user) -> {
                     val entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
                     // Clientside entities will be null in the world's entity list.
                     if (entity == null) return;

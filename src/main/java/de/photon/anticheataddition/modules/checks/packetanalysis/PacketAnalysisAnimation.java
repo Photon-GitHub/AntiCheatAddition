@@ -37,13 +37,10 @@ public final class PacketAnalysisAnimation extends ViolationModule
     {
         val packetAdapter = PacketAdapterBuilder
                 // THIS IS IN THE ORDER OF HOW THE PACKETS ARE SUPPOSED TO ARRIVE.
-                .of(PacketType.Play.Client.USE_ENTITY,
+                .of(this, PacketType.Play.Client.USE_ENTITY,
                     PacketType.Play.Client.ARM_ANIMATION)
                 .priority(ListenerPriority.LOW)
-                .onReceiving(event -> {
-                    val user = User.safeGetUserFromPacketEvent(event);
-                    if (User.isUserInvalid(user, this)) return;
-
+                .onReceiving((event, user) -> {
                     val packetType = event.getPacketType();
 
                     if (packetType == PacketType.Play.Client.ARM_ANIMATION)

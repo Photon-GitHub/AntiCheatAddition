@@ -11,8 +11,6 @@ import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 public final class AutoEat extends ViolationModule implements Listener
@@ -25,24 +23,6 @@ public final class AutoEat extends ViolationModule implements Listener
     private AutoEat()
     {
         super("AutoEat");
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerInteract(PlayerInteractEvent event)
-    {
-        val user = User.getUser(event.getPlayer());
-        if (user == null) return;
-
-        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) &&
-            event.getMaterial().isEdible() &&
-            // A sudden stop in sprinting after a lost food level.
-            user.hasSprintedRecently(500) &&
-            // Too low to sprint, forced by minecraft.
-            user.getPlayer().getFoodLevel() > 6 &&
-            user.getTimestampMap().at(TimeKey.FOOD_LEVEL_LOST).recentlyUpdated(100))
-            this.getManagement().flag(Flag.of(user)
-                                          .setAddedVl(5)
-                                          .setCancelAction(cancelVl, () -> user.getTimestampMap().at(TimeKey.AUTOEAT_TIMEOUT).update()));
     }
 
     @EventHandler

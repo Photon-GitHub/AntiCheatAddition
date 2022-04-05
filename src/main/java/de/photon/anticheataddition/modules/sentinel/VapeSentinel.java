@@ -35,7 +35,7 @@ public final class VapeSentinel extends SentinelModule implements Listener, Pars
         val user = User.getUser(player);
         if (User.isUserInvalid(user, this)) return;
 
-        DebugSender.getInstance().sendDebug("Player " + player.getName() + " joined with Vape | Data: " + message);
+        DebugSender.INSTANCE.sendDebug("Player " + player.getName() + " joined with Vape | Data: " + message);
         detection(player);
     }
 

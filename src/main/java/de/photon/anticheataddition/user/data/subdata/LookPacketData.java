@@ -9,7 +9,7 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.buffer.RingBuffer;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.RotationUtil;
@@ -140,7 +140,7 @@ public class LookPacketData
             if (RotationUtil.getDirection(user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_YAW), user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_PITCH))
                             .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
             {
-                user.getTimestampMap().at(TimestampKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
+                user.getTimestampMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
             }
 
             // Update the values here so the RotationUtil calculation is functional.

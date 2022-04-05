@@ -2,7 +2,7 @@ package de.photon.anticheataddition.modules.checks.inventory;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -40,7 +40,7 @@ public final class InventorySprinting extends ViolationModule implements Listene
             // The player opened the inventory at least a quarter second ago
             user.notRecentlyOpenedInventory(250) &&
             // Is the player moving
-            user.hasMovedRecently(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT, 1000))
+            user.hasMovedRecently(TimeKey.LAST_HEAD_OR_OTHER_MOVEMENT, 1000))
         {
             this.getManagement().flag(Flag.of(user)
                                           .setAddedVl(30)

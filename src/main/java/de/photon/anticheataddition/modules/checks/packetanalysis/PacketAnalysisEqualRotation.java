@@ -9,7 +9,7 @@ import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -53,11 +53,11 @@ public final class PacketAnalysisEqualRotation extends ViolationModule
                         currentYaw == user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_YAW) &&
                         currentPitch == user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_PITCH) &&
                         // 1.17 client false positive when throwing exp bottles.
-                        user.getTimestampMap().at(TimestampKey.LAST_EXPERIENCE_BOTTLE_THROWN).notRecentlyUpdated(5000) &&
+                        user.getTimestampMap().at(TimeKey.LAST_EXPERIENCE_BOTTLE_THROWN).notRecentlyUpdated(5000) &&
                         // LabyMod fp when standing still / hit in corner fp
-                        user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 100) &&
+                        user.hasMovedRecently(TimeKey.LAST_XZ_MOVEMENT, 100) &&
                         // 1.17 false positives
-                        !(user.getTimestampMap().at(TimestampKey.LAST_HOTBAR_SWITCH).recentlyUpdated(3000) && user.hasSneakedRecently(3000)) &&
+                        !(user.getTimestampMap().at(TimeKey.LAST_HOTBAR_SWITCH).recentlyUpdated(3000) && user.hasSneakedRecently(3000)) &&
                         PacketAdapterBuilder.checkSync(10, TimeUnit.SECONDS,
                                                        // False positive when jumping from great heights into a pool with slime blocks / beds on the bottom.
                                                        () -> !(user.isInLiquids() && MaterialUtil.BOUNCE_MATERIALS.contains(user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) &&

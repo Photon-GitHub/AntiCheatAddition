@@ -10,7 +10,7 @@ import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayPosition;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
@@ -135,7 +135,7 @@ public final class InventoryMove extends ViolationModule
                         }
 
                         // Make sure that the last jump is a little ago (same "breaking" effect that needs compensation.)
-                        if (user.getTimestampMap().at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) ||
+                        if (user.getTimestampMap().at(TimeKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) ||
                             // No Y change anymore. Anticheat and the rule above makes sure that people cannot jump again.
                             // While falling down people can modify their inventories.
                             knownPosition.getY() == moveTo.getY()) return;

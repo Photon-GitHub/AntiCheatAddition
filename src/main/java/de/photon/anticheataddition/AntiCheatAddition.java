@@ -80,9 +80,9 @@ public class AntiCheatAddition extends JavaPlugin
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
             if (!ServerVersion.getActiveServerVersion().isSupported()) {
-                DebugSender.getInstance().sendDebug("Server version is not supported.", true, true);
-                DebugSender.getInstance().sendDebug("Supported versions: " + ServerVersion.ALL_SUPPORTED_VERSIONS.stream().map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
-                                                    true, true);
+                DebugSender.INSTANCE.sendDebug("Server version is not supported.", true, true);
+                DebugSender.INSTANCE.sendDebug("Supported versions: " + ServerVersion.ALL_SUPPORTED_VERSIONS.stream().map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
+                                               true, true);
                 return;
             }
 
@@ -91,13 +91,13 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             this.bungeecord = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getBoolean("settings.bungeecord", false);
-            DebugSender.getInstance().sendDebug("Bungeecord " + (this.bungeecord ? "detected" : "not detected"), true, false);
+            DebugSender.INSTANCE.sendDebug("Bungeecord " + (this.bungeecord ? "detected" : "not detected"), true, false);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Metrics                                                 //
             // ------------------------------------------------------------------------------------------------------ //
 
-            DebugSender.getInstance().sendDebug("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608", true, false);
+            DebugSender.INSTANCE.sendDebug("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608", true, false);
             val metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // The first getConfig call will automatically saveToFile and cache the config.
@@ -108,11 +108,11 @@ public class AntiCheatAddition extends JavaPlugin
 
             // Call is correct here as Bukkit always has a player api.
             final boolean viaEnabled = this.getServer().getPluginManager().isPluginEnabled("ViaVersion");
-            DebugSender.getInstance().sendDebug("ViaVersion " + (viaEnabled ? "hooked" : "not found"), true, false);
+            DebugSender.INSTANCE.sendDebug("ViaVersion " + (viaEnabled ? "hooked" : "not found"), true, false);
             if (viaEnabled) viaAPI = Via.getAPI();
 
             final boolean floodgateEnabled = this.getServer().getPluginManager().isPluginEnabled("floodgate");
-            DebugSender.getInstance().sendDebug("Floodgate " + (floodgateEnabled ? "hooked" : "not found"), true, false);
+            DebugSender.INSTANCE.sendDebug("Floodgate " + (floodgateEnabled ? "hooked" : "not found"), true, false);
             if (floodgateEnabled) floodgateApi = FloodgateApi.getInstance();
 
             metrics.addCustomChart(new SimplePie("viaversion", () -> viaEnabled ? "Yes" : "No"));
@@ -140,7 +140,7 @@ public class AntiCheatAddition extends JavaPlugin
             //                                           Enabled-Debug + API                                          //
             // ------------------------------------------------------------------------------------------------------ //
             this.getLogger().info(this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
-            DebugSender.getInstance().sendDebug("AntiCheatAddition initialization completed.");
+            DebugSender.INSTANCE.sendDebug("AntiCheatAddition initialization completed.");
         } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //
@@ -153,7 +153,7 @@ public class AntiCheatAddition extends JavaPlugin
     public void onDisable()
     {
         // Plugin is already disabled -> DebugSender is not allowed to register a task
-        DebugSender.getInstance().setAllowedToRegisterTasks(false);
+        DebugSender.INSTANCE.setAllowedToRegisterTasks(false);
 
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
@@ -162,7 +162,7 @@ public class AntiCheatAddition extends JavaPlugin
         DataUpdaterEvents.INSTANCE.unregister();
         EntityVisibility.INSTANCE.disable();
 
-        DebugSender.getInstance().sendDebug("AntiCheatAddition disabled.", true, false);
-        DebugSender.getInstance().sendDebug(" ", true, false);
+        DebugSender.INSTANCE.sendDebug("AntiCheatAddition disabled.", true, false);
+        DebugSender.INSTANCE.sendDebug(" ", true, false);
     }
 }

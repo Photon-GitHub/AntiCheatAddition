@@ -6,7 +6,6 @@ import de.photon.anticheataddition.events.ViolationEvent;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.execute.Placeholders;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.val;
@@ -21,13 +20,13 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DebugSender implements Listener
 {
-    @Getter private static final DebugSender instance;
+    public static final DebugSender INSTANCE;
     private static final String SENTINEL_PRE_STRING = (ChatColor.WHITE + "{player} " + ChatColor.GRAY) + "Sentinel detection: ";
     private static final String VIOLATION_PRE_STRING = (ChatColor.WHITE + "{player} " + ChatColor.GRAY) + "module detection: ";
 
     static {
-        instance = new DebugSender();
-        AntiCheatAddition.getInstance().registerListener(instance);
+        INSTANCE = new DebugSender();
+        AntiCheatAddition.getInstance().registerListener(INSTANCE);
     }
 
     private final boolean writeToFile = AntiCheatAddition.getInstance().getConfig().getBoolean("Debug.file");

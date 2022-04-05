@@ -4,7 +4,7 @@ package de.photon.anticheataddition.modules.checks.scaffold;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.messaging.DebugSender;
 import lombok.Getter;
 import lombok.val;
@@ -31,11 +31,11 @@ final class ScaffoldJumping extends Module
         applyingConsumer = (user, event) -> {
             val failCounter = user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_JUMPING_FAILS);
 
-            if (user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 500)
+            if (user.hasMovedRecently(TimeKey.LAST_XZ_MOVEMENT, 500)
                 && user.hasJumpedRecently(1000))
             {
                 if (failCounter.incrementCompareThreshold()) {
-                    DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + event.getPlayer().getName() + " jumped while scaffolding.");
+                    DebugSender.INSTANCE.sendDebug("Scaffold-Debug | Player: " + event.getPlayer().getName() + " jumped while scaffolding.");
                     return 20;
                 }
             } else {

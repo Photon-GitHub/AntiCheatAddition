@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
 import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.minecraft.world.Region;
@@ -38,9 +38,9 @@ public final class Teaming extends ViolationModule implements Listener
                 Region region = Region.parseRegion(s);
                 safeZones.add(region);
             } catch (NullPointerException e) {
-                DebugSender.getInstance().sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, is the world correct?", true, true);
+                DebugSender.INSTANCE.sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, is the world correct?", true, true);
             } catch (ArrayIndexOutOfBoundsException e) {
-                DebugSender.getInstance().sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, are all coordinates present?", true, true);
+                DebugSender.INSTANCE.sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, are all coordinates present?", true, true);
             }
         }
         return Set.copyOf(safeZones);
@@ -52,7 +52,7 @@ public final class Teaming extends ViolationModule implements Listener
         for (String key : loadStringList(".enabled_worlds")) {
             World world = Bukkit.getWorld(key);
             if (world == null) {
-                DebugSender.getInstance().sendDebug("Unable to load world \"" + key + "\" in teaming check.");
+                DebugSender.INSTANCE.sendDebug("Unable to load world \"" + key + "\" in teaming check.");
                 continue;
             }
             worlds.add(world);
@@ -91,7 +91,7 @@ public final class Teaming extends ViolationModule implements Listener
                                 // Correct gamemodes
                                 user.inAdventureOrSurvivalMode() &&
                                 // Not engaged in pvp
-                                user.getTimestampMap().at(TimestampKey.TEAMING_COMBAT_TAG).notRecentlyUpdated(noPvpTime) &&
+                                user.getTimestampMap().at(TimeKey.TEAMING_COMBAT_TAG).notRecentlyUpdated(noPvpTime) &&
                                 // Not in a bypassed region
                                 safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(location)))
                             {

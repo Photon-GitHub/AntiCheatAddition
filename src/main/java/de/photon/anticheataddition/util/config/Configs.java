@@ -29,7 +29,7 @@ public enum Configs
         try {
             this.configurationRepresentation.save();
         } catch (IOException e) {
-            DebugSender.getInstance().sendDebug("Unable to change and save" + this.name() + "'s config.", true, true);
+            DebugSender.INSTANCE.sendDebug("Unable to change and save" + this.name() + "'s config.", true, true);
             AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Error when saving a config: ", e);
         }
     }

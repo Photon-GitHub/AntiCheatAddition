@@ -3,7 +3,7 @@ package de.photon.anticheataddition.modules.checks.inventory;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
@@ -42,7 +42,7 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
             // Inventory is empty
             InventoryUtil.isInventoryEmpty(event.getInventory()))
         {
-            val passedTime = user.getTimestampMap().at(TimestampKey.LAST_INVENTORY_CLICK_ON_ITEM).passedTime();
+            val passedTime = user.getTimestampMap().at(TimeKey.LAST_INVENTORY_CLICK_ON_ITEM).passedTime();
             if (user.getDataMap().getCounter(DataKey.Count.INVENTORY_PERFECT_EXIT_FAILS).conditionallyIncDec(passedTime <= 70)) {
                 this.getManagement().flag(Flag.of(user)
                                               .setAddedVl(VL_CALCULATOR.apply(passedTime).intValue())

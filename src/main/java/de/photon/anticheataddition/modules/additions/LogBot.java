@@ -61,7 +61,7 @@ public final class LogBot extends Module
         {
             // The folder exists.
             if (!logFolder.exists()) {
-                DebugSender.getInstance().sendDebug("Could not find log folder " + logFolder.getName(), true, true);
+                DebugSender.INSTANCE.sendDebug("Could not find log folder " + logFolder.getName(), true, true);
                 return;
             }
 
@@ -73,7 +73,7 @@ public final class LogBot extends Module
                 // Be sure it is a log file of AntiCheatAddition (.log) or a log file of the server (.log.gz)
                 if ((fileName.endsWith(".log") || fileName.endsWith(".log.gz")) && currentTime - file.lastModified() > timeToDelete) {
                     final boolean result = file.delete();
-                    DebugSender.getInstance().sendDebug((result ? "Deleted " : "Could not delete old file ") + fileName, true, !result);
+                    DebugSender.INSTANCE.sendDebug((result ? "Deleted " : "Could not delete old file ") + fileName, true, !result);
                 }
             }
         }

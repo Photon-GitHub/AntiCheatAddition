@@ -2,7 +2,7 @@ package de.photon.anticheataddition.modules.checks.scaffold;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
 import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
@@ -47,7 +47,7 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
             this.getModule().getManagement().flag(Flag.of(user)
                                                       .setAddedVl(vlIncrease)
                                                       .setCancelAction(cancelVl, () -> {
-                                                          user.getTimestampMap().at(TimestampKey.SCAFFOLD_TIMEOUT).update();
+                                                          user.getTimestampMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
                                                       .setDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() +

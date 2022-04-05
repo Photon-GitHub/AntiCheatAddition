@@ -28,7 +28,7 @@ final class ScaffoldRotationSecondDerivative extends Module
     {
         applyingConsumer = (user, angleInformation) -> {
             if (angleInformation > ANGLE_OFFSET_SUM_THRESHOLD) {
-                DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
+                DebugSender.INSTANCE.sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
                 return 5;
             }
             return 0;

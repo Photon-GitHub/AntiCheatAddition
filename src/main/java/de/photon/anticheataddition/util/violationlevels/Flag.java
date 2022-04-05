@@ -87,7 +87,7 @@ public class Flag
      */
     public void callNotCancelledActions(int currentVl)
     {
-        if (this.debug != null) DebugSender.getInstance().sendDebug(this.debug);
+        if (this.debug != null) DebugSender.INSTANCE.sendDebug(this.debug);
         if (this.cancelVl >= 0 && currentVl >= this.cancelVl) this.onCancel.run();
         if (this.eventNotCancelled != null) this.eventNotCancelled.run();
     }

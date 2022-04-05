@@ -55,29 +55,29 @@ public class ModuleLoader
     public boolean load()
     {
         if (this.bungeecordForbidden && AntiCheatAddition.getInstance().isBungeecord()) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " is not compatible with bungeecord.", true, false);
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " is not compatible with bungeecord.", true, false);
             return false;
         }
 
         val missingDependencies = pluginDependencies.stream().filter(dependency -> !Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)).sorted().collect(Collectors.joining(", "));
         if (!missingDependencies.isEmpty()) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " has been not been enabled as of missing dependencies. Missing: " + missingDependencies, true, false);
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " has been not been enabled as of missing dependencies. Missing: " + missingDependencies, true, false);
             return false;
         }
 
         val loadedIncompatibilities = pluginIncompatibilities.stream().filter(incompatibility -> Bukkit.getServer().getPluginManager().isPluginEnabled(incompatibility)).sorted().collect(Collectors.joining(", "));
         if (!loadedIncompatibilities.isEmpty()) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + loadedIncompatibilities, true, false);
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + loadedIncompatibilities, true, false);
             return false;
         }
 
         if (!ServerVersion.containsActiveServerVersion(allowedServerVersions)) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " is not compatible with your server version.", true, false);
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " is not compatible with your server version.", true, false);
             return false;
         }
 
         if (!AntiCheatAddition.getInstance().getConfig().getBoolean(this.module.getConfigString() + ".enabled")) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " has been disabled in the config.", true, false);
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " has been disabled in the config.", true, false);
             return false;
         }
 
@@ -90,7 +90,7 @@ public class ModuleLoader
         for (MessageChannel messageChannel : incoming) messageChannel.registerIncomingChannel((PluginMessageListener) module);
         for (MessageChannel messageChannel : outgoing) messageChannel.registerOutgoingChannel();
 
-        DebugSender.getInstance().sendDebug(module.getConfigString() + " has been enabled.", true, false);
+        DebugSender.INSTANCE.sendDebug(module.getConfigString() + " has been enabled.", true, false);
         return true;
     }
 

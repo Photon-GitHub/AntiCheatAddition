@@ -40,10 +40,10 @@ public final class Esp extends Module
     private static int loadDefaultTrackingRange(ConfigurationSection worlds)
     {
         if (worlds.contains(DEFAULT_WORLD_NAME + ENTITY_TRACKING_RANGE_PLAYERS)) {
-            DebugSender.getInstance().sendDebug("ESP | Default entity tracking range found.", true, false);
+            DebugSender.INSTANCE.sendDebug("ESP | Default entity tracking range found.", true, false);
             return worlds.getInt(DEFAULT_WORLD_NAME + ENTITY_TRACKING_RANGE_PLAYERS);
         } else {
-            DebugSender.getInstance().sendDebug("ESP | Default entity tracking range not found, using max tracking range.", true, true);
+            DebugSender.INSTANCE.sendDebug("ESP | Default entity tracking range not found, using max tracking range.", true, true);
             return MAX_TRACKING_RANGE;
         }
     }
@@ -59,7 +59,7 @@ public final class Esp extends Module
             // Does the world exist?
             val world = Bukkit.getWorld(key);
             if (world == null || !worlds.contains(key + ENTITY_TRACKING_RANGE_PLAYERS)) {
-                DebugSender.getInstance().sendDebug("ESP | World " + key + " player tracking range could not be loaded, using default tracking range.", true, true);
+                DebugSender.INSTANCE.sendDebug("ESP | World " + key + " player tracking range could not be loaded, using default tracking range.", true, true);
                 continue;
             }
 
@@ -77,7 +77,7 @@ public final class Esp extends Module
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
         val worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
         if (worlds == null) {
-            DebugSender.getInstance().sendDebug("Cannot enable ESP as the world-settings in spigot.yml are not present.", true, true);
+            DebugSender.INSTANCE.sendDebug("Cannot enable ESP as the world-settings in spigot.yml are not present.", true, true);
             return;
         }
 

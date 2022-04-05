@@ -1,6 +1,6 @@
 package de.photon.anticheataddition.user.data;
 
-public enum TimestampKey
+public enum TimeKey
 {
     AUTOEAT_TIMEOUT,
 
@@ -10,6 +10,10 @@ public enum TimestampKey
     AUTOPOTION_TIMEOUT,
 
     FASTSWITCH_HOTBAR_SWITCH,
+
+    FOOD_LEVEL_CHANGE,
+    FOOD_LEVEL_GAINED,
+    FOOD_LEVEL_LOST,
 
     INVENTORY_OPENED,
 

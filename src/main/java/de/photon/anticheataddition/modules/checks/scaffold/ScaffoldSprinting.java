@@ -27,7 +27,7 @@ final class ScaffoldSprinting extends Module
     {
         applyingConsumer = user -> {
             if (user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_SPRINTING_FAILS).conditionallyIncDec(user.hasSprintedRecently(400))) {
-                DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
+                DebugSender.INSTANCE.sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
                 return 45;
             }
             return 0;

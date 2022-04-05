@@ -5,7 +5,7 @@ import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -38,7 +38,7 @@ public final class AutoFishInhumanReaction extends ViolationModule implements Li
         switch (event.getState()) {
             case CAUGHT_FISH:
                 // Too few time has passed since the fish bit.
-                final long passedBiteTime = user.getTimestampMap().at(TimestampKey.LAST_FISH_BITE).passedTime();
+                final long passedBiteTime = user.getTimestampMap().at(TimeKey.LAST_FISH_BITE).passedTime();
                 final int vl = VL_CALCULATOR.apply(passedBiteTime / humanReactionTime).intValue();
 
                 if (vl > 0) {
@@ -50,10 +50,10 @@ public final class AutoFishInhumanReaction extends ViolationModule implements Li
                 }
 
                 // Reset the bite-timestamp to be ready for the next one
-                user.getTimestampMap().at(TimestampKey.LAST_FISH_BITE).setToZero();
+                user.getTimestampMap().at(TimeKey.LAST_FISH_BITE).setToZero();
                 break;
             case BITE:
-                user.getTimestampMap().at(TimestampKey.LAST_FISH_BITE).update();
+                user.getTimestampMap().at(TimeKey.LAST_FISH_BITE).update();
                 break;
             default:
                 break;

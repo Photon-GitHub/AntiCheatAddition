@@ -3,7 +3,7 @@ package de.photon.anticheataddition.modules.checks.tower;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.TowerBatch;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
@@ -36,7 +36,7 @@ public final class Tower extends ViolationModule implements Listener
         if (User.isUserInvalid(user, this)) return;
 
         // To prevent too fast towering -> Timeout
-        if (user.getTimestampMap().at(TimestampKey.TOWER_TIMEOUT).recentlyUpdated(timeout)) {
+        if (user.getTimestampMap().at(TimeKey.TOWER_TIMEOUT).recentlyUpdated(timeout)) {
             event.setCancelled(true);
             InventoryUtil.syncUpdateInventory(user.getPlayer());
             return;
@@ -55,7 +55,7 @@ public final class Tower extends ViolationModule implements Listener
                 blockPlaced.getType().isSolid() &&
                 //
                 // Custom formula when setting -> Will return negative value when in protected timeframe.
-                user.getTimestampMap().at(TimestampKey.TOWER_BOUNCE).passedTime() > 0 &&
+                user.getTimestampMap().at(TimeKey.TOWER_BOUNCE).passedTime() > 0 &&
                 // Check if the block is placed against only one block (face).
                 // Only one block that is not a liquid is allowed (the one which the Block is placed against).
                 WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&

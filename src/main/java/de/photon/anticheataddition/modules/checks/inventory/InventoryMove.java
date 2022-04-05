@@ -135,7 +135,7 @@ public final class InventoryMove extends ViolationModule
                         }
 
                         // Make sure that the last jump is a little ago (same "breaking" effect that needs compensation.)
-                        if (user.getTimestampMap().at(TimeKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) ||
+                        if (user.getTimestampMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) ||
                             // No Y change anymore. Anticheat and the rule above makes sure that people cannot jump again.
                             // While falling down people can modify their inventories.
                             knownPosition.getY() == moveTo.getY()) return;

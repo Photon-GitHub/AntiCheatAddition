@@ -40,7 +40,7 @@ public final class InventorySprinting extends ViolationModule implements Listene
             // The player opened the inventory at least a quarter second ago
             user.notRecentlyOpenedInventory(250) &&
             // Is the player moving
-            user.hasMovedRecently(TimeKey.LAST_HEAD_OR_OTHER_MOVEMENT, 1000))
+            user.hasMovedRecently(TimeKey.HEAD_OR_OTHER_MOVEMENT, 1000))
         {
             this.getManagement().flag(Flag.of(user)
                                           .setAddedVl(30)

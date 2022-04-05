@@ -224,7 +224,7 @@ public class User implements Permissible
      */
     public boolean hasClickedInventoryRecently(final long milliseconds)
     {
-        return this.getTimestampMap().at(TimeKey.LAST_INVENTORY_CLICK).recentlyUpdated(milliseconds);
+        return this.getTimestampMap().at(TimeKey.INVENTORY_CLICK).recentlyUpdated(milliseconds);
     }
 
 
@@ -241,9 +241,9 @@ public class User implements Permissible
     public boolean hasMovedRecently(final TimeKey movementType, final long milliseconds)
     {
         switch (movementType) {
-            case LAST_HEAD_OR_OTHER_MOVEMENT:
-            case LAST_XYZ_MOVEMENT:
-            case LAST_XZ_MOVEMENT:
+            case HEAD_OR_OTHER_MOVEMENT:
+            case XYZ_MOVEMENT:
+            case XZ_MOVEMENT:
                 return this.timestampMap.at(movementType).recentlyUpdated(milliseconds);
             default:
                 throw new IllegalStateException("Unexpected MovementType: " + movementType);
@@ -259,7 +259,7 @@ public class User implements Permissible
      */
     public boolean hasSprintedRecently(final long milliseconds)
     {
-        return this.dataMap.getBoolean(DataKey.Bool.SPRINTING) || this.timestampMap.at(TimeKey.LAST_SPRINT_TOGGLE).recentlyUpdated(milliseconds);
+        return this.dataMap.getBoolean(DataKey.Bool.SPRINTING) || this.timestampMap.at(TimeKey.SPRINT_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -271,7 +271,7 @@ public class User implements Permissible
      */
     public boolean hasSneakedRecently(final long milliseconds)
     {
-        return this.dataMap.getBoolean(DataKey.Bool.SNEAKING) || this.timestampMap.at(TimeKey.LAST_SNEAK_TOGGLE).recentlyUpdated(milliseconds);
+        return this.dataMap.getBoolean(DataKey.Bool.SNEAKING) || this.timestampMap.at(TimeKey.SNEAK_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -283,7 +283,7 @@ public class User implements Permissible
      */
     public boolean hasJumpedRecently(final long milliseconds)
     {
-        return this.timestampMap.at(TimeKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(milliseconds);
+        return this.timestampMap.at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(milliseconds);
     }
 
     // Convenience methods for much used timestamps
@@ -296,7 +296,7 @@ public class User implements Permissible
      */
     public boolean hasTeleportedRecently(final long milliseconds)
     {
-        return this.timestampMap.at(TimeKey.LAST_TELEPORT).recentlyUpdated(milliseconds);
+        return this.timestampMap.at(TimeKey.TELEPORT).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -306,7 +306,7 @@ public class User implements Permissible
      */
     public boolean hasChangedWorldsRecently(final long milliseconds)
     {
-        return this.timestampMap.at(TimeKey.LAST_WORLD_CHANGE).recentlyUpdated(milliseconds);
+        return this.timestampMap.at(TimeKey.WORLD_CHANGE).recentlyUpdated(milliseconds);
     }
 
 
@@ -360,9 +360,9 @@ public class User implements Permissible
             // Login time
             user.timestampMap.at(TimeKey.LOGIN_TIME).update();
             // Login should count as movement.
-            user.timestampMap.at(TimeKey.LAST_HEAD_OR_OTHER_MOVEMENT).update();
-            user.timestampMap.at(TimeKey.LAST_XYZ_MOVEMENT).update();
-            user.timestampMap.at(TimeKey.LAST_XZ_MOVEMENT).update();
+            user.timestampMap.at(TimeKey.HEAD_OR_OTHER_MOVEMENT).update();
+            user.timestampMap.at(TimeKey.XYZ_MOVEMENT).update();
+            user.timestampMap.at(TimeKey.XZ_MOVEMENT).update();
         }
 
         @EventHandler

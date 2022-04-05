@@ -53,11 +53,12 @@ public final class PacketAnalysisEqualRotation extends ViolationModule
                         currentYaw == user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_YAW) &&
                         currentPitch == user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_PITCH) &&
                         // 1.17 client false positive when throwing exp bottles.
-                        user.getTimestampMap().at(TimeKey.LAST_EXPERIENCE_BOTTLE_THROWN).notRecentlyUpdated(5000) &&
+                        user.getTimestampMap().at(TimeKey.EXPERIENCE_BOTTLE_THROWN).notRecentlyUpdated(5000) &&
                         // LabyMod fp when standing still / hit in corner fp
-                        user.hasMovedRecently(TimeKey.LAST_XZ_MOVEMENT, 100) &&
+                        user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 100) &&
                         // 1.17 false positives
-                        !(user.getTimestampMap().at(TimeKey.LAST_HOTBAR_SWITCH).recentlyUpdated(3000) && user.hasSneakedRecently(3000)) &&
+                        !(user.getTimestampMap().at(TimeKey.HOTBAR_SWITCH).recentlyUpdated(3000) && user.hasSneakedRecently(3000)) &&
+                        !(user.getTimestampMap().at(TimeKey.RIGHT_CLICK_ITEM_EVENT).recentlyUpdated(100)) &&
                         PacketAdapterBuilder.checkSync(10, TimeUnit.SECONDS,
                                                        // False positive when jumping from great heights into a pool with slime blocks / beds on the bottom.
                                                        () -> !(user.isInLiquids() && MaterialUtil.BOUNCE_MATERIALS.contains(user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) &&

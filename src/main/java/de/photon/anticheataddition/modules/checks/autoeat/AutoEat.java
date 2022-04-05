@@ -55,7 +55,7 @@ public final class AutoEat extends ViolationModule implements Listener
         Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), () -> {
             // A PlayerInteractEvent will always fire when the right mouse button is clicked, therefore a legit player will always hold his mouse a bit longer than a bot and the last right click will
             // be after the last consume event.
-            if (user.getTimestampMap().at(TimeKey.LAST_RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).getTime() < user.getTimestampMap().at(TimeKey.LAST_CONSUME_EVENT).getTime()) {
+            if (user.getTimestampMap().at(TimeKey.RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).getTime() < user.getTimestampMap().at(TimeKey.CONSUME_EVENT).getTime()) {
                 this.getManagement().flag(Flag.of(user)
                                               .setAddedVl(20)
                                               .setCancelAction(cancelVl, () -> user.getTimestampMap().at(TimeKey.AUTOEAT_TIMEOUT).update()));

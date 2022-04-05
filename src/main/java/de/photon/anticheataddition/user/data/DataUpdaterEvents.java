@@ -66,7 +66,7 @@ public final class DataUpdaterEvents implements Listener
         val user = User.getUser(event.getPlayer());
         if (user == null) return;
 
-        user.getTimestampMap().at(TimeKey.LAST_CONSUME_EVENT).update();
+        user.getTimestampMap().at(TimeKey.CONSUME_EVENT).update();
         user.getDataMap().setObject(DataKey.Obj.LAST_CONSUMED_ITEM_STACK, event.getItem());
     }
 
@@ -142,8 +142,8 @@ public final class DataUpdaterEvents implements Listener
         // Only update if the inventory is currently closed to not interfere with opening time checks.
         if (!user.hasOpenInventory()) user.getTimestampMap().at(TimeKey.INVENTORY_OPENED).update();
 
-        user.getTimestampMap().at(TimeKey.LAST_INVENTORY_CLICK).update();
-        if (event.getCurrentItem() != null) user.getTimestampMap().at(TimeKey.LAST_INVENTORY_CLICK_ON_ITEM).update();
+        user.getTimestampMap().at(TimeKey.INVENTORY_CLICK).update();
+        if (event.getCurrentItem() != null) user.getTimestampMap().at(TimeKey.INVENTORY_CLICK_ON_ITEM).update();
 
 
         user.getDataMap().setInt(DataKey.Int.LAST_RAW_SLOT_CLICKED, event.getRawSlot());
@@ -170,7 +170,7 @@ public final class DataUpdaterEvents implements Listener
     public void onItemHeld(PlayerItemHeldEvent event)
     {
         val user = User.getUser(event.getPlayer());
-        if (user != null) user.getTimestampMap().at(TimeKey.LAST_HOTBAR_SWITCH).update();
+        if (user != null) user.getTimestampMap().at(TimeKey.HOTBAR_SWITCH).update();
     }
 
     @EventHandler
@@ -180,10 +180,14 @@ public final class DataUpdaterEvents implements Listener
         if (user == null) return;
 
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
-            user.getTimestampMap().at(TimeKey.LAST_RIGHT_CLICK_EVENT).update();
-            if (event.getMaterial().isEdible()) user.getTimestampMap().at(TimeKey.LAST_RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).update();
+            user.getTimestampMap().at(TimeKey.RIGHT_CLICK_EVENT).update();
 
-            if (event.getItem() != null && event.getItem().getType() == MaterialUtil.EXPERIENCE_BOTTLE) user.getTimestampMap().at(TimeKey.LAST_EXPERIENCE_BOTTLE_THROWN).update();
+            if (!event.getMaterial().isAir()) {
+                user.getTimestampMap().at(TimeKey.RIGHT_CLICK_ITEM_EVENT).update();
+                if (event.getMaterial().isEdible()) user.getTimestampMap().at(TimeKey.RIGHT_CLICK_CONSUMABLE_ITEM_EVENT).update();
+            }
+
+            if (event.getItem() != null && event.getItem().getType() == MaterialUtil.EXPERIENCE_BOTTLE) user.getTimestampMap().at(TimeKey.EXPERIENCE_BOTTLE_THROWN).update();
         }
     }
 
@@ -194,18 +198,18 @@ public final class DataUpdaterEvents implements Listener
         if (user == null || event.getTo() == null) return;
 
         // Head + normal movement
-        user.getTimestampMap().at(TimeKey.LAST_HEAD_OR_OTHER_MOVEMENT).update();
+        user.getTimestampMap().at(TimeKey.HEAD_OR_OTHER_MOVEMENT).update();
 
         // xz movement only
         if (event.getFrom().getX() != event.getTo().getX() ||
             event.getFrom().getZ() != event.getTo().getZ())
         {
-            user.getTimestampMap().at(TimeKey.LAST_XYZ_MOVEMENT).update();
-            user.getTimestampMap().at(TimeKey.LAST_XZ_MOVEMENT).update();
+            user.getTimestampMap().at(TimeKey.XYZ_MOVEMENT).update();
+            user.getTimestampMap().at(TimeKey.XZ_MOVEMENT).update();
         }
         // Any non-head movement.
         else if (event.getFrom().getY() != event.getTo().getY()) {
-            user.getTimestampMap().at(TimeKey.LAST_XYZ_MOVEMENT).update();
+            user.getTimestampMap().at(TimeKey.XYZ_MOVEMENT).update();
         }
 
         // Slime / Bed block -> Tower bounce jump
@@ -223,8 +227,8 @@ public final class DataUpdaterEvents implements Listener
         if (user == null) return;
 
         user.getTimestampMap().at(TimeKey.INVENTORY_OPENED).setToZero();
-        user.getTimestampMap().at(TimeKey.LAST_TELEPORT).update();
-        user.getTimestampMap().at(TimeKey.LAST_RESPAWN).update();
+        user.getTimestampMap().at(TimeKey.TELEPORT).update();
+        user.getTimestampMap().at(TimeKey.RESPAWN).update();
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -234,7 +238,7 @@ public final class DataUpdaterEvents implements Listener
         if (user == null) return;
 
         user.getTimestampMap().at(TimeKey.INVENTORY_OPENED).setToZero();
-        user.getTimestampMap().at(TimeKey.LAST_TELEPORT).update();
+        user.getTimestampMap().at(TimeKey.TELEPORT).update();
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -246,13 +250,13 @@ public final class DataUpdaterEvents implements Listener
         val sneak = event.isSneaking();
         user.getDataMap().setBoolean(DataKey.Bool.SNEAKING, sneak);
         if (sneak) {
-            user.getTimestampMap().at(TimeKey.LAST_SNEAK_ENABLE).update();
+            user.getTimestampMap().at(TimeKey.SNEAK_ENABLE).update();
         } else {
-            user.getTimestampMap().at(TimeKey.LAST_SNEAK_DISABLE).update();
-            user.getDataMap().setLong(DataKey.Long.LAST_SNEAK_DURATION, user.getTimestampMap().at(TimeKey.LAST_SNEAK_TOGGLE).passedTime());
+            user.getTimestampMap().at(TimeKey.SNEAK_DISABLE).update();
+            user.getDataMap().setLong(DataKey.Long.LAST_SNEAK_DURATION, user.getTimestampMap().at(TimeKey.SNEAK_TOGGLE).passedTime());
         }
 
-        user.getTimestampMap().at(TimeKey.LAST_SNEAK_TOGGLE).update();
+        user.getTimestampMap().at(TimeKey.SNEAK_TOGGLE).update();
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -263,8 +267,8 @@ public final class DataUpdaterEvents implements Listener
 
         val sprint = event.isSprinting();
         user.getDataMap().setBoolean(DataKey.Bool.SPRINTING, sprint);
-        if (!sprint) user.getDataMap().setLong(DataKey.Long.LAST_SPRINT_DURATION, user.getTimestampMap().at(TimeKey.LAST_SPRINT_TOGGLE).passedTime());
-        user.getTimestampMap().at(TimeKey.LAST_SPRINT_TOGGLE).update();
+        if (!sprint) user.getDataMap().setLong(DataKey.Long.LAST_SPRINT_DURATION, user.getTimestampMap().at(TimeKey.SPRINT_TOGGLE).passedTime());
+        user.getTimestampMap().at(TimeKey.SPRINT_TOGGLE).update();
     }
 
     @EventHandler
@@ -274,8 +278,8 @@ public final class DataUpdaterEvents implements Listener
         if (user == null) return;
 
         user.getTimestampMap().at(TimeKey.INVENTORY_OPENED).setToZero();
-        user.getTimestampMap().at(TimeKey.LAST_TELEPORT).update();
-        user.getTimestampMap().at(TimeKey.LAST_WORLD_CHANGE).update();
+        user.getTimestampMap().at(TimeKey.TELEPORT).update();
+        user.getTimestampMap().at(TimeKey.WORLD_CHANGE).update();
     }
 
     /**
@@ -294,7 +298,7 @@ public final class DataUpdaterEvents implements Listener
             val user = User.safeGetUserFromPacketEvent(event);
             if (user == null) return;
 
-            user.getTimestampMap().at(TimeKey.LAST_VELOCITY_CHANGE).update();
+            user.getTimestampMap().at(TimeKey.VELOCITY_CHANGE).update();
 
             // The player wasn't hurt and got velocity for that.
             if (user.getPlayer().getNoDamageTicks() == 0
@@ -306,7 +310,7 @@ public final class DataUpdaterEvents implements Listener
 
                 if (updatedPositiveVelocity != user.getDataMap().getBoolean(DataKey.Bool.POSITIVE_VELOCITY)) {
                     user.getDataMap().setBoolean(DataKey.Bool.POSITIVE_VELOCITY, updatedPositiveVelocity);
-                    user.getTimestampMap().at(TimeKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).update();
+                    user.getTimestampMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).update();
                 }
             }
         }

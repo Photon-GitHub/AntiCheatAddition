@@ -33,11 +33,11 @@ final class ScaffoldSafewalkPosition extends Module
     {
         applyingConsumer = (user, event) -> {
             // A non-moving player is not of interest.
-            if (!user.hasMovedRecently(TimeKey.LAST_XZ_MOVEMENT, 175) ||
+            if (!user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 175) ||
                 // Long sneak durations are bypassed as this check mainly targets safewalk or similar mods that start sneaking at the edge.
                 user.hasSneakedRecently(125) && user.getDataMap().getLong(DataKey.Long.LAST_SNEAK_DURATION) > MIN_SNEAK_BYPASS_MILLIS ||
                 // If the player is still sneaking and started long ago they are also bypassed.
-                user.getPlayer().isSneaking() && user.getTimestampMap().at(TimeKey.LAST_SNEAK_ENABLE).passedTime() > MIN_SNEAK_BYPASS_MILLIS) return 0;
+                user.getPlayer().isSneaking() && user.getTimestampMap().at(TimeKey.SNEAK_ENABLE).passedTime() > MIN_SNEAK_BYPASS_MILLIS) return 0;
 
             val xOffset = MathUtil.absDiff(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
             val zOffset = MathUtil.absDiff(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());

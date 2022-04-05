@@ -31,7 +31,7 @@ final class ScaffoldJumping extends Module
         applyingConsumer = (user, event) -> {
             val failCounter = user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_JUMPING_FAILS);
 
-            if (user.hasMovedRecently(TimeKey.LAST_XZ_MOVEMENT, 500)
+            if (user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 500)
                 && user.hasJumpedRecently(1000))
             {
                 if (failCounter.incrementCompareThreshold()) {

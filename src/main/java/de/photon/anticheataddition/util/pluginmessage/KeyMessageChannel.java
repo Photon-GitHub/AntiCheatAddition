@@ -13,7 +13,7 @@ public class KeyMessageChannel extends MinecraftKey implements MessageChannel
     KeyMessageChannel(@NotNull String prefix, @NotNull String key)
     {
         super(Preconditions.checkNotNull(prefix, "Tried to create KeyMessageChannel with null prefix."), Preconditions.checkNotNull(key, "Tried to create KeyMessageChannel with null key."));
-        Preconditions.checkState(!ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()), "Tried to create KeyMessageChannel on old version.");
+        Preconditions.checkState(!ServerVersion.containsActive(ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS), "Tried to create KeyMessageChannel on old version.");
     }
 
     @Override

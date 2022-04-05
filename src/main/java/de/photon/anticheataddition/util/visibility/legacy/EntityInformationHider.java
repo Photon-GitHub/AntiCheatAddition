@@ -69,7 +69,7 @@ abstract class EntityInformationHider implements Listener
     public void registerListeners()
     {
         // Only start if the ServerVersion is supported
-        if (ServerVersion.containsActiveServerVersion(this.getSupportedVersions())) {
+        if (ServerVersion.containsActive(this.getSupportedVersions())) {
             // Register events and packet listener
             AntiCheatAddition.getInstance().registerListener(this);
             ProtocolLibrary.getProtocolManager().addPacketListener(this.informationPacketListener);
@@ -79,7 +79,7 @@ abstract class EntityInformationHider implements Listener
     public void unregisterListeners()
     {
         // Only stop if the ServerVersion is supported
-        if (ServerVersion.containsActiveServerVersion(this.getSupportedVersions())) {
+        if (ServerVersion.containsActive(this.getSupportedVersions())) {
             HandlerList.unregisterAll(this);
             ProtocolLibrary.getProtocolManager().removePacketListener(this.informationPacketListener);
         }

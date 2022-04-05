@@ -21,7 +21,7 @@ public class SentinelEvent extends ModulePlayerEvent
 
     public static SentinelEvent build(Player player, String moduleId)
     {
-        return ServerVersion.containsActiveServerVersion(ServerVersion.LEGACY_EVENT_VERSIONS) ?
+        return ServerVersion.containsActive(ServerVersion.LEGACY_EVENT_VERSIONS) ?
                new SentinelEvent(player, moduleId, true) :
                new SentinelEvent(player, moduleId);
     }

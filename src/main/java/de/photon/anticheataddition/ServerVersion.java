@@ -40,12 +40,11 @@ public enum ServerVersion
     /**
      * The server version of the currently running {@link Bukkit} instance.
      */
-    @Getter
     @NotNull
-    private static final ServerVersion activeServerVersion = Arrays.stream(ServerVersion.values())
-                                                                   .filter(serverVersion -> Bukkit.getVersion().contains(serverVersion.getVersionOutputString()))
-                                                                   .findFirst()
-                                                                   .orElseThrow(UnknownMinecraftException::new);
+    public static final ServerVersion ACTIVE = Arrays.stream(ServerVersion.values())
+                                                     .filter(serverVersion -> Bukkit.getVersion().contains(serverVersion.getVersionOutputString()))
+                                                     .findFirst()
+                                                     .orElseThrow(UnknownMinecraftException::new);
 
     private final String versionOutputString;
     private final boolean supported;
@@ -62,21 +61,21 @@ public enum ServerVersion
      */
     public static boolean is18()
     {
-        return activeServerVersion == MC18;
+        return ACTIVE == MC18;
     }
 
     /**
-     * Used to get the client version. Might only differ from {@link #getActiveServerVersion()} if ViaVersion is installed.
+     * Used to get the client version. Might only differ from {@link #ACTIVE} if ViaVersion is installed.
      */
     @NotNull
     public static ServerVersion getClientServerVersion(final Player player)
     {
-        if (player == null) return activeServerVersion;
+        if (player == null) return ACTIVE;
         val viaAPI = AntiCheatAddition.getInstance().getViaAPI();
-        if (viaAPI == null) return activeServerVersion;
+        if (viaAPI == null) return ACTIVE;
 
         val clientVersion = ProtocolVersion.getByVersionNumber(viaAPI.getPlayerVersion(player.getUniqueId()));
-        return clientVersion == null ? activeServerVersion : clientVersion.getEquivalentServerVersion();
+        return clientVersion == null ? ACTIVE : clientVersion.getEquivalentServerVersion();
     }
 
     /**
@@ -86,9 +85,9 @@ public enum ServerVersion
      *
      * @return true if the active server version is included in the provided {@link Set} or false if it is not.
      */
-    public static boolean containsActiveServerVersion(Set<ServerVersion> supportedServerVersions)
+    public static boolean containsActive(Set<ServerVersion> supportedServerVersions)
     {
-        return supportedServerVersions.contains(activeServerVersion);
+        return supportedServerVersions.contains(ACTIVE);
     }
 
     private Set<ServerVersion> generateVersionsTo()

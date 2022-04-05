@@ -47,7 +47,7 @@ public final class MaterialUtil
         val bounceMaterials = EnumSet.of(Material.SLIME_BLOCK);
         val freeSpaceContainers = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
 
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.ACTIVE) {
             case MC18:
             case MC112:
                 autoStepMaterials.addAll(getMaterialsEndingWith("_STAIRS", "_SLABS"));

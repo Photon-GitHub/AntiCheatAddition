@@ -26,7 +26,7 @@ public class ViolationEvent extends ModulePlayerEvent
 
     public static ViolationEvent build(Player player, String moduleId, int vl)
     {
-        return ServerVersion.containsActiveServerVersion(ServerVersion.LEGACY_EVENT_VERSIONS) ?
+        return ServerVersion.containsActive(ServerVersion.LEGACY_EVENT_VERSIONS) ?
                new ViolationEvent(player, moduleId, vl, true) :
                new ViolationEvent(player, moduleId, vl);
     }

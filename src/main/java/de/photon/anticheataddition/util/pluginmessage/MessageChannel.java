@@ -57,7 +57,7 @@ public interface MessageChannel
     @NotNull
     static MessageChannel of(final String prefix, final String key, final String legacyName)
     {
-        if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
+        if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.ACTIVE)) {
             return legacyName == null ? MessageChannel.EMPTY : new LegacyMessageChannel(legacyName);
         } else {
             return prefix == null || key == null ? MessageChannel.EMPTY : new KeyMessageChannel(prefix, key);
@@ -67,7 +67,7 @@ public interface MessageChannel
     @NotNull
     static MessageChannel ofLegacy(final String legacyName)
     {
-        return legacyName != null && ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ? new LegacyMessageChannel(legacyName) : MessageChannel.EMPTY;
+        return legacyName != null && ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.ACTIVE) ? new LegacyMessageChannel(legacyName) : MessageChannel.EMPTY;
     }
 
     /**

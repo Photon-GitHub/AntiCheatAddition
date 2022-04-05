@@ -194,7 +194,7 @@ public enum InternalPotion
      */
     public boolean isAvailable()
     {
-        return ServerVersion.containsActiveServerVersion(this.addedInVersion.getSupVersionsFrom());
+        return ServerVersion.containsActive(this.addedInVersion.getSupVersionsFrom());
     }
 
     /**

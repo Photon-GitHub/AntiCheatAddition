@@ -184,7 +184,7 @@ final class ModernWorldUtil implements WorldUtil
             val aboveBlock = block.getRelative(BlockFace.UP);
             val checkForCatLocation = aboveBlock.getLocation().add(0.5, 0.5, 0.5);
 
-            switch (ServerVersion.getActiveServerVersion()) {
+            switch (ServerVersion.ACTIVE) {
                 case MC18:
                 case MC112:
                     // 1.8.8 and 1.12 doesn't provide isPassable.

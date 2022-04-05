@@ -71,7 +71,7 @@ public class ModuleLoader
             return false;
         }
 
-        if (!ServerVersion.containsActiveServerVersion(allowedServerVersions)) {
+        if (!ServerVersion.containsActive(allowedServerVersions)) {
             DebugSender.INSTANCE.sendDebug(module.getConfigString() + " is not compatible with your server version.", true, false);
             return false;
         }

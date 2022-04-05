@@ -38,47 +38,47 @@ public class LookPacketData
      */
     public double[] getAngleInformation()
     {
-        val result = new double[2];
         final RotationChange[] changes;
 
         synchronized (this.rotationChangeQueue) {
             changes = this.rotationChangeQueue.toArray(new RotationChange[0]);
         }
 
+        final long curTime = System.currentTimeMillis();
+
         int rotationCount = 0;
         int gapFillers = 0;
-        long ticks;
-        float angle;
-        val curTime = System.currentTimeMillis();
+        double angleSum = 0;
         for (int i = 1; i < changes.length; ++i) {
             // Ignore rotation changes more than 1 second ago.
             if ((curTime - changes[i].getTime()) > 1000) continue;
 
             // Using -1 for the last element is fine as there is always the last element.
-            ticks = (changes[i - 1].getTime() - changes[i].getTime()) / 50;
+            final long ticks = changes[i - 1].timeOffset(changes[i]) / 50;
 
             // The current tick should be ignored, no gap filler.
             // How many ticks have been left out?
             if (ticks > 1) gapFillers += (ticks - 1);
 
-            // Angle calculations
-            angle = changes[i - 1].angle(changes[i]);
+            // This is a rotation.
             ++rotationCount;
+
             // Angle change sum
-            result[0] += angle;
+            angleSum += changes[i - 1].angle(changes[i]);
         }
 
         // Just immediately return the [0,0] array here to avoid dividing by 0.
-        if (rotationCount == 0 && gapFillers == 0) return result;
+        if (rotationCount == 0 && gapFillers == 0) return new double[]{0, 0};
 
-        // Angle offset sum
-        result[1] = MathUtil.absDiff(
-                // The offset average times the rotations
-                (result[0] / (rotationCount + gapFillers)) * rotationCount,
-                // The sum of all elements
-                result[0]);
-
-        return result;
+        return new double[]{
+                angleSum,
+                // Angle offset sum
+                MathUtil.absDiff(
+                        // The offset average times the rotations
+                        (angleSum / (rotationCount + gapFillers)) * rotationCount,
+                        // The sum of all elements
+                        angleSum)
+        };
     }
 
     @Value
@@ -103,6 +103,11 @@ public class LookPacketData
         public float angle(RotationChange rotationChange)
         {
             return RotationUtil.getDirection(this.getYaw(), this.getPitch()).angle(RotationUtil.getDirection(rotationChange.getYaw(), rotationChange.getPitch()));
+        }
+
+        public long timeOffset(RotationChange other)
+        {
+            return MathUtil.absDiff(this.time, other.time);
         }
     }
 

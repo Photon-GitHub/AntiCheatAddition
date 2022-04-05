@@ -4,17 +4,23 @@ import de.photon.anticheataddition.user.data.DataKey;
 import lombok.val;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class UserTest
 {
+    @BeforeAll
+    static void mockACA()
+    {
+        Dummy.mockEnvironment();
+        Dummy.mockAntiCheatAddition();
+    }
+
     @Test
     void materialTest()
     {
-        Dummy.mockAntiCheatAddition();
-
-        val obsidian = Material.OBSIDIAN;
         val user = Dummy.mockUser();
+        val obsidian = Material.OBSIDIAN;
 
         user.getDataMap().setObject(DataKey.Obj.LAST_MATERIAL_CLICKED, obsidian);
         Assertions.assertSame(user.getDataMap().getObject(DataKey.Obj.LAST_MATERIAL_CLICKED), obsidian);
@@ -23,7 +29,6 @@ class UserTest
     @Test
     void counterTest()
     {
-        Dummy.mockAntiCheatAddition();
         val user = Dummy.mockUser();
         val counter = user.getDataMap().getCounter(DataKey.Count.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS);
 

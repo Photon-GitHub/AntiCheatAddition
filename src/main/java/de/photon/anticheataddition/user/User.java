@@ -66,7 +66,7 @@ public class User implements Permissible
     /**
      * Creates an {@link User} from a {@link Player}.
      */
-    protected static User createFromPlayer(Player player)
+    public static User createFromPlayer(Player player)
     {
         val user = new User(player);
         USERS.put(player.getUniqueId(), user);

@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.datastructure;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.Dummy;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
@@ -13,6 +12,7 @@ import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -22,11 +22,19 @@ import java.util.Set;
 
 class BatchTest
 {
-    // Do not remove this unused variable, it is needed for initialization of mocking.
-    private static final AntiCheatAddition mock = Dummy.mockAntiCheatAddition();
-    private static final User dummy = Dummy.mockUser();
     private static final ViolationModule dummyVlModule = Dummy.mockViolationModule("Inventory");
     private static final Broadcaster<Batch.Snapshot<String>> stringBroadcaster = new Broadcaster<>();
+
+    // Do not remove this unused variable, it is needed for initialization of mocking.
+    private static User dummy;
+
+    @BeforeAll
+    static void setup()
+    {
+        Dummy.mockEnvironment();
+        Dummy.mockAntiCheatAddition();
+        dummy = Dummy.mockUser();
+    }
 
     @Test
     void dummyBatchTest()

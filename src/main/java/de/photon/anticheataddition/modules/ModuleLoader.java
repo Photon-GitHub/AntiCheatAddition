@@ -119,7 +119,7 @@ public class ModuleLoader
         private boolean bungeecordForbidden = false;
         private BatchProcessor<?> batchProcessor = null;
 
-        public Builder(Module module) {this.module = module;}
+        private Builder(Module module) {this.module = module;}
 
         public Builder disallowBungeeCord()
         {

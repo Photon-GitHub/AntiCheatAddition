@@ -30,10 +30,15 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
         super("Inventory.parts.MultiInteraction");
     }
 
-    private static OptionalDouble distanceToLastClickedSlot(final User user, final InventoryClickEvent event)
+    private static OptionalDouble distanceToLastClickedSlot(User user, InventoryClickEvent event)
     {
         val inventory = event.getClickedInventory();
         return inventory == null ? OptionalDouble.empty() : InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), inventory.getType());
+    }
+
+    private static boolean smallDistance(User user, InventoryClickEvent event)
+    {
+        return distanceToLastClickedSlot(user, event).orElse(0D) < 4;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -76,7 +81,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
                     enforcedTicks = 1;
 
                     // Too small distance to check correctly.
-                    if (distanceToLastClickedSlot(user, event).orElse(0D) < 3) return;
+                    if (smallDistance(user, event)) return;
                     break;
 
                 case PICKUP_ALL:
@@ -88,7 +93,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
                 case PLACE_ONE:
                     // No false positives to check for.
                     addedVl = 8;
-                    enforcedTicks = (distanceToLastClickedSlot(user, event).orElse(0D) < 4) ? 1 : 5;
+                    enforcedTicks = smallDistance(user, event) ? 1 : 5;
                     break;
 
                 case DROP_ALL_CURSOR:
@@ -103,7 +108,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
                     if (event.getCurrentItem() == null || user.getDataMap().getObject(DataKey.Obj.LAST_MATERIAL_CLICKED) == event.getCurrentItem().getType()) return;
 
                     // Depending on the distance of the clicks.
-                    enforcedTicks = (distanceToLastClickedSlot(user, event).orElse(0D) < 4) ? 1 : 2;
+                    enforcedTicks = smallDistance(user, event) ? 1 : 2;
                     break;
 
                 case SWAP_WITH_CURSOR:

@@ -7,6 +7,7 @@ import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
+import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
@@ -43,7 +44,7 @@ public final class InventoryAverageHeuristic extends ViolationModule implements 
             // Minimum ping
             PingProvider.INSTANCE.maxPingHandling(user.getPlayer(), maxPing))
         {
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType().isAir()) user.getDataMap().getCounter(DataKey.Count.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS).increment();
+            if (event.getCurrentItem() == null || MaterialUtil.isAir(event.getCurrentItem().getType())) user.getDataMap().getCounter(DataKey.Count.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS).increment();
                 // Shift - Double - Click shortcut will generate a lot of clicks.
             else if (user.getDataMap().getObject(DataKey.Obj.LAST_MATERIAL_CLICKED) != event.getCurrentItem().getType())
                 user.getInventoryBatch().addDataPoint(InventoryBatch.InventoryClick.fromClickEvent(event));

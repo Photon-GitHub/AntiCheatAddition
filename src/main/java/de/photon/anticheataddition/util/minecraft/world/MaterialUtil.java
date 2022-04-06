@@ -42,6 +42,10 @@ public final class MaterialUtil
                                                                                                               Material.CHEST,
                                                                                                               Material.ANVIL) : Set.of();
 
+    private static final Set<Material> AIR_MATERIALS = ServerVersion.containsActive(ServerVersion.MC116.getSupVersionsFrom()) ?
+                                                       Sets.immutableEnumSet(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR) :
+                                                       Sets.immutableEnumSet(Material.AIR);
+
     static {
         val autoStepMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
         val bounceMaterials = EnumSet.of(Material.SLIME_BLOCK);
@@ -121,5 +125,10 @@ public final class MaterialUtil
     public static boolean containsLiquids(@NotNull final Collection<Material> toBeSearched)
     {
         return containsMaterials(LIQUIDS, toBeSearched);
+    }
+
+    public static boolean isAir(Material material)
+    {
+        return AIR_MATERIALS.contains(material);
     }
 }

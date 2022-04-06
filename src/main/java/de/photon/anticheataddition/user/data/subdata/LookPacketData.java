@@ -72,12 +72,8 @@ public class LookPacketData
 
         return new double[]{
                 angleSum,
-                // Angle offset sum
-                MathUtil.absDiff(
-                        // The offset average times the rotations
-                        (angleSum / (rotationCount + gapFillers)) * rotationCount,
-                        // The sum of all elements
-                        angleSum)
+                // Compute the difference of angleSum and angleSum * (rotationCount / (rotationCount + gapFillers))
+                MathUtil.absDiff((angleSum / (rotationCount + gapFillers)) * rotationCount, angleSum)
         };
     }
 

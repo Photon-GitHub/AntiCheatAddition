@@ -46,6 +46,7 @@ public final class DamageIndicator extends Module
                     val entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
                     // Clientside entities will be null in the world's entity list.
                     if (entity == null) return;
+
                     val entityType = entity.getType();
 
                     // Should spoof?
@@ -72,16 +73,10 @@ public final class DamageIndicator extends Module
                         event.setPacket(event.getPacket().deepClone());
 
                         final MetadataPacket read;
-                        if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) {
-                            read = new WrapperPlayServerEntityMetadata(event.getPacket());
-                            // Only set it on 1.8.8, otherwise it will just be at the max health.
-                            // Automatically excluded on later versions as the PacketType is not registered.
-                            // This PacketWrapper doesn't currently work with 1.15+.
-                        } else if (event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
-                            read = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
-                        } else {
-                            throw new IllegalStateException("Unregistered packet type.");
-                        }
+
+                        if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) read = new WrapperPlayServerEntityMetadata(event.getPacket());
+                        else if (event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) read = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
+                        else throw new IllegalStateException("Unregistered packet type.");
 
                         read.getMetadataIndex(EntityMetadataIndex.HEALTH).ifPresent(health -> {
                             // Only set it if the entity is not yet dead to prevent problems on the clientside.

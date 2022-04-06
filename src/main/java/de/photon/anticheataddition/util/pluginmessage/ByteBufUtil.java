@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.experimental.UtilityClass;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,18 +15,18 @@ public final class ByteBufUtil
     {
         Preconditions.checkArgument(s.length() <= Short.MAX_VALUE, "Cannot send string longer than Short.MAX_VALUE (got " + s.length() + " characters)");
 
-        byte[] b = s.getBytes(StandardCharsets.UTF_8);
+        final byte[] b = s.getBytes(StandardCharsets.UTF_8);
         writeVarInt(b.length, buf);
         buf.writeBytes(b);
     }
 
     public static String readString(ByteBuf buf)
     {
-        int len = readVarInt(buf);
+        final int len = readVarInt(buf);
 
         Preconditions.checkArgument(len <= Short.MAX_VALUE, "Cannot receive string longer than Short.MAX_VALUE (got " + len + " characters)");
 
-        byte[] b = new byte[len];
+        final byte[] b = new byte[len];
         buf.readBytes(b);
 
         return new String(b, StandardCharsets.UTF_8);
@@ -43,9 +42,8 @@ public final class ByteBufUtil
 
     public static byte[] toArray(ByteBuf buf)
     {
-        byte[] ret = new byte[buf.readableBytes()];
+        final byte[] ret = new byte[buf.readableBytes()];
         buf.readBytes(ret);
-
         return ret;
     }
 
@@ -56,10 +54,10 @@ public final class ByteBufUtil
 
     public static byte[] readArray(ByteBuf buf, int limit)
     {
-        int len = readVarInt(buf);
+        final int len = readVarInt(buf);
 
         Preconditions.checkArgument(len <= limit, "Cannot receive byte array longer than " + limit + " (got " + len + " bytes)");
-        byte[] ret = new byte[len];
+        final byte[] ret = new byte[len];
         buf.readBytes(ret);
         return ret;
     }
@@ -67,19 +65,16 @@ public final class ByteBufUtil
     public static void writeStringArray(List<String> s, ByteBuf buf)
     {
         writeVarInt(s.size(), buf);
-        for (String str : s) {
-            writeString(str, buf);
-        }
+        for (String str : s) writeString(str, buf);
     }
 
     public static List<String> readStringArray(ByteBuf buf)
     {
-        int len = readVarInt(buf);
-        List<String> ret = new ArrayList<>(len);
-        for (int i = 0; i < len; ++i) {
-            ret.add(readString(buf));
-        }
-        return ret;
+        final int len = readVarInt(buf);
+
+        final String[] array = new String[len];
+        for (int i = 0; i < array.length; ++i) array[i] = readString(buf);
+        return List.of(array);
     }
 
     public static int readVarInt(ByteBuf input)
@@ -97,9 +92,7 @@ public final class ByteBufUtil
 
             out |= (in & 0x7F) << (bytes++ * 7);
 
-            if (bytes > maxBytes) {
-                throw new RuntimeException("VarInt too big");
-            }
+            if (bytes > maxBytes) throw new IllegalArgumentException("VarInt too big.");
         } while ((in & 0x80) == 0x80);
 
         return out;
@@ -112,9 +105,7 @@ public final class ByteBufUtil
             part = value & 0x7F;
 
             value >>>= 7;
-            if (value != 0) {
-                part |= 0x80;
-            }
+            if (value != 0) part |= 0x80;
 
             output.writeByte(part);
         } while (value != 0);
@@ -133,15 +124,12 @@ public final class ByteBufUtil
 
     public static void writeVarShort(ByteBuf buf, int toWrite)
     {
+        final int high = (toWrite & 0x7F8000) >> 15;
         int low = toWrite & 0x7FFF;
-        int high = (toWrite & 0x7F8000) >> 15;
-        if (high != 0) {
-            low |= 0x8000;
-        }
+        if (high != 0) low |= 0x8000;
+
         buf.writeShort(low);
-        if (high != 0) {
-            buf.writeByte(high);
-        }
+        if (high != 0) buf.writeByte(high);
     }
 
     public static void writeUUID(UUID value, ByteBuf output)

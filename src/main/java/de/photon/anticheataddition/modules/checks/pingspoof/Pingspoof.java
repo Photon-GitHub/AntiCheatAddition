@@ -12,7 +12,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
-import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -69,8 +68,9 @@ public final class Pingspoof extends ViolationModule implements Listener
 
                 if (sent > 0) {
                     if (received <= 0) {
-                        DebugSender.INSTANCE.sendDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to bypass pingspoof check.");
-                        this.getManagement().flag(Flag.of(user).setAddedVl(35));
+                        this.getManagement().flag(Flag.of(user)
+                                                      .setAddedVl(35)
+                                                      .setDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to bypass pingspoof check."));
                     } else {
                         user.getPingspoofPing().add(MathUtil.absDiff(received, sent));
                         echoPing = PingProvider.INSTANCE.getEchoPing(user);
@@ -82,10 +82,10 @@ public final class Pingspoof extends ViolationModule implements Listener
                             // Make sure we do not have continuous false positives due to floating point errors.
                             user.getPingspoofPing().reloadData();
 
-                            DebugSender.INSTANCE.sendDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to spoof ping. Spoofed: " + serverPing + " | Actual: " + echoPing);
                             this.getManagement().flag(Flag.of(user).setAddedVl(difference > 500 ?
                                                                                VL_CALCULATOR_ABOVE_500.apply(difference).intValue() :
-                                                                               VL_CALCULATOR_BELOW_500.apply(difference).intValue()));
+                                                                               VL_CALCULATOR_BELOW_500.apply(difference).intValue())
+                                                          .setDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to spoof ping. Spoofed: " + serverPing + " | Actual: " + echoPing));
                         }
                     }
                 }

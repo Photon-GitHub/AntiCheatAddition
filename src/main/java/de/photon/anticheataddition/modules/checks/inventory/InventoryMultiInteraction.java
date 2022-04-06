@@ -15,6 +15,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import java.util.OptionalDouble;
+
 public final class InventoryMultiInteraction extends ViolationModule implements Listener
 {
     public static final InventoryMultiInteraction INSTANCE = new InventoryMultiInteraction();
@@ -26,6 +28,12 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
     private InventoryMultiInteraction()
     {
         super("Inventory.parts.MultiInteraction");
+    }
+
+    private static OptionalDouble distanceToLastClickedSlot(final User user, final InventoryClickEvent event)
+    {
+        val inventory = event.getClickedInventory();
+        return inventory == null ? OptionalDouble.empty() : InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), inventory.getType());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -66,8 +74,9 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
                 case HOTBAR_MOVE_AND_READD:
                     addedVl = 1;
                     enforcedTicks = 1;
-                    // Enough distance to keep false positives at bay.
-                    if (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) >= 3) return;
+
+                    // Too small distance to check correctly.
+                    if (distanceToLastClickedSlot(user, event).orElse(0D) < 3) return;
                     break;
 
                 case PICKUP_ALL:
@@ -79,10 +88,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
                 case PLACE_ONE:
                     // No false positives to check for.
                     addedVl = 8;
-
-                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
-                                    1 :
-                                    5;
+                    enforcedTicks = (distanceToLastClickedSlot(user, event).orElse(0D) < 4) ? 1 : 5;
                     break;
 
                 case DROP_ALL_CURSOR:
@@ -97,9 +103,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
                     if (event.getCurrentItem() == null || user.getDataMap().getObject(DataKey.Obj.LAST_MATERIAL_CLICKED) == event.getCurrentItem().getType()) return;
 
                     // Depending on the distance of the clicks.
-                    enforcedTicks = (InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), event.getClickedInventory().getType()) < 4) ?
-                                    1 :
-                                    2;
+                    enforcedTicks = (distanceToLastClickedSlot(user, event).orElse(0D) < 4) ? 1 : 2;
                     break;
 
                 case SWAP_WITH_CURSOR:

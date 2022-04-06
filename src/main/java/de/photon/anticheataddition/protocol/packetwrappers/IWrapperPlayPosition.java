@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.protocol.packetwrappers;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 public interface IWrapperPlayPosition extends IWrapperPlay
@@ -77,9 +78,14 @@ public interface IWrapperPlayPosition extends IWrapperPlay
      *
      * @return The position as a vector.
      */
-    default Vector getPosition()
+    default Vector toVector()
     {
         return new Vector(this.getX(), this.getY(), this.getZ());
+    }
+
+    default Location toLocation(World world)
+    {
+        return new Location(world, this.getX(), this.getY(), this.getZ());
     }
 
     default void setWithLocation(Location location)

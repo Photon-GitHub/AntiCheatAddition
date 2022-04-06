@@ -26,7 +26,6 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.util.Vector;
 
 import java.util.Set;
 
@@ -51,7 +50,7 @@ public final class InventoryMove extends ViolationModule
         val knownPosition = user.getPlayer().getLocation();
 
         // Not many blocks moved to prevent exploits and world change problems.
-        if (positionWrapper.getPosition().distanceSquared(knownPosition.toVector()) < 4) {
+        if (positionWrapper.toVector().distanceSquared(knownPosition.toVector()) < 4) {
             // Teleport back the next tick.
             Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> user.getPlayer().teleport(knownPosition, PlayerTeleportEvent.TeleportCause.UNKNOWN));
         }
@@ -67,8 +66,9 @@ public final class InventoryMove extends ViolationModule
     protected ModuleLoader createModuleLoader()
     {
         val packetAdapter = PacketAdapterBuilder
-                // Look
-                .of(this, PacketType.Play.Client.LOOK,
+                .of(this,
+                    // Look
+                    PacketType.Play.Client.LOOK,
                     // Move
                     PacketType.Play.Client.POSITION,
                     PacketType.Play.Client.POSITION_LOOK)
@@ -76,15 +76,12 @@ public final class InventoryMove extends ViolationModule
                 .onReceiving((event, user) -> {
                     final IWrapperPlayPosition positionWrapper = event::getPacket;
 
-                    val moveTo = new Vector(positionWrapper.getX(),
-                                            positionWrapper.getY(),
-                                            positionWrapper.getZ());
-
                     val knownPosition = user.getPlayer().getLocation();
+                    val moveTo = positionWrapper.toLocation(knownPosition.getWorld());
 
                     // Check if this is a clientside movement:
                     // Position Vectors are not the same
-                    if (!moveTo.equals(knownPosition.toVector()) &&
+                    if (moveTo.distanceSquared(knownPosition) > 0.005 &&
                         // Not inside a vehicle
                         !user.getPlayer().isInsideVehicle() &&
                         // Not flying (may trigger some fps)

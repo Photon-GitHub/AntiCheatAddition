@@ -20,11 +20,20 @@ public final class ByteBufUtil
         buf.writeBytes(b);
     }
 
-    public static String readString(ByteBuf buf)
+    /**
+     * Reads a string from the given byte buffer
+     *
+     * @param buf       the byte buffer the string should be read from
+     * @param maxLength the string's max-length
+     *
+     * @return the string read
+     */
+    public static String readString(ByteBuf buf, int maxLength)
     {
         final int len = readVarInt(buf);
 
-        Preconditions.checkArgument(len <= Short.MAX_VALUE, "Cannot receive string longer than Short.MAX_VALUE (got " + len + " characters)");
+        Preconditions.checkArgument(len >= 0, "String len smaller than zero.");
+        Preconditions.checkArgument(len <= maxLength, "Cannot receive string longer than Short.MAX_VALUE (got " + len + " characters)");
 
         final byte[] b = new byte[len];
         buf.readBytes(b);
@@ -73,7 +82,7 @@ public final class ByteBufUtil
         final int len = readVarInt(buf);
 
         final String[] array = new String[len];
-        for (int i = 0; i < array.length; ++i) array[i] = readString(buf);
+        for (int i = 0; i < array.length; ++i) array[i] = readString(buf, Short.MAX_VALUE);
         return List.of(array);
     }
 
@@ -82,6 +91,14 @@ public final class ByteBufUtil
         return readVarInt(input, 5);
     }
 
+    /**
+     * Reads a varint from the given byte buffer
+     *
+     * @param input    the byte buffer the varint should be read from.
+     * @param maxBytes the maximum amount of bytes read.
+     *
+     * @return the int read
+     */
     public static int readVarInt(ByteBuf input, int maxBytes)
     {
         int out = 0;

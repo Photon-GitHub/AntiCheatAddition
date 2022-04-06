@@ -42,7 +42,7 @@ public final class InventoryAverageHeuristic extends ViolationModule implements 
             // Minimum TPS before the check is activated as of a huge amount of fps
             TPSProvider.INSTANCE.atLeastTPS(minTps) &&
             // Minimum ping
-            PingProvider.INSTANCE.maxPingHandling(user.getPlayer(), maxPing))
+            PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing))
         {
             if (event.getCurrentItem() == null || MaterialUtil.isAir(event.getCurrentItem().getType())) user.getDataMap().getCounter(DataKey.Count.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS).increment();
                 // Shift - Double - Click shortcut will generate a lot of clicks.

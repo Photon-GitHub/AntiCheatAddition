@@ -33,7 +33,7 @@ public interface PingProvider
      * @param maxPing the maximum ping a player may have to make this method return true.
      *                A negative ping will always return true.
      */
-    default boolean maxPingHandling(Player player, int maxPing)
+    default boolean atMostMaxPing(Player player, int maxPing)
     {
         return maxPing < 0 || this.getPing(player) <= maxPing;
     }

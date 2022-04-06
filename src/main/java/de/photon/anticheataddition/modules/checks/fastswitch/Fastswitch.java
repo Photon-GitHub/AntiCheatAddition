@@ -4,7 +4,6 @@ import com.comphenix.protocol.PacketType;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
-import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
@@ -54,7 +53,7 @@ public final class Fastswitch extends ViolationModule
                         // Already switched in the given timeframe
                         if (user.getTimestampMap().at(TimeKey.FASTSWITCH_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds) &&
                             // The ping is valid and in the borders that are set in the config
-                            PingProvider.INSTANCE.maxPingHandling(user.getPlayer(), maxPing))
+                            PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing))
                         {
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(25)

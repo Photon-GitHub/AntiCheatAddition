@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.OptionalInt;
 import java.util.function.Supplier;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -29,17 +30,16 @@ public final class DataKey
         SNEAKING(false),
         SPRINTING(false);
 
-        private final Boolean defaultValue;
+        private final boolean defaultValue;
     }
 
     @Getter
     @AllArgsConstructor
     public enum Int
     {
-        LAST_RAW_SLOT_CLICKED(0),
-        SKIN_COMPONENTS(null);
+        LAST_RAW_SLOT_CLICKED(0);
 
-        private final Integer defaultValue;
+        private final int defaultValue;
     }
 
     @Getter
@@ -51,7 +51,7 @@ public final class DataKey
 
         PACKET_ANALYSIS_COMPARE_FAILS(0L);
 
-        private final java.lang.Long defaultValue;
+        private final long defaultValue;
     }
 
     @Getter
@@ -64,7 +64,7 @@ public final class DataKey
         LAST_PACKET_PITCH(-1F),
         LAST_PACKET_YAW(-1F);
 
-        private final java.lang.Float defaultValue;
+        private final float defaultValue;
     }
 
     @Getter
@@ -72,7 +72,7 @@ public final class DataKey
     public enum Double
     {
         ;
-        private final java.lang.Double defaultValue;
+        private final double defaultValue;
     }
 
     public enum Count
@@ -118,7 +118,9 @@ public final class DataKey
 
         LAST_MATERIAL_CLICKED(Material.class, () -> Material.BEDROCK),
 
-        PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION(Location.class, () -> null);
+        PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION(Location.class, () -> null),
+
+        SKIN_COMPONENTS(OptionalInt.class, OptionalInt::empty);
 
         @Getter private final Class<?> clazz;
         @NotNull private final Supplier<Object> createDefaultObject;

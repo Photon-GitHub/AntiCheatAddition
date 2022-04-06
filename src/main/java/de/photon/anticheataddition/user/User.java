@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -319,17 +320,12 @@ public class User implements Permissible
      */
     public boolean updateSkinComponents(int newSkinComponents)
     {
-        val oldSkin = this.getDataMap().getInt(DataKey.Int.SKIN_COMPONENTS);
+        final OptionalInt oldSkin = (OptionalInt) this.getDataMap().getObject(DataKey.Obj.SKIN_COMPONENTS);
+        final boolean result = oldSkin.isPresent() && oldSkin.getAsInt() == newSkinComponents;
 
-        if (oldSkin == null) {
-            this.getDataMap().setInt(DataKey.Int.SKIN_COMPONENTS, newSkinComponents);
-            return false;
-        }
-
-        if (oldSkin == newSkinComponents) return false;
-
-        this.getDataMap().setInt(DataKey.Int.SKIN_COMPONENTS, newSkinComponents);
-        return true;
+        // Update the skin components.
+        this.getDataMap().setObject(DataKey.Obj.SKIN_COMPONENTS, OptionalInt.of(newSkinComponents));
+        return result;
     }
 
 

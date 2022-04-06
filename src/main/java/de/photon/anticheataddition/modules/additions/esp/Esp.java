@@ -93,7 +93,6 @@ public final class Esp extends Module
                 final int playerTrackingRange = playerTrackingRanges.getOrDefault(world, defaultTrackingRange);
 
                 val worldPlayers = world.getPlayers().stream()
-                                        .filter(player -> player.getWorld() != null)
                                         .map(User::getUser)
                                         .filter(user -> !User.isUserInvalid(user, this))
                                         .filter(User::inAdventureOrSurvivalMode)

@@ -57,7 +57,7 @@ public interface MessageChannel
     @NotNull
     static MessageChannel of(final String prefix, final String key, final String legacyName)
     {
-        if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.ACTIVE)) {
+        if (ServerVersion.containsActive(ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS)) {
             return legacyName == null ? MessageChannel.EMPTY : new LegacyMessageChannel(legacyName);
         } else {
             return prefix == null || key == null ? MessageChannel.EMPTY : new KeyMessageChannel(prefix, key);

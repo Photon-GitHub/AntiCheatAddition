@@ -221,13 +221,9 @@ public enum InternalPotion
     {
         if (!this.isAvailable()) return Optional.empty();
 
-        // Workaround for missing method in MC 1.8.8
-        if (ServerVersion.is18()) {
-            for (PotionEffect effect : livingEntity.getActivePotionEffects()) {
-                if (effect.getType().equals(this.mapping)) return Optional.of(effect);
-            }
-            return Optional.empty();
-        }
-        return Optional.ofNullable(livingEntity.getPotionEffect(this.mapping));
+        return ServerVersion.is18() ?
+               // Workaround for missing method in MC 1.8.8
+               livingEntity.getActivePotionEffects().stream().filter(pe -> pe.getType().equals(this.mapping)).findAny() :
+               Optional.ofNullable(livingEntity.getPotionEffect(this.mapping));
     }
 }

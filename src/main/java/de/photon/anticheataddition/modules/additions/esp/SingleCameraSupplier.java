@@ -26,7 +26,7 @@ class SingleCameraSupplier implements CanSee
         final Location cameraLocation = observer.getEyeLocation();
 
         final ResetVector between = new ResetVector(cameraLocation.toVector().multiply(-1));
-        for (Location hitLoc : Hitbox.hitboxLocationOf(watched).getEspLocations()) {
+        for (Location hitLoc : Hitbox.espHitboxLocationOf(watched).getEspLocations()) {
             // Effectively hitLoc - cameraLocation because of the multiply(-1) above.
             between.resetToBase().add(hitLoc.toVector());
 

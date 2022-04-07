@@ -44,6 +44,11 @@ public enum Hitbox
     private final double offsetZ;
     private final double height;
 
+    public static HitboxLocation espHitboxLocationOf(Player player)
+    {
+        return new HitboxLocation(player.isSneaking() ? ESP_SNEAKING_PLAYER : ESP_PLAYER, player.getLocation());
+    }
+
     public static HitboxLocation hitboxLocationOf(Player player)
     {
         return new HitboxLocation(player.isSneaking() ? SNEAKING_PLAYER : PLAYER, player.getLocation());

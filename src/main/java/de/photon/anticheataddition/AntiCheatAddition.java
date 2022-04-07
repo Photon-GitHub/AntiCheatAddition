@@ -124,7 +124,6 @@ public class AntiCheatAddition extends JavaPlugin
 
             // Managers
             this.registerListener(new User.UserListener());
-            EntityVisibility.INSTANCE.enable();
 
             // Load the module manager
             //noinspection ResultOfMethodCallIgnored
@@ -160,7 +159,6 @@ public class AntiCheatAddition extends JavaPlugin
         HandlerList.unregisterAll(AntiCheatAddition.getInstance());
 
         DataUpdaterEvents.INSTANCE.unregister();
-        EntityVisibility.INSTANCE.disable();
 
         DebugSender.INSTANCE.sendDebug("AntiCheatAddition disabled.", true, false);
         DebugSender.INSTANCE.sendDebug(" ", true, false);

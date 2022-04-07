@@ -15,7 +15,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -73,15 +72,6 @@ abstract class EntityInformationHider implements Listener
             // Register events and packet listener
             AntiCheatAddition.getInstance().registerListener(this);
             ProtocolLibrary.getProtocolManager().addPacketListener(this.informationPacketListener);
-        }
-    }
-
-    public void unregisterListeners()
-    {
-        // Only stop if the ServerVersion is supported
-        if (ServerVersion.containsActive(this.getSupportedVersions())) {
-            HandlerList.unregisterAll(this);
-            ProtocolLibrary.getProtocolManager().removePacketListener(this.informationPacketListener);
         }
     }
 

@@ -15,8 +15,4 @@ public interface EntityVisibility
      * Sets fully and equip hidden entities for a {@link Player}.
      */
     void setHidden(Player observer, Set<Entity> fullyHidden, Set<Entity> hideEquipment);
-
-    void enable();
-
-    void disable();
 }

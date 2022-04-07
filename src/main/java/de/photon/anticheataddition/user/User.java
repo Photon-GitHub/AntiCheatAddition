@@ -182,9 +182,9 @@ public class User implements Permissible
      *
      * @return {@link Hitbox#SNEAKING_PLAYER} or {@link Hitbox#PLAYER}.
      */
-    public Hitbox getHitbox()
+    public Hitbox.HitboxLocation getHitboxLocation()
     {
-        return Hitbox.fromPlayer(this.player);
+        return Hitbox.hitboxLocationOf(this.player);
     }
 
     /**
@@ -192,7 +192,7 @@ public class User implements Permissible
      */
     public boolean isInLiquids()
     {
-        return this.getHitbox().isInLiquids(this.getPlayer().getLocation());
+        return this.getHitboxLocation().isInLiquids();
     }
 
 

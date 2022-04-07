@@ -9,10 +9,8 @@ import lombok.val;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.Tag;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -108,23 +106,6 @@ public final class MaterialUtil
         return material != Material.BARRIER &&
                material.isOccluding() &&
                material != SPAWNER;
-    }
-
-    /**
-     * Checks if a {@link Collection} of {@link Material}s contains any of certain {@link Material}s.
-     */
-    public static boolean containsMaterials(@NotNull final Collection<Material> searchFor, @NotNull final Collection<Material> toBeSearched)
-    {
-        for (Material material : searchFor) if (toBeSearched.contains(material)) return true;
-        return false;
-    }
-
-    /**
-     * Checks if a {@link Collection} of {@link Material}s contains liquids.
-     */
-    public static boolean containsLiquids(@NotNull final Collection<Material> toBeSearched)
-    {
-        return containsMaterials(LIQUIDS, toBeSearched);
     }
 
     public static boolean isAir(Material material)

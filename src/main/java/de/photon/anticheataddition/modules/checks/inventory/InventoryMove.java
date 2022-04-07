@@ -99,7 +99,7 @@ public final class InventoryMove extends ViolationModule
                         // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load errors.
                         WorldUtil.INSTANCE.isChunkLoaded(user.getPlayer().getLocation()) &&
                         // The player is currently not in a liquid (liquids push)
-                        !user.getHitbox().isInLiquids(knownPosition) &&
+                        !user.getHitboxLocation().isInLiquids() &&
                         // Auto-Disable if TPS are too low
                         TPSProvider.INSTANCE.atLeastTPS(minTps))
                     {
@@ -144,7 +144,7 @@ public final class InventoryMove extends ViolationModule
                         if (user.notRecentlyOpenedInventory(240L + speedMillis + lenienceMillis) &&
                             // Do the entity pushing stuff here (performance impact)
                             // No nearby entities that could push the player
-                            PacketAdapterBuilder.checkSync(() -> WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()))
+                            PacketAdapterBuilder.checkSync(() -> WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitboxLocation().getHitbox(), 0.1D).isEmpty()))
                         {
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(5)

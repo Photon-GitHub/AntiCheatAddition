@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -125,9 +124,7 @@ public enum Hitbox
          */
         public Set<Material> getPartiallyIncludedMaterials()
         {
-            val materials = EnumSet.noneOf(Material.class);
-            for (Block block : getPartiallyIncludedBlocks()) materials.add(block.getType());
-            return materials;
+            return getPartiallyIncludedBlocks().stream().map(Block::getType).collect(SetUtil.toImmutableEnumSet());
         }
 
         /**

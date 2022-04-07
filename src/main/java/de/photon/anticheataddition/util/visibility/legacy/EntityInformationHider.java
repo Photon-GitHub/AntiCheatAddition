@@ -107,9 +107,11 @@ abstract class EntityInformationHider implements Listener
         switch (event.getNewGameMode()) {
             case CREATIVE:
             case SPECTATOR:
-                removeEntity(event.getPlayer());
-                Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () ->
-                        ProtocolLibrary.getProtocolManager().updateEntity(event.getPlayer(), event.getPlayer().getWorld().getPlayers()));
+                // Run with delay so we avoid any updates that are underway async.
+                Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), () -> {
+                    removeEntity(event.getPlayer());
+                    ProtocolLibrary.getProtocolManager().updateEntity(event.getPlayer(), event.getPlayer().getWorld().getPlayers());
+                }, 20L);
                 break;
             default: break;
         }

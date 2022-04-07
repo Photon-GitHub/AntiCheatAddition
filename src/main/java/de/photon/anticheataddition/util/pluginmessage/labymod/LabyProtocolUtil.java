@@ -77,7 +77,7 @@ public class LabyProtocolUtil
     public static byte[] getBytesToSend(String messageKey, String messageContents)
     {
         // Getting an empty buffer
-        ByteBuf byteBuf = Unpooled.buffer();
+        final ByteBuf byteBuf = Unpooled.buffer();
 
         // Writing the message-key to the buffer
         ByteBufUtil.writeString(byteBuf, messageKey);

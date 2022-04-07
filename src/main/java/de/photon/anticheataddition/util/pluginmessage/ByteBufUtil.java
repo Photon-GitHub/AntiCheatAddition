@@ -108,7 +108,7 @@ public final class ByteBufUtil
 
             out |= (in & 0x7F) << (bytes++ * 7);
 
-            if (bytes > maxBytes) throw new IllegalArgumentException("VarInt too big.");
+            Preconditions.checkArgument(bytes <= maxBytes, "VarInt too big.");
         } while ((in & 0x80) == 0x80);
 
         return out;

@@ -43,7 +43,7 @@ public final class BrandHider extends Module implements Listener
     {
         val buf = Unpooled.buffer();
 
-        ByteBufUtil.writeString(Placeholders.replacePlaceholders(this.brand, player), buf);
+        ByteBufUtil.writeString(buf, Placeholders.replacePlaceholders(this.brand, player));
 
         player.sendPluginMessage(AntiCheatAddition.getInstance(), MessageChannel.MC_BRAND_CHANNEL.getChannel().orElseThrow(), ByteBufUtil.toArray(buf));
         buf.release();

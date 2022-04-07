@@ -11,29 +11,28 @@ import java.util.UUID;
 @UtilityClass
 public final class ByteBufUtil
 {
-    public static void writeString(String s, ByteBuf buf)
+    public static void writeString(ByteBuf buf, String s)
     {
         Preconditions.checkArgument(s.length() <= Short.MAX_VALUE, "Cannot send string longer than Short.MAX_VALUE (got " + s.length() + " characters)");
 
         final byte[] b = s.getBytes(StandardCharsets.UTF_8);
-        writeVarInt(b.length, buf);
+        writeVarInt(buf, b.length);
         buf.writeBytes(b);
     }
 
     /**
      * Reads a string from the given byte buffer
      *
-     * @param buf       the byte buffer the string should be read from
-     * @param maxLength the string's max-length
+     * @param buf the byte buffer the string should be read from
      *
      * @return the string read
      */
-    public static String readString(ByteBuf buf, int maxLength)
+    public static String readString(ByteBuf buf)
     {
         final int len = readVarInt(buf);
 
         Preconditions.checkArgument(len >= 0, "String len smaller than zero.");
-        Preconditions.checkArgument(len <= maxLength, "Cannot receive string longer than Short.MAX_VALUE (got " + len + " characters)");
+        Preconditions.checkArgument(len <= Short.MAX_VALUE, "Cannot receive string longer than Short.MAX_VALUE (got " + len + " characters)");
 
         final byte[] b = new byte[len];
         buf.readBytes(b);
@@ -41,11 +40,11 @@ public final class ByteBufUtil
         return new String(b, StandardCharsets.UTF_8);
     }
 
-    public static void writeArray(byte[] b, ByteBuf buf)
+    public static void writeArray(ByteBuf buf, byte[] b)
     {
         Preconditions.checkArgument(b.length <= Short.MAX_VALUE, "Cannot send byte array longer than Short.MAX_VALUE (got " + b.length + " bytes)");
 
-        writeVarInt(b.length, buf);
+        writeVarInt(buf, b.length);
         buf.writeBytes(b);
     }
 
@@ -73,8 +72,8 @@ public final class ByteBufUtil
 
     public static void writeStringArray(List<String> s, ByteBuf buf)
     {
-        writeVarInt(s.size(), buf);
-        for (String str : s) writeString(str, buf);
+        writeVarInt(buf, s.size());
+        for (String str : s) writeString(buf, str);
     }
 
     public static List<String> readStringArray(ByteBuf buf)
@@ -82,7 +81,7 @@ public final class ByteBufUtil
         final int len = readVarInt(buf);
 
         final String[] array = new String[len];
-        for (int i = 0; i < array.length; ++i) array[i] = readString(buf, Short.MAX_VALUE);
+        for (int i = 0; i < array.length; ++i) array[i] = readString(buf);
         return List.of(array);
     }
 
@@ -92,7 +91,7 @@ public final class ByteBufUtil
     }
 
     /**
-     * Reads a varint from the given byte buffer
+     * Reads a variable int from the given byte buffer
      *
      * @param input    the byte buffer the varint should be read from.
      * @param maxBytes the maximum amount of bytes read.
@@ -115,13 +114,21 @@ public final class ByteBufUtil
         return out;
     }
 
-    public static void writeVarInt(int value, ByteBuf output)
+    /**
+     * Writes a variable int to the given byte buffer
+     *
+     * @param output the byte buffer the int should be written to
+     * @param value  the int that should be written to the buffer
+     */
+    public static void writeVarInt(ByteBuf output, int value)
     {
         int part;
         do {
+            // Get the first 7 bits into part.
             part = value & 0x7F;
-
             value >>>= 7;
+
+            // If the int is not fully written, add the 8th bit.
             if (value != 0) part |= 0x80;
 
             output.writeByte(part);

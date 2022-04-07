@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.modules.sentinel;
 
 import de.photon.anticheataddition.modules.ModuleLoader;
+import de.photon.anticheataddition.util.pluginmessage.ByteBufUtil;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import de.photon.anticheataddition.util.pluginmessage.labymod.LabyProtocolUtil;
 import io.netty.buffer.Unpooled;
@@ -27,8 +28,8 @@ public final class LabyModSentinel extends SentinelModule implements Listener, P
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] message)
     {
         val byteBuf = Unpooled.wrappedBuffer(message);
-        val key = LabyProtocolUtil.readString(byteBuf, Short.MAX_VALUE);
-        //val json = LabyModProtocol.readString(byteBuf, Short.MAX_VALUE);
+        val key = ByteBufUtil.readString(byteBuf);
+        //val json = ByteBufUtil.readString(byteBuf);
 
         // LabyMod user joins the server
         if ("INFO".equals(key)) {

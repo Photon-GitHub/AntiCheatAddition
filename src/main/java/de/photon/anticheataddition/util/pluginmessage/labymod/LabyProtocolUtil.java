@@ -11,8 +11,6 @@ import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.bukkit.entity.Player;
 
-import java.nio.charset.StandardCharsets;
-
 @UtilityClass
 public class LabyProtocolUtil
 {
@@ -82,10 +80,10 @@ public class LabyProtocolUtil
         ByteBuf byteBuf = Unpooled.buffer();
 
         // Writing the message-key to the buffer
-        writeString(byteBuf, messageKey);
+        ByteBufUtil.writeString(byteBuf, messageKey);
 
         // Writing the contents to the buffer
-        writeString(byteBuf, messageContents);
+        ByteBufUtil.writeString(byteBuf, messageContents);
 
         // Copying the buffer's bytes to the byte array
         byte[] bytes = new byte[byteBuf.readableBytes()];
@@ -96,51 +94,5 @@ public class LabyProtocolUtil
 
         // Returning the byte array
         return bytes;
-    }
-
-    /**
-     * Writes a varint to the given byte buffer
-     *
-     * @param buf   the byte buffer the int should be written to
-     * @param input the int that should be written to the buffer
-     */
-    private static void writeVarIntToBuffer(ByteBuf buf, int input)
-    {
-        while ((input & -128) != 0) {
-            buf.writeByte(input & 127 | 128);
-            input >>>= 7;
-        }
-
-        buf.writeByte(input);
-    }
-
-    /**
-     * Writes a string to the given byte buffer
-     *
-     * @param buf    the byte buffer the string should be written to
-     * @param string the string that should be written to the buffer
-     */
-    private static void writeString(ByteBuf buf, String string)
-    {
-        byte[] abyte = string.getBytes(StandardCharsets.UTF_8);
-
-        if (abyte.length > Short.MAX_VALUE) throw new IllegalArgumentException("String too big (was " + string.length() + " bytes encoded, max " + Short.MAX_VALUE + ")");
-        else {
-            writeVarIntToBuffer(buf, abyte.length);
-            buf.writeBytes(abyte);
-        }
-    }
-
-    /**
-     * Reads a string from the given byte buffer
-     *
-     * @param buf       the byte buffer the string should be read from
-     * @param maxLength the string's max-length
-     *
-     * @return the string read
-     */
-    public static String readString(ByteBuf buf, int maxLength)
-    {
-        return ByteBufUtil.readString(buf, maxLength);
     }
 }

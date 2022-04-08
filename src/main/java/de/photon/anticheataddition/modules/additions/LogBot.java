@@ -3,7 +3,7 @@ package de.photon.anticheataddition.modules.additions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.util.messaging.DebugSender;
-import lombok.Value;
+import lombok.EqualsAndHashCode;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -19,7 +19,7 @@ public final class LogBot extends Module
     private final Set<LogDeletionTime> logDeletionTimes = Stream.of(new LogDeletionTime("plugins/AntiCheatAddition/logs", ".AntiCheatAddition"),
                                                                     new LogDeletionTime("logs", ".Server"))
                                                                 // Actually active.
-                                                                .filter(logDeletionTime -> logDeletionTime.timeToDelete > 0)
+                                                                .filter(LogDeletionTime::isActive)
                                                                 .collect(Collectors.toUnmodifiableSet());
 
     private int taskNumber;
@@ -45,16 +45,21 @@ public final class LogBot extends Module
         Bukkit.getScheduler().cancelTask(taskNumber);
     }
 
-    @Value
-    private class LogDeletionTime
+    @EqualsAndHashCode
+    private static class LogDeletionTime
     {
-        File logFolder;
-        long timeToDelete;
+        private final File logFolder;
+        private final long timeToDelete;
 
-        public LogDeletionTime(String filePath, String configPath)
+        private LogDeletionTime(String filePath, String configPath)
         {
             this.logFolder = new File(filePath);
-            this.timeToDelete = TimeUnit.DAYS.toMillis(loadLong(configPath, 10));
+            this.timeToDelete = TimeUnit.DAYS.toMillis(LogBot.INSTANCE.loadLong(configPath, 10));
+        }
+
+        public boolean isActive()
+        {
+            return timeToDelete > 0;
         }
 
         public void handleLog(final long currentTime)

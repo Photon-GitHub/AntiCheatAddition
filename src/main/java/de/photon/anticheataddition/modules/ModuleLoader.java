@@ -18,7 +18,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -157,28 +156,9 @@ public class ModuleLoader
             return this;
         }
 
-        public Builder addIncomingMessageChannels(Collection<MessageChannel> channels)
-        {
-            this.incoming.addAll(channels);
-            return this;
-        }
-
         public Builder addOutgoingMessageChannel(MessageChannel channel)
         {
             this.outgoing.add(channel);
-            return this;
-        }
-
-        public Builder addOutgoingMessageChannels(Collection<MessageChannel> channels)
-        {
-            this.outgoing.addAll(channels);
-            return this;
-        }
-
-        public Builder setAllowedServerVersions(ServerVersion... serverVersions)
-        {
-            this.allowedServerVersions.clear();
-            Collections.addAll(this.allowedServerVersions, serverVersions);
             return this;
         }
 
@@ -194,7 +174,6 @@ public class ModuleLoader
             this.batchProcessor = batchProcessor;
             return this;
         }
-
 
         public ModuleLoader build()
         {

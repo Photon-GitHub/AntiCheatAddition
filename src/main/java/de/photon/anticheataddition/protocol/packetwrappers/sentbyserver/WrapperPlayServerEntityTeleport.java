@@ -2,7 +2,6 @@ package de.photon.anticheataddition.protocol.packetwrappers.sentbyserver;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.protocol.packetwrappers.AbstractPacket;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayPosition;
 import org.bukkit.Location;
@@ -31,50 +30,5 @@ public class WrapperPlayServerEntityTeleport extends AbstractPacket implements I
 
         this.setYaw(location.getYaw());
         this.setPitch(location.getPitch());
-    }
-
-    @Override
-    public double getX()
-    {
-        return ServerVersion.is18() ?
-               handle.getIntegers().read(1) / 32.0 :
-               handle.getDoubles().read(0);
-    }
-
-    @Override
-    public void setX(double value)
-    {
-        if (ServerVersion.is18()) handle.getIntegers().write(1, (int) value * 32);
-        else handle.getDoubles().write(0, value);
-    }
-
-    @Override
-    public double getY()
-    {
-        return ServerVersion.is18() ?
-               handle.getIntegers().read(2) / 32.0 :
-               handle.getDoubles().read(1);
-    }
-
-    @Override
-    public void setY(double value)
-    {
-        if (ServerVersion.is18()) handle.getIntegers().write(2, (int) value * 32);
-        else handle.getDoubles().write(1, value);
-    }
-
-    @Override
-    public double getZ()
-    {
-        return ServerVersion.is18() ?
-               handle.getIntegers().read(3) / 32.0 :
-               handle.getDoubles().read(2);
-    }
-
-    @Override
-    public void setZ(double value)
-    {
-        if (ServerVersion.is18()) handle.getIntegers().write(3, (int) value * 32);
-        else handle.getDoubles().write(2, value);
     }
 }

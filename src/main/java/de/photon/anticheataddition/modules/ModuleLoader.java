@@ -10,7 +10,7 @@ import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.batch.BatchProcessor;
 import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
-import lombok.Value;
+import lombok.AllArgsConstructor;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -23,24 +23,24 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Value
+@AllArgsConstructor
 public class ModuleLoader
 {
-    Module module;
+    private final Module module;
 
     // Startup
-    boolean bungeecordForbidden;
-    Set<String> pluginDependencies;
-    Set<String> pluginIncompatibilities;
-    Set<ServerVersion> allowedServerVersions;
+    private final boolean bungeecordForbidden;
+    private final Set<String> pluginDependencies;
+    private final Set<String> pluginIncompatibilities;
+    private final Set<ServerVersion> allowedServerVersions;
 
     // Loading
-    BatchProcessor<?> batchProcessor;
-    Set<MessageChannel> incoming;
-    Set<MessageChannel> outgoing;
+    private final BatchProcessor<?> batchProcessor;
+    private final Set<MessageChannel> incoming;
+    private final Set<MessageChannel> outgoing;
 
-    Set<Listener> listeners;
-    Set<PacketListener> packetListeners;
+    private final Set<Listener> listeners;
+    private final Set<PacketListener> packetListeners;
 
     public static Builder builder(Module module)
     {

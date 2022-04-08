@@ -98,7 +98,7 @@ public class LookPacketData
          */
         public float angle(RotationChange rotationChange)
         {
-            return RotationUtil.getDirection(this.getYaw(), this.getPitch()).angle(RotationUtil.getDirection(rotationChange.getYaw(), rotationChange.getPitch()));
+            return RotationUtil.getDirection(this.yaw, this.pitch).angle(RotationUtil.getDirection(rotationChange.getYaw(), rotationChange.getPitch()));
         }
 
         public long timeOffset(RotationChange other)

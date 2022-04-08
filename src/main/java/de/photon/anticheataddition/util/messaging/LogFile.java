@@ -1,7 +1,7 @@
 package de.photon.anticheataddition.util.messaging;
 
 import de.photon.anticheataddition.AntiCheatAddition;
-import lombok.Value;
+import lombok.EqualsAndHashCode;
 import lombok.val;
 
 import java.io.File;
@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 
-@Value
-public class LogFile
+@EqualsAndHashCode
+public final class LogFile
 {
     // Using the apostrophes to make sure that the String in between is not optional, but the brackets shall be printed.
     private static final DateTimeFormatter PREFIX_TIME_FORMATTER = DateTimeFormatter.ofPattern("'['HH:mm:ss.SSS']' ");
 
-    File backingFile;
-    int dayOfTheYear;
+    private final File backingFile;
+    private final int dayOfTheYear;
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public LogFile(LocalDateTime now)

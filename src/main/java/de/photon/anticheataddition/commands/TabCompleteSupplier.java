@@ -111,7 +111,7 @@ public class TabCompleteSupplier
             // Add the child commands.
             constants(attributes.getChildCommands().keySet());
             // Automatically add the command help.
-            if (!attributes.getCommandHelp().isEmpty()) constants("help");
+            if (attributes.hasCommandHelp()) constants("help");
 
             if (!this.constants.isEmpty()) {
                 // Explicitly compute the constants here to make sure that we only compute this list once.

@@ -108,7 +108,6 @@ public abstract class InternalCommand
     protected void invokeCommand(@NotNull final CommandSender sender, @NotNull final Queue<String> arguments)
     {
         if (!this.commandAttributes.hasPermission(sender)) return;
-        if (this.commandAttributes.argumentsOutOfRange(arguments.size())) return;
 
         if (!arguments.isEmpty()) {
             val nextArgument = arguments.peek();
@@ -129,11 +128,7 @@ public abstract class InternalCommand
         // ------- Normal command procedure or childCommands is null or no fitting child commands were found. ------- //
 
         // Correct amount of arguments
-        if (this.commandAttributes.argumentsOutOfRange(arguments.size())) {
-            ChatMessage.sendMessage(sender, "Wrong amount of arguments: " + arguments.size() + " expected: " + this.commandAttributes.getMinArguments() + " to " + this.commandAttributes.getMaxArguments());
-            ChatMessage.sendMessage(sender, "For further information use /<command> help");
-            return;
-        }
+        if (this.commandAttributes.argumentsOutOfRange(arguments.size(), sender)) return;
 
         execute(sender, arguments);
     }

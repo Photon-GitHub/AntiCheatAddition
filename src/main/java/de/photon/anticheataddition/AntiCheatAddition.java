@@ -9,7 +9,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataUpdaterEvents;
 import de.photon.anticheataddition.util.config.Configs;
 import de.photon.anticheataddition.util.messaging.DebugSender;
-import de.photon.anticheataddition.util.visibility.EntityVisibility;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;

@@ -76,7 +76,7 @@ public class ModuleLoader
             return false;
         }
 
-        if (!AntiCheatAddition.getInstance().getConfig().getBoolean(this.module.getConfigString() + ".enabled")) {
+        if (!this.module.loadBoolean(".enabled", false)) {
             DebugSender.INSTANCE.sendDebug(module.getConfigString() + " has been disabled in the config.", true, false);
             return false;
         }

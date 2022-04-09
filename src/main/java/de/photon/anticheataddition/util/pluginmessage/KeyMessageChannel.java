@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.Optional;
 
-public class KeyMessageChannel extends MinecraftKey implements MessageChannel
+public final class KeyMessageChannel extends MinecraftKey implements MessageChannel
 {
     KeyMessageChannel(@NotNull String prefix, @NotNull String key)
     {

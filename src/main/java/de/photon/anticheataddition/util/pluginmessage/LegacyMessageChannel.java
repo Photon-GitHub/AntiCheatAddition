@@ -15,7 +15,7 @@ public class LegacyMessageChannel implements MessageChannel
 {
     @NotNull String legacyString;
 
-    public LegacyMessageChannel(@NotNull String legacyString)
+    LegacyMessageChannel(@NotNull String legacyString)
     {
         this.legacyString = Preconditions.checkNotNull(legacyString, "Tried to create LegacyMessageChannel with null legacyString.");
         Preconditions.checkState(ServerVersion.containsActive(ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS), "Tried to create LegacyMessageChannel on new version.");

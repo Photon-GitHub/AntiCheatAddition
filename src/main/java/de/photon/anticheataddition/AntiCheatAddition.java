@@ -132,7 +132,7 @@ public class AntiCheatAddition extends JavaPlugin
             DataUpdaterEvents.INSTANCE.register();
 
             // Commands
-            this.getCommand(MainCommand.getInstance().getName()).setExecutor(MainCommand.getInstance());
+            this.getCommand(MainCommand.INSTANCE.getName()).setExecutor(MainCommand.INSTANCE);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                           Enabled-Debug + API                                          //

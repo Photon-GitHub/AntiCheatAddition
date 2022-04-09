@@ -178,7 +178,6 @@ public class ModuleLoader
         public ModuleLoader build()
         {
             val incomingChannels = incoming.build();
-            val outgoingChannels = outgoing.build();
             Preconditions.checkArgument((module instanceof PluginMessageListener) == !(incomingChannels.isEmpty()), "Incoming channels have to be registered in a PluginMessageListener Module and cannot be registered otherwise.");
 
             if (module instanceof Listener) this.listeners.add((Listener) module);
@@ -190,7 +189,7 @@ public class ModuleLoader
                                     Sets.immutableEnumSet(allowedServerVersions),
                                     batchProcessor,
                                     incomingChannels,
-                                    outgoingChannels,
+                                    outgoing.build(),
                                     listeners.build(),
                                     packetListeners.build());
         }

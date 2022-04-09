@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ModuleMap<T extends Module>
+public final class ModuleMap<T extends Module>
 {
     private Map<String, T> backingMap;
 

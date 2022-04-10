@@ -1,6 +1,7 @@
 # Test
 Test:
   Empty:
+    stringlist0: ""
     stringlist1: { }
     stringlist2: "{}"
     stringlist3: "{ }"

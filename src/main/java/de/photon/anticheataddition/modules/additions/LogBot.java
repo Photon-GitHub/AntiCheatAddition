@@ -54,7 +54,7 @@ public final class LogBot extends Module
         private LogDeletionTime(String filePath, String configPath)
         {
             this.logFolder = new File(filePath);
-            this.timeToDelete = TimeUnit.DAYS.toMillis(LogBot.INSTANCE.loadLong(configPath, 10));
+            this.timeToDelete = TimeUnit.DAYS.toMillis(AntiCheatAddition.getInstance().getConfig().getLong("LogBot" + configPath, 10));
         }
 
         public boolean isActive()

@@ -16,36 +16,39 @@ public class DataMap
     private final Map<DataKey.Count, ViolationCounter> counterMap = Collections.synchronizedMap(new EnumMap<>(DataKey.Count.class));
     private final Map<DataKey.Obj, Object> objectMap = Collections.synchronizedMap(new EnumMap<>(DataKey.Obj.class));
 
-    public Boolean getBoolean(DataKey.Bool key)
+    public boolean getBoolean(DataKey.Bool key)
     {
-        return this.boolMap.computeIfAbsent(key, DataKey.Bool::getDefaultValue);
+        return this.boolMap.computeIfAbsent(key, DataKey.Bool::isDefaultValue);
     }
 
-    public Integer getInt(DataKey.Int key)
+    public int getInt(DataKey.Int key)
     {
         return this.intMap.computeIfAbsent(key, DataKey.Int::getDefaultValue);
     }
 
-    public Long getLong(DataKey.Long key)
+    public long getLong(DataKey.Long key)
     {
         return this.longMap.computeIfAbsent(key, DataKey.Long::getDefaultValue);
     }
 
-    public Float getFloat(DataKey.Float key)
+    public float getFloat(DataKey.Float key)
     {
         return this.floatMap.computeIfAbsent(key, DataKey.Float::getDefaultValue);
     }
 
-    public Double getDouble(DataKey.Double key)
+    public double getDouble(DataKey.Double key)
     {
         return this.doubleMap.computeIfAbsent(key, DataKey.Double::getDefaultValue);
     }
 
-    public ViolationCounter getCounter(DataKey.Count key) {return this.counterMap.computeIfAbsent(key, DataKey.Count::getCounter);}
+    public ViolationCounter getCounter(DataKey.Count key)
+    {
+        return this.counterMap.computeIfAbsent(key, DataKey.Count::createDefaultCounter);
+    }
 
     public Object getObject(DataKey.Obj key)
     {
-        return this.objectMap.computeIfAbsent(key, DataKey.Obj::getDefaultValue);
+        return this.objectMap.computeIfAbsent(key, DataKey.Obj::createDefaultObject);
     }
 
     public void setBoolean(DataKey.Bool key, Boolean b)

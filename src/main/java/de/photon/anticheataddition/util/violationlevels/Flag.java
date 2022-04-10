@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
  * This class presents options for the flagging process.
  */
 @Getter
-public class Flag
+public final class Flag
 {
     private final Player player;
     private int addedVl = 1;
@@ -87,7 +87,7 @@ public class Flag
      */
     public void callNotCancelledActions(int currentVl)
     {
-        if (this.debug != null) DebugSender.getInstance().sendDebug(this.debug);
+        if (this.debug != null) DebugSender.INSTANCE.sendDebug(this.debug);
         if (this.cancelVl >= 0 && currentVl >= this.cancelVl) this.onCancel.run();
         if (this.eventNotCancelled != null) this.eventNotCancelled.run();
     }

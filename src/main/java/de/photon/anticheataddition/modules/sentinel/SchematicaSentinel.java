@@ -10,11 +10,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class SchematicaSentinel extends SentinelModule implements Listener
+public final class SchematicaSentinel extends SentinelModule implements Listener
 {
+    public static final SchematicaSentinel INSTANCE = new SchematicaSentinel();
+
     private final byte[] sentMessage;
 
-    public SchematicaSentinel()
+    private SchematicaSentinel()
     {
         super("Schematica");
         val byteBuf = Unpooled.buffer();

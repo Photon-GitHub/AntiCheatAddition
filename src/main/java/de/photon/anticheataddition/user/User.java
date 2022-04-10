@@ -7,7 +7,7 @@ import de.photon.anticheataddition.InternalPermission;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.DataMap;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.TimestampMap;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,7 +67,7 @@ public class User implements Permissible
     /**
      * Creates an {@link User} from a {@link Player}.
      */
-    protected static User createFromPlayer(Player player)
+    public static User createFromPlayer(Player player)
     {
         val user = new User(player);
         USERS.put(player.getUniqueId(), user);
@@ -181,9 +182,9 @@ public class User implements Permissible
      *
      * @return {@link Hitbox#SNEAKING_PLAYER} or {@link Hitbox#PLAYER}.
      */
-    public Hitbox getHitbox()
+    public Hitbox.HitboxLocation getHitboxLocation()
     {
-        return Hitbox.fromPlayer(this.player);
+        return Hitbox.hitboxLocationOf(this.player);
     }
 
     /**
@@ -191,7 +192,7 @@ public class User implements Permissible
      */
     public boolean isInLiquids()
     {
-        return this.getHitbox().isInLiquids(this.getPlayer().getLocation());
+        return this.getHitboxLocation().isInLiquids();
     }
 
 
@@ -203,7 +204,7 @@ public class User implements Permissible
      */
     public boolean hasOpenInventory()
     {
-        return this.getTimestampMap().at(TimestampKey.INVENTORY_OPENED).getTime() != 0;
+        return this.getTimestampMap().at(TimeKey.INVENTORY_OPENED).getTime() != 0;
     }
 
     /**
@@ -214,7 +215,7 @@ public class User implements Permissible
      */
     public boolean notRecentlyOpenedInventory(final long milliseconds)
     {
-        return this.getTimestampMap().at(TimestampKey.INVENTORY_OPENED).notRecentlyUpdated(milliseconds);
+        return this.getTimestampMap().at(TimeKey.INVENTORY_OPENED).notRecentlyUpdated(milliseconds);
     }
 
     /**
@@ -224,7 +225,7 @@ public class User implements Permissible
      */
     public boolean hasClickedInventoryRecently(final long milliseconds)
     {
-        return this.getTimestampMap().at(TimestampKey.LAST_INVENTORY_CLICK).recentlyUpdated(milliseconds);
+        return this.getTimestampMap().at(TimeKey.INVENTORY_CLICK).recentlyUpdated(milliseconds);
     }
 
 
@@ -238,12 +239,12 @@ public class User implements Permissible
      *
      * @return true if the player has moved in the specified time frame.
      */
-    public boolean hasMovedRecently(final TimestampKey movementType, final long milliseconds)
+    public boolean hasMovedRecently(final TimeKey movementType, final long milliseconds)
     {
         switch (movementType) {
-            case LAST_HEAD_OR_OTHER_MOVEMENT:
-            case LAST_XYZ_MOVEMENT:
-            case LAST_XZ_MOVEMENT:
+            case HEAD_OR_OTHER_MOVEMENT:
+            case XYZ_MOVEMENT:
+            case XZ_MOVEMENT:
                 return this.timestampMap.at(movementType).recentlyUpdated(milliseconds);
             default:
                 throw new IllegalStateException("Unexpected MovementType: " + movementType);
@@ -259,7 +260,7 @@ public class User implements Permissible
      */
     public boolean hasSprintedRecently(final long milliseconds)
     {
-        return this.dataMap.getBoolean(DataKey.Bool.SPRINTING) || this.timestampMap.at(TimestampKey.LAST_SPRINT_TOGGLE).recentlyUpdated(milliseconds);
+        return this.dataMap.getBoolean(DataKey.Bool.SPRINTING) || this.timestampMap.at(TimeKey.SPRINT_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -271,7 +272,7 @@ public class User implements Permissible
      */
     public boolean hasSneakedRecently(final long milliseconds)
     {
-        return this.dataMap.getBoolean(DataKey.Bool.SNEAKING) || this.timestampMap.at(TimestampKey.LAST_SNEAK_TOGGLE).recentlyUpdated(milliseconds);
+        return this.dataMap.getBoolean(DataKey.Bool.SNEAKING) || this.timestampMap.at(TimeKey.SNEAK_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -283,7 +284,7 @@ public class User implements Permissible
      */
     public boolean hasJumpedRecently(final long milliseconds)
     {
-        return this.timestampMap.at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(milliseconds);
+        return this.timestampMap.at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(milliseconds);
     }
 
     // Convenience methods for much used timestamps
@@ -296,7 +297,7 @@ public class User implements Permissible
      */
     public boolean hasTeleportedRecently(final long milliseconds)
     {
-        return this.timestampMap.at(TimestampKey.LAST_TELEPORT).recentlyUpdated(milliseconds);
+        return this.timestampMap.at(TimeKey.TELEPORT).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -306,7 +307,7 @@ public class User implements Permissible
      */
     public boolean hasChangedWorldsRecently(final long milliseconds)
     {
-        return this.timestampMap.at(TimestampKey.LAST_WORLD_CHANGE).recentlyUpdated(milliseconds);
+        return this.timestampMap.at(TimeKey.WORLD_CHANGE).recentlyUpdated(milliseconds);
     }
 
 
@@ -319,17 +320,12 @@ public class User implements Permissible
      */
     public boolean updateSkinComponents(int newSkinComponents)
     {
-        val oldSkin = this.getDataMap().getInt(DataKey.Int.SKIN_COMPONENTS);
+        final OptionalInt oldSkin = (OptionalInt) this.getDataMap().getObject(DataKey.Obj.SKIN_COMPONENTS);
+        final boolean result = oldSkin.isPresent() && oldSkin.getAsInt() == newSkinComponents;
 
-        if (oldSkin == null) {
-            this.getDataMap().setInt(DataKey.Int.SKIN_COMPONENTS, newSkinComponents);
-            return false;
-        }
-
-        if (oldSkin == newSkinComponents) return false;
-
-        this.getDataMap().setInt(DataKey.Int.SKIN_COMPONENTS, newSkinComponents);
-        return true;
+        // Update the skin components.
+        this.getDataMap().setObject(DataKey.Obj.SKIN_COMPONENTS, OptionalInt.of(newSkinComponents));
+        return result;
     }
 
 
@@ -358,11 +354,11 @@ public class User implements Permissible
             val user = createFromPlayer(event.getPlayer());
 
             // Login time
-            user.timestampMap.at(TimestampKey.LOGIN_TIME).update();
+            user.timestampMap.at(TimeKey.LOGIN_TIME).update();
             // Login should count as movement.
-            user.timestampMap.at(TimestampKey.LAST_HEAD_OR_OTHER_MOVEMENT).update();
-            user.timestampMap.at(TimestampKey.LAST_XYZ_MOVEMENT).update();
-            user.timestampMap.at(TimestampKey.LAST_XZ_MOVEMENT).update();
+            user.timestampMap.at(TimeKey.HEAD_OR_OTHER_MOVEMENT).update();
+            user.timestampMap.at(TimeKey.XYZ_MOVEMENT).update();
+            user.timestampMap.at(TimeKey.XZ_MOVEMENT).update();
         }
 
         @EventHandler

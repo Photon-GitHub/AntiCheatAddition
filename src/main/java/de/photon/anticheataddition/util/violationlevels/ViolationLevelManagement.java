@@ -7,6 +7,7 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.events.ViolationEvent;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
@@ -77,7 +78,7 @@ public final class ViolationLevelManagement extends ViolationManagement
         this.broadcast(player);
     }
 
-    @RequiredArgsConstructor
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Builder
     {
         @NotNull private final ViolationModule module;

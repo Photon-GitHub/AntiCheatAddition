@@ -6,6 +6,9 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
+import de.photon.anticheataddition.modules.Module;
+import de.photon.anticheataddition.user.User;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -16,17 +19,18 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class PacketAdapterBuilder
 {
+    @NotNull private final Module module;
     @NotNull private final Set<PacketType> types;
 
     private ListenerPriority priority = ListenerPriority.NORMAL;
-    private Consumer<PacketEvent> onReceiving = null;
-    private Consumer<PacketEvent> onSending = null;
+    private BiConsumer<PacketEvent, User> onReceiving = null;
+    private BiConsumer<PacketEvent, User> onSending = null;
 
     public static boolean checkSync(@NotNull Callable<Boolean> task)
     {
@@ -46,7 +50,10 @@ public class PacketAdapterBuilder
     {
         try {
             // If the timeout is smaller than or equal to 0, wait indefinitely.
-            return timeout <= 0 ? Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AntiCheatAddition.getInstance(), task).get()) : Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AntiCheatAddition.getInstance(), task).get(timeout, unit));
+            return timeout <= 0 ?
+                   Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AntiCheatAddition.getInstance(), task).get()) :
+                   Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AntiCheatAddition.getInstance(), task).get(timeout, unit));
+
         } catch (InterruptedException | ExecutionException e) {
             AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to complete the synchronous calculations.", e);
             Thread.currentThread().interrupt();
@@ -56,16 +63,16 @@ public class PacketAdapterBuilder
         return false;
     }
 
-    public static PacketAdapterBuilder of(@NotNull PacketType... types)
+    public static PacketAdapterBuilder of(@NotNull Module module, @NotNull PacketType... types)
     {
-        return of(Set.of(types));
+        return of(module, Set.of(types));
     }
 
-    public static PacketAdapterBuilder of(@NotNull Set<PacketType> types)
+    public static PacketAdapterBuilder of(@NotNull Module module, @NotNull Set<PacketType> types)
     {
         Preconditions.checkNotNull(types, "Tried to create PacketAdapterBuilder with null types.");
         Preconditions.checkArgument(!types.isEmpty(), "Tried to create PacketAdapterBuilder without types.");
-        return new PacketAdapterBuilder(types);
+        return new PacketAdapterBuilder(module, types);
     }
 
     public PacketAdapterBuilder priority(ListenerPriority priority)
@@ -75,16 +82,23 @@ public class PacketAdapterBuilder
         return this;
     }
 
-    public PacketAdapterBuilder onReceiving(Consumer<PacketEvent> onReceiving)
+    public PacketAdapterBuilder onReceiving(BiConsumer<PacketEvent, User> onReceiving)
     {
         this.onReceiving = onReceiving;
         return this;
     }
 
-    public PacketAdapterBuilder onSending(Consumer<PacketEvent> onSending)
+    public PacketAdapterBuilder onSending(BiConsumer<PacketEvent, User> onSending)
     {
         this.onSending = onSending;
         return this;
+    }
+
+    private void runPacketEventBiConsumer(PacketEvent event, BiConsumer<PacketEvent, User> biConsumer)
+    {
+        final User user = User.safeGetUserFromPacketEvent(event);
+        if (User.isUserInvalid(user, module)) return;
+        biConsumer.accept(event, user);
     }
 
     public PacketAdapter build()
@@ -97,13 +111,13 @@ public class PacketAdapterBuilder
                 @Override
                 public void onPacketReceiving(PacketEvent event)
                 {
-                    onReceiving.accept(event);
+                    runPacketEventBiConsumer(event, onReceiving);
                 }
 
                 @Override
                 public void onPacketSending(PacketEvent event)
                 {
-                    onSending.accept(event);
+                    runPacketEventBiConsumer(event, onSending);
                 }
             };
         } else if (onReceiving != null) {
@@ -112,7 +126,7 @@ public class PacketAdapterBuilder
                 @Override
                 public void onPacketReceiving(PacketEvent event)
                 {
-                    onReceiving.accept(event);
+                    runPacketEventBiConsumer(event, onReceiving);
                 }
             };
         } else {
@@ -121,7 +135,7 @@ public class PacketAdapterBuilder
                 @Override
                 public void onPacketSending(PacketEvent event)
                 {
-                    onSending.accept(event);
+                    runPacketEventBiConsumer(event, onSending);
                 }
             };
         }

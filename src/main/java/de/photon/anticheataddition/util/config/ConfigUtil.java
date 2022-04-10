@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.config;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import lombok.experimental.UtilityClass;
-import lombok.val;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 @UtilityClass
-public final class ConfigUtils
+public final class ConfigUtil
 {
     /**
      * Used to load a {@link List} of {@link String}s if it is uncertain if the value of path
@@ -24,22 +23,24 @@ public final class ConfigUtils
     @NotNull
     public static List<String> loadImmutableStringOrStringList(@NotNull final String path)
     {
-        // Command list
-        val input = AntiCheatAddition.getInstance().getConfig().getStringList(path);
+        final List<String> input = AntiCheatAddition.getInstance().getConfig().getStringList(path);
 
-        // Single command
-        if (input.isEmpty()) {
-            val possibleCommand = AntiCheatAddition.getInstance().getConfig().getString(path);
+        if (input.isEmpty() && AntiCheatAddition.getInstance().getConfig().isString(path)) {
+            final String possibleString = AntiCheatAddition.getInstance().getConfig().getString(path);
 
-            // No-command indicator or null
-            return possibleCommand == null || "{}".equals(possibleCommand) ?
-                   List.of() :
-                   List.of(possibleCommand);
+            if (possibleString == null) return List.of();
+
+            switch (possibleString) {
+                case "":
+                case "{}":
+                case "{ }":
+                case "[]":
+                case "[ ]":
+                    return List.of();
+                default: return List.of(possibleString);
+            }
         }
-
-        // Input is not empty
-        // No-command indicator
-        return "{}".equals(input.get(0)) ? List.of() : List.copyOf(input);
+        return input;
     }
 
     /**

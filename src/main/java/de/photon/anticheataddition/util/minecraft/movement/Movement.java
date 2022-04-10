@@ -6,7 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 public enum Movement
 {
-    PLAYER(-0.08);
+    PLAYER(-0.08),
+    PLAYER_SLOW_FALLING(-0.01),
+    FALLING_ITEMS_BLOCKS(-0.04),
+    PROJECTILES(-0.03);
 
     /**
      * The gravitation that is applied to that type of entity
@@ -54,22 +57,18 @@ public enum Movement
      *
      * @param amplifier the amplifier of the Jump_Boost effect. If no effect should be applied this should be null
      */
-    @SuppressWarnings({"RedundantCast", "SwitchStatementWithTooFewBranches"})
+    @SuppressWarnings({"RedundantCast"})
     public double getJumpYMotion(final Integer amplifier)
     {
-        switch (this) {
-            case PLAYER:
-                double motionY = (double) 0.42F;
+        if (this != Movement.PLAYER && this != Movement.PLAYER_SLOW_FALLING) throw new UnsupportedOperationException("Movement type does not support jump y motion calculation.");
 
-                // If the amplifier is null no effect should be applied.
-                if (amplifier != null) {
-                    // Increase amplifier by one as e.g. amplifier 0 makes up JumpBoost I
-                    motionY += (double) ((float) ((amplifier + 1) * 0.1F));
-                }
-                return motionY;
-            default:
-                throw new UnsupportedOperationException("Movement type does not support jump y motion calculation.");
+        double motionY = (double) 0.42F;
+
+        // If the amplifier is null no effect should be applied.
+        if (amplifier != null) {
+            // Increase amplifier by one as e.g. amplifier 0 makes up JumpBoost I
+            motionY += (double) ((float) ((amplifier + 1) * 0.1F));
         }
-
+        return motionY;
     }
 }

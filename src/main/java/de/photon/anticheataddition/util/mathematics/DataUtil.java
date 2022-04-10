@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.util.mathematics;
 
 import lombok.experimental.UtilityClass;
-import lombok.val;
 
 @UtilityClass
 public final class DataUtil
@@ -47,7 +46,7 @@ public final class DataUtil
      */
     public static double squaredError(final double reference, final double value)
     {
-        val error = value - reference;
+        final double error = value - reference;
         return error * error;
     }
 

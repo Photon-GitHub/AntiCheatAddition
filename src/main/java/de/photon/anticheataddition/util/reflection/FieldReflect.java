@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.reflection;
 
 import de.photon.anticheataddition.AntiCheatAddition;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
@@ -19,7 +20,7 @@ public class FieldReflect
         return new TempValueReflect(field, obj);
     }
 
-    @RequiredArgsConstructor
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class TempValueReflect
     {
         private final Field field;

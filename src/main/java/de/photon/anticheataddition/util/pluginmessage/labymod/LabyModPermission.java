@@ -1,7 +1,7 @@
 package de.photon.anticheataddition.util.pluginmessage.labymod;
 
 import com.google.gson.JsonObject;
-import de.photon.anticheataddition.AntiCheatAddition;
+import de.photon.anticheataddition.modules.sentinel.LabyModSentinel;
 import lombok.Getter;
 import lombok.val;
 
@@ -40,7 +40,7 @@ public enum LabyModPermission
      */
     LabyModPermission(boolean defaultEnabled)
     {
-        this.configValue = AntiCheatAddition.getInstance().getConfig().getBoolean("Sentinel.LabyMod.disable." + this.name().toLowerCase(Locale.ENGLISH), defaultEnabled);
+        this.configValue = LabyModSentinel.INSTANCE.loadBoolean(".disable" + this.name().toLowerCase(Locale.ENGLISH), defaultEnabled);
     }
 
     private static JsonObject generatePermissionJsonObject()

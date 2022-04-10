@@ -36,12 +36,14 @@ import java.util.List;
  *** Re-enables basic functionality of the mod on client side.
  *** Sent to all players with the mod after using the '/bettersprinting disablemod false' command.
  */
-public class BetterSprintingSentinel extends SentinelModule implements PluginMessageListener
+public final class BetterSprintingSentinel extends SentinelModule implements PluginMessageListener
 {
+    public static final BetterSprintingSentinel INSTANCE = new BetterSprintingSentinel();
+
     private final byte[] settingsBufArray;
     private final byte[] disableBufArray;
 
-    public BetterSprintingSentinel()
+    private BetterSprintingSentinel()
     {
         super("BetterSprinting");
 

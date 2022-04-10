@@ -21,16 +21,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Esp extends Module
+public final class Esp extends Module
 {
-    public static final long ESP_INTERVAL_TICKS = AntiCheatAddition.getInstance().getConfig().getLong("Esp.interval_ticks", 2L);
+    public static final Esp INSTANCE = new Esp();
+
+    public static final long ESP_INTERVAL_TICKS = Esp.INSTANCE.loadLong(".interval_ticks", 2L);
 
     private static final String ENTITY_TRACKING_RANGE_PLAYERS = ".entity-tracking-range.players";
     private static final String DEFAULT_WORLD_NAME = "default";
 
     private static final int MAX_TRACKING_RANGE = 139;
 
-    public Esp()
+    private Esp()
     {
         super("Esp");
     }
@@ -38,10 +40,10 @@ public class Esp extends Module
     private static int loadDefaultTrackingRange(ConfigurationSection worlds)
     {
         if (worlds.contains(DEFAULT_WORLD_NAME + ENTITY_TRACKING_RANGE_PLAYERS)) {
-            DebugSender.getInstance().sendDebug("ESP | Default entity tracking range found.", true, false);
+            DebugSender.INSTANCE.sendDebug("ESP | Default entity tracking range found.", true, false);
             return worlds.getInt(DEFAULT_WORLD_NAME + ENTITY_TRACKING_RANGE_PLAYERS);
         } else {
-            DebugSender.getInstance().sendDebug("ESP | Default entity tracking range not found, using max tracking range.", true, true);
+            DebugSender.INSTANCE.sendDebug("ESP | Default entity tracking range not found, using max tracking range.", true, true);
             return MAX_TRACKING_RANGE;
         }
     }
@@ -57,7 +59,7 @@ public class Esp extends Module
             // Does the world exist?
             val world = Bukkit.getWorld(key);
             if (world == null || !worlds.contains(key + ENTITY_TRACKING_RANGE_PLAYERS)) {
-                DebugSender.getInstance().sendDebug("ESP | World " + key + " player tracking range could not be loaded, using default tracking range.", true, true);
+                DebugSender.INSTANCE.sendDebug("ESP | World " + key + " player tracking range could not be loaded, using default tracking range.", true, true);
                 continue;
             }
 
@@ -75,7 +77,7 @@ public class Esp extends Module
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
         val worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
         if (worlds == null) {
-            DebugSender.getInstance().sendDebug("Cannot enable ESP as the world-settings in spigot.yml are not present.", true, true);
+            DebugSender.INSTANCE.sendDebug("Cannot enable ESP as the world-settings in spigot.yml are not present.", true, true);
             return;
         }
 
@@ -91,7 +93,6 @@ public class Esp extends Module
                 final int playerTrackingRange = playerTrackingRanges.getOrDefault(world, defaultTrackingRange);
 
                 val worldPlayers = world.getPlayers().stream()
-                                        .filter(player -> player.getWorld() != null)
                                         .map(User::getUser)
                                         .filter(user -> !User.isUserInvalid(user, this))
                                         .filter(User::inAdventureOrSurvivalMode)

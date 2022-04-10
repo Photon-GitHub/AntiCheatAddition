@@ -11,14 +11,14 @@ import org.bukkit.util.Vector;
 
 import java.util.function.ToIntBiFunction;
 
-class ScaffoldAngle extends Module
+final class ScaffoldAngle extends Module
 {
     private static final double MAX_ANGLE = Math.toRadians(90);
 
     @Getter
     private ToIntBiFunction<User, BlockPlaceEvent> applyingConsumer = (user, event) -> 0;
 
-    public ScaffoldAngle(String scaffoldConfigString)
+    ScaffoldAngle(String scaffoldConfigString)
     {
         super(scaffoldConfigString + ".parts.Angle");
     }
@@ -33,7 +33,7 @@ class ScaffoldAngle extends Module
 
             // If greater than 90 in radians.
             if (user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_ANGLE_FAILS).conditionallyIncDec(user.getPlayer().getLocation().getDirection().angle(placedVector) > MAX_ANGLE)) {
-                DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " placed a block with a suspicious angle.");
+                DebugSender.INSTANCE.sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " placed a block with a suspicious angle.");
                 return 15;
             }
             return 0;

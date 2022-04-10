@@ -72,7 +72,7 @@ class ThirdPersonCameraSupplier implements CanSee
         if (InternalPotion.GLOWING.hasPotionEffect(watched)) return true;
 
         // ----------------------------------- Calculation ---------------------------------- //
-        final Location[] watchedHitboxLocations = Hitbox.fromPlayer(watched).getEspLocations(watched.getLocation());
+        final Location[] watchedHitboxLocations = Hitbox.espHitboxLocationOf(watched).getEspLocations();
 
         for (Location cameraLocation : getCameraLocations(observer)) {
             final ResetVector between = new ResetVector(cameraLocation.toVector().multiply(-1));

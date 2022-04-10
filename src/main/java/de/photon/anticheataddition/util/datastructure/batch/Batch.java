@@ -3,6 +3,8 @@ package de.photon.anticheataddition.util.datastructure.batch;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.broadcast.Broadcaster;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -72,6 +74,7 @@ public class Batch<T>
      * Represents a snapshot of a {@link Batch}, e.g. for broadcasting.
      */
     @Value
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Snapshot<T>
     {
         @NotNull User user;

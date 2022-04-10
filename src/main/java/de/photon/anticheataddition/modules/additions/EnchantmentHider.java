@@ -8,7 +8,6 @@ import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.equipment.IWrapperPlayEquipment;
-import de.photon.anticheataddition.user.User;
 import lombok.val;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -16,12 +15,14 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
-public class EnchantmentHider extends Module
+public final class EnchantmentHider extends Module
 {
+    public static final EnchantmentHider INSTANCE = new EnchantmentHider();
+
     private final boolean spoofPlayers = loadBoolean(".spoof.players", true);
     private final boolean spoofOthers = loadBoolean(".spoof.others", false);
 
-    public EnchantmentHider()
+    private EnchantmentHider()
     {
         super("EnchantmentHider");
     }
@@ -48,12 +49,9 @@ public class EnchantmentHider extends Module
     protected ModuleLoader createModuleLoader()
     {
         val adapter = PacketAdapterBuilder
-                .of(PacketType.Play.Server.ENTITY_EQUIPMENT)
+                .of(this, PacketType.Play.Server.ENTITY_EQUIPMENT)
                 .priority(ListenerPriority.HIGH)
-                .onSending(event -> {
-                    val user = User.safeGetUserFromPacketEvent(event);
-                    if (event.isCancelled() || User.isUserInvalid(user, this)) return;
-
+                .onSending((event, user) -> {
                     val wrapper = IWrapperPlayEquipment.of(event.getPacket());
                     val entity = wrapper.getEntity(event);
 

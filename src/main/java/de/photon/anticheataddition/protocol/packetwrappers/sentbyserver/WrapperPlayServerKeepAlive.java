@@ -2,9 +2,10 @@ package de.photon.anticheataddition.protocol.packetwrappers.sentbyserver;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import de.photon.anticheataddition.protocol.packetwrappers.WrapperPlayKeepAlive;
+import de.photon.anticheataddition.protocol.packetwrappers.AbstractPacket;
+import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayKeepAlive;
 
-public class WrapperPlayServerKeepAlive extends WrapperPlayKeepAlive
+public class WrapperPlayServerKeepAlive extends AbstractPacket implements IWrapperPlayKeepAlive
 {
     public static final PacketType TYPE = PacketType.Play.Server.KEEP_ALIVE;
 

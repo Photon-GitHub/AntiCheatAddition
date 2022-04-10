@@ -37,11 +37,11 @@ public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
 
         public ScaffoldBlockPlace(Block block, BlockFace blockFace, User user)
         {
-            this.block = block;
-            this.blockFace = blockFace;
-            this.location = user.getPlayer().getLocation();
-            this.sneaked = user.hasSneakedRecently(175);
-            this.speedModifier = InternalPotion.SPEED.getPotionEffect(user.getPlayer()).map(ScaffoldBlockPlace::calcSpeedModifier).orElse(1.0D);
+            this(block,
+                 blockFace,
+                 user.getPlayer().getLocation(),
+                 user.hasSneakedRecently(175),
+                 InternalPotion.SPEED.getPotionEffect(user.getPlayer()).map(ScaffoldBlockPlace::calcSpeedModifier).orElse(1.0D));
         }
 
         private static double calcSpeedModifier(@NotNull PotionEffect potionEffect)

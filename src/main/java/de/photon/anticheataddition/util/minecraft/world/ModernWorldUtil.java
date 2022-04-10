@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class ModernWorldUtil implements WorldUtil
+final class ModernWorldUtil implements WorldUtil
 {
     @Override
     public boolean isNext(Block a, Block b, Set<BlockFace> faces)
@@ -184,7 +184,7 @@ class ModernWorldUtil implements WorldUtil
             val aboveBlock = block.getRelative(BlockFace.UP);
             val checkForCatLocation = aboveBlock.getLocation().add(0.5, 0.5, 0.5);
 
-            switch (ServerVersion.getActiveServerVersion()) {
+            switch (ServerVersion.ACTIVE) {
                 case MC18:
                 case MC112:
                     // 1.8.8 and 1.12 doesn't provide isPassable.

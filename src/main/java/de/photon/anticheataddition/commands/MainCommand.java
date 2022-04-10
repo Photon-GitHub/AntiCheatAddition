@@ -6,7 +6,6 @@ import de.photon.anticheataddition.commands.subcommands.InfoCommand;
 import de.photon.anticheataddition.commands.subcommands.SetVlCommand;
 import de.photon.anticheataddition.commands.subcommands.TabListRemoveCommand;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
-import lombok.Getter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,18 +20,17 @@ import java.util.Queue;
 
 public class MainCommand extends InternalCommand implements CommandExecutor, TabCompleter
 {
-    @Getter
-    private static final MainCommand instance = new MainCommand();
+    public static final MainCommand INSTANCE = new MainCommand();
 
     public MainCommand()
     {
         super("anticheataddition", CommandAttributes.builder()
-                                                 .addCommandHelp("The main command of AntiCheatAddition", "To use a subcommands simply add it to the parent command:", "/anticheataddition <subcommand>")
-                                                 .addChildCommands(new DebugCommand(),
-                                                                   new InfoCommand(),
-                                                                   new SetVlCommand(),
-                                                                   new TabListRemoveCommand())
-                                                 .build(), TabCompleteSupplier.builder());
+                                                    .addCommandHelp("The main command of AntiCheatAddition", "To use a subcommands simply add it to the parent command:", "/anticheataddition <subcommand>")
+                                                    .addChildCommands(new DebugCommand(),
+                                                                      new InfoCommand(),
+                                                                      new SetVlCommand(),
+                                                                      new TabListRemoveCommand())
+                                                    .build(), TabCompleteSupplier.builder());
     }
 
     @Override

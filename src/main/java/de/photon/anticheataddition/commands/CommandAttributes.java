@@ -7,7 +7,7 @@ import de.photon.anticheataddition.util.messaging.ChatMessage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.Getter;
 import lombok.val;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
@@ -15,21 +15,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
 
-@Value
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
 public class CommandAttributes
 {
-    @NotNull SortedMap<String, InternalCommand> childCommands;
-    @NotNull List<String> commandHelp;
-    @Nullable InternalPermission permission;
-    int minArguments;
-    int maxArguments;
+    @Getter @NotNull private final SortedMap<String, InternalCommand> childCommands;
+    @NotNull private final List<String> commandHelp;
+    @Nullable private final InternalPermission permission;
+    private final int minArguments;
+    private final int maxArguments;
 
     public static Builder builder()
     {
@@ -39,13 +37,25 @@ public class CommandAttributes
     /**
      * Checks if the given argument count is valid by the attributes.
      *
-     * @param arguments the argument count.
+     * @param arguments            the argument count.
+     * @param errorMessageReceiver the receiver of any error message if the arguments are out of range.
      *
      * @return <code>true</code> iff minArguments <= arguments <= maxArguments
      */
-    public boolean argumentsOutOfRange(int arguments)
+    public boolean argumentsOutOfRange(int arguments, CommandSender errorMessageReceiver)
     {
+        final boolean outOfRange = !MathUtil.inRange(minArguments, maxArguments, arguments);
+        if (outOfRange) {
+            ChatMessage.sendMessage(errorMessageReceiver, "Wrong amount of arguments: " + arguments + ". Expected: " + minArguments + " to " + maxArguments);
+            ChatMessage.sendMessage(errorMessageReceiver, "For further information use /<command> help");
+        }
+
         return !MathUtil.inRange(minArguments, maxArguments, arguments);
+    }
+
+    public boolean hasCommandHelp()
+    {
+        return !commandHelp.isEmpty();
     }
 
     public boolean hasPermission(Permissible permissible)
@@ -111,15 +121,6 @@ public class CommandAttributes
         /**
          * Directly sets the command help.
          */
-        public Builder addCommandHelp(List<String> commandHelp)
-        {
-            this.commandHelp.addAll(commandHelp);
-            return this;
-        }
-
-        /**
-         * Directly sets the command help.
-         */
         public Builder addCommandHelp(String... commandHelp)
         {
             Collections.addAll(this.commandHelp, commandHelp);
@@ -132,15 +133,6 @@ public class CommandAttributes
         public Builder addCommandHelpLine(String line)
         {
             this.commandHelp.add(line);
-            return this;
-        }
-
-        /**
-         * Directly sets the command help.
-         */
-        public Builder addChildCommands(Collection<InternalCommand> commands)
-        {
-            for (InternalCommand command : commands) addChildCommand(command);
             return this;
         }
 

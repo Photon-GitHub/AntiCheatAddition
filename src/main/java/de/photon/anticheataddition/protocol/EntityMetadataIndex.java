@@ -12,7 +12,7 @@ public final class EntityMetadataIndex
     public static final int SKIN_PARTS;
 
     static {
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.ACTIVE) {
             case MC18:
                 HEALTH = 6;
                 ARROWS_IN_ENTITY = 9;

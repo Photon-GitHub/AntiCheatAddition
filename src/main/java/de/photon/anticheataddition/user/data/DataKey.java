@@ -10,6 +10,10 @@ import lombok.NoArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.OptionalInt;
+import java.util.function.Supplier;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataKey
@@ -26,17 +30,16 @@ public final class DataKey
         SNEAKING(false),
         SPRINTING(false);
 
-        private final Boolean defaultValue;
+        private final boolean defaultValue;
     }
 
     @Getter
     @AllArgsConstructor
     public enum Int
     {
-        LAST_RAW_SLOT_CLICKED(0),
-        SKIN_COMPONENTS(null);
+        LAST_RAW_SLOT_CLICKED(0);
 
-        private final Integer defaultValue;
+        private final int defaultValue;
     }
 
     @Getter
@@ -48,7 +51,7 @@ public final class DataKey
 
         PACKET_ANALYSIS_COMPARE_FAILS(0L);
 
-        private final java.lang.Long defaultValue;
+        private final long defaultValue;
     }
 
     @Getter
@@ -57,10 +60,11 @@ public final class DataKey
     {
         AUTOPOTION_LAST_SUDDEN_PITCH(0F),
         AUTOPOTION_LAST_SUDDEN_YAW(0F),
+
         LAST_PACKET_PITCH(-1F),
         LAST_PACKET_YAW(-1F);
 
-        private final java.lang.Float defaultValue;
+        private final float defaultValue;
     }
 
     @Getter
@@ -68,15 +72,16 @@ public final class DataKey
     public enum Double
     {
         ;
-        private final java.lang.Double defaultValue;
+        private final double defaultValue;
     }
 
-    @Getter
     public enum Count
     {
         AUTOFISH_FAILED("AutoFish.parts.consistency.maximum_fails"),
+
         INVENTORY_AVERAGE_HEURISTICS_MISCLICKS(0),
         INVENTORY_PERFECT_EXIT_FAILS("Inventory.parts.PerfectExit.violation_threshold"),
+
         SCAFFOLD_ANGLE_FAILS("Scaffold.parts.Angle.violation_threshold"),
         SCAFFOLD_JUMPING_FAILS("Scaffold.parts.Jumping.violation_threshold"),
         SCAFFOLD_JUMPING_LEGIT(20),
@@ -85,38 +90,44 @@ public final class DataKey
         SCAFFOLD_SAFEWALK_TIMING_FAILS("Scaffold.parts.Safewalk.Timing.violation_threshold"),
         SCAFFOLD_SPRINTING_FAILS("Scaffold.parts.Sprinting.violation_threshold");
 
-        private final ViolationCounter counter;
+        private final long threshold;
 
         Count(long threshold)
         {
-            this.counter = new ViolationCounter(threshold);
+            this.threshold = threshold;
         }
 
         Count(String configPath)
         {
             Preconditions.checkArgument(AntiCheatAddition.getInstance().getConfig().contains(configPath), "Tried to load ViolationCounter from nonexistent path " + configPath);
-            this.counter = new ViolationCounter(AntiCheatAddition.getInstance().getConfig().getLong(configPath));
+            this.threshold = AntiCheatAddition.getInstance().getConfig().getLong(configPath);
+        }
+
+        public ViolationCounter createDefaultCounter()
+        {
+            return new ViolationCounter(this.threshold);
         }
     }
 
-    @Getter
     @AllArgsConstructor
     public enum Obj
     {
-        AUTOFISH_CONSISTENCY_DATA(DoubleStatistics.class, new DoubleStatistics()),
+        AUTOFISH_CONSISTENCY_DATA(DoubleStatistics.class, DoubleStatistics::new),
 
-        LAST_CONSUMED_ITEM_STACK(ItemStack.class, null),
+        LAST_CONSUMED_ITEM_STACK(ItemStack.class, () -> null),
 
-        /**
-         * The last slot a person clicked.<br>
-         * This variable is used to prevent false positives based on spam-clicking one slot.
-         */
-        LAST_MATERIAL_CLICKED(Material.class, Material.BEDROCK),
+        LAST_MATERIAL_CLICKED(Material.class, () -> Material.BEDROCK),
 
+        PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION(Location.class, () -> null),
 
-        PACKET_ANALYSIS_LAST_POSITION_FORCE_LOCATION(Location.class, null);
+        SKIN_COMPONENTS(OptionalInt.class, OptionalInt::empty);
 
-        private final Class<?> clazz;
-        private final Object defaultValue;
+        @Getter private final Class<?> clazz;
+        @NotNull private final Supplier<Object> createDefaultObject;
+
+        public Object createDefaultObject()
+        {
+            return createDefaultObject.get();
+        }
     }
 }

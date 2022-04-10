@@ -4,6 +4,7 @@ import com.comphenix.protocol.wrappers.MinecraftKey;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import lombok.val;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +37,7 @@ public interface MessageChannel
     static MessageChannel of(final String prefix, final String key)
     {
         final String legacyName;
-        val upperStartTempKey = Character.toUpperCase(key.charAt(0)) + key.substring(1);
+        final String upperStartTempKey = StringUtils.capitalize(key);
         switch (prefix) {
             case "minecraft":
                 legacyName = "MC|" + upperStartTempKey;
@@ -48,7 +49,7 @@ public interface MessageChannel
                 legacyName = "WDL|" + key.toUpperCase();
                 break;
             default:
-                legacyName = null;
+                legacyName = prefix + ':' + key;
                 break;
         }
         return MessageChannel.of(prefix, key, legacyName);
@@ -57,17 +58,14 @@ public interface MessageChannel
     @NotNull
     static MessageChannel of(final String prefix, final String key, final String legacyName)
     {
-        if (ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion())) {
-            return legacyName == null ? MessageChannel.EMPTY : new LegacyMessageChannel(legacyName);
-        } else {
-            return prefix == null || key == null ? MessageChannel.EMPTY : new KeyMessageChannel(prefix, key);
-        }
+        if (ServerVersion.containsActive(ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS)) return ofLegacy(legacyName);
+        else return prefix == null || key == null ? MessageChannel.EMPTY : new KeyMessageChannel(prefix, key);
     }
 
     @NotNull
     static MessageChannel ofLegacy(final String legacyName)
     {
-        return legacyName != null && ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.getActiveServerVersion()) ? new LegacyMessageChannel(legacyName) : MessageChannel.EMPTY;
+        return legacyName != null && ServerVersion.LEGACY_PLUGIN_MESSAGE_VERSIONS.contains(ServerVersion.ACTIVE) ? new LegacyMessageChannel(legacyName) : MessageChannel.EMPTY;
     }
 
     /**

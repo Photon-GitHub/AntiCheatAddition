@@ -7,15 +7,29 @@ import org.bukkit.util.Vector;
 
 public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
 {
+    private double getCoordinate(int oldMCFieldIndex, int fieldIndex)
+    {
+        return ServerVersion.is18() ?
+               getHandle().getBytes().read(oldMCFieldIndex) / 32D :
+               // Integers are ok, even though wiki.vg says short
+               getHandle().getIntegers().read(fieldIndex) / 4096D;
+    }
+
+    private void setCoordinate(int oldMCFieldIndex, int fieldIndex, double value)
+    {
+        Preconditions.checkArgument(value <= 8, "Tried to move relative " + value + " blocks when teleport is needed.");
+
+        if (ServerVersion.is18()) getHandle().getBytes().write(oldMCFieldIndex, (byte) (value * 32));
+            // Integers are ok, even though wiki.vg says short
+        else getHandle().getIntegers().write(fieldIndex, (int) (value * 4096));
+    }
+
     /**
      * Get the x difference.
      */
     default double getDx()
     {
-        return ServerVersion.is18() ?
-               getHandle().getBytes().read(0) / 32D :
-               // Integers are ok, even though wiki.vg says short
-               getHandle().getIntegers().read(1) / 4096D;
+        return getCoordinate(0, 1);
     }
 
     /**
@@ -23,11 +37,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
      */
     default void setDx(double value)
     {
-        Preconditions.checkArgument(value <= 8, "Tried to move relative x: " + value + " blocks when teleport is needed.");
-
-        if (ServerVersion.is18()) getHandle().getBytes().write(0, (byte) (value * 32));
-            // Integers are ok, even though wiki.vg says short
-        else getHandle().getIntegers().write(1, (int) (value * 4096));
+        setCoordinate(0, 1, value);
     }
 
     /**
@@ -35,10 +45,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
      */
     default double getDy()
     {
-        return ServerVersion.is18() ?
-               getHandle().getBytes().read(1) / 32D :
-               // Integers are ok, even though wiki.vg says short
-               getHandle().getIntegers().read(2) / 4096D;
+        return getCoordinate(1, 2);
     }
 
     /**
@@ -46,11 +53,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
      */
     default void setDy(double value)
     {
-        Preconditions.checkArgument(value <= 8, "Tried to move relative y: " + value + " blocks when teleport is needed.");
-
-        if (ServerVersion.is18()) getHandle().getBytes().write(1, (byte) (value * 32));
-            // Integers are ok, even though wiki.vg says short
-        else getHandle().getIntegers().write(2, (int) (value * 4096));
+        setCoordinate(1, 2, value);
     }
 
     /**
@@ -58,10 +61,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
      */
     default double getDz()
     {
-        return ServerVersion.is18() ?
-               getHandle().getBytes().read(2) / 32D :
-               // Integers are ok, even though wiki.vg says short
-               getHandle().getIntegers().read(3) / 4096D;
+        return getCoordinate(2, 3);
     }
 
     /**
@@ -69,11 +69,7 @@ public interface IWrapperPlayServerRelEntityMove extends IWrapperPlayOnGround
      */
     default void setDz(double value)
     {
-        Preconditions.checkArgument(value <= 8, "Tried to move relative z: " + value + " blocks when teleport is needed.");
-
-        if (ServerVersion.is18()) getHandle().getBytes().write(1, (byte) (value * 32));
-            // Integers are ok, even though wiki.vg says short
-        else getHandle().getIntegers().write(2, (int) (value * 4096));
+        setCoordinate(2, 3, value);
     }
 
     /**

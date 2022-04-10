@@ -23,6 +23,15 @@ public final class SetUtil
     }
 
     /**
+     * Searches for an occurance of any element of searchFor in toBeSearched.
+     */
+    public static <T> boolean containsAny(Set<T> searchFor, Set<T> toBeSearched)
+    {
+        for (T t : searchFor) if (toBeSearched.contains(t)) return true;
+        return false;
+    }
+
+    /**
      * This computes the difference of two {@link Set}s.
      * Compared to {@link com.google.common.collect.Sets#difference(Set, Set)} this actually computes the {@link Set} and does not return a view, therefore guaranteeing that
      * all computations are only performed once.

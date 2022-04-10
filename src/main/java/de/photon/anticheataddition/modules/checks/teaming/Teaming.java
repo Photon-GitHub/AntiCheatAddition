@@ -4,7 +4,8 @@ import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
+import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
 import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.minecraft.world.Region;
@@ -21,9 +22,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Teaming extends ViolationModule implements Listener
+public final class Teaming extends ViolationModule implements Listener
 {
-    public Teaming()
+    public static final Teaming INSTANCE = new Teaming();
+
+    private Teaming()
     {
         super("Teaming");
     }
@@ -36,9 +39,9 @@ public class Teaming extends ViolationModule implements Listener
                 Region region = Region.parseRegion(s);
                 safeZones.add(region);
             } catch (NullPointerException e) {
-                DebugSender.getInstance().sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, is the world correct?", true, true);
+                DebugSender.INSTANCE.sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, is the world correct?", true, true);
             } catch (ArrayIndexOutOfBoundsException e) {
-                DebugSender.getInstance().sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, are all coordinates present?", true, true);
+                DebugSender.INSTANCE.sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, are all coordinates present?", true, true);
             }
         }
         return Set.copyOf(safeZones);
@@ -50,7 +53,7 @@ public class Teaming extends ViolationModule implements Listener
         for (String key : loadStringList(".enabled_worlds")) {
             World world = Bukkit.getWorld(key);
             if (world == null) {
-                DebugSender.getInstance().sendDebug("Unable to load world \"" + key + "\" in teaming check.");
+                DebugSender.INSTANCE.sendDebug("Unable to load world \"" + key + "\" in teaming check.");
                 continue;
             }
             worlds.add(world);
@@ -65,6 +68,8 @@ public class Teaming extends ViolationModule implements Listener
         val enabledWorlds = loadEnabledWorlds();
 
         final double proximityRange = loadDouble(".proximity_range", 4.5);
+        final double proximityRangeSquared = proximityRange * proximityRange;
+
         final int noPvpTime = loadInt(".no_pvp_time", 6000);
         final long period = (loadLong(".delay", 5000) * 20L) / 1000L;
 
@@ -74,43 +79,36 @@ public class Teaming extends ViolationModule implements Listener
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 AntiCheatAddition.getInstance(),
                 () -> {
-                    val players = new QuadTreeSet<Player>();
+                    val quadTree = new QuadTreeSet<Player>();
 
                     for (World world : enabledWorlds) {
-                        // No need to clear playersOfWorld here, that is automatically done below.
-                        // Add the users of the world.
-                        for (Player player : world.getPlayers()) {
-                            val user = User.getUser(player);
+                        world.getPlayers().stream()
+                             .map(User::getUser)
+                             .filter(user -> !User.isUserInvalid(user, this))
+                             // Correct game modes.
+                             .filter(User::inAdventureOrSurvivalMode)
+                             // Not engaged in pvp.
+                             .filter(user -> user.getTimestampMap().at(TimeKey.TEAMING_COMBAT_TAG).notRecentlyUpdated(noPvpTime))
+                             // Get the player's location.
+                             .map(user -> Pair.of(user, user.getPlayer().getLocation()))
+                             // Not in a bypassed region.
+                             .filter(pair -> safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(pair.getSecond())))
+                             // Add the player to the QuadTree.
+                             .forEach(pair -> quadTree.add(pair.getSecond().getX(), pair.getSecond().getZ(), pair.getFirst().getPlayer()));
 
-                            // Only add users if they meet the preconditions
-                            // User has to be online and not bypassed
-                            val location = player.getLocation();
-                            if (!User.isUserInvalid(user, this) &&
-                                // Correct gamemodes
-                                user.inAdventureOrSurvivalMode() &&
-                                // Not engaged in pvp
-                                user.getTimestampMap().at(TimestampKey.TEAMING_COMBAT_TAG).notRecentlyUpdated(noPvpTime) &&
-                                // Not in a bypassed region
-                                safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(location)))
-                            {
-                                players.add(location.getX(), location.getZ(), player);
-                            }
-                        }
-
-                        while (!players.isEmpty()) {
+                        while (!quadTree.isEmpty()) {
                             // Use getAny() so the node itself is contained in the team below.
-                            val firstNode = players.getAny();
-                            val proximityRangeSquared = proximityRange * proximityRange;
-                            val team = players.queryCircle(firstNode, proximityRange).stream()
-                                              // Check for y-distance.
-                                              .filter(node -> node.getElement().getLocation().distanceSquared(firstNode.getElement().getLocation()) <= proximityRangeSquared)
-                                              .peek(players::remove)
-                                              .map(QuadTreeSet.Node::getElement)
-                                              .collect(Collectors.toUnmodifiableSet());
+                            val firstNode = quadTree.getAny();
+                            val team = quadTree.queryCircle(firstNode, proximityRange).stream()
+                                               // Check for y-distance.
+                                               .filter(node -> node.getElement().getLocation().distanceSquared(firstNode.getElement().getLocation()) <= proximityRangeSquared)
+                                               .peek(quadTree::remove)
+                                               .map(QuadTreeSet.Node::getElement)
+                                               .collect(Collectors.toUnmodifiableSet());
 
                             // Team is too big
-                            if (team.size() > allowedSize) {
-                                final int vl = team.size() - allowedSize;
+                            final int vl = team.size() - allowedSize;
+                            if (vl > 0) {
                                 for (Player player : team) this.getManagement().flag(Flag.of(player).setAddedVl(vl));
                             }
                         }

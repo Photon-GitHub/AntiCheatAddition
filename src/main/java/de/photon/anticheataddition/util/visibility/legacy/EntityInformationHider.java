@@ -1,20 +1,20 @@
-package de.photon.anticheataddition.util.visibility;
+package de.photon.anticheataddition.util.visibility.legacy;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
-import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -36,21 +36,26 @@ abstract class EntityInformationHider implements Listener
                                              .hashSetValues(AntiCheatAddition.WORLD_EXPECTED_PLAYERS)
                                              .build();
 
-        informationPacketListener = PacketAdapterBuilder.of(affectedPackets).onSending(event -> {
-            if (event.isPlayerTemporary() || event.isCancelled()) return;
-            final int entityId = event.getPacket().getIntegers().read(0);
+        informationPacketListener = new PacketAdapter(AntiCheatAddition.getInstance(), affectedPackets)
+        {
+            @Override
+            public void onPacketSending(PacketEvent event)
+            {
+                if (event.isPlayerTemporary() || event.isCancelled()) return;
+                final int entityId = event.getPacket().getIntegers().read(0);
 
-            // Get all hidden entities
-            final boolean hidden;
-            synchronized (hiddenFromPlayerMap) {
-                // The test for the entityId must happen here in the synchronized block as get only returns a view that might change async.
-                hidden = hiddenFromPlayerMap.get(event.getPlayer()).stream()
-                                            .mapToInt(Entity::getEntityId)
-                                            .anyMatch(i -> i == entityId);
+                // Get all hidden entities
+                final boolean hidden;
+                synchronized (hiddenFromPlayerMap) {
+                    // The test for the entityId must happen here in the synchronized block as get only returns a view that might change async.
+                    hidden = hiddenFromPlayerMap.get(event.getPlayer()).stream()
+                                                .mapToInt(Entity::getEntityId)
+                                                .anyMatch(i -> i == entityId);
+                }
+
+                if (hidden) event.setCancelled(true);
             }
-
-            if (hidden) event.setCancelled(true);
-        }).build();
+        };
     }
 
     public void clear()
@@ -63,19 +68,10 @@ abstract class EntityInformationHider implements Listener
     public void registerListeners()
     {
         // Only start if the ServerVersion is supported
-        if (ServerVersion.containsActiveServerVersion(this.getSupportedVersions())) {
+        if (ServerVersion.containsActive(this.getSupportedVersions())) {
             // Register events and packet listener
             AntiCheatAddition.getInstance().registerListener(this);
             ProtocolLibrary.getProtocolManager().addPacketListener(this.informationPacketListener);
-        }
-    }
-
-    public void unregisterListeners()
-    {
-        // Only stop if the ServerVersion is supported
-        if (ServerVersion.containsActiveServerVersion(this.getSupportedVersions())) {
-            HandlerList.unregisterAll(this);
-            ProtocolLibrary.getProtocolManager().removePacketListener(this.informationPacketListener);
         }
     }
 
@@ -111,9 +107,11 @@ abstract class EntityInformationHider implements Listener
         switch (event.getNewGameMode()) {
             case CREATIVE:
             case SPECTATOR:
-                removeEntity(event.getPlayer());
-                Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () ->
-                        ProtocolLibrary.getProtocolManager().updateEntity(event.getPlayer(), event.getPlayer().getWorld().getPlayers()));
+                // Run with delay so we avoid any updates that are underway async.
+                Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), () -> {
+                    removeEntity(event.getPlayer());
+                    ProtocolLibrary.getProtocolManager().updateEntity(event.getPlayer(), event.getPlayer().getWorld().getPlayers());
+                }, 20L);
                 break;
             default: break;
         }

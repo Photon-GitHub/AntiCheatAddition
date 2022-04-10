@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.util.visibility;
 
+import de.photon.anticheataddition.util.visibility.legacy.LegacyEntityVisibility;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -14,8 +15,4 @@ public interface EntityVisibility
      * Sets fully and equip hidden entities for a {@link Player}.
      */
     void setHidden(Player observer, Set<Entity> fullyHidden, Set<Entity> hideEquipment);
-
-    void enable();
-
-    void disable();
 }

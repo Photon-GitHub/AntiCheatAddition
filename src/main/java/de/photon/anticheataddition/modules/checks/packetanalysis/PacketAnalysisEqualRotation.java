@@ -7,9 +7,9 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
-import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
+import de.photon.anticheataddition.util.datastructure.SetUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -19,9 +19,11 @@ import org.bukkit.block.BlockFace;
 
 import java.util.concurrent.TimeUnit;
 
-public class PacketAnalysisEqualRotation extends ViolationModule
+public final class PacketAnalysisEqualRotation extends ViolationModule
 {
-    public PacketAnalysisEqualRotation()
+    public static final PacketAnalysisEqualRotation INSTANCE = new PacketAnalysisEqualRotation();
+
+    private PacketAnalysisEqualRotation()
     {
         super("PacketAnalysis.parts.EqualRotation");
     }
@@ -30,17 +32,14 @@ public class PacketAnalysisEqualRotation extends ViolationModule
     protected ModuleLoader createModuleLoader()
     {
         val packetAdapter = PacketAdapterBuilder
-                .of(PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK)
+                .of(this, PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK)
                 .priority(ListenerPriority.LOW)
-                .onReceiving(event -> {
-                    val user = User.safeGetUserFromPacketEvent(event);
-                    if (User.isUserInvalid(user, this)) return;
-
+                .onReceiving((event, user) -> {
                     // Get the packet.
                     final IWrapperPlayClientLook lookWrapper = event::getPacket;
 
-                    val currentYaw = lookWrapper.getYaw();
-                    val currentPitch = lookWrapper.getPitch();
+                    final float currentYaw = lookWrapper.getYaw();
+                    final float currentPitch = lookWrapper.getPitch();
 
                     // Boat false positive (usually worse cheats in vehicles as well)
                     if (!user.getPlayer().isInsideVehicle() &&
@@ -51,18 +50,19 @@ public class PacketAnalysisEqualRotation extends ViolationModule
                         currentYaw == user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_YAW) &&
                         currentPitch == user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_PITCH) &&
                         // 1.17 client false positive when throwing exp bottles.
-                        user.getTimestampMap().at(TimestampKey.LAST_EXPERIENCE_BOTTLE_THROWN).notRecentlyUpdated(5000) &&
+                        user.getTimestampMap().at(TimeKey.EXPERIENCE_BOTTLE_THROWN).notRecentlyUpdated(5000) &&
                         // LabyMod fp when standing still / hit in corner fp
-                        user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 100) &&
+                        user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 100) &&
                         // 1.17 false positives
-                        !(user.getTimestampMap().at(TimestampKey.LAST_HOTBAR_SWITCH).recentlyUpdated(3000) && user.hasSneakedRecently(3000)) &&
+                        !(user.getTimestampMap().at(TimeKey.HOTBAR_SWITCH).recentlyUpdated(3000) && user.hasSneakedRecently(3000)) &&
+                        !(user.getTimestampMap().at(TimeKey.RIGHT_CLICK_ITEM_EVENT).recentlyUpdated(400)) &&
                         PacketAdapterBuilder.checkSync(10, TimeUnit.SECONDS,
                                                        // False positive when jumping from great heights into a pool with slime blocks / beds on the bottom.
                                                        () -> !(user.isInLiquids() && MaterialUtil.BOUNCE_MATERIALS.contains(user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) &&
                                                              // Fixes false positives on versions 1.9+ because of changed hitboxes
                                                              !(ServerVersion.is18() &&
                                                                ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC18 &&
-                                                               MaterialUtil.containsMaterials(user.getHitbox().getPartiallyIncludedMaterials(user.getPlayer().getLocation()), MaterialUtil.CHANGED_HITBOX_MATERIALS))))
+                                                               SetUtil.containsAny(user.getHitboxLocation().getPartiallyIncludedMaterials(), MaterialUtil.CHANGED_HITBOX_MATERIALS))))
                     {
                         // Cancelled packets may cause problems.
                         if (user.getDataMap().getBoolean(DataKey.Bool.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED)) {

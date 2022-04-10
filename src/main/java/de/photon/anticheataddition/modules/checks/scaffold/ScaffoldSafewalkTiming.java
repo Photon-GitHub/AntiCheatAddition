@@ -3,7 +3,7 @@ package de.photon.anticheataddition.modules.checks.scaffold;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.messaging.DebugSender;
 import lombok.Getter;
 
@@ -12,12 +12,12 @@ import java.util.function.ToIntFunction;
 /**
  * This detects safe-walk behaviour (stopping when not sneaking)
  */
-class ScaffoldSafewalkTiming extends Module
+final class ScaffoldSafewalkTiming extends Module
 {
     @Getter
     private ToIntFunction<User> applyingConsumer = user -> 0;
 
-    public ScaffoldSafewalkTiming(String scaffoldConfigString)
+    ScaffoldSafewalkTiming(String scaffoldConfigString)
     {
         super(scaffoldConfigString + ".parts.Safewalk.Timing");
     }
@@ -28,13 +28,13 @@ class ScaffoldSafewalkTiming extends Module
         applyingConsumer = user -> {
             if (user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_SAFEWALK_TIMING_FAILS).conditionallyIncDec(
                     // Moved recently
-                    user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 355) &&
+                    user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 355) &&
                     // Suddenly stopped
-                    !user.hasMovedRecently(TimestampKey.LAST_XZ_MOVEMENT, 175) &&
+                    !user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 175) &&
                     // Has not sneaked recently
                     !(user.hasSneakedRecently(175) && user.getDataMap().getLong(DataKey.Long.LAST_SNEAK_DURATION) > 148)))
             {
-                DebugSender.getInstance().sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Timing)");
+                DebugSender.INSTANCE.sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Timing)");
                 return 20;
             }
             return 0;

@@ -7,22 +7,24 @@ import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
+import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class InventoryAverageHeuristic extends ViolationModule implements Listener
+public final class InventoryAverageHeuristic extends ViolationModule implements Listener
 {
+    public static final InventoryAverageHeuristic INSTANCE = new InventoryAverageHeuristic();
+
     private final int maxPing = loadInt(".max_ping", 400);
     private final double minTps = loadDouble(".min_tps", 15.5);
 
-    public InventoryAverageHeuristic()
+    private InventoryAverageHeuristic()
     {
         super("Inventory.parts.AverageHeuristic");
     }
@@ -40,9 +42,9 @@ public class InventoryAverageHeuristic extends ViolationModule implements Listen
             // Minimum TPS before the check is activated as of a huge amount of fps
             TPSProvider.INSTANCE.atLeastTPS(minTps) &&
             // Minimum ping
-            PingProvider.INSTANCE.maxPingHandling(user.getPlayer(), maxPing))
+            PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing))
         {
-            if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) user.getDataMap().getCounter(DataKey.Count.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS).increment();
+            if (event.getCurrentItem() == null || MaterialUtil.isAir(event.getCurrentItem().getType())) user.getDataMap().getCounter(DataKey.Count.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS).increment();
                 // Shift - Double - Click shortcut will generate a lot of clicks.
             else if (user.getDataMap().getObject(DataKey.Obj.LAST_MATERIAL_CLICKED) != event.getCurrentItem().getType())
                 user.getInventoryBatch().addDataPoint(InventoryBatch.InventoryClick.fromClickEvent(event));

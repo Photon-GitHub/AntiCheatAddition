@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InventoryUtil
@@ -54,12 +55,12 @@ public final class InventoryUtil
      *
      * @return the distance between the two slots or -1 if locating the slots failed.
      */
-    public static double distanceBetweenSlots(final int rawSlotOne, final int rawSlotTwo, @NotNull final InventoryType inventoryType)
+    public static OptionalDouble distanceBetweenSlots(final int rawSlotOne, final int rawSlotTwo, @NotNull final InventoryType inventoryType)
     {
         val first = InventoryUtil.locateSlot(rawSlotOne, inventoryType);
         val second = InventoryUtil.locateSlot(rawSlotTwo, inventoryType);
 
-        return first.isPresent() && second.isPresent() ? first.get().distance(second.get()) : -1;
+        return first.isPresent() && second.isPresent() ? OptionalDouble.of(first.get().distance(second.get())) : OptionalDouble.empty();
     }
 
     /**

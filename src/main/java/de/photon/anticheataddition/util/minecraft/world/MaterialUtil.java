@@ -9,10 +9,8 @@ import lombok.val;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.Tag;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -42,12 +40,16 @@ public final class MaterialUtil
                                                                                                               Material.CHEST,
                                                                                                               Material.ANVIL) : Set.of();
 
+    private static final Set<Material> AIR_MATERIALS = ServerVersion.containsActive(ServerVersion.MC116.getSupVersionsFrom()) ?
+                                                       Sets.immutableEnumSet(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR) :
+                                                       Sets.immutableEnumSet(Material.AIR);
+
     static {
         val autoStepMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
         val bounceMaterials = EnumSet.of(Material.SLIME_BLOCK);
         val freeSpaceContainers = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
 
-        switch (ServerVersion.getActiveServerVersion()) {
+        switch (ServerVersion.ACTIVE) {
             case MC18:
             case MC112:
                 autoStepMaterials.addAll(getMaterialsEndingWith("_STAIRS", "_SLABS"));
@@ -106,20 +108,8 @@ public final class MaterialUtil
                material != SPAWNER;
     }
 
-    /**
-     * Checks if a {@link Collection} of {@link Material}s contains any of certain {@link Material}s.
-     */
-    public static boolean containsMaterials(@NotNull final Collection<Material> searchFor, @NotNull final Collection<Material> toBeSearched)
+    public static boolean isAir(Material material)
     {
-        for (Material material : searchFor) if (toBeSearched.contains(material)) return true;
-        return false;
-    }
-
-    /**
-     * Checks if a {@link Collection} of {@link Material}s contains liquids.
-     */
-    public static boolean containsLiquids(@NotNull final Collection<Material> toBeSearched)
-    {
-        return containsMaterials(LIQUIDS, toBeSearched);
+        return AIR_MATERIALS.contains(material);
     }
 }

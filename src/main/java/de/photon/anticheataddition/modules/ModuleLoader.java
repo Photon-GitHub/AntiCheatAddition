@@ -10,7 +10,7 @@ import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.batch.BatchProcessor;
 import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
-import lombok.Value;
+import lombok.AllArgsConstructor;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -18,29 +18,28 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Value
+@AllArgsConstructor
 public class ModuleLoader
 {
-    Module module;
+    private final Module module;
 
     // Startup
-    boolean bungeecordForbidden;
-    Set<String> pluginDependencies;
-    Set<String> pluginIncompatibilities;
-    Set<ServerVersion> allowedServerVersions;
+    private final boolean bungeecordForbidden;
+    private final Set<String> pluginDependencies;
+    private final Set<String> pluginIncompatibilities;
+    private final Set<ServerVersion> allowedServerVersions;
 
     // Loading
-    BatchProcessor<?> batchProcessor;
-    Set<MessageChannel> incoming;
-    Set<MessageChannel> outgoing;
+    private final BatchProcessor<?> batchProcessor;
+    private final Set<MessageChannel> incoming;
+    private final Set<MessageChannel> outgoing;
 
-    Set<Listener> listeners;
-    Set<PacketListener> packetListeners;
+    private final Set<Listener> listeners;
+    private final Set<PacketListener> packetListeners;
 
     public static Builder builder(Module module)
     {
@@ -55,29 +54,29 @@ public class ModuleLoader
     public boolean load()
     {
         if (this.bungeecordForbidden && AntiCheatAddition.getInstance().isBungeecord()) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " is not compatible with bungeecord.", true, false);
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " is not compatible with bungeecord.", true, false);
             return false;
         }
 
         val missingDependencies = pluginDependencies.stream().filter(dependency -> !Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)).sorted().collect(Collectors.joining(", "));
         if (!missingDependencies.isEmpty()) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " has been not been enabled as of missing dependencies. Missing: " + missingDependencies, true, false);
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " has been not been enabled as of missing dependencies. Missing: " + missingDependencies, true, false);
             return false;
         }
 
         val loadedIncompatibilities = pluginIncompatibilities.stream().filter(incompatibility -> Bukkit.getServer().getPluginManager().isPluginEnabled(incompatibility)).sorted().collect(Collectors.joining(", "));
         if (!loadedIncompatibilities.isEmpty()) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + loadedIncompatibilities, true, false);
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + loadedIncompatibilities, true, false);
             return false;
         }
 
-        if (!ServerVersion.containsActiveServerVersion(allowedServerVersions)) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " is not compatible with your server version.", true, false);
+        if (!ServerVersion.containsActive(allowedServerVersions)) {
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " is not compatible with your server version.", true, false);
             return false;
         }
 
-        if (!AntiCheatAddition.getInstance().getConfig().getBoolean(this.module.getConfigString() + ".enabled")) {
-            DebugSender.getInstance().sendDebug(module.getConfigString() + " has been disabled in the config.", true, false);
+        if (!this.module.loadBoolean(".enabled", false)) {
+            DebugSender.INSTANCE.sendDebug(module.getConfigString() + " has been disabled in the config.", true, false);
             return false;
         }
 
@@ -90,7 +89,7 @@ public class ModuleLoader
         for (MessageChannel messageChannel : incoming) messageChannel.registerIncomingChannel((PluginMessageListener) module);
         for (MessageChannel messageChannel : outgoing) messageChannel.registerOutgoingChannel();
 
-        DebugSender.getInstance().sendDebug(module.getConfigString() + " has been enabled.", true, false);
+        DebugSender.INSTANCE.sendDebug(module.getConfigString() + " has been enabled.", true, false);
         return true;
     }
 
@@ -119,7 +118,7 @@ public class ModuleLoader
         private boolean bungeecordForbidden = false;
         private BatchProcessor<?> batchProcessor = null;
 
-        public Builder(Module module) {this.module = module;}
+        private Builder(Module module) {this.module = module;}
 
         public Builder disallowBungeeCord()
         {
@@ -157,28 +156,9 @@ public class ModuleLoader
             return this;
         }
 
-        public Builder addIncomingMessageChannels(Collection<MessageChannel> channels)
-        {
-            this.incoming.addAll(channels);
-            return this;
-        }
-
         public Builder addOutgoingMessageChannel(MessageChannel channel)
         {
             this.outgoing.add(channel);
-            return this;
-        }
-
-        public Builder addOutgoingMessageChannels(Collection<MessageChannel> channels)
-        {
-            this.outgoing.addAll(channels);
-            return this;
-        }
-
-        public Builder setAllowedServerVersions(ServerVersion... serverVersions)
-        {
-            this.allowedServerVersions.clear();
-            Collections.addAll(this.allowedServerVersions, serverVersions);
             return this;
         }
 
@@ -195,11 +175,9 @@ public class ModuleLoader
             return this;
         }
 
-
         public ModuleLoader build()
         {
             val incomingChannels = incoming.build();
-            val outgoingChannels = outgoing.build();
             Preconditions.checkArgument((module instanceof PluginMessageListener) == !(incomingChannels.isEmpty()), "Incoming channels have to be registered in a PluginMessageListener Module and cannot be registered otherwise.");
 
             if (module instanceof Listener) this.listeners.add((Listener) module);
@@ -211,7 +189,7 @@ public class ModuleLoader
                                     Sets.immutableEnumSet(allowedServerVersions),
                                     batchProcessor,
                                     incomingChannels,
-                                    outgoingChannels,
+                                    outgoing.build(),
                                     listeners.build(),
                                     packetListeners.build());
         }

@@ -8,11 +8,10 @@ import de.photon.anticheataddition.modules.ModuleManager;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
 import lombok.EqualsAndHashCode;
-import lombok.Value;
 import lombok.val;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.util.Objects;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
@@ -34,9 +33,9 @@ public class InfoCommand extends InternalCommand
         if (player == null) return;
 
         val moduleVls = ModuleManager.getViolationModuleMap().values().stream()
-                                     // The of() method will return null when the vl is 0.
-                                     .map(vlm -> ModuleVl.of(vlm, vlm.getManagement().getVL(player.getUniqueId())))
-                                     .filter(Objects::nonNull)
+                                     .map(vlm -> new ModuleVl(vlm, player))
+                                     // Only the modules with above 0 vl are important.
+                                     .filter(mvl -> mvl.vl > 0)
                                      .sorted()
                                      .collect(Collectors.toList());
 
@@ -46,16 +45,16 @@ public class InfoCommand extends InternalCommand
         else moduleVls.forEach(moduleVl -> ChatMessage.sendMessage(sender, moduleVl.message));
     }
 
-    @Value
+    @EqualsAndHashCode
     private static class ModuleVl implements Comparable<ModuleVl>
     {
-        String message;
-        @EqualsAndHashCode.Exclude int vl;
+        @EqualsAndHashCode.Exclude private final int vl;
+        private final String message;
 
-        public static ModuleVl of(ViolationModule vm, int vl)
+        private ModuleVl(ViolationModule vm, Player player)
         {
-            // Return null when the vl is 0.
-            return vl > 0 ? new ModuleVl(vm.getConfigString() + " -> vl " + vl, vl) : null;
+            this.vl = vm.getManagement().getVL(player.getUniqueId());
+            this.message = vm.getConfigString() + " -> vl " + vl;
         }
 
         @Override

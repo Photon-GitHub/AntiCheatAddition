@@ -5,7 +5,7 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -18,8 +18,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class AutoPotion extends ViolationModule implements Listener
+public final class AutoPotion extends ViolationModule implements Listener
 {
+    public static final AutoPotion INSTANCE = new AutoPotion();
+
     private final int cancelVl = loadInt(".cancel_vl", 2);
     private final int timeout = loadInt(".timeout", 1000);
     private final int lookRestoredTime = loadInt(".look_restored_time", 150);
@@ -27,7 +29,7 @@ public class AutoPotion extends ViolationModule implements Listener
     private final double initialPitchDifference = loadDouble(".initial_pitch_difference", 40);
     private final double lookDownAngle = loadDouble(".look_down_angle", 80);
 
-    public AutoPotion()
+    private AutoPotion()
     {
         super("AutoPotion");
     }
@@ -43,14 +45,14 @@ public class AutoPotion extends ViolationModule implements Listener
             if (MathUtil.absDiff(event.getTo().getPitch(), user.getDataMap().getFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_PITCH)) <= angleOffset &&
                 MathUtil.absDiff(event.getTo().getYaw(), user.getDataMap().getFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_YAW)) <= angleOffset &&
                 // Happened in a short time frame
-                user.getTimestampMap().at(TimestampKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
+                user.getTimestampMap().at(TimeKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
             {
                 // Flag
                 this.getManagement().flag(Flag.of(user)
                                               .setAddedVl(50)
                                               // Enable timeout when cancel_vl is crossed
-                                              .setCancelAction(cancelVl, () -> user.getTimestampMap().at(TimestampKey.AUTOPOTION_TIMEOUT).update())
-                                              .setEventNotCancelledAction(() -> user.getTimestampMap().at(TimestampKey.AUTOPOTION_DETECTION).setToZero()));
+                                              .setCancelAction(cancelVl, () -> user.getTimestampMap().at(TimeKey.AUTOPOTION_TIMEOUT).update())
+                                              .setEventNotCancelledAction(() -> user.getTimestampMap().at(TimeKey.AUTOPOTION_DETECTION).setToZero()));
             }
         } else {
             // The initial_pitch_difference is reached
@@ -64,7 +66,7 @@ public class AutoPotion extends ViolationModule implements Listener
                 user.getDataMap().setFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_YAW, event.getFrom().getYaw());
                 user.getDataMap().setBoolean(DataKey.Bool.AUTOPOTION_ALREADY_THROWN, false);
 
-                user.getTimestampMap().at(TimestampKey.AUTOPOTION_DETECTION).update();
+                user.getTimestampMap().at(TimeKey.AUTOPOTION_DETECTION).update();
             }
         }
     }
@@ -76,7 +78,7 @@ public class AutoPotion extends ViolationModule implements Listener
         if (User.isUserInvalid(user, this)) return;
 
         // Timeout
-        if (user.getTimestampMap().at(TimestampKey.AUTOPOTION_TIMEOUT).recentlyUpdated(timeout)) {
+        if (user.getTimestampMap().at(TimeKey.AUTOPOTION_TIMEOUT).recentlyUpdated(timeout)) {
             event.setCancelled(true);
             return;
         }
@@ -87,11 +89,11 @@ public class AutoPotion extends ViolationModule implements Listener
             event.getItem() != null &&
             event.getMaterial() == Material.SPLASH_POTION &&
             // The last sudden movement was not long ago
-            user.getTimestampMap().at(TimestampKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
+            user.getTimestampMap().at(TimeKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
         {
             user.getDataMap().setBoolean(DataKey.Bool.AUTOPOTION_ALREADY_THROWN, true);
             // Here the timestamp is used to contain the data of the last splash
-            user.getTimestampMap().at(TimestampKey.AUTOPOTION_DETECTION).update();
+            user.getTimestampMap().at(TimeKey.AUTOPOTION_DETECTION).update();
         }
     }
 

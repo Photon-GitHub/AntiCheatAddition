@@ -139,6 +139,8 @@ AutoEat:
 # This check does only work on minecraft versions 1.11 and beyond due to changes in the spigot API compared to older
 # versions and auto-disables itself accordingly.
 AutoFish:
+  # Do you want to enable the AutoFish check?
+  enabled: true
   # Violation before AntiCheatAddition starts to cancel the fishing.
   # Please think of potential luck, because of this I do not recommend setting this to a value smaller than 7.
   # Set this to 0 to never cancel fishing.

@@ -12,11 +12,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class InventoryHit extends ViolationModule implements Listener
+public final class InventoryHit extends ViolationModule implements Listener
 {
+    public static final InventoryHit INSTANCE = new InventoryHit();
+
     private final int cancelVl = loadInt(".cancel_vl", 60);
 
-    public InventoryHit()
+    private InventoryHit()
     {
         super("Inventory.parts.Hit");
     }

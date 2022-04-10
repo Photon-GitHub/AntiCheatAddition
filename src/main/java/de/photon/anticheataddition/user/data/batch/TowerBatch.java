@@ -38,9 +38,7 @@ public class TowerBatch extends Batch<TowerBatch.TowerBlockPlace>
 
         public TowerBlockPlace(Location locationOfBlock, Player player)
         {
-            this.locationOfBlock = locationOfBlock;
-            this.jumpBoost = InternalPotion.JUMP.getPotionEffect(player);
-            this.levitation = InternalPotion.LEVITATION.getPotionEffect(player);
+            this(locationOfBlock, InternalPotion.JUMP.getPotionEffect(player), InternalPotion.LEVITATION.getPotionEffect(player));
         }
 
         public long timeOffset(@NotNull TowerBlockPlace other)

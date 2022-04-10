@@ -2,7 +2,7 @@ package de.photon.anticheataddition.modules.checks.tower;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.TowerBatch;
 import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
@@ -18,7 +18,7 @@ import org.bukkit.util.Vector;
 import java.util.List;
 import java.util.Set;
 
-public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlockPlace>
+public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlockPlace>
 {
     private static final Polynomial VL_CALCULATOR = new Polynomial(0.37125, 1);
 
@@ -67,7 +67,7 @@ public class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.TowerBlo
             this.getModule().getManagement().flag(Flag.of(user)
                                                       .setAddedVl(vlToAdd)
                                                       .setCancelAction(cancelVl, () -> {
-                                                          user.getTimestampMap().at(TimestampKey.TOWER_TIMEOUT).update();
+                                                          user.getTimestampMap().at(TimeKey.TOWER_TIMEOUT).update();
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
                                                       .setDebug("Tower-Debug | Player: " + user.getPlayer().getName() + " expected time: " + calcAvg + " | real: " + actAvg));

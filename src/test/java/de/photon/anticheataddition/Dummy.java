@@ -1,10 +1,12 @@
 package de.photon.anticheataddition;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.DataMap;
-import de.photon.anticheataddition.user.data.TimestampMap;
+import lombok.experimental.UtilityClass;
 import lombok.val;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.mockito.Mockito;
@@ -12,11 +14,32 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.util.UUID;
 
-public class Dummy
+@UtilityClass
+public final class Dummy
 {
+    // Mock the environment.
+    static {
+        val bukkitMock = Mockito.mockStatic(Bukkit.class);
+        bukkitMock.when(Bukkit::getVersion).thenReturn("This server is running CraftBukkit version 3467-Spigot-ffceeae-e6cc7c7 (MC: 1.18.2) (Implementing API version 1.18.2-R0.1-SNAPSHOT)");
+
+        val protocolManager = Mockito.mock(ProtocolManager.class);
+        val protocolLibMock = Mockito.mockStatic(ProtocolLibrary.class);
+        protocolLibMock.when(ProtocolLibrary::getProtocolManager).thenReturn(protocolManager);
+    }
+
+    public static void mockEnvironment()
+    {
+        // Do nothing, this is already done via the static constructor.
+    }
+
     public static AntiCheatAddition mockAntiCheatAddition()
     {
-        val config = YamlConfiguration.loadConfiguration(new File("src/main/resources/config.yml"));
+        return mockAntiCheatAddition("src/main/resources/config.yml");
+    }
+
+    public static AntiCheatAddition mockAntiCheatAddition(String configPath)
+    {
+        val config = YamlConfiguration.loadConfiguration(new File(configPath));
         AntiCheatAddition mockAntiCheatAddition = Mockito.mock(AntiCheatAddition.class);
         Mockito.when(mockAntiCheatAddition.getConfig()).thenReturn(config);
         AntiCheatAddition.setInstance(mockAntiCheatAddition);
@@ -32,17 +55,13 @@ public class Dummy
         return player;
     }
 
+    /**
+     * Mock User.
+     * Make sure to call mockEnvironment beforehand.
+     */
     public static User mockUser()
     {
-        User user = Mockito.mock(User.class);
-        Player player = mockPlayer();
-        DataMap dataMap = new DataMap();
-        TimestampMap timestampMap = new TimestampMap();
-
-        Mockito.when(user.getPlayer()).thenReturn(player);
-        Mockito.when(user.getDataMap()).thenReturn(dataMap);
-        Mockito.when(user.getTimestampMap()).thenReturn(timestampMap);
-        return user;
+        return User.createFromPlayer(mockPlayer());
     }
 
     public static ViolationModule mockViolationModule(String configString)

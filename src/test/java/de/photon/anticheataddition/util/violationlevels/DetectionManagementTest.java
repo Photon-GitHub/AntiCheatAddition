@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.violationlevels;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.Dummy;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
@@ -8,6 +7,7 @@ import lombok.val;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -16,9 +16,8 @@ import java.util.stream.IntStream;
 class DetectionManagementTest
 {
     // Do not remove this unused variable, it is needed for initialization of mocking.
-    private static final AntiCheatAddition mock = Dummy.mockAntiCheatAddition();
-    private static final User dummy = Dummy.mockUser();
     private static final ViolationModule dummyVlModule = Dummy.mockViolationModule("Sentinel.LabyMod");
+    private static User dummy;
 
     private static DetectionManagement getDetectionManagement()
     {
@@ -27,6 +26,13 @@ class DetectionManagementTest
             // Disable punishment to avoid bugs.
             protected void punishPlayer(@NotNull Player player, int fromVl, int toVl) {}
         };
+    }
+
+    @BeforeAll
+    static void setup()
+    {
+        Dummy.mockAntiCheatAddition();
+        dummy = Dummy.mockUser();
     }
 
     @Test

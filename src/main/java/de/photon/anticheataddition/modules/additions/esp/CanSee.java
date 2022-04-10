@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.mathematics.ResetLocation;
 import de.photon.anticheataddition.util.mathematics.ResetVector;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
@@ -21,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public interface CanSee
 {
-    CanSee INSTANCE = AntiCheatAddition.getInstance().getConfig().getBoolean("Esp.calculate_third_person_modes", false) ? new ThirdPersonCameraSupplier() : new SingleCameraSupplier();
+    CanSee INSTANCE = Esp.INSTANCE.loadBoolean(".calculate_third_person_modes", false) ? new ThirdPersonCameraSupplier() : new SingleCameraSupplier();
 
     // This cache reduces the required getBlock() calls.
     LoadingCache<Location, Boolean> BLOCK_CACHE = CacheBuilder.newBuilder()

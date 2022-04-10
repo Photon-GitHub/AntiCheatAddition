@@ -18,12 +18,12 @@ public interface IWrapperPlayEquipment extends IWrapperPlayEntity
 
     static IWrapperPlayEquipment of()
     {
-        return ServerVersion.getActiveServerVersion().compareTo(ServerVersion.MC116) < 0 ? new LegacyServerEquipmentWrapper() : new ModernServerEquipmentWrapper();
+        return ServerVersion.ACTIVE.compareTo(ServerVersion.MC116) < 0 ? new LegacyServerEquipmentWrapper() : new ModernServerEquipmentWrapper();
     }
 
     static IWrapperPlayEquipment of(final PacketContainer packet)
     {
-        return ServerVersion.getActiveServerVersion().compareTo(ServerVersion.MC116) < 0 ? new LegacyServerEquipmentWrapper(packet) : new ModernServerEquipmentWrapper(packet);
+        return ServerVersion.ACTIVE.compareTo(ServerVersion.MC116) < 0 ? new LegacyServerEquipmentWrapper(packet) : new ModernServerEquipmentWrapper(packet);
     }
 
     /**

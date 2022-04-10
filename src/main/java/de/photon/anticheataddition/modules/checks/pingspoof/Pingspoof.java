@@ -9,10 +9,9 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerTransaction;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
-import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -25,8 +24,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
 
-public class Pingspoof extends ViolationModule implements Listener
+public final class Pingspoof extends ViolationModule implements Listener
 {
+    public static final Pingspoof INSTANCE = new Pingspoof();
+
     private static final Polynomial VL_CALCULATOR_BELOW_500 = new Polynomial(-1.78571E-5, 0.0723572, 1.214286);
     private static final Polynomial VL_CALCULATOR_ABOVE_500 = new Polynomial(1.372434E-10, -2.53498E-6, 0.0160475, 25.7896);
 
@@ -34,7 +35,7 @@ public class Pingspoof extends ViolationModule implements Listener
 
     private BukkitTask pingSpoofTask;
 
-    public Pingspoof()
+    private Pingspoof()
     {
         super("Pingspoof");
     }
@@ -62,13 +63,14 @@ public class Pingspoof extends ViolationModule implements Listener
 
                 serverPing = PingProvider.INSTANCE.getPing(user.getPlayer());
 
-                val received = user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).getTime();
-                val sent = user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).getTime();
+                val received = user.getTimestampMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).getTime();
+                val sent = user.getTimestampMap().at(TimeKey.PINGSPOOF_SENT_PACKET).getTime();
 
                 if (sent > 0) {
                     if (received <= 0) {
-                        DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to bypass pingspoof check.");
-                        this.getManagement().flag(Flag.of(user).setAddedVl(35));
+                        this.getManagement().flag(Flag.of(user)
+                                                      .setAddedVl(35)
+                                                      .setDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to bypass pingspoof check."));
                     } else {
                         user.getPingspoofPing().add(MathUtil.absDiff(received, sent));
                         echoPing = PingProvider.INSTANCE.getEchoPing(user);
@@ -80,18 +82,18 @@ public class Pingspoof extends ViolationModule implements Listener
                             // Make sure we do not have continuous false positives due to floating point errors.
                             user.getPingspoofPing().reloadData();
 
-                            DebugSender.getInstance().sendDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to spoof ping. Spoofed: " + serverPing + " | Actual: " + echoPing);
                             this.getManagement().flag(Flag.of(user).setAddedVl(difference > 500 ?
                                                                                VL_CALCULATOR_ABOVE_500.apply(difference).intValue() :
-                                                                               VL_CALCULATOR_BELOW_500.apply(difference).intValue()));
+                                                                               VL_CALCULATOR_BELOW_500.apply(difference).intValue())
+                                                          .setDebug("Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to spoof ping. Spoofed: " + serverPing + " | Actual: " + echoPing));
                         }
                     }
                 }
 
                 // Send the new packet.
-                user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).setToZero();
+                user.getTimestampMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).setToZero();
                 transactionPacket.sendPacket(user.getPlayer());
-                user.getTimestampMap().at(TimestampKey.PINGSPOOF_SENT_PACKET).update();
+                user.getTimestampMap().at(TimeKey.PINGSPOOF_SENT_PACKET).update();
             }
         }, 600, tickInterval);
     }
@@ -103,7 +105,7 @@ public class Pingspoof extends ViolationModule implements Listener
         if (User.isUserInvalid(user, this)) return;
 
         // Update the received once to make sure the player is not initially flagged for not sending a received packet.
-        user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).update();
+        user.getTimestampMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).update();
     }
 
     @Override
@@ -118,15 +120,11 @@ public class Pingspoof extends ViolationModule implements Listener
         return ModuleLoader.builder(this)
                            //TODO: 1.17 is not yet compatible.
                            .setAllowedServerVersions(ServerVersion.MC116.getSupVersionsTo())
-                           .addPacketListeners(PacketAdapterBuilder.of(PacketType.Play.Client.TRANSACTION)
+                           .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Play.Client.TRANSACTION)
                                                                    .priority(ListenerPriority.HIGH)
-                                                                   .onReceiving(event -> {
-                                                                       val user = User.safeGetUserFromPacketEvent(event);
-                                                                       if (User.isUserInvalid(user, this)) return;
-
-                                                                       // We have now received the answer.
-                                                                       user.getTimestampMap().at(TimestampKey.PINGSPOOF_RECEIVED_PACKET).update();
-                                                                   }).build())
+                                                                   // We have now received the answer.
+                                                                   .onReceiving((event, user) -> user.getTimestampMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).update())
+                                                                   .build())
                            .build();
     }
 

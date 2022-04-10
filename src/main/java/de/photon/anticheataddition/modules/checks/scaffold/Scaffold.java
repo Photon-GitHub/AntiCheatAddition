@@ -4,7 +4,7 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
@@ -23,8 +23,10 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import java.util.Objects;
 
 @Getter
-public class Scaffold extends ViolationModule implements Listener
+public final class Scaffold extends ViolationModule implements Listener
 {
+    public static final Scaffold INSTANCE = new Scaffold();
+
     private final ScaffoldAngle scaffoldAngle = new ScaffoldAngle(this.getConfigString());
 
     private final ScaffoldJumping scaffoldJumping = new ScaffoldJumping(this.getConfigString());
@@ -43,7 +45,7 @@ public class Scaffold extends ViolationModule implements Listener
     private final int cancelVl = loadInt(".cancel_vl", 110);
     private final int timeout = loadInt(".timeout", 1000);
 
-    public Scaffold()
+    private Scaffold()
     {
         super("Scaffold");
     }
@@ -57,7 +59,7 @@ public class Scaffold extends ViolationModule implements Listener
         if (User.isUserInvalid(user, this)) return;
 
         // To prevent too fast scaffolding -> Timeout
-        if (user.getTimestampMap().at(TimestampKey.SCAFFOLD_TIMEOUT).recentlyUpdated(timeout)) {
+        if (user.getTimestampMap().at(TimeKey.SCAFFOLD_TIMEOUT).recentlyUpdated(timeout)) {
             event.setCancelled(true);
             InventoryUtil.syncUpdateInventory(user.getPlayer());
         }
@@ -128,7 +130,7 @@ public class Scaffold extends ViolationModule implements Listener
             if (vl > 0) {
                 this.getManagement().flag(Flag.of(event.getPlayer()).setAddedVl(vl).setCancelAction(cancelVl, () -> {
                     event.setCancelled(true);
-                    user.getTimestampMap().at(TimestampKey.SCAFFOLD_TIMEOUT).update();
+                    user.getTimestampMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
                     InventoryUtil.syncUpdateInventory(user.getPlayer());
                 }));
             }

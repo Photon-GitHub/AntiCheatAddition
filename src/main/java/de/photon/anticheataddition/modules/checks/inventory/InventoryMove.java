@@ -10,7 +10,7 @@ import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayPosition;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
@@ -26,19 +26,20 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.util.Vector;
 
 import java.util.Set;
 
-public class InventoryMove extends ViolationModule
+public final class InventoryMove extends ViolationModule
 {
+    public static final InventoryMove INSTANCE = new InventoryMove();
+
     private final int cancelVl = loadInt(".cancel_vl", 60);
     private final double minTps = loadDouble(".min_tps", 19.5);
     private final int lenienceMillis = loadInt(".lenience_millis", 0);
     private final int teleportBypassTime = loadInt(".teleport_bypass_time", 900);
     private final int worldChangeBypassTime = loadInt(".world_change_bypass_time", 2000);
 
-    public InventoryMove()
+    private InventoryMove()
     {
         super("Inventory.parts.Move");
     }
@@ -49,7 +50,7 @@ public class InventoryMove extends ViolationModule
         val knownPosition = user.getPlayer().getLocation();
 
         // Not many blocks moved to prevent exploits and world change problems.
-        if (positionWrapper.getPosition().distanceSquared(knownPosition.toVector()) < 4) {
+        if (positionWrapper.toVector().distanceSquared(knownPosition.toVector()) < 4) {
             // Teleport back the next tick.
             Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> user.getPlayer().teleport(knownPosition, PlayerTeleportEvent.TeleportCause.UNKNOWN));
         }
@@ -65,27 +66,22 @@ public class InventoryMove extends ViolationModule
     protected ModuleLoader createModuleLoader()
     {
         val packetAdapter = PacketAdapterBuilder
-                // Look
-                .of(PacketType.Play.Client.LOOK,
+                .of(this,
+                    // Look
+                    PacketType.Play.Client.LOOK,
                     // Move
                     PacketType.Play.Client.POSITION,
                     PacketType.Play.Client.POSITION_LOOK)
                 .priority(ListenerPriority.LOWEST)
-                .onReceiving(event -> {
-                    val user = User.safeGetUserFromPacketEvent(event);
-                    if (User.isUserInvalid(user, this)) return;
-
+                .onReceiving((event, user) -> {
                     final IWrapperPlayPosition positionWrapper = event::getPacket;
 
-                    val moveTo = new Vector(positionWrapper.getX(),
-                                            positionWrapper.getY(),
-                                            positionWrapper.getZ());
-
                     val knownPosition = user.getPlayer().getLocation();
+                    val moveTo = positionWrapper.toLocation(knownPosition.getWorld());
 
                     // Check if this is a clientside movement:
                     // Position Vectors are not the same
-                    if (!moveTo.equals(knownPosition.toVector()) &&
+                    if (moveTo.distanceSquared(knownPosition) > 0.005 &&
                         // Not inside a vehicle
                         !user.getPlayer().isInsideVehicle() &&
                         // Not flying (may trigger some fps)
@@ -103,7 +99,7 @@ public class InventoryMove extends ViolationModule
                         // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load errors.
                         WorldUtil.INSTANCE.isChunkLoaded(user.getPlayer().getLocation()) &&
                         // The player is currently not in a liquid (liquids push)
-                        !user.getHitbox().isInLiquids(knownPosition) &&
+                        !user.getHitboxLocation().isInLiquids() &&
                         // Auto-Disable if TPS are too low
                         TPSProvider.INSTANCE.atLeastTPS(minTps))
                     {
@@ -133,7 +129,7 @@ public class InventoryMove extends ViolationModule
                         }
 
                         // Make sure that the last jump is a little ago (same "breaking" effect that needs compensation.)
-                        if (user.getTimestampMap().at(TimestampKey.LAST_VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) ||
+                        if (user.getTimestampMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) ||
                             // No Y change anymore. Anticheat and the rule above makes sure that people cannot jump again.
                             // While falling down people can modify their inventories.
                             knownPosition.getY() == moveTo.getY()) return;
@@ -148,7 +144,7 @@ public class InventoryMove extends ViolationModule
                         if (user.notRecentlyOpenedInventory(240L + speedMillis + lenienceMillis) &&
                             // Do the entity pushing stuff here (performance impact)
                             // No nearby entities that could push the player
-                            PacketAdapterBuilder.checkSync(() -> WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitbox(), 0.1D).isEmpty()))
+                            PacketAdapterBuilder.checkSync(() -> WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitboxLocation().getHitbox(), 0.1D).isEmpty()))
                         {
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(5)

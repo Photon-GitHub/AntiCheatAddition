@@ -6,7 +6,7 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.user.data.TimestampKey;
+import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -18,14 +18,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 
-public class AutoFishConsistency extends ViolationModule implements Listener
+public final class AutoFishConsistency extends ViolationModule implements Listener
 {
+    public static final AutoFishConsistency INSTANCE = new AutoFishConsistency();
+
     private final int cancelVl = AntiCheatAddition.getInstance().getConfig().getInt("AutoFish.cancel_vl");
 
     private final int fishingAttemptCount = loadInt(".fishing_attempt_count", 5);
     private final int minVariation = loadInt(".min_variation", 30);
 
-    public AutoFishConsistency()
+    private AutoFishConsistency()
     {
         super("AutoFish.parts.consistency");
     }
@@ -42,11 +44,11 @@ public class AutoFishConsistency extends ViolationModule implements Listener
                 // Negative maximum_fails indicate not allowing afk fishing farms.
                 if (user.getDataMap().getCounter(DataKey.Count.AUTOFISH_FAILED).compareThreshold() &&
                     // If the last attempt was a fail do not check (false positives)
-                    user.getTimestampMap().at(TimestampKey.AUTOFISH_DETECTION).getTime() != 0)
+                    user.getTimestampMap().at(TimeKey.AUTOFISH_DETECTION).getTime() != 0)
                 {
                     // Buffer the data.
                     val consistencyData = (DoubleStatistics) user.getDataMap().getObject(DataKey.Obj.AUTOFISH_CONSISTENCY_DATA);
-                    consistencyData.accept(user.getTimestampMap().at(TimestampKey.AUTOFISH_DETECTION).passedTime());
+                    consistencyData.accept(user.getTimestampMap().at(TimeKey.AUTOFISH_DETECTION).passedTime());
 
                     // Check that we have enough data.
                     if (consistencyData.getCount() < fishingAttemptCount) return;
@@ -81,12 +83,12 @@ public class AutoFishConsistency extends ViolationModule implements Listener
             // No consistency when not fishing / failed fishing
             case IN_GROUND:
             case FAILED_ATTEMPT:
-                user.getTimestampMap().at(TimestampKey.AUTOFISH_DETECTION).setToZero();
+                user.getTimestampMap().at(TimeKey.AUTOFISH_DETECTION).setToZero();
                 user.getDataMap().getCounter(DataKey.Count.AUTOFISH_FAILED).increment();
                 break;
             case CAUGHT_FISH:
                 // CAUGHT_FISH covers all forms of items from the water.
-                user.getTimestampMap().at(TimestampKey.AUTOFISH_DETECTION).update();
+                user.getTimestampMap().at(TimeKey.AUTOFISH_DETECTION).update();
                 break;
             default:
                 break;

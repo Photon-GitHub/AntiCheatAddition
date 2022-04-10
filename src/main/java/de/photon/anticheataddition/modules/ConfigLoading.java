@@ -1,7 +1,7 @@
 package de.photon.anticheataddition.modules;
 
 import de.photon.anticheataddition.AntiCheatAddition;
-import de.photon.anticheataddition.util.config.ConfigUtils;
+import de.photon.anticheataddition.util.config.ConfigUtil;
 
 import java.util.List;
 
@@ -42,6 +42,6 @@ public interface ConfigLoading
 
     default List<String> loadStringList(String substring)
     {
-        return ConfigUtils.loadImmutableStringOrStringList(getConfigString() + substring);
+        return ConfigUtil.loadImmutableStringOrStringList(getConfigString() + substring);
     }
 }

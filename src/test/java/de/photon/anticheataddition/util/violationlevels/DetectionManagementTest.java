@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.violationlevels;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.Dummy;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
@@ -17,7 +16,6 @@ import java.util.stream.IntStream;
 class DetectionManagementTest
 {
     // Do not remove this unused variable, it is needed for initialization of mocking.
-    private static final AntiCheatAddition mock = Dummy.mockAntiCheatAddition();
     private static final ViolationModule dummyVlModule = Dummy.mockViolationModule("Sentinel.LabyMod");
     private static User dummy;
 

@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,7 +14,8 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.util.UUID;
 
-public class Dummy
+@UtilityClass
+public final class Dummy
 {
     // Mock the environment.
     static {
@@ -32,7 +34,12 @@ public class Dummy
 
     public static AntiCheatAddition mockAntiCheatAddition()
     {
-        val config = YamlConfiguration.loadConfiguration(new File("src/main/resources/config.yml"));
+        return mockAntiCheatAddition("src/main/resources/config.yml");
+    }
+
+    public static AntiCheatAddition mockAntiCheatAddition(String configPath)
+    {
+        val config = YamlConfiguration.loadConfiguration(new File(configPath));
         AntiCheatAddition mockAntiCheatAddition = Mockito.mock(AntiCheatAddition.class);
         Mockito.when(mockAntiCheatAddition.getConfig()).thenReturn(config);
         AntiCheatAddition.setInstance(mockAntiCheatAddition);

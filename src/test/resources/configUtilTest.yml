@@ -1,0 +1,25 @@
+# Test
+Test:
+  Empty:
+    stringlist1: { }
+    stringlist2: "{}"
+    stringlist3: "{ }"
+    stringlist4: [ ]
+    stringlist5: "[]"
+    stringlist6: "[ ]"
+  One:
+    stringlist1: "1"
+    stringlist2:
+      - "1"
+    stringlist3: [ "1" ]
+  Two:
+    stringlist1:
+      - "1"
+      - "2"
+    stringlist2: [ "1", "2" ]
+  Three:
+    stringlist1:
+      - "1"
+      - "2"
+      - "3"
+    stringlist2: [ "1", "2", "3" ]

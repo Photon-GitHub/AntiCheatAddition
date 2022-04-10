@@ -38,7 +38,7 @@ import de.photon.anticheataddition.modules.sentinel.exploits.CommandBlockSentine
 import de.photon.anticheataddition.modules.sentinel.exploits.CreativeKillPotionSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.SelfDamageSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.TrollPotionSentinel;
-import de.photon.anticheataddition.util.config.ConfigUtils;
+import de.photon.anticheataddition.util.config.ConfigUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -125,7 +125,7 @@ public final class ModuleManager
                 WorldDownloaderSentinel.INSTANCE));
 
         // Add sentinel custom modules.
-        ConfigUtils.loadKeys("Sentinel.Custom").stream().map(key -> new SentinelChannelModule("Custom." + key)).forEach(moduleList::add);
+        ConfigUtil.loadKeys("Sentinel.Custom").stream().map(key -> new SentinelChannelModule("Custom." + key)).forEach(moduleList::add);
 
         moduleMap = new ModuleMap<>(moduleList);
         violationModuleMap = new ModuleMap<>(moduleMap.values().stream()

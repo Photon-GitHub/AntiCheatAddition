@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public class TowerBatch extends Batch<TowerBatch.TowerBlockPlace>
+public final class TowerBatch extends Batch<TowerBatch.TowerBlockPlace>
 {
 
     public static final Broadcaster<Snapshot<TowerBlockPlace>> TOWER_BATCH_BROADCASTER = new Broadcaster<>();

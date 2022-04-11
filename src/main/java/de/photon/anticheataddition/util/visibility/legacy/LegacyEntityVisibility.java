@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Set;
 
-public class LegacyEntityVisibility implements EntityVisibility
+public final class LegacyEntityVisibility implements EntityVisibility
 {
     private final EntityInformationHider equipmentHider;
     private final EntityInformationHider entityHider;

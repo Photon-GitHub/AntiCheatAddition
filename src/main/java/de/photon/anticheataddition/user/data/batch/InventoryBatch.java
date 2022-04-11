@@ -14,7 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 
-public class InventoryBatch extends Batch<InventoryBatch.InventoryClick>
+public final class InventoryBatch extends Batch<InventoryBatch.InventoryClick>
 {
     // Default buffer size is 6, being well tested.
     public static final int AVERAGE_HEURISTICS_BATCH_SIZE = 15;

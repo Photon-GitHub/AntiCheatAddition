@@ -10,7 +10,7 @@ import java.util.Set;
  * This is an implementation with a backing {@link HashSet}.
  * Therefore, any remove and contains operations are O(1), but the getAny() operation is costly.
  */
-public class QuadTreeSet<T> extends QuadTreeCollection<T>
+public final class QuadTreeSet<T> extends QuadTreeCollection<T>
 {
     private final Set<Node<T>> nodes = new HashSet<>();
 

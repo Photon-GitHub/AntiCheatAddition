@@ -10,7 +10,7 @@ import java.util.Objects;
 @Getter
 @ToString
 @AllArgsConstructor
-public class AxisAlignedBB implements Cloneable
+public final class AxisAlignedBB implements Cloneable
 {
 
     private double minX;

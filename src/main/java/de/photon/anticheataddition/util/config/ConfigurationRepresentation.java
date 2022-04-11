@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigurationRepresentation
+public final class ConfigurationRepresentation
 {
     @NotNull private final File configFile;
     @Getter(lazy = true) private final YamlConfiguration yamlConfiguration = loadYaml();

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-class LegacyEntityUtil implements EntityUtil
+final class LegacyEntityUtil implements EntityUtil
 {
     @Override
     public boolean isFlyingWithElytra(@NotNull LivingEntity livingEntity)

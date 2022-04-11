@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-class ModernEntityUtil implements EntityUtil
+final class ModernEntityUtil implements EntityUtil
 {
     @Override
     public boolean isFlyingWithElytra(@NotNull LivingEntity livingEntity)

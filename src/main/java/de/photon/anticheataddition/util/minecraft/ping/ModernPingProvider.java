@@ -2,7 +2,7 @@ package de.photon.anticheataddition.util.minecraft.ping;
 
 import org.bukkit.entity.Player;
 
-class ModernPingProvider implements PingProvider
+final class ModernPingProvider implements PingProvider
 {
     public int getPing(final Player player)
     {

@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public class ResetLocation extends Location
+public final class ResetLocation extends Location
 {
     @Getter
     private final Location baseLocation;

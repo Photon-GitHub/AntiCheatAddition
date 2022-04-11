@@ -2,7 +2,7 @@ package de.photon.anticheataddition.util.mathematics;
 
 import org.bukkit.util.Vector;
 
-public class ResetVector extends Vector
+public final class ResetVector extends Vector
 {
     private final double resetX;
     private final double resetY;

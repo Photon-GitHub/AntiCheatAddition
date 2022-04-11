@@ -13,7 +13,7 @@ import java.util.Arrays;
  * Removing elements is not supported.
  * This class guarantees O(1) operations for add, sum and average.
  */
-public class MovingLongStatistics
+public final class MovingLongStatistics
 {
     private final long[] data;
     private final ModularInteger index;

@@ -18,7 +18,7 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.val;
 
-public class LookPacketData
+public final class LookPacketData
 {
     private static final byte QUEUE_CAPACITY = 20;
 

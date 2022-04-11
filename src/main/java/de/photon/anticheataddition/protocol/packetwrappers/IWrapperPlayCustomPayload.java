@@ -29,11 +29,8 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
      */
     default void setChannel(MessageChannel value)
     {
-        if (ServerVersion.MC113.getSupVersionsTo().contains(ServerVersion.ACTIVE)) {
-            value.getChannel().ifPresent(channel -> getHandle().getStrings().write(0, channel));
-        } else {
-            getHandle().getMinecraftKeys().write(0, (KeyMessageChannel) value);
-        }
+        if (ServerVersion.MC113.getSupVersionsTo().contains(ServerVersion.ACTIVE)) value.getChannel().ifPresent(channel -> getHandle().getStrings().write(0, channel));
+        else getHandle().getMinecraftKeys().write(0, (KeyMessageChannel) value);
     }
 
     /**
@@ -68,8 +65,8 @@ public interface IWrapperPlayCustomPayload extends IWrapperPlay
      */
     default byte[] getContents()
     {
-        ByteBuf buffer = getContentsBuffer();
-        byte[] array = new byte[buffer.readableBytes()];
+        final ByteBuf buffer = getContentsBuffer().copy();
+        final byte[] array = new byte[buffer.readableBytes()];
         buffer.readBytes(array);
         return array;
     }

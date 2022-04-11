@@ -30,7 +30,7 @@ public class QuadTreeQueue<T> extends QuadTreeCollection<T>
     public Node<T> removeAny()
     {
         val any = nodes.poll();
-        if (any != null) quadTree.remove(any, any.x, any.y);
+        if (any != null) quadTree.remove(any, any.getX(), any.getY());
         return any;
     }
 }

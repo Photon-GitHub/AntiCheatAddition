@@ -11,7 +11,7 @@ import java.util.function.DoubleFunction;
  * The evaluation will be done via Horner's method to reduce unnecessary calculations.
  */
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
-public class Polynomial implements DoubleFunction<Double>
+public final class Polynomial implements DoubleFunction<Double>
 {
     private final double[] coefficients;
 

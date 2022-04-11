@@ -4,7 +4,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
-import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayEntity;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayPosition;
 import de.photon.anticheataddition.protocol.packetwrappers.MetadataPacket;
@@ -65,46 +64,37 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
     @Override
     public double getX()
     {
-        return ServerVersion.is18() ?
-               handle.getIntegers().read(1) / 32.0D :
-               handle.getDoubles().read(0);
+        return IWrapperPlayPosition.getIntDoublePosition(handle, 0);
     }
 
     @Override
     public void setX(double value)
     {
-        if (ServerVersion.is18()) handle.getIntegers().write(1, (int) (value * 32));
-        else handle.getDoubles().write(0, value);
+        IWrapperPlayPosition.setIntDoublePosition(handle, 0, value);
     }
 
     @Override
     public double getY()
     {
-        return ServerVersion.is18() ?
-               handle.getIntegers().read(2) / 32.0D :
-               handle.getDoubles().read(1);
+        return IWrapperPlayPosition.getIntDoublePosition(handle, 1);
     }
 
     @Override
     public void setY(double value)
     {
-        if (ServerVersion.is18()) handle.getIntegers().write(2, (int) (value * 32));
-        else handle.getDoubles().write(1, value);
+        IWrapperPlayPosition.setIntDoublePosition(handle, 1, value);
     }
 
     @Override
     public double getZ()
     {
-        return ServerVersion.is18() ?
-               handle.getIntegers().read(3) / 32.0D :
-               handle.getDoubles().read(2);
+        return IWrapperPlayPosition.getIntDoublePosition(handle, 2);
     }
 
     @Override
     public void setZ(double value)
     {
-        if (ServerVersion.is18()) handle.getIntegers().write(3, (int) (value * 32));
-        else handle.getDoubles().write(2, value);
+        IWrapperPlayPosition.setIntDoublePosition(handle, 2, value);
     }
 
     /**

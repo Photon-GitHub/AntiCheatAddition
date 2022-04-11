@@ -1,11 +1,28 @@
 package de.photon.anticheataddition.protocol.packetwrappers;
 
+import com.comphenix.protocol.events.PacketContainer;
+import de.photon.anticheataddition.ServerVersion;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 public interface IWrapperPlayPosition extends IWrapperPlay
 {
+    static void setIntDoublePosition(PacketContainer handle, int fieldIndex, double value)
+    {
+        // The oldMCFieldIndex has always been modern fieldIndex + 1 so far.
+        if (ServerVersion.is18()) handle.getIntegers().write(fieldIndex + 1, (int) (value * 32));
+        else handle.getDoubles().write(fieldIndex, value);
+    }
+
+    static double getIntDoublePosition(PacketContainer handle, int fieldIndex)
+    {
+        return ServerVersion.is18() ?
+               // The oldMCFieldIndex has always been modern fieldIndex + 1 so far.
+               handle.getIntegers().read(fieldIndex + 1) / 32.0D :
+               handle.getDoubles().read(fieldIndex);
+    }
+
     /**
      * Retrieve X.
      * <p>

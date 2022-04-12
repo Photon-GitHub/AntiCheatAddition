@@ -85,7 +85,7 @@ public final class User implements Permissible
     /**
      * Removes an {@link User}.
      */
-    protected static void deleteUser(UUID uuid)
+    private static void deleteUser(UUID uuid)
     {
         val oldUser = USERS.remove(uuid);
         FLOODGATE_USERS.remove(oldUser);

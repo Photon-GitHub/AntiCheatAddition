@@ -26,7 +26,6 @@ class TestQuadTreeCollection
         Assertions.assertEquals(0, quad.size());
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Test
     void clearSetTest()
     {
@@ -38,11 +37,11 @@ class TestQuadTreeCollection
 
         Assertions.assertEquals(100, quad.size());
         quad.clear();
+        //noinspection ConstantConditions
         Assertions.assertEquals(0, quad.size());
         Assertions.assertTrue(quad.isEmpty());
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Test
     void clearQueueTest()
     {
@@ -54,6 +53,7 @@ class TestQuadTreeCollection
 
         Assertions.assertEquals(100, quad.size());
         quad.clear();
+        //noinspection ConstantConditions
         Assertions.assertEquals(0, quad.size());
         Assertions.assertTrue(quad.isEmpty());
     }

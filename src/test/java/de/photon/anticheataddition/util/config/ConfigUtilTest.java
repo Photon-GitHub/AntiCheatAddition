@@ -29,7 +29,7 @@ class ConfigUtilTest
         Assertions.assertArrayEquals(expected, actual);
     }
 
-    private void testStringList(List<String> expected, String pathToLoad)
+    private static void testStringList(List<String> expected, String pathToLoad)
     {
         // Use this to see what entries are in the list instead of only seeing that there is one.
         for (String loadKey : ConfigUtil.loadKeys(pathToLoad)) {

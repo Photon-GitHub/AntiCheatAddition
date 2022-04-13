@@ -124,7 +124,7 @@ public final class DataUpdaterEvents implements Listener
         if (WorldUtil.INSTANCE.isInventoryOpenable(clickedBlock)) {
             // Make sure that the container is opened and the player doesn't just place a block next to it.
             // Check if the material is a placeable block
-            val blockInHand = InventoryUtil.getHandContents(event.getPlayer()).stream().map(ItemStack::getType).anyMatch(Material::isBlock);
+            val blockInHand = InventoryUtil.INSTANCE.getHandContents(event.getPlayer()).stream().map(ItemStack::getType).anyMatch(Material::isBlock);
 
             // If the player is sneaking and has a block in hand, they place the block instead of opening an inventory.
             if (!blockInHand || !event.getPlayer().isSneaking()) user.getTimestampMap().at(TimeKey.INVENTORY_OPENED).update();

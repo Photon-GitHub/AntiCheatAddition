@@ -40,7 +40,7 @@ final class EntityEquipmentHider extends EntityInformationHider
                 wrapper.setEntityID(watched.getEntityId());
 
                 // Hand Stuff.
-                final List<ItemStack> handItems = InventoryUtil.getHandContents(watched);
+                final List<ItemStack> handItems = InventoryUtil.INSTANCE.getHandContents(watched);
                 wrapper.setSlotStackPair(EnumWrappers.ItemSlot.MAINHAND, handItems.get(0));
                 if (handItems.size() > 1) wrapper.setSlotStackPair(EnumWrappers.ItemSlot.OFFHAND, handItems.get(1));
 

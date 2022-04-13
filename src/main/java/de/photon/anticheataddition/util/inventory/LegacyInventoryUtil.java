@@ -143,24 +143,6 @@ public class LegacyInventoryUtil implements InventoryUtil
                     case 1: return SlotLocation.opOf(1.5D, 2.6D);
                     default: return InventoryUtil.lowerInventoryLocation(2, rawSlot);
                 }
-            case MERCHANT:
-                /*
-                 *
-                 *
-                 *       0           1                      2
-                 *
-                 *
-                 * ------------------------------------------------------
-                 * ------------------------------------------------------
-                 * 3                         -                       11
-                 *
-                 * 12                        -                       20
-                 *
-                 * 21                        -                       29
-                 * ------------------------------------------------------
-                 * 30                        -                       38
-                 */
-                break;
             case ANVIL:
                 /*
                  *
@@ -220,7 +202,6 @@ public class LegacyInventoryUtil implements InventoryUtil
                  * ------------------------------------------------------
                  * 32                        -                       40
                  */
-                // Start at y = 1 as the inventory is smaller
                 if (rawSlot <= 4) return SlotLocation.opOf(2D + rawSlot, 1D);
                 return InventoryUtil.lowerInventoryLocation(5, rawSlot);
             case CRAFTING:
@@ -241,7 +222,6 @@ public class LegacyInventoryUtil implements InventoryUtil
                  * ------------------------------------------------------
                  * 36                        -                       44
                  * */
-
                 switch (rawSlot) {
                     // Crafting slots
                     case 0: return SlotLocation.opOf(7.5D, 1.5D);
@@ -260,6 +240,5 @@ public class LegacyInventoryUtil implements InventoryUtil
                 // CREATIVE (false positives), PLAYER, SHULKER_BOX, BREWING_STAND (version compatibility)
                 return Optional.empty();
         }
-        return Optional.empty();
     }
 }

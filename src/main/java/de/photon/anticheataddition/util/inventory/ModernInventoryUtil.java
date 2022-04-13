@@ -112,7 +112,6 @@ final class ModernInventoryUtil implements InventoryUtil
                  * ------------------------------------------------------
                  * 37                        -                       45
                  */
-
                 if (rawSlot == 0) return SlotLocation.opOf(6.5, 1);
 
                 if (rawSlot <= 9) {
@@ -227,7 +226,6 @@ final class ModernInventoryUtil implements InventoryUtil
                  * ------------------------------------------------------
                  * 32                        -                       40
                  */
-                // Start at y = 1 as the inventory is smaller
                 if (rawSlot <= 4) return SlotLocation.opOf(2D + rawSlot, 1D);
                 return InventoryUtil.lowerInventoryLocation(5, rawSlot);
 
@@ -256,6 +254,22 @@ final class ModernInventoryUtil implements InventoryUtil
                     case 4: return SlotLocation.opOf(0.5, 0);
                     default: return InventoryUtil.lowerInventoryLocation(5, rawSlot);
                 }
+                /*
+                 *      0
+                 *
+                 *                                          2
+                 *      1
+                 *
+                 * ------------------------------------------------------
+                 * ------------------------------------------------------
+                 * 5                         -                       13
+                 *
+                 * 14                        -                       22
+                 *
+                 * 23                        -                       31
+                 * ------------------------------------------------------
+                 * 32                        -                       40
+                 */
             case CARTOGRAPHY:
                 switch (rawSlot) {
                     case 0: return SlotLocation.opOf(0.5, 0);
@@ -263,6 +277,22 @@ final class ModernInventoryUtil implements InventoryUtil
                     case 2: return SlotLocation.opOf(7.5, 1.3);
                     default: return InventoryUtil.lowerInventoryLocation(3, rawSlot);
                 }
+                /*
+                 *                 0
+                 *
+                 *                 1                         2
+                 *
+                 *
+                 * ------------------------------------------------------
+                 * ------------------------------------------------------
+                 * 5                         -                       13
+                 *
+                 * 14                        -                       22
+                 *
+                 * 23                        -                       31
+                 * ------------------------------------------------------
+                 * 32                        -                       40
+                 */
             case GRINDSTONE:
                 switch (rawSlot) {
                     case 0: return SlotLocation.opOf(2.3, 0);

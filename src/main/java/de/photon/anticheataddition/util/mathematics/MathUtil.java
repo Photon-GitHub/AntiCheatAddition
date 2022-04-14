@@ -98,30 +98,23 @@ public final class MathUtil
         return d * d;
     }
 
-    public static int pow(int base, int power)
+    /**
+     * Returns the sum of all parameters squared.
+     */
+    public static int squareSum(int... ns)
     {
-        // 0^0 is defined as 1 here.
-        if (power == 0) return 1;
+        int squareSum = 0;
+        for (int n : ns) squareSum += n * n;
+        return squareSum;
+    }
 
-        // Some standard bases that can be calculated very fast.
-        if (base == 0) return 0;
-        if (base == 1) return 1;
-        if (base == 2) return 1 << power;
-
-        switch (power) {
-            // Default cases for fast normal usages.
-            case 1: return base;
-            case 2: return base * base;
-            case 3: return base * base * base;
-            // Fast exponentiation algorithm.
-            default:
-                int result = 1;
-                while (power > 0) {
-                    if ((power & 1) == 1) result *= base;
-                    base *= base;
-                    power >>= 1;
-                }
-                return result;
-        }
+    /**
+     * Returns the sum of all parameters squared.
+     */
+    public static double squareSum(double... ns)
+    {
+        double squareSum = 0;
+        for (double n : ns) squareSum += n * n;
+        return squareSum;
     }
 }

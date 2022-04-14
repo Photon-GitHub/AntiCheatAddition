@@ -318,7 +318,6 @@ final class ModernInventoryUtil implements InventoryUtil
                  * ------------------------------------------------------
                  * 36                        -                       44
                  * */
-
                 switch (rawSlot) {
                     // Crafting slots
                     case 0: return SlotLocation.opOf(7.5, 1.5);

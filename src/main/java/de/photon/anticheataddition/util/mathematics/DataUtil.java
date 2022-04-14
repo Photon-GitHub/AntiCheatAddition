@@ -5,38 +5,38 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class DataUtil
 {
-    public static int sum(int[] data)
+    public static int sum(int... data)
     {
         int sum = 0;
         for (int datum : data) sum += datum;
         return sum;
     }
 
-    public static long sum(long[] data)
+    public static long sum(long... data)
     {
         long sum = 0;
         for (long datum : data) sum += datum;
         return sum;
     }
 
-    public static double sum(double[] data)
+    public static double sum(double... data)
     {
         double sum = 0;
         for (double datum : data) sum += datum;
         return sum;
     }
 
-    public static double average(int[] data)
+    public static double average(int... data)
     {
         return sum(data) / (double) data.length;
     }
 
-    public static double average(long[] data)
+    public static double average(long... data)
     {
         return sum(data) / (double) data.length;
     }
 
-    public static double average(double[] data)
+    public static double average(double... data)
     {
         return sum(data) / data.length;
     }
@@ -53,7 +53,7 @@ public final class DataUtil
     /**
      * Calculates the summed square error from the reference value.
      */
-    public static double squaredError(double reference, int[] data)
+    public static double squaredError(double reference, int... data)
     {
         double sum = 0;
         for (int datum : data) sum += squaredError(reference, datum);
@@ -63,7 +63,7 @@ public final class DataUtil
     /**
      * Calculates the summed square error from the reference value.
      */
-    public static double squaredError(double reference, long[] data)
+    public static double squaredError(double reference, long... data)
     {
         double sum = 0;
         for (long datum : data) sum += squaredError(reference, datum);
@@ -73,7 +73,7 @@ public final class DataUtil
     /**
      * Calculates the summed square error from the reference value.
      */
-    public static double squaredError(double reference, double[] data)
+    public static double squaredError(double reference, double... data)
     {
         double sum = 0;
         for (double datum : data) sum += squaredError(reference, datum);

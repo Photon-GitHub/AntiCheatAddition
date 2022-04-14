@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.minecraft.world;
 
 import com.google.common.base.Preconditions;
+import com.google.common.math.DoubleMath;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.exception.UnknownMinecraftException;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
@@ -15,6 +16,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.InventoryHolder;
 
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -86,6 +88,11 @@ final class ModernWorldUtil implements WorldUtil
         return world.isChunkLoaded(blockX >> 4, blockZ >> 4);
     }
 
+    private static int toChunkCoordinate(double coordinate)
+    {
+        return DoubleMath.roundToInt(coordinate, RoundingMode.FLOOR) >> 4;
+    }
+
     @Override
     public boolean areChunksLoadedBetweenLocations(Location one, Location two)
     {
@@ -99,24 +106,24 @@ final class ModernWorldUtil implements WorldUtil
 
         final boolean modifyX;
 
-        val deltaX = two.getX() - one.getX();
-        val deltaZ = two.getZ() - one.getZ();
+        final double totalXDistance = two.getX() - one.getX();
+        final double totalZDistance = two.getZ() - one.getZ();
 
         final double xStep;
         final double zStep;
 
         final int steps;
 
-        if (Math.abs(deltaX) > Math.abs(deltaZ)) {
+        if (Math.abs(totalXDistance) > Math.abs(totalZDistance)) {
             modifyX = false;
-            steps = (int) Math.ceil(Math.abs(deltaX));
-            xStep = Math.signum(deltaX);
-            zStep = deltaZ / steps;
+            steps = DoubleMath.roundToInt(Math.abs(totalXDistance), RoundingMode.CEILING);
+            xStep = Math.signum(totalXDistance);
+            zStep = totalZDistance / steps;
         } else {
             modifyX = true;
-            steps = (int) Math.ceil(Math.abs(deltaZ));
-            xStep = deltaX / Math.abs(deltaZ);
-            zStep = Math.signum(deltaZ);
+            steps = DoubleMath.roundToInt(Math.abs(totalZDistance), RoundingMode.CEILING);
+            xStep = totalXDistance / Math.abs(totalZDistance);
+            zStep = Math.signum(totalZDistance);
         }
 
         double workingX = one.getX();
@@ -129,7 +136,7 @@ final class ModernWorldUtil implements WorldUtil
 
         // Cache the last and current chunk for faster processing.
         // The last chunk is important as of the modifier.
-        final int[] currentChunkCoords = {((int) Math.floor(workingX)) >> 4, ((int) Math.floor(workingZ)) >> 4};
+        final int[] currentChunkCoords = {toChunkCoordinate(workingX), toChunkCoordinate(workingZ)};
         final int[] lastChunkCoords = {currentChunkCoords[0], currentChunkCoords[1]};
 
         for (int i = 0; i < steps; ++i) {
@@ -146,8 +153,9 @@ final class ModernWorldUtil implements WorldUtil
                     workingModifiedZ = workingZ + modifier;
                 }
 
-                chunkX = ((int) Math.floor(workingModifiedX)) >> 4;
-                chunkZ = ((int) Math.floor(workingModifiedZ)) >> 4;
+
+                chunkX = toChunkCoordinate(workingModifiedX);
+                chunkZ = toChunkCoordinate(workingModifiedZ);
 
                 // Check if the chunk has already been checked
                 if ((currentChunkCoords[0] != chunkX || currentChunkCoords[1] != chunkZ) &&

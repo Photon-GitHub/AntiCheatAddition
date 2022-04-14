@@ -168,14 +168,12 @@ public abstract class QuadTreeCollection<T> extends AbstractCollection<QuadTreeC
 
         public boolean inRadius(Node<T> center, double squaredRadius)
         {
-            final double cX = this.x - center.x;
-            final double cY = this.y - center.y;
-            return (cX * cX + cY * cY) <= squaredRadius;
+            return MathUtil.squareSum(this.x - center.x, this.y - center.y) <= squaredRadius;
         }
 
         public double distanceSquared(Node<T> other)
         {
-            return MathUtil.square(this.x - other.x) + MathUtil.square(this.y - other.y);
+            return MathUtil.squareSum(this.x - other.x, this.y - other.y);
         }
 
         public double distance(Node<T> other)

@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.util.mathematics;
 
+import com.google.common.math.IntMath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -30,16 +31,6 @@ class MathUtilTest
         for (int i = 0; i < 100; ++i) {
             sum += i;
             Assertions.assertEquals(sum, MathUtil.gaussianSumFormulaTo(i));
-        }
-    }
-
-    @Test
-    void testPow()
-    {
-        for (int base = 0; base < 15; base++) {
-            for (int pow = 0; pow < 7; pow++) {
-                Assertions.assertEquals((int) Math.pow(base, pow), MathUtil.pow(base, pow));
-            }
         }
     }
 }

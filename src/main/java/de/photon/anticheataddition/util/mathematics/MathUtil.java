@@ -58,7 +58,7 @@ public final class MathUtil
      * @return a value of at least min and at most max. If value is smaller than max and greater than min, it is
      * returned unchanged, otherwise either min (value smaller than min) or max (value greater than max) is returned.
      */
-    public static double bound(final double min, final double max, final double value)
+    public static double bound(final double min, final double value, final double max)
     {
         return Math.min(Math.max(min, value), max);
     }

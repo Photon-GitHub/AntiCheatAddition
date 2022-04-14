@@ -76,7 +76,7 @@ public final class Pingspoof extends ViolationModule implements Listener
                         echoPing = PingProvider.INSTANCE.getEchoPing(user);
 
                         // The player has not sent the received packet.
-                        difference = Math.abs(serverPing - echoPing);
+                        difference = MathUtil.absDiff(serverPing, echoPing);
 
                         if (difference > pingLeniency) {
                             // Make sure we do not have continuous false positives due to floating point errors.

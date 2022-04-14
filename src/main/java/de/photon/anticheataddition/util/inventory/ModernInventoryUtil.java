@@ -329,7 +329,7 @@ final class ModernInventoryUtil implements InventoryUtil
                     case 5:
                     case 6:
                     case 7:
-                    case 8: return SlotLocation.opOf(0D, rawSlot - 5);
+                    case 8: return SlotLocation.opOf(0D, rawSlot - 5D);
                     // Shield slot.
                     case 45: return SlotLocation.opOf(3.6D, 3);
                     default: return InventoryUtil.lowerInventoryLocation(9, rawSlot);

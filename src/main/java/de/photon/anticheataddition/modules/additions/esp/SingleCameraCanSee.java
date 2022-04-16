@@ -8,7 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-class SingleCameraSupplier implements CanSee
+class SingleCameraCanSee implements CanSee
 {
     // The real MAX_FOV is 110 (quake pro), which results in 137° according to https://minecraft.fandom.com/wiki/Options
     // + Compensation -> 165°

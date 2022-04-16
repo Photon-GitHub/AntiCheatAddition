@@ -8,7 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-class ThirdPersonCameraSupplier implements CanSee
+class ThirdPersonCameraCanSee implements CanSee
 {
     private static final double THIRD_PERSON_OFFSET = 5D;
 

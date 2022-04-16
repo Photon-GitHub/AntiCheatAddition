@@ -67,7 +67,7 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
             this.getModule().getManagement().flag(Flag.of(user)
                                                       .setAddedVl(vlToAdd)
                                                       .setCancelAction(cancelVl, () -> {
-                                                          user.getTimestampMap().at(TimeKey.TOWER_TIMEOUT).update();
+                                                          user.getTimeMap().at(TimeKey.TOWER_TIMEOUT).update();
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
                                                       .setDebug("Tower-Debug | Player: " + user.getPlayer().getName() + " expected time: " + calcAvg + " | real: " + actAvg));

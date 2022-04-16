@@ -50,9 +50,11 @@ public final class Fastswitch extends ViolationModule implements Listener
             canBeLegit(event.getPreviousSlot(), event.getNewSlot())) return;
 
         // Already switched in the given timeframe
-        if (user.getTimestampMap().at(TimeKey.FASTSWITCH_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds) &&
-            // The ping is valid and in the borders that are set in the config
-            PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing))
+        if (user.getTimeMap().at(TimeKey.FASTSWITCH_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds) &&
+            // The ping is valid and in the borders that are set in the config.
+            PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing) &&
+            // User has done something except switching slots all the time.
+            (user.getTimeMap().at(TimeKey.COMBAT).recentlyUpdated(750) || user.getTimeMap().at(TimeKey.RIGHT_CLICK_ITEM_EVENT).recentlyUpdated(750)))
         {
             getManagement().flag(Flag.of(user)
                                      .setAddedVl(25)
@@ -60,7 +62,7 @@ public final class Fastswitch extends ViolationModule implements Listener
                                      .setEventNotCancelledAction(() -> InventoryUtil.syncUpdateInventory(user.getPlayer())));
         }
 
-        user.getTimestampMap().at(TimeKey.FASTSWITCH_HOTBAR_SWITCH).update();
+        user.getTimeMap().at(TimeKey.FASTSWITCH_HOTBAR_SWITCH).update();
     }
 
     @Override

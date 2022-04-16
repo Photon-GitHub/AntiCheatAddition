@@ -47,7 +47,7 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
             this.getModule().getManagement().flag(Flag.of(user)
                                                       .setAddedVl(vlIncrease)
                                                       .setCancelAction(cancelVl, () -> {
-                                                          user.getTimestampMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
+                                                          user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
                                                       .setDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() +

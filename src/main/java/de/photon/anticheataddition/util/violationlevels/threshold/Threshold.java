@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.List;
 
 @EqualsAndHashCode(doNotUseGetters = true, onlyExplicitlyIncluded = true)
-public final class Threshold implements Comparable<Threshold>
+final class Threshold implements Comparable<Threshold>
 {
     @Getter @EqualsAndHashCode.Include private final int vl;
     @NotNull @Unmodifiable private final List<String> commandList;

@@ -1,0 +1,23 @@
+NoCommand: [ ]
+SingleCommand: "Command"
+MultiCommand:
+  - "CommandOne"
+  - "CommandTwo"
+
+NoCommandThreshold: [ ]
+
+SingleCommandThreshold:
+  1: "Some command"
+
+
+SingleCommandThresholdTwo:
+  1:
+    - "Some command"
+    - "Another command"
+
+MultiCommandThreshold:
+  1: "Some command"
+  2:
+    - "Another command"
+    - "Yes, this as well."
+  3: "Yup."

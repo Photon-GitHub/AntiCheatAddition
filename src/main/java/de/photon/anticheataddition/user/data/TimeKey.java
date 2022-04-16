@@ -51,8 +51,6 @@ public enum TimeKey
 
     SPRINT_TOGGLE,
 
-    TEAMING_COMBAT_TAG,
-
     TELEPORT,
 
     TOWER_BOUNCE,

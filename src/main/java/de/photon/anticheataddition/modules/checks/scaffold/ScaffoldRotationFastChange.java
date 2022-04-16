@@ -26,7 +26,7 @@ final class ScaffoldRotationFastChange extends Module
     public void enable()
     {
         applyingConsumer = user -> {
-            if (user.getTimestampMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).recentlyUpdated(125)) {
+            if (user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).recentlyUpdated(125)) {
                 DebugSender.INSTANCE.sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent fast rotation changes.");
                 return 15;
             }

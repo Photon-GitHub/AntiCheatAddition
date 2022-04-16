@@ -18,7 +18,7 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.val;
 
-public class LookPacketData
+public final class LookPacketData
 {
     private static final byte QUEUE_CAPACITY = 20;
 
@@ -141,7 +141,7 @@ public class LookPacketData
             if (RotationUtil.getDirection(user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_YAW), user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_PITCH))
                             .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
             {
-                user.getTimestampMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
+                user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
             }
 
             // Update the values here so the RotationUtil calculation is functional.

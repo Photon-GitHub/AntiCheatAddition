@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public class ModuleLoader
+public final class ModuleLoader
 {
     private final Module module;
 

@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class DataMap
+public final class DataMap
 {
     private final Map<DataKey.Bool, Boolean> boolMap = Collections.synchronizedMap(new EnumMap<>(DataKey.Bool.class));
     private final Map<DataKey.Int, Integer> intMap = Collections.synchronizedMap(new EnumMap<>(DataKey.Int.class));

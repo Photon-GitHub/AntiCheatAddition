@@ -24,16 +24,4 @@ public class WrapperPlayServerRelEntityMoveLook extends WrapperPlayServerRelEnti
     {
         return ServerVersion.is18() ? 3 : 0;
     }
-
-    @Override
-    public boolean getOnGround()
-    {
-        return this.getHandle().getBooleans().read(0);
-    }
-
-    @Override
-    public void setOnGround(final boolean value)
-    {
-        this.getHandle().getBooleans().write(0, value);
-    }
 }

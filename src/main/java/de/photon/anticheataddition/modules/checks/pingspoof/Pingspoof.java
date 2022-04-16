@@ -63,8 +63,8 @@ public final class Pingspoof extends ViolationModule implements Listener
 
                 serverPing = PingProvider.INSTANCE.getPing(user.getPlayer());
 
-                val received = user.getTimestampMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).getTime();
-                val sent = user.getTimestampMap().at(TimeKey.PINGSPOOF_SENT_PACKET).getTime();
+                val received = user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).getTime();
+                val sent = user.getTimeMap().at(TimeKey.PINGSPOOF_SENT_PACKET).getTime();
 
                 if (sent > 0) {
                     if (received <= 0) {
@@ -76,7 +76,7 @@ public final class Pingspoof extends ViolationModule implements Listener
                         echoPing = PingProvider.INSTANCE.getEchoPing(user);
 
                         // The player has not sent the received packet.
-                        difference = Math.abs(serverPing - echoPing);
+                        difference = MathUtil.absDiff(serverPing, echoPing);
 
                         if (difference > pingLeniency) {
                             // Make sure we do not have continuous false positives due to floating point errors.
@@ -91,9 +91,9 @@ public final class Pingspoof extends ViolationModule implements Listener
                 }
 
                 // Send the new packet.
-                user.getTimestampMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).setToZero();
+                user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).setToZero();
                 transactionPacket.sendPacket(user.getPlayer());
-                user.getTimestampMap().at(TimeKey.PINGSPOOF_SENT_PACKET).update();
+                user.getTimeMap().at(TimeKey.PINGSPOOF_SENT_PACKET).update();
             }
         }, 600, tickInterval);
     }
@@ -105,7 +105,7 @@ public final class Pingspoof extends ViolationModule implements Listener
         if (User.isUserInvalid(user, this)) return;
 
         // Update the received once to make sure the player is not initially flagged for not sending a received packet.
-        user.getTimestampMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).update();
+        user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).update();
     }
 
     @Override
@@ -123,7 +123,7 @@ public final class Pingspoof extends ViolationModule implements Listener
                            .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Play.Client.TRANSACTION)
                                                                    .priority(ListenerPriority.HIGH)
                                                                    // We have now received the answer.
-                                                                   .onReceiving((event, user) -> user.getTimestampMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).update())
+                                                                   .onReceiving((event, user) -> user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).update())
                                                                    .build())
                            .build();
     }

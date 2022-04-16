@@ -5,7 +5,6 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.datastructure.broadcast.BroadcastReceiver;
 import de.photon.anticheataddition.util.datastructure.broadcast.Broadcaster;
-import de.photon.anticheataddition.util.violationlevels.threshold.Threshold;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +19,7 @@ public abstract class ViolationManagement extends Broadcaster<Player> implements
      */
     @NotNull protected final ViolationModule module;
     /**
-     * A {@link List} of {@link Threshold}s which is guaranteed to be sorted.
+     * A {@link List} of thresholds which is guaranteed to be sorted.
      */
     @NotNull protected final ThresholdManagement thresholds;
 

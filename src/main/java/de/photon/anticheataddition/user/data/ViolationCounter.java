@@ -5,7 +5,7 @@ import com.google.common.base.Preconditions;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongUnaryOperator;
 
-public class ViolationCounter
+public final class ViolationCounter
 {
     private static final LongUnaryOperator DECREMENT_ABOVE_ZERO_FUNCTION = l -> (l > 0 ? l - 1 : 0);
 

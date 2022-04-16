@@ -5,7 +5,7 @@ import lombok.val;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class TimestampMap
+public final class TimestampMap
 {
     // As the map is not modified by a single thread, we can safely read without synchronization.
     private final Map<TimeKey, Timestamp> map;

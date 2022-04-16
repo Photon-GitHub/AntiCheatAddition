@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
 
-class LegacyPingProvider implements PingProvider
+final class LegacyPingProvider implements PingProvider
 {
     private final ClassReflect craftPlayerReflect = Reflect.fromOBC("entity.CraftPlayer");
 

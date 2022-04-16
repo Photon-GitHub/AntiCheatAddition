@@ -1,9 +1,7 @@
 package de.photon.anticheataddition.modules.checks.fastswitch;
 
-import com.comphenix.protocol.PacketType;
-import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
-import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
+import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
@@ -13,8 +11,11 @@ import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 
-public final class Fastswitch extends ViolationModule
+public final class Fastswitch extends ViolationModule implements Listener
 {
     public static final Fastswitch INSTANCE = new Fastswitch();
 
@@ -38,36 +39,30 @@ public final class Fastswitch extends ViolationModule
                MathUtil.absDiff(oldSlot, newHeldItemSlot) <= 1;
     }
 
-    @Override
-    protected ModuleLoader createModuleLoader()
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerItemHeld(PlayerItemHeldEvent event)
     {
-        val packetAdapter = PacketAdapterBuilder
-                .of(this, PacketType.Play.Client.HELD_ITEM_SLOT)
-                .onReceiving((event, user) -> {
-                    // Tps are high enough
-                    if (TPSProvider.INSTANCE.atLeastTPS(19) &&
-                        event.getPacket().getBytes().readSafely(0) != null &&
-                        // Prevent the detection of scrolling
-                        !canBeLegit(user.getPlayer().getInventory().getHeldItemSlot(), event.getPacket().getBytes().readSafely(0)))
-                    {
-                        // Already switched in the given timeframe
-                        if (user.getTimestampMap().at(TimeKey.FASTSWITCH_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds) &&
-                            // The ping is valid and in the borders that are set in the config
-                            PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing))
-                        {
-                            getManagement().flag(Flag.of(user)
-                                                     .setAddedVl(25)
-                                                     .setCancelAction(cancelVl, () -> event.setCancelled(true))
-                                                     .setEventNotCancelledAction(() -> InventoryUtil.syncUpdateInventory(user.getPlayer())));
-                        }
+        val user = User.getUser(event.getPlayer());
+        if (User.isUserInvalid(user, this) ||
+            // Tps are high enough
+            !TPSProvider.INSTANCE.atLeastTPS(19) ||
+            // Prevent the detection of scrolling
+            canBeLegit(event.getPreviousSlot(), event.getNewSlot())) return;
 
-                        user.getTimestampMap().at(TimeKey.FASTSWITCH_HOTBAR_SWITCH).update();
-                    }
-                }).build();
+        // Already switched in the given timeframe
+        if (user.getTimeMap().at(TimeKey.FASTSWITCH_HOTBAR_SWITCH).recentlyUpdated(switchMilliseconds) &&
+            // The ping is valid and in the borders that are set in the config.
+            PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing) &&
+            // User has done something except switching slots all the time.
+            (user.getTimeMap().at(TimeKey.COMBAT).recentlyUpdated(750) || user.getTimeMap().at(TimeKey.RIGHT_CLICK_ITEM_EVENT).recentlyUpdated(750)))
+        {
+            getManagement().flag(Flag.of(user)
+                                     .setAddedVl(25)
+                                     .setCancelAction(cancelVl, () -> event.setCancelled(true))
+                                     .setEventNotCancelledAction(() -> InventoryUtil.syncUpdateInventory(user.getPlayer())));
+        }
 
-        return ModuleLoader.builder(this)
-                           .addPacketListeners(packetAdapter)
-                           .build();
+        user.getTimeMap().at(TimeKey.FASTSWITCH_HOTBAR_SWITCH).update();
     }
 
     @Override

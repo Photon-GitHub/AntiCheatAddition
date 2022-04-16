@@ -36,7 +36,7 @@ public final class Tower extends ViolationModule implements Listener
         if (User.isUserInvalid(user, this)) return;
 
         // To prevent too fast towering -> Timeout
-        if (user.getTimestampMap().at(TimeKey.TOWER_TIMEOUT).recentlyUpdated(timeout)) {
+        if (user.getTimeMap().at(TimeKey.TOWER_TIMEOUT).recentlyUpdated(timeout)) {
             event.setCancelled(true);
             InventoryUtil.syncUpdateInventory(user.getPlayer());
             return;
@@ -55,7 +55,7 @@ public final class Tower extends ViolationModule implements Listener
                 blockPlaced.getType().isSolid() &&
                 //
                 // Custom formula when setting -> Will return negative value when in protected timeframe.
-                user.getTimestampMap().at(TimeKey.TOWER_BOUNCE).passedTime() > 0 &&
+                user.getTimeMap().at(TimeKey.TOWER_BOUNCE).passedTime() > 0 &&
                 // Check if the block is placed against only one block (face).
                 // Only one block that is not a liquid is allowed (the one which the Block is placed against).
                 WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&

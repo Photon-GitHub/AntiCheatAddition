@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigurationRepresentation
+public final class ConfigurationRepresentation
 {
     @NotNull private final File configFile;
     @Getter(lazy = true) private final YamlConfiguration yamlConfiguration = loadYaml();
@@ -32,7 +32,7 @@ public class ConfigurationRepresentation
 
     private static int linesOfKey(final List<String> lines, int firstLineOfKey)
     {
-        final int depthOfKey = StringUtil.depth(lines.get(firstLineOfKey));
+        final long depthOfKey = StringUtil.depth(lines.get(firstLineOfKey));
         return (int) lines.stream()
                           // Skip firstLineOfKey to get to the first line and 1 as the initial line should not be iterated over to avoid stopping there in takeWhile.
                           .skip(firstLineOfKey + 1L)
@@ -81,7 +81,7 @@ public class ConfigurationRepresentation
 
                 if (list.isEmpty()) replacementLine.append(" []");
                 else {
-                    val preString = StringUtils.leftPad("- ", StringUtil.depth(originalLine));
+                    val preString = StringUtils.leftPad("- ", (int) StringUtil.depth(originalLine));
                     for (Object o : list) configLines.add(lineIndexOfKey + 1, preString + o);
                 }
             }
@@ -107,8 +107,8 @@ public class ConfigurationRepresentation
             int partIndex = 0;
 
             int lineIndex = 0;
-            int partDepth = 0;
-            int lineDepth;
+            long partDepth = 0;
+            long lineDepth;
 
             String trimmed;
             for (String line : lines) {

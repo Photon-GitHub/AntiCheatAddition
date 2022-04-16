@@ -14,7 +14,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
 
-public class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
+public final class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
 {
     public static final Broadcaster<Snapshot<ScaffoldBlockPlace>> SCAFFOLD_BATCH_BROADCASTER = new Broadcaster<>();
     private static final int SCAFFOLD_BATCH_SIZE = 6;

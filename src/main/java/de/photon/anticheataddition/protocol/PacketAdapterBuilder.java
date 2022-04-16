@@ -23,7 +23,7 @@ import java.util.function.BiConsumer;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class PacketAdapterBuilder
+public final class PacketAdapterBuilder
 {
     @NotNull private final Module module;
     @NotNull private final Set<PacketType> types;

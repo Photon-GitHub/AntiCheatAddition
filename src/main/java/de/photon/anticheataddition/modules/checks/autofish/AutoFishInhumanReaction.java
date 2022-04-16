@@ -38,7 +38,7 @@ public final class AutoFishInhumanReaction extends ViolationModule implements Li
         switch (event.getState()) {
             case CAUGHT_FISH:
                 // Too few time has passed since the fish bit.
-                final long passedBiteTime = user.getTimestampMap().at(TimeKey.FISH_BITE).passedTime();
+                final long passedBiteTime = user.getTimeMap().at(TimeKey.FISH_BITE).passedTime();
                 final int vl = VL_CALCULATOR.apply(passedBiteTime / humanReactionTime).intValue();
 
                 if (vl > 0) {
@@ -50,10 +50,10 @@ public final class AutoFishInhumanReaction extends ViolationModule implements Li
                 }
 
                 // Reset the bite-timestamp to be ready for the next one
-                user.getTimestampMap().at(TimeKey.FISH_BITE).setToZero();
+                user.getTimeMap().at(TimeKey.FISH_BITE).setToZero();
                 break;
             case BITE:
-                user.getTimestampMap().at(TimeKey.FISH_BITE).update();
+                user.getTimeMap().at(TimeKey.FISH_BITE).update();
                 break;
             default:
                 break;

@@ -11,7 +11,7 @@ import java.util.function.DoubleConsumer;
  */
 @EqualsAndHashCode
 @ToString
-public class DoubleStatistics implements DoubleConsumer
+public final class DoubleStatistics implements DoubleConsumer
 {
     private long count;
     private double sum;

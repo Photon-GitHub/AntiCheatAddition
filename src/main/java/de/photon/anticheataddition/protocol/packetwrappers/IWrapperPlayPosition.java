@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.protocol.packetwrappers;
 
+import com.comphenix.protocol.events.PacketContainer;
 import de.photon.anticheataddition.ServerVersion;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -7,17 +8,19 @@ import org.bukkit.util.Vector;
 
 public interface IWrapperPlayPosition extends IWrapperPlay
 {
-    private double getCoordinate(int oldMCFieldIndex, int fieldIndex)
+    static void setIntDoublePosition(PacketContainer handle, int fieldIndex, double value)
     {
-        return ServerVersion.is18() ?
-               getHandle().getIntegers().read(oldMCFieldIndex) / 32.0 :
-               getHandle().getDoubles().read(fieldIndex);
+        // The oldMCFieldIndex has always been modern fieldIndex + 1 so far.
+        if (ServerVersion.is18()) handle.getIntegers().write(fieldIndex + 1, (int) (value * 32));
+        else handle.getDoubles().write(fieldIndex, value);
     }
 
-    private void setCoordinate(int oldMCFieldIndex, int fieldIndex, double value)
+    static double getIntDoublePosition(PacketContainer handle, int fieldIndex)
     {
-        if (ServerVersion.is18()) getHandle().getIntegers().write(oldMCFieldIndex, (int) (value * 32));
-        else getHandle().getDoubles().write(fieldIndex, value);
+        return ServerVersion.is18() ?
+               // The oldMCFieldIndex has always been modern fieldIndex + 1 so far.
+               handle.getIntegers().read(fieldIndex + 1) / 32.0D :
+               handle.getDoubles().read(fieldIndex);
     }
 
     /**
@@ -29,7 +32,7 @@ public interface IWrapperPlayPosition extends IWrapperPlay
      */
     default double getX()
     {
-        return getCoordinate(1, 0);
+        return getHandle().getDoubles().read(0);
     }
 
     /**
@@ -39,7 +42,7 @@ public interface IWrapperPlayPosition extends IWrapperPlay
      */
     default void setX(final double value)
     {
-        setCoordinate(1, 0, value);
+        getHandle().getDoubles().write(0, value);
     }
 
     /**
@@ -52,7 +55,7 @@ public interface IWrapperPlayPosition extends IWrapperPlay
      */
     default double getY()
     {
-        return getCoordinate(2, 1);
+        return getHandle().getDoubles().read(1);
     }
 
     /**
@@ -62,7 +65,7 @@ public interface IWrapperPlayPosition extends IWrapperPlay
      */
     default void setY(final double value)
     {
-        setCoordinate(2, 1, value);
+        getHandle().getDoubles().write(1, value);
     }
 
     /**
@@ -74,7 +77,7 @@ public interface IWrapperPlayPosition extends IWrapperPlay
      */
     default double getZ()
     {
-        return getCoordinate(3, 2);
+        return getHandle().getDoubles().read(2);
     }
 
     /**
@@ -84,7 +87,7 @@ public interface IWrapperPlayPosition extends IWrapperPlay
      */
     default void setZ(final double value)
     {
-        setCoordinate(3, 2, value);
+        getHandle().getDoubles().write(2, value);
     }
 
     /**

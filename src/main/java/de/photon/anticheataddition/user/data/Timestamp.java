@@ -3,7 +3,7 @@ package de.photon.anticheataddition.user.data;
 /**
  * A class to manage a timestamp.
  */
-public class Timestamp
+public final class Timestamp
 {
     // Only set and get operations -> no atomic required.
     private volatile long currentTime = 0;

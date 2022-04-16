@@ -21,7 +21,7 @@ import java.util.SortedMap;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
-public class CommandAttributes
+public final class CommandAttributes
 {
     @Getter @NotNull private final SortedMap<String, InternalCommand> childCommands;
     @NotNull private final List<String> commandHelp;

@@ -14,7 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 
-public class InventoryBatch extends Batch<InventoryBatch.InventoryClick>
+public final class InventoryBatch extends Batch<InventoryBatch.InventoryClick>
 {
     // Default buffer size is 6, being well tested.
     public static final int AVERAGE_HEURISTICS_BATCH_SIZE = 15;
@@ -40,7 +40,7 @@ public class InventoryBatch extends Batch<InventoryBatch.InventoryClick>
             Preconditions.checkNotNull(event, "Tried to create InventoryClick from null event.");
             Preconditions.checkNotNull(event.getClickedInventory(), "Tried to create InventoryClick from null event clickedInventory.");
 
-            val slotLocation = InventoryUtil.locateSlot(event.getRawSlot(), event.getClickedInventory().getType());
+            val slotLocation = InventoryUtil.INSTANCE.locateSlot(event.getRawSlot(), event.getClickedInventory());
             return new InventoryClick(event.getInventory(), slotLocation.orElse(InventoryUtil.SlotLocation.DUMMY), event.getClick());
         }
 

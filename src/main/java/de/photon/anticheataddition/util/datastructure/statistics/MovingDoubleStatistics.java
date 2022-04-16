@@ -14,7 +14,7 @@ import java.util.Arrays;
  * Removing elements is not supported.
  * This class guarantees O(1) operations for add, sum and average.
  */
-public class MovingDoubleStatistics
+public final class MovingDoubleStatistics
 {
     private final double[] data;
     private final ModularInteger index;

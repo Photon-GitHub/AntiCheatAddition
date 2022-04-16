@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 /**
  * This util provides methods to get information from the server that is usually hidden.
  */
-class ModernTPSProvider extends BukkitRunnable implements TPSProvider
+final class ModernTPSProvider extends BukkitRunnable implements TPSProvider
 {
     private static final int RESOLUTION = 40;
 

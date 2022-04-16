@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 
 @Getter
 @ToString
-public class MovementSimulator
+public final class MovementSimulator
 {
     private final Location current;
     private final Movement movement;

@@ -59,7 +59,7 @@ public final class Scaffold extends ViolationModule implements Listener
         if (User.isUserInvalid(user, this)) return;
 
         // To prevent too fast scaffolding -> Timeout
-        if (user.getTimestampMap().at(TimeKey.SCAFFOLD_TIMEOUT).recentlyUpdated(timeout)) {
+        if (user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).recentlyUpdated(timeout)) {
             event.setCancelled(true);
             InventoryUtil.syncUpdateInventory(user.getPlayer());
         }
@@ -130,7 +130,7 @@ public final class Scaffold extends ViolationModule implements Listener
             if (vl > 0) {
                 this.getManagement().flag(Flag.of(event.getPlayer()).setAddedVl(vl).setCancelAction(cancelVl, () -> {
                     event.setCancelled(true);
-                    user.getTimestampMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
+                    user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
                     InventoryUtil.syncUpdateInventory(user.getPlayer());
                 }));
             }

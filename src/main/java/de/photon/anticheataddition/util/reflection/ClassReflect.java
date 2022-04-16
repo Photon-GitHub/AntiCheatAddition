@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class ClassReflect
+public final class ClassReflect
 {
     private final ConcurrentMap<String, FieldReflect> fieldCache = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, ConstructorReflect> constructorCache = new ConcurrentHashMap<>();

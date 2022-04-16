@@ -6,7 +6,7 @@
 
     <groupId>de.photon</groupId>
     <artifactId>AntiCheatAddition</artifactId>
-    <version>8.0.10</version>
+    <version>8.0.11</version>
 
     <name>AntiCheatAddition</name>
     <description>This plugin provides niche checks for cheats which are not covered by most anticheats.</description>
@@ -187,7 +187,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>
-            <version>4.1.74.Final</version>
+            <version>4.1.75.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -223,7 +223,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
-            <version>4.3.1</version>
+            <version>4.4.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -44,7 +44,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class User implements Permissible
+public final class User implements Permissible
 {
     private static final ConcurrentMap<UUID, User> USERS = new ConcurrentHashMap<>(AntiCheatAddition.SERVER_EXPECTED_PLAYERS);
     private static final Set<User> FLOODGATE_USERS = ConcurrentHashMap.newKeySet(AntiCheatAddition.SERVER_EXPECTED_PLAYERS);
@@ -54,7 +54,7 @@ public class User implements Permissible
     @EqualsAndHashCode.Include private final Player player;
 
     private final DataMap dataMap = new DataMap();
-    private final TimestampMap timestampMap = new TimestampMap();
+    private final TimestampMap timeMap = new TimestampMap();
 
     private final InventoryBatch inventoryBatch = new InventoryBatch(this);
     private final ScaffoldBatch scaffoldBatch = new ScaffoldBatch(this);
@@ -85,7 +85,7 @@ public class User implements Permissible
     /**
      * Removes an {@link User}.
      */
-    protected static void deleteUser(UUID uuid)
+    private static void deleteUser(UUID uuid)
     {
         val oldUser = USERS.remove(uuid);
         FLOODGATE_USERS.remove(oldUser);
@@ -204,7 +204,7 @@ public class User implements Permissible
      */
     public boolean hasOpenInventory()
     {
-        return this.getTimestampMap().at(TimeKey.INVENTORY_OPENED).getTime() != 0;
+        return this.getTimeMap().at(TimeKey.INVENTORY_OPENED).getTime() != 0;
     }
 
     /**
@@ -215,7 +215,7 @@ public class User implements Permissible
      */
     public boolean notRecentlyOpenedInventory(final long milliseconds)
     {
-        return this.getTimestampMap().at(TimeKey.INVENTORY_OPENED).notRecentlyUpdated(milliseconds);
+        return this.getTimeMap().at(TimeKey.INVENTORY_OPENED).notRecentlyUpdated(milliseconds);
     }
 
     /**
@@ -225,7 +225,7 @@ public class User implements Permissible
      */
     public boolean hasClickedInventoryRecently(final long milliseconds)
     {
-        return this.getTimestampMap().at(TimeKey.INVENTORY_CLICK).recentlyUpdated(milliseconds);
+        return this.getTimeMap().at(TimeKey.INVENTORY_CLICK).recentlyUpdated(milliseconds);
     }
 
 
@@ -245,7 +245,7 @@ public class User implements Permissible
             case HEAD_OR_OTHER_MOVEMENT:
             case XYZ_MOVEMENT:
             case XZ_MOVEMENT:
-                return this.timestampMap.at(movementType).recentlyUpdated(milliseconds);
+                return this.timeMap.at(movementType).recentlyUpdated(milliseconds);
             default:
                 throw new IllegalStateException("Unexpected MovementType: " + movementType);
         }
@@ -260,7 +260,7 @@ public class User implements Permissible
      */
     public boolean hasSprintedRecently(final long milliseconds)
     {
-        return this.dataMap.getBoolean(DataKey.Bool.SPRINTING) || this.timestampMap.at(TimeKey.SPRINT_TOGGLE).recentlyUpdated(milliseconds);
+        return this.dataMap.getBoolean(DataKey.Bool.SPRINTING) || this.timeMap.at(TimeKey.SPRINT_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -272,7 +272,7 @@ public class User implements Permissible
      */
     public boolean hasSneakedRecently(final long milliseconds)
     {
-        return this.dataMap.getBoolean(DataKey.Bool.SNEAKING) || this.timestampMap.at(TimeKey.SNEAK_TOGGLE).recentlyUpdated(milliseconds);
+        return this.dataMap.getBoolean(DataKey.Bool.SNEAKING) || this.timeMap.at(TimeKey.SNEAK_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -284,7 +284,7 @@ public class User implements Permissible
      */
     public boolean hasJumpedRecently(final long milliseconds)
     {
-        return this.timestampMap.at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(milliseconds);
+        return this.timeMap.at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(milliseconds);
     }
 
     // Convenience methods for much used timestamps
@@ -297,7 +297,7 @@ public class User implements Permissible
      */
     public boolean hasTeleportedRecently(final long milliseconds)
     {
-        return this.timestampMap.at(TimeKey.TELEPORT).recentlyUpdated(milliseconds);
+        return this.timeMap.at(TimeKey.TELEPORT).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -307,7 +307,7 @@ public class User implements Permissible
      */
     public boolean hasChangedWorldsRecently(final long milliseconds)
     {
-        return this.timestampMap.at(TimeKey.WORLD_CHANGE).recentlyUpdated(milliseconds);
+        return this.timeMap.at(TimeKey.WORLD_CHANGE).recentlyUpdated(milliseconds);
     }
 
 
@@ -354,11 +354,11 @@ public class User implements Permissible
             val user = createFromPlayer(event.getPlayer());
 
             // Login time
-            user.timestampMap.at(TimeKey.LOGIN_TIME).update();
+            user.timeMap.at(TimeKey.LOGIN_TIME).update();
             // Login should count as movement.
-            user.timestampMap.at(TimeKey.HEAD_OR_OTHER_MOVEMENT).update();
-            user.timestampMap.at(TimeKey.XYZ_MOVEMENT).update();
-            user.timestampMap.at(TimeKey.XZ_MOVEMENT).update();
+            user.timeMap.at(TimeKey.HEAD_OR_OTHER_MOVEMENT).update();
+            user.timeMap.at(TimeKey.XYZ_MOVEMENT).update();
+            user.timeMap.at(TimeKey.XZ_MOVEMENT).update();
         }
 
         @EventHandler

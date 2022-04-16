@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
  * It provides static methods to directly work on integers, but also allows to be used as a class to for easier handling.
  */
 @EqualsAndHashCode
-public class ModularInteger
+public final class ModularInteger
 {
     private final int mod;
     @EqualsAndHashCode.Exclude private final int lastInt;

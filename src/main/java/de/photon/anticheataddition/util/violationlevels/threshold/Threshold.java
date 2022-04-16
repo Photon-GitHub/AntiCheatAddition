@@ -10,14 +10,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
 @EqualsAndHashCode(doNotUseGetters = true, onlyExplicitlyIncluded = true)
-public class Threshold implements Comparable<Threshold>
+final class Threshold implements Comparable<Threshold>
 {
     @Getter @EqualsAndHashCode.Include private final int vl;
-    @NotNull private final List<String> commandList;
+    @NotNull @Unmodifiable private final List<String> commandList;
 
     public Threshold(int vl, List<String> commandList)
     {

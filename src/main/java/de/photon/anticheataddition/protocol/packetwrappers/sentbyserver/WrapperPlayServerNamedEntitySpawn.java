@@ -61,6 +61,42 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
         setZ(position.getZ());
     }
 
+    @Override
+    public double getX()
+    {
+        return IWrapperPlayPosition.getIntDoublePosition(handle, 0);
+    }
+
+    @Override
+    public void setX(double value)
+    {
+        IWrapperPlayPosition.setIntDoublePosition(handle, 0, value);
+    }
+
+    @Override
+    public double getY()
+    {
+        return IWrapperPlayPosition.getIntDoublePosition(handle, 1);
+    }
+
+    @Override
+    public void setY(double value)
+    {
+        IWrapperPlayPosition.setIntDoublePosition(handle, 1, value);
+    }
+
+    @Override
+    public double getZ()
+    {
+        return IWrapperPlayPosition.getIntDoublePosition(handle, 2);
+    }
+
+    @Override
+    public void setZ(double value)
+    {
+        IWrapperPlayPosition.setIntDoublePosition(handle, 2, value);
+    }
+
     /**
      * Retrieve Metadata.
      * <p>

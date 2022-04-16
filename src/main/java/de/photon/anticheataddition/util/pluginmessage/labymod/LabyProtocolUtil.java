@@ -86,7 +86,7 @@ public class LabyProtocolUtil
         ByteBufUtil.writeString(byteBuf, messageContents);
 
         // Copying the buffer's bytes to the byte array
-        byte[] bytes = new byte[byteBuf.readableBytes()];
+        final byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes);
 
         // Release the buffer

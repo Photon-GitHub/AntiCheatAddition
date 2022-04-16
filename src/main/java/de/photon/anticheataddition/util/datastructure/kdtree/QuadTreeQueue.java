@@ -10,7 +10,7 @@ import java.util.Queue;
  * This is an implementation with a backing {@link ArrayDeque}.
  * Therefore, getAny() is a very fast operation, but contains and remove are O(n)
  */
-public class QuadTreeQueue<T> extends QuadTreeCollection<T>
+public final class QuadTreeQueue<T> extends QuadTreeCollection<T>
 {
     private final Queue<Node<T>> nodes = new ArrayDeque<>();
 
@@ -30,7 +30,7 @@ public class QuadTreeQueue<T> extends QuadTreeCollection<T>
     public Node<T> removeAny()
     {
         val any = nodes.poll();
-        if (any != null) quadTree.remove(any, any.x, any.y);
+        if (any != null) quadTree.remove(any, any.getX(), any.getY());
         return any;
     }
 }

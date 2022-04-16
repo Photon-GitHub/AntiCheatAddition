@@ -88,7 +88,7 @@ public final class Teaming extends ViolationModule implements Listener
                              // Correct game modes.
                              .filter(User::inAdventureOrSurvivalMode)
                              // Not engaged in pvp.
-                             .filter(user -> user.getTimestampMap().at(TimeKey.TEAMING_COMBAT_TAG).notRecentlyUpdated(noPvpTime))
+                             .filter(user -> user.getTimeMap().at(TimeKey.COMBAT).notRecentlyUpdated(noPvpTime))
                              // Get the player's location.
                              .map(user -> Pair.of(user, user.getPlayer().getLocation()))
                              // Not in a bypassed region.

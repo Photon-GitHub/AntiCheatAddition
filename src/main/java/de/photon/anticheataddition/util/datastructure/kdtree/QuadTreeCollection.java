@@ -162,20 +162,18 @@ public abstract class QuadTreeCollection<T> extends AbstractCollection<QuadTreeC
     @Value
     public static class Node<T>
     {
-        protected double x;
-        protected double y;
-        @EqualsAndHashCode.Exclude protected T element;
+        double x;
+        double y;
+        @EqualsAndHashCode.Exclude T element;
 
         public boolean inRadius(Node<T> center, double squaredRadius)
         {
-            double cX = this.x - center.x;
-            double cY = this.y - center.y;
-            return (cX * cX + cY * cY) <= squaredRadius;
+            return MathUtil.squareSum(this.x - center.x, this.y - center.y) <= squaredRadius;
         }
 
         public double distanceSquared(Node<T> other)
         {
-            return MathUtil.square(this.x - other.x) + MathUtil.square(this.y - other.y);
+            return MathUtil.squareSum(this.x - other.x, this.y - other.y);
         }
 
         public double distance(Node<T> other)

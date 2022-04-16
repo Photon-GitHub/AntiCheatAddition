@@ -33,7 +33,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
     private static OptionalDouble distanceToLastClickedSlot(User user, InventoryClickEvent event)
     {
         val inventory = event.getClickedInventory();
-        return inventory == null ? OptionalDouble.empty() : InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), inventory.getType());
+        return inventory == null ? OptionalDouble.empty() : InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getDataMap().getInt(DataKey.Int.LAST_RAW_SLOT_CLICKED), inventory);
     }
 
     private static boolean smallDistance(User user, InventoryClickEvent event)

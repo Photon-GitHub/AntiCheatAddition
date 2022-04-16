@@ -11,19 +11,16 @@ public final class StringUtil
     public static boolean isConfigComment(final String string)
     {
         // If the first letter after whitespaces is not # assume that some data/key comes first.
-        return string == null || string.isEmpty() || string.strip().indexOf('#') == 0;
+        return string == null || string.isEmpty() || string.stripLeading().charAt(0) == '#';
     }
 
     /**
      * Counts the leading whitespaces of a {@link String}
      *
-     * @return the amount of leading whitespaces. 0 if there are only whitespaces present.
+     * @return the amount of leading whitespaces.
      */
-    public static int depth(final String string)
+    public static long depth(final String string)
     {
-        for (int i = 0, n = string.length(); i < n; ++i) {
-            if (string.charAt(i) != ' ') return i;
-        }
-        return 0;
+        return string == null || string.isEmpty() ? 0 : string.chars().takeWhile(Character::isWhitespace).count();
     }
 }

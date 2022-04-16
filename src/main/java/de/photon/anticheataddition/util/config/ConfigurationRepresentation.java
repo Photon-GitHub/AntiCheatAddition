@@ -32,7 +32,7 @@ public final class ConfigurationRepresentation
 
     private static int linesOfKey(final List<String> lines, int firstLineOfKey)
     {
-        final int depthOfKey = StringUtil.depth(lines.get(firstLineOfKey));
+        final long depthOfKey = StringUtil.depth(lines.get(firstLineOfKey));
         return (int) lines.stream()
                           // Skip firstLineOfKey to get to the first line and 1 as the initial line should not be iterated over to avoid stopping there in takeWhile.
                           .skip(firstLineOfKey + 1L)
@@ -81,7 +81,7 @@ public final class ConfigurationRepresentation
 
                 if (list.isEmpty()) replacementLine.append(" []");
                 else {
-                    val preString = StringUtils.leftPad("- ", StringUtil.depth(originalLine));
+                    val preString = StringUtils.leftPad("- ", (int) StringUtil.depth(originalLine));
                     for (Object o : list) configLines.add(lineIndexOfKey + 1, preString + o);
                 }
             }
@@ -107,8 +107,8 @@ public final class ConfigurationRepresentation
             int partIndex = 0;
 
             int lineIndex = 0;
-            int partDepth = 0;
-            int lineDepth;
+            long partDepth = 0;
+            long lineDepth;
 
             String trimmed;
             for (String line : lines) {

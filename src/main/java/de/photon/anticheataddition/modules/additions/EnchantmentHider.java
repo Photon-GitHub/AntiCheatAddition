@@ -56,7 +56,7 @@ public final class EnchantmentHider extends Module
                     val entity = wrapper.getEntity(event);
 
                     // Do not modify the players' own enchantments.
-                    if (entity.getEntityId() == user.getPlayer().getEntityId()) return;
+                    if (entity == null || entity.getEntityId() == user.getPlayer().getEntityId()) return;
 
                     val entityType = entity.getType();
 

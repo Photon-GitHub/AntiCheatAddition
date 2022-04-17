@@ -34,10 +34,13 @@ public final class PacketAnalysisAnimation extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
+        /* Protocol:
+         * 1) Player left clicks
+         * 2) Entity use packet with attack.
+         * 3) Arm Animation packet.
+         * */
         val packetAdapter = PacketAdapterBuilder
-                // THIS IS IN THE ORDER OF HOW THE PACKETS ARE SUPPOSED TO ARRIVE.
-                .of(this, PacketType.Play.Client.USE_ENTITY,
-                    PacketType.Play.Client.ARM_ANIMATION)
+                .of(this, PacketType.Play.Client.USE_ENTITY, PacketType.Play.Client.ARM_ANIMATION)
                 .priority(ListenerPriority.LOW)
                 .onReceiving((event, user) -> {
                     val packetType = event.getPacketType();

@@ -6,7 +6,7 @@
 
     <groupId>de.photon</groupId>
     <artifactId>AntiCheatAddition</artifactId>
-    <version>8.0.12</version>
+    <version>8.1.0</version>
 
     <name>AntiCheatAddition</name>
     <description>This plugin provides niche checks for cheats which are not covered by most anticheats.</description>

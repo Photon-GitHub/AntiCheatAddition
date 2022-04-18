@@ -617,6 +617,10 @@ Sentinel:
         - "permissions"
         - "perms"
         - "perm"
+      # What commands will be executed if the mod is detected.
+      # Automatic banning can be considered.
+      commands:
+        - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} had an illegal book."
 
     # Even if you have command blocks disabled on your server (as you should), it might be good to know (and ban)
     # players that used some exploit to get a command block. This will also delete any command blocks found in the

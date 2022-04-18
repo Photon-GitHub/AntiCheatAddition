@@ -597,6 +597,27 @@ Sentinel:
   # Sentinel tries to identify and prevent various exploits on your server.
   # These are usually safe to ban automatically.
   Exploits:
+    # Books in minecraft can be very dangerous. Not only can too large books potentially lag your server, but they
+    # allow unprecedented actions in creative mode: Potentially opening files, executing commands and more. This
+    # sentinel will automatically delete any books from your server that fall into the categories defined below.
+    BookPage:
+      # Do you want to enable the BookPage exploit detection?
+      enabled: true
+      # How many book pages are allowed on your server?
+      # Any book with too many pages will be deleted.
+      max_page_count: 500
+      # Any book that has a ClickAction that opens an arbitrary local file on your pc will be deleted.
+      disallow_open_file: true
+      # Any book that has a ClickAction which runs a command defined below will be deleted.
+      disallowed_commands:
+        - "op"
+        - "deop"
+        - "lp"
+        - "luckperms"
+        - "permissions"
+        - "perms"
+        - "perm"
+
     # Even if you have command blocks disabled on your server (as you should), it might be good to know (and ban)
     # players that used some exploit to get a command block. This will also delete any command blocks found in the
     # player's inventory.

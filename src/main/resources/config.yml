@@ -605,7 +605,7 @@ Sentinel:
       enabled: true
       # How many book pages are allowed on your server?
       # Any book with too many pages will be deleted.
-      max_page_count: 500
+      max_page_count: 1024
       # Any book that has a ClickAction that opens an arbitrary local file on your pc will be deleted.
       disallow_open_file: true
       # Any book that has a ClickAction which runs a command defined below will be deleted.

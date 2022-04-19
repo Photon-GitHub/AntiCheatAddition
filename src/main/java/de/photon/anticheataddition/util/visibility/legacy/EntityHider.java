@@ -2,7 +2,9 @@ package de.photon.anticheataddition.util.visibility.legacy;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.entitydestroy.IWrapperServerEntityDestroy;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +45,11 @@ final class EntityHider extends EntityInformationHider
     protected void onReveal(@NotNull Player observer, @NotNull Set<Entity> revealed)
     {
         final List<Player> observerList = List.of(observer);
+        Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
+            for (Entity entity : revealed) {
+                ProtocolLibrary.getProtocolManager().updateEntity(entity, observerList);
+            }
+        });
         for (Entity entity : revealed) ProtocolLibrary.getProtocolManager().updateEntity(entity, observerList);
     }
 }

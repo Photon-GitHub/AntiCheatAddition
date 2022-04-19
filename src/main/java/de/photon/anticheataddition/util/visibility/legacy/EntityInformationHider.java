@@ -56,22 +56,24 @@ abstract class EntityInformationHider implements Listener
                 if (hidden) event.setCancelled(true);
             }
         };
+
+        this.registerListeners();
     }
 
-    public void clear()
-    {
-        synchronized (hiddenFromPlayerMap) {
-            hiddenFromPlayerMap.clear();
-        }
-    }
-
-    public void registerListeners()
+    private void registerListeners()
     {
         // Only start if the ServerVersion is supported
         if (ServerVersion.containsActive(this.getSupportedVersions())) {
             // Register events and packet listener
             AntiCheatAddition.getInstance().registerListener(this);
             ProtocolLibrary.getProtocolManager().addPacketListener(this.informationPacketListener);
+        }
+    }
+
+    public void clear()
+    {
+        synchronized (hiddenFromPlayerMap) {
+            hiddenFromPlayerMap.clear();
         }
     }
 
@@ -107,11 +109,12 @@ abstract class EntityInformationHider implements Listener
         switch (event.getNewGameMode()) {
             case CREATIVE:
             case SPECTATOR:
-                // Run with delay so we avoid any updates that are underway async.
-                Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), () -> {
-                    removeEntity(event.getPlayer());
-                    ProtocolLibrary.getProtocolManager().updateEntity(event.getPlayer(), event.getPlayer().getWorld().getPlayers());
-                }, 20L);
+                setHiddenEntities(event.getPlayer(), Set.of());
+                removeEntity(event.getPlayer());
+
+                // Run with delay, so we avoid any updates that are underway async.
+                Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(),
+                                                   () -> ProtocolLibrary.getProtocolManager().updateEntity(event.getPlayer(), event.getPlayer().getWorld().getPlayers()), 20L);
                 break;
             default: break;
         }
@@ -140,10 +143,8 @@ abstract class EntityInformationHider implements Listener
 
     /**
      * Hides entities from a {@link Player}.
-     *
-     * @return the {@link Set} of entities that needs updating (newly revealed).
      */
-    public Set<Entity> setHiddenEntities(@NotNull Player observer, @NotNull Set<Entity> toHide)
+    public void setHiddenEntities(@NotNull Player observer, @NotNull Set<Entity> toHide)
     {
         final Set<Entity> oldHidden;
         final Set<Entity> newlyHidden;
@@ -158,8 +159,7 @@ abstract class EntityInformationHider implements Listener
 
         // Call onHide for those entities that have been revealed and shall now be hidden.
         this.onHide(observer, newlyHidden);
-
-        return SetUtil.difference(oldHidden, toHide);
+        this.onReveal(observer, SetUtil.difference(oldHidden, toHide));
     }
 
     protected void onPreHide(@NotNull Player observer, @NotNull Set<Entity> toHide) {}

@@ -26,6 +26,7 @@ public final class Esp extends Module
     public static final Esp INSTANCE = new Esp();
 
     public static final long ESP_INTERVAL_TICKS = Esp.INSTANCE.loadLong(".interval_ticks", 2L);
+    private static final boolean ONLY_FULL_HIDE = Esp.INSTANCE.loadBoolean(".only_full_hide", false);
 
     private static final String ENTITY_TRACKING_RANGE_PLAYERS = ".entity-tracking-range.players";
     private static final String DEFAULT_WORLD_NAME = "default";
@@ -102,31 +103,57 @@ public final class Esp extends Module
                 val playerQuadTree = new QuadTreeQueue<Player>();
                 for (Player player : worldPlayers) playerQuadTree.add(player.getLocation().getX(), player.getLocation().getZ(), player);
 
-                for (val observerNode : playerQuadTree) {
-                    final Set<Entity> equipHiddenPlayers = new HashSet<>();
-                    final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
-                    final Player observer = observerNode.getElement();
-
-                    for (val playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
-                        final Player watched = playerNode.getElement();
-
-                        // Less than 1 block distance (removes the player themselves and any very close player)
-                        if (observerNode.distanceSquared(playerNode) < 1 || CanSee.INSTANCE.canSee(observer, watched)) {
-                            // No hiding case
-                            fullHiddenPlayers.remove(watched);
-                        } else if (!watched.isSneaking()) {
-                            // Equip hiding
-                            fullHiddenPlayers.remove(watched);
-                            equipHiddenPlayers.add(watched);
-                        }
-                        // Full hiding (due to the default adding to fullHiddenPlayers.)
-                    }
-
-                    EntityVisibility.INSTANCE.setHidden(observerNode.getElement(), fullHiddenPlayers, equipHiddenPlayers);
-                }
-                playerQuadTree.clear();
+                if (ONLY_FULL_HIDE) processOnlyHideWorldQuadTree(playerTrackingRange, worldPlayers, playerQuadTree);
+                else processWorldQuadTree(playerTrackingRange, worldPlayers, playerQuadTree);
             }
         }, 100, ESP_INTERVAL_TICKS);
+    }
+
+    private void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
+    {
+        for (val observerNode : playerQuadTree) {
+            final Set<Entity> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
+            final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
+            final Player observer = observerNode.getElement();
+
+            for (val playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
+                final Player watched = playerNode.getElement();
+
+                // Less than 1 block distance (removes the player themselves and any very close player)
+                if (observerNode.distanceSquared(playerNode) < 1 || CanSee.INSTANCE.canSee(observer, watched)) {
+                    // No hiding case
+                    fullHiddenPlayers.remove(watched);
+                } else if (!watched.isSneaking()) {
+                    // Equip hiding
+                    fullHiddenPlayers.remove(watched);
+                    equipHiddenPlayers.add(watched);
+                }
+                // Full hiding (due to the default adding to fullHiddenPlayers.)
+            }
+
+            EntityVisibility.INSTANCE.setHidden(observerNode.getElement(), fullHiddenPlayers, equipHiddenPlayers);
+        }
+    }
+
+    private void processOnlyHideWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
+    {
+        for (val observerNode : playerQuadTree) {
+            final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
+            final Player observer = observerNode.getElement();
+
+            for (val playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
+                final Player watched = playerNode.getElement();
+
+                // Less than 1 block distance (removes the player themselves and any very close player)
+                if (observerNode.distanceSquared(playerNode) < 1 || CanSee.INSTANCE.canSee(observer, watched)) {
+                    // No hiding case
+                    fullHiddenPlayers.remove(watched);
+                }
+                // Full hiding (due to the default adding to fullHiddenPlayers.)
+            }
+
+            EntityVisibility.INSTANCE.setHidden(observerNode.getElement(), fullHiddenPlayers, Set.of());
+        }
     }
 }
 

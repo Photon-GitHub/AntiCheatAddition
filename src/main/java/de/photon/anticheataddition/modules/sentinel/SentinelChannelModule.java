@@ -38,7 +38,7 @@ public class SentinelChannelModule extends SentinelModule implements ParsedPlugi
     {
         val builder = ModuleLoader.builder(this);
         loadStringList(".incoming_channels").stream().map(MessageChannel::of).forEach(builder::addIncomingMessageChannel);
-        loadStringList(".outgoing_channels").stream().map(MessageChannel::of).forEach(builder::addOutgoingMessageChannel);
+        // No outgoing channels as the config does not allow for sending in a channel.
         return builder.build();
     }
 }

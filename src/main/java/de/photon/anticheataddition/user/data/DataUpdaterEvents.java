@@ -38,6 +38,9 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
+import java.util.function.Consumer;
+
 /**
  * A singleton to update the data in {@link AntiCheatAddition}s internal data storage.
  */
@@ -58,6 +61,18 @@ public final class DataUpdaterEvents implements Listener
     public void unregister()
     {
         HandlerList.unregisterAll(this);
+    }
+
+    private static final Consumer<User> CLOSE_INVENTORY = user -> user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
+    private static final Consumer<User> NOTHING = user -> {};
+
+    private static void userUpdate(UUID uuid, Consumer<User> userAction, TimeKey... update)
+    {
+        val user = User.getUser(uuid);
+        if (user == null) return;
+
+        userAction.accept(user);
+        for (TimeKey key : update) user.getTimeMap().at(key).update();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -82,18 +97,12 @@ public final class DataUpdaterEvents implements Listener
     {
         // Was hit
         if (event.getEntity() instanceof HumanEntity) {
-            val user = User.getUser(event.getEntity().getUniqueId());
-            if (user == null) return;
-
-            user.getTimeMap().at(TimeKey.COMBAT).update();
+            userUpdate(event.getEntity().getUniqueId(), NOTHING, TimeKey.COMBAT);
         }
 
         // Hit somebody else
         if (event.getDamager() instanceof HumanEntity) {
-            val user = User.getUser(event.getEntity().getUniqueId());
-            if (user == null) return;
-
-            user.getTimeMap().at(TimeKey.COMBAT).update();
+            userUpdate(event.getEntity().getUniqueId(), NOTHING, TimeKey.COMBAT);
         }
     }
 
@@ -155,22 +164,19 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInventoryClose(final InventoryCloseEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
-        if (user != null) user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
+        userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onInventoryOpen(final InventoryOpenEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
-        if (user != null) user.getTimeMap().at(TimeKey.INVENTORY_OPENED).update();
+        userUpdate(event.getPlayer().getUniqueId(), NOTHING, TimeKey.INVENTORY_OPENED);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onItemHeld(PlayerItemHeldEvent event)
     {
-        val user = User.getUser(event.getPlayer());
-        if (user != null) user.getTimeMap().at(TimeKey.HOTBAR_SWITCH).update();
+        userUpdate(event.getPlayer().getUniqueId(), NOTHING, TimeKey.HOTBAR_SWITCH);
     }
 
     @EventHandler
@@ -223,22 +229,13 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRespawn(final PlayerRespawnEvent event)
     {
-        val user = User.getUser(event.getPlayer());
-        if (user == null) return;
-
-        user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
-        user.getTimeMap().at(TimeKey.TELEPORT).update();
-        user.getTimeMap().at(TimeKey.RESPAWN).update();
+        userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY, TimeKey.TELEPORT, TimeKey.RESPAWN);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTeleport(final PlayerTeleportEvent event)
     {
-        val user = User.getUser(event.getPlayer());
-        if (user == null) return;
-
-        user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
-        user.getTimeMap().at(TimeKey.TELEPORT).update();
+        userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY, TimeKey.TELEPORT);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -274,12 +271,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler
     public void onWorldChange(final PlayerChangedWorldEvent event)
     {
-        val user = User.getUser(event.getPlayer());
-        if (user == null) return;
-
-        user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
-        user.getTimeMap().at(TimeKey.TELEPORT).update();
-        user.getTimeMap().at(TimeKey.WORLD_CHANGE).update();
+        userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY, TimeKey.TELEPORT, TimeKey.WORLD_CHANGE);
     }
 
     /**

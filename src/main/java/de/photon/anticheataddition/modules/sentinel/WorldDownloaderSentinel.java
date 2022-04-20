@@ -14,6 +14,7 @@ public final class WorldDownloaderSentinel extends SentinelModule implements Plu
     public static final WorldDownloaderSentinel INSTANCE = new WorldDownloaderSentinel();
 
     private static final MessageChannel WDL_CONTROL_CHANNEL = MessageChannel.of("wdl", "control", "WDL|CONTROL");
+    public static final MessageChannel WDL_INIT_CHANNEL = MessageChannel.of("wdl", "init", "WDL|INIT");
 
     private final boolean disable = loadBoolean(".disable.general", true);
     private final boolean disableFuture = loadBoolean(".disable.future", true);
@@ -65,7 +66,7 @@ public final class WorldDownloaderSentinel extends SentinelModule implements Plu
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addIncomingMessageChannel(MessageChannel.of("wdl", "init", "WDL|INIT"))
+                           .addIncomingMessageChannel(WDL_INIT_CHANNEL)
                            .addOutgoingMessageChannel(WDL_CONTROL_CHANNEL)
                            .build();
     }

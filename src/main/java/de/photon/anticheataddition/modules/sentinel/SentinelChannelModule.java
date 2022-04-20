@@ -22,14 +22,11 @@ public class SentinelChannelModule extends SentinelModule implements ParsedPlugi
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull String message)
     {
-        val user = User.getUser(player);
-        if (User.isUserInvalid(user, this)) return;
-
         // If containsAll or containsAny is empty, skip the respective check.
         if ((containsAll.isEmpty() || containsAll.stream().allMatch(message::contains)) &&
             (containsAny.isEmpty() || containsAny.stream().anyMatch(message::contains)))
         {
-            this.detection(user.getPlayer());
+            detection(player);
         }
     }
 

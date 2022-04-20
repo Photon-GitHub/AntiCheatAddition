@@ -32,9 +32,6 @@ public final class VapeSentinel extends SentinelModule implements Listener, Pars
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull String message)
     {
-        val user = User.getUser(player);
-        if (User.isUserInvalid(user, this)) return;
-
         DebugSender.INSTANCE.sendDebug("Player " + player.getName() + " joined with Vape | Data: " + message);
         detection(player);
     }

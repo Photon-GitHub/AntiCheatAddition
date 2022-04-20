@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.NavigableMap;
 
-class MultiThresholds implements ThresholdManagement
+final class MultiThresholds implements ThresholdManagement
 {
     @Getter private final NavigableMap<Integer, Threshold> thresholdMap;
 

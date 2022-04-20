@@ -2,7 +2,6 @@ package de.photon.anticheataddition.modules.sentinel;
 
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ModuleLoader;
-import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import io.netty.buffer.Unpooled;
 import lombok.val;
@@ -69,15 +68,12 @@ public final class BetterSprintingSentinel extends SentinelModule implements Plu
     @Override
     public void onPluginMessageReceived(@NotNull final String channel, @NotNull final Player player, final byte[] message)
     {
-        val user = User.getUser(player);
-        if (User.isUserInvalid(user, this)) return;
-
-        detection(user.getPlayer());
+        detection(player);
 
         val sendChannel = "BSprint".equals(channel) ? "BSM" : MessageChannel.BETTER_SPRINTING_CHANNEL.getChannel().orElseThrow();
 
-        user.getPlayer().sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, this.settingsBufArray);
-        user.getPlayer().sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, this.disableBufArray);
+        player.sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, this.settingsBufArray);
+        player.sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, this.disableBufArray);
     }
 
     @Override

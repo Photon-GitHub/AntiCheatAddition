@@ -9,7 +9,6 @@ import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapper
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 
 public final class InventoryRotation extends ViolationModule
 {
@@ -26,7 +25,7 @@ public final class InventoryRotation extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetAdapter = PacketAdapterBuilder
+        return ModuleLoader.of(this, PacketAdapterBuilder
                 .of(this, PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK)
                 .priority(ListenerPriority.LOWEST)
                 .onReceiving((event, user) -> {
@@ -47,11 +46,7 @@ public final class InventoryRotation extends ViolationModule
                     {
                         getManagement().flag(Flag.of(user).setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " sent new rotations while having an open inventory."));
                     }
-                }).build();
-
-        return ModuleLoader.builder(this)
-                           .addPacketListeners(packetAdapter)
-                           .build();
+                }).build());
     }
 
     @Override

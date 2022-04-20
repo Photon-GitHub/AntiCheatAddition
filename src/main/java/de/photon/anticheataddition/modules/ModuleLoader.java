@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.modules;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketListener;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
@@ -40,6 +41,11 @@ public final class ModuleLoader
 
     private final Set<Listener> listeners;
     private final Set<PacketListener> packetListeners;
+
+    public static ModuleLoader of(Module module, PacketAdapter adapter)
+    {
+        return builder(module).addPacketListeners(adapter).build();
+    }
 
     public static Builder builder(Module module)
     {

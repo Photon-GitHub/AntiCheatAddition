@@ -65,7 +65,7 @@ public final class InventoryMove extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetAdapter = PacketAdapterBuilder
+        return ModuleLoader.of(this, PacketAdapterBuilder
                 .of(this,
                     // Look
                     PacketType.Play.Client.LOOK,
@@ -154,11 +154,7 @@ public final class InventoryMove extends ViolationModule
                     } else {
                         user.getDataMap().setBoolean(DataKey.Bool.ALLOWED_TO_JUMP, true);
                     }
-                }).build();
-
-        return ModuleLoader.builder(this)
-                           .addPacketListeners(packetAdapter)
-                           .build();
+                }).build());
     }
 
     @Override

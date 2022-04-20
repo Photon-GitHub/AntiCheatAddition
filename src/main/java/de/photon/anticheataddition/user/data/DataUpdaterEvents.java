@@ -93,14 +93,10 @@ public final class DataUpdaterEvents implements Listener
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event)
     {
         // Was hit
-        if (event.getEntity() instanceof HumanEntity) {
-            userUpdate(event.getEntity().getUniqueId(), NOTHING, TimeKey.COMBAT);
-        }
+        if (event.getEntity() instanceof HumanEntity) userUpdate(event.getEntity().getUniqueId(), NOTHING, TimeKey.COMBAT);
 
         // Hit somebody else
-        if (event.getDamager() instanceof HumanEntity) {
-            userUpdate(event.getDamager().getUniqueId(), NOTHING, TimeKey.COMBAT);
-        }
+        if (event.getDamager() instanceof HumanEntity) userUpdate(event.getDamager().getUniqueId(), NOTHING, TimeKey.COMBAT);
     }
 
     @EventHandler(ignoreCancelled = true)

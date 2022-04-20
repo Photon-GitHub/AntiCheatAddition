@@ -78,18 +78,15 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onConsume(final PlayerItemConsumeEvent event)
     {
-        val user = User.getUser(event.getPlayer());
-        if (user == null) return;
-
-        user.getTimeMap().at(TimeKey.CONSUME_EVENT).update();
-        user.getDataMap().setObject(DataKey.Obj.LAST_CONSUMED_ITEM_STACK, event.getItem());
+        userUpdate(event.getPlayer().getUniqueId(),
+                   user -> user.getDataMap().setObject(DataKey.Obj.LAST_CONSUMED_ITEM_STACK, event.getItem()),
+                   TimeKey.CONSUME_EVENT);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(final PlayerDeathEvent event)
     {
-        val user = User.getUser(event.getEntity().getUniqueId());
-        if (user != null) user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
+        userUpdate(event.getEntity().getUniqueId(), CLOSE_INVENTORY);
     }
 
     @EventHandler

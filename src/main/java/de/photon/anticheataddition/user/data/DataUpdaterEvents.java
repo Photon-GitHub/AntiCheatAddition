@@ -99,7 +99,7 @@ public final class DataUpdaterEvents implements Listener
 
         // Hit somebody else
         if (event.getDamager() instanceof HumanEntity) {
-            userUpdate(event.getEntity().getUniqueId(), NOTHING, TimeKey.COMBAT);
+            userUpdate(event.getDamager().getUniqueId(), NOTHING, TimeKey.COMBAT);
         }
     }
 

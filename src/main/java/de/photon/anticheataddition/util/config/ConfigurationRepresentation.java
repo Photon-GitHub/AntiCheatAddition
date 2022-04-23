@@ -63,9 +63,9 @@ public final class ConfigurationRepresentation
         for (ConfigChange requestedChange : requestedChanges) {
             val value = requestedChange.getValue();
 
-            val lineIndexOfKey = requestedChange.lineIndexOfPath(configLines);
-            val originalLine = configLines.get(lineIndexOfKey);
-            val affectedLines = linesOfKey(configLines, lineIndexOfKey);
+            final int lineIndexOfKey = requestedChange.lineIndexOfPath(configLines);
+            final String originalLine = configLines.get(lineIndexOfKey);
+            final int affectedLines = linesOfKey(configLines, lineIndexOfKey);
 
             // We want to delete all lines after the initial one.
             deleteLines(configLines, lineIndexOfKey + 1, affectedLines - 1);

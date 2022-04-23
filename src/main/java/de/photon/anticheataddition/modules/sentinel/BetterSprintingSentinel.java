@@ -9,8 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 // API_DOCS of BetterSprinting:
 /*
  * OUTGOING PACKETS
@@ -46,20 +44,19 @@ public final class BetterSprintingSentinel extends SentinelModule implements Plu
     {
         super("BetterSprinting");
 
-        val featureList = List.of(!loadBoolean(".disable.survival_fly_boost", true),
-                                  !loadBoolean(".disable.enable_all_dirs", true));
-
         val settingsBuffer = Unpooled.buffer();
         settingsBuffer.writeByte(0);
 
-        for (Boolean enable : featureList) settingsBuffer.writeBoolean(enable);
+        settingsBuffer.writeBoolean(!loadBoolean(".disable.survival_fly_boost", true));
+        settingsBuffer.writeBoolean(!loadBoolean(".disable.enable_all_dirs", true));
+
         this.settingsBufArray = settingsBuffer.array();
         settingsBuffer.release();
 
         val disableBuffer = Unpooled.buffer();
         // Bypassed players are already filtered out.
         // The mod provides a method to disable it
-        final boolean disableGeneral = loadBoolean(".disable.general", false);
+        val disableGeneral = loadBoolean(".disable.general", false);
         disableBuffer.writeByte(disableGeneral ? 1 : 2);
         this.disableBufArray = disableBuffer.array();
         disableBuffer.release();

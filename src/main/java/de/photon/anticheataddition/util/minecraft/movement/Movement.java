@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.minecraft.movement;
 
-import lombok.Getter;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +13,7 @@ public enum Movement
     /**
      * The gravitation that is applied to that type of entity
      */
-    @Getter final double gravitationPerTick;
+    private final double gravitationPerTick;
 
     Movement(double gravitationPerTick)
     {

@@ -45,11 +45,11 @@ final class EntityHider extends EntityInformationHider
     protected void onReveal(@NotNull Player observer, @NotNull Set<Entity> revealed)
     {
         final List<Player> observerList = List.of(observer);
+
         Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
-            for (Entity entity : revealed) {
-                ProtocolLibrary.getProtocolManager().updateEntity(entity, observerList);
-            }
+            for (Entity entity : revealed) ProtocolLibrary.getProtocolManager().updateEntity(entity, observerList);
         });
+
         for (Entity entity : revealed) ProtocolLibrary.getProtocolManager().updateEntity(entity, observerList);
     }
 }

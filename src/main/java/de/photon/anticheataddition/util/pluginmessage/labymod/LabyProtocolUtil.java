@@ -34,7 +34,7 @@ public class LabyProtocolUtil
      */
     public static void sendPermissionMessage(Player player)
     {
-        sendLabyModMessage(player, "PERMISSIONS", LabyModPermission.PERMISSIONS_JSON);
+        sendLabyModMessage(player, "PERMISSIONS", LabyModPermission.getPermissionsJson());
     }
 
     /**

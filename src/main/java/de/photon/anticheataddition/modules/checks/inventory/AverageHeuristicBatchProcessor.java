@@ -20,7 +20,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
 
     AverageHeuristicBatchProcessor(ViolationModule module)
     {
-        super(module, Set.of(InventoryBatch.INVENTORY_BATCH_BROADCASTER));
+        super(module, Set.of(InventoryBatch.INVENTORY_BATCH_EVENTBUS));
     }
 
     @Override
@@ -34,7 +34,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
 
         val misClickCounter = user.getDataMap().getCounter(DataKey.Count.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS);
 
-        // Not enough data to check as the player opened many different inventories.
+        // Not enough data to check as the player opened many inventories.
         if (timeOffsets.length < 8) {
             misClickCounter.setToZero();
             return;

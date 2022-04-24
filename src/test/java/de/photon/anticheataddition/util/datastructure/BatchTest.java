@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.util.datastructure;
 
+import com.google.common.eventbus.EventBus;
 import de.photon.anticheataddition.Dummy;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
@@ -7,7 +8,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.Batch;
 import de.photon.anticheataddition.util.datastructure.batch.SyncBatchProcessor;
-import de.photon.anticheataddition.util.datastructure.broadcast.Broadcaster;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -23,7 +23,7 @@ import java.util.Set;
 class BatchTest
 {
     private static final ViolationModule dummyVlModule = Dummy.mockViolationModule("Inventory");
-    private static final Broadcaster<Batch.Snapshot<String>> stringBroadcaster = new Broadcaster<>();
+    private static final EventBus testBus = new EventBus();
 
     // Do not remove this unused variable, it is needed for initialization of mocking.
     private static User dummy;
@@ -38,7 +38,7 @@ class BatchTest
     @Test
     void dummyBatchTest()
     {
-        Assertions.assertThrows(NullPointerException.class, () -> new Batch<>(stringBroadcaster, dummy, 1, null));
+        Assertions.assertThrows(NullPointerException.class, () -> new Batch<>(testBus, dummy, 1, null));
         Assertions.assertThrows(NullPointerException.class, () -> new Batch<>(null, dummy, 1, "null"));
         Assertions.assertThrows(NullPointerException.class, () -> new Batch<String>(null, dummy, 1, null));
     }
@@ -46,16 +46,16 @@ class BatchTest
     @Test
     void illegalCapacityBatchTest()
     {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(stringBroadcaster, dummy, 0, ""));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(stringBroadcaster, dummy, -1, ""));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(stringBroadcaster, dummy, Integer.MIN_VALUE, ""));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(testBus, dummy, 0, ""));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(testBus, dummy, -1, ""));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(testBus, dummy, Integer.MIN_VALUE, ""));
     }
 
     @Test
     void peekingTest()
     {
         final int batchSize = 3;
-        val batch = new Batch<>(stringBroadcaster, dummy, batchSize, "");
+        val batch = new Batch<>(testBus, dummy, batchSize, "");
         Assertions.assertEquals("", batch.peekLastAdded());
 
         batch.addDataPoint("SomeString");
@@ -83,7 +83,7 @@ class BatchTest
         val output = new ArrayList<String>();
         final int batchSize = 3;
 
-        val batchProcessor = new SyncBatchProcessor<>(dummyVlModule, Set.of(stringBroadcaster))
+        val batchProcessor = new SyncBatchProcessor<String>(dummyVlModule, Set.of(testBus))
         {
             @Override
             public void processBatch(User user, List<String> batch)
@@ -94,14 +94,14 @@ class BatchTest
 
         batchProcessor.enable();
 
-        val batch = new Batch<>(stringBroadcaster, dummy, batchSize, "");
-        stringBroadcaster.subscribe(batchProcessor);
+        val batch = new Batch<>(testBus, dummy, batchSize, "");
+        testBus.register(batchProcessor);
 
         for (int i = 0; i < 2 * batchSize; ++i) batch.addDataPoint(String.valueOf(i));
 
         Assertions.assertIterableEquals(List.of("0", "1", "2", "3", "4", "5"), output);
 
-        stringBroadcaster.unsubscribe(batchProcessor);
+        testBus.unregister(batchProcessor);
 
         for (int i = 0; i < 2 * batchSize; ++i) {
             batch.addDataPoint("Test");
@@ -117,7 +117,7 @@ class BatchTest
         val output = Collections.synchronizedList(new ArrayList<String>());
         final int batchSize = 3;
 
-        val batchProcessor = new AsyncBatchProcessor<>(dummyVlModule, Set.of(stringBroadcaster))
+        val batchProcessor = new AsyncBatchProcessor<String>(dummyVlModule, Set.of(testBus))
         {
             @Override
             public void processBatch(User user, List<String> batch)
@@ -128,8 +128,8 @@ class BatchTest
 
         batchProcessor.enable();
 
-        val batch = new Batch<>(stringBroadcaster, dummy, batchSize, "");
-        stringBroadcaster.subscribe(batchProcessor);
+        val batch = new Batch<>(testBus, dummy, batchSize, "");
+        testBus.register(batchProcessor);
 
         for (int i = 0; i < 6; ++i) batch.addDataPoint(String.valueOf(i));
 

@@ -49,7 +49,7 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
 
     public TowerBatchProcessor(ViolationModule module)
     {
-        super(module, Set.of(TowerBatch.TOWER_BATCH_BROADCASTER));
+        super(module, Set.of(TowerBatch.TOWER_BATCH_EVENTBUS));
     }
 
     @Override

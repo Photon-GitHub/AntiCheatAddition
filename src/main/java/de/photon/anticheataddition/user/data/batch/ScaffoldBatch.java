@@ -1,8 +1,8 @@
 package de.photon.anticheataddition.user.data.batch;
 
+import com.google.common.eventbus.EventBus;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.batch.Batch;
-import de.photon.anticheataddition.util.datastructure.broadcast.Broadcaster;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
 import lombok.AccessLevel;
@@ -16,12 +16,11 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
 {
-    public static final Broadcaster<Snapshot<ScaffoldBlockPlace>> SCAFFOLD_BATCH_BROADCASTER = new Broadcaster<>();
-    private static final int SCAFFOLD_BATCH_SIZE = 6;
+    public static final EventBus SCAFFOLD_BATCH_EVENTBUS = new EventBus();
 
     public ScaffoldBatch(@NotNull User user)
     {
-        super(SCAFFOLD_BATCH_BROADCASTER, user, SCAFFOLD_BATCH_SIZE, new ScaffoldBlockPlace(null, null, new Location(null, 0, 0, 0), true, 1));
+        super(SCAFFOLD_BATCH_EVENTBUS, user, 6, new ScaffoldBlockPlace(null, null, new Location(null, 0, 0, 0), true, 1));
     }
 
     @Value

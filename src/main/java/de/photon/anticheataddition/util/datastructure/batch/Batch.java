@@ -1,8 +1,8 @@
 package de.photon.anticheataddition.util.datastructure.batch;
 
 import com.google.common.base.Preconditions;
+import com.google.common.eventbus.EventBus;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.datastructure.broadcast.Broadcaster;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -16,18 +16,18 @@ import java.util.List;
  */
 public class Batch<T>
 {
+    @NotNull private final EventBus eventBus;
     @NotNull private final User user;
     @NotNull private final T[] values;
-    @NotNull private final Broadcaster<Snapshot<T>> broadcaster;
 
     private int index = 0;
     // Volatile is ok here as we do not change the object itself and only care for the reference.
     @NotNull private T lastAdded;
 
-    public Batch(Broadcaster<Snapshot<T>> broadcaster, User user, int capacity, T dummyLastAdded)
+    public Batch(EventBus eventBus, User user, int capacity, T dummyLastAdded)
     {
         Preconditions.checkArgument(capacity > 0, "Invalid batch size specified.");
-        this.broadcaster = Preconditions.checkNotNull(broadcaster, "Tried to create batch with null broadcaster.");
+        this.eventBus = Preconditions.checkNotNull(eventBus, "Tried to create batch with null EventBus.");
         this.user = Preconditions.checkNotNull(user, "Tried to create batch with null user.");
         this.values = (T[]) new Object[capacity];
         this.lastAdded = Preconditions.checkNotNull(dummyLastAdded, "Tried to create batch with null dummy.");
@@ -43,7 +43,7 @@ public class Batch<T>
         this.values[this.index++] = value;
 
         if (this.index >= this.values.length) {
-            broadcaster.broadcast(Snapshot.of(this));
+            eventBus.post(Snapshot.of(this));
             // Clear the batch.
             this.clear();
         }

@@ -1,19 +1,19 @@
 package de.photon.anticheataddition.util.datastructure.batch;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import de.photon.anticheataddition.modules.ViolationModule;
-import de.photon.anticheataddition.util.datastructure.broadcast.Broadcaster;
 
-import java.util.Collection;
+import java.util.Set;
 
 public abstract class SyncBatchProcessor<T> extends BatchProcessor<T>
 {
-
-    protected SyncBatchProcessor(ViolationModule module, Collection<Broadcaster<Batch.Snapshot<T>>> broadcasters)
+    protected SyncBatchProcessor(ViolationModule module, Set<EventBus> eventBuses)
     {
-        super(module, broadcasters);
+        super(module, eventBuses);
     }
 
-    @Override
+    @Subscribe
     public void receive(Batch.Snapshot<T> snapshot)
     {
         this.processBatch(snapshot.getUser(), snapshot.getValues());

@@ -20,14 +20,12 @@ import lombok.val;
 
 public final class LookPacketData
 {
-    private static final byte QUEUE_CAPACITY = 20;
-
     static {
         ProtocolLibrary.getProtocolManager().addPacketListener(new LookPacketDataUpdater());
     }
 
     @Getter
-    private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(QUEUE_CAPACITY, new RotationChange(0, 0));
+    private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(20, new RotationChange(0, 0));
 
     /**
      * Calculates the total rotation change in the last time.
@@ -126,14 +124,12 @@ public final class LookPacketData
             final IWrapperPlayClientLook lookWrapper = event::getPacket;
 
             val rotationChange = new RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
+            val rotationQueue = user.getLookPacketData().rotationChangeQueue;
 
             // Same tick -> merge
             synchronized (user.getLookPacketData().rotationChangeQueue) {
-                if (rotationChange.getTime() - user.getLookPacketData().getRotationChangeQueue().head().getTime() < 55) {
-                    user.getLookPacketData().getRotationChangeQueue().head().merge(rotationChange);
-                } else {
-                    user.getLookPacketData().getRotationChangeQueue().add(rotationChange);
-                }
+                if (rotationChange.timeOffset(rotationQueue.head()) < 55) rotationQueue.head().merge(rotationChange);
+                else rotationQueue.add(rotationChange);
             }
 
             // Huge angle change

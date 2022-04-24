@@ -1,8 +1,8 @@
 package de.photon.anticheataddition.user.data.batch;
 
+import com.google.common.eventbus.EventBus;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.batch.Batch;
-import de.photon.anticheataddition.util.datastructure.broadcast.Broadcaster;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
 import lombok.AccessLevel;
@@ -17,13 +17,11 @@ import java.util.Optional;
 
 public final class TowerBatch extends Batch<TowerBatch.TowerBlockPlace>
 {
-
-    public static final Broadcaster<Snapshot<TowerBlockPlace>> TOWER_BATCH_BROADCASTER = new Broadcaster<>();
-    private static final int TOWER_BATCH_SIZE = 6;
+    public static final EventBus TOWER_BATCH_EVENTBUS = new EventBus();
 
     public TowerBatch(@NotNull User user)
     {
-        super(TOWER_BATCH_BROADCASTER, user, TOWER_BATCH_SIZE, new TowerBlockPlace(new Location(null, 0, 0, 0), Optional.empty(), Optional.empty()));
+        super(TOWER_BATCH_EVENTBUS, user, 6, new TowerBlockPlace(new Location(null, 0, 0, 0), Optional.empty(), Optional.empty()));
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")

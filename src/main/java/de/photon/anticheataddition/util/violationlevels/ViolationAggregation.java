@@ -3,6 +3,7 @@ package de.photon.anticheataddition.util.violationlevels;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
+import com.google.common.eventbus.Subscribe;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
 import org.bukkit.entity.Player;
@@ -25,9 +26,7 @@ public final class ViolationAggregation extends ViolationManagement
         this.children = Set.copyOf(children);
 
         // Receive updates from the children.
-        for (ViolationManagement child : this.children) {
-            child.subscribe(this);
-        }
+        for (ViolationManagement child : this.children) child.register(this);
     }
 
     @Override
@@ -58,8 +57,8 @@ public final class ViolationAggregation extends ViolationManagement
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void receive(Player player)
+    @Subscribe
+    public void onPlayerVlUpdate(Player player)
     {
         final UUID uuid = player.getUniqueId();
         final int oldVl = oldVls.count(uuid);

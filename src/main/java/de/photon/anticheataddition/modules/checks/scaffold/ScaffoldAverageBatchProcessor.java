@@ -27,7 +27,7 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
 
     ScaffoldAverageBatchProcessor(ViolationModule module)
     {
-        super(module, Set.of(ScaffoldBatch.SCAFFOLD_BATCH_BROADCASTER));
+        super(module, Set.of(ScaffoldBatch.SCAFFOLD_BATCH_EVENTBUS));
     }
 
     @Override

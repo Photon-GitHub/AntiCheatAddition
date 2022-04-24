@@ -62,7 +62,7 @@ public final class ViolationLevelManagement extends ViolationManagement
         if (oldVl < newVl) this.punishPlayer(player, oldVl, newVl);
 
         // Update potential aggregations.
-        this.broadcast(player);
+        this.postVlUpdate(player);
     }
 
     @Override
@@ -75,7 +75,7 @@ public final class ViolationLevelManagement extends ViolationManagement
         this.punishPlayer(player, oldVl, oldVl + vl);
 
         // Update potential aggregations.
-        this.broadcast(player);
+        this.postVlUpdate(player);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

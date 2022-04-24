@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.ToDoubleBiFunction;
+import java.util.function.ToDoubleFunction;
 
 @UtilityClass
 public final class BatchPreprocessors
@@ -77,7 +78,7 @@ public final class BatchPreprocessors
     public static <T> List<DoubleStatistics> zipReduceToDoubleStatistics(List<T> input, ToDoubleBiFunction<T, T>... mappers)
     {
         val statistics = new DoubleStatistics[mappers.length];
-        for (int i = 0; i < statistics.length; i++) statistics[i] = new DoubleStatistics();
+        for (int i = 0; i < statistics.length; ++i) statistics[i] = new DoubleStatistics();
 
         if (!input.isEmpty()) {
             final Iterator<T> iterator = input.iterator();

@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.ToDoubleBiFunction;
-import java.util.function.ToDoubleFunction;
 
 @UtilityClass
 public final class BatchPreprocessors
@@ -57,9 +56,7 @@ public final class BatchPreprocessors
     public static <T> List<DoubleStatistics> reducePairToDoubleStatistics(List<Pair<T, T>> input, ToDoubleBiFunction<T, T>... mappers)
     {
         val statistics = new DoubleStatistics[mappers.length];
-        for (int i = 0; i < statistics.length; i++) {
-            statistics[i] = new DoubleStatistics();
-        }
+        for (int i = 0; i < statistics.length; ++i) statistics[i] = new DoubleStatistics();
 
         for (val pair : input) {
             for (int i = 0; i < mappers.length; ++i) {
@@ -84,12 +81,11 @@ public final class BatchPreprocessors
             final Iterator<T> iterator = input.iterator();
             T old = iterator.next();
             T current;
+
             while (iterator.hasNext()) {
                 current = iterator.next();
 
-                for (int i = 0; i < mappers.length; ++i) {
-                    statistics[i].accept(mappers[i].applyAsDouble(old, current));
-                }
+                for (int i = 0; i < mappers.length; ++i) statistics[i].accept(mappers[i].applyAsDouble(old, current));
 
                 old = current;
             }

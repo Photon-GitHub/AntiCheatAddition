@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 @Getter
@@ -51,8 +52,8 @@ public enum ServerVersion
 
     // Lazy getting as most versions are not supported or used.
     // Also, this is important to avoid loading errors (as the generate methods access values() when not fully loaded)
-    @Getter(lazy = true) private final Set<ServerVersion> supVersionsTo = generateVersionsTo();
-    @Getter(lazy = true) private final Set<ServerVersion> supVersionsFrom = generateVersionsFrom();
+    @Getter(lazy = true) private final Set<ServerVersion> supVersionsTo = getSupportedVersions(version -> this.compareTo(version) >= 0);
+    @Getter(lazy = true) private final Set<ServerVersion> supVersionsFrom = getSupportedVersions(version -> this.compareTo(version) <= 0);
 
     /**
      * Shorthand for activeServerVersion == MC18.
@@ -90,19 +91,11 @@ public enum ServerVersion
         return supportedServerVersions.contains(ACTIVE);
     }
 
-    private Set<ServerVersion> generateVersionsTo()
+    private static Set<ServerVersion> getSupportedVersions(Predicate<ServerVersion> filter)
     {
         return Arrays.stream(values())
                      .filter(ServerVersion::isSupported)
-                     .filter(version -> this.compareTo(version) >= 0)
-                     .collect(SetUtil.toImmutableEnumSet());
-    }
-
-    private Set<ServerVersion> generateVersionsFrom()
-    {
-        return Arrays.stream(values())
-                     .filter(ServerVersion::isSupported)
-                     .filter(version -> this.compareTo(version) <= 0)
+                     .filter(filter)
                      .collect(SetUtil.toImmutableEnumSet());
     }
 }

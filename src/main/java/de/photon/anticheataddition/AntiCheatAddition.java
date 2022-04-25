@@ -13,8 +13,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import org.apache.commons.lang.StringUtils;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
@@ -23,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -68,11 +71,19 @@ public class AntiCheatAddition extends JavaPlugin
         return YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
     }
 
+    private static boolean checkForPlugin(String pluginName, Metrics metrics)
+    {
+        final boolean enabled = Bukkit.getServer().getPluginManager().isPluginEnabled(pluginName);
+        DebugSender.INSTANCE.sendDebug(StringUtils.capitalize(pluginName) + (enabled ? "hooked" : "not found"), true, false);
+        metrics.addCustomChart(new SimplePie(pluginName.toLowerCase(Locale.ROOT), enabled ? () -> "Yes" : () -> "No"));
+        return enabled;
+    }
+
     @Override
     public void onEnable()
     {
         try {
-            // Now needs to be done via this ugly way as the original way did lead to a loading error.
+            // Now needs to be done via this ugly way as the original way caused a loading error.
             setInstance(this);
 
             // ------------------------------------------------------------------------------------------------------ //
@@ -99,23 +110,13 @@ public class AntiCheatAddition extends JavaPlugin
             DebugSender.INSTANCE.sendDebug("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608", true, false);
             val metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
-            // The first getConfig call will automatically saveToFile and cache the config.
-
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Plugin hooks                                              //
             // ------------------------------------------------------------------------------------------------------ //
 
             // Call is correct here as Bukkit always has a player api.
-            final boolean viaEnabled = this.getServer().getPluginManager().isPluginEnabled("ViaVersion");
-            DebugSender.INSTANCE.sendDebug("ViaVersion " + (viaEnabled ? "hooked" : "not found"), true, false);
-            if (viaEnabled) viaAPI = Via.getAPI();
-
-            final boolean floodgateEnabled = this.getServer().getPluginManager().isPluginEnabled("floodgate");
-            DebugSender.INSTANCE.sendDebug("Floodgate " + (floodgateEnabled ? "hooked" : "not found"), true, false);
-            if (floodgateEnabled) floodgateApi = FloodgateApi.getInstance();
-
-            metrics.addCustomChart(new SimplePie("viaversion", () -> viaEnabled ? "Yes" : "No"));
-            metrics.addCustomChart(new SimplePie("floodgate", () -> floodgateEnabled ? "Yes" : "No"));
+            if (checkForPlugin("ViaVersion", metrics)) viaAPI = Via.getAPI();
+            if (checkForPlugin("floodgate", metrics)) floodgateApi = FloodgateApi.getInstance();
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Features                                                //

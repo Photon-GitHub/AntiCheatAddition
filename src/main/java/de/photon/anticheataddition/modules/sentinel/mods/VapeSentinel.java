@@ -1,11 +1,11 @@
-package de.photon.anticheataddition.modules.sentinel;
+package de.photon.anticheataddition.modules.sentinel.mods;
 
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
-import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.modules.sentinel.ParsedPluginMessageListener;
+import de.photon.anticheataddition.modules.sentinel.SentinelModule;
 import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
-import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

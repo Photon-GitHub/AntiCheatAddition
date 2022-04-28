@@ -1,8 +1,9 @@
-package de.photon.anticheataddition.modules.sentinel;
+package de.photon.anticheataddition.modules.sentinel.mods;
 
 import com.google.common.io.ByteStreams;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ModuleLoader;
+import de.photon.anticheataddition.modules.sentinel.SentinelModule;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import lombok.val;
 import org.bukkit.entity.Player;

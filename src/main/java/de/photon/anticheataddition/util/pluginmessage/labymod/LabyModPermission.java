@@ -1,7 +1,7 @@
 package de.photon.anticheataddition.util.pluginmessage.labymod;
 
 import com.google.gson.JsonObject;
-import de.photon.anticheataddition.modules.sentinel.LabyModSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.LabyModSentinel;
 import lombok.Getter;
 import lombok.val;
 

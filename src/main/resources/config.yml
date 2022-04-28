@@ -677,6 +677,14 @@ Sentinel:
       commands:
         - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} had a troll potion"
 
+  # A popular pvp mod that can display a HUD, capes and has multiple social features.
+  5Zig:
+    # Do you want to enable 5Zig?
+    enabled: false
+    # What commands will be executed if the mod is detected.
+    commands:
+      - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses 5Zig"
+
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   BetterSprinting:
     # Do you want to enable BetterSprinting?
@@ -693,14 +701,6 @@ Sentinel:
     # What commands will be executed if the mod is detected.
     commands:
       - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses BetterSprinting"
-
-  # A popular pvp mod that can display a HUD, capes and has multiple social features.
-  5Zig:
-    # Do you want to enable 5Zig?
-    enabled: false
-    # What commands will be executed if the mod is detected.
-    commands:
-      - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses 5Zig"
 
   # This covers the latest version of LabyMod.
   # A very popular PvP modification similar to 5zig but with more features and TS3 support

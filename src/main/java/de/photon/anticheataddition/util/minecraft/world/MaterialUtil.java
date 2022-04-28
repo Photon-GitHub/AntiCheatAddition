@@ -27,6 +27,7 @@ public final class MaterialUtil
      */
     public static final Set<Material> AUTO_STEP_MATERIALS;
     public static final Material EXPERIENCE_BOTTLE;
+    public static final Set<Material> SIGNS;
     public static final Material SPAWNER;
     public static final Set<Material> LIQUIDS;
     /**
@@ -58,6 +59,7 @@ public final class MaterialUtil
                 freeSpaceContainers.addAll(getMaterialsEndingWith("SHULKER_BOK"));
 
                 EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
+                SIGNS = getMaterialsEndingWith("SIGN");
                 SPAWNER = Material.getMaterial("MOB_SPAWNER");
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA, Material.getMaterial("STATIONARY_WATER"), Material.getMaterial("STATIONARY_LAVA"));
                 break;
@@ -70,6 +72,7 @@ public final class MaterialUtil
                 freeSpaceContainers.addAll(ofTags(Tag.SHULKER_BOXES));
 
                 EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
+                SIGNS = ofTags(Tag.SIGNS, Tag.STANDING_SIGNS, Tag.WALL_SIGNS);
                 SPAWNER = Material.SPAWNER;
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA);
                 break;

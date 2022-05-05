@@ -2,6 +2,7 @@ package de.photon.anticheataddition.modules.additions;
 
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.messaging.DebugSender;
 import lombok.EqualsAndHashCode;
 import org.bukkit.Bukkit;
@@ -36,7 +37,7 @@ public final class LogBot extends Module
         taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(AntiCheatAddition.getInstance(), () -> {
             final long currentTime = System.currentTimeMillis();
             for (LogDeletionTime logDeletionTime : logDeletionTimes) logDeletionTime.handleLog(currentTime);
-        }, 1, TimeUnit.DAYS.toSeconds(1) * 20);
+        }, 1, TimeUtil.toTicks(TimeUnit.DAYS, 1));
     }
 
     @Override

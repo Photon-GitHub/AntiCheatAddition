@@ -6,6 +6,7 @@ import com.google.common.collect.Multiset;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.events.ViolationEvent;
 import de.photon.anticheataddition.modules.ViolationModule;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public final class ViolationLevelManagement extends ViolationManagement
     private ViolationLevelManagement(@NotNull ViolationModule module, @NotNull ThresholdManagement management, long decayTicks, int decayAmount)
     {
         super(module, management);
-        vlMultiSet = new ViolationLevelMultiSet(decayTicks * 50, decayAmount);
+        vlMultiSet = new ViolationLevelMultiSet(TimeUtil.toMillis(decayTicks), decayAmount);
     }
 
     public static Builder builder(ViolationModule module)

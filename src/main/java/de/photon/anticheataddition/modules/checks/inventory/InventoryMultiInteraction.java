@@ -4,6 +4,7 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -129,7 +130,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
 
         // Convert ticks to millis.
         // 25 to account for server lag.
-        if (user.hasClickedInventoryRecently(25L + (enforcedTicks * 50))) {
+        if (user.hasClickedInventoryRecently(25L + TimeUtil.toMillis(enforcedTicks))) {
             this.getManagement().flag(Flag.of(user).setAddedVl(addedVl).setCancelAction(cancelVl, () -> {
                 event.setCancelled(true);
                 InventoryUtil.syncUpdateInventory(user.getPlayer());

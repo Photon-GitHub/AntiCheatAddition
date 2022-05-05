@@ -12,6 +12,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -23,6 +24,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.concurrent.TimeUnit;
 
 public final class Pingspoof extends ViolationModule implements Listener
 {
@@ -44,7 +47,7 @@ public final class Pingspoof extends ViolationModule implements Listener
     public void enable()
     {
         // Seconds -> Ticks
-        val tickInterval = loadInt(".interval", 30) * 20;
+        val tickInterval = TimeUtil.toTicks(TimeUnit.SECONDS, loadInt(".interval", 30));
 
         val transactionPacket = new WrapperPlayServerTransaction();
         transactionPacket.setAccepted(false);

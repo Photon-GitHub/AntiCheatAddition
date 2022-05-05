@@ -7,6 +7,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.minecraft.world.Region;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -71,7 +72,7 @@ public final class Teaming extends ViolationModule implements Listener
         final double proximityRangeSquared = proximityRange * proximityRange;
 
         final int noPvpTime = loadInt(".no_pvp_time", 6000);
-        final long period = (loadLong(".delay", 5000) * 20L) / 1000L;
+        final long period = TimeUtil.toTicks(loadLong(".delay", 5000));
 
         final int allowedSize = loadInt(".allowed_size", 1);
         Preconditions.checkArgument(allowedSize > 0, "The Teaming allowed_size must be greater than 0.");

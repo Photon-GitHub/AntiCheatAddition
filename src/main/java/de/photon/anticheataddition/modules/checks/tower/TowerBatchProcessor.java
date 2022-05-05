@@ -8,6 +8,7 @@ import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.movement.Movement;
 import de.photon.anticheataddition.util.minecraft.movement.MovementSimulator;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -102,7 +103,7 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
         val simulator = new MovementSimulator(startLocation, currentVelocity, Movement.PLAYER);
         simulator.tick();
         simulator.tickUntil(sim -> sim.getVelocity().getY() <= 0, 200);
-        val landingBlockY = simulator.getCurrent().getBlock().getY();
+        final double landingBlockY = simulator.getCurrent().getBlock().getY();
         simulator.tickUntil(sim -> sim.getCurrent().getY() <= landingBlockY, 50);
 
         // If the result is lower here, the detection is more lenient.
@@ -110,6 +111,6 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
         // 0.92 is the required simulation leniency I got from testing.
         // 0.925 is additional leniency
         // -15 is special leniency for high jump boost environments.
-        return ((((simulator.getTick() * 50D) / landingBlockY) * 0.92D * 0.925D) - 15D) * towerLeniency;
+        return (((TimeUtil.toMillis(simulator.getTick()) / landingBlockY) * 0.92D * 0.925D) - 15D) * towerLeniency;
     }
 }

@@ -6,6 +6,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import de.photon.anticheataddition.util.mathematics.ResetLocation;
 import de.photon.anticheataddition.util.mathematics.ResetVector;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import lombok.val;
 import org.bukkit.Location;
@@ -27,7 +28,7 @@ public interface CanSee
                                                               // About 32000 locations can be cached at most.
                                                               .maximumSize(1L << 14)
                                                               // Use this expireAfterWrite method as the other is not compatible with 1.8.8.
-                                                              .expireAfterWrite(Esp.ESP_INTERVAL_TICKS * 50, TimeUnit.MILLISECONDS)
+                                                              .expireAfterWrite(TimeUtil.toMillis(Esp.ESP_INTERVAL_TICKS), TimeUnit.MILLISECONDS)
                                                               .build(new CacheLoader<>()
                                                               {
                                                                   @Override

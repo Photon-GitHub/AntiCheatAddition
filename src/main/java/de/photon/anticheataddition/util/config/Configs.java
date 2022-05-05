@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.config;
 
 import de.photon.anticheataddition.AntiCheatAddition;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,8 +29,8 @@ public enum Configs
         try {
             this.configurationRepresentation.save();
         } catch (IOException e) {
-            AntiCheatAddition.getInstance().getLogger().severe("Unable to change and save" + this.name() + "'s config.");
-            AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Error when saving a config: ", e);
+            Log.severe(() -> "Unable to change and save" + this.name() + "'s config.");
+            Log.error("Error when saving a config: ", e);
         }
     }
 }

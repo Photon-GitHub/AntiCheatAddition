@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.reflection;
 
 import de.photon.anticheataddition.AntiCheatAddition;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.reflect.FieldUtils;
@@ -39,7 +40,7 @@ public final class ClassReflect
                 constructor.setAccessible(true);
                 return new ConstructorReflect(constructor);
             } catch (NoSuchMethodException e) {
-                AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to find method via reflection", e);
+                Log.error("Unable to find method via reflection", e);
             }
             return null;
         });

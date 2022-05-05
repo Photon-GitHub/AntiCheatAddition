@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.messaging;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.events.SentinelEvent;
 import de.photon.anticheataddition.events.ViolationEvent;
 import de.photon.anticheataddition.util.execute.Placeholders;
@@ -16,12 +15,12 @@ final class ViolationLogger implements Listener
     @EventHandler
     public void onAdditionViolation(final ViolationEvent event)
     {
-        AntiCheatAddition.getInstance().getLogger().fine(() -> Placeholders.replacePlaceholders(VIOLATION_PRE_STRING + event.getModuleId() + " | added vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer()));
+        Log.fine(() -> Placeholders.replacePlaceholders(VIOLATION_PRE_STRING + event.getModuleId() + " | added vl: " + event.getVl() + " | TPS: {tps} | Ping: {ping}", event.getPlayer()));
     }
 
     @EventHandler
     public void onClientControl(final SentinelEvent event)
     {
-        AntiCheatAddition.getInstance().getLogger().fine(() -> Placeholders.replacePlaceholders(SENTINEL_PRE_STRING + event.getModuleId(), event.getPlayer()));
+        Log.fine(() -> Placeholders.replacePlaceholders(SENTINEL_PRE_STRING + event.getModuleId(), event.getPlayer()));
     }
 }

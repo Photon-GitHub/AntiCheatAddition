@@ -3,6 +3,7 @@ package de.photon.anticheataddition.modules.additions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.EqualsAndHashCode;
 import org.bukkit.Bukkit;
 
@@ -66,7 +67,7 @@ public final class LogBot extends Module
         {
             // The folder exists.
             if (!logFolder.exists()) {
-                AntiCheatAddition.getInstance().getLogger().severe("Could not find log folder " + logFolder.getName());
+                Log.severe(() -> "Could not find log folder " + logFolder.getName());
                 return;
             }
 
@@ -79,8 +80,8 @@ public final class LogBot extends Module
                 if ((fileName.endsWith(".log") || fileName.endsWith(".log.gz")) && currentTime - file.lastModified() > timeToDelete) {
                     final boolean result = file.delete();
 
-                    if (result) AntiCheatAddition.getInstance().getLogger().info("Deleted " + fileName);
-                    else AntiCheatAddition.getInstance().getLogger().severe("Could not delete old file " + fileName);
+                    if (result) Log.info(() -> "Deleted " + fileName);
+                    else Log.severe(() -> "Could not delete old file " + fileName);
                 }
             }
         }

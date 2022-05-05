@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
@@ -55,10 +56,10 @@ public final class PacketAdapterBuilder
                    Boolean.TRUE.equals(Bukkit.getScheduler().callSyncMethod(AntiCheatAddition.getInstance(), task).get(timeout, unit));
 
         } catch (InterruptedException | ExecutionException e) {
-            AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to complete the synchronous calculations.", e);
+            Log.error("Unable to complete the synchronous calculations.", e);
             Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
-            AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to finish synchronous calculations. If this message appears frequently please consider upgrading your server.");
+            Log.severe(() -> "Unable to finish synchronous calculations. If this message appears frequently please consider upgrading your server.");
         }
         return false;
     }

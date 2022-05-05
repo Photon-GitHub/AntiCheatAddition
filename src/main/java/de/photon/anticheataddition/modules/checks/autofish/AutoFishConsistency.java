@@ -62,14 +62,14 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
 
                         this.getManagement().flag(Flag.of(event.getPlayer())
                                                       .setAddedVl((int) flagOffset)
-                                                      .setDebug("AutoFish-Debug | Player " +
-                                                                user.getPlayer().getName() +
-                                                                " failed consistency | average time: " +
-                                                                StringUtils.left(String.valueOf(consistencyData.getAverage()), 7) +
-                                                                " | maximum offset: " +
-                                                                StringUtils.left(String.valueOf(maxOffset), 7) +
-                                                                " | flag offset: " +
-                                                                StringUtils.left(String.valueOf(flagOffset), 7))
+                                                      .setDebug(() -> "AutoFish-Debug | Player " +
+                                                                      user.getPlayer().getName() +
+                                                                      " failed consistency | average time: " +
+                                                                      StringUtils.left(String.valueOf(consistencyData.getAverage()), 7) +
+                                                                      " | maximum offset: " +
+                                                                      StringUtils.left(String.valueOf(maxOffset), 7) +
+                                                                      " | flag offset: " +
+                                                                      StringUtils.left(String.valueOf(flagOffset), 7))
                                                       .setCancelAction(cancelVl, () -> event.setCancelled(true)));
                     }
 

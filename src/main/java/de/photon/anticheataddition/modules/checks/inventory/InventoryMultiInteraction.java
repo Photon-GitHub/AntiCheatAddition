@@ -134,7 +134,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
             this.getManagement().flag(Flag.of(user).setAddedVl(addedVl).setCancelAction(cancelVl, () -> {
                 event.setCancelled(true);
                 InventoryUtil.syncUpdateInventory(user.getPlayer());
-            }).setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " moved items too quickly."));
+            }).setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " moved items too quickly."));
         }
     }
 

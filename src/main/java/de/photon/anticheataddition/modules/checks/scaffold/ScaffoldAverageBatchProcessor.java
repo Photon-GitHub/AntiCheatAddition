@@ -50,9 +50,9 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
                                                           user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
-                                                      .setDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() +
-                                                                " enforced delay: " + minExpectedAverage + " | real: " + actualAverage +
-                                                                " | vl increase: " + vlIncrease));
+                                                      .setDebug(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() +
+                                                                      " enforced delay: " + minExpectedAverage + " | real: " + actualAverage +
+                                                                      " | vl increase: " + vlIncrease));
         }
     }
 

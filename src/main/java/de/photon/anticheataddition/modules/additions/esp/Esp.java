@@ -5,6 +5,7 @@ import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.config.Configs;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeQueue;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.visibility.EntityVisibility;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -40,10 +41,10 @@ public final class Esp extends Module
     private static int loadDefaultTrackingRange(ConfigurationSection worlds)
     {
         if (worlds.contains(DEFAULT_WORLD_NAME + ENTITY_TRACKING_RANGE_PLAYERS)) {
-            AntiCheatAddition.getInstance().getLogger().info("ESP | Default entity tracking range found.");
+            Log.info(() -> "ESP | Default entity tracking range found.");
             return worlds.getInt(DEFAULT_WORLD_NAME + ENTITY_TRACKING_RANGE_PLAYERS);
         } else {
-            AntiCheatAddition.getInstance().getLogger().severe("ESP | Default entity tracking range not found, using max tracking range.");
+            Log.info(() -> "ESP | Default entity tracking range not found, using max tracking range.");
             return MAX_TRACKING_RANGE;
         }
     }
@@ -59,7 +60,7 @@ public final class Esp extends Module
             // Does the world exist?
             val world = Bukkit.getWorld(key);
             if (world == null || !worlds.contains(key + ENTITY_TRACKING_RANGE_PLAYERS)) {
-                AntiCheatAddition.getInstance().getLogger().severe(() -> "ESP | World " + key + " player tracking range could not be loaded, using default tracking range.");
+                Log.severe(() -> "ESP | World " + key + " player tracking range could not be loaded, using default tracking range.");
                 continue;
             }
 
@@ -77,7 +78,7 @@ public final class Esp extends Module
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
         val worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
         if (worlds == null) {
-            AntiCheatAddition.getInstance().getLogger().severe("Cannot enable ESP as the world-settings in spigot.yml are not present.");
+            Log.severe(() -> "Cannot enable ESP as the world-settings in spigot.yml are not present.");
             return;
         }
 

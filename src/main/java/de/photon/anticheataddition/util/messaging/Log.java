@@ -14,15 +14,17 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.function.Supplier;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
-public class LogHandler
+public class Log
 {
-    public static final LogHandler INSTANCE = new LogHandler();
+    public static final Log INSTANCE = new Log();
     // The prefix is always "[plugin name] ", so plugin name length + 3.
     private static final int PREFIX_CHARS = AntiCheatAddition.getInstance().getName().length() + 3;
 
@@ -47,6 +49,51 @@ public class LogHandler
         }
     };
 
+    public static Logger logger()
+    {
+        return AntiCheatAddition.getInstance().getLogger();
+    }
+
+    public static void log(Level level, Supplier<String> message)
+    {
+        logger().log(level, message);
+    }
+
+    public static void finest(Supplier<String> message)
+    {
+        logger().finest(message);
+    }
+
+    public static void finer(Supplier<String> message)
+    {
+        logger().finer(message);
+    }
+
+    public static void fine(Supplier<String> message)
+    {
+        logger().fine(message);
+    }
+
+    public static void info(Supplier<String> message)
+    {
+        logger().info(message);
+    }
+
+    public static void warning(Supplier<String> message)
+    {
+        logger().warning(message);
+    }
+
+    public static void severe(Supplier<String> message)
+    {
+        logger().severe(message);
+    }
+
+    public static void error(String message, Throwable thrown)
+    {
+        logger().log(Level.SEVERE, message, thrown);
+    }
+
     private final Level level = AntiCheatAddition.getInstance().getConfig().getBoolean("Debug.console") ? Level.FINE : Level.INFO;
     private FileHandler currentHandler = null;
 
@@ -57,11 +104,11 @@ public class LogHandler
         }
 
         if (AntiCheatAddition.getInstance().getConfig().getBoolean("Debug.players")) {
-            AntiCheatAddition.getInstance().getLogger().addHandler(new DebugUserHandler(level));
+            logger().addHandler(new DebugUserHandler(level));
         }
 
         // Set the console level.
-        AntiCheatAddition.getInstance().getLogger().setLevel(level);
+        logger().setLevel(level);
 
         // Add the violation debug messages.
         AntiCheatAddition.getInstance().registerListener(new ViolationLogger());
@@ -89,8 +136,8 @@ public class LogHandler
         }
 
         // Replace old handler.
-        AntiCheatAddition.getInstance().getLogger().addHandler(currentHandler);
-        if (oldHandler != null) AntiCheatAddition.getInstance().getLogger().removeHandler(oldHandler);
+        logger().addHandler(currentHandler);
+        if (oldHandler != null) logger().removeHandler(oldHandler);
 
         // Replace again the next day.
         // 5 seconds after the next day to prevent date problems.

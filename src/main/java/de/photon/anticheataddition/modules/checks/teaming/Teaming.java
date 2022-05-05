@@ -8,6 +8,7 @@ import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.minecraft.world.Region;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -39,9 +40,9 @@ public final class Teaming extends ViolationModule implements Listener
                 Region region = Region.parseRegion(s);
                 safeZones.add(region);
             } catch (NullPointerException e) {
-                AntiCheatAddition.getInstance().getLogger().severe("Unable to load safe zone \"" + s + "\" in teaming check, is the world correct?");
+                Log.severe(() -> "Unable to load safe zone \"" + s + "\" in teaming check, is the world correct?");
             } catch (ArrayIndexOutOfBoundsException e) {
-                AntiCheatAddition.getInstance().getLogger().severe("Unable to load safe zone \"" + s + "\" in teaming check, are all coordinates present?");
+                Log.severe(() -> "Unable to load safe zone \"" + s + "\" in teaming check, are all coordinates present?");
             }
         }
         return Set.copyOf(safeZones);
@@ -53,7 +54,7 @@ public final class Teaming extends ViolationModule implements Listener
         for (String key : loadStringList(".enabled_worlds")) {
             World world = Bukkit.getWorld(key);
             if (world == null) {
-                AntiCheatAddition.getInstance().getLogger().fine(() -> "Unable to load world \"" + key + "\" in teaming check.");
+                Log.fine(() -> "Unable to load world \"" + key + "\" in teaming check.");
                 continue;
             }
             worlds.add(world);

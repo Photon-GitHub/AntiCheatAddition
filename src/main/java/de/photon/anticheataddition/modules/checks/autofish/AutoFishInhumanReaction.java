@@ -45,7 +45,7 @@ public final class AutoFishInhumanReaction extends ViolationModule implements Li
                     // Flag for vl = b + 1 because there would otherwise be a "0-vl"
                     this.getManagement().flag(Flag.of(user)
                                                   .setAddedVl(vl)
-                                                  .setDebug("AutoFish-Debug | Player " + user.getPlayer().getName() + " failed inhuman reaction")
+                                                  .setDebug(() -> "AutoFish-Debug | Player " + user.getPlayer().getName() + " failed inhuman reaction")
                                                   .setCancelAction(cancelVl, () -> event.setCancelled(true)));
                 }
 

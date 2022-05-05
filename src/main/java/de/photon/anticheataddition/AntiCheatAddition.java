@@ -8,7 +8,7 @@ import de.photon.anticheataddition.modules.ModuleManager;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataUpdaterEvents;
 import de.photon.anticheataddition.util.config.Configs;
-import de.photon.anticheataddition.util.messaging.LogHandler;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -87,14 +87,14 @@ public class AntiCheatAddition extends JavaPlugin
             setInstance(this);
 
             // Setup logging.
-            LogHandler.INSTANCE.setup();
+            Log.INSTANCE.setup();
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
             if (!ServerVersion.ACTIVE.isSupported()) {
-                getInstance().getLogger().severe("Server version is not supported.");
-                getInstance().getLogger().severe("Supported versions: " + ServerVersion.ALL_SUPPORTED_VERSIONS.stream().map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")));
+                getLogger().severe("Server version is not supported.");
+                getLogger().severe("Supported versions: " + ServerVersion.ALL_SUPPORTED_VERSIONS.stream().map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")));
                 return;
             }
 
@@ -103,13 +103,13 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             this.bungeecord = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getBoolean("settings.bungeecord", false);
-            getInstance().getLogger().info("Bungeecord " + (this.bungeecord ? "detected" : "not detected"));
+            getLogger().info("Bungeecord " + (this.bungeecord ? "detected" : "not detected"));
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Metrics                                                 //
             // ------------------------------------------------------------------------------------------------------ //
 
-            getInstance().getLogger().info("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608");
+            getLogger().info("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608");
             val metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // ------------------------------------------------------------------------------------------------------ //
@@ -140,13 +140,13 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             //                                           Enabled-Debug + API                                          //
             // ------------------------------------------------------------------------------------------------------ //
-            this.getLogger().info(this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
-            getInstance().getLogger().fine("AntiCheatAddition initialization completed.");
+            getLogger().info(this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
+            getLogger().fine("AntiCheatAddition initialization completed.");
         } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //
             // ------------------------------------------------------------------------------------------------------ //
-            this.getLogger().log(Level.SEVERE, "Loading failed:\n", e);
+            getLogger().log(Level.SEVERE, "Loading failed:\n", e);
         }
     }
 
@@ -159,10 +159,10 @@ public class AntiCheatAddition extends JavaPlugin
 
         DataUpdaterEvents.INSTANCE.unregister();
 
-        getInstance().getLogger().info("AntiCheatAddition disabled.");
-        getInstance().getLogger().info(" ");
+        getLogger().info("AntiCheatAddition disabled.");
+        getLogger().info(" ");
 
         // Close the log handlers (file locking, etc.)
-        LogHandler.INSTANCE.close();
+        Log.INSTANCE.close();
     }
 }

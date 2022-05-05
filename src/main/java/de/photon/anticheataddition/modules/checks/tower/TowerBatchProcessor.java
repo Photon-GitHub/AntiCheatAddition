@@ -71,7 +71,7 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
                                                           user.getTimeMap().at(TimeKey.TOWER_TIMEOUT).update();
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
-                                                      .setDebug("Tower-Debug | Player: " + user.getPlayer().getName() + " expected time: " + calcAvg + " | real: " + actAvg));
+                                                      .setDebug(() -> "Tower-Debug | Player: " + user.getPlayer().getName() + " expected time: " + calcAvg + " | real: " + actAvg));
         }
     }
 

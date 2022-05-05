@@ -44,7 +44,7 @@ public final class InventoryRotation extends ViolationModule
                         // The player has opened his inventory for at least one second.
                         user.notRecentlyOpenedInventory(1000))
                     {
-                        getManagement().flag(Flag.of(user).setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " sent new rotations while having an open inventory."));
+                        getManagement().flag(Flag.of(user).setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " sent new rotations while having an open inventory."));
                     }
                 }).build());
     }

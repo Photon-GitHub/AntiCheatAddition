@@ -124,7 +124,7 @@ public final class InventoryMove extends ViolationModule
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(20)
                                                      .setCancelAction(cancelVl, () -> cancelAction(user, event))
-                                                     .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory."));
+                                                     .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory."));
                             return;
                         }
 
@@ -149,7 +149,7 @@ public final class InventoryMove extends ViolationModule
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(5)
                                                      .setCancelAction(cancelVl, () -> cancelAction(user, event))
-                                                     .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory."));
+                                                     .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory."));
                         }
                     } else {
                         user.getDataMap().setBoolean(DataKey.Bool.ALLOWED_TO_JUMP, true);

@@ -64,7 +64,8 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         val finalVl = (int) Math.min(vl, 70);
         this.getModule().getManagement().flag(Flag.of(user)
                                                   .setAddedVl(finalVl)
-                                                  .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + averageMillis + " | MC: " + misClickCounter.getCounter() + " | VLU: " + finalVl + ")"));
+                                                  .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() +
+                                                                  " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + averageMillis + " | MC: " + misClickCounter.getCounter() + " | VLU: " + finalVl + ")"));
 
         misClickCounter.setToZero();
     }

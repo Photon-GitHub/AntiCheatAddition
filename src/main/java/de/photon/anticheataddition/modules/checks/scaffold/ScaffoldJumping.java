@@ -6,6 +6,7 @@ import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimeKey;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -35,7 +36,7 @@ final class ScaffoldJumping extends Module
                 && user.hasJumpedRecently(1000))
             {
                 if (failCounter.incrementCompareThreshold()) {
-                    AntiCheatAddition.getInstance().getLogger().fine("Scaffold-Debug | Player: " + event.getPlayer().getName() + " jumped while scaffolding.");
+                    Log.fine(() -> "Scaffold-Debug | Player: " + event.getPlayer().getName() + " jumped while scaffolding.");
                     return 20;
                 }
             } else {

@@ -46,7 +46,7 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
             if (user.getDataMap().getCounter(DataKey.Count.INVENTORY_PERFECT_EXIT_FAILS).conditionallyIncDec(passedTime <= 70)) {
                 this.getManagement().flag(Flag.of(user)
                                               .setAddedVl(VL_CALCULATOR.apply(passedTime).intValue())
-                                              .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')'));
+                                              .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')'));
             }
         }
     }

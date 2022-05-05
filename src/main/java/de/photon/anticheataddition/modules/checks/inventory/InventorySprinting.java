@@ -48,7 +48,7 @@ public final class InventorySprinting extends ViolationModule implements Listene
                                               event.setCancelled(true);
                                               InventoryUtil.syncUpdateInventory(user.getPlayer());
                                           })
-                                          .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " interacted with an inventory while sprinting or sneaking."));
+                                          .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " interacted with an inventory while sprinting or sneaking."));
         }
     }
 

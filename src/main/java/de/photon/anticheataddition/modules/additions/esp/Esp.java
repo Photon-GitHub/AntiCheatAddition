@@ -103,8 +103,7 @@ public final class Esp extends Module
                 val playerQuadTree = new QuadTreeQueue<Player>();
                 for (Player player : worldPlayers) playerQuadTree.add(player.getLocation().getX(), player.getLocation().getZ(), player);
 
-                if (ONLY_FULL_HIDE) processOnlyHideWorldQuadTree(playerTrackingRange, worldPlayers, playerQuadTree);
-                else processWorldQuadTree(playerTrackingRange, worldPlayers, playerQuadTree);
+                processWorldQuadTree(playerTrackingRange, worldPlayers, playerQuadTree);
             }
         }, 100, ESP_INTERVAL_TICKS);
     }
@@ -123,7 +122,7 @@ public final class Esp extends Module
                 if (observerNode.distanceSquared(playerNode) < 1 || CanSee.INSTANCE.canSee(observer, watched)) {
                     // No hiding case
                     fullHiddenPlayers.remove(watched);
-                } else if (!watched.isSneaking()) {
+                } else if (!ONLY_FULL_HIDE && !watched.isSneaking()) {
                     // Equip hiding
                     fullHiddenPlayers.remove(watched);
                     equipHiddenPlayers.add(watched);
@@ -132,27 +131,6 @@ public final class Esp extends Module
             }
 
             EntityVisibility.INSTANCE.setHidden(observerNode.getElement(), fullHiddenPlayers, equipHiddenPlayers);
-        }
-    }
-
-    private void processOnlyHideWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
-    {
-        for (val observerNode : playerQuadTree) {
-            final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
-            final Player observer = observerNode.getElement();
-
-            for (val playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
-                final Player watched = playerNode.getElement();
-
-                // Less than 1 block distance (removes the player themselves and any very close player)
-                if (observerNode.distanceSquared(playerNode) < 1 || CanSee.INSTANCE.canSee(observer, watched)) {
-                    // No hiding case
-                    fullHiddenPlayers.remove(watched);
-                }
-                // Full hiding (due to the default adding to fullHiddenPlayers.)
-            }
-
-            EntityVisibility.INSTANCE.setHidden(observerNode.getElement(), fullHiddenPlayers, Set.of());
         }
     }
 }

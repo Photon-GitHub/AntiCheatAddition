@@ -1,9 +1,9 @@
 package de.photon.anticheataddition.modules.checks.scaffold;
 
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
-import de.photon.anticheataddition.util.messaging.DebugSender;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -54,7 +54,7 @@ final class ScaffoldPosition extends Module
             }
 
             if (flag) {
-                DebugSender.INSTANCE.sendDebug("Scaffold-Debug | Player: " + event.getPlayer().getName() + " placed from a suspicious location.");
+                AntiCheatAddition.getInstance().getLogger().fine("Scaffold-Debug | Player: " + event.getPlayer().getName() + " placed from a suspicious location.");
                 return 30;
             }
 

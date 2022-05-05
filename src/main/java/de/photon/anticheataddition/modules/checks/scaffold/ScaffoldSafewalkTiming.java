@@ -1,10 +1,10 @@
 package de.photon.anticheataddition.modules.checks.scaffold;
 
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimeKey;
-import de.photon.anticheataddition.util.messaging.DebugSender;
 import lombok.Getter;
 
 import java.util.function.ToIntFunction;
@@ -34,7 +34,7 @@ final class ScaffoldSafewalkTiming extends Module
                     // Has not sneaked recently
                     !(user.hasSneakedRecently(175) && user.getDataMap().getLong(DataKey.Long.LAST_SNEAK_DURATION) > 148)))
             {
-                DebugSender.INSTANCE.sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Timing)");
+                AntiCheatAddition.getInstance().getLogger().fine("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Timing)");
                 return 20;
             }
             return 0;

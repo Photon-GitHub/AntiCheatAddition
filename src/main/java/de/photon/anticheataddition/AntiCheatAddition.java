@@ -8,7 +8,7 @@ import de.photon.anticheataddition.modules.ModuleManager;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataUpdaterEvents;
 import de.photon.anticheataddition.util.config.Configs;
-import de.photon.anticheataddition.util.messaging.DebugSender;
+import de.photon.anticheataddition.util.messaging.LogHandler;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -74,7 +74,7 @@ public class AntiCheatAddition extends JavaPlugin
     private static boolean checkForPlugin(String pluginName, Metrics metrics)
     {
         final boolean enabled = Bukkit.getServer().getPluginManager().isPluginEnabled(pluginName);
-        DebugSender.INSTANCE.sendDebug(StringUtils.capitalize(pluginName) + (enabled ? "hooked" : "not found"), true, false);
+        getInstance().getLogger().info(StringUtils.capitalize(pluginName) + (enabled ? " hooked" : " not found"));
         metrics.addCustomChart(new SimplePie(pluginName.toLowerCase(Locale.ROOT), enabled ? () -> "Yes" : () -> "No"));
         return enabled;
     }
@@ -86,13 +86,15 @@ public class AntiCheatAddition extends JavaPlugin
             // Now needs to be done via this ugly way as the original way caused a loading error.
             setInstance(this);
 
+            // Setup logging.
+            LogHandler.INSTANCE.setup();
+
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
             if (!ServerVersion.ACTIVE.isSupported()) {
-                DebugSender.INSTANCE.sendDebug("Server version is not supported.", true, true);
-                DebugSender.INSTANCE.sendDebug("Supported versions: " + ServerVersion.ALL_SUPPORTED_VERSIONS.stream().map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")),
-                                               true, true);
+                getInstance().getLogger().severe("Server version is not supported.");
+                getInstance().getLogger().severe("Supported versions: " + ServerVersion.ALL_SUPPORTED_VERSIONS.stream().map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")));
                 return;
             }
 
@@ -101,13 +103,13 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             this.bungeecord = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getBoolean("settings.bungeecord", false);
-            DebugSender.INSTANCE.sendDebug("Bungeecord " + (this.bungeecord ? "detected" : "not detected"), true, false);
+            getInstance().getLogger().info("Bungeecord " + (this.bungeecord ? "detected" : "not detected"));
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Metrics                                                 //
             // ------------------------------------------------------------------------------------------------------ //
 
-            DebugSender.INSTANCE.sendDebug("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608", true, false);
+            getInstance().getLogger().info("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608");
             val metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // ------------------------------------------------------------------------------------------------------ //
@@ -139,7 +141,7 @@ public class AntiCheatAddition extends JavaPlugin
             //                                           Enabled-Debug + API                                          //
             // ------------------------------------------------------------------------------------------------------ //
             this.getLogger().info(this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
-            DebugSender.INSTANCE.sendDebug("AntiCheatAddition initialization completed.");
+            getInstance().getLogger().fine("AntiCheatAddition initialization completed.");
         } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //
@@ -151,16 +153,16 @@ public class AntiCheatAddition extends JavaPlugin
     @Override
     public void onDisable()
     {
-        // Plugin is already disabled -> DebugSender is not allowed to register a task
-        DebugSender.INSTANCE.setAllowedToRegisterTasks(false);
-
         // Remove all the Listeners, PacketListeners
         ProtocolLibrary.getProtocolManager().removePacketListeners(this);
         HandlerList.unregisterAll(AntiCheatAddition.getInstance());
 
         DataUpdaterEvents.INSTANCE.unregister();
 
-        DebugSender.INSTANCE.sendDebug("AntiCheatAddition disabled.", true, false);
-        DebugSender.INSTANCE.sendDebug(" ", true, false);
+        getInstance().getLogger().info("AntiCheatAddition disabled.");
+        getInstance().getLogger().info(" ");
+
+        // Close the log handlers (file locking, etc.)
+        LogHandler.INSTANCE.close();
     }
 }

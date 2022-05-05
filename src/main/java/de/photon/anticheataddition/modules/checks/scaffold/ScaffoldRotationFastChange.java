@@ -1,9 +1,9 @@
 package de.photon.anticheataddition.modules.checks.scaffold;
 
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
-import de.photon.anticheataddition.util.messaging.DebugSender;
 import lombok.Getter;
 
 import java.util.function.ToIntFunction;
@@ -27,7 +27,7 @@ final class ScaffoldRotationFastChange extends Module
     {
         applyingConsumer = user -> {
             if (user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).recentlyUpdated(125)) {
-                DebugSender.INSTANCE.sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent fast rotation changes.");
+                AntiCheatAddition.getInstance().getLogger().fine("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent fast rotation changes.");
                 return 15;
             }
             return 0;

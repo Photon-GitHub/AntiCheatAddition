@@ -8,7 +8,6 @@ import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
-import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.minecraft.world.Region;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
@@ -40,9 +39,9 @@ public final class Teaming extends ViolationModule implements Listener
                 Region region = Region.parseRegion(s);
                 safeZones.add(region);
             } catch (NullPointerException e) {
-                DebugSender.INSTANCE.sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, is the world correct?", true, true);
+                AntiCheatAddition.getInstance().getLogger().severe("Unable to load safe zone \"" + s + "\" in teaming check, is the world correct?");
             } catch (ArrayIndexOutOfBoundsException e) {
-                DebugSender.INSTANCE.sendDebug("Unable to load safe zone \"" + s + "\" in teaming check, are all coordinates present?", true, true);
+                AntiCheatAddition.getInstance().getLogger().severe("Unable to load safe zone \"" + s + "\" in teaming check, are all coordinates present?");
             }
         }
         return Set.copyOf(safeZones);
@@ -54,7 +53,7 @@ public final class Teaming extends ViolationModule implements Listener
         for (String key : loadStringList(".enabled_worlds")) {
             World world = Bukkit.getWorld(key);
             if (world == null) {
-                DebugSender.INSTANCE.sendDebug("Unable to load world \"" + key + "\" in teaming check.");
+                AntiCheatAddition.getInstance().getLogger().fine(() -> "Unable to load world \"" + key + "\" in teaming check.");
                 continue;
             }
             worlds.add(world);

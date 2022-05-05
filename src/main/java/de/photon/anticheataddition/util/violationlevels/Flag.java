@@ -1,8 +1,8 @@
 package de.photon.anticheataddition.util.violationlevels;
 
 import com.google.common.base.Preconditions;
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.messaging.DebugSender;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
@@ -87,7 +87,7 @@ public final class Flag
      */
     public void callNotCancelledActions(int currentVl)
     {
-        if (this.debug != null) DebugSender.INSTANCE.sendDebug(this.debug);
+        if (this.debug != null) AntiCheatAddition.getInstance().getLogger().fine(this.debug);
         if (this.cancelVl >= 0 && currentVl >= this.cancelVl) this.onCancel.run();
         if (this.eventNotCancelled != null) this.eventNotCancelled.run();
     }

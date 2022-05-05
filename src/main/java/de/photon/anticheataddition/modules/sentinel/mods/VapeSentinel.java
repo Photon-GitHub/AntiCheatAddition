@@ -1,10 +1,10 @@
 package de.photon.anticheataddition.modules.sentinel.mods;
 
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.sentinel.ParsedPluginMessageListener;
 import de.photon.anticheataddition.modules.sentinel.SentinelModule;
-import de.photon.anticheataddition.util.messaging.DebugSender;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,7 +32,7 @@ public final class VapeSentinel extends SentinelModule implements Listener, Pars
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull String message)
     {
-        DebugSender.INSTANCE.sendDebug("Player " + player.getName() + " joined with Vape | Data: " + message);
+        AntiCheatAddition.getInstance().getLogger().fine("Player " + player.getName() + " joined with Vape | Data: " + message);
         detection(player);
     }
 

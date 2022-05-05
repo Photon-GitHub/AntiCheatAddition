@@ -544,7 +544,7 @@ Teaming:
   # If you only want to allow teams with a certain member-cap you can change this value appropriately.
   # Setting it to 1 flags all teams.
   allowed_size: 1
-  # Non-pvp time to count as teaming
+  # After what duration not attacking a close player is regarded as teaming.
   # Measured in milliseconds.
   no_pvp_time: 6000
   # This contains all worlds the check should be enabled in.

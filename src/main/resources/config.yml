@@ -966,12 +966,9 @@ Sentinel:
 # debug file of AntiCheatAddition, therefore this setting is enabled here.
 Debug:
   # This is the debug level of AntiCheatAddition.
-  # Possible values are: "SEVERE", "WARNING", "INFO", "FINE" among others.
+  # Possible values are: "OFF", "SEVERE", "WARNING", "INFO", "FINE" among others.
   # Default is "INFO", setting this to "FINE" will cause debug messages to be logged to the console, log file and sent
   # to debug players enabled down below.
-  level: "INFO"
-  # Do you want AntiCheatAddition to log into a log-file?
-  file: true
-  # Should players be able to get debug messages if they have the anticheataddition.debug permission
-  # Players can toggle the debug output with the command /anticheataddition debug
-  players: false
+  console_level: "INFO"
+  file_level: "FINE"
+  player_level: "OFF"

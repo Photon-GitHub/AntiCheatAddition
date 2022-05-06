@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.util.messaging;
 
+import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
@@ -14,7 +15,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
@@ -27,8 +27,16 @@ public class Log
 {
     public static final Log INSTANCE = new Log();
 
-    private static final Level LEVEL = Level.parse(Optional.ofNullable(AntiCheatAddition.getInstance().getConfig().getString("Debug.level"))
-                                                           .orElseThrow(() -> new IllegalStateException("Debug level setting is not present in config. Please regenerate your config.")));
+    private static final Level CONSOLE_LEVEL = getConfigLevel("Debug.console_level");
+    private static final Level FILE_LEVEL = getConfigLevel("Debug.file_level");
+    private static final Level PLAYER_LEVEL = getConfigLevel("Debug.file_level");
+
+    private static Level getConfigLevel(String path)
+    {
+        final String value = AntiCheatAddition.getInstance().getConfig().getString(path);
+        Preconditions.checkNotNull(value, "Debug level setting is not present in config. Please regenerate your config.");
+        return Level.parse(value);
+    }
 
     // The prefix is always "[plugin name] ", so plugin name length + 3.
     private static final int PREFIX_CHARS = AntiCheatAddition.getInstance().getName().length() + 3;
@@ -99,6 +107,7 @@ public class Log
         logger().log(Level.SEVERE, message, thrown);
     }
 
+
     private FileHandler currentHandler = null;
 
     public void setup()
@@ -108,11 +117,11 @@ public class Log
         }
 
         if (AntiCheatAddition.getInstance().getConfig().getBoolean("Debug.players")) {
-            logger().addHandler(new DebugUserHandler(LEVEL));
+            logger().addHandler(new DebugUserHandler(PLAYER_LEVEL));
         }
 
         // Set the console level.
-        logger().setLevel(LEVEL);
+        logger().setLevel(CONSOLE_LEVEL);
 
         // Add the violation debug messages.
         AntiCheatAddition.getInstance().registerListener(new ViolationLogger());
@@ -132,7 +141,7 @@ public class Log
         final String path = AntiCheatAddition.getInstance().getDataFolder().getPath() + File.separatorChar + "logs" + File.separatorChar + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log";
         try {
             this.currentHandler = new FileHandler(path, true);
-            this.currentHandler.setLevel(LEVEL);
+            this.currentHandler.setLevel(FILE_LEVEL);
             this.currentHandler.setFormatter(LOG_FILE_FORMATTER);
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.SEVERE, "AntiCheatAddition unable to create log file handler.", e);

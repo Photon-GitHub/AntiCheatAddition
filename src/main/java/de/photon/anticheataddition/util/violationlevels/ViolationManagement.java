@@ -1,10 +1,9 @@
 package de.photon.anticheataddition.util.violationlevels;
 
 import com.google.common.base.Preconditions;
+import com.google.common.eventbus.EventBus;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
-import de.photon.anticheataddition.util.datastructure.broadcast.BroadcastReceiver;
-import de.photon.anticheataddition.util.datastructure.broadcast.Broadcaster;
 import de.photon.anticheataddition.util.violationlevels.threshold.ThresholdManagement;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class ViolationManagement extends Broadcaster<Player> implements BroadcastReceiver<Player>
+public abstract class ViolationManagement
 {
     /**
      * The module id of the handler
@@ -22,6 +21,7 @@ public abstract class ViolationManagement extends Broadcaster<Player> implements
      * A {@link List} of thresholds which is guaranteed to be sorted.
      */
     @NotNull protected final ThresholdManagement thresholds;
+    @NotNull private final EventBus vlUpdateBus = new EventBus();
 
     protected ViolationManagement(@NotNull ViolationModule module, @NotNull ThresholdManagement thresholds)
     {
@@ -50,6 +50,23 @@ public abstract class ViolationManagement extends Broadcaster<Player> implements
     public abstract void setVL(@NotNull final Player player, final int newVl);
 
     /**
+     * Registers a listener.
+     * The listener is called with a {@link Player} each time the vl updates.
+     */
+    public final void register(Object playerVlChangeListener)
+    {
+        this.vlUpdateBus.register(playerVlChangeListener);
+    }
+
+    /**
+     * Call this method if a {@link Player}'s vl changes.
+     */
+    protected final void postVlUpdate(Player player)
+    {
+        this.vlUpdateBus.post(player);
+    }
+
+    /**
      * Adds an {@link Integer} to the vl of a player. The number can be negative, this will decrease the vl then.
      *
      * @param player the {@link Player} whose vl should be set
@@ -67,11 +84,5 @@ public abstract class ViolationManagement extends Broadcaster<Player> implements
     {
         // Only schedule the command execution if the plugin is loaded.
         if (AntiCheatAddition.getInstance().isEnabled()) this.thresholds.executeThresholds(fromVl, toVl, player);
-    }
-
-    @Override
-    public void receive(Player value)
-    {
-        // Ignore, only important for aggregations.
     }
 }

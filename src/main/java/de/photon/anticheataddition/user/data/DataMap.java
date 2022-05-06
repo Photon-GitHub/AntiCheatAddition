@@ -71,7 +71,7 @@ public final class DataMap
         this.floatMap.put(key, f);
     }
 
-    public void setFloat(DataKey.Double key, Double d)
+    public void setDouble(DataKey.Double key, Double d)
     {
         this.doubleMap.put(key, d);
     }

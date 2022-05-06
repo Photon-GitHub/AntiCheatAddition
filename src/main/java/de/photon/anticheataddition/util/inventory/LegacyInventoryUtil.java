@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.Optional;
 
-public class LegacyInventoryUtil implements InventoryUtil
+final class LegacyInventoryUtil implements InventoryUtil
 {
     @Override
     public List<ItemStack> getHandContents(Player player)
@@ -233,7 +233,7 @@ public class LegacyInventoryUtil implements InventoryUtil
                     case 5:
                     case 6:
                     case 7:
-                    case 8: return SlotLocation.opOf(0D, rawSlot - 5);
+                    case 8: return SlotLocation.opOf(0D, rawSlot - 5D);
                     default: return InventoryUtil.lowerInventoryLocation(9, rawSlot);
                 }
             default:

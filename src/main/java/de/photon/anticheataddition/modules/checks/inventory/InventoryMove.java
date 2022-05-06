@@ -65,7 +65,7 @@ public final class InventoryMove extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetAdapter = PacketAdapterBuilder
+        return ModuleLoader.of(this, PacketAdapterBuilder
                 .of(this,
                     // Look
                     PacketType.Play.Client.LOOK,
@@ -124,7 +124,7 @@ public final class InventoryMove extends ViolationModule
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(20)
                                                      .setCancelAction(cancelVl, () -> cancelAction(user, event))
-                                                     .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory."));
+                                                     .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory."));
                             return;
                         }
 
@@ -149,16 +149,12 @@ public final class InventoryMove extends ViolationModule
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(5)
                                                      .setCancelAction(cancelVl, () -> cancelAction(user, event))
-                                                     .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory."));
+                                                     .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory."));
                         }
                     } else {
                         user.getDataMap().setBoolean(DataKey.Bool.ALLOWED_TO_JUMP, true);
                     }
-                }).build();
-
-        return ModuleLoader.builder(this)
-                           .addPacketListeners(packetAdapter)
-                           .build();
+                }).build());
     }
 
     @Override

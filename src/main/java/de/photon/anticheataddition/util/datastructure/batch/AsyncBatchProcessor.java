@@ -1,9 +1,10 @@
 package de.photon.anticheataddition.util.datastructure.batch;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import de.photon.anticheataddition.modules.ViolationModule;
-import de.photon.anticheataddition.util.datastructure.broadcast.Broadcaster;
 
-import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -12,12 +13,12 @@ public abstract class AsyncBatchProcessor<T> extends BatchProcessor<T>
 {
     private ExecutorService executor;
 
-    protected AsyncBatchProcessor(ViolationModule module, Collection<Broadcaster<Batch.Snapshot<T>>> broadcasters)
+    protected AsyncBatchProcessor(ViolationModule module, Set<EventBus> eventBuses)
     {
-        super(module, broadcasters);
+        super(module, eventBuses);
     }
 
-    @Override
+    @Subscribe
     public final void receive(Batch.Snapshot<T> snapshot)
     {
         if (executor != null && !executor.isShutdown()) {

@@ -1,11 +1,12 @@
 package de.photon.anticheataddition.modules.checks.scaffold;
 
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
-import de.photon.anticheataddition.util.messaging.DebugSender;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -69,7 +70,7 @@ final class ScaffoldSafewalkPosition extends Module
 
             if (sneakBorder) {
                 if (user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_SAFEWALK_POSITION_FAILS).incrementCompareThreshold()) {
-                    DebugSender.INSTANCE.sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Position)" + " | Face: " + face + "| xOffset: " + xOffset + " | zOffset" + zOffset);
+                    Log.fine(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Position)" + " | Face: " + face + "| xOffset: " + xOffset + " | zOffset" + zOffset);
                     return 15;
                 }
             } else user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_SAFEWALK_POSITION_FAILS).setToZero();

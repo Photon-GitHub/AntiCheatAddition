@@ -39,7 +39,7 @@ public final class DamageIndicator extends Module
                           Set.of(PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN) :
                           Set.of(PacketType.Play.Server.ENTITY_METADATA);
 
-        val adapter = PacketAdapterBuilder
+        return ModuleLoader.of(this, PacketAdapterBuilder
                 .of(this, packetTypes)
                 .priority(ListenerPriority.HIGH)
                 .onSending((event, user) -> {
@@ -84,10 +84,6 @@ public final class DamageIndicator extends Module
                             if (((Float) health.getValue() > 0.0F)) health.setValue(1.0F);
                         });
                     }
-                }).build();
-
-        return ModuleLoader.builder(this)
-                           .addPacketListeners(adapter)
-                           .build();
+                }).build());
     }
 }

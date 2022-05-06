@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
-class SingleThresholds implements ThresholdManagement
+final class SingleThresholds implements ThresholdManagement
 {
     private final Threshold threshold;
 

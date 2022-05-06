@@ -12,7 +12,6 @@ import lombok.val;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +24,7 @@ public final class CommandAttributes
 {
     @Getter @NotNull private final SortedMap<String, InternalCommand> childCommands;
     @NotNull private final List<String> commandHelp;
-    @Nullable private final InternalPermission permission;
+    @NotNull private final InternalPermission permission;
     private final int minArguments;
     private final int maxArguments;
 
@@ -61,7 +60,7 @@ public final class CommandAttributes
     public boolean hasPermission(Permissible permissible)
     {
         // This will automatically return true for null-permissions.
-        return InternalPermission.hasPermission(permissible, this.permission);
+        return this.permission.hasPermission(permissible);
     }
 
     /**
@@ -79,7 +78,7 @@ public final class CommandAttributes
     {
         private final ImmutableSortedMap.Builder<String, InternalCommand> childCommandsBuilder = ImmutableSortedMap.naturalOrder();
         private final List<String> commandHelp = new ArrayList<>();
-        private InternalPermission permission = null;
+        private InternalPermission permission = InternalPermission.NONE;
         private int minArguments = 0;
         private int maxArguments = 100;
 

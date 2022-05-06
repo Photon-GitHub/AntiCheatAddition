@@ -20,7 +20,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
 
     AverageHeuristicBatchProcessor(ViolationModule module)
     {
-        super(module, Set.of(InventoryBatch.INVENTORY_BATCH_BROADCASTER));
+        super(module, Set.of(InventoryBatch.INVENTORY_BATCH_EVENTBUS));
     }
 
     @Override
@@ -34,7 +34,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
 
         val misClickCounter = user.getDataMap().getCounter(DataKey.Count.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS);
 
-        // Not enough data to check as the player opened many different inventories.
+        // Not enough data to check as the player opened many inventories.
         if (timeOffsets.length < 8) {
             misClickCounter.setToZero();
             return;
@@ -64,7 +64,8 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         val finalVl = (int) Math.min(vl, 70);
         this.getModule().getManagement().flag(Flag.of(user)
                                                   .setAddedVl(finalVl)
-                                                  .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + averageMillis + " | MC: " + misClickCounter.getCounter() + " | VLU: " + finalVl + ")"));
+                                                  .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() +
+                                                                  " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + averageMillis + " | MC: " + misClickCounter.getCounter() + " | VLU: " + finalVl + ")"));
 
         misClickCounter.setToZero();
     }

@@ -1,7 +1,8 @@
-package de.photon.anticheataddition.modules.sentinel;
+package de.photon.anticheataddition.modules.sentinel.mods;
 
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ModuleLoader;
+import de.photon.anticheataddition.modules.sentinel.SentinelModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import io.netty.buffer.Unpooled;

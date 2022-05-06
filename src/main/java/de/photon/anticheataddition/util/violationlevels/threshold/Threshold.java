@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.violationlevels.threshold;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.execute.Placeholders;
-import de.photon.anticheataddition.util.messaging.DebugSender;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -44,9 +43,9 @@ final class Threshold implements Comparable<Threshold>
                         // Try catch to prevent console errors if a command couldn't be executed, e.g. if the player has left.
                         try {
                             Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), command);
-                            DebugSender.INSTANCE.sendDebug(ChatColor.GOLD + "Executed command: " + command);
+                            AntiCheatAddition.getInstance().getLogger().fine(ChatColor.GOLD + "Executed command: " + command);
                         } catch (final Exception e) {
-                            DebugSender.INSTANCE.sendDebug("Could not execute command /" + command, true, true);
+                            AntiCheatAddition.getInstance().getLogger().severe("Could not execute command /" + command);
                         }
                     }
                 });

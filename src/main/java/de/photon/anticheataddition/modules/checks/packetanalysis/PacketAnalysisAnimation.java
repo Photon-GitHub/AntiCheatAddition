@@ -34,10 +34,13 @@ public final class PacketAnalysisAnimation extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
+        /* Protocol:
+         * 1) Player left clicks
+         * 2) Entity use packet with attack.
+         * 3) Arm Animation packet.
+         * */
         val packetAdapter = PacketAdapterBuilder
-                // THIS IS IN THE ORDER OF HOW THE PACKETS ARE SUPPOSED TO ARRIVE.
-                .of(this, PacketType.Play.Client.USE_ENTITY,
-                    PacketType.Play.Client.ARM_ANIMATION)
+                .of(this, PacketType.Play.Client.USE_ENTITY, PacketType.Play.Client.ARM_ANIMATION)
                 .priority(ListenerPriority.LOW)
                 .onReceiving((event, user) -> {
                     val packetType = event.getPacketType();
@@ -48,7 +51,7 @@ public final class PacketAnalysisAnimation extends ViolationModule
                         // Expected Animation after attack, but didn't arrive.
                         if (user.getDataMap().getBoolean(DataKey.Bool.PACKET_ANALYSIS_ANIMATION_EXPECTED)) {
                             user.getDataMap().setBoolean(DataKey.Bool.PACKET_ANALYSIS_ANIMATION_EXPECTED, false);
-                            getManagement().flag(Flag.of(user).setAddedVl(30).setDebug("PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " did not send animation packet after an attack."));
+                            getManagement().flag(Flag.of(user).setAddedVl(30).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " did not send animation packet after an attack."));
                         }
 
                         // Make sure an arm animation packet is sent directly after an attack as it is the next packet in the client code.

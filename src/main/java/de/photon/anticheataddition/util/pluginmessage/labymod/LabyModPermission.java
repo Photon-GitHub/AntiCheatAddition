@@ -1,13 +1,13 @@
 package de.photon.anticheataddition.util.pluginmessage.labymod;
 
 import com.google.gson.JsonObject;
-import de.photon.anticheataddition.modules.sentinel.LabyModSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.LabyModSentinel;
 import lombok.Getter;
 import lombok.val;
 
 import java.util.Locale;
 
-public enum LabyModPermission
+enum LabyModPermission
 {
     // Permissions that are disabled by default
     IMPROVED_LAVA(false),
@@ -29,10 +29,15 @@ public enum LabyModPermission
     ANIMATIONS(true),
     SATURATION_BAR(true);
 
-    @Getter(lazy = true)
-    private static final JsonObject permissionJsonObject = generatePermissionJsonObject();
+    @Getter(lazy = true) private static final JsonObject permissionsJson = generatePermissionsJson();
 
-    @Getter
+    private static JsonObject generatePermissionsJson()
+    {
+        val json = new JsonObject();
+        for (LabyModPermission value : LabyModPermission.values()) json.addProperty(value.name(), value.configValue);
+        return json;
+    }
+
     private final boolean configValue;
 
     /**
@@ -41,12 +46,5 @@ public enum LabyModPermission
     LabyModPermission(boolean defaultEnabled)
     {
         this.configValue = LabyModSentinel.INSTANCE.loadBoolean(".disable" + this.name().toLowerCase(Locale.ENGLISH), defaultEnabled);
-    }
-
-    private static JsonObject generatePermissionJsonObject()
-    {
-        val json = new JsonObject();
-        for (LabyModPermission value : LabyModPermission.values()) json.addProperty(value.name(), value.configValue);
-        return json;
     }
 }

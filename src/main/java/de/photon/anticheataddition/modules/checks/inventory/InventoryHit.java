@@ -40,7 +40,7 @@ public final class InventoryHit extends ViolationModule implements Listener
                 this.getManagement().flag(Flag.of(user)
                                               .setAddedVl(20)
                                               .setCancelAction(cancelVl, () -> event.setCancelled(true))
-                                              .setDebug("Inventory-Debug | Player: " + user.getPlayer().getName() + " hit an entity while having an open inventory."));
+                                              .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " hit an entity while having an open inventory."));
             }
         }
     }

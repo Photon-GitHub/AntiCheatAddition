@@ -3,9 +3,11 @@ package de.photon.anticheataddition.util.visibility.legacy;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.equipment.IWrapperPlayEquipment;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -53,7 +55,7 @@ final class EntityEquipmentHider extends EntityInformationHider
                 // Send the packet.
                 wrapper.sendTranslatedPackets(observer);
             } else {
-                ProtocolLibrary.getProtocolManager().updateEntity(entity, observerList);
+                Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> ProtocolLibrary.getProtocolManager().updateEntity(entity, observerList));
             }
         }
     }

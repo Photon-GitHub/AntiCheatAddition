@@ -56,8 +56,8 @@ public class DetectionManagement extends ViolationManagement implements Listener
                 break;
             default: throw new IllegalArgumentException("A Sentinel detection management only supports the vls 0 (no detection) and 1 (detection).");
         }
-        
-        broadcast(player);
+
+        postVlUpdate(player);
     }
 
     @Override

@@ -70,7 +70,7 @@ public final class PacketAnalysisEqualRotation extends ViolationModule
                             return;
                         }
 
-                        getManagement().flag(Flag.of(user).setDebug("PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent equal rotations."));
+                        getManagement().flag(Flag.of(user).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent equal rotations."));
                     }
                 }).build();
 

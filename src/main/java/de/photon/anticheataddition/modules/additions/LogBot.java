@@ -2,7 +2,8 @@ package de.photon.anticheataddition.modules.additions;
 
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
-import de.photon.anticheataddition.util.messaging.DebugSender;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.EqualsAndHashCode;
 import org.bukkit.Bukkit;
 
@@ -36,7 +37,7 @@ public final class LogBot extends Module
         taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(AntiCheatAddition.getInstance(), () -> {
             final long currentTime = System.currentTimeMillis();
             for (LogDeletionTime logDeletionTime : logDeletionTimes) logDeletionTime.handleLog(currentTime);
-        }, 1, TimeUnit.DAYS.toSeconds(1) * 20);
+        }, 1, TimeUtil.toTicks(TimeUnit.DAYS, 1));
     }
 
     @Override
@@ -66,7 +67,7 @@ public final class LogBot extends Module
         {
             // The folder exists.
             if (!logFolder.exists()) {
-                DebugSender.INSTANCE.sendDebug("Could not find log folder " + logFolder.getName(), true, true);
+                Log.severe(() -> "Could not find log folder " + logFolder.getName());
                 return;
             }
 
@@ -78,7 +79,9 @@ public final class LogBot extends Module
                 // Be sure it is a log file of AntiCheatAddition (.log) or a log file of the server (.log.gz)
                 if ((fileName.endsWith(".log") || fileName.endsWith(".log.gz")) && currentTime - file.lastModified() > timeToDelete) {
                     final boolean result = file.delete();
-                    DebugSender.INSTANCE.sendDebug((result ? "Deleted " : "Could not delete old file ") + fileName, true, !result);
+
+                    if (result) Log.info(() -> "Deleted " + fileName);
+                    else Log.severe(() -> "Could not delete old file " + fileName);
                 }
             }
         }

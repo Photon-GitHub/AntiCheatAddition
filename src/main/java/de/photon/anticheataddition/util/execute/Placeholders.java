@@ -6,6 +6,7 @@ import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -17,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class Placeholders
 {
     /**

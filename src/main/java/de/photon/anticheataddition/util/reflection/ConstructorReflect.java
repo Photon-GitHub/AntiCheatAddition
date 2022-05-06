@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.reflection;
 
 import de.photon.anticheataddition.AntiCheatAddition;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.Value;
 
 import java.lang.reflect.Constructor;
@@ -17,7 +18,7 @@ public class ConstructorReflect
         try {
             return this.constructor.newInstance(initObjects);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to invoke instance via constructor reflection", e);
+            Log.error("Unable to invoke instance via constructor reflection", e);
         }
         return null;
     }

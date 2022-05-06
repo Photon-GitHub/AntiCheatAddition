@@ -27,7 +27,7 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
 
     ScaffoldAverageBatchProcessor(ViolationModule module)
     {
-        super(module, Set.of(ScaffoldBatch.SCAFFOLD_BATCH_BROADCASTER));
+        super(module, Set.of(ScaffoldBatch.SCAFFOLD_BATCH_EVENTBUS));
     }
 
     @Override
@@ -50,9 +50,9 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
                                                           user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
-                                                      .setDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() +
-                                                                " enforced delay: " + minExpectedAverage + " | real: " + actualAverage +
-                                                                " | vl increase: " + vlIncrease));
+                                                      .setDebug(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() +
+                                                                      " enforced delay: " + minExpectedAverage + " | real: " + actualAverage +
+                                                                      " | vl increase: " + vlIncrease));
         }
     }
 

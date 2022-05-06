@@ -1,6 +1,7 @@
-package de.photon.anticheataddition.modules.sentinel;
+package de.photon.anticheataddition.modules.sentinel.mods;
 
 import de.photon.anticheataddition.modules.ModuleLoader;
+import de.photon.anticheataddition.modules.sentinel.SentinelModule;
 import de.photon.anticheataddition.util.pluginmessage.ByteBufUtil;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import de.photon.anticheataddition.util.pluginmessage.labymod.LabyProtocolUtil;

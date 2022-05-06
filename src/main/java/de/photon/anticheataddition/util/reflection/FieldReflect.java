@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.reflection;
 
 import de.photon.anticheataddition.AntiCheatAddition;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -36,7 +37,7 @@ public class FieldReflect
             try {
                 return this.field.getDouble(obj);
             } catch (IllegalAccessException e) {
-                AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to get field as double via reflection", e);
+                Log.error("Unable to get field as double via reflection", e);
             }
 
             return 0;
@@ -62,7 +63,7 @@ public class FieldReflect
             try {
                 return this.field.get(obj);
             } catch (IllegalAccessException e) {
-                AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to get field via reflection", e);
+                Log.error("Unable to get field via reflection", e);
             }
 
             return null;

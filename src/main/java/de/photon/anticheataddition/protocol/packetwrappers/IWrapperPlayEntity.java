@@ -3,6 +3,7 @@ package de.photon.anticheataddition.protocol.packetwrappers;
 import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.jetbrains.annotations.Nullable;
 
 public interface IWrapperPlayEntity extends IWrapperPlay
 {
@@ -48,6 +49,7 @@ public interface IWrapperPlayEntity extends IWrapperPlay
      *
      * @return The spawned entity.
      */
+    @Nullable
     default Entity getEntity(PacketEvent event)
     {
         return getEntity(event.getPlayer().getWorld());

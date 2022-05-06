@@ -1,16 +1,14 @@
-package de.photon.anticheataddition.modules.sentinel;
+package de.photon.anticheataddition.modules.sentinel.mods;
 
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ModuleLoader;
-import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.modules.sentinel.SentinelModule;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import io.netty.buffer.Unpooled;
 import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 // API_DOCS of BetterSprinting:
 /*
@@ -47,20 +45,19 @@ public final class BetterSprintingSentinel extends SentinelModule implements Plu
     {
         super("BetterSprinting");
 
-        val featureList = List.of(!loadBoolean(".disable.survival_fly_boost", true),
-                                  !loadBoolean(".disable.enable_all_dirs", true));
-
         val settingsBuffer = Unpooled.buffer();
         settingsBuffer.writeByte(0);
 
-        for (Boolean enable : featureList) settingsBuffer.writeBoolean(enable);
+        settingsBuffer.writeBoolean(!loadBoolean(".disable.survival_fly_boost", true));
+        settingsBuffer.writeBoolean(!loadBoolean(".disable.enable_all_dirs", true));
+
         this.settingsBufArray = settingsBuffer.array();
         settingsBuffer.release();
 
         val disableBuffer = Unpooled.buffer();
         // Bypassed players are already filtered out.
         // The mod provides a method to disable it
-        final boolean disableGeneral = loadBoolean(".disable.general", false);
+        val disableGeneral = loadBoolean(".disable.general", false);
         disableBuffer.writeByte(disableGeneral ? 1 : 2);
         this.disableBufArray = disableBuffer.array();
         disableBuffer.release();
@@ -69,15 +66,12 @@ public final class BetterSprintingSentinel extends SentinelModule implements Plu
     @Override
     public void onPluginMessageReceived(@NotNull final String channel, @NotNull final Player player, final byte[] message)
     {
-        val user = User.getUser(player);
-        if (User.isUserInvalid(user, this)) return;
-
-        detection(user.getPlayer());
+        detection(player);
 
         val sendChannel = "BSprint".equals(channel) ? "BSM" : MessageChannel.BETTER_SPRINTING_CHANNEL.getChannel().orElseThrow();
 
-        user.getPlayer().sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, this.settingsBufArray);
-        user.getPlayer().sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, this.disableBufArray);
+        player.sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, this.settingsBufArray);
+        player.sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, this.disableBufArray);
     }
 
     @Override

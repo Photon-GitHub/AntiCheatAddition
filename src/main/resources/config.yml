@@ -88,6 +88,11 @@ Esp:
   # How many ticks shall be waited between two ESP cycles. Setting this too low may result in performance issues,
   # setting it too high may result in players being hidden too long and popping up.
   interval_ticks: 2
+  # As defined above, only sneaking players are fully hidden from other players as otherwise one could see their
+  # location thanks to nametags. If you disable nametags or choose to ignore this vanilla behaviour, you can set
+  # this option to true which will cause all players to be fully hidden, even when not sneaking. Indeed, this will
+  # make Esp much more effective against eps, tracers and similar cheats.
+  only_full_hide: false
   # This determines whether minecraft's 3rd person modes should be considered for calculation as well.
   # Disabling this will reduce the required number of block queries by two thirds.
   # Especially useful if you have games in which players are not supposed to use the third person mode.
@@ -539,7 +544,7 @@ Teaming:
   # If you only want to allow teams with a certain member-cap you can change this value appropriately.
   # Setting it to 1 flags all teams.
   allowed_size: 1
-  # Non-pvp time to count as teaming
+  # After what duration not attacking a close player is regarded as teaming.
   # Measured in milliseconds.
   no_pvp_time: 6000
   # This contains all worlds the check should be enabled in.
@@ -597,6 +602,31 @@ Sentinel:
   # Sentinel tries to identify and prevent various exploits on your server.
   # These are usually safe to ban automatically.
   Exploits:
+    # Books in minecraft can be very dangerous. Not only can too large books potentially lag your server, but they
+    # allow unprecedented actions in creative mode: Potentially opening files, executing commands and more. This
+    # sentinel will automatically delete any books from your server that fall into the categories defined below.
+    BookPage:
+      # Do you want to enable the BookPage exploit detection?
+      enabled: true
+      # How many book pages are allowed on your server?
+      # Any book with too many pages will be deleted.
+      max_page_count: 100
+      # Any book that has a ClickAction that opens an arbitrary local file on your pc will be deleted.
+      disallow_open_file: true
+      # Any book that has a ClickAction which runs a command defined below will be deleted.
+      disallowed_commands:
+        - "op"
+        - "deop"
+        - "lp"
+        - "luckperms"
+        - "permissions"
+        - "perms"
+        - "perm"
+      # What commands will be executed if the mod is detected.
+      # Automatic banning can be considered.
+      commands:
+        - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} had an illegal book."
+
     # Even if you have command blocks disabled on your server (as you should), it might be good to know (and ban)
     # players that used some exploit to get a command block. This will also delete any command blocks found in the
     # player's inventory.
@@ -647,6 +677,14 @@ Sentinel:
       commands:
         - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} had a troll potion"
 
+  # A popular pvp mod that can display a HUD, capes and has multiple social features.
+  5Zig:
+    # Do you want to enable 5Zig?
+    enabled: false
+    # What commands will be executed if the mod is detected.
+    commands:
+      - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses 5Zig"
+
   # A popular PvP modification to enhance the sprinting behaviour (ToggleSprint)
   BetterSprinting:
     # Do you want to enable BetterSprinting?
@@ -663,14 +701,6 @@ Sentinel:
     # What commands will be executed if the mod is detected.
     commands:
       - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses BetterSprinting"
-
-  # A popular pvp mod that can display a HUD, capes and has multiple social features.
-  5Zig:
-    # Do you want to enable 5Zig?
-    enabled: false
-    # What commands will be executed if the mod is detected.
-    commands:
-      - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses 5Zig"
 
   # This covers the latest version of LabyMod.
   # A very popular PvP modification similar to 5zig but with more features and TS3 support
@@ -933,12 +963,15 @@ Sentinel:
 # ------------------------------------------------------------------------------------------------------------------- #
 
 # Allows defining where to send debug messages to. Please note that when reporting bugs, you will need to provide the
-# debug file of AntiCheatAddition, therefore this setting is enabled here.
+# debug file of AntiCheatAddition with at least "FINE" level of messages.
 Debug:
-  # Do you want AntiCheatAddition to log into a log-file?
-  file: true
-  # Should players be able to get debug messages if they have the anticheataddition.debug permission
-  # Players can toggle the debug output with the command /anticheataddition debug
-  players: false
-  # Should the debug output be logged in the console (very spammy, only recommended for testing purposes)
-  console: false
+  # These are the logging levels of AntiCheatAddition.
+  # Possible values are: "OFF", "SEVERE", "WARNING", "INFO", "FINE" among others.
+  # Default is "INFO", setting any value to "FINE" will cause debug messages to be logged. "OFF" will disable logging.
+  # The logging level for the console.
+  console_level: "INFO"
+  # The logging level for the log file.
+  file_level: "FINE"
+  # The logging level for the players with debug permission. They can still disable them by using the debug command
+  # even when this is not "OFF".
+  player_level: "OFF"

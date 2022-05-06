@@ -1,8 +1,9 @@
-package de.photon.anticheataddition.modules.sentinel;
+package de.photon.anticheataddition.modules.sentinel.mods;
 
 import com.google.common.io.ByteStreams;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ModuleLoader;
+import de.photon.anticheataddition.modules.sentinel.SentinelModule;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import lombok.val;
 import org.bukkit.entity.Player;
@@ -14,6 +15,7 @@ public final class WorldDownloaderSentinel extends SentinelModule implements Plu
     public static final WorldDownloaderSentinel INSTANCE = new WorldDownloaderSentinel();
 
     private static final MessageChannel WDL_CONTROL_CHANNEL = MessageChannel.of("wdl", "control", "WDL|CONTROL");
+    public static final MessageChannel WDL_INIT_CHANNEL = MessageChannel.of("wdl", "init", "WDL|INIT");
 
     private final boolean disable = loadBoolean(".disable.general", true);
     private final boolean disableFuture = loadBoolean(".disable.future", true);
@@ -65,7 +67,7 @@ public final class WorldDownloaderSentinel extends SentinelModule implements Plu
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addIncomingMessageChannel(MessageChannel.of("wdl", "init", "WDL|INIT"))
+                           .addIncomingMessageChannel(WDL_INIT_CHANNEL)
                            .addOutgoingMessageChannel(WDL_CONTROL_CHANNEL)
                            .build();
     }

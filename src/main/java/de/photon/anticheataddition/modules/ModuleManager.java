@@ -27,13 +27,14 @@ import de.photon.anticheataddition.modules.checks.skinblinker.SkinBlinkerSprinti
 import de.photon.anticheataddition.modules.checks.skinblinker.SkinBlinkerUnusedBit;
 import de.photon.anticheataddition.modules.checks.teaming.Teaming;
 import de.photon.anticheataddition.modules.checks.tower.Tower;
-import de.photon.anticheataddition.modules.sentinel.BetterSprintingSentinel;
-import de.photon.anticheataddition.modules.sentinel.FiveZigSentinel;
-import de.photon.anticheataddition.modules.sentinel.LabyModSentinel;
-import de.photon.anticheataddition.modules.sentinel.SchematicaSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.BetterSprintingSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.FiveZigSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.LabyModSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.SchematicaSentinel;
 import de.photon.anticheataddition.modules.sentinel.SentinelChannelModule;
-import de.photon.anticheataddition.modules.sentinel.VapeSentinel;
-import de.photon.anticheataddition.modules.sentinel.WorldDownloaderSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.VapeSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.WorldDownloaderSentinel;
+import de.photon.anticheataddition.modules.sentinel.exploits.BookPageSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.CommandBlockSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.CreativeKillPotionSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.SelfDamageSentinel;
@@ -112,6 +113,7 @@ public final class ModuleManager
                 Tower.INSTANCE,
 
                 // Sentinel
+                BookPageSentinel.INSTANCE,
                 CommandBlockSentinel.INSTANCE,
                 CreativeKillPotionSentinel.INSTANCE,
                 SelfDamageSentinel.INSTANCE,

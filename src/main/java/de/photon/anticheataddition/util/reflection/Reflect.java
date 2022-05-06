@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.util.reflection;
 
 import de.photon.anticheataddition.AntiCheatAddition;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 
@@ -24,7 +25,7 @@ public class Reflect
         try {
             return from(Reflect.class.getClassLoader().loadClass(classPath));
         } catch (ClassNotFoundException e) {
-            AntiCheatAddition.getInstance().getLogger().log(Level.SEVERE, "Unable to reflect class from path.", e);
+            Log.logger().log(Level.SEVERE, "Unable to reflect class from path.", e);
         }
 
         return null;

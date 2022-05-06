@@ -1,8 +1,9 @@
 package de.photon.anticheataddition.modules.checks.scaffold;
 
+import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.util.messaging.DebugSender;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.Getter;
 
 import java.util.function.ToIntBiFunction;
@@ -28,7 +29,7 @@ final class ScaffoldRotationDerivative extends Module
     {
         applyingConsumer = (user, angleInformation) -> {
             if (angleInformation > ANGLE_CHANGE_SUM_THRESHOLD) {
-                DebugSender.INSTANCE.sendDebug("Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation changes.");
+                Log.fine(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation changes.");
                 return 10;
             }
             return 0;

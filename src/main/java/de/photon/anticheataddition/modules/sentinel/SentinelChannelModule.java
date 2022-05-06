@@ -22,14 +22,11 @@ public class SentinelChannelModule extends SentinelModule implements ParsedPlugi
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull String message)
     {
-        val user = User.getUser(player);
-        if (User.isUserInvalid(user, this)) return;
-
         // If containsAll or containsAny is empty, skip the respective check.
         if ((containsAll.isEmpty() || containsAll.stream().allMatch(message::contains)) &&
             (containsAny.isEmpty() || containsAny.stream().anyMatch(message::contains)))
         {
-            this.detection(user.getPlayer());
+            detection(player);
         }
     }
 
@@ -37,12 +34,8 @@ public class SentinelChannelModule extends SentinelModule implements ParsedPlugi
     protected ModuleLoader createModuleLoader()
     {
         val builder = ModuleLoader.builder(this);
-        final List<String> incoming = loadStringList(".incoming_channels");
-        final List<String> outgoing = loadStringList(".outgoing_channels");
-
-
-        if (!incoming.isEmpty()) incoming.stream().map(MessageChannel::of).forEach(builder::addIncomingMessageChannel);
-        if (!outgoing.isEmpty()) incoming.stream().map(MessageChannel::of).forEach(builder::addOutgoingMessageChannel);
+        loadStringList(".incoming_channels").stream().map(MessageChannel::of).forEach(builder::addIncomingMessageChannel);
+        // No outgoing channels as the config does not allow for sending in a channel.
         return builder.build();
     }
 }

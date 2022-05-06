@@ -38,6 +38,9 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
+import java.util.function.Consumer;
+
 /**
  * A singleton to update the data in {@link AntiCheatAddition}s internal data storage.
  */
@@ -60,54 +63,48 @@ public final class DataUpdaterEvents implements Listener
         HandlerList.unregisterAll(this);
     }
 
+    private static final Consumer<User> CLOSE_INVENTORY = user -> user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
+    private static final Consumer<User> NOTHING = user -> {};
+
+    private static void userUpdate(UUID uuid, Consumer<User> userAction, TimeKey... update)
+    {
+        val user = User.getUser(uuid);
+        if (user == null) return;
+
+        userAction.accept(user);
+        for (TimeKey key : update) user.getTimeMap().at(key).update();
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onConsume(final PlayerItemConsumeEvent event)
     {
-        val user = User.getUser(event.getPlayer());
-        if (user == null) return;
-
-        user.getTimeMap().at(TimeKey.CONSUME_EVENT).update();
-        user.getDataMap().setObject(DataKey.Obj.LAST_CONSUMED_ITEM_STACK, event.getItem());
+        userUpdate(event.getPlayer().getUniqueId(),
+                   user -> user.getDataMap().setObject(DataKey.Obj.LAST_CONSUMED_ITEM_STACK, event.getItem()),
+                   TimeKey.CONSUME_EVENT);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(final PlayerDeathEvent event)
     {
-        val user = User.getUser(event.getEntity().getUniqueId());
-        if (user != null) user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
+        userUpdate(event.getEntity().getUniqueId(), CLOSE_INVENTORY);
     }
 
     @EventHandler
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event)
     {
         // Was hit
-        if (event.getEntity() instanceof HumanEntity) {
-            val user = User.getUser(event.getEntity().getUniqueId());
-            if (user == null) return;
-
-            user.getTimeMap().at(TimeKey.COMBAT).update();
-        }
+        if (event.getEntity() instanceof HumanEntity) userUpdate(event.getEntity().getUniqueId(), NOTHING, TimeKey.COMBAT);
 
         // Hit somebody else
-        if (event.getDamager() instanceof HumanEntity) {
-            val user = User.getUser(event.getEntity().getUniqueId());
-            if (user == null) return;
-
-            user.getTimeMap().at(TimeKey.COMBAT).update();
-        }
+        if (event.getDamager() instanceof HumanEntity) userUpdate(event.getDamager().getUniqueId(), NOTHING, TimeKey.COMBAT);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onFoodLevelChange(FoodLevelChangeEvent event)
     {
-        val user = User.getUser(event.getEntity().getUniqueId());
-        if (user == null) return;
-
-        user.getTimeMap().at(TimeKey.FOOD_LEVEL_CHANGE).update();
-
-        // Gain food level.
-        if (user.getPlayer().getFoodLevel() < event.getFoodLevel()) user.getTimeMap().at(TimeKey.FOOD_LEVEL_GAINED).update();
-        else user.getTimeMap().at(TimeKey.FOOD_LEVEL_LOST).update();
+        userUpdate(event.getEntity().getUniqueId(), NOTHING, TimeKey.FOOD_LEVEL_CHANGE,
+                   // If the previous food level was lower, the user gained a food level, otherwise lost one.
+                   event.getEntity().getFoodLevel() < event.getFoodLevel() ? TimeKey.FOOD_LEVEL_GAINED : TimeKey.FOOD_LEVEL_LOST);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -155,22 +152,19 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInventoryClose(final InventoryCloseEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
-        if (user != null) user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
+        userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onInventoryOpen(final InventoryOpenEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
-        if (user != null) user.getTimeMap().at(TimeKey.INVENTORY_OPENED).update();
+        userUpdate(event.getPlayer().getUniqueId(), NOTHING, TimeKey.INVENTORY_OPENED);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onItemHeld(PlayerItemHeldEvent event)
     {
-        val user = User.getUser(event.getPlayer());
-        if (user != null) user.getTimeMap().at(TimeKey.HOTBAR_SWITCH).update();
+        userUpdate(event.getPlayer().getUniqueId(), NOTHING, TimeKey.HOTBAR_SWITCH);
     }
 
     @EventHandler
@@ -223,22 +217,13 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRespawn(final PlayerRespawnEvent event)
     {
-        val user = User.getUser(event.getPlayer());
-        if (user == null) return;
-
-        user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
-        user.getTimeMap().at(TimeKey.TELEPORT).update();
-        user.getTimeMap().at(TimeKey.RESPAWN).update();
+        userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY, TimeKey.TELEPORT, TimeKey.RESPAWN);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onTeleport(final PlayerTeleportEvent event)
     {
-        val user = User.getUser(event.getPlayer());
-        if (user == null) return;
-
-        user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
-        user.getTimeMap().at(TimeKey.TELEPORT).update();
+        userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY, TimeKey.TELEPORT);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -274,12 +259,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler
     public void onWorldChange(final PlayerChangedWorldEvent event)
     {
-        val user = User.getUser(event.getPlayer());
-        if (user == null) return;
-
-        user.getTimeMap().at(TimeKey.INVENTORY_OPENED).setToZero();
-        user.getTimeMap().at(TimeKey.TELEPORT).update();
-        user.getTimeMap().at(TimeKey.WORLD_CHANGE).update();
+        userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY, TimeKey.TELEPORT, TimeKey.WORLD_CHANGE);
     }
 
     /**

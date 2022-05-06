@@ -94,7 +94,7 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             if (!ServerVersion.ACTIVE.isSupported()) {
                 getLogger().severe("Server version is not supported.");
-                getLogger().severe("Supported versions: " + ServerVersion.ALL_SUPPORTED_VERSIONS.stream().map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")));
+                getLogger().severe(() -> "Supported versions: " + ServerVersion.ALL_SUPPORTED_VERSIONS.stream().map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")));
                 return;
             }
 
@@ -103,7 +103,7 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             this.bungeecord = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getBoolean("settings.bungeecord", false);
-            getLogger().info("Bungeecord " + (this.bungeecord ? "detected" : "not detected"));
+            getLogger().info(() -> "Bungeecord " + (this.bungeecord ? "detected" : "not detected"));
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                                Metrics                                                 //

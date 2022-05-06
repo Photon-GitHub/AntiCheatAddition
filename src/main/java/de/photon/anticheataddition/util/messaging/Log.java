@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
@@ -25,6 +26,10 @@ import java.util.logging.Logger;
 public class Log
 {
     public static final Log INSTANCE = new Log();
+
+    private static final Level LEVEL = Level.parse(Optional.ofNullable(AntiCheatAddition.getInstance().getConfig().getString("Debug.level"))
+                                                           .orElseThrow(() -> new IllegalStateException("Debug level setting is not present in config. Please regenerate your config.")));
+
     // The prefix is always "[plugin name] ", so plugin name length + 3.
     private static final int PREFIX_CHARS = AntiCheatAddition.getInstance().getName().length() + 3;
 
@@ -94,7 +99,6 @@ public class Log
         logger().log(Level.SEVERE, message, thrown);
     }
 
-    private final Level level = AntiCheatAddition.getInstance().getConfig().getBoolean("Debug.console") ? Level.FINE : Level.INFO;
     private FileHandler currentHandler = null;
 
     public void setup()
@@ -104,11 +108,11 @@ public class Log
         }
 
         if (AntiCheatAddition.getInstance().getConfig().getBoolean("Debug.players")) {
-            logger().addHandler(new DebugUserHandler(level));
+            logger().addHandler(new DebugUserHandler(LEVEL));
         }
 
         // Set the console level.
-        logger().setLevel(level);
+        logger().setLevel(LEVEL);
 
         // Add the violation debug messages.
         AntiCheatAddition.getInstance().registerListener(new ViolationLogger());
@@ -122,17 +126,16 @@ public class Log
     private void replaceDebugFileCycle()
     {
         val now = LocalDateTime.now();
-
         val oldHandler = currentHandler;
 
         // Create new handler.
         final String path = AntiCheatAddition.getInstance().getDataFolder().getPath() + File.separatorChar + "logs" + File.separatorChar + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log";
         try {
             this.currentHandler = new FileHandler(path, true);
-            this.currentHandler.setLevel(level);
+            this.currentHandler.setLevel(LEVEL);
             this.currentHandler.setFormatter(LOG_FILE_FORMATTER);
         } catch (IOException e) {
-            Bukkit.getLogger().log(Level.SEVERE, e, () -> "AntiCheatAddition unable to create log file handler ");
+            Bukkit.getLogger().log(Level.SEVERE, "AntiCheatAddition unable to create log file handler.", e);
         }
 
         // Replace old handler.

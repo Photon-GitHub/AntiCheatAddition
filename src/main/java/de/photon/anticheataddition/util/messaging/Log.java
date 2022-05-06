@@ -120,6 +120,8 @@ public class Log
 
         // Add the violation debug messages.
         AntiCheatAddition.getInstance().registerListener(new ViolationLogger());
+
+        info(() -> "Logging setup finished");
     }
 
     public void close()

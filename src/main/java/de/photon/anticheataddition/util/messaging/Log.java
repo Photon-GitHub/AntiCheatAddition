@@ -112,13 +112,8 @@ public class Log
 
     public void setup()
     {
-        if (AntiCheatAddition.getInstance().getConfig().getBoolean("Debug.file")) {
-            replaceDebugFileCycle();
-        }
-
-        if (AntiCheatAddition.getInstance().getConfig().getBoolean("Debug.players")) {
-            logger().addHandler(new DebugUserHandler(PLAYER_LEVEL));
-        }
+        if (!Level.OFF.equals(FILE_LEVEL)) replaceDebugFileCycle();
+        if (!Level.OFF.equals(PLAYER_LEVEL)) logger().addHandler(new DebugUserHandler(PLAYER_LEVEL));
 
         // Set the console level.
         logger().setLevel(CONSOLE_LEVEL);

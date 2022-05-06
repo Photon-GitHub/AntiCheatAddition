@@ -963,12 +963,15 @@ Sentinel:
 # ------------------------------------------------------------------------------------------------------------------- #
 
 # Allows defining where to send debug messages to. Please note that when reporting bugs, you will need to provide the
-# debug file of AntiCheatAddition, therefore this setting is enabled here.
+# debug file of AntiCheatAddition with at least "FINE" level of messages.
 Debug:
-  # This is the debug level of AntiCheatAddition.
+  # These are the logging levels of AntiCheatAddition.
   # Possible values are: "OFF", "SEVERE", "WARNING", "INFO", "FINE" among others.
-  # Default is "INFO", setting this to "FINE" will cause debug messages to be logged to the console, log file and sent
-  # to debug players enabled down below.
+  # Default is "INFO", setting any value to "FINE" will cause debug messages to be logged. "OFF" will disable logging.
+  # The logging level for the console.
   console_level: "INFO"
+  # The logging level for the log file.
   file_level: "FINE"
+  # The logging level for the players with debug permission. They can still disable them by using the debug command
+  # even when this is not "OFF".
   player_level: "OFF"

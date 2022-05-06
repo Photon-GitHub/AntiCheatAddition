@@ -32,12 +32,12 @@ public final class ConfigurationRepresentation
 
     private static int linesOfKey(final List<String> lines, int firstLineOfKey)
     {
-        final long depthOfKey = StringUtil.depth(lines.get(firstLineOfKey));
+        final long depthOfKey = ConfigUtil.depth(lines.get(firstLineOfKey));
         return (int) lines.stream()
                           // Skip firstLineOfKey to get to the first line and 1 as the initial line should not be iterated over to avoid stopping there in takeWhile.
                           .skip(firstLineOfKey + 1L)
                           // Smaller or equal depth is the indicator of a new key, and we only want the lines of the current key.
-                          .takeWhile(line -> StringUtil.depth(line) > depthOfKey)
+                          .takeWhile(line -> ConfigUtil.depth(line) > depthOfKey)
                           // + 1 as the first line is always there.
                           .count() + 1;
     }
@@ -81,7 +81,7 @@ public final class ConfigurationRepresentation
 
                 if (list.isEmpty()) replacementLine.append(" []");
                 else {
-                    val preString = StringUtils.leftPad("- ", (int) StringUtil.depth(originalLine));
+                    val preString = StringUtils.leftPad("- ", (int) ConfigUtil.depth(originalLine));
                     for (Object o : list) configLines.add(lineIndexOfKey + 1, preString + o);
                 }
             }
@@ -112,14 +112,14 @@ public final class ConfigurationRepresentation
 
             String trimmed;
             for (String line : lines) {
-                lineDepth = StringUtil.depth(line);
+                lineDepth = ConfigUtil.depth(line);
 
                 // The sub-part we search for does not exist.
                 if (partDepth > lineDepth) throw new IllegalArgumentException("Path " + path + " could not be found.");
 
                 trimmed = line.strip();
                 // New "deeper" subpart found?
-                if (!StringUtil.isConfigComment(trimmed) && trimmed.startsWith(pathParts[partIndex])) {
+                if (!ConfigUtil.isConfigComment(trimmed) && trimmed.startsWith(pathParts[partIndex])) {
                     partDepth = lineDepth;
                     // Whole path found.
                     if (++partIndex == pathParts.length) return lineIndex;

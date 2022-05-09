@@ -10,12 +10,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Collectors;
 
-public interface ThresholdManagement
+public sealed interface ThresholdManagement permits EmptyThresholds, SingleThresholds, MultiThresholds
 {
     /**
      * Empty {@link ThresholdManagement} that doesn't have any {@link Threshold}s.
      */
-    ThresholdManagement EMPTY = (fromVl, toVl, player) -> {};
+    ThresholdManagement EMPTY = new EmptyThresholds();
 
     @NotNull
     static ThresholdManagement loadThresholds(ViolationModule module)

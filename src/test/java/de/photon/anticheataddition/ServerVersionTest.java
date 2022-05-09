@@ -1,5 +1,6 @@
 package de.photon.anticheataddition;
 
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -54,5 +55,16 @@ class ServerVersionTest
                                     .collect(Collectors.toUnmodifiableList());
 
         Assertions.assertIterableEquals(expected, actual);
+    }
+
+    @Test
+    void allSupportedVersionsTest()
+    {
+        val expected = Arrays.stream(ServerVersion.values())
+                             .filter(ServerVersion::isSupported)
+                             .collect(Collectors.toUnmodifiableSet());
+
+        Assertions.assertTrue(expected.containsAll(ServerVersion.ALL_SUPPORTED_VERSIONS), "ALL_SUPPORTED_VERSIONS contains unsupported version.");
+        Assertions.assertTrue(ServerVersion.ALL_SUPPORTED_VERSIONS.containsAll(expected), "ALL_SUPPORTED_VERSIONS does not contain all supported versions.");
     }
 }

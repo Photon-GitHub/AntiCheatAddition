@@ -87,6 +87,8 @@ public final class Esp extends Module
         final int defaultTrackingRange = loadDefaultTrackingRange(worlds);
         final Map<World, Integer> playerTrackingRanges = loadWorldTrackingRanges(worlds, worldKeys);
 
+        Log.fine(() -> "ESP | OnlyFullHide: " + ONLY_FULL_HIDE);
+
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(AntiCheatAddition.getInstance(), () -> {
@@ -129,6 +131,10 @@ public final class Esp extends Module
                 }
                 // Full hiding (due to the default adding to fullHiddenPlayers.)
             }
+
+            Log.finest(() -> "ESP | Observer: " + observerNode.getElement().getName() +
+                             " | FULL: " + fullHiddenPlayers.stream().map(Entity::getName).collect(Collectors.joining(", ")) +
+                             " | EQUIP: " + equipHiddenPlayers.stream().map(Entity::getName).collect(Collectors.joining(", ")));
 
             EntityVisibility.INSTANCE.setHidden(observerNode.getElement(), fullHiddenPlayers, equipHiddenPlayers);
         }

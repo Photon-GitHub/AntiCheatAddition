@@ -3,6 +3,7 @@ package de.photon.anticheataddition.util.messaging;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import lombok.val;
 import org.bukkit.Bukkit;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
@@ -22,6 +24,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Log
 {
@@ -121,6 +124,7 @@ public class Log
         // Add the violation debug messages.
         AntiCheatAddition.getInstance().registerListener(new ViolationLogger());
 
+        fine(() -> "Logger handlers: " + Arrays.stream(logger().getHandlers()).map(handler -> Pair.of(handler.getClass().getName(), handler.getLevel())).map(Pair::toString).collect(Collectors.joining(", ")));
         info(() -> "Logging setup finished. Console: " + CONSOLE_LEVEL.getName() + " | File: " + FILE_LEVEL.getName() + " | Player: " + PLAYER_LEVEL.getName());
     }
 

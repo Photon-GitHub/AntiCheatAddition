@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.pluginmessage;
 
-import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import lombok.experimental.UtilityClass;
 
@@ -13,7 +12,7 @@ public final class ByteBufUtil
 {
     public static void writeString(ByteBuf buf, String s)
     {
-        Preconditions.checkArgument(s.length() <= Short.MAX_VALUE, "Cannot send string longer than Short.MAX_VALUE (got " + s.length() + " characters)");
+        if (s.length() > Short.MAX_VALUE) throw new IllegalArgumentException("Cannot send string longer than Short.MAX_VALUE (got " + s.length() + " characters)");
 
         final byte[] b = s.getBytes(StandardCharsets.UTF_8);
         writeVarInt(buf, b.length);
@@ -31,8 +30,8 @@ public final class ByteBufUtil
     {
         final int len = readVarInt(buf);
 
-        Preconditions.checkArgument(len >= 0, "String len smaller than zero.");
-        Preconditions.checkArgument(len <= Short.MAX_VALUE, "Cannot receive string longer than Short.MAX_VALUE (got " + len + " characters)");
+        if (len < 0) throw new IllegalArgumentException("String len smaller than zero.");
+        if (len > Short.MAX_VALUE) throw new IllegalArgumentException("Cannot receive string longer than Short.MAX_VALUE (got " + len + " characters)");
 
         final byte[] b = new byte[len];
         buf.readBytes(b);
@@ -42,7 +41,7 @@ public final class ByteBufUtil
 
     public static void writeArray(ByteBuf buf, byte[] b)
     {
-        Preconditions.checkArgument(b.length <= Short.MAX_VALUE, "Cannot send byte array longer than Short.MAX_VALUE (got " + b.length + " bytes)");
+        if (b.length > Short.MAX_VALUE) throw new IllegalArgumentException("Cannot send byte array longer than Short.MAX_VALUE (got " + b.length + " bytes)");
 
         writeVarInt(buf, b.length);
         buf.writeBytes(b);
@@ -64,7 +63,7 @@ public final class ByteBufUtil
     {
         final int len = readVarInt(buf);
 
-        Preconditions.checkArgument(len <= limit, "Cannot receive byte array longer than " + limit + " (got " + len + " bytes)");
+        if (len > limit) throw new IllegalArgumentException("Cannot receive byte array longer than " + limit + " (got " + len + " bytes)");
         final byte[] ret = new byte[len];
         buf.readBytes(ret);
         return ret;
@@ -108,7 +107,7 @@ public final class ByteBufUtil
 
             out |= (in & 0x7F) << (bytes++ * 7);
 
-            Preconditions.checkArgument(bytes <= maxBytes, "VarInt too big.");
+            if (bytes > maxBytes) throw new IllegalArgumentException("VarInt too big.");
         } while ((in & 0x80) == 0x80);
 
         return out;

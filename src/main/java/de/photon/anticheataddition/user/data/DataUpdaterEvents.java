@@ -102,9 +102,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onFoodLevelChange(FoodLevelChangeEvent event)
     {
-        userUpdate(event.getEntity().getUniqueId(), NOTHING, TimeKey.FOOD_LEVEL_CHANGE,
-                   // If the previous food level was lower, the user gained a food level, otherwise lost one.
-                   event.getEntity().getFoodLevel() < event.getFoodLevel() ? TimeKey.FOOD_LEVEL_GAINED : TimeKey.FOOD_LEVEL_LOST);
+        userUpdate(event.getEntity().getUniqueId(), NOTHING, TimeKey.FOOD_LEVEL_CHANGE);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

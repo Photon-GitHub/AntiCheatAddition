@@ -60,18 +60,18 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
                                                                         (old, cur) -> calculateDelay(old),
                                                                         TowerBatch.TowerBlockPlace::timeOffset);
 
-        val calcAvg = statistics.get(0).getAverage();
-        val actAvg = statistics.get(1).getAverage();
+        final double calcAvg = statistics.get(0).getAverage();
+        final double actAvg = statistics.get(1).getAverage();
 
         if (actAvg < calcAvg) {
-            val vlToAdd = Math.min(VL_CALCULATOR.apply(calcAvg - actAvg).intValue(), 1000);
+            final int vlToAdd = Math.min(VL_CALCULATOR.apply(calcAvg - actAvg).intValue(), 1000);
             this.getModule().getManagement().flag(Flag.of(user)
                                                       .setAddedVl(vlToAdd)
                                                       .setCancelAction(cancelVl, () -> {
                                                           user.getTimeMap().at(TimeKey.TOWER_TIMEOUT).update();
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
-                                                      .setDebug(() -> "Tower-Debug | Player: " + user.getPlayer().getName() + " expected time: " + calcAvg + " | real: " + actAvg));
+                                                      .setDebug(() -> "Tower-Debug | Player: %s | Expected: %f | Actual: %f | Vl: %d".formatted(user.getPlayer().getName(), calcAvg, actAvg, vlToAdd)));
         }
     }
 

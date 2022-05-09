@@ -38,21 +38,19 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
                                                                     (old, cur) -> old.getSpeedModifier() * cur.timeOffset(old),
                                                                     (old, cur) -> calculateMinExpectedDelay(old, cur, moonwalk));
 
-        val actualAverage = delays.get(0).getAverage();
-        val minExpectedAverage = delays.get(1).getAverage();
+        final double actualAverage = delays.get(0).getAverage();
+        final double minExpectedAverage = delays.get(1).getAverage();
 
         // delta-times are too low -> flag
         if (actualAverage < minExpectedAverage) {
-            val vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpectedAverage - actualAverage).intValue());
+            final int vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpectedAverage - actualAverage).intValue());
             this.getModule().getManagement().flag(Flag.of(user)
                                                       .setAddedVl(vlIncrease)
                                                       .setCancelAction(cancelVl, () -> {
                                                           user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
-                                                      .setDebug(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() +
-                                                                      " enforced delay: " + minExpectedAverage + " | real: " + actualAverage +
-                                                                      " | vl increase: " + vlIncrease));
+                                                      .setDebug(() -> "Scaffold-Debug | Player: %s enforced delay: %f | real: %f | vl increase: %d".formatted(user.getPlayer().getName(), minExpectedAverage, actualAverage, vlIncrease)));
         }
     }
 

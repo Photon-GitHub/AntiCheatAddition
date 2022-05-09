@@ -1,18 +1,12 @@
 package de.photon.anticheataddition.util.reflection;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.messaging.Log;
-import lombok.Value;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 
-@Value
-public class ConstructorReflect
+public record ConstructorReflect(Constructor<?> constructor)
 {
-    Constructor<?> constructor;
-
     public Object instance(Object... initObjects)
     {
         try {

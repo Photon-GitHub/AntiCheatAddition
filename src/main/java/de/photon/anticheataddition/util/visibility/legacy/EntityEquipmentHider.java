@@ -34,9 +34,7 @@ final class EntityEquipmentHider extends EntityInformationHider
     {
         final List<Player> observerList = List.of(observer);
         for (Entity entity : revealed) {
-            if (entity instanceof Player) {
-                final Player watched = (Player) entity;
-
+            if (entity instanceof Player watched) {
                 // Basic wrapper stuff.
                 final IWrapperPlayEquipment wrapper = IWrapperPlayEquipment.of();
                 wrapper.setEntityID(watched.getEntityId());

@@ -107,16 +107,14 @@ abstract class EntityInformationHider implements Listener
     {
         // Creative and Spectator players are ignored by ESP and therefore need to be removed from hiding manually.
         switch (event.getNewGameMode()) {
-            case CREATIVE:
-            case SPECTATOR:
+            case CREATIVE, SPECTATOR -> {
                 setHiddenEntities(event.getPlayer(), Set.of());
                 removeEntity(event.getPlayer());
 
                 // Run with delay, so we avoid any updates that are underway async.
                 Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(),
                                                    () -> ProtocolLibrary.getProtocolManager().updateEntity(event.getPlayer(), event.getPlayer().getWorld().getPlayers()), 20L);
-                break;
-            default: break;
+            }
         }
     }
 

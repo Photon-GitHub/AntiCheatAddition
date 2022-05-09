@@ -16,6 +16,6 @@ public abstract class SyncBatchProcessor<T> extends BatchProcessor<T>
     @Subscribe
     public void receive(Batch.Snapshot<T> snapshot)
     {
-        this.processBatch(snapshot.getUser(), snapshot.getValues());
+        this.processBatch(snapshot.user(), snapshot.values());
     }
 }

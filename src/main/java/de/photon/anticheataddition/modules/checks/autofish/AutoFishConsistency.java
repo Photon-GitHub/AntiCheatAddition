@@ -39,7 +39,7 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
         if (User.isUserInvalid(user, this)) return;
 
         switch (event.getState()) {
-            case FISHING:
+            case FISHING -> {
                 // Not too many failed attempts in between (afk fish farm false positives)
                 // Negative maximum_fails indicate not allowing afk fishing farms.
                 if (user.getDataMap().getCounter(DataKey.Count.AUTOFISH_FAILED).compareThreshold() &&
@@ -79,19 +79,14 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
 
                 // Reset the fail counter as just now there was a fishing success.
                 user.getDataMap().getCounter(DataKey.Count.AUTOFISH_FAILED).setToZero();
-                break;
+            }
             // No consistency when not fishing / failed fishing
-            case IN_GROUND:
-            case FAILED_ATTEMPT:
+            case IN_GROUND, FAILED_ATTEMPT -> {
                 user.getTimeMap().at(TimeKey.AUTOFISH_DETECTION).setToZero();
                 user.getDataMap().getCounter(DataKey.Count.AUTOFISH_FAILED).increment();
-                break;
-            case CAUGHT_FISH:
-                // CAUGHT_FISH covers all forms of items from the water.
-                user.getTimeMap().at(TimeKey.AUTOFISH_DETECTION).update();
-                break;
-            default:
-                break;
+            }
+            // CAUGHT_FISH covers all forms of items from the water.
+            case CAUGHT_FISH -> user.getTimeMap().at(TimeKey.AUTOFISH_DETECTION).update();
         }
     }
 

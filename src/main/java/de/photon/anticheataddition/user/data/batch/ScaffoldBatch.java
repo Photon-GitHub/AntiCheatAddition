@@ -45,23 +45,14 @@ public final class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
 
         private static double calcSpeedModifier(@NotNull PotionEffect potionEffect)
         {
-            switch (potionEffect.getAmplifier()) {
-                case 0:
-                    return 1.01D;
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                    return 1.5D;
-                case 6:
-                    return 1.55D;
-                case 7:
-                    return 2.3D;
-                default:
-                    // Everything above 8 should have a speed_modifier of 3
-                    return 3.0D;
-            }
+            return switch (potionEffect.getAmplifier()) {
+                case 0 -> 1.01D;
+                case 1, 2, 3, 4, 5 -> 1.5D;
+                case 6 -> 1.55D;
+                case 7 -> 2.3D;
+                // Everything above 8 should have a speed_modifier of 3
+                default -> 3.0D;
+            };
         }
 
         public long timeOffset(@NotNull ScaffoldBlockPlace other)

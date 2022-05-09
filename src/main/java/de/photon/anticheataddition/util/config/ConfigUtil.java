@@ -30,15 +30,10 @@ public final class ConfigUtil
 
             if (possibleString == null) return List.of();
 
-            switch (possibleString) {
-                case "":
-                case "{}":
-                case "{ }":
-                case "[]":
-                case "[ ]":
-                    return List.of();
-                default: return List.of(possibleString);
-            }
+            return switch (possibleString) {
+                case "", "{}", "{ }", "[]", "[ ]" -> List.of();
+                default -> List.of(possibleString);
+            };
         }
         return input;
     }

@@ -27,8 +27,8 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
     public void processBatch(User user, List<InventoryBatch.InventoryClick> batch)
     {
         val timeOffsets = BatchPreprocessors.zipOffsetOne(batch).stream()
-                                            .filter(pair -> pair.getFirst().getInventory().equals(pair.getSecond().getInventory()))
-                                            .mapToLong(pair -> pair.getFirst().timeOffset(pair.getSecond()))
+                                            .filter(pair -> pair.first().getInventory().equals(pair.second().getInventory()))
+                                            .mapToLong(pair -> pair.first().timeOffset(pair.second()))
                                             .toArray();
 
 

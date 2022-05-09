@@ -3,8 +3,6 @@ package de.photon.anticheataddition.util.execute;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import lombok.val;
@@ -55,31 +53,15 @@ public final class Placeholders
                 // See if the recorded chars match a placeholder
                 switch (placeholderBuilder.toString()) {
                     // Usually one placeholder is only once in the string, thus recalculation should not be a problem.
-                    case "player":
-                        result.append(PlayerPlaceholders.PLAYER.getReplacement(player));
-                        break;
-                    case "ping":
-                        result.append(PlayerPlaceholders.PING.getReplacement(player));
-                        break;
-                    case "world":
-                        result.append(WorldPlaceholders.WORLD.getReplacement(world));
-                        break;
-                    case "date":
-                        result.append(SimplePlaceholders.DATE.getReplacement());
-                        break;
-                    case "time":
-                        result.append(SimplePlaceholders.TIME.getReplacement());
-                        break;
-                    case "server":
-                        result.append(SimplePlaceholders.SERVER.getReplacement());
-                        break;
-                    case "tps":
-                        result.append(SimplePlaceholders.TPS.getReplacement());
-                        break;
-                    default:
-                        // Otherwise add the placeholder as plain-string
-                        result.append('{').append(placeholderBuilder).append('}');
-                        break;
+                    case "player" -> result.append(PlayerPlaceholders.PLAYER.getReplacement(player));
+                    case "ping" -> result.append(PlayerPlaceholders.PING.getReplacement(player));
+                    case "world" -> result.append(WorldPlaceholders.WORLD.getReplacement(world));
+                    case "date" -> result.append(SimplePlaceholders.DATE.getReplacement());
+                    case "time" -> result.append(SimplePlaceholders.TIME.getReplacement());
+                    case "server" -> result.append(SimplePlaceholders.SERVER.getReplacement());
+                    case "tps" -> result.append(SimplePlaceholders.TPS.getReplacement());
+                    // Otherwise, add the placeholder as plain-string
+                    default -> result.append('{').append(placeholderBuilder).append('}');
                 }
 
                 // Make sure the '}' char is not recorded.

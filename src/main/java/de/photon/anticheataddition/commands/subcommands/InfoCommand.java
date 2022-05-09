@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 public class InfoCommand extends InternalCommand
 {
@@ -37,7 +36,7 @@ public class InfoCommand extends InternalCommand
                                      // Only the modules with above 0 vl are important.
                                      .filter(mvl -> mvl.vl > 0)
                                      .sorted()
-                                     .collect(Collectors.toList());
+                                     .toList();
 
         ChatMessage.sendMessage(sender, player.getName());
 

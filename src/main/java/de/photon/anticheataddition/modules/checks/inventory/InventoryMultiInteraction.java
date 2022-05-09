@@ -112,19 +112,14 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
                 break;
 
             case SWAP_WITH_CURSOR:
-                switch (event.getSlotType()) {
+                enforcedTicks = switch (event.getSlotType()) {
                     // Armor slots are not eligible for fewer ticks as of quick change problems with the feet slot.
                     // No false positives possible in fuel or crafting slot as it is only one slot which is separated from others
-                    case FUEL:
-                    case RESULT:
-                        enforcedTicks = 4;
-                        break;
+                    case FUEL, RESULT -> 4;
 
                     // Default tested value.
-                    default:
-                        enforcedTicks = 2;
-                        break;
-                }
+                    default -> 2;
+                };
                 break;
         }
 

@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.modules.checks.scaffold;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;
@@ -47,26 +46,15 @@ final class ScaffoldSafewalkPosition extends Module
             // Not building in a straight line.
             if (face == null || event.getBlockAgainst().getRelative(face).isEmpty()) return 0;
 
-            boolean sneakBorder;
+            boolean sneakBorder = switch (face) {
+                case EAST -> xOffset > 0.28D && xOffset < 0.305D;
+                case WEST -> xOffset > 1.28D && xOffset < 1.305D;
+                case NORTH -> zOffset > 1.28D && zOffset < 1.305D;
+                case SOUTH -> zOffset > 0.28D && zOffset < 0.305D;
+                // Some other, weird block placement.
+                default -> false;
+            };
             // Moved to the edge of the block
-            switch (face) {
-                case EAST:
-                    sneakBorder = xOffset > 0.28D && xOffset < 0.305D;
-                    break;
-                case WEST:
-                    sneakBorder = xOffset > 1.28D && xOffset < 1.305D;
-                    break;
-                case NORTH:
-                    sneakBorder = zOffset > 1.28D && zOffset < 1.305D;
-                    break;
-                case SOUTH:
-                    sneakBorder = zOffset > 0.28D && zOffset < 0.305D;
-                    break;
-                default:
-                    // Some other, mostly weird blockplaces.
-                    sneakBorder = false;
-                    break;
-            }
 
             if (sneakBorder) {
                 if (user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_SAFEWALK_POSITION_FAILS).incrementCompareThreshold()) {

@@ -30,7 +30,7 @@ public enum ProtocolVersion
                                                                                   // Map each ProtocolVersion to pairs of (Version Number, ProtocolVersion)
                                                                                   .flatMap(pv -> pv.getVersionNumbers().stream().map(vn -> Pair.of(vn, pv)))
                                                                                   // Create a Map from version number to ProtocolVersion.
-                                                                                  .collect(Collectors.toUnmodifiableMap(Pair::getFirst, Pair::getSecond));
+                                                                                  .collect(Collectors.toUnmodifiableMap(Pair::first, Pair::second));
 
     /**
      * The name of the {@link ProtocolVersion}. Intended to be equivalent to minecraft versions.

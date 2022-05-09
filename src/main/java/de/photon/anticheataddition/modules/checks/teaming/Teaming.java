@@ -93,9 +93,9 @@ public final class Teaming extends ViolationModule implements Listener
                              // Get the player's location.
                              .map(user -> Pair.of(user, user.getPlayer().getLocation()))
                              // Not in a bypassed region.
-                             .filter(pair -> safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(pair.getSecond())))
+                             .filter(pair -> safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(pair.second())))
                              // Add the player to the QuadTree.
-                             .forEach(pair -> quadTree.add(pair.getSecond().getX(), pair.getSecond().getZ(), pair.getFirst().getPlayer()));
+                             .forEach(pair -> quadTree.add(pair.second().getX(), pair.second().getZ(), pair.first().getPlayer()));
 
                         while (!quadTree.isEmpty()) {
                             // Use getAny() so the node itself is contained in the team below.

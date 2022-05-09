@@ -36,11 +36,10 @@ public final class AutoFishInhumanReaction extends ViolationModule implements Li
         if (User.isUserInvalid(user, this)) return;
 
         switch (event.getState()) {
-            case CAUGHT_FISH:
+            case CAUGHT_FISH -> {
                 // Too few time has passed since the fish bit.
                 final long passedBiteTime = user.getTimeMap().at(TimeKey.FISH_BITE).passedTime();
                 final int vl = VL_CALCULATOR.apply(passedBiteTime / humanReactionTime).intValue();
-
                 if (vl > 0) {
                     // Flag for vl = b + 1 because there would otherwise be a "0-vl"
                     this.getManagement().flag(Flag.of(user)
@@ -51,12 +50,8 @@ public final class AutoFishInhumanReaction extends ViolationModule implements Li
 
                 // Reset the bite-timestamp to be ready for the next one
                 user.getTimeMap().at(TimeKey.FISH_BITE).setToZero();
-                break;
-            case BITE:
-                user.getTimeMap().at(TimeKey.FISH_BITE).update();
-                break;
-            default:
-                break;
+            }
+            case BITE -> user.getTimeMap().at(TimeKey.FISH_BITE).update();
         }
     }
 

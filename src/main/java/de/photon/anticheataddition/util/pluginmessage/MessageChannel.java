@@ -36,22 +36,13 @@ public interface MessageChannel
     @NotNull
     static MessageChannel of(final String prefix, final String key)
     {
-        final String legacyName;
         final String upperStartTempKey = StringUtils.capitalize(key);
-        switch (prefix) {
-            case "minecraft":
-                legacyName = "MC|" + upperStartTempKey;
-                break;
-            case "px":
-                legacyName = "PX|" + upperStartTempKey;
-                break;
-            case "wdl":
-                legacyName = "WDL|" + key.toUpperCase();
-                break;
-            default:
-                legacyName = prefix + ':' + key;
-                break;
-        }
+        final String legacyName = switch (prefix) {
+            case "minecraft" -> "MC|" + upperStartTempKey;
+            case "px" -> "PX|" + upperStartTempKey;
+            case "wdl" -> "WDL|" + key.toUpperCase();
+            default -> prefix + ':' + key;
+        };
         return MessageChannel.of(prefix, key, legacyName);
     }
 

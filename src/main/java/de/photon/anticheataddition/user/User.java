@@ -241,14 +241,10 @@ public final class User implements Permissible
      */
     public boolean hasMovedRecently(final TimeKey movementType, final long milliseconds)
     {
-        switch (movementType) {
-            case HEAD_OR_OTHER_MOVEMENT:
-            case XYZ_MOVEMENT:
-            case XZ_MOVEMENT:
-                return this.timeMap.at(movementType).recentlyUpdated(milliseconds);
-            default:
-                throw new IllegalStateException("Unexpected MovementType: " + movementType);
-        }
+        return switch (movementType) {
+            case HEAD_OR_OTHER_MOVEMENT, XYZ_MOVEMENT, XZ_MOVEMENT -> this.timeMap.at(movementType).recentlyUpdated(milliseconds);
+            default -> throw new IllegalStateException("Unexpected MovementType: " + movementType);
+        };
     }
 
     /**

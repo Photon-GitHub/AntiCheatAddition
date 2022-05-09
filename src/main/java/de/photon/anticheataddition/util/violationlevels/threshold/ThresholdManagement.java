@@ -30,11 +30,11 @@ public interface ThresholdManagement
         val keys = Preconditions.checkNotNull(ConfigUtil.loadKeys(configPath), "Config loading error: The keys loaded from " + configPath + " are null.");
         val thresholds = keys.stream().map(key -> new Threshold(Integer.parseInt(key), ConfigUtil.loadImmutableStringOrStringList(configPath + '.' + key))).collect(Collectors.toList());
 
-        switch (thresholds.size()) {
-            case 0: return EMPTY;
-            case 1: return new SingleThresholds(thresholds.get(0));
-            default: return new MultiThresholds(thresholds);
-        }
+        return switch (thresholds.size()) {
+            case 0 -> EMPTY;
+            case 1 -> new SingleThresholds(thresholds.get(0));
+            default -> new MultiThresholds(thresholds);
+        };
     }
 
     @NotNull

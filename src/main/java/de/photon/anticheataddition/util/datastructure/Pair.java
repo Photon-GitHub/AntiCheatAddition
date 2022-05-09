@@ -1,13 +1,12 @@
 package de.photon.anticheataddition.util.datastructure;
 
-import lombok.Value;
-
 /**
  * This defines a generic, immutable pair of values.
  */
-@Value(staticConstructor = "of")
-public class Pair<E, F>
+public record Pair<E, F>(E first, F second)
 {
-    E first;
-    F second;
+    public static <E, F> Pair<E, F> of(E first, F second)
+    {
+        return new Pair<>(first, second);
+    }
 }

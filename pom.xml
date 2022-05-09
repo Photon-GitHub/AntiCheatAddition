@@ -12,7 +12,7 @@
     <description>This plugin provides niche checks for cheats which are not covered by most anticheats.</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Add your server directory here for automatic deployment. -->
         <testserver.dir>C:\Users\marti\Desktop\1.18-Testserver\plugins</testserver.dir>

@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.inventory;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
-import lombok.Value;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -98,13 +97,9 @@ public interface InventoryUtil
      */
     Optional<SlotLocation> locateSlot(int rawSlot, final Inventory inventory) throws IllegalArgumentException;
 
-    @Value
-    class SlotLocation
+    record SlotLocation(double x, double y)
     {
         public static final SlotLocation DUMMY = new SlotLocation(0, 0);
-
-        double x;
-        double y;
 
         static Optional<SlotLocation> opOf(double x, double y)
         {

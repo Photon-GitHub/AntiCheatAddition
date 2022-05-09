@@ -144,7 +144,7 @@ public final class InventoryMove extends ViolationModule
                         if (user.notRecentlyOpenedInventory(240L + speedMillis + lenienceMillis) &&
                             // Do the entity pushing stuff here (performance impact)
                             // No nearby entities that could push the player
-                            PacketAdapterBuilder.checkSync(() -> WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitboxLocation().getHitbox(), 0.1D).isEmpty()))
+                            PacketAdapterBuilder.checkSync(() -> WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitboxLocation().hitbox(), 0.1D).isEmpty()))
                         {
                             getManagement().flag(Flag.of(user)
                                                      .setAddedVl(5)

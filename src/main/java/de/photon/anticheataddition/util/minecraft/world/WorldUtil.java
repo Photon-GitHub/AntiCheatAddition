@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Contract;
 import java.util.List;
 import java.util.Set;
 
-public interface WorldUtil
+public sealed interface WorldUtil permits ModernWorldUtil
 {
     WorldUtil INSTANCE = new ModernWorldUtil();
 

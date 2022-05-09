@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 
-public interface InventoryUtil
+public sealed interface InventoryUtil permits LegacyInventoryUtil, ModernInventoryUtil
 {
     InventoryUtil INSTANCE = ServerVersion.is18() ? new LegacyInventoryUtil() : new ModernInventoryUtil();
 

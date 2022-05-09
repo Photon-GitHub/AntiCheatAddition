@@ -3,9 +3,8 @@ package de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.entityd
 import com.comphenix.protocol.events.PacketContainer;
 import de.photon.anticheataddition.protocol.packetwrappers.AbstractPacket;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class LegacyWrapperPlayServerEntityDestroy extends AbstractPacket implements IWrapperServerEntityDestroy
 {
@@ -22,11 +21,19 @@ public class LegacyWrapperPlayServerEntityDestroy extends AbstractPacket impleme
 
     public List<Integer> getEntityIDs()
     {
-        return Arrays.stream(handle.getIntegerArrays().read(0)).boxed().collect(Collectors.toUnmodifiableList());
+        final int[] array = handle.getIntegerArrays().read(0);
+        final List<Integer> list = new ArrayList<>();
+
+        for (int i : array) list.add(i);
+        return list;
     }
 
     public void setEntityIds(List<Integer> value)
     {
-        handle.getIntegerArrays().write(0, value.stream().mapToInt(Integer::intValue).toArray());
+        final int[] array = new int[value.size()];
+        int index = 0;
+        for (int i : value) array[index++] = i;
+
+        handle.getIntegerArrays().write(0, array);
     }
 }

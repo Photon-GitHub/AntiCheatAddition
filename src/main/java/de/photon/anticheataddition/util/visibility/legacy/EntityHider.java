@@ -38,18 +38,20 @@ final class EntityHider extends EntityInformationHider
     @Override
     protected void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide)
     {
+        if (toHide.isEmpty()) return;
+
         IWrapperServerEntityDestroy.sendDestroyEntities(observer, toHide.stream().map(Entity::getEntityId).collect(Collectors.toList()));
     }
 
     @Override
     protected void onReveal(@NotNull Player observer, @NotNull Set<Entity> revealed)
     {
+        if (revealed.isEmpty()) return;
+
         final List<Player> observerList = List.of(observer);
 
         Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> {
             for (Entity entity : revealed) ProtocolLibrary.getProtocolManager().updateEntity(entity, observerList);
         });
-
-        for (Entity entity : revealed) ProtocolLibrary.getProtocolManager().updateEntity(entity, observerList);
     }
 }

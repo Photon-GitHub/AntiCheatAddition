@@ -108,7 +108,7 @@ public final class LookPacketData
     /**
      * A singleton class to reduce the required {@link com.comphenix.protocol.events.PacketListener}s to a minimum.
      */
-    private static class LookPacketDataUpdater extends PacketAdapter
+    private static final class LookPacketDataUpdater extends PacketAdapter
     {
         public LookPacketDataUpdater()
         {

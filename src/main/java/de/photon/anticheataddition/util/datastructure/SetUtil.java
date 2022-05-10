@@ -47,7 +47,7 @@ public final class SetUtil
     /**
      * Copy of the newer guava method to accumulate to immutable {@link EnumSet}s, as minecraft 1.8 does not have that method.
      */
-    private static class EnumSetAccumulator<E extends Enum<E>>
+    private static final class EnumSetAccumulator<E extends Enum<E>>
     {
         @SuppressWarnings({"unchecked", "rawtypes"})
         public static final Collector<Enum<?>, ?, Set<? extends Enum<?>>> TO_IMMUTABLE_ENUM_SET =

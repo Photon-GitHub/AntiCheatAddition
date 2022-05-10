@@ -159,7 +159,7 @@ public class Log
         Bukkit.getScheduler().scheduleSyncDelayedTask(AntiCheatAddition.getInstance(), this::replaceDebugFileCycle, TimeUtil.toMillis(difference));
     }
 
-    private static class DebugUserHandler extends Handler
+    private static final class DebugUserHandler extends Handler
     {
         public DebugUserHandler(Level level)
         {

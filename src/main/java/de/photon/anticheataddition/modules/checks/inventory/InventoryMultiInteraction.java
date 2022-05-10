@@ -64,19 +64,13 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
 
         switch (event.getAction()) {
             // ------------------------------------------ Exemptions -------------------------------------------- //
-            case NOTHING:
-                // Nothing happens, therefore exempted
-            case UNKNOWN:
-                // Unknown reason might not be safe to handle
-            case COLLECT_TO_CURSOR:
-                // False positive with collecting all items of one type in the inventory
-            case DROP_ALL_SLOT:
-            case DROP_ONE_SLOT:
-                // False positives due to autodropping feature of minecraft when holding q
-                return;
+            // Nothing happens, therefore exempted
+            // Unknown reason might not be safe to handle
+            // False positive with collecting all items of one type in the inventory
+            // False positives due to autodropping feature of minecraft when holding q
+            case NOTHING, UNKNOWN, COLLECT_TO_CURSOR, DROP_ALL_SLOT, DROP_ONE_SLOT: return;
             // ------------------------------------------ Normal -------------------------------------------- //
-            case HOTBAR_SWAP:
-            case HOTBAR_MOVE_AND_READD:
+            case HOTBAR_SWAP, HOTBAR_MOVE_AND_READD:
                 addedVl = 1;
                 enforcedTicks = 1;
 
@@ -84,21 +78,13 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
                 if (smallDistance(user, event)) return;
                 break;
 
-            case PICKUP_ALL:
-            case PICKUP_SOME:
-            case PICKUP_HALF:
-            case PICKUP_ONE:
-            case PLACE_ALL:
-            case PLACE_SOME:
-            case PLACE_ONE:
+            case PICKUP_ALL, PICKUP_SOME, PICKUP_HALF, PICKUP_ONE, PLACE_ALL, PLACE_SOME, PLACE_ONE:
                 // No false positives to check for.
                 addedVl = 8;
                 enforcedTicks = smallDistance(user, event) ? 1 : 5;
                 break;
 
-            case DROP_ALL_CURSOR:
-            case DROP_ONE_CURSOR:
-            case CLONE_STACK:
+            case DROP_ALL_CURSOR, DROP_ONE_CURSOR, CLONE_STACK:
                 // No false positives to check for.
                 enforcedTicks = 4;
                 break;

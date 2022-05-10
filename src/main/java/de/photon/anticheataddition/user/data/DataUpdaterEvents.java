@@ -263,7 +263,7 @@ public final class DataUpdaterEvents implements Listener
     /**
      * A singleton class to reduce the required {@link Listener}s to a minimum.
      */
-    private static class VelocityChangeDataUpdater extends PacketAdapter
+    private static final class VelocityChangeDataUpdater extends PacketAdapter
     {
         private VelocityChangeDataUpdater()
         {

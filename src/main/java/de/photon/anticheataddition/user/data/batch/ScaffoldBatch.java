@@ -5,9 +5,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.batch.Batch;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Value;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -20,23 +17,15 @@ public final class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
 
     public ScaffoldBatch(@NotNull User user)
     {
-        super(SCAFFOLD_BATCH_EVENTBUS, user, 6, new ScaffoldBlockPlace(null, null, new Location(null, 0, 0, 0), true, 1));
+        super(SCAFFOLD_BATCH_EVENTBUS, user, 6, new ScaffoldBlockPlace(0, null, null, new Location(null, 0, 0, 0), true, 1));
     }
 
-    @Value
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class ScaffoldBlockPlace
+    public record ScaffoldBlockPlace(long time, Block block, BlockFace blockFace, Location location, boolean sneaked, double speedModifier)
     {
-        long time = System.currentTimeMillis();
-        Block block;
-        BlockFace blockFace;
-        Location location;
-        boolean sneaked;
-        double speedModifier;
-
         public ScaffoldBlockPlace(Block block, BlockFace blockFace, User user)
         {
-            this(block,
+            this(System.currentTimeMillis(),
+                 block,
                  blockFace,
                  user.getPlayer().getLocation(),
                  user.hasSneakedRecently(175),
@@ -57,7 +46,7 @@ public final class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
 
         public long timeOffset(@NotNull ScaffoldBlockPlace other)
         {
-            return MathUtil.absDiff(time, other.getTime());
+            return MathUtil.absDiff(time, other.time);
         }
     }
 }

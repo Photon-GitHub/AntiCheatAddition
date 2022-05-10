@@ -4,7 +4,6 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.messaging.Log;
-import lombok.EqualsAndHashCode;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -46,16 +45,11 @@ public final class LogBot extends Module
         Bukkit.getScheduler().cancelTask(taskNumber);
     }
 
-    @EqualsAndHashCode
-    private static class LogDeletionTime
+    private record LogDeletionTime(File logFolder, long timeToDelete)
     {
-        private final File logFolder;
-        private final long timeToDelete;
-
         private LogDeletionTime(String filePath, String configPath)
         {
-            this.logFolder = new File(filePath);
-            this.timeToDelete = TimeUnit.DAYS.toMillis(AntiCheatAddition.getInstance().getConfig().getLong("LogBot" + configPath, 10));
+            this(new File(filePath), TimeUnit.DAYS.toMillis(AntiCheatAddition.getInstance().getConfig().getLong("LogBot" + configPath, 10)));
         }
 
         public boolean isActive()

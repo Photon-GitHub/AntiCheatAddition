@@ -33,9 +33,9 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
     @Override
     public void processBatch(User user, List<ScaffoldBatch.ScaffoldBlockPlace> batch)
     {
-        final boolean moonwalk = batch.stream().filter(Predicate.not(ScaffoldBatch.ScaffoldBlockPlace::isSneaked)).count() >= batch.size() / 2;
+        final boolean moonwalk = batch.stream().filter(Predicate.not(ScaffoldBatch.ScaffoldBlockPlace::sneaked)).count() >= batch.size() / 2;
         val delays = BatchPreprocessors.zipReduceToDoubleStatistics(batch,
-                                                                    (old, cur) -> old.getSpeedModifier() * cur.timeOffset(old),
+                                                                    (old, cur) -> old.speedModifier() * cur.timeOffset(old),
                                                                     (old, cur) -> calculateMinExpectedDelay(old, cur, moonwalk));
 
         final double actualAverage = delays.get(0).getAverage();
@@ -56,10 +56,10 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
 
     private double calculateMinExpectedDelay(ScaffoldBatch.ScaffoldBlockPlace old, ScaffoldBatch.ScaffoldBlockPlace current, boolean moonwalk)
     {
-        if (current.getBlockFace() == old.getBlockFace() || current.getBlockFace() == old.getBlockFace().getOppositeFace()) {
-            return !moonwalk && current.isSneaked() && old.isSneaked() ?
+        if (current.blockFace() == old.blockFace() || current.blockFace() == old.blockFace().getOppositeFace()) {
+            return !moonwalk && current.sneaked() && old.sneaked() ?
                    // Sneaking handling
-                   normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * current.getLocation().getYaw()))) :
+                   normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * current.location().getYaw()))) :
                    // Moonwalking.
                    normalDelay;
             // Not the same blockfaces means that something is built diagonally or a new build position which means higher actual delay anyway and can be ignored.

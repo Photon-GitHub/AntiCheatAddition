@@ -128,7 +128,7 @@ public final class LookPacketData
 
             // Same tick -> merge
             synchronized (user.getLookPacketData().rotationChangeQueue) {
-                if (rotationChange.timeOffset(rotationQueue.head()) < 55) rotationQueue.head().merge(rotationChange);
+                if (rotationChange.timeOffset(rotationQueue.tail()) < 55) rotationQueue.tail().merge(rotationChange);
                 else rotationQueue.add(rotationChange);
             }
 

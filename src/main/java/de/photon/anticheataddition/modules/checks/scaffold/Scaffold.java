@@ -92,7 +92,7 @@ public final class Scaffold extends ViolationModule implements Listener
             WorldUtil.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
         {
 
-            val lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().getBlock();
+            val lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().block();
             // This checks if the block was placed against the expected block for scaffolding.
             val newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !WorldUtil.INSTANCE.isNext(lastScaffoldBlock, event.getBlockPlaced(), WorldUtil.HORIZONTAL_FACES);
 

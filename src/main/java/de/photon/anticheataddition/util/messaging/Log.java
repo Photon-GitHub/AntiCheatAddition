@@ -140,7 +140,9 @@ public class Log
 
         // Create new handler.
         final String path = AntiCheatAddition.getInstance().getDataFolder().getPath() + File.separatorChar + "logs" + File.separatorChar + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log";
+        final File file = new File(path);
         try {
+            file.getParentFile().mkdirs();
             this.currentHandler = new FileHandler(path, true);
             this.currentHandler.setLevel(FILE_LEVEL);
             this.currentHandler.setFormatter(LOG_FILE_FORMATTER);

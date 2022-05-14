@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.reflection;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.messaging.Log;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;

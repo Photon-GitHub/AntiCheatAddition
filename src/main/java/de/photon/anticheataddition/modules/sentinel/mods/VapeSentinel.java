@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.modules.sentinel.mods;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.sentinel.ParsedPluginMessageListener;

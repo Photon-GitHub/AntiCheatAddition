@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * Creates a TabCompleter which computes the tab possibilities of a command.
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class TabCompleteSupplier
+public final class TabCompleteSupplier
 {
     private final List<Supplier<List<String>>> tabPossibilities;
 

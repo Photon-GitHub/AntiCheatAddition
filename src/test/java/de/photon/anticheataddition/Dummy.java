@@ -32,18 +32,17 @@ public final class Dummy
         // Do nothing, this is already done via the static constructor.
     }
 
-    public static AntiCheatAddition mockAntiCheatAddition()
+    public static void mockAntiCheatAddition()
     {
-        return mockAntiCheatAddition("src/main/resources/config.yml");
+        mockAntiCheatAddition("src/main/resources/config.yml");
     }
 
-    public static AntiCheatAddition mockAntiCheatAddition(String configPath)
+    public static void mockAntiCheatAddition(String configPath)
     {
         val config = YamlConfiguration.loadConfiguration(new File(configPath));
         AntiCheatAddition mockAntiCheatAddition = Mockito.mock(AntiCheatAddition.class);
         Mockito.when(mockAntiCheatAddition.getConfig()).thenReturn(config);
         AntiCheatAddition.setInstance(mockAntiCheatAddition);
-        return mockAntiCheatAddition;
     }
 
     public static Player mockPlayer()

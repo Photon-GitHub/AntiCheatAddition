@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.modules.checks.scaffold;
 
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.DataKey;

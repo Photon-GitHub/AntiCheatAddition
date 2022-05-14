@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.reflection;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.messaging.Log;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor

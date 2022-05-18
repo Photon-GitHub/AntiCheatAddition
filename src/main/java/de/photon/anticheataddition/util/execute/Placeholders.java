@@ -44,9 +44,7 @@ public final class Placeholders
                 placeholderStarted = true;
                 // Make sure the '{' char is not recorded.
                 continue;
-            }
-
-            if (c == '}') {
+            } else if (c == '}') {
                 // End the recording of the placeholder
                 placeholderStarted = false;
 

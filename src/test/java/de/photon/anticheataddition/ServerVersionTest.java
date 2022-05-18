@@ -50,8 +50,7 @@ class ServerVersionTest
 
         actual = ServerVersion.MC112.getSupVersionsTo().stream()
                                     .map(ServerVersion::getVersionOutputString)
-                                    .sorted()
-                                    .toList();
+                                    .sorted().toList();
 
         Assertions.assertIterableEquals(expected, actual);
     }

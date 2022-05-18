@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.SetMultimap;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
@@ -27,7 +28,7 @@ import java.util.Set;
 
 abstract class EntityInformationHider implements Listener
 {
-    private final Multimap<Entity, Entity> hiddenFromPlayerMap;
+    private final SetMultimap<Entity, Entity> hiddenFromPlayerMap;
     private final PacketListener informationPacketListener;
 
     protected EntityInformationHider(@NotNull PacketType... affectedPackets)

@@ -163,8 +163,10 @@ public final class User implements Permissible
      */
     public boolean inAdventureOrSurvivalMode()
     {
-        final GameMode gameMode = this.player.getGameMode();
-        return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
+        return switch (this.player.getGameMode()) {
+            case ADVENTURE, SURVIVAL -> true;
+            default -> false;
+        };
     }
 
     /**

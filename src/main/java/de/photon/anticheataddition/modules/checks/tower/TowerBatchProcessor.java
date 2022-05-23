@@ -23,26 +23,6 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
 {
     private static final Polynomial VL_CALCULATOR = new Polynomial(0.37125, 1);
 
-    /**
-     * This {@link java.util.List} provides usually used and tested values to speed up performance and possibly low-quality simulation results.
-     */
-    private static final List<Double> FIRST_DELAYS = List.of(
-            // 478.4 * 0.925
-            // No jump boost
-            442.52D,
-            // 578.4 * 0.925
-            // Jump boost 1
-            542.52D,
-            // 290 * 0.925
-            // Jump boost 2
-            268.25,
-            // 190 * 0.925
-            // Jump boost 3
-            175.75,
-            // 140 * 0.925
-            // Jump boost 4
-            129.5);
-
     private final int cancelVl = loadInt(".cancel_vl", 6);
     private final double towerLeniency = loadDouble(".tower_leniency", 1);
     private final double levitationLeniency = loadDouble(".levitation_leniency", 0.95);
@@ -85,19 +65,28 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
             return (900 / (blockPlace.levitation().get().getAmplifier() + 1D)) * towerLeniency * levitationLeniency;
         }
 
-        // No Jump Boost
-        if (blockPlace.jumpBoost().isEmpty()) return FIRST_DELAYS.get(0);
+        // No Jump Boost, tested value.
+        if (blockPlace.jumpBoost().isEmpty()) return 478.4D * towerLeniency;
+        final int amplifier = blockPlace.jumpBoost().get().getAmplifier();
 
-        val jumpBoost = blockPlace.jumpBoost().get().getAmplifier();
         // Negative Jump Boost -> Player is not allowed to place blocks -> Very high delay
-        if (jumpBoost < 0) return 1500;
+        if (amplifier < 0) return 1500;
 
-        // Normal Jump Boost in cache
-        if (jumpBoost + 1 < FIRST_DELAYS.size()) return FIRST_DELAYS.get(jumpBoost + 1);
+        return towerLeniency * switch (amplifier) {
+            // Cache for common JumpBoosts (I to IV)
+            case 0 -> 578.4;
+            case 1 -> 290;
+            case 2 -> 190;
+            case 3 -> 140;
+            default -> simulateJumpBoost(amplifier);
+        };
+    }
 
+    private static double simulateJumpBoost(int amplifier)
+    {
         // Start the simulation.
         val startLocation = new Location(null, 0, 0, 0);
-        val currentVelocity = new Vector(0, Movement.PLAYER.getJumpYMotion(jumpBoost), 0);
+        val currentVelocity = new Vector(0, Movement.PLAYER.getJumpYMotion(amplifier), 0);
 
         val simulator = new MovementSimulator(startLocation, currentVelocity, Movement.PLAYER);
         simulator.tick();
@@ -110,6 +99,6 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
         // 0.92 is the required simulation leniency I got from testing.
         // 0.925 is additional leniency
         // -15 is special leniency for high jump boost environments.
-        return (((TimeUtil.toMillis(simulator.getTick()) / landingBlockY) * 0.92D * 0.925D) - 15D) * towerLeniency;
+        return (((TimeUtil.toMillis(simulator.getTick()) / landingBlockY) * 0.92D * 0.925D) - 15D);
     }
 }

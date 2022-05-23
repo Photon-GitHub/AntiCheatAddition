@@ -57,7 +57,7 @@ public enum ProtocolVersion
     }
 
     /**
-     * This gets the respective {@link ProtocolVersion} for a version number as returned by the {@link com.viaversion.viaversion.api.ViaAPI}
+     * This gets the respective {@link ProtocolVersion} for a version number returned by the {@link com.viaversion.viaversion.api.ViaAPI}
      */
     @Nullable
     public static ProtocolVersion getByVersionNumber(int versionNumber)

@@ -24,8 +24,7 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
     private static final Polynomial VL_CALCULATOR = new Polynomial(0.37125, 1);
 
     /**
-     * This {@link java.util.List} provides usually used and tested values to speed up performance and possibly low-
-     * quality simulation results.
+     * This {@link java.util.List} provides usually used and tested values to speed up performance and possibly low-quality simulation results.
      */
     private static final List<Double> FIRST_DELAYS = List.of(
             // 478.4 * 0.925

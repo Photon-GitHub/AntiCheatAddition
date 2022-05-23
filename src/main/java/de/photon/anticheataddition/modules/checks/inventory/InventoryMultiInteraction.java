@@ -67,7 +67,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
             // Nothing happens, therefore exempted
             // Unknown reason might not be safe to handle
             // False positive with collecting all items of one type in the inventory
-            // False positives due to autodropping feature of minecraft when holding q
+            // False positives due to auto-dropping feature of minecraft when holding q
             case NOTHING, UNKNOWN, COLLECT_TO_CURSOR, DROP_ALL_SLOT, DROP_ONE_SLOT: return;
             // ------------------------------------------ Normal -------------------------------------------- //
             case HOTBAR_SWAP, HOTBAR_MOVE_AND_READD:

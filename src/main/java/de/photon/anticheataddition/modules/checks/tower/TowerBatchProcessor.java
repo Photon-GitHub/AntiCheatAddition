@@ -70,14 +70,14 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
         final int amplifier = blockPlace.jumpBoost().get().getAmplifier();
 
         // Negative Jump Boost -> Player is not allowed to place blocks -> Very high delay
-        if (amplifier < 0) return 1500;
+        if (amplifier < 0) return 1500D;
 
         return towerLeniency * switch (amplifier) {
             // Cache for common JumpBoosts (I to IV)
-            case 0 -> 578.4;
-            case 1 -> 290;
-            case 2 -> 190;
-            case 3 -> 140;
+            case 0 -> 578.4D;
+            case 1 -> 290D;
+            case 2 -> 190D;
+            case 3 -> 140D;
             default -> simulateJumpBoost(amplifier);
         };
     }

@@ -4,9 +4,6 @@ import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.messaging.Log;
-import lombok.Getter;
-
-import java.util.function.ToIntFunction;
 
 
 /**
@@ -14,29 +11,19 @@ import java.util.function.ToIntFunction;
  */
 final class ScaffoldRotationFastChange extends Module
 {
-    @Getter
-    private ToIntFunction<User> applyingConsumer = user -> 0;
-
     ScaffoldRotationFastChange(String scaffoldConfigString)
     {
         super(scaffoldConfigString + ".parts.Rotation.FastChange");
     }
 
-    @Override
-    public void enable()
+    public int getVl(User user)
     {
-        applyingConsumer = user -> {
-            if (user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).recentlyUpdated(125)) {
-                Log.fine(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent fast rotation changes.");
-                return 15;
-            }
-            return 0;
-        };
-    }
+        if (!this.isEnabled()) return 0;
 
-    @Override
-    public void disable()
-    {
-        applyingConsumer = user -> 0;
+        if (user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).recentlyUpdated(125)) {
+            Log.fine(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent fast rotation changes.");
+            return 15;
+        }
+        return 0;
     }
 }

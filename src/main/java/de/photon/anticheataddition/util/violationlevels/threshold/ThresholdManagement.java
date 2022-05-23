@@ -8,8 +8,6 @@ import lombok.val;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.stream.Collectors;
-
 public sealed interface ThresholdManagement permits EmptyThresholds, SingleThresholds, MultiThresholds
 {
     /**
@@ -28,7 +26,7 @@ public sealed interface ThresholdManagement permits EmptyThresholds, SingleThres
     {
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
         val keys = Preconditions.checkNotNull(ConfigUtil.loadKeys(configPath), "Config loading error: The keys loaded from " + configPath + " are null.");
-        val thresholds = keys.stream().map(key -> new Threshold(Integer.parseInt(key), ConfigUtil.loadImmutableStringOrStringList(configPath + '.' + key))).collect(Collectors.toList());
+        val thresholds = keys.stream().map(key -> new Threshold(Integer.parseInt(key), ConfigUtil.loadImmutableStringOrStringList(configPath + '.' + key))).toList();
 
         return switch (thresholds.size()) {
             case 0 -> EMPTY;

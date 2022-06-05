@@ -1,6 +1,6 @@
 package de.photon.anticheataddition.util.minecraft.tps;
 
-public interface TPSProvider
+public sealed interface TPSProvider permits ModernTPSProvider
 {
     TPSProvider INSTANCE = new ModernTPSProvider();
 

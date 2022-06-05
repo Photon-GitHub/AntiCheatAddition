@@ -29,6 +29,14 @@ public final class InventoryAverageHeuristic extends ViolationModule implements 
         super("Inventory.parts.AverageHeuristic");
     }
 
+    private static boolean supportedClickType(ClickType type)
+    {
+        return switch (type) {
+            case DROP, RIGHT, LEFT, SHIFT_LEFT, SHIFT_RIGHT -> true;
+            default -> false;
+        };
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClick(InventoryClickEvent event)
     {
@@ -36,7 +44,7 @@ public final class InventoryAverageHeuristic extends ViolationModule implements 
         if (User.isUserInvalid(user, this)) return;
 
         // Make sure that we have normal click actions.
-        if ((event.getClick() == ClickType.DROP || event.getClick() == ClickType.RIGHT || event.getClick() == ClickType.LEFT || event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) &&
+        if (supportedClickType(event.getClick()) &&
             // Creative-clear might trigger this.
             user.inAdventureOrSurvivalMode() &&
             // Minimum TPS before the check is activated as of a huge amount of fps

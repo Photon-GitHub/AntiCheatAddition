@@ -51,33 +51,28 @@ public final class MaterialUtil
         val freeSpaceContainers = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
 
         switch (ServerVersion.ACTIVE) {
-            case MC18:
-            case MC112:
+            case MC18, MC112 -> {
                 autoStepMaterials.addAll(getMaterialsEndingWith("_STAIRS", "_SLABS"));
                 // This will automatically exclude the "BED" on 1.8.8, as jumping was introduced in 1.12.
                 bounceMaterials.addAll(getMaterialsEndingWith("_BED"));
                 freeSpaceContainers.addAll(getMaterialsEndingWith("SHULKER_BOK"));
-
                 EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
                 SIGNS = getMaterialsEndingWith("SIGN");
                 SPAWNER = Material.getMaterial("MOB_SPAWNER");
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA, Material.getMaterial("STATIONARY_WATER"), Material.getMaterial("STATIONARY_LAVA"));
-                break;
-            case MC115:
-            case MC116:
-            case MC117:
-            case MC118:
+            }
+
+            case MC115, MC116, MC117, MC118 -> {
                 autoStepMaterials.addAll(ofTags(Tag.SLABS, Tag.WOODEN_SLABS, Tag.STAIRS, Tag.WOODEN_STAIRS));
                 bounceMaterials.addAll(ofTags(Tag.BEDS));
                 freeSpaceContainers.addAll(ofTags(Tag.SHULKER_BOXES));
-
                 EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
                 SIGNS = ofTags(Tag.SIGNS, Tag.STANDING_SIGNS, Tag.WALL_SIGNS);
                 SPAWNER = Material.SPAWNER;
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA);
-                break;
-            default:
-                throw new UnknownMinecraftException();
+            }
+
+            default -> throw new UnknownMinecraftException();
         }
 
         AUTO_STEP_MATERIALS = Sets.immutableEnumSet(autoStepMaterials);

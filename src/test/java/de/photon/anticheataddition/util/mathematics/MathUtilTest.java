@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.mathematics;
 
-import com.google.common.math.IntMath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

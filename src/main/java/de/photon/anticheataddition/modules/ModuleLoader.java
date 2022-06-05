@@ -186,7 +186,7 @@ public final class ModuleLoader
             val incomingChannels = incoming.build();
             Preconditions.checkArgument((module instanceof PluginMessageListener) == !(incomingChannels.isEmpty()), "Incoming channels have to be registered in a PluginMessageListener Module and cannot be registered otherwise.");
 
-            if (module instanceof Listener) this.listeners.add((Listener) module);
+            if (module instanceof Listener listener) this.listeners.add(listener);
 
             return new ModuleLoader(module,
                                     bungeecordForbidden,

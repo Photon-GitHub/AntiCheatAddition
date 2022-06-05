@@ -60,7 +60,7 @@ public final class BatchPreprocessors
 
         for (val pair : input) {
             for (int i = 0; i < mappers.length; ++i) {
-                statistics[i].accept(mappers[i].applyAsDouble(pair.getFirst(), pair.getSecond()));
+                statistics[i].accept(mappers[i].applyAsDouble(pair.first(), pair.second()));
             }
         }
 

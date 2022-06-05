@@ -27,8 +27,8 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
     public void processBatch(User user, List<InventoryBatch.InventoryClick> batch)
     {
         val timeOffsets = BatchPreprocessors.zipOffsetOne(batch).stream()
-                                            .filter(pair -> pair.getFirst().getInventory().equals(pair.getSecond().getInventory()))
-                                            .mapToLong(pair -> pair.getFirst().timeOffset(pair.getSecond()))
+                                            .filter(pair -> pair.first().inventory().equals(pair.second().inventory()))
+                                            .mapToLong(pair -> pair.first().timeOffset(pair.second()))
                                             .toArray();
 
 
@@ -40,8 +40,8 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
             return;
         }
 
-        val averageMillis = DataUtil.average(timeOffsets);
-        val squaredErrorsSum = DataUtil.squaredError(averageMillis, timeOffsets);
+        final double averageMillis = DataUtil.average(timeOffsets);
+        final double squaredErrorsSum = DataUtil.squaredError(averageMillis, timeOffsets);
 
         // One time 2 ticks offset and 2 times 1 tick offset * 15 minimum vl = 168750
         // 2500 error sum is legit achievable.
@@ -64,8 +64,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         val finalVl = (int) Math.min(vl, 70);
         this.getModule().getManagement().flag(Flag.of(user)
                                                   .setAddedVl(finalVl)
-                                                  .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() +
-                                                                  " has bot-like click delays. (SE: " + squaredErrorsSum + " | A: " + averageMillis + " | MC: " + misClickCounter.getCounter() + " | VLU: " + finalVl + ")"));
+                                                  .setDebug(() -> "Inventory-Debug | Player: %s has bot-like click delays. (SE: %f | A: %f | MC: %d | VLU: %d)".formatted(user.getPlayer().getName(), squaredErrorsSum, averageMillis, misClickCounter.getCounter(), finalVl)));
 
         misClickCounter.setToZero();
     }

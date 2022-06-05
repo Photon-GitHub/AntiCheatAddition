@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.modules.sentinel;
 
 import de.photon.anticheataddition.modules.ModuleLoader;
-import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import lombok.val;
 import org.bukkit.entity.Player;

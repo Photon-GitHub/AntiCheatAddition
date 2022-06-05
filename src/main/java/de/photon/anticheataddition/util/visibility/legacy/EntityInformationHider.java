@@ -5,8 +5,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.SetMultimap;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
@@ -27,7 +27,7 @@ import java.util.Set;
 
 abstract class EntityInformationHider implements Listener
 {
-    private final Multimap<Entity, Entity> hiddenFromPlayerMap;
+    private final SetMultimap<Entity, Entity> hiddenFromPlayerMap;
     private final PacketListener informationPacketListener;
 
     protected EntityInformationHider(@NotNull PacketType... affectedPackets)
@@ -107,16 +107,14 @@ abstract class EntityInformationHider implements Listener
     {
         // Creative and Spectator players are ignored by ESP and therefore need to be removed from hiding manually.
         switch (event.getNewGameMode()) {
-            case CREATIVE:
-            case SPECTATOR:
+            case CREATIVE, SPECTATOR -> {
                 setHiddenEntities(event.getPlayer(), Set.of());
                 removeEntity(event.getPlayer());
 
                 // Run with delay, so we avoid any updates that are underway async.
                 Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(),
                                                    () -> ProtocolLibrary.getProtocolManager().updateEntity(event.getPlayer(), event.getPlayer().getWorld().getPlayers()), 20L);
-                break;
-            default: break;
+            }
         }
     }
 

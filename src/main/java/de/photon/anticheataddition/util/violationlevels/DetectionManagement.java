@@ -33,7 +33,7 @@ public class DetectionManagement extends ViolationManagement implements Listener
 
         if (!SentinelEvent.build(flag.getPlayer(), this.module.getModuleId()).call().isCancelled()) {
             this.addVL(flag.getPlayer(), flag.getAddedVl());
-            // No execution of the Runnables of flag.
+            // No execution of the runnables of flag.
         }
     }
 

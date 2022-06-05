@@ -63,7 +63,7 @@ public final class Tower extends ViolationModule implements Listener
                 !user.isInLiquids())
             {
                 // Make sure that the player is still towering in the same position.
-                if (!event.getBlockAgainst().getLocation().equals(user.getTowerBatch().peekLastAdded().getLocationOfBlock())) user.getTowerBatch().clear();
+                if (!event.getBlockAgainst().getLocation().equals(user.getTowerBatch().peekLastAdded().locationOfBlock())) user.getTowerBatch().clear();
 
                 user.getTowerBatch().addDataPoint(new TowerBatch.TowerBlockPlace(blockPlaced.getLocation(), user.getPlayer()));
             }

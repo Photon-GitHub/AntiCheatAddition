@@ -1,13 +1,11 @@
 package de.photon.anticheataddition.util.config;
 
-import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.messaging.Log;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
 
 @Getter
 public enum Configs

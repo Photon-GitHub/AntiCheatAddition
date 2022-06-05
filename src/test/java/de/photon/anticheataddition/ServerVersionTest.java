@@ -34,25 +34,23 @@ class ServerVersionTest
                                       .filter(ServerVersion::isSupported)
                                       .map(ServerVersion::getVersionOutputString)
                                       .sorted()
-                                      .collect(Collectors.toUnmodifiableList());
+                                      .toList();
 
         List<String> actual = ServerVersion.MC18.getSupVersionsFrom().stream()
                                                 .map(ServerVersion::getVersionOutputString)
                                                 .sorted()
-                                                .collect(Collectors.toUnmodifiableList());
+                                                .toList();
 
         Assertions.assertIterableEquals(expected, actual);
 
         expected = Stream.of(ServerVersion.MC18, ServerVersion.MC19, ServerVersion.MC110, ServerVersion.MC111, ServerVersion.MC112)
                          .filter(ServerVersion::isSupported)
                          .map(ServerVersion::getVersionOutputString)
-                         .sorted()
-                         .collect(Collectors.toUnmodifiableList());
+                         .sorted().toList();
 
         actual = ServerVersion.MC112.getSupVersionsTo().stream()
                                     .map(ServerVersion::getVersionOutputString)
-                                    .sorted()
-                                    .collect(Collectors.toUnmodifiableList());
+                                    .sorted().toList();
 
         Assertions.assertIterableEquals(expected, actual);
     }

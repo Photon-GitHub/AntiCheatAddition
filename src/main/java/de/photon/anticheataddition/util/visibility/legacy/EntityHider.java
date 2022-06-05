@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 final class EntityHider extends EntityInformationHider
 {
@@ -40,7 +39,7 @@ final class EntityHider extends EntityInformationHider
     {
         if (toHide.isEmpty()) return;
 
-        IWrapperServerEntityDestroy.sendDestroyEntities(observer, toHide.stream().map(Entity::getEntityId).collect(Collectors.toList()));
+        IWrapperServerEntityDestroy.sendDestroyEntities(observer, toHide.stream().map(Entity::getEntityId).toList());
     }
 
     @Override

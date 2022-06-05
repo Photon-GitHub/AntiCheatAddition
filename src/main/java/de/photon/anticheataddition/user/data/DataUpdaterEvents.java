@@ -131,7 +131,7 @@ public final class DataUpdaterEvents implements Listener
     public void onInventoryClick(final InventoryClickEvent event)
     {
         val user = User.getUser(event.getWhoClicked().getUniqueId());
-        // Quickbar actions can be performed outside the inventory.
+        // Hotbar actions can be performed outside the inventory.
         if (user == null || event.getSlotType() == InventoryType.SlotType.QUICKBAR) return;
 
         // Only update if the inventory is currently closed to not interfere with opening time checks.
@@ -263,7 +263,7 @@ public final class DataUpdaterEvents implements Listener
     /**
      * A singleton class to reduce the required {@link Listener}s to a minimum.
      */
-    private static class VelocityChangeDataUpdater extends PacketAdapter
+    private static final class VelocityChangeDataUpdater extends PacketAdapter
     {
         private VelocityChangeDataUpdater()
         {

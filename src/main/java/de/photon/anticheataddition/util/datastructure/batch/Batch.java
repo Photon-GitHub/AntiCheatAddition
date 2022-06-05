@@ -3,9 +3,6 @@ package de.photon.anticheataddition.util.datastructure.batch;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import de.photon.anticheataddition.user.User;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Value;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -43,7 +40,7 @@ public class Batch<T>
         this.values[this.index++] = value;
 
         if (this.index >= this.values.length) {
-            eventBus.post(Snapshot.of(this));
+            eventBus.post(new Snapshot<>(this));
             // Clear the batch.
             this.clear();
         }
@@ -73,16 +70,17 @@ public class Batch<T>
     /**
      * Represents a snapshot of a {@link Batch}, e.g. for broadcasting.
      */
-    @Value
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class Snapshot<T>
+    public record Snapshot<T>(@NotNull User user, @NotNull @Unmodifiable List<T> values)
     {
-        @NotNull User user;
-        @NotNull @Unmodifiable List<T> values;
-
-        protected static <T> Snapshot<T> of(@NotNull Batch<T> batch)
+        public Snapshot(User user, List<T> values)
         {
-            return new Snapshot<>(batch.user, List.of(batch.values));
+            this.user = user;
+            this.values = List.copyOf(values);
+        }
+
+        public Snapshot(@NotNull Batch<T> batch)
+        {
+            this(batch.user, List.of(batch.values));
         }
     }
 }

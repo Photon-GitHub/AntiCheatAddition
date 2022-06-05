@@ -33,35 +33,33 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
     @Override
     public void processBatch(User user, List<ScaffoldBatch.ScaffoldBlockPlace> batch)
     {
-        final boolean moonwalk = batch.stream().filter(Predicate.not(ScaffoldBatch.ScaffoldBlockPlace::isSneaked)).count() >= batch.size() / 2;
+        final boolean moonwalk = batch.stream().filter(Predicate.not(ScaffoldBatch.ScaffoldBlockPlace::sneaked)).count() >= batch.size() / 2;
         val delays = BatchPreprocessors.zipReduceToDoubleStatistics(batch,
-                                                                    (old, cur) -> old.getSpeedModifier() * cur.timeOffset(old),
+                                                                    (old, cur) -> old.speedModifier() * cur.timeOffset(old),
                                                                     (old, cur) -> calculateMinExpectedDelay(old, cur, moonwalk));
 
-        val actualAverage = delays.get(0).getAverage();
-        val minExpectedAverage = delays.get(1).getAverage();
+        final double actualAverage = delays.get(0).getAverage();
+        final double minExpectedAverage = delays.get(1).getAverage();
 
         // delta-times are too low -> flag
         if (actualAverage < minExpectedAverage) {
-            val vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpectedAverage - actualAverage).intValue());
+            final int vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpectedAverage - actualAverage).intValue());
             this.getModule().getManagement().flag(Flag.of(user)
                                                       .setAddedVl(vlIncrease)
                                                       .setCancelAction(cancelVl, () -> {
                                                           user.getTimeMap().at(TimeKey.SCAFFOLD_TIMEOUT).update();
                                                           InventoryUtil.syncUpdateInventory(user.getPlayer());
                                                       })
-                                                      .setDebug(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() +
-                                                                      " enforced delay: " + minExpectedAverage + " | real: " + actualAverage +
-                                                                      " | vl increase: " + vlIncrease));
+                                                      .setDebug(() -> "Scaffold-Debug | Player: %s enforced delay: %f | real: %f | vl increase: %d".formatted(user.getPlayer().getName(), minExpectedAverage, actualAverage, vlIncrease)));
         }
     }
 
     private double calculateMinExpectedDelay(ScaffoldBatch.ScaffoldBlockPlace old, ScaffoldBatch.ScaffoldBlockPlace current, boolean moonwalk)
     {
-        if (current.getBlockFace() == old.getBlockFace() || current.getBlockFace() == old.getBlockFace().getOppositeFace()) {
-            return !moonwalk && current.isSneaked() && old.isSneaked() ?
+        if (current.blockFace() == old.blockFace() || current.blockFace() == old.blockFace().getOppositeFace()) {
+            return !moonwalk && current.sneaked() && old.sneaked() ?
                    // Sneaking handling
-                   normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * current.getLocation().getYaw()))) :
+                   normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * current.location().getYaw()))) :
                    // Moonwalking.
                    normalDelay;
             // Not the same blockfaces means that something is built diagonally or a new build position which means higher actual delay anyway and can be ignored.

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.function.Predicate;
 
-public interface EntityUtil
+public sealed interface EntityUtil permits LegacyEntityUtil, ModernEntityUtil
 {
     EntityUtil INSTANCE = ServerVersion.containsActive(ServerVersion.MC115.getSupVersionsTo()) ? new LegacyEntityUtil() : new ModernEntityUtil();
 

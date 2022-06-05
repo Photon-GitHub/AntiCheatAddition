@@ -13,13 +13,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Creates a TabCompleter which computes the tab possibilities of a command.
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class TabCompleteSupplier
+public final class TabCompleteSupplier
 {
     private final List<Supplier<List<String>>> tabPossibilities;
 
@@ -43,7 +42,7 @@ public class TabCompleteSupplier
                                     .flatMap(List::stream)
                                     .filter(potentialTab -> potentialTab.toLowerCase(Locale.ENGLISH).startsWith(lowerCaseArgument))
                                     .sorted()
-                                    .collect(Collectors.toList());
+                                    .toList();
     }
 
     /**
@@ -55,7 +54,7 @@ public class TabCompleteSupplier
                                     .map(Supplier::get)
                                     .flatMap(List::stream)
                                     .sorted()
-                                    .collect(Collectors.toList());
+                                    .toList();
     }
 
     /**
@@ -71,7 +70,7 @@ public class TabCompleteSupplier
          */
         public Builder allPlayers()
         {
-            supplierBuilder.add(() -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
+            supplierBuilder.add(() -> Bukkit.getOnlinePlayers().stream().map(Player::getName).toList());
             return this;
         }
 

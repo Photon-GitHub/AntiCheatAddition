@@ -59,7 +59,7 @@ public interface IWrapperPlayEquipment extends IWrapperPlayEntity
     boolean setSlotStackPair(EnumWrappers.ItemSlot slot, ItemStack item);
 
     /**
-     * Removes the ItemSlot ItemStack pair matching the provided slot. If doesn't exist does nothing
+     * Removes the ItemSlot ItemStack pair matching the provided slot. If it doesn't exist this does nothing.
      *
      * @param slot the slot to remove the pair from
      *
@@ -81,7 +81,7 @@ public interface IWrapperPlayEquipment extends IWrapperPlayEntity
      *
      * @param slot the slot to retrieve the item from
      *
-     * @return the equipping item, or null if doesn't exist
+     * @return the equipping item, or null if it doesn't exist
      */
     ItemStack getItem(EnumWrappers.ItemSlot slot);
 

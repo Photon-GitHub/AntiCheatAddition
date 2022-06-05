@@ -2,37 +2,27 @@ package de.photon.anticheataddition.util.minecraft.world;
 
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.util.mathematics.AxisAlignedBB;
-import lombok.Value;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
-
-@Value
-public class Region
+public record Region(@NotNull World world, @NotNull AxisAlignedBB regionBox)
 {
-    /**
-     * The {@link World} the region is a part of.
-     */
-    @NotNull World world;
-
-    /**
-     * The boundaries of the region are stored here.
-     */
-    @NotNull AxisAlignedBB regionBox;
+    public Region
+    {
+        Preconditions.checkNotNull(world, "Tried to define region with unknown world");
+    }
 
     public Region(final World world, final double x1, final double z1, final double x2, final double z2)
     {
-        this.world = Preconditions.checkNotNull(world, "Tried to define region with unknown world");
-        // From y = MIN_VALUE to y = MAX_VALUE as a region is 2-dimensional and has to cover the entire y-range.
-        this.regionBox = new AxisAlignedBB(Double.min(x1, x2),
-                                           Double.MIN_VALUE,
-                                           Double.min(z1, z2),
-                                           //
-                                           Double.max(x1, x2),
-                                           Double.MAX_VALUE,
-                                           Double.max(z1, z2));
+        this(world, new AxisAlignedBB(Double.min(x1, x2),
+                                      Double.MIN_VALUE,
+                                      Double.min(z1, z2),
+                                      //
+                                      Double.max(x1, x2),
+                                      Double.MAX_VALUE,
+                                      Double.max(z1, z2)));
     }
 
     /**

@@ -4,7 +4,7 @@ import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.user.User;
 import org.bukkit.entity.Player;
 
-public interface PingProvider
+public sealed interface PingProvider permits LegacyPingProvider, ModernPingProvider
 {
     PingProvider INSTANCE = ServerVersion.containsActive(ServerVersion.MC115.getSupVersionsTo()) ? new LegacyPingProvider() : new ModernPingProvider();
 

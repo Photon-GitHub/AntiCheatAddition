@@ -5,7 +5,6 @@ import de.photon.anticheataddition.util.datastructure.SetUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Getter
@@ -54,12 +52,8 @@ public enum Hitbox
         return new HitboxLocation(player.isSneaking() ? SNEAKING_PLAYER : PLAYER, player.getLocation());
     }
 
-    @Value
-    public static class HitboxLocation implements Iterable<Location>
+    public record HitboxLocation(@NotNull Hitbox hitbox, @NotNull Location location) implements Iterable<Location>
     {
-        @NotNull Hitbox hitbox;
-        @NotNull Location location;
-
         public Location[] getEspLocations()
         {
             val cullX = (location.getBlockX() - (int) (location.getX() + hitbox.offsetX)) == 0 && (location.getBlockX() - (int) (location.getX() - hitbox.offsetX)) == 0;
@@ -138,7 +132,7 @@ public enum Hitbox
         public List<Block> getPartiallyIncludedBlocks()
         {
             val world = Preconditions.checkNotNull(location.getWorld(), "Tried to get blocks from null world.");
-            return getPartiallyIncludedLocations().stream().map(world::getBlockAt).collect(Collectors.toUnmodifiableList());
+            return getPartiallyIncludedLocations().stream().map(world::getBlockAt).toList();
         }
 
         public List<Location> getPartiallyIncludedLocations()

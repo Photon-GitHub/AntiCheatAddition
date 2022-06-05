@@ -82,16 +82,6 @@ public final class User implements Permissible
         return user;
     }
 
-    /**
-     * Removes an {@link User}.
-     */
-    private static void deleteUser(UUID uuid)
-    {
-        val oldUser = USERS.remove(uuid);
-        FLOODGATE_USERS.remove(oldUser);
-        DEBUG_USERS.remove(oldUser);
-    }
-
     public static User getUser(Player player)
     {
         return USERS.get(player.getUniqueId());
@@ -173,8 +163,10 @@ public final class User implements Permissible
      */
     public boolean inAdventureOrSurvivalMode()
     {
-        final GameMode gameMode = this.player.getGameMode();
-        return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
+        return switch (this.player.getGameMode()) {
+            case ADVENTURE, SURVIVAL -> true;
+            default -> false;
+        };
     }
 
     /**
@@ -241,14 +233,10 @@ public final class User implements Permissible
      */
     public boolean hasMovedRecently(final TimeKey movementType, final long milliseconds)
     {
-        switch (movementType) {
-            case HEAD_OR_OTHER_MOVEMENT:
-            case XYZ_MOVEMENT:
-            case XZ_MOVEMENT:
-                return this.timeMap.at(movementType).recentlyUpdated(milliseconds);
-            default:
-                throw new IllegalStateException("Unexpected MovementType: " + movementType);
-        }
+        return switch (movementType) {
+            case HEAD_OR_OTHER_MOVEMENT, XYZ_MOVEMENT, XZ_MOVEMENT -> this.timeMap.at(movementType).recentlyUpdated(milliseconds);
+            default -> throw new IllegalStateException("Unexpected MovementType: " + movementType);
+        };
     }
 
     /**
@@ -346,12 +334,12 @@ public final class User implements Permissible
         else DEBUG_USERS.remove(this);
     }
 
-    public static class UserListener implements Listener
+    public static final class UserListener implements Listener
     {
         @EventHandler(priority = EventPriority.LOWEST)
         public void onJoin(final PlayerJoinEvent event)
         {
-            val user = createFromPlayer(event.getPlayer());
+            final User user = createFromPlayer(event.getPlayer());
 
             // Login time
             user.timeMap.at(TimeKey.LOGIN_TIME).update();
@@ -364,7 +352,9 @@ public final class User implements Permissible
         @EventHandler
         public void onQuit(final PlayerQuitEvent event)
         {
-            deleteUser(event.getPlayer().getUniqueId());
+            final User oldUser = USERS.remove(event.getPlayer().getUniqueId());
+            FLOODGATE_USERS.remove(oldUser);
+            DEBUG_USERS.remove(oldUser);
         }
     }
 }

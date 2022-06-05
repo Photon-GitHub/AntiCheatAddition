@@ -108,7 +108,7 @@ public final class LookPacketData
     /**
      * A singleton class to reduce the required {@link com.comphenix.protocol.events.PacketListener}s to a minimum.
      */
-    private static class LookPacketDataUpdater extends PacketAdapter
+    private static final class LookPacketDataUpdater extends PacketAdapter
     {
         public LookPacketDataUpdater()
         {
@@ -128,7 +128,7 @@ public final class LookPacketData
 
             // Same tick -> merge
             synchronized (user.getLookPacketData().rotationChangeQueue) {
-                if (rotationChange.timeOffset(rotationQueue.head()) < 55) rotationQueue.head().merge(rotationChange);
+                if (rotationChange.timeOffset(rotationQueue.tail()) < 55) rotationQueue.tail().merge(rotationChange);
                 else rotationQueue.add(rotationChange);
             }
 

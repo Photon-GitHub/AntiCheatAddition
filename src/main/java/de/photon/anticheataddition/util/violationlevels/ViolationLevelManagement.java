@@ -132,7 +132,7 @@ public final class ViolationLevelManagement extends ViolationManagement
         }
     }
 
-    private static class ViolationLevelMultiSet implements Listener
+    private static final class ViolationLevelMultiSet implements Listener
     {
         private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor();
 

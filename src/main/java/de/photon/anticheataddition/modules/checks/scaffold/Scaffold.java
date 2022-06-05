@@ -92,7 +92,7 @@ public final class Scaffold extends ViolationModule implements Listener
             WorldUtil.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
         {
 
-            val lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().getBlock();
+            val lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().block();
             // This checks if the block was placed against the expected block for scaffolding.
             val newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !WorldUtil.INSTANCE.isNext(lastScaffoldBlock, event.getBlockPlaced(), WorldUtil.HORIZONTAL_FACES);
 
@@ -106,25 +106,25 @@ public final class Scaffold extends ViolationModule implements Listener
 
             // --------------------------------------------- Rotations ---------------------------------------------- //
 
-            int vl = this.scaffoldAngle.getApplyingConsumer().applyAsInt(user, event);
-            vl += this.scaffoldPosition.getApplyingConsumer().applyAsInt(user, event);
+            int vl = this.scaffoldAngle.getVl(user, event);
+            vl += this.scaffoldPosition.getVl(event);
 
             // All these checks may have false positives in new situations.
             if (!newScaffoldLocation) {
                 // Do not check jumping for new locations as of wall-building / jumping.
-                vl += this.scaffoldJumping.getApplyingConsumer().applyAsInt(user, event);
+                vl += this.scaffoldJumping.getVl(user, event);
 
                 val angleInformation = user.getLookPacketData().getAngleInformation();
 
-                val rotationVl = this.scaffoldRotationFastChange.getApplyingConsumer().applyAsInt(user) +
-                                 this.scaffoldRotationDerivative.getApplyingConsumer().applyAsInt(user, angleInformation[0]) +
-                                 this.scaffoldRotationSecondDerivative.getApplyingConsumer().applyAsInt(user, angleInformation[1]);
+                val rotationVl = this.scaffoldRotationFastChange.getVl(user) +
+                                 this.scaffoldRotationDerivative.getVl(user, angleInformation[0]) +
+                                 this.scaffoldRotationSecondDerivative.getVl(user, angleInformation[1]);
 
                 if (user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_ROTATION_FAILS).conditionallyIncDec(rotationVl > 0)) vl += rotationVl;
 
-                vl += this.scaffoldSafewalkPosition.getApplyingConsumer().applyAsInt(user, event);
-                vl += this.scaffoldSafewalkTiming.getApplyingConsumer().applyAsInt(user);
-                vl += this.scaffoldSprinting.getApplyingConsumer().applyAsInt(user);
+                vl += this.scaffoldSafewalkPosition.getVl(user, event);
+                vl += this.scaffoldSafewalkTiming.getVl(user);
+                vl += this.scaffoldSprinting.getVl(user);
             }
 
             if (vl > 0) {

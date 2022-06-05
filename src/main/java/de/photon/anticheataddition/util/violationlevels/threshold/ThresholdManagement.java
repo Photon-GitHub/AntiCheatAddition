@@ -8,14 +8,12 @@ import lombok.val;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.stream.Collectors;
-
-public interface ThresholdManagement
+public sealed interface ThresholdManagement permits EmptyThresholds, SingleThresholds, MultiThresholds
 {
     /**
      * Empty {@link ThresholdManagement} that doesn't have any {@link Threshold}s.
      */
-    ThresholdManagement EMPTY = (fromVl, toVl, player) -> {};
+    ThresholdManagement EMPTY = new EmptyThresholds();
 
     @NotNull
     static ThresholdManagement loadThresholds(ViolationModule module)
@@ -28,13 +26,13 @@ public interface ThresholdManagement
     {
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
         val keys = Preconditions.checkNotNull(ConfigUtil.loadKeys(configPath), "Config loading error: The keys loaded from " + configPath + " are null.");
-        val thresholds = keys.stream().map(key -> new Threshold(Integer.parseInt(key), ConfigUtil.loadImmutableStringOrStringList(configPath + '.' + key))).collect(Collectors.toList());
+        val thresholds = keys.stream().map(key -> new Threshold(Integer.parseInt(key), ConfigUtil.loadImmutableStringOrStringList(configPath + '.' + key))).toList();
 
-        switch (thresholds.size()) {
-            case 0: return EMPTY;
-            case 1: return new SingleThresholds(thresholds.get(0));
-            default: return new MultiThresholds(thresholds);
-        }
+        return switch (thresholds.size()) {
+            case 0 -> EMPTY;
+            case 1 -> new SingleThresholds(thresholds.get(0));
+            default -> new MultiThresholds(thresholds);
+        };
     }
 
     @NotNull

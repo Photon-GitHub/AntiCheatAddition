@@ -491,7 +491,7 @@ Scaffold:
       Timing:
         # Do you want to enable Safewalk Timing?
         enabled: true
-        # How many suspicious positions should Scaffold count as legit?
+        # How many suspicious stop times should Scaffold count as legit?
         # The value must be greater or equal to 0.
         violation_threshold: 2
     # This part detects sprinting between block placements.

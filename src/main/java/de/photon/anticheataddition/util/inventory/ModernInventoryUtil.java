@@ -21,10 +21,7 @@ final class ModernInventoryUtil implements InventoryUtil
 
         final int size = inventory.getSize();
         switch (inventory.getType()) {
-            case CHEST:
-            case ENDER_CHEST:
-            case BARREL:
-            case SHULKER_BOX:
+            case CHEST, ENDER_CHEST, BARREL, SHULKER_BOX:
                 /*
                  * 0                         -                       8
                  *
@@ -45,8 +42,7 @@ final class ModernInventoryUtil implements InventoryUtil
                 // There are custom chest sizes (from 0 to 54!)
                 if (rawSlot < size) return SlotLocation.opOf(rawSlot % 9, rawSlot / 9D);
                 return InventoryUtil.lowerInventoryLocation(size, rawSlot);
-            case DISPENSER:
-            case DROPPER:
+            case DISPENSER, DROPPER:
                 // Dispenser and Dropper have the same layout
                 /*
                  *                   0       1       2
@@ -68,9 +64,7 @@ final class ModernInventoryUtil implements InventoryUtil
                 // In the dispenser - part
                 if (rawSlot < 9) return SlotLocation.opOf(4D + rawSlot % 3, rawSlot / 3D);
                 return InventoryUtil.lowerInventoryLocation(9, rawSlot);
-            case FURNACE:
-            case BLAST_FURNACE:
-            case SMOKER:
+            case FURNACE, BLAST_FURNACE, SMOKER:
                 /*
                  *                 0
                  *
@@ -88,12 +82,12 @@ final class ModernInventoryUtil implements InventoryUtil
                  * ------------------------------------------------------
                  * 30                        -                       38
                  */
-                switch (rawSlot) {
-                    case 0: return SlotLocation.opOf(2.5, 0);
-                    case 1: return SlotLocation.opOf(2.5, 2);
-                    case 2: return SlotLocation.opOf(6, 1);
-                    default: return InventoryUtil.lowerInventoryLocation(3, rawSlot);
-                }
+                return switch (rawSlot) {
+                    case 0 -> SlotLocation.opOf(2.5, 0);
+                    case 1 -> SlotLocation.opOf(2.5, 2);
+                    case 2 -> SlotLocation.opOf(6, 1);
+                    default -> InventoryUtil.lowerInventoryLocation(3, rawSlot);
+                };
             case WORKBENCH:
                 /*
                  *          1       2       3
@@ -138,11 +132,11 @@ final class ModernInventoryUtil implements InventoryUtil
                  * ------------------------------------------------------
                  * 29                        -                       37
                  */
-                switch (rawSlot) {
-                    case 0: return SlotLocation.opOf(0.4, 2.6);
-                    case 1: return SlotLocation.opOf(1.5, 2.6);
-                    default: return InventoryUtil.lowerInventoryLocation(2, rawSlot);
-                }
+                return switch (rawSlot) {
+                    case 0 -> SlotLocation.opOf(0.4, 2.6);
+                    case 1 -> SlotLocation.opOf(1.5, 2.6);
+                    default -> InventoryUtil.lowerInventoryLocation(2, rawSlot);
+                };
             case MERCHANT:
                 /*
                  *
@@ -160,14 +154,13 @@ final class ModernInventoryUtil implements InventoryUtil
                  * ------------------------------------------------------
                  * 30                        -                       38
                  */
-                switch (rawSlot) {
-                    case 0: return SlotLocation.opOf(1.5, 1);
-                    case 1: return SlotLocation.opOf(3, 1);
-                    case 2: return SlotLocation.opOf(6.3, 1);
-                    default: return InventoryUtil.lowerInventoryLocation(3, rawSlot);
-                }
-            case ANVIL:
-            case SMITHING:
+                return switch (rawSlot) {
+                    case 0 -> SlotLocation.opOf(1.5, 1);
+                    case 1 -> SlotLocation.opOf(3, 1);
+                    case 2 -> SlotLocation.opOf(6.3, 1);
+                    default -> InventoryUtil.lowerInventoryLocation(3, rawSlot);
+                };
+            case ANVIL, SMITHING:
                 /*
                  *
                  *
@@ -184,12 +177,12 @@ final class ModernInventoryUtil implements InventoryUtil
                  * ------------------------------------------------------
                  * 30                        -                       38
                  */
-                switch (rawSlot) {
-                    case 0: return SlotLocation.opOf(1, 1.5);
-                    case 1: return SlotLocation.opOf(3.6, 1.5);
-                    case 2: return SlotLocation.opOf(7, 1.5);
-                    default: return InventoryUtil.lowerInventoryLocation(3, rawSlot);
-                }
+                return switch (rawSlot) {
+                    case 0 -> SlotLocation.opOf(1, 1.5);
+                    case 1 -> SlotLocation.opOf(3.6, 1.5);
+                    case 2 -> SlotLocation.opOf(7, 1.5);
+                    default -> InventoryUtil.lowerInventoryLocation(3, rawSlot);
+                };
             case BEACON:
                 /*
                  *
@@ -246,62 +239,61 @@ final class ModernInventoryUtil implements InventoryUtil
                  * ------------------------------------------------------
                  * 32                        -                       40
                  */
-                switch (rawSlot) {
-                    case 0: return SlotLocation.opOf(5.3, 1.5);
-                    case 1: return SlotLocation.opOf(4, 2);
-                    case 2: return SlotLocation.opOf(2.6, 1.5);
-                    case 3: return SlotLocation.opOf(4, 0);
-                    case 4: return SlotLocation.opOf(0.5, 0);
-                    default: return InventoryUtil.lowerInventoryLocation(5, rawSlot);
-                }
-                /*
-                 *      0
-                 *
-                 *                                          2
-                 *      1
-                 *
-                 * ------------------------------------------------------
-                 * ------------------------------------------------------
-                 * 5                         -                       13
-                 *
-                 * 14                        -                       22
-                 *
-                 * 23                        -                       31
-                 * ------------------------------------------------------
-                 * 32                        -                       40
-                 */
+                return switch (rawSlot) {
+                    case 0 -> SlotLocation.opOf(5.3, 1.5);
+                    case 1 -> SlotLocation.opOf(4, 2);
+                    case 2 -> SlotLocation.opOf(2.6, 1.5);
+                    case 3 -> SlotLocation.opOf(4, 0);
+                    case 4 -> SlotLocation.opOf(0.5, 0);
+                    default -> InventoryUtil.lowerInventoryLocation(5, rawSlot);
+                };
+            /*
+             *      0
+             *
+             *                                          2
+             *      1
+             *
+             * ------------------------------------------------------
+             * ------------------------------------------------------
+             * 5                         -                       13
+             *
+             * 14                        -                       22
+             *
+             * 23                        -                       31
+             * ------------------------------------------------------
+             * 32                        -                       40
+             */
             case CARTOGRAPHY:
-                switch (rawSlot) {
-                    case 0: return SlotLocation.opOf(0.5, 0);
-                    case 1: return SlotLocation.opOf(0.5, 2);
-                    case 2: return SlotLocation.opOf(7.5, 1.3);
-                    default: return InventoryUtil.lowerInventoryLocation(3, rawSlot);
-                }
-                /*
-                 *                 0
-                 *
-                 *                 1                         2
-                 *
-                 *
-                 * ------------------------------------------------------
-                 * ------------------------------------------------------
-                 * 5                         -                       13
-                 *
-                 * 14                        -                       22
-                 *
-                 * 23                        -                       31
-                 * ------------------------------------------------------
-                 * 32                        -                       40
-                 */
+                return switch (rawSlot) {
+                    case 0 -> SlotLocation.opOf(0.5, 0);
+                    case 1 -> SlotLocation.opOf(0.5, 2);
+                    case 2 -> SlotLocation.opOf(7.5, 1.3);
+                    default -> InventoryUtil.lowerInventoryLocation(3, rawSlot);
+                };
+            /*
+             *                 0
+             *
+             *                 1                         2
+             *
+             *
+             * ------------------------------------------------------
+             * ------------------------------------------------------
+             * 5                         -                       13
+             *
+             * 14                        -                       22
+             *
+             * 23                        -                       31
+             * ------------------------------------------------------
+             * 32                        -                       40
+             */
             case GRINDSTONE:
-                switch (rawSlot) {
-                    case 0: return SlotLocation.opOf(2.3, 0);
-                    case 1: return SlotLocation.opOf(2.3, 1);
-                    case 2: return SlotLocation.opOf(6.6, 0.6);
-                    default: return InventoryUtil.lowerInventoryLocation(3, rawSlot);
-                }
-            case CRAFTING:
-            case PLAYER:
+                return switch (rawSlot) {
+                    case 0 -> SlotLocation.opOf(2.3, 0);
+                    case 1 -> SlotLocation.opOf(2.3, 1);
+                    case 2 -> SlotLocation.opOf(6.6, 0.6);
+                    default -> InventoryUtil.lowerInventoryLocation(3, rawSlot);
+                };
+            case CRAFTING, PLAYER:
                 /* Player Inventory
                  * 5
                  * 6                            1   2
@@ -318,22 +310,19 @@ final class ModernInventoryUtil implements InventoryUtil
                  * ------------------------------------------------------
                  * 36                        -                       44
                  * */
-                switch (rawSlot) {
+                return switch (rawSlot) {
                     // Crafting slots
-                    case 0: return SlotLocation.opOf(7.5, 1.5);
-                    case 1: return SlotLocation.opOf(4.5, 1);
-                    case 2: return SlotLocation.opOf(5.5, 1);
-                    case 3: return SlotLocation.opOf(4.5, 2);
-                    case 4: return SlotLocation.opOf(5.5, 2);
+                    case 0 -> SlotLocation.opOf(7.5, 1.5);
+                    case 1 -> SlotLocation.opOf(4.5, 1);
+                    case 2 -> SlotLocation.opOf(5.5, 1);
+                    case 3 -> SlotLocation.opOf(4.5, 2);
+                    case 4 -> SlotLocation.opOf(5.5, 2);
                     // Armor slots.
-                    case 5:
-                    case 6:
-                    case 7:
-                    case 8: return SlotLocation.opOf(0D, rawSlot - 5D);
+                    case 5, 6, 7, 8 -> SlotLocation.opOf(0D, rawSlot - 5D);
                     // Shield slot.
-                    case 45: return SlotLocation.opOf(3.6D, 3);
-                    default: return InventoryUtil.lowerInventoryLocation(9, rawSlot);
-                }
+                    case 45 -> SlotLocation.opOf(3.6D, 3);
+                    default -> InventoryUtil.lowerInventoryLocation(9, rawSlot);
+                };
             default:
                 // CREATIVE (false positives), and a few rare inventories (like looms).
                 return Optional.empty();

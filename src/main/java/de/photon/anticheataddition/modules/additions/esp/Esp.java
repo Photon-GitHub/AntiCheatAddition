@@ -110,7 +110,7 @@ public final class Esp extends Module
         }, 100, ESP_INTERVAL_TICKS);
     }
 
-    private void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
+    private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
     {
         for (val observerNode : playerQuadTree) {
             final Set<Entity> equipHiddenPlayers = new HashSet<>(worldPlayers.size());

@@ -133,7 +133,7 @@ public final class ModuleManager
         violationModuleMap = new ModuleMap<>(moduleMap.values().stream()
                                                       .filter(ViolationModule.class::isInstance)
                                                       .map(ViolationModule.class::cast)
-                                                      .collect(Collectors.toList()));
+                                                      .toList());
 
         // Use moduleList to make sure the initial enabling log is sorted.
         for (Module module : moduleList) module.enableModule();
@@ -142,6 +142,6 @@ public final class ModuleManager
     public static void addExternalModule(final Module externalModule)
     {
         moduleMap.addModule(externalModule);
-        if (externalModule instanceof ViolationModule) violationModuleMap.addModule((ViolationModule) externalModule);
+        if (externalModule instanceof ViolationModule vlModule) violationModuleMap.addModule(vlModule);
     }
 }

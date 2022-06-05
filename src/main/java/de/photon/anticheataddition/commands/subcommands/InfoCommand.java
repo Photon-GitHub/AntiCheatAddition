@@ -7,13 +7,11 @@ import de.photon.anticheataddition.commands.TabCompleteSupplier;
 import de.photon.anticheataddition.modules.ModuleManager;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
-import lombok.EqualsAndHashCode;
 import lombok.val;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 public class InfoCommand extends InternalCommand
 {
@@ -33,11 +31,11 @@ public class InfoCommand extends InternalCommand
         if (player == null) return;
 
         val moduleVls = ModuleManager.getViolationModuleMap().values().stream()
-                                     .map(vlm -> new ModuleVl(vlm, player))
+                                     .map(vlm -> ModuleVl.of(vlm, player))
                                      // Only the modules with above 0 vl are important.
-                                     .filter(mvl -> mvl.vl > 0)
+                                     .filter(ModuleVl::hasValidVl)
                                      .sorted()
-                                     .collect(Collectors.toList());
+                                     .toList();
 
         ChatMessage.sendMessage(sender, player.getName());
 
@@ -45,16 +43,17 @@ public class InfoCommand extends InternalCommand
         else moduleVls.forEach(moduleVl -> ChatMessage.sendMessage(sender, moduleVl.message));
     }
 
-    @EqualsAndHashCode
-    private static class ModuleVl implements Comparable<ModuleVl>
+    private record ModuleVl(int vl, String message) implements Comparable<ModuleVl>
     {
-        @EqualsAndHashCode.Exclude private final int vl;
-        private final String message;
-
-        private ModuleVl(ViolationModule vm, Player player)
+        private static ModuleVl of(ViolationModule vm, Player player)
         {
-            this.vl = vm.getManagement().getVL(player.getUniqueId());
-            this.message = vm.getConfigString() + " -> vl " + vl;
+            final int vl = vm.getManagement().getVL(player.getUniqueId());
+            return new ModuleVl(vl, vm.getConfigString() + " -> vl " + vl);
+        }
+
+        public boolean hasValidVl()
+        {
+            return this.vl > 0;
         }
 
         @Override

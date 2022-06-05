@@ -34,22 +34,14 @@ public class DebugCommand extends InternalPlayerCommand
         val user = User.getUser(sender.getUniqueId());
         if (user == null) return;
 
+        final String nextArgument = arguments.peek();
         boolean toggleTo;
-        if (arguments.peek() != null) {
-            switch (arguments.peek().toLowerCase()) {
-                case "on":
-                    toggleTo = true;
-                    break;
-                case "off":
-                    toggleTo = false;
-                    break;
-                default:
-                    toggleTo = !user.hasDebug();
-                    break;
-            }
-        } else {
-            toggleTo = !user.hasDebug();
-        }
+        if (nextArgument == null) toggleTo = !user.hasDebug();
+        else toggleTo = switch (nextArgument.toLowerCase()) {
+            case "on" -> true;
+            case "off" -> false;
+            default -> !user.hasDebug();
+        };
 
         user.setDebug(toggleTo);
         ChatMessage.sendMessage(sender, toggleTo ? ENABLED_MESSAGE : DISABLED_MESSAGE);

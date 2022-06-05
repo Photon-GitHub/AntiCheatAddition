@@ -19,7 +19,6 @@ import org.bukkit.inventory.InventoryHolder;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 final class ModernWorldUtil implements WorldUtil
 {
@@ -61,7 +60,7 @@ final class ModernWorldUtil implements WorldUtil
                     .filter(b -> !b.isEmpty())
                     // Ignored materials.
                     .filter(b -> !ignored.contains(b.getType()))
-                    .collect(Collectors.toUnmodifiableList());
+                    .toList();
     }
 
     @Override
@@ -192,24 +191,17 @@ final class ModernWorldUtil implements WorldUtil
             val aboveBlock = block.getRelative(BlockFace.UP);
             val checkForCatLocation = aboveBlock.getLocation().add(0.5, 0.5, 0.5);
 
-            switch (ServerVersion.ACTIVE) {
-                case MC18:
-                case MC112:
-                    // 1.8.8 and 1.12 doesn't provide isPassable.
-                    // Make sure that the block above is not obstructed by blocks
-                    // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
-                    return !aboveBlock.getType().isOccluding();
-                case MC115:
-                case MC116:
-                case MC117:
-                case MC118:
-                    // Make sure that the block above is not obstructed by blocks
-                    return !aboveBlock.getType().isOccluding()
-                           // Make sure that the block above is not obstructed by cats
-                           && aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.ofType(EntityType.CAT)).isEmpty();
-                default:
-                    throw new UnknownMinecraftException();
-            }
+            return switch (ServerVersion.ACTIVE) {
+                // 1.8.8 and 1.12 doesn't provide isPassable.
+                // Make sure that the block above is not obstructed by blocks
+                // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
+                case MC18, MC112 -> !aboveBlock.getType().isOccluding();
+                // Make sure that the block above is not obstructed by blocks
+                // Make sure that the block above is not obstructed by cats
+                case MC115, MC116, MC117, MC118 -> !aboveBlock.getType().isOccluding() &&
+                                                   aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.ofType(EntityType.CAT)).isEmpty();
+                default -> throw new UnknownMinecraftException();
+            };
         }
         return true;
     }
@@ -222,6 +214,6 @@ final class ModernWorldUtil implements WorldUtil
         return entity.getNearbyEntities(x, y, z).stream()
                      .filter(LivingEntity.class::isInstance)
                      .map(LivingEntity.class::cast)
-                     .collect(Collectors.toUnmodifiableList());
+                     .toList();
     }
 }

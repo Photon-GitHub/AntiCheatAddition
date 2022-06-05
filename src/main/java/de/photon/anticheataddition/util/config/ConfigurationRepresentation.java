@@ -2,7 +2,6 @@ package de.photon.anticheataddition.util.config;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.Value;
 import lombok.val;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -61,7 +60,7 @@ public final class ConfigurationRepresentation
         val configLines = new ArrayList<>(Files.readAllLines(this.configFile.toPath()));
 
         for (ConfigChange requestedChange : requestedChanges) {
-            val value = requestedChange.getValue();
+            val value = requestedChange.value();
 
             final int lineIndexOfKey = requestedChange.lineIndexOfPath(configLines);
             final String originalLine = configLines.get(lineIndexOfKey);
@@ -75,10 +74,8 @@ public final class ConfigurationRepresentation
 
             // Set the new value.
             if (value instanceof Boolean || value instanceof Number) replacementLine.append(' ').append(value);
-            else if (value instanceof String) replacementLine.append(" \"").append(value).append('\"');
-            else if (value instanceof List) {
-                val list = (List<?>) value;
-
+            else if (value instanceof String str) replacementLine.append(' ').append('\"').append(str).append('\"');
+            else if (value instanceof List<?> list) {
                 if (list.isEmpty()) replacementLine.append(" []");
                 else {
                     val preString = StringUtils.leftPad("- ", (int) ConfigUtil.depth(originalLine));
@@ -92,12 +89,8 @@ public final class ConfigurationRepresentation
         Files.write(this.configFile.toPath(), configLines);
     }
 
-    @Value
-    private static class ConfigChange
+    private record ConfigChange(String path, Object value)
     {
-        String path;
-        Object value;
-
         /**
          * Searches for the first config line the path points to.
          */

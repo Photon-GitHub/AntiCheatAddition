@@ -61,7 +61,7 @@ public final class MaterialUtil
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA, Material.getMaterial("STATIONARY_WATER"), Material.getMaterial("STATIONARY_LAVA"));
             }
 
-            case MC115, MC116, MC117, MC118 -> {
+            case MC115, MC116, MC117, MC118, MC119 -> {
                 autoStepMaterials.addAll(ofTags(Tag.SLABS, Tag.WOODEN_SLABS, Tag.STAIRS, Tag.WOODEN_STAIRS));
                 bounceMaterials.addAll(ofTags(Tag.BEDS));
                 freeSpaceContainers.addAll(ofTags(Tag.SHULKER_BOXES));

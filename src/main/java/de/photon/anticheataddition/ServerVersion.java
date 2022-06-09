@@ -30,7 +30,8 @@ public enum ServerVersion
     MC115("1.15.2", true),
     MC116("1.16.5", true),
     MC117("1.17.1", true),
-    MC118("1.18", true);
+    MC118("1.18", true),
+    MC119("1.19", true);
 
 
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = MC18.getSupVersionsFrom();

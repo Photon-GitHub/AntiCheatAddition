@@ -198,8 +198,8 @@ final class ModernWorldUtil implements WorldUtil
                 case MC18, MC112 -> !aboveBlock.getType().isOccluding();
                 // Make sure that the block above is not obstructed by blocks
                 // Make sure that the block above is not obstructed by cats
-                case MC115, MC116, MC117, MC118 -> !aboveBlock.getType().isOccluding() &&
-                                                   aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.ofType(EntityType.CAT)).isEmpty();
+                case MC115, MC116, MC117, MC118, MC119 -> !aboveBlock.getType().isOccluding() &&
+                                                          aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.ofType(EntityType.CAT)).isEmpty();
                 default -> throw new UnknownMinecraftException();
             };
         }

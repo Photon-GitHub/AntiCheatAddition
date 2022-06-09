@@ -6,7 +6,6 @@ import de.photon.anticheataddition.exception.UnknownMinecraftException;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
 import lombok.experimental.UtilityClass;
 import lombok.val;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 
@@ -83,7 +82,7 @@ public final class MaterialUtil
     public static Set<Material> getMaterialsEndingWith(String... ends)
     {
         return Arrays.stream(Material.values())
-                     .filter(material -> StringUtils.endsWithAny(material.name(), ends))
+                     .filter(material -> Arrays.stream(ends).anyMatch(material.name()::endsWith))
                      .collect(SetUtil.toImmutableEnumSet());
     }
 

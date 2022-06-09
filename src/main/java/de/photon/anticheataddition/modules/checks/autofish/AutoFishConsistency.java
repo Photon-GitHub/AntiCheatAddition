@@ -13,7 +13,6 @@ import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -54,22 +53,19 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
                     if (consistencyData.getCount() < fishingAttemptCount) return;
 
                     // Calculate the maximum offset.
-                    val maxOffset = Math.max(MathUtil.absDiff(consistencyData.getMin(), consistencyData.getAverage()), MathUtil.absDiff(consistencyData.getMax(), consistencyData.getAverage()));
+                    final double maxOffset = Math.max(MathUtil.absDiff(consistencyData.getMin(), consistencyData.getAverage()), MathUtil.absDiff(consistencyData.getMax(), consistencyData.getAverage()));
 
                     if (minVariation > (maxOffset + 1)) {
                         // (maxOffset / minVariation) will be at most 1 and at least 0
-                        val flagOffset = 160 - (159 * (maxOffset / minVariation));
+                        final double flagOffset = 160 - (159 * (maxOffset / minVariation));
 
                         this.getManagement().flag(Flag.of(event.getPlayer())
                                                       .setAddedVl((int) flagOffset)
-                                                      .setDebug(() -> "AutoFish-Debug | Player " +
-                                                                      user.getPlayer().getName() +
-                                                                      " failed consistency | average time: " +
-                                                                      StringUtils.left(String.valueOf(consistencyData.getAverage()), 7) +
-                                                                      " | maximum offset: " +
-                                                                      StringUtils.left(String.valueOf(maxOffset), 7) +
-                                                                      " | flag offset: " +
-                                                                      StringUtils.left(String.valueOf(flagOffset), 7))
+                                                      .setDebug(() -> "AutoFish-Debug | Player %s failed consistency | average time: %f | maximum offset: %f | flag offset: %f"
+                                                              .formatted(user.getPlayer().getName(),
+                                                                         consistencyData.getAverage(),
+                                                                         maxOffset,
+                                                                         flagOffset))
                                                       .setCancelAction(cancelVl, () -> event.setCancelled(true)));
                     }
 

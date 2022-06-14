@@ -115,10 +115,10 @@ public final class Esp extends Module
         for (val observerNode : playerQuadTree) {
             final Set<Entity> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
             final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
-            final Player observer = observerNode.getElement();
+            final Player observer = observerNode.element();
 
             for (val playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
-                final Player watched = playerNode.getElement();
+                final Player watched = playerNode.element();
 
                 // Less than 1 block distance (removes the player themselves and any very close player)
                 if (observerNode.distanceSquared(playerNode) < 1 || CanSee.INSTANCE.canSee(observer, watched)) {
@@ -132,11 +132,11 @@ public final class Esp extends Module
                 // Full hiding (due to the default adding to fullHiddenPlayers.)
             }
 
-            Log.finest(() -> "ESP | Observer: " + observerNode.getElement().getName() +
+            Log.finest(() -> "ESP | Observer: " + observerNode.element().getName() +
                              " | FULL: " + fullHiddenPlayers.stream().map(Entity::getName).collect(Collectors.joining(", ")) +
                              " | EQUIP: " + equipHiddenPlayers.stream().map(Entity::getName).collect(Collectors.joining(", ")));
 
-            EntityVisibility.INSTANCE.setHidden(observerNode.getElement(), fullHiddenPlayers, equipHiddenPlayers);
+            EntityVisibility.INSTANCE.setHidden(observerNode.element(), fullHiddenPlayers, equipHiddenPlayers);
         }
     }
 }

@@ -102,9 +102,9 @@ public final class Teaming extends ViolationModule implements Listener
                             val firstNode = quadTree.getAny();
                             val team = quadTree.queryCircle(firstNode, proximityRange).stream()
                                                // Check for y-distance.
-                                               .filter(node -> node.getElement().getLocation().distanceSquared(firstNode.getElement().getLocation()) <= proximityRangeSquared)
+                                               .filter(node -> node.element().getLocation().distanceSquared(firstNode.element().getLocation()) <= proximityRangeSquared)
                                                .peek(quadTree::remove)
-                                               .map(QuadTreeSet.Node::getElement)
+                                               .map(QuadTreeSet.Node::element)
                                                .collect(Collectors.toUnmodifiableSet());
 
                             // Team is too big

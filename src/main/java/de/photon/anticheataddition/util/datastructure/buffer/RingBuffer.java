@@ -2,7 +2,6 @@ package de.photon.anticheataddition.util.datastructure.buffer;
 
 import de.photon.anticheataddition.util.mathematics.ModularInteger;
 import lombok.val;
-import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
@@ -110,7 +109,10 @@ public class RingBuffer<T> extends AbstractCollection<T> implements Collection<T
     @Override
     public boolean contains(Object o)
     {
-        return ArrayUtils.contains(this.array, o);
+        for (T t : this.array) {
+            if (t.equals(o)) return true;
+        }
+        return false;
     }
 
     @Override

@@ -6,7 +6,6 @@ import de.photon.anticheataddition.exception.UnknownMinecraftException;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
 import lombok.experimental.UtilityClass;
 import lombok.val;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 
@@ -62,7 +61,7 @@ public final class MaterialUtil
                 LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA, Material.getMaterial("STATIONARY_WATER"), Material.getMaterial("STATIONARY_LAVA"));
             }
 
-            case MC115, MC116, MC117, MC118 -> {
+            case MC115, MC116, MC117, MC118, MC119 -> {
                 autoStepMaterials.addAll(ofTags(Tag.SLABS, Tag.WOODEN_SLABS, Tag.STAIRS, Tag.WOODEN_STAIRS));
                 bounceMaterials.addAll(ofTags(Tag.BEDS));
                 freeSpaceContainers.addAll(ofTags(Tag.SHULKER_BOXES));
@@ -83,7 +82,7 @@ public final class MaterialUtil
     public static Set<Material> getMaterialsEndingWith(String... ends)
     {
         return Arrays.stream(Material.values())
-                     .filter(material -> StringUtils.endsWithAny(material.name(), ends))
+                     .filter(material -> Arrays.stream(ends).anyMatch(material.name()::endsWith))
                      .collect(SetUtil.toImmutableEnumSet());
     }
 

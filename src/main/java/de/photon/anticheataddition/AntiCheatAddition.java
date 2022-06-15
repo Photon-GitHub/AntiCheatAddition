@@ -13,7 +13,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
-import org.apache.commons.lang.StringUtils;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
@@ -74,7 +73,7 @@ public class AntiCheatAddition extends JavaPlugin
     private static boolean checkForPlugin(String pluginName, Metrics metrics)
     {
         final boolean enabled = Bukkit.getServer().getPluginManager().isPluginEnabled(pluginName);
-        getInstance().getLogger().info(StringUtils.capitalize(pluginName) + (enabled ? " hooked" : " not found"));
+        getInstance().getLogger().info(pluginName + (enabled ? " hooked" : " not found"));
         metrics.addCustomChart(new SimplePie(pluginName.toLowerCase(Locale.ROOT), enabled ? () -> "Yes" : () -> "No"));
         return enabled;
     }

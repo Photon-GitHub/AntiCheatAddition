@@ -4,7 +4,6 @@ import com.comphenix.protocol.wrappers.MinecraftKey;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import lombok.val;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +35,7 @@ public interface MessageChannel
     @NotNull
     static MessageChannel of(final String prefix, final String key)
     {
-        final String upperStartTempKey = StringUtils.capitalize(key);
+        final String upperStartTempKey = Character.toUpperCase(key.charAt(0)) + key.substring(1);
         final String legacyName = switch (prefix) {
             case "minecraft" -> "MC|" + upperStartTempKey;
             case "px" -> "PX|" + upperStartTempKey;

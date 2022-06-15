@@ -1,11 +1,12 @@
 package de.photon.anticheataddition.util.reflection;
 
+import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.util.messaging.Log;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.reflect.FieldUtils;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,9 +22,24 @@ public final class ClassReflect
 
     @Getter private final Class<?> clazz;
 
+    public static Field getDeclaredField(Class cls, String fieldName)
+    {
+        Preconditions.checkNotNull(cls, "The class must not be null");
+        Preconditions.checkNotNull(fieldName, "The field name must not be null");
+
+        try {
+            // only consider the specified class by using getDeclaredField()
+            final Field field = cls.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field;
+        } catch (NoSuchFieldException ignored) {
+        }
+        return null;
+    }
+
     public FieldReflect field(String name)
     {
-        return this.fieldCache.computeIfAbsent(name, fileName -> new FieldReflect(FieldUtils.getDeclaredField(this.clazz, fileName, true)));
+        return this.fieldCache.computeIfAbsent(name, fileName -> new FieldReflect(getDeclaredField(this.clazz, fileName)));
     }
 
     public ConstructorReflect constructor(Class<?>... classes)

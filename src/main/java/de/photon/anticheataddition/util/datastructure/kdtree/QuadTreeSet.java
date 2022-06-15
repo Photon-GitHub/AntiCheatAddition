@@ -1,9 +1,8 @@
 package de.photon.anticheataddition.util.datastructure.kdtree;
 
-import lombok.val;
-
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -23,14 +22,14 @@ public final class QuadTreeSet<T> extends QuadTreeCollection<T>
     @Override
     public Node<T> getAny()
     {
-        val iter = nodes.iterator();
+        final Iterator<Node<T>> iter = nodes.iterator();
         return iter.hasNext() ? iter.next() : null;
     }
 
     @Override
     public Node<T> removeAny()
     {
-        val any = getAny();
+        final Node<T> any = getAny();
         this.remove(any);
         return any;
     }

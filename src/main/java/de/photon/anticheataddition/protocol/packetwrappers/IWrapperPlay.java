@@ -4,8 +4,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.InvocationTargetException;
-
 public interface IWrapperPlay
 {
     /**
@@ -24,11 +22,7 @@ public interface IWrapperPlay
      */
     default void sendPacket(Player receiver)
     {
-        try {
-            ProtocolLibrary.getProtocolManager().sendServerPacket(receiver, getHandle());
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException("Cannot send packet.", e);
-        }
+        ProtocolLibrary.getProtocolManager().sendServerPacket(receiver, getHandle());
     }
 
     /**
@@ -37,21 +31,5 @@ public interface IWrapperPlay
     default void broadcastPacket()
     {
         ProtocolLibrary.getProtocolManager().broadcastServerPacket(getHandle());
-    }
-
-    /**
-     * Simulate receiving the current packet from the given sender.
-     *
-     * @param sender - the sender.
-     *
-     * @throws RuntimeException if the packet cannot be received.
-     */
-    default void receivePacket(Player sender)
-    {
-        try {
-            ProtocolLibrary.getProtocolManager().recieveClientPacket(sender, getHandle());
-        } catch (Exception e) {
-            throw new IllegalStateException("Cannot receive packet.", e);
-        }
     }
 }

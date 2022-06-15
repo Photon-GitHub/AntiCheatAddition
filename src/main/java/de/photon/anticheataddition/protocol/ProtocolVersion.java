@@ -24,7 +24,8 @@ public enum ProtocolVersion
     MC115("1.15", ServerVersion.MC115, 573, 575),
     MC116("1.16", ServerVersion.MC116, 735, 736, 751, 753, 754),
     MC117("1.17", ServerVersion.MC117, 755, 756),
-    MC118("1.18", ServerVersion.MC118, 757, 758);
+    MC118("1.18", ServerVersion.MC118, 757, 758),
+    MC119("1.19", ServerVersion.MC119, 759);
 
     private static final Map<Integer, ProtocolVersion> VERSION_NUMBER_MAP = Arrays.stream(ProtocolVersion.values())
                                                                                   // Map each ProtocolVersion to pairs of (Version Number, ProtocolVersion)

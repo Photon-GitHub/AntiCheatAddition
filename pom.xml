@@ -7,7 +7,7 @@
     <groupId>de.photon</groupId>
     <artifactId>AntiCheatAddition</artifactId>
 
-    <version>8.2.3</version>
+    <version>8.2.4</version>
 
     <name>AntiCheatAddition</name>
     <description>This plugin provides niche checks for cheats which are not covered by most anticheats.</description>
@@ -16,7 +16,7 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Add your server directory here for automatic deployment. -->
-        <testserver.dir>C:\Users\marti\Desktop\1.18-Testserver\plugins</testserver.dir>
+        <testserver.dir>C:\Users\marti\Desktop\1.19-Testserver\plugins</testserver.dir>
     </properties>
 
     <build>
@@ -170,7 +170,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.18.2-R0.1-SNAPSHOT</version>
+            <version>1.19-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -182,13 +182,13 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>4.8.0-SNAPSHOT</version>
+            <version>5.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>
-            <version>4.1.75.Final</version>
+            <version>4.1.77.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -224,7 +224,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
-            <version>4.4.0</version>
+            <version>4.6.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

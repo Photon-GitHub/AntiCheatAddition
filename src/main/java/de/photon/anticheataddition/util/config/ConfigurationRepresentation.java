@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.config;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.val;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -69,8 +68,8 @@ public final class ConfigurationRepresentation
             // We want to delete all lines after the initial one.
             deleteLines(configLines, lineIndexOfKey + 1, affectedLines - 1);
 
-            // Add the removed ':' right back.
-            val replacementLine = new StringBuilder(StringUtils.substringBeforeLast(originalLine, ":")).append(':');
+            // +1 to add the otherwise removed ':' right back.
+            val replacementLine = new StringBuilder(originalLine.substring(0, originalLine.lastIndexOf(':') + 1));
 
             // Set the new value.
             if (value instanceof Boolean || value instanceof Number) replacementLine.append(' ').append(value);
@@ -78,7 +77,7 @@ public final class ConfigurationRepresentation
             else if (value instanceof List<?> list) {
                 if (list.isEmpty()) replacementLine.append(" []");
                 else {
-                    val preString = StringUtils.leftPad("- ", (int) ConfigUtil.depth(originalLine));
+                    val preString = "- ".indent((int) ConfigUtil.depth(originalLine));
                     for (Object o : list) configLines.add(lineIndexOfKey + 1, preString + o);
                 }
             }

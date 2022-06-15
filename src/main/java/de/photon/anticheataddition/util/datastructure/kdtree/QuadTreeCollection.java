@@ -1,8 +1,6 @@
 package de.photon.anticheataddition.util.datastructure.kdtree;
 
 import de.photon.anticheataddition.util.mathematics.MathUtil;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
 import lombok.val;
 import org.danilopianini.util.FlexibleQuadTree;
 import org.danilopianini.util.SpatialIndex;
@@ -29,7 +27,7 @@ public abstract class QuadTreeCollection<T> extends AbstractCollection<QuadTreeC
 
     public void add(double x, double y, T element)
     {
-        val node = new Node<>(x, y, element);
+        final Node<T> node = new Node<>(x, y, element);
         quadTree.insert(node, x, y);
         getBackingCollection().add(node);
     }
@@ -159,16 +157,11 @@ public abstract class QuadTreeCollection<T> extends AbstractCollection<QuadTreeC
         return this.getBackingCollection().containsAll(c);
     }
 
-    @Value
-    public static class Node<T>
+    public record Node<T>(double x, double y, T element)
     {
-        double x;
-        double y;
-        @EqualsAndHashCode.Exclude T element;
-
         public boolean inRadius(Node<T> center, double squaredRadius)
         {
-            return MathUtil.squareSum(this.x - center.x, this.y - center.y) <= squaredRadius;
+            return distanceSquared(center) <= squaredRadius;
         }
 
         public double distanceSquared(Node<T> other)

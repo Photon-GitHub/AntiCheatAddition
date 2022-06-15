@@ -6,7 +6,6 @@ import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import lombok.val;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -78,8 +77,8 @@ public final class Placeholders
     public enum PlayerPlaceholders
     {
         // Single placeholder
-        PLAYER(player -> StringUtils.left(player.getName(), 30)),
-        PING(player -> StringUtils.left(String.valueOf(PingProvider.INSTANCE.getPing(player)), 5));
+        PLAYER(player -> limitChars(player.getName(), 30)),
+        PING(player -> limitChars(String.valueOf(PingProvider.INSTANCE.getPing(player)), 5));
 
         private final Function<Player, String> function;
 
@@ -109,9 +108,9 @@ public final class Placeholders
     {
         // Global placeholders
         DATE(() -> LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)),
-        TIME(() -> StringUtils.left(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME), 8)),
+        TIME(() -> limitChars(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME), 8)),
         SERVER(() -> Bukkit.getServer().getName()),
-        TPS(() -> StringUtils.left(String.valueOf(TPSProvider.INSTANCE.getTPS()), 5));
+        TPS(() -> limitChars(String.valueOf(TPSProvider.INSTANCE.getTPS()), 5));
 
         private final Supplier<String> supplier;
 
@@ -119,5 +118,11 @@ public final class Placeholders
         {
             return this.supplier.get();
         }
+    }
+
+    private static String limitChars(String str, int limit)
+    {
+        if (str.length() <= limit) return str;
+        return str.substring(0, limit);
     }
 }

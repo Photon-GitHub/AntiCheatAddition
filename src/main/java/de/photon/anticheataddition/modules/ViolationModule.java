@@ -18,11 +18,16 @@ public abstract class ViolationModule extends Module
         super(configString);
     }
 
+    protected ViolationModule(String configString, Module... children)
+    {
+        super(configString, children);
+    }
+
     public static ViolationModule parentOf(String configString, ViolationModule... children)
     {
         Preconditions.checkArgument(children != null && children.length != 0, "Tried to create parent ViolationModule without children.");
 
-        return new ViolationModule(configString)
+        return new ViolationModule(configString, children)
         {
             @Override
             protected ViolationManagement createViolationManagement()

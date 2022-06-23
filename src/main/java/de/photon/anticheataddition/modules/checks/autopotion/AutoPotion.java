@@ -14,7 +14,6 @@ import lombok.val;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -84,16 +83,18 @@ public final class AutoPotion extends ViolationModule implements Listener
         }
 
         // Is the action a right-click that can throw a potion
-        if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
-            // The item is a throwable potion
-            event.getItem() != null &&
-            event.getMaterial() == Material.SPLASH_POTION &&
-            // The last sudden movement was not long ago
-            user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
-        {
-            user.getDataMap().setBoolean(DataKey.Bool.AUTOPOTION_ALREADY_THROWN, true);
-            // Here the timestamp is used to contain the data of the last splash
-            user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).update();
+        switch (event.getAction()) {
+            case RIGHT_CLICK_AIR, RIGHT_CLICK_BLOCK:
+                // The item is a throwable potion
+                if (event.getItem() != null && event.getMaterial() == Material.SPLASH_POTION &&
+                    // The last sudden movement was not long ago
+                    user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
+                {
+                    user.getDataMap().setBoolean(DataKey.Bool.AUTOPOTION_ALREADY_THROWN, true);
+                    // Here the timestamp is used to contain the data of the last splash
+                    user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).update();
+                }
+                break;
         }
     }
 

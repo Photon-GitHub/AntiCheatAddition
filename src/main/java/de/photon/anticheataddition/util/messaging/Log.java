@@ -41,8 +41,7 @@ public class Log
         return Level.parse(value);
     }
 
-    // The prefix is always "[plugin name] ", so plugin name length + 3.
-    private static final int PREFIX_CHARS = AntiCheatAddition.getInstance().getName().length() + 3;
+    private static final String PREFIX = "[AntiCheatAddition] ";
 
     private static final DateTimeFormatter PREFIX_TIME_FORMATTER = DateTimeFormatter.ofPattern("'['HH:mm:ss.SSS']' ");
 
@@ -52,7 +51,8 @@ public class Log
         public String format(LogRecord logRecord)
         {
             return LocalDateTime.now().format(PREFIX_TIME_FORMATTER) +
-                   ChatColor.stripColor(formatMessage(logRecord)).substring(PREFIX_CHARS) +
+                   // Do not use simple substring here as purpur uses a different format.
+                   ChatColor.stripColor(formatMessage(logRecord)).replace(PREFIX, "") +
                    System.lineSeparator();
         }
     };

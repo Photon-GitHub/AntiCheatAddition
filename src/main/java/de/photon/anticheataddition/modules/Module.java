@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.modules;
 
 import com.google.common.base.Preconditions;
+import com.google.common.eventbus.EventBus;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.InternalPermission;
 import lombok.EqualsAndHashCode;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.Locale;
+import java.util.Set;
 
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY, onlyExplicitlyIncluded = true)
 @ToString
@@ -18,13 +20,43 @@ public abstract class Module implements ConfigLoading
     @Getter private final String bypassPermission = (InternalPermission.BYPASS.getRealPermission() + '.') + this.getModuleId();
     @Getter(lazy = true) private final ModuleLoader moduleLoader = Preconditions.checkNotNull(createModuleLoader(), "Tried to create null ModuleLoader.");
     @Getter private boolean enabled = false;
+    @Getter private final Set<Module> children;
 
-    protected Module(String configString)
+    private final EventBus toChildren = new EventBus();
+    private final EventBus toParent = new EventBus();
+
+    private Module(String configString, Set<Module> children)
     {
         Preconditions.checkNotNull(configString, "Tried to create Module with null configString.");
         Preconditions.checkArgument(AntiCheatAddition.getInstance().getConfig().contains(configString), "Config path " + configString + " does not exist in the config. Please regenerate your config.");
         this.configString = configString;
         this.moduleId = "anticheataddition_" + configString.toLowerCase(Locale.ENGLISH);
+        this.children = Set.copyOf(children);
+
+        for (Module child : children) {
+            this.toChildren.register(child);
+            child.toParent.register(this);
+        }
+    }
+
+    protected Module(String configString)
+    {
+        this(configString, Set.of());
+    }
+
+    protected Module(String configString, Module... children)
+    {
+        this(configString, Set.of(children));
+    }
+
+    public void forwardToChildren(Object object)
+    {
+        this.toChildren.post(object);
+    }
+
+    public void forwardToParent(Object object)
+    {
+        this.toParent.post(object);
     }
 
     public void setEnabled(boolean enabled)

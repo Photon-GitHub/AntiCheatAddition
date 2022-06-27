@@ -2,7 +2,6 @@ package de.photon.anticheataddition.commands;
 
 import com.google.common.collect.ImmutableSortedMap;
 import de.photon.anticheataddition.InternalPermission;
-import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -43,13 +42,12 @@ public final class CommandAttributes
      */
     public boolean argumentsOutOfRange(int arguments, CommandSender errorMessageReceiver)
     {
-        final boolean outOfRange = !MathUtil.inRange(minArguments, maxArguments, arguments);
-        if (outOfRange) {
+        if (arguments < minArguments || arguments > maxArguments) {
             ChatMessage.sendMessage(errorMessageReceiver, "Wrong amount of arguments: " + arguments + ". Expected: " + minArguments + " to " + maxArguments);
             ChatMessage.sendMessage(errorMessageReceiver, "For further information use /<command> help");
+            return true;
         }
-
-        return !MathUtil.inRange(minArguments, maxArguments, arguments);
+        return false;
     }
 
     public boolean hasCommandHelp()

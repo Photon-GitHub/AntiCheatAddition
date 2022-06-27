@@ -110,7 +110,7 @@ public abstract class InternalCommand
         if (!this.commandAttributes.hasPermission(sender)) return;
 
         if (!arguments.isEmpty()) {
-            val nextArgument = arguments.peek();
+            final String nextArgument = arguments.peek();
 
             if ("help".equals(nextArgument)) {
                 this.commandAttributes.sendCommandHelp(sender);

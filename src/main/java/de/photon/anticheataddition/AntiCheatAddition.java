@@ -141,6 +141,7 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             getLogger().info(this.getName() + " Version " + this.getDescription().getVersion() + " enabled");
             getLogger().fine("AntiCheatAddition initialization completed.");
+            getLogger().finest("Full debug is active.");
         } catch (final Exception e) {
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Failed loading                                            //

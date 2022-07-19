@@ -284,10 +284,10 @@ public final class DataUpdaterEvents implements Listener
                 && !user.hasTeleportedRecently(1000))
             {
                 final IWrapperPlayPosition position = event::getPacket;
-                val updatedPositiveVelocity = user.getPlayer().getLocation().getY() < position.getY();
+                final boolean movingUpwards = user.getPlayer().getLocation().getY() < position.getY();
 
-                if (updatedPositiveVelocity != user.getDataMap().getBoolean(DataKey.Bool.POSITIVE_VELOCITY)) {
-                    user.getDataMap().setBoolean(DataKey.Bool.POSITIVE_VELOCITY, updatedPositiveVelocity);
+                if (movingUpwards != user.getDataMap().getBoolean(DataKey.Bool.POSITIVE_VELOCITY)) {
+                    user.getDataMap().setBoolean(DataKey.Bool.POSITIVE_VELOCITY, movingUpwards);
                     user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).update();
                 }
             }

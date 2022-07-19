@@ -8,7 +8,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.buffer.RingBuffer;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
@@ -134,15 +133,15 @@ public final class LookPacketData
 
             // Huge angle change
             // Use the map values here to because the other ones are already updated.
-            if (RotationUtil.getDirection(user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_YAW), user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_PITCH))
+            if (RotationUtil.getDirection(user.getData().floating.getLastPacketYaw(), user.getData().floating.getLastPacketPitch())
                             .angle(RotationUtil.getDirection(lookWrapper.getYaw(), lookWrapper.getPitch())) > 35)
             {
                 user.getTimeMap().at(TimeKey.SCAFFOLD_SIGNIFICANT_ROTATION_CHANGE).update();
             }
 
             // Update the values here so the RotationUtil calculation is functional.
-            user.getDataMap().setFloat(DataKey.Float.LAST_PACKET_YAW, lookWrapper.getYaw());
-            user.getDataMap().setFloat(DataKey.Float.LAST_PACKET_PITCH, lookWrapper.getPitch());
+            user.getData().floating.setLastPacketYaw(lookWrapper.getYaw());
+            user.getData().floating.setLastPacketPitch(lookWrapper.getPitch());
         }
     }
 }

@@ -4,7 +4,6 @@ import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -39,10 +38,10 @@ public final class AutoPotion extends ViolationModule implements Listener
         val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this) || event.getTo() == null) return;
 
-        if (user.getDataMap().getBoolean(DataKey.Bool.AUTOPOTION_ALREADY_THROWN)) {
+        if (user.getData().bool.isAutopotionAlreadyThrown()) {
             // The pitch and yaw values are nearly the same as before
-            if (MathUtil.absDiff(event.getTo().getPitch(), user.getDataMap().getFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_PITCH)) <= angleOffset &&
-                MathUtil.absDiff(event.getTo().getYaw(), user.getDataMap().getFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_YAW)) <= angleOffset &&
+            if (MathUtil.absDiff(event.getTo().getPitch(), user.getData().floating.getAutopotionLastSuddenPitch()) <= angleOffset &&
+                MathUtil.absDiff(event.getTo().getYaw(), user.getData().floating.getAutopotionLastSuddenYaw()) <= angleOffset &&
                 // Happened in a short time frame
                 user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
             {
@@ -61,9 +60,9 @@ public final class AutoPotion extends ViolationModule implements Listener
                 // The pitch is beyond the lookdown angle
                 event.getTo().getPitch() >= lookDownAngle)
             {
-                user.getDataMap().setFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_PITCH, event.getFrom().getPitch());
-                user.getDataMap().setFloat(DataKey.Float.AUTOPOTION_LAST_SUDDEN_YAW, event.getFrom().getYaw());
-                user.getDataMap().setBoolean(DataKey.Bool.AUTOPOTION_ALREADY_THROWN, false);
+                user.getData().floating.setAutopotionLastSuddenPitch(event.getFrom().getPitch());
+                user.getData().floating.setAutopotionLastSuddenYaw(event.getFrom().getYaw());
+                user.getData().bool.setAutopotionAlreadyThrown(false);
 
                 user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).update();
             }
@@ -90,7 +89,7 @@ public final class AutoPotion extends ViolationModule implements Listener
                     // The last sudden movement was not long ago
                     user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
                 {
-                    user.getDataMap().setBoolean(DataKey.Bool.AUTOPOTION_ALREADY_THROWN, true);
+                    user.getData().bool.setAutopotionAlreadyThrown(true);
                     // Here the timestamp is used to contain the data of the last splash
                     user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).update();
                 }

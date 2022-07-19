@@ -2,7 +2,6 @@ package de.photon.anticheataddition.modules.checks.scaffold;
 
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.util.messaging.Log;
 
 /**
@@ -20,7 +19,7 @@ final class ScaffoldSprinting extends Module
     {
         if (!this.isEnabled()) return 0;
 
-        if (user.getDataMap().getCounter(DataKey.Count.SCAFFOLD_SPRINTING_FAILS).conditionallyIncDec(user.hasSprintedRecently(400))) {
+        if (user.getData().counter.getScaffoldSprintingFails().conditionallyIncDec(user.hasSprintedRecently(400))) {
             Log.fine(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
             return 45;
         }

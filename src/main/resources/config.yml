@@ -216,6 +216,27 @@ AutoPotion:
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoPotion"
     200: "kick {player} AutoPotion"
 
+# Duping uses various heuristics to detect common behaviour patterns during duping items.
+# As this only detects common behaviour patterns, it is not 100% accurate, and can miss cases of duping.
+# However, it can be useful for admins to investigate any suspicions.
+#
+# To help with any investigations this check will log both the world and the exact location of any suspicious
+# behaviour.
+Duping:
+  # Do you want to enable the Duping check?
+  enabled: true
+  # Control the different parts of Duping
+  parts:
+    # The duping part detects picking up exactly twice the item count one dropped.
+    DoubleDropped:
+      # Do you want to enable the DoubleDropped part?
+      enabled: true
+  # Map of violation levels to command
+  thresholds:
+    50: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} might be duping items."
+    100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for duping items."
+    200: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for duping items."
+
 # The Fastswitch check prevents players from switching their hotbar-selection too quickly which can detect some
 # killauras or scaffolds.
 # The check will automatically disable itself if the server is lagging.

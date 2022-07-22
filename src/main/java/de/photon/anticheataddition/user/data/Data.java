@@ -16,17 +16,17 @@ public final class Data
 
     public static final class Bool
     {
-        public boolean allowedToJump = true;
+        public volatile boolean allowedToJump = true;
 
         public boolean autopotionAlreadyThrown = false;
 
         public boolean packetAnalysisAnimationExpected = false;
         public boolean packetAnalysisEqualRotationExpected = false;
 
-        public boolean positiveVelocity = false;
+        public volatile boolean positiveVelocity = false;
 
-        public boolean sneaking = false;
-        public boolean sprinting = false;
+        public volatile boolean sneaking = false;
+        public volatile boolean sprinting = false;
     }
 
     public static final class Floating
@@ -43,7 +43,7 @@ public final class Data
         public int dupingDoubleItemsDropped = 0;
         public int dupingDoubleItemsCollected = 0;
 
-        public int lastRawSlotClicked = 0;
+        public volatile int lastRawSlotClicked = 0;
 
         public volatile long lastSneakDuration = Long.MAX_VALUE;
         public volatile long lastSprintDuration = Long.MAX_VALUE;

@@ -247,7 +247,7 @@ public final class User implements Permissible
      */
     public boolean hasSprintedRecently(final long milliseconds)
     {
-        return this.data.bool.isSprinting() || this.timeMap.at(TimeKey.SPRINT_TOGGLE).recentlyUpdated(milliseconds);
+        return this.data.bool.sprinting || this.timeMap.at(TimeKey.SPRINT_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -259,7 +259,7 @@ public final class User implements Permissible
      */
     public boolean hasSneakedRecently(final long milliseconds)
     {
-        return this.data.bool.isSneaking() || this.timeMap.at(TimeKey.SNEAK_TOGGLE).recentlyUpdated(milliseconds);
+        return this.data.bool.sneaking || this.timeMap.at(TimeKey.SNEAK_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -307,11 +307,11 @@ public final class User implements Permissible
      */
     public boolean updateSkinComponents(int newSkinComponents)
     {
-        final OptionalInt oldSkin = this.data.object.getSkinComponents();
+        final OptionalInt oldSkin = this.data.object.skinComponents;
         final boolean result = oldSkin.isPresent() && oldSkin.getAsInt() == newSkinComponents;
 
         // Update the skin components.
-        this.data.object.setSkinComponents(OptionalInt.of(newSkinComponents));
+        this.data.object.skinComponents = OptionalInt.of(newSkinComponents);
         return result;
     }
 

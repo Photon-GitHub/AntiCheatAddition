@@ -38,10 +38,10 @@ public final class AutoPotion extends ViolationModule implements Listener
         val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this) || event.getTo() == null) return;
 
-        if (user.getData().bool.isAutopotionAlreadyThrown()) {
+        if (user.getData().bool.autopotionAlreadyThrown) {
             // The pitch and yaw values are nearly the same as before
-            if (MathUtil.absDiff(event.getTo().getPitch(), user.getData().floating.getAutopotionLastSuddenPitch()) <= angleOffset &&
-                MathUtil.absDiff(event.getTo().getYaw(), user.getData().floating.getAutopotionLastSuddenYaw()) <= angleOffset &&
+            if (MathUtil.absDiff(event.getTo().getPitch(), user.getData().floating.autopotionLastSuddenPitch) <= angleOffset &&
+                MathUtil.absDiff(event.getTo().getYaw(), user.getData().floating.autopotionLastSuddenYaw) <= angleOffset &&
                 // Happened in a short time frame
                 user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
             {
@@ -60,9 +60,9 @@ public final class AutoPotion extends ViolationModule implements Listener
                 // The pitch is beyond the lookdown angle
                 event.getTo().getPitch() >= lookDownAngle)
             {
-                user.getData().floating.setAutopotionLastSuddenPitch(event.getFrom().getPitch());
-                user.getData().floating.setAutopotionLastSuddenYaw(event.getFrom().getYaw());
-                user.getData().bool.setAutopotionAlreadyThrown(false);
+                user.getData().floating.autopotionLastSuddenPitch = event.getFrom().getPitch();
+                user.getData().floating.autopotionLastSuddenYaw = event.getFrom().getYaw();
+                user.getData().bool.autopotionAlreadyThrown = false;
 
                 user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).update();
             }
@@ -89,7 +89,7 @@ public final class AutoPotion extends ViolationModule implements Listener
                     // The last sudden movement was not long ago
                     user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).recentlyUpdated(lookRestoredTime))
                 {
-                    user.getData().bool.setAutopotionAlreadyThrown(true);
+                    user.getData().bool.autopotionAlreadyThrown = true;
                     // Here the timestamp is used to contain the data of the last splash
                     user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).update();
                 }

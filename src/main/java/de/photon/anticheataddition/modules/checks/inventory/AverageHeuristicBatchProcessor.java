@@ -31,7 +31,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
                                             .toArray();
 
 
-        val misClickCounter = user.getData().counter.getInventoryAverageHeuristicsMisclicks();
+        val misClickCounter = user.getData().counter.inventoryAverageHeuristicsMisclicks;
 
         // Not enough data to check as the player opened many inventories.
         if (timeOffsets.length < 8) {

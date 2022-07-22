@@ -22,7 +22,7 @@ final class ScaffoldJumping extends Module
     {
         if (!this.isEnabled()) return 0;
 
-        val failCounter = user.getData().counter.getScaffoldJumpingFails();
+        val failCounter = user.getData().counter.scaffoldJumpingFails;
 
         if (user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 500)
             && user.hasJumpedRecently(1000))
@@ -33,7 +33,7 @@ final class ScaffoldJumping extends Module
             }
         } else {
             // Decrease only every 10 blocks to make sure one cannot easily bypass this check by jumping only every other block.
-            val legitCounter = user.getData().counter.getScaffoldJumpingLegit();
+            val legitCounter = user.getData().counter.scaffoldJumpingLegit;
             if (legitCounter.incrementCompareThreshold()) {
                 failCounter.decrementAboveZero();
                 legitCounter.setToZero();

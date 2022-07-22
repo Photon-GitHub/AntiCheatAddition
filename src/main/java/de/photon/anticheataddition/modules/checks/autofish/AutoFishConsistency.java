@@ -39,12 +39,12 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
             case FISHING -> {
                 // Not too many failed attempts in between (afk fish farm false positives)
                 // Negative maximum_fails indicate not allowing afk fishing farms.
-                if (user.getData().counter.getAutofishFailed().compareThreshold() &&
+                if (user.getData().counter.autofishFailed.compareThreshold() &&
                     // If the last attempt was a fail do not check (false positives)
                     user.getTimeMap().at(TimeKey.AUTOFISH_DETECTION).getTime() != 0)
                 {
                     // Buffer the data.
-                    val consistencyData = user.getData().object.getAutoFishConsistencyData();
+                    val consistencyData = user.getData().object.autoFishConsistencyData;
                     consistencyData.accept(user.getTimeMap().at(TimeKey.AUTOFISH_DETECTION).passedTime());
 
                     // Check that we have enough data.
@@ -72,12 +72,12 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
                 }
 
                 // Reset the fail counter as just now there was a fishing success.
-                user.getData().counter.getAutofishFailed().setToZero();
+                user.getData().counter.autofishFailed.setToZero();
             }
             // No consistency when not fishing / failed fishing
             case IN_GROUND, FAILED_ATTEMPT -> {
                 user.getTimeMap().at(TimeKey.AUTOFISH_DETECTION).setToZero();
-                user.getData().counter.getAutofishFailed().increment();
+                user.getData().counter.autofishFailed.increment();
             }
             // CAUGHT_FISH covers all forms of items from the water.
             case CAUGHT_FISH -> user.getTimeMap().at(TimeKey.AUTOFISH_DETECTION).update();

@@ -51,9 +51,9 @@ public final class InventoryAverageHeuristic extends ViolationModule implements 
             // Minimum ping
             PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing))
         {
-            if (event.getCurrentItem() == null || MaterialUtil.isAir(event.getCurrentItem().getType())) user.getData().counter.getInventoryAverageHeuristicsMisclicks().increment();
+            if (event.getCurrentItem() == null || MaterialUtil.isAir(event.getCurrentItem().getType())) user.getData().counter.inventoryAverageHeuristicsMisclicks.increment();
                 // Shift - Double - Click shortcut will generate a lot of clicks.
-            else if (user.getData().object.getLastMaterialClicked() != event.getCurrentItem().getType())
+            else if (user.getData().object.lastMaterialClicked != event.getCurrentItem().getType())
                 user.getInventoryBatch().addDataPoint(InventoryBatch.InventoryClick.fromClickEvent(event));
         }
     }

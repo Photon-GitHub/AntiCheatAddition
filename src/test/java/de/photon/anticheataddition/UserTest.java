@@ -23,14 +23,14 @@ class UserTest
     {
         val obsidian = Material.OBSIDIAN;
 
-        dummyUser.getData().object.setLastMaterialClicked(obsidian);
-        Assertions.assertSame(dummyUser.getData().object.getLastMaterialClicked(), obsidian);
+        dummyUser.getData().object.lastMaterialClicked = obsidian;
+        Assertions.assertSame(dummyUser.getData().object.lastMaterialClicked, obsidian);
     }
 
     @Test
     void counterTest()
     {
-        val counter = dummyUser.getData().counter.getInventoryAverageHeuristicsMisclicks();
+        val counter = dummyUser.getData().counter.inventoryAverageHeuristicsMisclicks;
 
         counter.setToZero();
         Assertions.assertSame(0L, counter.getCounter());

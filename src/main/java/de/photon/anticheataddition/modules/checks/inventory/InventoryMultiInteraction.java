@@ -33,7 +33,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
     private static OptionalDouble distanceToLastClickedSlot(User user, InventoryClickEvent event)
     {
         val inventory = event.getClickedInventory();
-        return inventory == null ? OptionalDouble.empty() : InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getData().number.getLastRawSlotClicked(), inventory);
+        return inventory == null ? OptionalDouble.empty() : InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getData().number.lastRawSlotClicked, inventory);
     }
 
     private static boolean smallDistance(User user, InventoryClickEvent event)
@@ -54,7 +54,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
             // Maximum ping
             !PingProvider.INSTANCE.atMostMaxPing(user.getPlayer(), maxPing) ||
             // False positive: Click-spamming on the same slot
-            event.getRawSlot() == user.getData().number.getLastRawSlotClicked()) return;
+            event.getRawSlot() == user.getData().number.lastRawSlotClicked) return;
 
         // Default vl to 6
         int addedVl = 6;
@@ -90,7 +90,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
 
             case MOVE_TO_OTHER_INVENTORY:
                 // Last material false positive due to the fast move all items shortcut.
-                if (event.getCurrentItem() == null || user.getData().object.getLastMaterialClicked() == event.getCurrentItem().getType()) return;
+                if (event.getCurrentItem() == null || user.getData().object.lastMaterialClicked == event.getCurrentItem().getType()) return;
 
                 // Depending on the distance of the clicks.
                 enforcedTicks = smallDistance(user, event) ? 1 : 2;

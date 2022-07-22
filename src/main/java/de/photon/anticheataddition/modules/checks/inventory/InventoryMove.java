@@ -105,9 +105,9 @@ public final class InventoryMove extends ViolationModule
                         val positiveVelocity = knownPosition.getY() < moveTo.getY();
                         val noMovement = knownPosition.getY() == moveTo.getY();
 
-                        if (positiveVelocity != user.getData().bool.isPositiveVelocity()) {
-                            if (user.getData().bool.isAllowedToJump()) {
-                                user.getData().bool.setAllowedToJump(false);
+                        if (positiveVelocity != user.getData().bool.positiveVelocity) {
+                            if (user.getData().bool.allowedToJump) {
+                                user.getData().bool.allowedToJump = false;
                                 return;
                             }
 
@@ -151,7 +151,7 @@ public final class InventoryMove extends ViolationModule
                                                      .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory."));
                         }
                     } else {
-                        user.getData().bool.setAllowedToJump(true);
+                        user.getData().bool.allowedToJump = true;
                     }
                 }).build());
     }

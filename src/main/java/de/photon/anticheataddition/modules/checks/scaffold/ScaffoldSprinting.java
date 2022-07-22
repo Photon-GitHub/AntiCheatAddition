@@ -19,7 +19,7 @@ final class ScaffoldSprinting extends Module
     {
         if (!this.isEnabled()) return 0;
 
-        if (user.getData().counter.getScaffoldSprintingFails().conditionallyIncDec(user.hasSprintedRecently(400))) {
+        if (user.getData().counter.scaffoldSprintingFails.conditionallyIncDec(user.hasSprintedRecently(400))) {
             Log.fine(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() + " sprinted suspiciously.");
             return 45;
         }

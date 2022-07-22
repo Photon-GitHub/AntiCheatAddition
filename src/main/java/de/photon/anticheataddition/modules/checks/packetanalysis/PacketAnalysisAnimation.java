@@ -44,18 +44,18 @@ public final class PacketAnalysisAnimation extends ViolationModule
                 .onReceiving((event, user) -> {
                     val packetType = event.getPacketType();
 
-                    if (packetType == PacketType.Play.Client.ARM_ANIMATION) user.getData().bool.setPacketAnalysisAnimationExpected(false);
+                    if (packetType == PacketType.Play.Client.ARM_ANIMATION) user.getData().bool.packetAnalysisAnimationExpected = false;
                     else if (packetType == PacketType.Play.Client.USE_ENTITY) {
                         // Expected Animation after attack, but didn't arrive.
-                        if (user.getData().bool.isPacketAnalysisAnimationExpected()) {
-                            user.getData().bool.setPacketAnalysisAnimationExpected(false);
+                        if (user.getData().bool.packetAnalysisAnimationExpected) {
+                            user.getData().bool.packetAnalysisAnimationExpected = false;
                             getManagement().flag(Flag.of(user).setAddedVl(30).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " did not send animation packet after an attack."));
                         }
 
                         // Make sure an arm animation packet is sent directly after an attack as it is the next packet in the client code.
                         val useEntityWrapper = new WrapperPlayClientUseEntity(event.getPacket());
                         if (useEntityWrapper.getType() == EnumWrappers.EntityUseAction.ATTACK)
-                            user.getData().bool.setPacketAnalysisAnimationExpected(true);
+                            user.getData().bool.packetAnalysisAnimationExpected = true;
                     }
                 }).build();
 

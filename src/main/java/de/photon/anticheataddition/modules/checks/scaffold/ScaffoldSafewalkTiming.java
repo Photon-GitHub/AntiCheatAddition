@@ -19,13 +19,13 @@ final class ScaffoldSafewalkTiming extends Module
     {
         if (!this.isEnabled()) return 0;
 
-        if (user.getData().counter.getScaffoldSafewalkTimingFails().conditionallyIncDec(
+        if (user.getData().counter.scaffoldSafewalkTimingFails.conditionallyIncDec(
                 // Moved recently
                 user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 355) &&
                 // Suddenly stopped
                 !user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 175) &&
                 // Has not sneaked recently
-                !(user.hasSneakedRecently(175) && user.getData().number.getLastSneakDuration() > 148)))
+                !(user.hasSneakedRecently(175) && user.getData().number.lastSneakDuration > 148)))
         {
             Log.fine(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() + " has behaviour associated with safe-walk. (Timing)");
             return 20;

@@ -24,7 +24,7 @@ final class ScaffoldAngle extends Module
         val placedVector = new Vector(placedFace.getModX(), placedFace.getModY(), placedFace.getModZ());
 
         // If greater than 90 in radians.
-        if (user.getData().counter.getScaffoldAngleFails().conditionallyIncDec(user.getPlayer().getLocation().getDirection().angle(placedVector) > MAX_ANGLE)) {
+        if (user.getData().counter.scaffoldAngleFails.conditionallyIncDec(user.getPlayer().getLocation().getDirection().angle(placedVector) > MAX_ANGLE)) {
             Log.fine(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() + " placed a block with a suspicious angle.");
             return 15;
         }

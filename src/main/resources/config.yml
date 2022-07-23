@@ -231,6 +231,15 @@ Duping:
     DoubleDropped:
       # Do you want to enable the DoubleDropped part?
       enabled: true
+    # Secret cache tries to spot the creation of secret caches which are completely surrounded by other blocks
+    # Duping players often create multiple secret caches at the same time to allow alt accounts to gather them
+    # later.
+    SecretCache:
+      # Do you want to enable the SecretCache part?
+      enabled: true
+      # How many minutes after the closing of a chest or shulker box should AntiCheatAddition check if it is a
+      # secret cache (in minutes)?
+      check_delay: 10
   # Map of violation levels to command
   thresholds:
     50: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} might be duping items."

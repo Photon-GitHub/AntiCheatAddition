@@ -9,28 +9,32 @@ import org.junit.jupiter.api.Test;
 
 class UserTest
 {
-    private static User dummyUser;
+    private static User[] dummyUsers;
 
     @BeforeAll
     static void mockACA()
     {
         Dummy.mockAntiCheatAddition();
-        dummyUser = Dummy.mockUser();
+        dummyUsers = new User[]{Dummy.mockUser(), Dummy.mockUser()};
     }
 
     @Test
-    void materialTest()
+    void userDataMaterialTest()
     {
-        val obsidian = Material.OBSIDIAN;
+        final Material obsidian = Material.OBSIDIAN;
+        final Material coalBlock = Material.COAL_BLOCK;
 
-        dummyUser.getData().object.lastMaterialClicked = obsidian;
-        Assertions.assertSame(dummyUser.getData().object.lastMaterialClicked, obsidian);
+        dummyUsers[0].getData().object.lastMaterialClicked = obsidian;
+        dummyUsers[1].getData().object.lastMaterialClicked = coalBlock;
+
+        Assertions.assertSame(dummyUsers[0].getData().object.lastMaterialClicked, obsidian);
+        Assertions.assertSame(dummyUsers[1].getData().object.lastMaterialClicked, coalBlock);
     }
 
     @Test
     void counterTest()
     {
-        val counter = dummyUser.getData().counter.inventoryAverageHeuristicsMisclicks;
+        val counter = dummyUsers[0].getData().counter.inventoryAverageHeuristicsMisclicks;
 
         counter.setToZero();
         Assertions.assertSame(0L, counter.getCounter());

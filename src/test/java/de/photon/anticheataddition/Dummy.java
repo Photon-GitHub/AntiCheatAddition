@@ -49,6 +49,7 @@ public final class Dummy
     {
         Player player = Mockito.mock(Player.class);
         val uuid = UUID.randomUUID();
+        val name = "TestPlayer" + Long.toHexString(uuid.getLeastSignificantBits());
         Mockito.when(player.getName()).thenReturn("TestPlayer");
         Mockito.when(player.getUniqueId()).thenReturn(uuid);
         return player;

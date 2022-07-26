@@ -9,6 +9,8 @@ import de.photon.anticheataddition.modules.checks.autoeat.AutoEat;
 import de.photon.anticheataddition.modules.checks.autofish.AutoFishConsistency;
 import de.photon.anticheataddition.modules.checks.autofish.AutoFishInhumanReaction;
 import de.photon.anticheataddition.modules.checks.autopotion.AutoPotion;
+import de.photon.anticheataddition.modules.checks.duping.DupingDoubleDropped;
+import de.photon.anticheataddition.modules.checks.duping.DupingSecretCache;
 import de.photon.anticheataddition.modules.checks.fastswitch.Fastswitch;
 import de.photon.anticheataddition.modules.checks.impossiblechat.ImpossibleChat;
 import de.photon.anticheataddition.modules.checks.inventory.InventoryAverageHeuristic;
@@ -27,18 +29,18 @@ import de.photon.anticheataddition.modules.checks.skinblinker.SkinBlinkerSprinti
 import de.photon.anticheataddition.modules.checks.skinblinker.SkinBlinkerUnusedBit;
 import de.photon.anticheataddition.modules.checks.teaming.Teaming;
 import de.photon.anticheataddition.modules.checks.tower.Tower;
-import de.photon.anticheataddition.modules.sentinel.mods.BetterSprintingSentinel;
-import de.photon.anticheataddition.modules.sentinel.mods.FiveZigSentinel;
-import de.photon.anticheataddition.modules.sentinel.mods.LabyModSentinel;
-import de.photon.anticheataddition.modules.sentinel.mods.SchematicaSentinel;
 import de.photon.anticheataddition.modules.sentinel.SentinelChannelModule;
-import de.photon.anticheataddition.modules.sentinel.mods.VapeSentinel;
-import de.photon.anticheataddition.modules.sentinel.mods.WorldDownloaderSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.BookPageSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.CommandBlockSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.CreativeKillPotionSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.SelfDamageSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.TrollPotionSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.BetterSprintingSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.FiveZigSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.LabyModSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.SchematicaSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.VapeSentinel;
+import de.photon.anticheataddition.modules.sentinel.mods.WorldDownloaderSentinel;
 import de.photon.anticheataddition.util.config.ConfigUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -71,6 +73,10 @@ public final class ModuleManager
                 ViolationModule.parentOf("AutoFish", AutoFishConsistency.INSTANCE, AutoFishInhumanReaction.INSTANCE),
 
                 AutoPotion.INSTANCE,
+
+                DupingDoubleDropped.INSTANCE,
+                DupingSecretCache.INSTANCE,
+                ViolationModule.parentOf("Duping", DupingDoubleDropped.INSTANCE, DupingSecretCache.INSTANCE),
 
                 Fastswitch.INSTANCE,
 

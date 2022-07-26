@@ -2,7 +2,6 @@ package de.photon.anticheataddition.modules.checks.inventory;
 
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
@@ -32,7 +31,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
                                             .toArray();
 
 
-        val misClickCounter = user.getDataMap().getCounter(DataKey.Count.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS);
+        val misClickCounter = user.getData().counter.inventoryAverageHeuristicsMisclicks;
 
         // Not enough data to check as the player opened many inventories.
         if (timeOffsets.length < 8) {

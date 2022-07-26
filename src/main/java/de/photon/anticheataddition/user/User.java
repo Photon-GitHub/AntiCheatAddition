@@ -5,8 +5,7 @@ import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.InternalPermission;
 import de.photon.anticheataddition.modules.Module;
-import de.photon.anticheataddition.user.data.DataKey;
-import de.photon.anticheataddition.user.data.DataMap;
+import de.photon.anticheataddition.user.data.Data;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.user.data.TimestampMap;
 import de.photon.anticheataddition.user.data.batch.InventoryBatch;
@@ -53,7 +52,7 @@ public final class User implements Permissible
     @Delegate(types = Permissible.class)
     @EqualsAndHashCode.Include private final Player player;
 
-    private final DataMap dataMap = new DataMap();
+    private final Data data = new Data();
     private final TimestampMap timeMap = new TimestampMap();
 
     private final InventoryBatch inventoryBatch = new InventoryBatch(this);
@@ -248,7 +247,7 @@ public final class User implements Permissible
      */
     public boolean hasSprintedRecently(final long milliseconds)
     {
-        return this.dataMap.getBoolean(DataKey.Bool.SPRINTING) || this.timeMap.at(TimeKey.SPRINT_TOGGLE).recentlyUpdated(milliseconds);
+        return this.data.bool.sprinting || this.timeMap.at(TimeKey.SPRINT_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -260,7 +259,7 @@ public final class User implements Permissible
      */
     public boolean hasSneakedRecently(final long milliseconds)
     {
-        return this.dataMap.getBoolean(DataKey.Bool.SNEAKING) || this.timeMap.at(TimeKey.SNEAK_TOGGLE).recentlyUpdated(milliseconds);
+        return this.data.bool.sneaking || this.timeMap.at(TimeKey.SNEAK_TOGGLE).recentlyUpdated(milliseconds);
     }
 
     /**
@@ -308,11 +307,11 @@ public final class User implements Permissible
      */
     public boolean updateSkinComponents(int newSkinComponents)
     {
-        final OptionalInt oldSkin = (OptionalInt) this.getDataMap().getObject(DataKey.Obj.SKIN_COMPONENTS);
+        final OptionalInt oldSkin = this.data.object.skinComponents;
         final boolean result = oldSkin.isPresent() && oldSkin.getAsInt() == newSkinComponents;
 
         // Update the skin components.
-        this.getDataMap().setObject(DataKey.Obj.SKIN_COMPONENTS, OptionalInt.of(newSkinComponents));
+        this.data.object.skinComponents = OptionalInt.of(newSkinComponents);
         return result;
     }
 

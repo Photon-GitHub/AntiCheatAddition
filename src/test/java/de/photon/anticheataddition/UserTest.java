@@ -1,7 +1,6 @@
 package de.photon.anticheataddition;
 
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.DataKey;
 import lombok.val;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
@@ -10,28 +9,32 @@ import org.junit.jupiter.api.Test;
 
 class UserTest
 {
-    private static User dummyUser;
+    private static User[] dummyUsers;
 
     @BeforeAll
     static void mockACA()
     {
         Dummy.mockAntiCheatAddition();
-        dummyUser = Dummy.mockUser();
+        dummyUsers = new User[]{Dummy.mockUser(), Dummy.mockUser()};
     }
 
     @Test
-    void materialTest()
+    void userDataMaterialTest()
     {
-        val obsidian = Material.OBSIDIAN;
+        final Material obsidian = Material.OBSIDIAN;
+        final Material coalBlock = Material.COAL_BLOCK;
 
-        dummyUser.getDataMap().setObject(DataKey.Obj.LAST_MATERIAL_CLICKED, obsidian);
-        Assertions.assertSame(dummyUser.getDataMap().getObject(DataKey.Obj.LAST_MATERIAL_CLICKED), obsidian);
+        dummyUsers[0].getData().object.lastMaterialClicked = obsidian;
+        dummyUsers[1].getData().object.lastMaterialClicked = coalBlock;
+
+        Assertions.assertSame(dummyUsers[0].getData().object.lastMaterialClicked, obsidian);
+        Assertions.assertSame(dummyUsers[1].getData().object.lastMaterialClicked, coalBlock);
     }
 
     @Test
     void counterTest()
     {
-        val counter = dummyUser.getDataMap().getCounter(DataKey.Count.INVENTORY_AVERAGE_HEURISTICS_MISCLICKS);
+        val counter = dummyUsers[0].getData().counter.inventoryAverageHeuristicsMisclicks;
 
         counter.setToZero();
         Assertions.assertSame(0L, counter.getCounter());

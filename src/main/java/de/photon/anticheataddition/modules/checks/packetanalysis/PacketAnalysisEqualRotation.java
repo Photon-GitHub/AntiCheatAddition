@@ -7,7 +7,6 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
-import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
@@ -47,8 +46,8 @@ public final class PacketAnalysisEqualRotation extends ViolationModule
                         !user.hasTeleportedRecently(5000) &&
                         // Same rotation values
                         // LookPacketData automatically updates its values.
-                        currentYaw == user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_YAW) &&
-                        currentPitch == user.getDataMap().getFloat(DataKey.Float.LAST_PACKET_PITCH) &&
+                        currentYaw == user.getData().floating.lastPacketYaw &&
+                        currentPitch == user.getData().floating.lastPacketPitch &&
                         // 1.17 client false positive when throwing exp bottles.
                         user.getTimeMap().at(TimeKey.EXPERIENCE_BOTTLE_THROWN).notRecentlyUpdated(5000) &&
                         // LabyMod fp when standing still / hit in corner fp
@@ -65,8 +64,8 @@ public final class PacketAnalysisEqualRotation extends ViolationModule
                                                                SetUtil.containsAny(user.getHitboxLocation().getPartiallyIncludedMaterials(), MaterialUtil.CHANGED_HITBOX_MATERIALS))))
                     {
                         // Cancelled packets may cause problems.
-                        if (user.getDataMap().getBoolean(DataKey.Bool.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED)) {
-                            user.getDataMap().setBoolean(DataKey.Bool.PACKET_ANALYSIS_EQUAL_ROTATION_EXPECTED, false);
+                        if (user.getData().bool.packetAnalysisEqualRotationExpected) {
+                            user.getData().bool.packetAnalysisEqualRotationExpected = false;
                             return;
                         }
 

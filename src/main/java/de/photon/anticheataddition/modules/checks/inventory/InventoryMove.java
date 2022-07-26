@@ -9,7 +9,6 @@ import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayPosition;
 import de.photon.anticheataddition.user.User;
-import de.photon.anticheataddition.user.data.DataKey;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
@@ -106,9 +105,9 @@ public final class InventoryMove extends ViolationModule
                         val positiveVelocity = knownPosition.getY() < moveTo.getY();
                         val noMovement = knownPosition.getY() == moveTo.getY();
 
-                        if (positiveVelocity != user.getDataMap().getBoolean(DataKey.Bool.POSITIVE_VELOCITY)) {
-                            if (user.getDataMap().getBoolean(DataKey.Bool.ALLOWED_TO_JUMP)) {
-                                user.getDataMap().setBoolean(DataKey.Bool.ALLOWED_TO_JUMP, false);
+                        if (positiveVelocity != user.getData().bool.positiveVelocity) {
+                            if (user.getData().bool.allowedToJump) {
+                                user.getData().bool.allowedToJump = false;
                                 return;
                             }
 
@@ -152,7 +151,7 @@ public final class InventoryMove extends ViolationModule
                                                      .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory."));
                         }
                     } else {
-                        user.getDataMap().setBoolean(DataKey.Bool.ALLOWED_TO_JUMP, true);
+                        user.getData().bool.allowedToJump = true;
                     }
                 }).build());
     }

@@ -56,7 +56,7 @@ public final class DupingSecretCache extends ViolationModule implements Listener
 
                     // Secret cache if surrounded on all sides.
                     if (surroundingBlocks == WorldUtil.ALL_FACES.size()) {
-                        getManagement().flag(Flag.of(user).setAddedVl(60));
+                        getManagement().flag(Flag.of(user).setAddedVl(50));
                     }
                 }, secretCacheCheckDelayTicks);
             }

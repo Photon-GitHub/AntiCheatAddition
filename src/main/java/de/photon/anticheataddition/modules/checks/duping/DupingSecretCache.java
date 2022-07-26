@@ -26,7 +26,7 @@ public final class DupingSecretCache extends ViolationModule implements Listener
     private static final Set<Material> IGNORED_AROUND_INVENTORY = Stream.of(MaterialUtil.LIQUIDS, MaterialUtil.FREE_SPACE_CONTAINERS)
                                                                         .flatMap(Set::stream)
                                                                         .collect(SetUtil.toImmutableEnumSet());
-    private final long secretCacheCheckDelayTicks = 20L * 60L * loadLong("check_delay", 10); // minutes to ticks
+    private final long secretCacheCheckDelayTicks = 20L * 60L * loadLong(".check_delay", 10); // minutes to ticks
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)

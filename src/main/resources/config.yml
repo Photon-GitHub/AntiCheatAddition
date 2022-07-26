@@ -996,8 +996,10 @@ Sentinel:
 # debug file of AntiCheatAddition with at least "FINE" level of messages.
 Debug:
   # These are the logging levels of AntiCheatAddition.
-  # Possible values are: "OFF", "SEVERE", "WARNING", "INFO", "FINE" among others.
-  # Default is "INFO", setting any value to "FINE" will cause debug messages to be logged. "OFF" will disable logging.
+  # Possible values are: "OFF", "SEVERE", "WARNING", "INFO", "FINE", "FINER", "FINEST", "ALL" among others.
+  # Default is "INFO", setting any value to "FINE" will cause debug for violations to be logged.
+  # "OFF" will disable logging, "FINER" will cause various debug messages be logged and "ALL" or "FINEST "will enable
+  # very spammy debug messages.
   # The logging level for the console.
   console_level: "INFO"
   # The logging level for the log file.

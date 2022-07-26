@@ -43,14 +43,16 @@ public final class DupingSecretCache extends ViolationModule implements Listener
 
                 val block = loc.getBlock();
 
-                Log.finest(() -> "Checking secret cache for " + user.getPlayer().getName() + " at " + block.getX() + " " + block.getY() + " " + block.getZ());
+                Log.finer(() -> "Checking secret cache for " + user.getPlayer().getName() +
+                                " at " + block.getX() + " " + block.getY() + " " + block.getZ() +
+                                " in " + secretCacheCheckDelayTicks + " ticks.");
 
                 // Check after x minutes how many blocks surround the chest or shulker box.
                 // If the chest or shulker box is completely surrounded, flag as secret cache.
                 Bukkit.getScheduler().scheduleSyncDelayedTask(AntiCheatAddition.getInstance(), () -> {
                     final long surroundingBlocks = WorldUtil.INSTANCE.countBlocksAround(block, WorldUtil.ALL_FACES, IGNORED_AROUND_INVENTORY);
 
-                    Log.finest(() -> "Surrounding blocks for secret cache of player " + user.getPlayer().getName() + " : " + surroundingBlocks + " | Needed for flag: " + WorldUtil.ALL_FACES.size());
+                    Log.finer(() -> "Surrounding blocks for secret cache of player " + user.getPlayer().getName() + " : " + surroundingBlocks + " | Needed for flag: " + WorldUtil.ALL_FACES.size());
 
                     // Secret cache if surrounded on all sides.
                     if (surroundingBlocks == WorldUtil.ALL_FACES.size()) {

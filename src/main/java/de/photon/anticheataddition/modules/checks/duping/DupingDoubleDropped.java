@@ -72,6 +72,6 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).loadThresholdsToManagement().withDecay(1200, 20).build();
+        return ViolationLevelManagement.builder(this).emptyThresholdManagement().withDecay(1200, 20).build();
     }
 }

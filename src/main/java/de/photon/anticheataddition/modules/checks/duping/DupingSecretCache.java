@@ -69,6 +69,6 @@ public final class DupingSecretCache extends ViolationModule implements Listener
     @Override
     protected ViolationManagement createViolationManagement()
     {
-        return ViolationLevelManagement.builder(this).loadThresholdsToManagement().withDecay(18000L, 30).build();
+        return ViolationLevelManagement.builder(this).emptyThresholdManagement().withDecay(18000L, 30).build();
     }
 }

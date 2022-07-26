@@ -8,8 +8,10 @@ import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 
@@ -66,6 +68,19 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
             user.getData().object.dupingDoubleDroppedMaterial = droppedStack.getType();
             user.getData().number.dupingDoubleItemsDropped = droppedStack.getAmount();
             user.getData().number.dupingDoubleItemsCollected = 0;
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockDropItem(BlockDropItemEvent event)
+    {
+        val user = User.getUser(event.getPlayer().getUniqueId());
+        if (User.isUserInvalid(user, this)) return;
+
+        for (Item item : event.getItems()) {
+            if (item.getItemStack().getType() == user.getData().object.dupingDoubleDroppedMaterial) {
+                user.getData().number.dupingDoubleItemsDropped += item.getItemStack().getAmount();
+            }
         }
     }
 

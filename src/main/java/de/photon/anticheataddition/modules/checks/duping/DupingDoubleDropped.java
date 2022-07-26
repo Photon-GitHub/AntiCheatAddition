@@ -47,7 +47,7 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
                                               .setAddedVl(20)
                                               .setDebug(() -> "Duping-Debug | Player " +
                                                               user.getPlayer().getName() +
-                                                              " collected exactly twice the dropped amount of an item at " +
+                                                              " collected exactly twice the dropped amount of item " + itemMaterial + " at " +
                                                               user.getPlayer().getLocation().toVector() +
                                                               " in world " + user.getPlayer().getWorld().getName()));
             }

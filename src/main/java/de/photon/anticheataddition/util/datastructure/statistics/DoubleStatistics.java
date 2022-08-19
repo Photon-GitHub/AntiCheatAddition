@@ -21,7 +21,7 @@ public final class DoubleStatistics implements DoubleConsumer
     private double max = Double.NEGATIVE_INFINITY;
 
     /**
-     * Construct an empty instance with zero count, zero sum,
+     * Construct an empty instance with zero count, zero-sum,
      * {@code Double.POSITIVE_INFINITY} min, {@code Double.NEGATIVE_INFINITY}
      * max and zero average.
      */

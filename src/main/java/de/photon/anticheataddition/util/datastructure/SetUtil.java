@@ -22,7 +22,7 @@ public final class SetUtil
     }
 
     /**
-     * Searches for an occurance of any element of searchFor in toBeSearched.
+     * Searches for an occurrence of any element of searchFor in toBeSearched.
      */
     public static <T> boolean containsAny(Set<T> searchFor, Set<T> toBeSearched)
     {

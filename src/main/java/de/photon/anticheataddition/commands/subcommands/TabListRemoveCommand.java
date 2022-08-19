@@ -26,7 +26,7 @@ public class TabListRemoveCommand extends InternalCommand
               CommandAttributes.builder()
                                .minArguments(2)
                                .maxArguments(3)
-                               .addCommandHelp("Removes a player from the tablist of a player and readds him after a certain time.",
+                               .addCommandHelp("Removes a player from the tablist of a player and re-adds him after a certain time.",
                                                "Without a provided timeframe the command will add the player back to the tablist immediately.",
                                                "Syntax: /anticheataddition tablistremove <player whose tablist is affected> <player that will be removed> [<ticks>]")
                                .setPermission(InternalPermission.TABLISTREMOVE)

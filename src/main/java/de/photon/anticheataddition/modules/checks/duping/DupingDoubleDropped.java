@@ -117,6 +117,7 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
     /**
      * Class for the ancient version 1.8.9 as it does not have the {@link EntityPickupItemEvent}.
      */
+    @SuppressWarnings("deprecation")
     private class AncientPickupListener implements Listener
     {
         @EventHandler(ignoreCancelled = true)

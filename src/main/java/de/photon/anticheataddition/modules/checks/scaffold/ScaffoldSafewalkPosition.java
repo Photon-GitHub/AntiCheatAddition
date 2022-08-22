@@ -39,7 +39,7 @@ final class ScaffoldSafewalkPosition extends Module
         // Not building in a straight line.
         if (face == null || event.getBlockAgainst().getRelative(face).isEmpty()) return 0;
 
-        boolean sneakBorder = switch (face) {
+        final boolean sneakBorder = switch (face) {
             case EAST -> xOffset > 0.28D && xOffset < 0.305D;
             case WEST -> xOffset > 1.28D && xOffset < 1.305D;
             case NORTH -> zOffset > 1.28D && zOffset < 1.305D;

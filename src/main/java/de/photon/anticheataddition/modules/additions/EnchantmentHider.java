@@ -61,9 +61,7 @@ public final class EnchantmentHider extends Module
                     val entityType = entity.getType();
 
                     // Only modify the packets if they originate from a player.
-                    if (spoofPlayers && entityType == EntityType.PLAYER ||
-                        spoofOthers && entityType != EntityType.PLAYER)
-                    {
+                    if (entityType == EntityType.PLAYER ? spoofPlayers : spoofOthers) {
                         // If all items do not have any enchantments, skip.
                         if (wrapper.getSlotStackPairs().stream().map(Pair::getSecond).map(ItemStack::getEnchantments).allMatch(Map::isEmpty)) return;
 

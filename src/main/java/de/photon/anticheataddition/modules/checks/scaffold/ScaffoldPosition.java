@@ -26,7 +26,7 @@ final class ScaffoldPosition extends Module
         val xOffset = MathUtil.absDiff(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
         val zOffset = MathUtil.absDiff(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
 
-        boolean flag = switch (event.getBlock().getFace(event.getBlockAgainst())) {
+        final boolean flag = switch (event.getBlock().getFace(event.getBlockAgainst())) {
             case EAST -> xOffset <= 0;
             case WEST -> xOffset <= 1;
             case NORTH -> zOffset <= 1;

@@ -29,7 +29,7 @@ public abstract class SentinelModule extends ViolationModule
     protected final void detection(Player player)
     {
         val user = User.getUser(player);
-        if (user != null) detection(user);
+        if (!User.isUserInvalid(user, this)) detection(user);
     }
 
     protected final void detection(User user)

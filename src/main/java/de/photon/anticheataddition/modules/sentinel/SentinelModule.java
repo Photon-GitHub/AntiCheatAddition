@@ -5,7 +5,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.violationlevels.DetectionManagement;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.entity.Player;
 
 public abstract class SentinelModule extends ViolationModule
@@ -28,7 +27,7 @@ public abstract class SentinelModule extends ViolationModule
      */
     protected final void detection(Player player)
     {
-        val user = User.getUser(player);
+        final User user = User.getUser(player);
         if (!User.isUserInvalid(user, this)) detection(user);
     }
 

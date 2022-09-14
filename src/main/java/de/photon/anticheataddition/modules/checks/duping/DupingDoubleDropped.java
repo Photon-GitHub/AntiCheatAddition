@@ -16,10 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.UUID;
 
 public final class DupingDoubleDropped extends ViolationModule implements Listener
 {
@@ -30,9 +27,14 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
         super("Duping.parts.DoubleDropped");
     }
 
-    private void handlePickup(UUID uuid, ItemStack pickupStack)
+    @EventHandler(ignoreCancelled = true)
+    public void onEntityPickupItem(EntityPickupItemEvent event)
     {
-        val user = User.getUser(uuid);
+        if (event.getEntity().getType() != EntityType.PLAYER) return;
+
+        final ItemStack pickupStack = event.getItem().getItemStack();
+
+        val user = User.getUser(event.getEntity().getUniqueId());
         if (User.isUserInvalid(user, this)) return;
 
         final Material itemMaterial = pickupStack.getType();
@@ -96,34 +98,8 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addListeners(ServerVersion.is18() ? new AncientPickupListener() : new ModernPickupListener())
+                           // Both EntityPickupItemEvent and BlockDropItemEvent are not available in 1.8.8
+                           .setAllowedServerVersions(ServerVersion.NON_188_VERSIONS)
                            .build();
-    }
-
-    /**
-     * Class for the modern event to prevent errors on 1.8.9.
-     */
-    private class ModernPickupListener implements Listener
-    {
-        @EventHandler(ignoreCancelled = true)
-        public void onEntityPickupItem(EntityPickupItemEvent event)
-        {
-            if (event.getEntity().getType() != EntityType.PLAYER) return;
-
-            handlePickup(event.getEntity().getUniqueId(), event.getItem().getItemStack());
-        }
-    }
-
-    /**
-     * Class for the ancient version 1.8.9 as it does not have the {@link EntityPickupItemEvent}.
-     */
-    @SuppressWarnings("deprecation")
-    private class AncientPickupListener implements Listener
-    {
-        @EventHandler(ignoreCancelled = true)
-        public void onPlayerPickupItem(PlayerPickupItemEvent event)
-        {
-            handlePickup(event.getPlayer().getUniqueId(), event.getItem().getItemStack());
-        }
     }
 }

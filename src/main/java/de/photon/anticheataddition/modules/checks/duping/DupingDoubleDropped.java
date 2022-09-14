@@ -96,7 +96,7 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           .addListeners(ServerVersion.ACTIVE == ServerVersion.MC18 ? new AncientPickupListener() : new ModernPickupListener())
+                           .addListeners(ServerVersion.is18() ? new AncientPickupListener() : new ModernPickupListener())
                            .build();
     }
 

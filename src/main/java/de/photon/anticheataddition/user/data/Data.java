@@ -1,10 +1,13 @@
 package de.photon.anticheataddition.user.data;
 
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.OptionalInt;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class Data
 {
@@ -71,6 +74,9 @@ public final class Data
         public final DoubleStatistics autoFishConsistencyData = new DoubleStatistics();
 
         public Material dupingDoubleDroppedMaterial = Material.BEDROCK;
+
+        // This contains all the locations currently in the check queue so that opening a chest twice does not cause a double vl.
+        public final Set<Location> dupingSecretCacheCurrentlyCheckedLocations = ConcurrentHashMap.newKeySet();
 
         public ItemStack lastConsumedItemStack = null;
         public volatile Material lastMaterialClicked = Material.BEDROCK;

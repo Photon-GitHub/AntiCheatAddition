@@ -7,7 +7,7 @@
     <groupId>de.photon</groupId>
     <artifactId>AntiCheatAddition</artifactId>
 
-    <version>8.3.0</version>
+    <version>8.3.1</version>
 
     <name>AntiCheatAddition</name>
     <description>This plugin provides niche checks for cheats which are not covered by most anticheats.</description>
@@ -163,7 +163,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.8.2</version>
+            <version>5.9.0</version>
             <scope>test</scope>
         </dependency>
         <!-- Spigot -->
@@ -188,7 +188,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>
-            <version>4.1.77.Final</version>
+            <version>4.1.79.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -206,7 +206,7 @@
         <dependency>
             <groupId>org.danilopianini</groupId>
             <artifactId>java-quadtree</artifactId>
-            <version>0.1.9</version>
+            <version>0.2.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

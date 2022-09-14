@@ -41,7 +41,7 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
             // Inventory is empty
             InventoryUtil.isInventoryEmpty(event.getInventory()))
         {
-            val passedTime = user.getTimeMap().at(TimeKey.INVENTORY_CLICK_ON_ITEM).passedTime();
+            final long passedTime = user.getTimeMap().at(TimeKey.INVENTORY_CLICK_ON_ITEM).passedTime();
             if (user.getData().counter.inventoryPerfectExitFails.conditionallyIncDec(passedTime <= 70)) {
                 this.getManagement().flag(Flag.of(user)
                                               .setAddedVl(VL_CALCULATOR.apply(passedTime).intValue())

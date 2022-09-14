@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 final class LegacyEntityUtil implements EntityUtil
 {
     @Override

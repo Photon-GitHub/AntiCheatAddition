@@ -27,6 +27,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("deprecation")
 public final class Pingspoof extends ViolationModule implements Listener
 {
     public static final Pingspoof INSTANCE = new Pingspoof();
@@ -123,7 +124,6 @@ public final class Pingspoof extends ViolationModule implements Listener
     protected ModuleLoader createModuleLoader()
     {
         return ModuleLoader.builder(this)
-                           //TODO: 1.17 is not yet compatible.
                            .setAllowedServerVersions(ServerVersion.MC116.getSupVersionsTo())
                            .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Play.Client.TRANSACTION)
                                                                    .priority(ListenerPriority.HIGH)

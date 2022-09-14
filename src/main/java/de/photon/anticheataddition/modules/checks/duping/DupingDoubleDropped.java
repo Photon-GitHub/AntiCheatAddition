@@ -1,5 +1,7 @@
 package de.photon.anticheataddition.modules.checks.duping;
 
+import de.photon.anticheataddition.ServerVersion;
+import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.violationlevels.Flag;
@@ -14,6 +16,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.UUID;
 
 public final class DupingDoubleDropped extends ViolationModule implements Listener
 {
@@ -24,15 +30,11 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
         super("Duping.parts.DoubleDropped");
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onEntityPickupItem(EntityPickupItemEvent event)
+    private void handlePickup(UUID uuid, ItemStack pickupStack)
     {
-        if (event.getEntity().getType() != EntityType.PLAYER) return;
-
-        val user = User.getUser(event.getEntity().getUniqueId());
+        val user = User.getUser(uuid);
         if (User.isUserInvalid(user, this)) return;
 
-        val pickupStack = event.getItem().getItemStack();
         final Material itemMaterial = pickupStack.getType();
         final int itemCount = pickupStack.getAmount();
         final int droppedCount = user.getData().number.dupingDoubleItemsDropped;
@@ -88,5 +90,40 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
     protected ViolationManagement createViolationManagement()
     {
         return ViolationLevelManagement.builder(this).emptyThresholdManagement().withDecay(1200, 20).build();
+    }
+
+    @Override
+    protected ModuleLoader createModuleLoader()
+    {
+        return ModuleLoader.builder(this)
+                           .addListeners(ServerVersion.is18() ? new AncientPickupListener() : new ModernPickupListener())
+                           .build();
+    }
+
+    /**
+     * Class for the modern event to prevent errors on 1.8.9.
+     */
+    private class ModernPickupListener implements Listener
+    {
+        @EventHandler(ignoreCancelled = true)
+        public void onEntityPickupItem(EntityPickupItemEvent event)
+        {
+            if (event.getEntity().getType() != EntityType.PLAYER) return;
+
+            handlePickup(event.getEntity().getUniqueId(), event.getItem().getItemStack());
+        }
+    }
+
+    /**
+     * Class for the ancient version 1.8.9 as it does not have the {@link EntityPickupItemEvent}.
+     */
+    @SuppressWarnings("deprecation")
+    private class AncientPickupListener implements Listener
+    {
+        @EventHandler(ignoreCancelled = true)
+        public void onPlayerPickupItem(PlayerPickupItemEvent event)
+        {
+            handlePickup(event.getPlayer().getUniqueId(), event.getItem().getItemStack());
+        }
     }
 }

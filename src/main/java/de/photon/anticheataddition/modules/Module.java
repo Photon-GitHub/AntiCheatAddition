@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.modules;
 
 import com.google.common.base.Preconditions;
-import com.google.common.eventbus.EventBus;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.InternalPermission;
 import lombok.EqualsAndHashCode;
@@ -22,9 +21,6 @@ public abstract class Module implements ConfigLoading
     @Getter private boolean enabled = false;
     @Getter private final Set<Module> children;
 
-    private final EventBus toChildren = new EventBus();
-    private final EventBus toParent = new EventBus();
-
     private Module(String configString, Set<Module> children)
     {
         Preconditions.checkNotNull(configString, "Tried to create Module with null configString.");
@@ -42,26 +38,6 @@ public abstract class Module implements ConfigLoading
     protected Module(String configString, Module... children)
     {
         this(configString, Set.of(children));
-    }
-
-    public void forwardToChildren(Object object)
-    {
-        this.toChildren.post(object);
-    }
-
-    public void forwardToParent(Object object)
-    {
-        this.toParent.post(object);
-    }
-
-    void setupEventBuses()
-    {
-        for (Module child : children) {
-            if (child.moduleLoader.isAllowLoading()) {
-                this.toChildren.register(child);
-                child.toParent.register(this);
-            }
-        }
     }
 
     public void setEnabled(boolean enabled)

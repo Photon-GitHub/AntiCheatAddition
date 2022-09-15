@@ -12,11 +12,14 @@ import de.photon.anticheataddition.util.datastructure.batch.BatchProcessor;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -26,21 +29,23 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public final class ModuleLoader
 {
-    private final Module module;
+    @NotNull private final Module module;
 
     // Startup
     private final boolean bungeecordForbidden;
-    private final Set<String> pluginDependencies;
-    private final Set<String> pluginIncompatibilities;
-    private final Set<ServerVersion> allowedServerVersions;
+    @NotNull private final Set<String> pluginDependencies;
+    @NotNull private final Set<String> pluginIncompatibilities;
+    @NotNull private final Set<ServerVersion> allowedServerVersions;
 
     // Loading
-    private final BatchProcessor<?> batchProcessor;
-    private final Set<MessageChannel> incoming;
-    private final Set<MessageChannel> outgoing;
+    @Nullable private final BatchProcessor<?> batchProcessor;
+    @NotNull private final Set<MessageChannel> incoming;
+    @NotNull private final Set<MessageChannel> outgoing;
 
-    private final Set<Listener> listeners;
-    private final Set<PacketListener> packetListeners;
+    @NotNull private final Set<Listener> listeners;
+    @NotNull private final Set<PacketListener> packetListeners;
+
+    @Getter(lazy = true) private final boolean allowLoading = this.canBeLoaded();
 
     public static ModuleLoader of(Module module, PacketAdapter adapter)
     {
@@ -52,12 +57,7 @@ public final class ModuleLoader
         return new Builder(module);
     }
 
-    /**
-     * Tries to load the referenced {@link Module}.
-     *
-     * @return <code>true</code> if the {@link Module} has been loaded and <code>false</code> if it could not be loaded.
-     */
-    public boolean load()
+    private boolean canBeLoaded()
     {
         if (this.bungeecordForbidden && AntiCheatAddition.getInstance().isBungeecord()) {
             Log.info(() -> module.getConfigString() + " is not compatible with bungeecord.");
@@ -85,6 +85,17 @@ public final class ModuleLoader
             Log.info(() -> module.getConfigString() + " has been disabled in the config.");
             return false;
         }
+        return true;
+    }
+
+    /**
+     * Tries to load the referenced {@link Module}.
+     *
+     * @return <code>true</code> if the {@link Module} has been loaded and <code>false</code> if it could not be loaded.
+     */
+    public boolean load()
+    {
+        if (!isAllowLoading()) return false;
 
         // Handle Listeners and PacketListeners
         for (Listener listener : listeners) AntiCheatAddition.getInstance().registerListener(listener);

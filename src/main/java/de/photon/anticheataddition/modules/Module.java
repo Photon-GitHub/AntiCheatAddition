@@ -32,11 +32,6 @@ public abstract class Module implements ConfigLoading
         this.configString = configString;
         this.moduleId = "anticheataddition_" + configString.toLowerCase(Locale.ENGLISH);
         this.children = Set.copyOf(children);
-
-        for (Module child : children) {
-            this.toChildren.register(child);
-            child.toParent.register(this);
-        }
     }
 
     protected Module(String configString)
@@ -57,6 +52,16 @@ public abstract class Module implements ConfigLoading
     public void forwardToParent(Object object)
     {
         this.toParent.post(object);
+    }
+
+    void setupEventBuses()
+    {
+        for (Module child : children) {
+            if (child.moduleLoader.isAllowLoading()) {
+                this.toChildren.register(child);
+                child.toParent.register(this);
+            }
+        }
     }
 
     public void setEnabled(boolean enabled)

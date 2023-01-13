@@ -2,6 +2,7 @@ package de.photon.anticheataddition.protocol.packetwrappers.sentbyserver;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayEntity;
 import de.photon.anticheataddition.protocol.packetwrappers.MetadataPacket;
@@ -29,9 +30,9 @@ public class WrapperPlayServerEntityMetadata extends MetadataPacket implements I
      *
      * @return The current Metadata
      */
-    public List<WrappedWatchableObject> getMetadata()
+    public List<WrappedDataValue> getMetadata()
     {
-        return handle.getWatchableCollectionModifier().read(0);
+        return handle.getDataValueCollectionModifier().read(0);
     }
 
     /**
@@ -45,7 +46,7 @@ public class WrapperPlayServerEntityMetadata extends MetadataPacket implements I
     }
 
     @Override
-    public List<WrappedWatchableObject> getRawMetadata()
+    public List<WrappedDataValue> getRawMetadata()
     {
         return getMetadata();
     }

@@ -2,8 +2,7 @@ package de.photon.anticheataddition.protocol.packetwrappers.sentbyserver;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
+import com.comphenix.protocol.wrappers.WrappedDataValue;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayEntity;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayPosition;
 import de.photon.anticheataddition.protocol.packetwrappers.MetadataPacket;
@@ -104,9 +103,9 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
      *
      * @return The current Metadata
      */
-    public WrappedDataWatcher getMetadata()
+    public List<WrappedDataValue> getMetadata()
     {
-        return handle.getDataWatcherModifier().read(0);
+        return handle.getDataValueCollectionModifier().read(0);
     }
 
     /**
@@ -114,14 +113,14 @@ public class WrapperPlayServerNamedEntitySpawn extends MetadataPacket implements
      *
      * @param value - new value.
      */
-    public void setMetadata(WrappedDataWatcher value)
+    public void setMetadata(List<WrappedDataValue> value)
     {
-        handle.getDataWatcherModifier().write(0, value);
+        handle.getDataValueCollectionModifier().write(0, value);
     }
 
     @Override
-    public List<WrappedWatchableObject> getRawMetadata()
+    public List<WrappedDataValue> getRawMetadata()
     {
-        return getMetadata().getWatchableObjects();
+        return getMetadata();
     }
 }

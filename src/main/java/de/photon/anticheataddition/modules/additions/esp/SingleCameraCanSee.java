@@ -18,6 +18,9 @@ final class SingleCameraCanSee implements CanSee
     @Override
     public boolean canSee(Player observer, Player watched)
     {
+        // Different worlds (might be possible if the player changed world in just the correct moment)
+        if (!observer.getWorld().getUID().equals(watched.getWorld().getUID())) return false;
+
         // Glowing.
         if (InternalPotion.GLOWING.hasPotionEffect(watched)) return true;
 

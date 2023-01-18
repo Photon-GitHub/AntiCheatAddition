@@ -17,6 +17,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -26,21 +28,21 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public final class ModuleLoader
 {
-    private final Module module;
+    @NotNull private final Module module;
 
     // Startup
     private final boolean bungeecordForbidden;
-    private final Set<String> pluginDependencies;
-    private final Set<String> pluginIncompatibilities;
-    private final Set<ServerVersion> allowedServerVersions;
+    @NotNull private final Set<String> pluginDependencies;
+    @NotNull private final Set<String> pluginIncompatibilities;
+    @NotNull private final Set<ServerVersion> allowedServerVersions;
 
     // Loading
-    private final BatchProcessor<?> batchProcessor;
-    private final Set<MessageChannel> incoming;
-    private final Set<MessageChannel> outgoing;
+    @Nullable private final BatchProcessor<?> batchProcessor;
+    @NotNull private final Set<MessageChannel> incoming;
+    @NotNull private final Set<MessageChannel> outgoing;
 
-    private final Set<Listener> listeners;
-    private final Set<PacketListener> packetListeners;
+    @NotNull private final Set<Listener> listeners;
+    @NotNull private final Set<PacketListener> packetListeners;
 
     public static ModuleLoader of(Module module, PacketAdapter adapter)
     {

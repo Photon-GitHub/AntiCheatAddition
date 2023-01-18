@@ -120,8 +120,12 @@ public final class Esp extends Module
             for (val playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
                 final Player watched = playerNode.element();
 
-                // Less than 1 block distance (removes the player themselves and any very close player)
-                if (observerNode.distanceSquared(playerNode) < 1 || CanSee.INSTANCE.canSee(observer, watched)) {
+                // Different worlds (might be possible if the player changed world in just the right moment)
+                if (!observer.getWorld().getUID().equals(watched.getWorld().getUID())
+                    // Less than 1 block distance (removes the player themselves and any very close player)
+                    || observerNode.distanceSquared(playerNode) < 1
+                    || CanSee.INSTANCE.canSee(observer, watched))
+                {
                     // No hiding case
                     fullHiddenPlayers.remove(watched);
                 } else if (!ONLY_FULL_HIDE && !watched.isSneaking()) {

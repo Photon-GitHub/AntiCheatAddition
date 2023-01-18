@@ -2,6 +2,7 @@ package de.photon.anticheataddition.protocol.packetwrappers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import de.photon.anticheataddition.ServerVersion;
@@ -23,7 +24,7 @@ public abstract class MetadataPacket extends AbstractPacket
         super(handle, type);
     }
 
-    public abstract List<WrappedWatchableObject> getRawMetadata();
+    public abstract List<WrappedDataValue> getRawMetadata();
 
     /**
      * Searches for an index in the metadata as it is unsorted.
@@ -31,9 +32,9 @@ public abstract class MetadataPacket extends AbstractPacket
      *
      * @return the {@link WrappedWatchableObject} wrapped in an {@link Optional} or {@link Optional#empty()} if the index was not found.
      */
-    public Optional<WrappedWatchableObject> getMetadataIndex(final int index)
+    public Optional<WrappedDataValue> getMetadataIndex(final int index)
     {
-        for (WrappedWatchableObject watch : getRawMetadata()) {
+        for (WrappedDataValue watch : getRawMetadata()) {
             if (index == watch.getIndex()) return Optional.of(watch);
         }
         return Optional.empty();

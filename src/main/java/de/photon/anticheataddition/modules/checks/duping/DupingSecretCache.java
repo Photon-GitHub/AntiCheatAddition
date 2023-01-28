@@ -35,7 +35,8 @@ public final class DupingSecretCache extends ViolationModule implements Listener
             // Check only chests and shulker boxes to prevent false positives.
             case CHEST, SHULKER_BOX -> {
                 val user = User.getUser(event.getPlayer().getUniqueId());
-                if (User.isUserInvalid(user, this) || event.getInventory().isEmpty()) return;
+                // Use .iterator().hasNext() to check if the inventory is empty, instead of isEmpty() as that method is not available on 1.8.8.
+                if (User.isUserInvalid(user, this) || !event.getInventory().iterator().hasNext()) return;
 
                 // Artificial plugin inventories might not have a location.
                 val loc = event.getInventory().getLocation();

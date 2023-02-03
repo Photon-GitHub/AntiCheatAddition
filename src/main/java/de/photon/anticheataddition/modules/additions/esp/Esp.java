@@ -11,7 +11,6 @@ import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -113,8 +112,8 @@ public final class Esp extends Module
     private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
     {
         for (val observerNode : playerQuadTree) {
-            final Set<Entity> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
-            final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
+            final Set<Player> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
+            final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
             final Player observer = observerNode.element();
 
             for (val playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
@@ -138,8 +137,8 @@ public final class Esp extends Module
             }
 
             Log.finest(() -> "ESP | Observer: " + observerNode.element().getName() +
-                             " | FULL: " + fullHiddenPlayers.stream().map(Entity::getName).collect(Collectors.joining(", ")) +
-                             " | EQUIP: " + equipHiddenPlayers.stream().map(Entity::getName).collect(Collectors.joining(", ")));
+                             " | FULL: " + fullHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")) +
+                             " | EQUIP: " + equipHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")));
 
             PlayerVisibility.INSTANCE.setHidden(observerNode.element(), fullHiddenPlayers, equipHiddenPlayers);
         }

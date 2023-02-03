@@ -10,27 +10,22 @@ import com.google.common.collect.SetMultimap;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
-import lombok.val;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Set;
 
-abstract class EntityInformationHider implements Listener
+abstract class PlayerInformationHider implements Listener
 {
-    private final SetMultimap<Entity, Entity> hiddenFromPlayerMap;
+    private final SetMultimap<Player, Player> hiddenFromPlayerMap;
     private final PacketListener informationPacketListener;
 
-    protected EntityInformationHider(@NotNull PacketType... affectedPackets)
+    protected PlayerInformationHider(@NotNull PacketType... affectedPackets)
     {
         hiddenFromPlayerMap = MultimapBuilder.hashKeys(AntiCheatAddition.SERVER_EXPECTED_PLAYERS)
                                              .hashSetValues(AntiCheatAddition.WORLD_EXPECTED_PLAYERS)
@@ -49,7 +44,7 @@ abstract class EntityInformationHider implements Listener
                 synchronized (hiddenFromPlayerMap) {
                     // The test for the entityId must happen here in the synchronized block as get only returns a view that might change async.
                     hidden = hiddenFromPlayerMap.get(event.getPlayer()).stream()
-                                                .mapToInt(Entity::getEntityId)
+                                                .mapToInt(Player::getEntityId)
                                                 .anyMatch(i -> i == entityId);
                 }
 
@@ -82,26 +77,6 @@ abstract class EntityInformationHider implements Listener
         return ServerVersion.ALL_SUPPORTED_VERSIONS;
     }
 
-    @EventHandler
-    public void onChunkUnload(ChunkUnloadEvent event)
-    {
-        // Cache entities for performance reasons so the server doesn't need to load them again when the task is executed.
-        val entities = Arrays.asList(event.getChunk().getEntities());
-        synchronized (hiddenFromPlayerMap) {
-            // All the entities that are keys in the map, do this first to reduce the amount of values in the call below.
-            for (final Entity entity : entities) hiddenFromPlayerMap.removeAll(entity);
-
-            // Any entities that are values in the map.
-            hiddenFromPlayerMap.values().removeAll(entities);
-        }
-    }
-
-    @EventHandler
-    public void onEntityDeath(EntityDeathEvent event)
-    {
-        removeEntity(event.getEntity());
-    }
-
     @EventHandler(ignoreCancelled = true)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event)
     {
@@ -109,7 +84,7 @@ abstract class EntityInformationHider implements Listener
         switch (event.getNewGameMode()) {
             case CREATIVE, SPECTATOR -> {
                 setHiddenEntities(event.getPlayer(), Set.of());
-                removeEntity(event.getPlayer());
+                removePlayer(event.getPlayer());
 
                 // Run with delay, so we avoid any updates that are underway async.
                 Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(),
@@ -121,7 +96,7 @@ abstract class EntityInformationHider implements Listener
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
-        removeEntity(event.getPlayer());
+        removePlayer(event.getPlayer());
     }
 
     /**
@@ -129,7 +104,7 @@ abstract class EntityInformationHider implements Listener
      *
      * @param entity - the entity to remove.
      */
-    private void removeEntity(Entity entity)
+    private void removePlayer(Player entity)
     {
         synchronized (hiddenFromPlayerMap) {
             hiddenFromPlayerMap.removeAll(entity);
@@ -142,10 +117,10 @@ abstract class EntityInformationHider implements Listener
     /**
      * Hides entities from a {@link Player}.
      */
-    public void setHiddenEntities(@NotNull Player observer, @NotNull Set<Entity> toHide)
+    public void setHiddenEntities(@NotNull Player observer, @NotNull Set<Player> toHide)
     {
-        final Set<Entity> oldHidden;
-        final Set<Entity> newlyHidden;
+        final Set<Player> oldHidden;
+        final Set<Player> newlyHidden;
         synchronized (hiddenFromPlayerMap) {
             oldHidden = Set.copyOf(hiddenFromPlayerMap.get(observer));
             newlyHidden = SetUtil.difference(toHide, oldHidden);
@@ -160,9 +135,9 @@ abstract class EntityInformationHider implements Listener
         this.onReveal(observer, SetUtil.difference(oldHidden, toHide));
     }
 
-    protected void onPreHide(@NotNull Player observer, @NotNull Set<Entity> toHide) {}
+    protected void onPreHide(@NotNull Player observer, @NotNull Set<Player> toHide) {}
 
-    protected void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide) {}
+    protected void onHide(@NotNull Player observer, @NotNull Set<Player> toHide) {}
 
-    protected abstract void onReveal(@NotNull Player observer, @NotNull Set<Entity> revealed);
+    protected abstract void onReveal(@NotNull Player observer, @NotNull Set<Player> revealed);
 }

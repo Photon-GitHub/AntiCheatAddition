@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Set;
 
-final class EntityHider extends EntityInformationHider
+final class PlayerHider extends PlayerInformationHider
 {
-    public EntityHider()
+    public PlayerHider()
     {
         super(PacketType.Play.Server.ENTITY_EQUIPMENT,
               PacketType.Play.Server.ENTITY_EFFECT,
@@ -35,7 +35,7 @@ final class EntityHider extends EntityInformationHider
     }
 
     @Override
-    protected void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide)
+    protected void onHide(@NotNull Player observer, @NotNull Set<Player> toHide)
     {
         if (toHide.isEmpty()) return;
 
@@ -43,7 +43,7 @@ final class EntityHider extends EntityInformationHider
     }
 
     @Override
-    protected void onReveal(@NotNull Player observer, @NotNull Set<Entity> revealed)
+    protected void onReveal(@NotNull Player observer, @NotNull Set<Player> revealed)
     {
         if (revealed.isEmpty()) return;
 

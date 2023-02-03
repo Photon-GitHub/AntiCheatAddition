@@ -6,7 +6,7 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.config.Configs;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeQueue;
 import de.photon.anticheataddition.util.messaging.Log;
-import de.photon.anticheataddition.util.visibility.EntityVisibility;
+import de.photon.anticheataddition.util.visibility.PlayerVisibility;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -124,6 +124,7 @@ public final class Esp extends Module
                 if (!observer.getWorld().getUID().equals(watched.getWorld().getUID())
                     // Less than 1 block distance (removes the player themselves and any very close player)
                     || observerNode.distanceSquared(playerNode) < 1
+                    || watched.isDead()
                     || CanSee.INSTANCE.canSee(observer, watched))
                 {
                     // No hiding case
@@ -140,7 +141,7 @@ public final class Esp extends Module
                              " | FULL: " + fullHiddenPlayers.stream().map(Entity::getName).collect(Collectors.joining(", ")) +
                              " | EQUIP: " + equipHiddenPlayers.stream().map(Entity::getName).collect(Collectors.joining(", ")));
 
-            EntityVisibility.INSTANCE.setHidden(observerNode.element(), fullHiddenPlayers, equipHiddenPlayers);
+            PlayerVisibility.INSTANCE.setHidden(observerNode.element(), fullHiddenPlayers, equipHiddenPlayers);
         }
     }
 }

@@ -65,4 +65,17 @@ class ServerVersionTest
         Assertions.assertTrue(expected.containsAll(ServerVersion.ALL_SUPPORTED_VERSIONS), "ALL_SUPPORTED_VERSIONS contains unsupported version.");
         Assertions.assertTrue(ServerVersion.ALL_SUPPORTED_VERSIONS.containsAll(expected), "ALL_SUPPORTED_VERSIONS does not contain all supported versions.");
     }
+
+    @Test
+    void protocolToServerVersionTest()
+    {
+        for (ServerVersion value : ServerVersion.values()) {
+            Assertions.assertFalse(value.getProtocolVersions().isEmpty(), "No protocol versions defined for ServerVersion " + value.name());
+        }
+
+        Assertions.assertEquals(ServerVersion.MC18, ServerVersion.getByProtocolVersionNumber(47).orElse(null));
+        for (int i : new int[]{335, 338, 340}) Assertions.assertEquals(ServerVersion.MC112, ServerVersion.getByProtocolVersionNumber(i).orElse(null));
+        for (int i : new int[]{735, 736, 751, 753, 754}) Assertions.assertEquals(ServerVersion.MC116, ServerVersion.getByProtocolVersionNumber(i).orElse(null));
+        for (int i : new int[]{759, 760, 761}) Assertions.assertEquals(ServerVersion.MC119, ServerVersion.getByProtocolVersionNumber(i).orElse(null));
+    }
 }

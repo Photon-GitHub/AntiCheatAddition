@@ -36,7 +36,8 @@ public final class ModernPlayerEquipmentHider extends PacketInformationHider
         for (Player watched : revealed) {
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 final var stack = watched.getInventory().getItem(slot);
-                observer.sendEquipmentChange(watched, slot, stack == null ? AIR_STACK : stack);
+                // Only send non-null stacks, as the null stacks are air, and we sent that upon hiding.
+                if (stack != null) observer.sendEquipmentChange(watched, slot, stack);
             }
         }
     }

@@ -52,7 +52,7 @@ public final class MaterialUtil
         switch (ServerVersion.ACTIVE) {
             case MC18, MC112 -> {
                 autoStepMaterials.addAll(getMaterialsEndingWith("_STAIRS", "_SLABS"));
-                // This will automatically exclude the "BED" on 1.8.8, as jumping was introduced in 1.12.
+                // This will automatically exclude the "BED" on 1.8.8, as bed bouncing was introduced in 1.12.
                 bounceMaterials.addAll(getMaterialsEndingWith("_BED"));
                 freeSpaceContainers.addAll(getMaterialsEndingWith("SHULKER_BOK"));
                 EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");

@@ -692,6 +692,7 @@ Sentinel:
 
     # This sentinel detects all potions that have one of the following features:
     # + Blindness for at least min_effect_time seconds
+    # + Darkness (on minecraft 1.19+) for at least min_effect_time seconds
     # + Nausea for at least min_effect_time seconds
     # Such potions are not available by brewing and unless a core feature on your server, should not be available to
     # your players due to the detrimental effect on a player's experience. This detects the creation and usage of such

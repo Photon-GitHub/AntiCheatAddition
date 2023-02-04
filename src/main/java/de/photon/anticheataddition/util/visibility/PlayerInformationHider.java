@@ -15,7 +15,7 @@ import java.util.Set;
 
 public abstract class PlayerInformationHider implements Listener
 {
-    private final SetMultimap<Player, Player> hiddenFromPlayerMap;
+    protected final SetMultimap<Player, Player> hiddenFromPlayerMap;
 
     protected PlayerInformationHider()
     {
@@ -43,6 +43,7 @@ public abstract class PlayerInformationHider implements Listener
 
     /**
      * Remove the given entity from the underlying map.
+     * This method is thread-safe.
      *
      * @param entity - the entity to remove.
      */
@@ -58,6 +59,7 @@ public abstract class PlayerInformationHider implements Listener
 
     /**
      * Hides entities from a {@link Player}.
+     * This method is thread-safe.
      */
     public void setHiddenEntities(@NotNull Player observer, @NotNull Set<Player> toHide)
     {
@@ -77,6 +79,10 @@ public abstract class PlayerInformationHider implements Listener
         this.onReveal(observer, SetUtil.difference(oldHidden, toHide));
     }
 
+    /**
+     * This method is used to act before the hiding {@link com.google.common.collect.Multimap} is updated.
+     * An example use case would be to send a packet that is required to hide the entity, but the packet would be blocked after updating the map.
+     */
     protected void onPreHide(@NotNull Player observer, @NotNull Set<Player> toHide) {}
 
     protected void onHide(@NotNull Player observer, @NotNull Set<Player> toHide) {}

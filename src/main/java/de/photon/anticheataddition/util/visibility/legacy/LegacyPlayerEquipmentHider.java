@@ -5,6 +5,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.equipment.IWrapperPlayEquipment;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
+import de.photon.anticheataddition.util.visibility.PacketInformationHider;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,9 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Set;
 
-final class PlayerEquipmentHider extends PlayerInformationHider
+public final class LegacyPlayerEquipmentHider extends PacketInformationHider
 {
-    public PlayerEquipmentHider()
+    public LegacyPlayerEquipmentHider()
     {
         super(PacketType.Play.Server.ENTITY_EQUIPMENT);
     }
@@ -49,7 +50,6 @@ final class PlayerEquipmentHider extends PlayerInformationHider
             wrapper.sendTranslatedPackets(observer);
         }
     }
-
 
     @Override
     protected Set<ServerVersion> getSupportedVersions()

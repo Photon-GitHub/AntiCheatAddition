@@ -142,6 +142,16 @@ public final class User implements Permissible
         return user == null || user.getPlayer() == null || user.isFloodgate() || user.isBypassed(bypassPermission);
     }
 
+    /**
+     * Checks if the {@link Player} is in {@link GameMode#ADVENTURE} or {@link GameMode#SURVIVAL}
+     */
+    public static boolean inAdventureOrSurvivalMode(Player player)
+    {
+        return switch (player.getGameMode()) {
+            case ADVENTURE, SURVIVAL -> true;
+            default -> false;
+        };
+    }
 
     /**
      * Determines whether a {@link Player} bypasses a certain module.
@@ -162,10 +172,7 @@ public final class User implements Permissible
      */
     public boolean inAdventureOrSurvivalMode()
     {
-        return switch (this.player.getGameMode()) {
-            case ADVENTURE, SURVIVAL -> true;
-            default -> false;
-        };
+        return inAdventureOrSurvivalMode(this.player);
     }
 
     /**

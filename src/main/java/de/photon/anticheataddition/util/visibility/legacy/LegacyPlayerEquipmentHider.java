@@ -6,6 +6,7 @@ import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.equipment.IWrapperPlayEquipment;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.visibility.PacketInformationHider;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -16,6 +17,8 @@ import java.util.Set;
 
 public final class LegacyPlayerEquipmentHider extends PacketInformationHider
 {
+    private static final ItemStack AIR_STACK = new ItemStack(Material.AIR);
+
     public LegacyPlayerEquipmentHider()
     {
         super(PacketType.Play.Server.ENTITY_EQUIPMENT);
@@ -24,7 +27,14 @@ public final class LegacyPlayerEquipmentHider extends PacketInformationHider
     @Override
     protected void onPreHide(@NotNull Player observer, @NotNull Set<Player> toHide)
     {
-        for (Entity entity : toHide) IWrapperPlayEquipment.clearAllSlots(entity.getEntityId(), observer);
+        for (Entity entity : toHide) {
+            final int entityId = entity.getEntityId();
+            final var wrapper = IWrapperPlayEquipment.of();
+
+            wrapper.setEntityID(entityId);
+            for (EnumWrappers.ItemSlot slot : EnumWrappers.ItemSlot.values()) wrapper.setSlotStackPair(slot, AIR_STACK);
+            wrapper.sendTranslatedPackets(observer);
+        }
     }
 
     @Override

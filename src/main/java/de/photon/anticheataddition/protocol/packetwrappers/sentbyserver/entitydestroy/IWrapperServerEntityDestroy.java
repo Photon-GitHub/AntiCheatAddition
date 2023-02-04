@@ -3,7 +3,6 @@ package de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.entityd
 import com.comphenix.protocol.PacketType;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayEntity;
-import lombok.val;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public interface IWrapperServerEntityDestroy extends IWrapperPlayEntity
 
     static void sendDestroyEntities(Player player, List<Integer> entities)
     {
-        val wrapper = create();
+        final var wrapper = create();
         wrapper.setEntityIds(entities);
         wrapper.sendPacket(player);
     }

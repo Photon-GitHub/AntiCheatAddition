@@ -1,38 +1,44 @@
 package de.photon.anticheataddition;
 
 import de.photon.anticheataddition.exception.UnknownMinecraftException;
-import de.photon.anticheataddition.protocol.ProtocolVersion;
+import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Getter
 public enum ServerVersion
 {
     // As we compare the versions these MUST be sorted.
 
-    MC18("1.8.8", true),
-    MC19("1.9", false),
-    MC110("1.10", false),
-    MC111("1.11.2", false),
-    MC112("1.12.2", true),
-    MC113("1.13", false),
-    MC114("1.14", false),
-    MC115("1.15.2", true),
-    MC116("1.16.5", true),
-    MC117("1.17.1", true),
-    MC118("1.18", true),
-    MC119("1.19", true);
+    MC18("1.8.8", true, 47),
+    MC19("1.9", false, 107, 108, 109, 110),
+    MC110("1.10", false, 210),
+    MC111("1.11.2", false, 315, 316),
+    MC112("1.12.2", true, 335, 338, 340),
+    MC113("1.13", false, 393, 401, 404),
+    MC114("1.14", false, 477, 480, 485, 490, 498),
+    MC115("1.15.2", true, 573, 575),
+    MC116("1.16.5", true, 735, 736, 751, 753, 754),
+    MC117("1.17.1", true, 755, 756),
+    MC118("1.18.2", true, 757, 758),
+    MC119("1.19", true, 759, 760, 761);
 
+    private static final Map<Integer, ServerVersion> PROTOCOL_VERSION_MAP = Arrays.stream(ServerVersion.values())
+                                                                                  // Map each protocol version number to the ServerVersion.
+                                                                                  .flatMap(sv -> sv.getProtocolVersions().stream().map(vn -> Pair.of(vn, sv)))
+                                                                                  // Create a map.
+                                                                                  .collect(Collectors.toUnmodifiableMap(Pair::first, Pair::second));
 
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = MC18.getSupVersionsFrom();
     public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = MC112.getSupVersionsTo();
@@ -48,8 +54,30 @@ public enum ServerVersion
                                                      .findFirst()
                                                      .orElseThrow(UnknownMinecraftException::new);
 
+    /**
+     * This is the string that is searched for on startup.
+     * If a minor version like 1.18.2 is specified, servers with 1.18 and 1.18.1 will be considered as unsupported.
+     */
     private final String versionOutputString;
+
+    /**
+     * Whether AntiCheatAddition still supports that version.
+     * If this is false any server of that version will get an error on startup.
+     */
     private final boolean supported;
+
+    /**
+     * The protocol versions of the major minecraft version.
+     * E.g. even though the name is 1.18.2, this shall include the protocol versions of 1.18, 1.18.1 and 1.18.2.
+     */
+    private final Set<Integer> protocolVersions;
+
+    ServerVersion(String versionOutputString, boolean supported, Integer... protocolVersions)
+    {
+        this.versionOutputString = versionOutputString;
+        this.supported = supported;
+        this.protocolVersions = Set.of(protocolVersions);
+    }
 
     // Lazy getting as most versions are not supported or used.
     // Also, this is important to avoid loading errors (as the generate methods access values() when not fully loaded)
@@ -76,8 +104,7 @@ public enum ServerVersion
         val viaAPI = AntiCheatAddition.getInstance().getViaAPI();
         if (viaAPI == null) return ACTIVE;
 
-        val clientVersion = ProtocolVersion.getByVersionNumber(viaAPI.getPlayerVersion(player.getUniqueId()));
-        return clientVersion == null ? ACTIVE : clientVersion.getEquivalentServerVersion();
+        return getByProtocolVersionNumber(viaAPI.getPlayerVersion(player.getUniqueId())).orElse(ACTIVE);
     }
 
     /**
@@ -90,6 +117,14 @@ public enum ServerVersion
     public static boolean containsActive(Set<ServerVersion> supportedServerVersions)
     {
         return supportedServerVersions.contains(ACTIVE);
+    }
+
+    /**
+     * This gets the respective {@link ServerVersion} for a version number returned by the {@link com.viaversion.viaversion.api.ViaAPI}
+     */
+    public static Optional<ServerVersion> getByProtocolVersionNumber(int versionNumber)
+    {
+        return Optional.ofNullable(PROTOCOL_VERSION_MAP.get(versionNumber));
     }
 
     private static Set<ServerVersion> getSupportedVersions(Predicate<ServerVersion> filter)

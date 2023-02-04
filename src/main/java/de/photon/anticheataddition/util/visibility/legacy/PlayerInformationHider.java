@@ -4,7 +4,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.events.PacketListener;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
 import de.photon.anticheataddition.AntiCheatAddition;
@@ -23,7 +22,6 @@ import java.util.Set;
 abstract class PlayerInformationHider implements Listener
 {
     private final SetMultimap<Player, Player> hiddenFromPlayerMap;
-    private final PacketListener informationPacketListener;
 
     protected PlayerInformationHider(@NotNull PacketType... affectedPackets)
     {
@@ -31,7 +29,17 @@ abstract class PlayerInformationHider implements Listener
                                              .hashSetValues(AntiCheatAddition.WORLD_EXPECTED_PLAYERS)
                                              .build();
 
-        informationPacketListener = new PacketAdapter(AntiCheatAddition.getInstance(), affectedPackets)
+        // Only start if the ServerVersion is supported
+        if (!ServerVersion.containsActive(this.getSupportedVersions())) return;
+
+        // Register events
+        AntiCheatAddition.getInstance().registerListener(this);
+
+        if (affectedPackets.length == 0) return;
+
+        // Get all hidden entities
+        // The test for the entityId must happen here in the synchronized block as get only returns a view that might change async.
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AntiCheatAddition.getInstance(), affectedPackets)
         {
             @Override
             public void onPacketSending(PacketEvent event)
@@ -50,19 +58,7 @@ abstract class PlayerInformationHider implements Listener
 
                 if (hidden) event.setCancelled(true);
             }
-        };
-
-        this.registerListeners();
-    }
-
-    private void registerListeners()
-    {
-        // Only start if the ServerVersion is supported
-        if (ServerVersion.containsActive(this.getSupportedVersions())) {
-            // Register events and packet listener
-            AntiCheatAddition.getInstance().registerListener(this);
-            ProtocolLibrary.getProtocolManager().addPacketListener(this.informationPacketListener);
-        }
+        });
     }
 
     public void clear()

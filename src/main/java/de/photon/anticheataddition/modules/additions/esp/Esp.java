@@ -9,6 +9,7 @@ import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.visibility.PlayerVisibility;
 import lombok.val;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -123,6 +124,8 @@ public final class Esp extends Module
                 if (!observer.getWorld().getUID().equals(watched.getWorld().getUID())
                     // Less than 1 block distance (removes the player themselves and any very close player)
                     || observerNode.distanceSquared(playerNode) < 1
+                    || observer.getGameMode() == GameMode.SPECTATOR
+                    || observer.getGameMode() == GameMode.CREATIVE
                     || watched.isDead()
                     || CanSee.INSTANCE.canSee(observer, watched))
                 {

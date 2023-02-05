@@ -18,8 +18,16 @@ class CommandAttributesTest
     {
         final var player = Dummy.mockPlayer();
 
+        Assertions.assertThrows(IllegalArgumentException.class, () -> CommandAttributes.builder().minArguments(-1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> CommandAttributes.builder().maxArguments(-1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> CommandAttributes.builder().exactArguments(-1));
+
+        Assertions.assertFalse(CommandAttributes.builder().exactArguments(0).build().argumentsOutOfRange(0, player), "0 was tested as the given exact arg, but was classified as out of range.");
+        Assertions.assertFalse(CommandAttributes.builder().minArguments(0).build().argumentsOutOfRange(0, player), "0 was tested as the given min arg, but was classified as out of range.");
+        Assertions.assertFalse(CommandAttributes.builder().maxArguments(0).build().argumentsOutOfRange(0, player), "0 was tested as the given max arg, but was classified as out of range.");
+
         // Test all possible combinations of arguments. Default values are min = 0 and max = 25.
-        for (int i = 0; i <= 25; ++i) {
+        for (int i = 1; i <= 25; ++i) {
             final var exactAttributes = CommandAttributes.builder().exactArguments(i).build();
             final var minAttributes = CommandAttributes.builder().minArguments(i).maxArguments(Integer.MAX_VALUE).build();
             final var maxAttributes = CommandAttributes.builder().minArguments(0).maxArguments(i).build();

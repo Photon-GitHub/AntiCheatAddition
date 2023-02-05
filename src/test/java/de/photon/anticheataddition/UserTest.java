@@ -1,7 +1,6 @@
 package de.photon.anticheataddition;
 
 import de.photon.anticheataddition.user.User;
-import lombok.val;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,8 +20,8 @@ class UserTest
     @Test
     void userDataMaterialTest()
     {
-        final Material obsidian = Material.OBSIDIAN;
-        final Material coalBlock = Material.COAL_BLOCK;
+        final var obsidian = Material.OBSIDIAN;
+        final var coalBlock = Material.COAL_BLOCK;
 
         dummyUsers[0].getData().object.lastMaterialClicked = obsidian;
         dummyUsers[1].getData().object.lastMaterialClicked = coalBlock;
@@ -34,7 +33,7 @@ class UserTest
     @Test
     void counterTest()
     {
-        val counter = dummyUsers[0].getData().counter.inventoryAverageHeuristicsMisclicks;
+        final var counter = dummyUsers[0].getData().counter.inventoryAverageHeuristicsMisclicks;
 
         counter.setToZero();
         Assertions.assertSame(0L, counter.getCounter());

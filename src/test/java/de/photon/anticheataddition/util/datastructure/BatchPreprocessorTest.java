@@ -2,7 +2,6 @@ package de.photon.anticheataddition.util.datastructure;
 
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
-import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +12,7 @@ class BatchPreprocessorTest
     @Test
     void emptyTest()
     {
-        List<DoubleStatistics> statistics = List.of(new DoubleStatistics(), new DoubleStatistics());
+        final var statistics = List.of(new DoubleStatistics(), new DoubleStatistics());
 
         Assertions.assertEquals(List.of(), BatchPreprocessors.zipToPairs(List.of()));
         Assertions.assertEquals(List.of(), BatchPreprocessors.zipOffsetOne(List.of()));
@@ -46,11 +45,11 @@ class BatchPreprocessorTest
     @Test
     void reducePairToDoubleStatisticsTest()
     {
-        val reduceOne = BatchPreprocessors.reducePairToDoubleStatistics(List.of(Pair.of(1, 2)), (a, b) -> a, (a, b) -> b);
+        final var reduceOne = BatchPreprocessors.reducePairToDoubleStatistics(List.of(Pair.of(1, 2)), (a, b) -> a, (a, b) -> b);
         Assertions.assertEquals(1, reduceOne.get(0).getSum());
         Assertions.assertEquals(2, reduceOne.get(1).getSum());
 
-        val reduceTwo = BatchPreprocessors.reducePairToDoubleStatistics(List.of(Pair.of(1, 2), Pair.of(2, 3)), (a, b) -> a, (a, b) -> b);
+        final var reduceTwo = BatchPreprocessors.reducePairToDoubleStatistics(List.of(Pair.of(1, 2), Pair.of(2, 3)), (a, b) -> a, (a, b) -> b);
         Assertions.assertEquals(3, reduceTwo.get(0).getSum());
         Assertions.assertEquals(5, reduceTwo.get(1).getSum());
     }
@@ -58,11 +57,11 @@ class BatchPreprocessorTest
     @Test
     void zipReduceToDoubleStatisticsTest()
     {
-        val reduceOne = BatchPreprocessors.zipReduceToDoubleStatistics(List.of(1, 2), (a, b) -> a, (a, b) -> b);
+        final var reduceOne = BatchPreprocessors.zipReduceToDoubleStatistics(List.of(1, 2), (a, b) -> a, (a, b) -> b);
         Assertions.assertEquals(1, reduceOne.get(0).getSum());
         Assertions.assertEquals(2, reduceOne.get(1).getSum());
 
-        val reduceTwo = BatchPreprocessors.zipReduceToDoubleStatistics(List.of(1, 2, 3), (a, b) -> a, (a, b) -> b);
+        final var reduceTwo = BatchPreprocessors.zipReduceToDoubleStatistics(List.of(1, 2, 3), (a, b) -> a, (a, b) -> b);
         Assertions.assertEquals(3, reduceTwo.get(0).getSum());
         Assertions.assertEquals(5, reduceTwo.get(1).getSum());
     }

@@ -10,7 +10,6 @@ import de.photon.anticheataddition.util.datastructure.batch.Batch;
 import de.photon.anticheataddition.util.datastructure.batch.SyncBatchProcessor;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.SneakyThrows;
-import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -55,7 +54,7 @@ class BatchTest
     void peekingTest()
     {
         final int batchSize = 3;
-        val batch = new Batch<>(testBus, dummy, batchSize, "");
+        final var batch = new Batch<>(testBus, dummy, batchSize, "");
         Assertions.assertEquals("", batch.peekLastAdded());
 
         batch.addDataPoint("SomeString");
@@ -65,7 +64,7 @@ class BatchTest
     @Test
     void syncBatchProcessorTest()
     {
-        val dummyVlModule = new ViolationModule("Inventory")
+        final var dummyVlModule = new ViolationModule("Inventory")
         {
             @Override
             protected ViolationManagement createViolationManagement()
@@ -80,10 +79,11 @@ class BatchTest
             }
         };
 
-        val output = new ArrayList<String>();
+        final var expected = List.of("0", "1", "2", "3", "4", "5");
+        final var output = new ArrayList<String>();
         final int batchSize = 3;
 
-        val batchProcessor = new SyncBatchProcessor<String>(dummyVlModule, Set.of(testBus))
+        final var batchProcessor = new SyncBatchProcessor<String>(dummyVlModule, Set.of(testBus))
         {
             @Override
             public void processBatch(User user, List<String> batch)
@@ -94,30 +94,27 @@ class BatchTest
 
         batchProcessor.enable();
 
-        val batch = new Batch<>(testBus, dummy, batchSize, "");
+        final var batch = new Batch<>(testBus, dummy, batchSize, "");
         testBus.register(batchProcessor);
 
-        for (int i = 0; i < 2 * batchSize; ++i) batch.addDataPoint(String.valueOf(i));
+        for (int i = 0, n = 2 * batchSize; i < n; ++i) batch.addDataPoint(String.valueOf(i));
 
-        Assertions.assertIterableEquals(List.of("0", "1", "2", "3", "4", "5"), output);
-
+        Assertions.assertIterableEquals(expected, output);
         testBus.unregister(batchProcessor);
 
-        for (int i = 0; i < 2 * batchSize; ++i) {
-            batch.addDataPoint("Test");
-        }
+        for (int i = 0, n = 2 * batchSize; i < n; ++i) batch.addDataPoint("Test");
 
-        Assertions.assertIterableEquals(List.of("0", "1", "2", "3", "4", "5"), output);
+        Assertions.assertIterableEquals(expected, output);
     }
 
     @SneakyThrows
     @Test
     void asyncBatchProcessorTest()
     {
-        val output = Collections.synchronizedList(new ArrayList<String>());
+        final var output = Collections.synchronizedList(new ArrayList<String>());
         final int batchSize = 3;
 
-        val batchProcessor = new AsyncBatchProcessor<String>(dummyVlModule, Set.of(testBus))
+        final var batchProcessor = new AsyncBatchProcessor<String>(dummyVlModule, Set.of(testBus))
         {
             @Override
             public void processBatch(User user, List<String> batch)
@@ -128,10 +125,10 @@ class BatchTest
 
         batchProcessor.enable();
 
-        val batch = new Batch<>(testBus, dummy, batchSize, "");
+        final var batch = new Batch<>(testBus, dummy, batchSize, "");
         testBus.register(batchProcessor);
 
-        for (int i = 0; i < 6; ++i) batch.addDataPoint(String.valueOf(i));
+        for (int i = 0, n = 2 * batchSize; i < n; ++i) batch.addDataPoint(String.valueOf(i));
 
         batchProcessor.controlledShutdown();
 

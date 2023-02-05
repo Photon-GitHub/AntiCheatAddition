@@ -78,7 +78,7 @@ public final class CommandAttributes
         private final List<String> commandHelp = new ArrayList<>();
         private InternalPermission permission = InternalPermission.NONE;
         private int minArguments = 0;
-        private int maxArguments = 100;
+        private int maxArguments = 25;
 
         /**
          * The minimum arguments of the command that should be enforced.

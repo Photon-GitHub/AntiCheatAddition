@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.util.datastructure;
 
 import de.photon.anticheataddition.util.datastructure.buffer.RingBuffer;
-import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +15,7 @@ class BufferTest
     {
         List<String> forgottenList = new ArrayList<>();
 
-        val buffer = new RingBuffer<String>(10)
+        final var buffer = new RingBuffer<String>(10)
         {
             @Override
             public void onForget(String forgotten)
@@ -38,8 +37,8 @@ class BufferTest
         buffer.add("11");
         buffer.add("12");
 
-        List<String> expectedForgotten = List.of("1", "2");
-        List<String> expected = List.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
+        final var expectedForgotten = List.of("1", "2");
+        final var expected = List.of("3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
 
         Assertions.assertSame(expectedForgotten.size(), forgottenList.size(), "Different forgotten sizes: EXPECTED: " + expectedForgotten.size() + " ACTUAL: " + forgottenList.size());
         for (String s : forgottenList) {
@@ -55,15 +54,13 @@ class BufferTest
     @Test
     void RingBufferIterationTest()
     {
-
-        val buffer = new RingBuffer<String>(10);
+        final var buffer = new RingBuffer<String>(10);
         buffer.add("1");
         buffer.add("2");
         buffer.add("3");
         buffer.add("4");
 
-
-        List<String> expected = List.of("1", "2", "3", "4");
+        var expected = List.of("1", "2", "3", "4");
         int i = 0;
         for (String s : buffer) {
             Assertions.assertEquals(expected.get(i++), s);
@@ -93,7 +90,7 @@ class BufferTest
         }
         Assertions.assertSame(expected.size(), dotSize, "Different dot sizes: EXPECTED: " + expected.size() + " ACTUAL: " + dotSize);
 
-        Iterator<String> ascendingIterator = buffer.iterator();
+        final Iterator<String> ascendingIterator = buffer.iterator();
         int ascSize = 0;
         String next;
         while (ascendingIterator.hasNext()) {
@@ -104,7 +101,7 @@ class BufferTest
         }
         Assertions.assertSame(expected.size(), ascSize, "Wrong amount of elements ASC.");
 
-        Iterator<String> descendingIterator = buffer.descendingIterator();
+        final Iterator<String> descendingIterator = buffer.descendingIterator();
         int desSize = 0;
         while (descendingIterator.hasNext()) {
             next = descendingIterator.next();
@@ -118,7 +115,7 @@ class BufferTest
     @Test
     void RingBufferArrayTest()
     {
-        RingBuffer<String> buffer = new RingBuffer<>(10);
+        final RingBuffer<String> buffer = new RingBuffer<>(10);
         buffer.add("1");
         buffer.add("2");
         buffer.add("3");

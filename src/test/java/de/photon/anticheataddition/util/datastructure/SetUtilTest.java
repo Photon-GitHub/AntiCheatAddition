@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.datastructure;
 
-import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +12,7 @@ class SetUtilTest
     @Test
     void enumSetCollectorTest()
     {
-        val result = Arrays.stream(TestEnum.values()).collect(SetUtil.toImmutableEnumSet());
+        final var result = Arrays.stream(TestEnum.values()).collect(SetUtil.toImmutableEnumSet());
         Assertions.assertIterableEquals(EnumSet.allOf(TestEnum.class), result);
 
         Assertions.assertThrows(UnsupportedOperationException.class, () -> result.remove(TestEnum.TEST1));
@@ -23,10 +22,10 @@ class SetUtilTest
     @Test
     void differenceTest()
     {
-        val first = EnumSet.allOf(TestEnum.class);
-        val second = EnumSet.of(TestEnum.TEST1, TestEnum.TEST2);
+        final var first = EnumSet.allOf(TestEnum.class);
+        final var second = EnumSet.of(TestEnum.TEST1, TestEnum.TEST2);
 
-        val result = EnumSet.noneOf(TestEnum.class);
+        final var result = EnumSet.noneOf(TestEnum.class);
         result.addAll(SetUtil.difference(first, second));
 
         Assertions.assertIterableEquals(EnumSet.complementOf(second), result);

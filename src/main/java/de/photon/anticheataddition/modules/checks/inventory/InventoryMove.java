@@ -102,8 +102,8 @@ public final class InventoryMove extends ViolationModule
                         // Auto-Disable if TPS are too low
                         TPSProvider.INSTANCE.atLeastTPS(minTps))
                     {
-                        val positiveVelocity = knownPosition.getY() < moveTo.getY();
-                        val noMovement = knownPosition.getY() == moveTo.getY();
+                        final boolean positiveVelocity = knownPosition.getY() < moveTo.getY();
+                        final boolean noMovement = knownPosition.getY() == moveTo.getY();
 
                         if (positiveVelocity != user.getData().bool.positiveVelocity) {
                             if (user.getData().bool.allowedToJump) {

@@ -8,7 +8,6 @@ import de.photon.anticheataddition.util.mathematics.ResetLocation;
 import de.photon.anticheataddition.util.mathematics.ResetVector;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
-import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -51,11 +50,11 @@ public interface CanSee
     static double getDistanceToFirstIntersectionWithBlock(final Location start, final Vector direction)
     {
         Preconditions.checkNotNull(start.getWorld(), "RayTrace: Unknown start world.");
-        val length = (int) direction.length();
+        final int length = (int) direction.length();
 
         if (length >= 1) {
             try {
-                val blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
+                final var blockIterator = new BlockIterator(start.getWorld(), start.toVector(), direction, 0, length);
                 Block block;
                 while (blockIterator.hasNext()) {
                     block = blockIterator.next();
@@ -79,8 +78,8 @@ public interface CanSee
      */
     static boolean canSeeHeuristic(Location from, Vector between, Location to)
     {
-        val resetFrom = new ResetLocation(from);
-        val normalBetween = new ResetVector(between.normalize());
+        final var resetFrom = new ResetLocation(from);
+        final var normalBetween = new ResetVector(between.normalize());
         for (double d : heuristicScalars(from.distance(to))) {
             // An occluding block exists.
             if (Boolean.TRUE.equals(BLOCK_CACHE.getUnchecked(resetFrom.add(normalBetween.multiply(d))))) return false;

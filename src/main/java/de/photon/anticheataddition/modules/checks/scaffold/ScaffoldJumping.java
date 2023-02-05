@@ -5,7 +5,6 @@ import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.messaging.Log;
-import lombok.val;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -22,7 +21,7 @@ final class ScaffoldJumping extends Module
     {
         if (!this.isEnabled()) return 0;
 
-        val failCounter = user.getData().counter.scaffoldJumpingFails;
+        final var failCounter = user.getData().counter.scaffoldJumpingFails;
 
         if (user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 500)
             && user.hasJumpedRecently(1000))
@@ -33,7 +32,7 @@ final class ScaffoldJumping extends Module
             }
         } else {
             // Decrease only every 10 blocks to make sure one cannot easily bypass this check by jumping only every other block.
-            val legitCounter = user.getData().counter.scaffoldJumpingLegit;
+            final var legitCounter = user.getData().counter.scaffoldJumpingLegit;
             if (legitCounter.incrementCompareThreshold()) {
                 failCounter.decrementAboveZero();
                 legitCounter.setToZero();

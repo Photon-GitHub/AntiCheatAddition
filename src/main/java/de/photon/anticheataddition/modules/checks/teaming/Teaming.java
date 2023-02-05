@@ -35,7 +35,7 @@ public final class Teaming extends ViolationModule implements Listener
     private Set<Region> loadSafeZones()
     {
         Set<Region> safeZones = new HashSet<>();
-        for (String s : loadStringList(".safe_zones")) {
+        for (final String s : loadStringList(".safe_zones")) {
             try {
                 Region region = Region.parseRegion(s);
                 safeZones.add(region);
@@ -51,8 +51,8 @@ public final class Teaming extends ViolationModule implements Listener
     private Set<World> loadEnabledWorlds()
     {
         Set<World> worlds = new HashSet<>();
-        for (String key : loadStringList(".enabled_worlds")) {
-            World world = Bukkit.getWorld(key);
+        for (final String key : loadStringList(".enabled_worlds")) {
+            final var world = Bukkit.getWorld(key);
             if (world == null) {
                 Log.fine(() -> "Unable to load world \"" + key + "\" in teaming check.");
                 continue;

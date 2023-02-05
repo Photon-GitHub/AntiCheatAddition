@@ -3,7 +3,6 @@ package de.photon.anticheataddition.modules.checks.scaffold;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.messaging.Log;
-import lombok.val;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -23,8 +22,8 @@ final class ScaffoldPosition extends Module
         // This sorts out scaffolding with non-full block hitboxes that will cause false positives (e.g. fences).
         if (!event.getBlockPlaced().getType().isOccluding()) return 0;
 
-        val xOffset = MathUtil.absDiff(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
-        val zOffset = MathUtil.absDiff(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
+        final double xOffset = MathUtil.absDiff(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
+        final double zOffset = MathUtil.absDiff(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
 
         final boolean flag = switch (event.getBlock().getFace(event.getBlockAgainst())) {
             case EAST -> xOffset <= 0;

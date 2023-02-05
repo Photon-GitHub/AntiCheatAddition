@@ -47,14 +47,12 @@ public class DetectionManagement extends ViolationManagement implements Listener
     public void setVL(@NotNull Player player, int newVl)
     {
         switch (newVl) {
-            case 0:
-                this.detectionSet.remove(player.getUniqueId());
-                break;
-            case 1:
+            case 0 -> this.detectionSet.remove(player.getUniqueId());
+            case 1 -> {
                 // Only punish if the vl actually changes (no prior detection).
                 if (detectionSet.add(player.getUniqueId())) this.punishPlayer(player, 0, 1);
-                break;
-            default: throw new IllegalArgumentException("A Sentinel detection management only supports the vls 0 (no detection) and 1 (detection).");
+            }
+            default -> throw new IllegalArgumentException("A Sentinel detection management only supports the vls 0 (no detection) and 1 (detection).");
         }
 
         postVlUpdate(player);

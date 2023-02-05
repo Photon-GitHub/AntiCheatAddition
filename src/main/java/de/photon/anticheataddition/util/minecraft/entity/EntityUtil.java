@@ -14,14 +14,6 @@ public sealed interface EntityUtil permits LegacyEntityUtil, ModernEntityUtil
     EntityUtil INSTANCE = ServerVersion.containsActive(ServerVersion.MC115.getSupVersionsTo()) ? new LegacyEntityUtil() : new ModernEntityUtil();
 
     /**
-     * Creates a {@link Predicate} that maps to <code>true</code> only for a certain {@link EntityType}.
-     */
-    static Predicate<Entity> ofType(EntityType type)
-    {
-        return entity -> entity.getType() == type;
-    }
-
-    /**
      * Determines if a {@link LivingEntity} is gliding (i.e. flying with an elytra)
      */
     boolean isFlyingWithElytra(@NotNull final LivingEntity livingEntity);

@@ -3,8 +3,6 @@ package de.photon.anticheataddition.util.minecraft.world;
 import com.google.common.base.Preconditions;
 import com.google.common.math.DoubleMath;
 import de.photon.anticheataddition.ServerVersion;
-import de.photon.anticheataddition.exception.UnknownMinecraftException;
-import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
 import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,7 +10,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.InventoryHolder;
 
@@ -100,7 +97,7 @@ final class ModernWorldUtil implements WorldUtil
         Preconditions.checkArgument(inSameWorld(one, two), "Tried to check chunks between worlds.");
 
         // Basic starting location check
-        val world = Preconditions.checkNotNull(one.getWorld(), "Tried to check chunks in null world.");
+        final var world = Preconditions.checkNotNull(one.getWorld(), "Tried to check chunks in null world.");
         if (!isChunkLoaded(world, one.getBlockX(), one.getBlockZ())) return false;
 
         final boolean modifyX;
@@ -188,20 +185,23 @@ final class ModernWorldUtil implements WorldUtil
 
         // Additional checks for cats and occluding blocks necessary?
         if (MaterialUtil.FREE_SPACE_CONTAINERS.contains(block.getType())) {
-            val aboveBlock = block.getRelative(BlockFace.UP);
-            val checkForCatLocation = aboveBlock.getLocation().add(0.5, 0.5, 0.5);
+            final Block aboveBlock = block.getRelative(BlockFace.UP);
 
-            return switch (ServerVersion.ACTIVE) {
+            if (ServerVersion.containsActive(ServerVersion.MC112.getSupVersionsTo())) {
                 // 1.8.8 and 1.12 doesn't provide isPassable.
                 // Make sure that the block above is not obstructed by blocks
                 // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.
-                case MC18, MC112 -> !aboveBlock.getType().isOccluding();
-                // Make sure that the block above is not obstructed by blocks
-                // Make sure that the block above is not obstructed by cats
-                case MC115, MC116, MC117, MC118, MC119 -> !aboveBlock.getType().isOccluding() &&
-                                                          aboveBlock.getWorld().getNearbyEntities(checkForCatLocation, 0.5, 0.5, 0.5, EntityUtil.ofType(EntityType.CAT)).isEmpty();
-                default -> throw new UnknownMinecraftException();
-            };
+                return !aboveBlock.getType().isOccluding();
+            } else {
+                // Any occluding block above will prevent the inventory from being opened.
+                return !aboveBlock.getType().isOccluding() &&
+                       // No cats or ocelots sitting on the chest.
+                       // Check the center of the block above with a radius of 0.5 blocks.
+                       aboveBlock.getWorld().getNearbyEntities(aboveBlock.getLocation().add(0.5, 0.5, 0.5), 0.5, 0.5, 0.5, entity -> switch (entity.getType()) {
+                           case CAT, OCELOT -> true;
+                           default -> false;
+                       }).isEmpty();
+            }
         }
         return true;
     }

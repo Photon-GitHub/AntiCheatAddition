@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.commands;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSortedMap;
 import de.photon.anticheataddition.InternalPermission;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
@@ -85,6 +86,7 @@ public final class CommandAttributes
          */
         public Builder minArguments(int minArguments)
         {
+            Preconditions.checkArgument(minArguments >= 0);
             this.minArguments = minArguments;
             return this;
         }
@@ -94,6 +96,7 @@ public final class CommandAttributes
          */
         public Builder maxArguments(int maxArguments)
         {
+            Preconditions.checkArgument(maxArguments >= 0);
             this.maxArguments = maxArguments;
             return this;
         }

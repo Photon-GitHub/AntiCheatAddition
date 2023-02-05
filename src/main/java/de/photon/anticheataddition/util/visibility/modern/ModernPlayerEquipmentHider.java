@@ -2,6 +2,7 @@ package de.photon.anticheataddition.util.visibility.modern;
 
 import com.comphenix.protocol.PacketType;
 import de.photon.anticheataddition.ServerVersion;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.visibility.PacketInformationHider;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,6 +27,7 @@ public final class ModernPlayerEquipmentHider extends PacketInformationHider
         for (Player player : toHide) {
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 observer.sendEquipmentChange(player, slot, AIR_STACK);
+                Log.finest(() -> "Player " + player.getName() + "'s equipment has been hidden from " + observer.getName());
             }
         }
     }
@@ -39,6 +41,7 @@ public final class ModernPlayerEquipmentHider extends PacketInformationHider
                 // Only send non-null stacks, as the null stacks are air, and we sent that upon hiding.
                 if (stack != null) observer.sendEquipmentChange(watched, slot, stack);
             }
+            Log.finest(() -> "Player " + watched.getName() + "'s equipment has been revealed to " + observer.getName());
         }
     }
 

@@ -2,6 +2,7 @@ package de.photon.anticheataddition.util.visibility.modern;
 
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.visibility.PlayerInformationHider;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +16,7 @@ public final class ModernPlayerHider extends PlayerInformationHider
     {
         for (Player player : toHide) {
             observer.hidePlayer(AntiCheatAddition.getInstance(), player);
+            Log.finest(() -> "Player " + player.getName() + " has been fully hidden from " + observer.getName());
         }
     }
 
@@ -23,6 +25,7 @@ public final class ModernPlayerHider extends PlayerInformationHider
     {
         for (Player player : revealed) {
             observer.showPlayer(AntiCheatAddition.getInstance(), player);
+            Log.finest(() -> "Player " + player.getName() + " has been revealed to " + observer.getName());
         }
     }
 

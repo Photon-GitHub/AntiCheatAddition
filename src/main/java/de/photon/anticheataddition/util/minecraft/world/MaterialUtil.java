@@ -13,6 +13,19 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
+import static org.bukkit.Material.AIR;
+import static org.bukkit.Material.ANVIL;
+import static org.bukkit.Material.CAVE_AIR;
+import static org.bukkit.Material.CHEST;
+import static org.bukkit.Material.ENDER_CHEST;
+import static org.bukkit.Material.LAVA;
+import static org.bukkit.Material.SLIME_BLOCK;
+import static org.bukkit.Material.TRAPPED_CHEST;
+import static org.bukkit.Material.VOID_AIR;
+import static org.bukkit.Material.WATER;
+import static org.bukkit.Material.getMaterial;
+import static org.bukkit.Material.values;
+
 @UtilityClass
 public final class MaterialUtil
 {
@@ -34,20 +47,20 @@ public final class MaterialUtil
      */
     public static final Set<Material> FREE_SPACE_CONTAINERS;
     // A set of materials which hitboxes changed in minecraft 1.9
-    public static final Set<Material> CHANGED_HITBOX_MATERIALS = ServerVersion.is18() ? Sets.immutableEnumSet(Material.getMaterial("STAINED_GLASS_PANE"),
-                                                                                                              Material.getMaterial("THIN_GLASS"),
-                                                                                                              Material.getMaterial("IRON_FENCE"),
-                                                                                                              Material.CHEST,
-                                                                                                              Material.ANVIL) : Set.of();
+    public static final Set<Material> CHANGED_HITBOX_MATERIALS = ServerVersion.is18() ? Sets.immutableEnumSet(ANVIL,
+                                                                                                              CHEST,
+                                                                                                              getMaterial("STAINED_GLASS_PANE"),
+                                                                                                              getMaterial("THIN_GLASS"),
+                                                                                                              getMaterial("IRON_FENCE")) : Set.of();
 
     private static final Set<Material> AIR_MATERIALS = ServerVersion.containsActive(ServerVersion.MC116.getSupVersionsFrom()) ?
-                                                       Sets.immutableEnumSet(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR) :
-                                                       Sets.immutableEnumSet(Material.AIR);
+                                                       Sets.immutableEnumSet(AIR, CAVE_AIR, VOID_AIR) :
+                                                       Sets.immutableEnumSet(AIR);
 
     static {
-        val autoStepMaterials = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
-        val bounceMaterials = EnumSet.of(Material.SLIME_BLOCK);
-        val freeSpaceContainers = EnumSet.of(Material.CHEST, Material.TRAPPED_CHEST, Material.ENDER_CHEST);
+        val autoStepMaterials = EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST);
+        val bounceMaterials = EnumSet.of(SLIME_BLOCK);
+        val freeSpaceContainers = EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST);
 
         switch (ServerVersion.ACTIVE) {
             case MC18, MC112 -> {
@@ -55,10 +68,10 @@ public final class MaterialUtil
                 // This will automatically exclude the "BED" on 1.8.8, as bed bouncing was introduced in 1.12.
                 bounceMaterials.addAll(getMaterialsEndingWith("_BED"));
                 freeSpaceContainers.addAll(getMaterialsEndingWith("SHULKER_BOK"));
-                EXPERIENCE_BOTTLE = Material.getMaterial("EXP_BOTTLE");
+                EXPERIENCE_BOTTLE = getMaterial("EXP_BOTTLE");
                 SIGNS = getMaterialsEndingWith("SIGN");
-                SPAWNER = Material.getMaterial("MOB_SPAWNER");
-                LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA, Material.getMaterial("STATIONARY_WATER"), Material.getMaterial("STATIONARY_LAVA"));
+                SPAWNER = getMaterial("MOB_SPAWNER");
+                LIQUIDS = Sets.immutableEnumSet(WATER, LAVA, getMaterial("STATIONARY_WATER"), getMaterial("STATIONARY_LAVA"));
             }
 
             case MC115, MC116, MC117, MC118, MC119 -> {
@@ -68,7 +81,7 @@ public final class MaterialUtil
                 EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
                 SIGNS = ofTags(Tag.SIGNS, Tag.STANDING_SIGNS, Tag.WALL_SIGNS);
                 SPAWNER = Material.SPAWNER;
-                LIQUIDS = Sets.immutableEnumSet(Material.WATER, Material.LAVA);
+                LIQUIDS = Sets.immutableEnumSet(WATER, LAVA);
             }
 
             default -> throw new UnknownMinecraftException();
@@ -81,7 +94,7 @@ public final class MaterialUtil
 
     public static Set<Material> getMaterialsEndingWith(String... ends)
     {
-        return Arrays.stream(Material.values())
+        return Arrays.stream(values())
                      .filter(material -> Arrays.stream(ends).anyMatch(material.name()::endsWith))
                      .collect(SetUtil.toImmutableEnumSet());
     }

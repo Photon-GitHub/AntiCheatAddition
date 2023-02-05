@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.minecraft.world;
 import com.google.common.base.Preconditions;
 import com.google.common.math.DoubleMath;
 import de.photon.anticheataddition.ServerVersion;
-import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 class TestQuadTreeCollection
 {
     @Test

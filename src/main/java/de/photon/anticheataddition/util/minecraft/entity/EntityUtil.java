@@ -2,12 +2,10 @@ package de.photon.anticheataddition.util.minecraft.entity;
 
 import de.photon.anticheataddition.ServerVersion;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 public sealed interface EntityUtil permits LegacyEntityUtil, ModernEntityUtil
 {

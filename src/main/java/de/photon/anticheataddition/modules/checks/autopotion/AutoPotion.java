@@ -83,7 +83,7 @@ public final class AutoPotion extends ViolationModule implements Listener
 
         // Is the action a right-click that can throw a potion
         switch (event.getAction()) {
-            case RIGHT_CLICK_AIR, RIGHT_CLICK_BLOCK:
+            case RIGHT_CLICK_AIR, RIGHT_CLICK_BLOCK -> {
                 // The item is a throwable potion
                 if (event.getItem() != null && event.getMaterial() == Material.SPLASH_POTION &&
                     // The last sudden movement was not long ago
@@ -93,7 +93,7 @@ public final class AutoPotion extends ViolationModule implements Listener
                     // Here the timestamp is used to contain the data of the last splash
                     user.getTimeMap().at(TimeKey.AUTOPOTION_DETECTION).update();
                 }
-                break;
+            }
         }
     }
 

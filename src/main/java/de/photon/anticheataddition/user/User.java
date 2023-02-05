@@ -340,6 +340,7 @@ public final class User implements Permissible
         else DEBUG_USERS.remove(this);
     }
 
+    @SuppressWarnings("MethodMayBeStatic")
     public static final class UserListener implements Listener
     {
         @EventHandler(priority = EventPriority.LOWEST)

@@ -23,7 +23,7 @@ final class LegacyInventoryUtil implements InventoryUtil
 
         final int size = inventory.getSize();
         switch (inventory.getType()) {
-            case CHEST, ENDER_CHEST, SHULKER_BOX:
+            case CHEST, ENDER_CHEST, SHULKER_BOX -> {
                 /*
                  * 0                         -                       8
                  *
@@ -42,9 +42,11 @@ final class LegacyInventoryUtil implements InventoryUtil
                  * 54                        -                       62
                  */
                 // There are custom chest sizes (from 0 to 54!)
-                if (rawSlot < size) return SlotLocation.opOf(rawSlot % 9, rawSlot / 9D);
+                final int row = rawSlot / 9;
+                if (rawSlot < size) return SlotLocation.opOf(rawSlot % 9, row);
                 return InventoryUtil.lowerInventoryLocation(size, rawSlot);
-            case DISPENSER, DROPPER:
+            }
+            case DISPENSER, DROPPER -> {
                 // Dispenser and Dropper have the same layout
                 /*
                  *                   0       1       2
@@ -64,9 +66,11 @@ final class LegacyInventoryUtil implements InventoryUtil
                  * 36                        -                       44
                  */
                 // In the dispenser - part
-                if (rawSlot < 9) return SlotLocation.opOf(4D + rawSlot % 3, rawSlot / 3D);
+                final int row = rawSlot / 3;
+                if (rawSlot < 9) return SlotLocation.opOf(4D + rawSlot % 3, row);
                 return InventoryUtil.lowerInventoryLocation(9, rawSlot);
-            case FURNACE:
+            }
+            case FURNACE -> {
                 /*
                  *                 0
                  *
@@ -90,7 +94,8 @@ final class LegacyInventoryUtil implements InventoryUtil
                     case 2 -> SlotLocation.opOf(6D, 1D);
                     default -> InventoryUtil.lowerInventoryLocation(3, rawSlot);
                 };
-            case WORKBENCH:
+            }
+            case WORKBENCH -> {
                 /*
                  *          1       2       3
                  *
@@ -109,16 +114,15 @@ final class LegacyInventoryUtil implements InventoryUtil
                  * 37                        -                       45
                  */
 
-                if (rawSlot == 0) return SlotLocation.opOf(6.5D, 1D);
-
-                if (rawSlot <= 9) {
-                    final double x = ((rawSlot - 1) % 3) + 1.25D;
-                    final double y = ((rawSlot - 1D) / 3D);
-                    return SlotLocation.opOf(x, y);
-                }
-
-                return InventoryUtil.lowerInventoryLocation(10, rawSlot);
-            case ENCHANTING:
+                return switch (rawSlot) {
+                    case 0 -> SlotLocation.opOf(6.5D, 1D);
+                    case 1, 2, 3 -> SlotLocation.opOf(rawSlot + 0.25, 0D);
+                    case 4, 5, 6 -> SlotLocation.opOf(rawSlot + 0.25, 1D);
+                    case 7, 8, 9 -> SlotLocation.opOf(rawSlot + 0.25, 2D);
+                    default -> InventoryUtil.lowerInventoryLocation(10, rawSlot);
+                };
+            }
+            case ENCHANTING -> {
                 /*
                  *
                  *
@@ -140,7 +144,8 @@ final class LegacyInventoryUtil implements InventoryUtil
                     case 1 -> SlotLocation.opOf(1.5D, 2.6D);
                     default -> InventoryUtil.lowerInventoryLocation(2, rawSlot);
                 };
-            case ANVIL:
+            }
+            case ANVIL -> {
                 /*
                  *
                  *
@@ -163,7 +168,8 @@ final class LegacyInventoryUtil implements InventoryUtil
                     case 2 -> SlotLocation.opOf(7D, 1.5D);
                     default -> InventoryUtil.lowerInventoryLocation(3, rawSlot);
                 };
-            case BEACON:
+            }
+            case BEACON -> {
                 /*
                  *
                  *
@@ -182,7 +188,8 @@ final class LegacyInventoryUtil implements InventoryUtil
                  */
                 if (rawSlot == 0) return SlotLocation.opOf(5.5D, 2D);
                 return InventoryUtil.lowerInventoryLocation(1, rawSlot);
-            case HOPPER:
+            }
+            case HOPPER -> {
                 /*
                  *
                  *
@@ -201,7 +208,8 @@ final class LegacyInventoryUtil implements InventoryUtil
                  */
                 if (rawSlot <= 4) return SlotLocation.opOf(2D + rawSlot, 1D);
                 return InventoryUtil.lowerInventoryLocation(5, rawSlot);
-            case CRAFTING, PLAYER:
+            }
+            case CRAFTING, PLAYER -> {
                 /* Player Inventory
                  * 5
                  * 6                            1   2
@@ -229,9 +237,11 @@ final class LegacyInventoryUtil implements InventoryUtil
                     case 5, 6, 7, 8 -> SlotLocation.opOf(0D, rawSlot - 5D);
                     default -> InventoryUtil.lowerInventoryLocation(9, rawSlot);
                 };
-            default:
+            }
+            default -> {
                 // CREATIVE (false positives), PLAYER, SHULKER_BOX, BREWING_STAND (version compatibility)
                 return Optional.empty();
+            }
         }
     }
 }

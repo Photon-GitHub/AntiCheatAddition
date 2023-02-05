@@ -100,9 +100,10 @@ public final class MaterialUtil
      */
     public static boolean isReallyOccluding(Material material)
     {
-        return material != Material.BARRIER &&
-               material.isOccluding() &&
-               material != SPAWNER;
+        return switch (material) {
+            case BARRIER, SPAWNER -> false;
+            default -> material.isOccluding();
+        };
     }
 
     public static boolean isAir(Material material)

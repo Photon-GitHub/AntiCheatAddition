@@ -159,19 +159,27 @@ public enum InternalPotion
     CONDUIT_POWER(ServerVersion.MC113),
 
     /**
+     * Increases underwater movement speed.<br>
      * Squee'ek uh'k kk'kkkk squeek eee'eek.
      */
     DOLPHINS_GRACE(ServerVersion.MC113),
 
     /**
+     * Triggers a raid when the player enters a village.<br>
      * oof.
      */
     BAD_OMEN(ServerVersion.MC114),
 
     /**
+     * Reduces the cost of villager trades.<br>
      * \o/.
      */
-    HERO_OF_THE_VILLAGE(ServerVersion.MC114);
+    HERO_OF_THE_VILLAGE(ServerVersion.MC114),
+
+    /**
+     * Causes the player's vision to dim occasionally.
+     */
+    DARKNESS(ServerVersion.MC119);
 
     private final ServerVersion addedInVersion;
 

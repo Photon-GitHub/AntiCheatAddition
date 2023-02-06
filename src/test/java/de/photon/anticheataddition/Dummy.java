@@ -26,6 +26,10 @@ public final class Dummy
         protocolLibMock.when(ProtocolLibrary::getProtocolManager).thenReturn(protocolManager);
     }
 
+    /**
+     * This method ensures that the mock environment is set up.
+     * This only allocates the environment once, any further calls do not cause any further performance drops.
+     */
     public static void mockEnvironment()
     {
         // Do nothing, this is already done via the static constructor.

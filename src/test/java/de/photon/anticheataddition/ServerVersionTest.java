@@ -76,5 +76,13 @@ class ServerVersionTest
         for (int i : new int[]{335, 338, 340}) Assertions.assertEquals(ServerVersion.MC112, ServerVersion.getByProtocolVersionNumber(i).orElse(null));
         for (int i : new int[]{735, 736, 751, 753, 754}) Assertions.assertEquals(ServerVersion.MC116, ServerVersion.getByProtocolVersionNumber(i).orElse(null));
         for (int i : new int[]{759, 760, 761}) Assertions.assertEquals(ServerVersion.MC119, ServerVersion.getByProtocolVersionNumber(i).orElse(null));
+
+        for (ServerVersion serverVersion : ServerVersion.values()) {
+            for (int v : serverVersion.getProtocolVersions()) {
+                var svOpt = ServerVersion.getByProtocolVersionNumber(v);
+                Assertions.assertTrue(svOpt.isPresent(), "Protocol version" + v + " -> Server version" + serverVersion.name() + " mapping is broken.");
+                Assertions.assertSame(serverVersion, svOpt.get(), "Protocol version" + v + " -> Server version" + serverVersion.name() + " mapping is broken, received " + svOpt.get());
+            }
+        }
     }
 }

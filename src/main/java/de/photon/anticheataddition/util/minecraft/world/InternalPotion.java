@@ -7,7 +7,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public enum InternalPotion
 {
@@ -181,7 +184,7 @@ public enum InternalPotion
      */
     DARKNESS(ServerVersion.MC119);
 
-    private final ServerVersion addedInVersion;
+    private final boolean available;
 
     @Getter
     private final PotionEffectType mapping;
@@ -193,8 +196,18 @@ public enum InternalPotion
 
     InternalPotion(ServerVersion addedInVersion)
     {
-        this.addedInVersion = addedInVersion;
+        this.available = ServerVersion.containsActive(addedInVersion.getSupVersionsFrom());
         this.mapping = PotionEffectType.getByName(this.name());
+    }
+
+    /**
+     * This returns all {@link PotionEffectType}s that exist on the active {@link ServerVersion}.
+     */
+    public static Set<PotionEffectType> getAvailablePotionTypes(InternalPotion... types)
+    {
+        return Arrays.stream(types).filter(InternalPotion::isAvailable)
+                     .map(InternalPotion::getMapping)
+                     .collect(Collectors.toUnmodifiableSet());
     }
 
     /**
@@ -202,7 +215,7 @@ public enum InternalPotion
      */
     public boolean isAvailable()
     {
-        return ServerVersion.containsActive(this.addedInVersion.getSupVersionsFrom());
+        return available;
     }
 
     /**

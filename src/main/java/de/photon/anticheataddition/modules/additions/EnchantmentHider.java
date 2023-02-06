@@ -8,7 +8,6 @@ import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.equipment.IWrapperPlayEquipment;
-import lombok.val;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
@@ -29,9 +28,9 @@ public final class EnchantmentHider extends Module
 
     private static void obfuscateEnchantments(IWrapperPlayEquipment wrapper)
     {
-        for (val pair : wrapper.getSlotStackPairs()) {
+        for (final var pair : wrapper.getSlotStackPairs()) {
             final ItemStack stack = pair.getSecond();
-            val enchantments = stack.getEnchantments();
+            final Map<Enchantment, Integer> enchantments = stack.getEnchantments();
 
             if (enchantments.isEmpty()) continue;
 
@@ -48,20 +47,18 @@ public final class EnchantmentHider extends Module
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val adapter = PacketAdapterBuilder
+        final var adapter = PacketAdapterBuilder
                 .of(this, PacketType.Play.Server.ENTITY_EQUIPMENT)
                 .priority(ListenerPriority.HIGH)
                 .onSending((event, user) -> {
-                    val wrapper = IWrapperPlayEquipment.of(event.getPacket());
-                    val entity = wrapper.getEntity(event);
+                    final var wrapper = IWrapperPlayEquipment.of(event.getPacket());
+                    final var entity = wrapper.getEntity(event);
 
                     // Do not modify the players' own enchantments.
                     if (entity == null || entity.getEntityId() == user.getPlayer().getEntityId()) return;
 
-                    val entityType = entity.getType();
-
                     // Only modify the packets if they originate from a player.
-                    if (entityType == EntityType.PLAYER ? spoofPlayers : spoofOthers) {
+                    if (entity.getType() == EntityType.PLAYER ? spoofPlayers : spoofOthers) {
                         // If all items do not have any enchantments, skip.
                         if (wrapper.getSlotStackPairs().stream().map(Pair::getSecond).map(ItemStack::getEnchantments).allMatch(Map::isEmpty)) return;
 

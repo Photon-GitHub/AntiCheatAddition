@@ -5,7 +5,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.messaging.Log;
-import lombok.val;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -34,7 +33,7 @@ final class ScaffoldSafewalkPosition extends Module
 
         final double xOffset = MathUtil.absDiff(event.getPlayer().getLocation().getX(), event.getBlockAgainst().getX());
         final double zOffset = MathUtil.absDiff(event.getPlayer().getLocation().getZ(), event.getBlockAgainst().getZ());
-        val face = event.getBlock().getFace(event.getBlockAgainst());
+        final var face = event.getBlock().getFace(event.getBlockAgainst());
 
         // Not building in a straight line.
         if (face == null || event.getBlockAgainst().getRelative(face).isEmpty()) return 0;

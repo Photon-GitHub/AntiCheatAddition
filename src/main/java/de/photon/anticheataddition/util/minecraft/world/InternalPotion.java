@@ -7,7 +7,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public enum InternalPotion
 {
@@ -159,21 +162,29 @@ public enum InternalPotion
     CONDUIT_POWER(ServerVersion.MC113),
 
     /**
+     * Increases underwater movement speed.<br>
      * Squee'ek uh'k kk'kkkk squeek eee'eek.
      */
     DOLPHINS_GRACE(ServerVersion.MC113),
 
     /**
+     * Triggers a raid when the player enters a village.<br>
      * oof.
      */
     BAD_OMEN(ServerVersion.MC114),
 
     /**
+     * Reduces the cost of villager trades.<br>
      * \o/.
      */
-    HERO_OF_THE_VILLAGE(ServerVersion.MC114);
+    HERO_OF_THE_VILLAGE(ServerVersion.MC114),
 
-    private final ServerVersion addedInVersion;
+    /**
+     * Causes the player's vision to dim occasionally.
+     */
+    DARKNESS(ServerVersion.MC119);
+
+    private final boolean available;
 
     @Getter
     private final PotionEffectType mapping;
@@ -185,8 +196,18 @@ public enum InternalPotion
 
     InternalPotion(ServerVersion addedInVersion)
     {
-        this.addedInVersion = addedInVersion;
+        this.available = ServerVersion.containsActive(addedInVersion.getSupVersionsFrom());
         this.mapping = PotionEffectType.getByName(this.name());
+    }
+
+    /**
+     * This returns all {@link PotionEffectType}s that exist on the active {@link ServerVersion}.
+     */
+    public static Set<PotionEffectType> getAvailablePotionTypes(InternalPotion... types)
+    {
+        return Arrays.stream(types).filter(InternalPotion::isAvailable)
+                     .map(InternalPotion::getMapping)
+                     .collect(Collectors.toUnmodifiableSet());
     }
 
     /**
@@ -194,7 +215,7 @@ public enum InternalPotion
      */
     public boolean isAvailable()
     {
-        return ServerVersion.containsActive(this.addedInVersion.getSupVersionsFrom());
+        return available;
     }
 
     /**

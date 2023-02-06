@@ -1,6 +1,5 @@
 package de.photon.anticheataddition;
 
-import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -58,11 +57,32 @@ class ServerVersionTest
     @Test
     void allSupportedVersionsTest()
     {
-        val expected = Arrays.stream(ServerVersion.values())
-                             .filter(ServerVersion::isSupported)
-                             .collect(Collectors.toUnmodifiableSet());
+        final var expected = Arrays.stream(ServerVersion.values())
+                                   .filter(ServerVersion::isSupported)
+                                   .collect(Collectors.toUnmodifiableSet());
 
         Assertions.assertTrue(expected.containsAll(ServerVersion.ALL_SUPPORTED_VERSIONS), "ALL_SUPPORTED_VERSIONS contains unsupported version.");
         Assertions.assertTrue(ServerVersion.ALL_SUPPORTED_VERSIONS.containsAll(expected), "ALL_SUPPORTED_VERSIONS does not contain all supported versions.");
+    }
+
+    @Test
+    void protocolToServerVersionTest()
+    {
+        for (ServerVersion value : ServerVersion.values()) {
+            Assertions.assertFalse(value.getProtocolVersions().isEmpty(), "No protocol versions defined for ServerVersion " + value.name());
+        }
+
+        Assertions.assertEquals(ServerVersion.MC18, ServerVersion.getByProtocolVersionNumber(47).orElse(null));
+        for (int i : new int[]{335, 338, 340}) Assertions.assertEquals(ServerVersion.MC112, ServerVersion.getByProtocolVersionNumber(i).orElse(null));
+        for (int i : new int[]{735, 736, 751, 753, 754}) Assertions.assertEquals(ServerVersion.MC116, ServerVersion.getByProtocolVersionNumber(i).orElse(null));
+        for (int i : new int[]{759, 760, 761}) Assertions.assertEquals(ServerVersion.MC119, ServerVersion.getByProtocolVersionNumber(i).orElse(null));
+
+        for (ServerVersion serverVersion : ServerVersion.values()) {
+            for (int v : serverVersion.getProtocolVersions()) {
+                var svOpt = ServerVersion.getByProtocolVersionNumber(v);
+                Assertions.assertTrue(svOpt.isPresent(), "Protocol version" + v + " -> Server version" + serverVersion.name() + " mapping is broken.");
+                Assertions.assertSame(serverVersion, svOpt.get(), "Protocol version" + v + " -> Server version" + serverVersion.name() + " mapping is broken, received " + svOpt.get());
+            }
+        }
     }
 }

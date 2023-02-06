@@ -28,9 +28,10 @@ public sealed interface InventoryUtil permits LegacyInventoryUtil, ModernInvento
     static Optional<SlotLocation> lowerInventoryLocation(int startSlot, int rawSlot)
     {
         final int normalizedSlot = rawSlot - startSlot;
-        final double x = normalizedSlot % 9;
+        final int x = normalizedSlot % 9;
         // 3.5 is the normal (tested) distance.
-        double y = (normalizedSlot / 9D) + 3.5D;
+        final int row = normalizedSlot / 9;
+        double y = row + 3.5D;
 
         // Hotbar handling.
         if (normalizedSlot >= 27) y += 0.25D;

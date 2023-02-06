@@ -12,7 +12,6 @@ import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.minecraft.movement.Movement;
 import de.photon.anticheataddition.util.minecraft.movement.MovementSimulator;
 import de.photon.anticheataddition.util.violationlevels.Flag;
-import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
@@ -35,9 +34,9 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
     @Override
     public void processBatch(User user, List<TowerBatch.TowerBlockPlace> batch)
     {
-        val statistics = BatchPreprocessors.zipReduceToDoubleStatistics(batch,
-                                                                        (old, cur) -> calculateDelay(old),
-                                                                        TowerBatch.TowerBlockPlace::timeOffset);
+        final var statistics = BatchPreprocessors.zipReduceToDoubleStatistics(batch,
+                                                                              (old, cur) -> calculateDelay(old),
+                                                                              TowerBatch.TowerBlockPlace::timeOffset);
 
         final double calcAvg = statistics.get(0).getAverage();
         final double actAvg = statistics.get(1).getAverage();
@@ -59,15 +58,18 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
      */
     public double calculateDelay(TowerBatch.TowerBlockPlace blockPlace)
     {
+        final var levitation = blockPlace.levitation();
+        final var jumpBoost = blockPlace.jumpBoost();
+
         // Levitation handling.
-        if (blockPlace.levitation().isPresent()) {
+        if (levitation.isPresent()) {
             // 0.9 Blocks per second per levitation level.
-            return (900 / (blockPlace.levitation().get().getAmplifier() + 1D)) * towerLeniency * levitationLeniency;
+            return (900 / (levitation.get().getAmplifier() + 1D)) * towerLeniency * levitationLeniency;
         }
 
         // No Jump Boost, tested value.
-        if (blockPlace.jumpBoost().isEmpty()) return 478.4D * towerLeniency;
-        final int amplifier = blockPlace.jumpBoost().get().getAmplifier();
+        if (jumpBoost.isEmpty()) return 478.4D * towerLeniency;
+        final int amplifier = jumpBoost.get().getAmplifier();
 
         // Negative Jump Boost -> Player is not allowed to place blocks -> Very high delay
         if (amplifier < 0) return 1500D;
@@ -85,10 +87,10 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
     private static double simulateJumpBoost(int amplifier)
     {
         // Start the simulation.
-        val startLocation = new Location(null, 0, 0, 0);
-        val currentVelocity = new Vector(0, Movement.PLAYER.getJumpYMotion(amplifier), 0);
+        final var startLocation = new Location(null, 0, 0, 0);
+        final var currentVelocity = new Vector(0, Movement.PLAYER.getJumpYMotion(amplifier), 0);
 
-        val simulator = new MovementSimulator(startLocation, currentVelocity, Movement.PLAYER);
+        final var simulator = new MovementSimulator(startLocation, currentVelocity, Movement.PLAYER);
         simulator.tick();
         simulator.tickUntil(sim -> sim.getVelocity().getY() <= 0, 200);
         final double landingBlockY = simulator.getCurrent().getBlock().getY();

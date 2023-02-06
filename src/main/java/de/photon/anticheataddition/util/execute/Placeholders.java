@@ -93,7 +93,7 @@ public final class Placeholders
     {
         // Team placeholders
         // No method reference here due to changes in spigot's world handling!
-        WORLD(world -> world.getName());
+        @SuppressWarnings("Convert2MethodRef") WORLD(world -> world.getName());
 
         private final Function<World, String> function;
 

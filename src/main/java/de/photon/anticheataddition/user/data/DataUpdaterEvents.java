@@ -44,6 +44,7 @@ import java.util.function.Consumer;
 /**
  * A singleton to update the data in {@link AntiCheatAddition}s internal data storage.
  */
+@SuppressWarnings("MethodMayBeStatic")
 public final class DataUpdaterEvents implements Listener
 {
     public static final DataUpdaterEvents INSTANCE = new DataUpdaterEvents();

@@ -5,8 +5,6 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.Pair;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayEntity;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,8 +12,6 @@ import java.util.List;
 
 public interface IWrapperPlayEquipment extends IWrapperPlayEntity
 {
-    ItemStack AIR_STACK = new ItemStack(Material.AIR);
-
     static IWrapperPlayEquipment of()
     {
         return ServerVersion.ACTIVE.compareTo(ServerVersion.MC116) < 0 ? new LegacyServerEquipmentWrapper() : new ModernServerEquipmentWrapper();
@@ -24,21 +20,6 @@ public interface IWrapperPlayEquipment extends IWrapperPlayEntity
     static IWrapperPlayEquipment of(final PacketContainer packet)
     {
         return ServerVersion.ACTIVE.compareTo(ServerVersion.MC116) < 0 ? new LegacyServerEquipmentWrapper(packet) : new ModernServerEquipmentWrapper(packet);
-    }
-
-    /**
-     * Sets all equipment slots of the entity to air for the observer.
-     *
-     * @param entityId the id of the {@link Entity} which slots should be cleared.
-     * @param observer the {@link Player} who shall no longer see the equipment.
-     */
-    static void clearAllSlots(int entityId, Player observer)
-    {
-        IWrapperPlayEquipment wrapper = of();
-
-        wrapper.setEntityID(entityId);
-        for (EnumWrappers.ItemSlot slot : EnumWrappers.ItemSlot.values()) wrapper.setSlotStackPair(slot, AIR_STACK);
-        wrapper.sendTranslatedPackets(observer);
     }
 
     /**

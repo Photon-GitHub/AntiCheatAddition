@@ -70,7 +70,7 @@ public final class Scaffold extends ViolationModule implements Listener
         val user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
-        val blockPlaced = event.getBlockPlaced();
+        final var blockPlaced = event.getBlockPlaced();
 
         // Short distance between player and the block (at most 2 Blocks)
         if (WorldUtil.INSTANCE.areLocationsInRange(user.getPlayer().getLocation(), blockPlaced.getLocation(), 4D) &&
@@ -91,9 +91,9 @@ public final class Scaffold extends ViolationModule implements Listener
             WorldUtil.HORIZONTAL_FACES.contains(event.getBlock().getFace(event.getBlockAgainst())))
         {
 
-            val lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().block();
+            final var lastScaffoldBlock = user.getScaffoldBatch().peekLastAdded().block();
             // This checks if the block was placed against the expected block for scaffolding.
-            val newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !WorldUtil.INSTANCE.isNext(lastScaffoldBlock, event.getBlockPlaced(), WorldUtil.HORIZONTAL_FACES);
+            final var newScaffoldLocation = !Objects.equals(lastScaffoldBlock, event.getBlockAgainst()) || !WorldUtil.INSTANCE.isNext(lastScaffoldBlock, event.getBlockPlaced(), WorldUtil.HORIZONTAL_FACES);
 
             // ---------------------------------------------- Average ---------------------------------------------- //
 
@@ -113,11 +113,11 @@ public final class Scaffold extends ViolationModule implements Listener
                 // Do not check jumping for new locations as of wall-building / jumping.
                 vl += this.scaffoldJumping.getVl(user, event);
 
-                val angleInformation = user.getLookPacketData().getAngleInformation();
+                final var angleInformation = user.getLookPacketData().getAngleInformation();
 
-                val rotationVl = this.scaffoldRotationFastChange.getVl(user) +
-                                 this.scaffoldRotationDerivative.getVl(user, angleInformation[0]) +
-                                 this.scaffoldRotationSecondDerivative.getVl(user, angleInformation[1]);
+                final var rotationVl = this.scaffoldRotationFastChange.getVl(user) +
+                                       this.scaffoldRotationDerivative.getVl(user, angleInformation[0]) +
+                                       this.scaffoldRotationSecondDerivative.getVl(user, angleInformation[1]);
 
                 if (user.getData().counter.scaffoldRotationFails.conditionallyIncDec(rotationVl > 0)) vl += rotationVl;
 

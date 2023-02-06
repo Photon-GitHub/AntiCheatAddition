@@ -72,9 +72,7 @@ public final class LogBot extends Module
                 final String fileName = file.getName();
                 // Be sure it is a log file of AntiCheatAddition (.log) or a log file of the server (.log.gz)
                 if ((fileName.endsWith(".log") || fileName.endsWith(".log.gz")) && currentTime - file.lastModified() > timeToDelete) {
-                    final boolean result = file.delete();
-
-                    if (result) Log.info(() -> "Deleted " + fileName);
+                    if (file.delete()) Log.info(() -> "Deleted " + fileName);
                     else Log.severe(() -> "Could not delete old file " + fileName);
                 }
             }

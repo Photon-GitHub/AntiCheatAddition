@@ -9,7 +9,6 @@ import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.violationlevels.Flag;
-import lombok.val;
 
 import java.util.List;
 import java.util.Set;
@@ -34,9 +33,9 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
     public void processBatch(User user, List<ScaffoldBatch.ScaffoldBlockPlace> batch)
     {
         final boolean moonwalk = batch.stream().filter(Predicate.not(ScaffoldBatch.ScaffoldBlockPlace::sneaked)).count() >= batch.size() / 2;
-        val delays = BatchPreprocessors.zipReduceToDoubleStatistics(batch,
-                                                                    (old, cur) -> old.speedModifier() * cur.timeOffset(old),
-                                                                    (old, cur) -> calculateMinExpectedDelay(old, cur, moonwalk));
+        final var delays = BatchPreprocessors.zipReduceToDoubleStatistics(batch,
+                                                                          (old, cur) -> old.speedModifier() * cur.timeOffset(old),
+                                                                          (old, cur) -> calculateMinExpectedDelay(old, cur, moonwalk));
 
         final double actualAverage = delays.get(0).getAverage();
         final double minExpectedAverage = delays.get(1).getAverage();

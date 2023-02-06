@@ -22,10 +22,10 @@ class ConfigUtilTest
     {
         Assertions.assertThrows(NullPointerException.class, () -> ConfigUtil.loadKeys("THIS_PATH_DOES_NOT_EXIST.REALLY"));
 
-        var expected = new String[]{"Empty", "One", "Two", "Three"};
+        final var expected = new String[]{"Empty", "One", "Two", "Three"};
         Arrays.sort(expected);
 
-        var actual = ConfigUtil.loadKeys("Test").stream().sorted().toArray(String[]::new);
+        final var actual = ConfigUtil.loadKeys("Test").stream().sorted().toArray(String[]::new);
         Assertions.assertArrayEquals(expected, actual);
     }
 

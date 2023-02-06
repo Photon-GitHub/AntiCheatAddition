@@ -3,14 +3,13 @@ package de.photon.anticheataddition.util.violationlevels;
 import de.photon.anticheataddition.Dummy;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
-import lombok.val;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 class DetectionManagementTest
@@ -38,8 +37,8 @@ class DetectionManagementTest
     @Test
     void invalidVl()
     {
-        val player = dummy.getPlayer();
-        val management = getDetectionManagement();
+        final var player = dummy.getPlayer();
+        final var management = getDetectionManagement();
 
         Assertions.assertDoesNotThrow(() -> management.setVL(player, 0));
         Assertions.assertDoesNotThrow(() -> management.addVL(player, 0));
@@ -56,7 +55,7 @@ class DetectionManagementTest
             Assertions.assertThrows(IllegalArgumentException.class, () -> management.addVL(player, -i));
         });
 
-        new Random().ints(10, 11, Integer.MAX_VALUE).forEach(i -> {
+        ThreadLocalRandom.current().ints(10, 11, Integer.MAX_VALUE).forEach(i -> {
             Assertions.assertThrows(IllegalArgumentException.class, () -> management.setVL(player, i));
             Assertions.assertThrows(IllegalArgumentException.class, () -> management.setVL(player, -i));
             Assertions.assertThrows(IllegalArgumentException.class, () -> management.addVL(player, i));
@@ -67,9 +66,9 @@ class DetectionManagementTest
     @Test
     void testSetVl()
     {
-        val player = dummy.getPlayer();
-        val player2 = Dummy.mockPlayer();
-        val management = getDetectionManagement();
+        final var player = dummy.getPlayer();
+        final var player2 = Dummy.mockPlayer();
+        final var management = getDetectionManagement();
 
         management.setVL(player, 0);
         management.setVL(player2, 0);
@@ -92,8 +91,8 @@ class DetectionManagementTest
     @Test
     void testAddVl()
     {
-        val management = getDetectionManagement();
-        val player = dummy.getPlayer();
+        final var management = getDetectionManagement();
+        final var player = dummy.getPlayer();
 
         management.setVL(player, 0);
         Assertions.assertEquals(0, management.getVL(player.getUniqueId()));

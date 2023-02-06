@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.entitydestroy.IWrapperServerEntityDestroy;
+import de.photon.anticheataddition.util.visibility.PacketInformationHider;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -12,9 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Set;
 
-final class EntityHider extends EntityInformationHider
+public final class AncientPlayerHider extends PacketInformationHider
 {
-    public EntityHider()
+    public AncientPlayerHider()
     {
         super(PacketType.Play.Server.ENTITY_EQUIPMENT,
               PacketType.Play.Server.ENTITY_EFFECT,
@@ -35,7 +36,7 @@ final class EntityHider extends EntityInformationHider
     }
 
     @Override
-    protected void onHide(@NotNull Player observer, @NotNull Set<Entity> toHide)
+    protected void onHide(@NotNull Player observer, @NotNull Set<Player> toHide)
     {
         if (toHide.isEmpty()) return;
 
@@ -43,7 +44,7 @@ final class EntityHider extends EntityInformationHider
     }
 
     @Override
-    protected void onReveal(@NotNull Player observer, @NotNull Set<Entity> revealed)
+    protected void onReveal(@NotNull Player observer, @NotNull Set<Player> revealed)
     {
         if (revealed.isEmpty()) return;
 

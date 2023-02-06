@@ -8,7 +8,6 @@ import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
 import de.photon.anticheataddition.util.mathematics.DataUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
 import de.photon.anticheataddition.util.violationlevels.Flag;
-import lombok.val;
 
 import java.util.List;
 import java.util.Set;
@@ -25,13 +24,13 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
     @Override
     public void processBatch(User user, List<InventoryBatch.InventoryClick> batch)
     {
-        val timeOffsets = BatchPreprocessors.zipOffsetOne(batch).stream()
-                                            .filter(pair -> pair.first().inventory().equals(pair.second().inventory()))
-                                            .mapToLong(pair -> pair.first().timeOffset(pair.second()))
-                                            .toArray();
+        final long[] timeOffsets = BatchPreprocessors.zipOffsetOne(batch).stream()
+                                                     .filter(pair -> pair.first().inventory().equals(pair.second().inventory()))
+                                                     .mapToLong(pair -> pair.first().timeOffset(pair.second()))
+                                                     .toArray();
 
 
-        val misClickCounter = user.getData().counter.inventoryAverageHeuristicsMisclicks;
+        final var misClickCounter = user.getData().counter.inventoryAverageHeuristicsMisclicks;
 
         // Not enough data to check as the player opened many inventories.
         if (timeOffsets.length < 8) {
@@ -60,7 +59,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         // Too low vl.
         if (vl < 10) return;
 
-        val finalVl = (int) Math.min(vl, 70);
+        final int finalVl = (int) Math.min(vl, 70);
         this.getModule().getManagement().flag(Flag.of(user)
                                                   .setAddedVl(finalVl)
                                                   .setDebug(() -> "Inventory-Debug | Player: %s has bot-like click delays. (SE: %f | A: %f | MC: %d | VLU: %d)".formatted(user.getPlayer().getName(), squaredErrorsSum, averageMillis, misClickCounter.getCounter(), finalVl)));

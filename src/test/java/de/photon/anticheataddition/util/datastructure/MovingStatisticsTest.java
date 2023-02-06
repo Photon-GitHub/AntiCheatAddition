@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.datastructure;
 
 import de.photon.anticheataddition.util.datastructure.statistics.MovingDoubleStatistics;
 import de.photon.anticheataddition.util.datastructure.statistics.MovingLongStatistics;
-import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -34,10 +33,10 @@ class MovingStatisticsTest
     @Test
     void MovingStatisticsNoDefaultTest()
     {
-        val capacity = 10;
+        final int capacity = 10;
 
-        val doubleStats = new MovingDoubleStatistics(capacity);
-        val longStats = new MovingLongStatistics(capacity);
+        final var doubleStats = new MovingDoubleStatistics(capacity);
+        final var longStats = new MovingLongStatistics(capacity);
 
         Assertions.assertEquals(0, doubleStats.getSum());
         Assertions.assertEquals(0, longStats.getSum());
@@ -70,11 +69,11 @@ class MovingStatisticsTest
     @Test
     void MovingStatisticsDefaultTest()
     {
-        val capacity = 10;
-        val defaultValue = 100;
+        final int capacity = 10;
+        final int defaultValue = 100;
 
-        val doubleStats = new MovingDoubleStatistics(capacity, defaultValue);
-        val longStats = new MovingLongStatistics(capacity, defaultValue);
+        final var doubleStats = new MovingDoubleStatistics(capacity, defaultValue);
+        final var longStats = new MovingLongStatistics(capacity, defaultValue);
 
         Assertions.assertEquals(capacity * defaultValue, doubleStats.getSum(), DELTA, "Wrong sum.");
         Assertions.assertEquals(capacity * defaultValue, longStats.getSum(), "Wrong sum.");

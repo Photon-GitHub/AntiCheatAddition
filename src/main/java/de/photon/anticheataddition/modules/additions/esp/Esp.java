@@ -6,12 +6,11 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.config.Configs;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeQueue;
 import de.photon.anticheataddition.util.messaging.Log;
-import de.photon.anticheataddition.util.visibility.EntityVisibility;
+import de.photon.anticheataddition.util.visibility.PlayerVisibility;
 import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -113,8 +112,8 @@ public final class Esp extends Module
     private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
     {
         for (val observerNode : playerQuadTree) {
-            final Set<Entity> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
-            final Set<Entity> fullHiddenPlayers = new HashSet<>(worldPlayers);
+            final Set<Player> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
+            final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
             final Player observer = observerNode.element();
 
             for (val playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
@@ -122,8 +121,12 @@ public final class Esp extends Module
 
                 // Different worlds (might be possible if the player changed world in just the right moment)
                 if (!observer.getWorld().getUID().equals(watched.getWorld().getUID())
+                    // Either of the two players is not in adventure or survival mode
+                    || !User.inAdventureOrSurvivalMode(observer)
+                    || !User.inAdventureOrSurvivalMode(watched)
                     // Less than 1 block distance (removes the player themselves and any very close player)
                     || observerNode.distanceSquared(playerNode) < 1
+                    || watched.isDead()
                     || CanSee.INSTANCE.canSee(observer, watched))
                 {
                     // No hiding case
@@ -137,10 +140,10 @@ public final class Esp extends Module
             }
 
             Log.finest(() -> "ESP | Observer: " + observerNode.element().getName() +
-                             " | FULL: " + fullHiddenPlayers.stream().map(Entity::getName).collect(Collectors.joining(", ")) +
-                             " | EQUIP: " + equipHiddenPlayers.stream().map(Entity::getName).collect(Collectors.joining(", ")));
+                             " | FULL: " + fullHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")) +
+                             " | EQUIP: " + equipHiddenPlayers.stream().map(Player::getName).collect(Collectors.joining(", ")));
 
-            EntityVisibility.INSTANCE.setHidden(observerNode.element(), fullHiddenPlayers, equipHiddenPlayers);
+            Bukkit.getScheduler().runTask(AntiCheatAddition.getInstance(), () -> PlayerVisibility.INSTANCE.setHidden(observerNode.element(), fullHiddenPlayers, equipHiddenPlayers));
         }
     }
 }

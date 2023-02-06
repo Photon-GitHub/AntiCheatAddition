@@ -3,7 +3,6 @@ package de.photon.anticheataddition.modules.checks.scaffold;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.messaging.Log;
-import lombok.val;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.Vector;
 
@@ -20,8 +19,8 @@ final class ScaffoldAngle extends Module
     {
         if (!this.isEnabled()) return 0;
 
-        val placedFace = event.getBlock().getFace(event.getBlockAgainst());
-        val placedVector = new Vector(placedFace.getModX(), placedFace.getModY(), placedFace.getModZ());
+        final var placedFace = event.getBlock().getFace(event.getBlockAgainst());
+        final var placedVector = new Vector(placedFace.getModX(), placedFace.getModY(), placedFace.getModZ());
 
         // If greater than 90 in radians.
         if (user.getData().counter.scaffoldAngleFails.conditionallyIncDec(user.getPlayer().getLocation().getDirection().angle(placedVector) > MAX_ANGLE)) {

@@ -640,6 +640,8 @@ Sentinel:
       enabled: true
       # How many book pages are allowed on your server?
       # Any book with too many pages will be deleted.
+      # Vanilla clients can at most reach 100 pages with a book and quill.
+      # If your server uses custom books that go above that, increase this number.
       max_page_count: 100
       # Any book that has a ClickAction that opens an arbitrary local file on your pc will be deleted.
       disallow_open_file: true
@@ -655,7 +657,7 @@ Sentinel:
       # What commands will be executed if the mod is detected.
       # Automatic banning can be considered.
       commands:
-        - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} had an illegal book."
+        - "kick {player} Maliciously modified book."
 
     # Even if you have command blocks disabled on your server (as you should), it might be good to know (and ban)
     # players that used some exploit to get a command block. This will also delete any command blocks found in the
@@ -692,6 +694,7 @@ Sentinel:
 
     # This sentinel detects all potions that have one of the following features:
     # + Blindness for at least min_effect_time seconds
+    # + Darkness (on minecraft 1.19+) for at least min_effect_time seconds
     # + Nausea for at least min_effect_time seconds
     # Such potions are not available by brewing and unless a core feature on your server, should not be available to
     # your players due to the detrimental effect on a player's experience. This detects the creation and usage of such
@@ -705,7 +708,7 @@ Sentinel:
       # What commands will be executed if an illegal potion is detected.
       # Automatic banning can be considered.
       commands:
-        - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} had a troll potion"
+        - "kick {player} Troll Potion"
 
   # A popular pvp mod that can display a HUD, capes and has multiple social features.
   5Zig:

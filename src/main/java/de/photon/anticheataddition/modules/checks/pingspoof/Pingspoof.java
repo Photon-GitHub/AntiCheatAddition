@@ -48,7 +48,7 @@ public final class Pingspoof extends ViolationModule implements Listener
     public void enable()
     {
         // Seconds -> Ticks
-        val tickInterval = TimeUtil.toTicks(TimeUnit.SECONDS, loadInt(".interval", 30));
+        final long tickInterval = TimeUtil.toTicks(TimeUnit.SECONDS, loadInt(".interval", 30));
 
         val transactionPacket = new WrapperPlayServerTransaction();
         transactionPacket.setAccepted(false);

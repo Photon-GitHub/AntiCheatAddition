@@ -81,7 +81,13 @@ public enum ServerVersion
 
     // Lazy getting as most versions are not supported or used.
     // Also, this is important to avoid loading errors (as the generate methods access values() when not fully loaded)
+    /**
+     * All supported versions that came before this minecraft server version, including this one.
+     */
     @Getter(lazy = true) private final Set<ServerVersion> supVersionsTo = getSupportedVersions(version -> this.compareTo(version) >= 0);
+    /**
+     * All supported versions that came after this minecraft server version, including this one.
+     */
     @Getter(lazy = true) private final Set<ServerVersion> supVersionsFrom = getSupportedVersions(version -> this.compareTo(version) <= 0);
 
     /**

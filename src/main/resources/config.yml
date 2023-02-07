@@ -201,7 +201,7 @@ AutoPotion:
   timeout: 1000
   # How fast the player must look in the initial direction once again to be regarded as having bot-like reaction speed
   # (in milliseconds).
-  look_restored_time: 150
+  look_restored_time: 200
   # When looking back, beyond what angle difference should someone be considered as legit?
   angle_offset: 5
   # How much someone has to suddenly look down to start the check (in degrees)

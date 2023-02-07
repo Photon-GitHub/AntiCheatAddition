@@ -1,18 +1,17 @@
 package de.photon.anticheataddition.modules.checks.packetanalysis;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
-import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
-import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
-import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
+import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.val;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 
-public final class PacketAnalysisIllegalPitch extends ViolationModule
+public final class PacketAnalysisIllegalPitch extends ViolationModule implements Listener
 {
     public static final PacketAnalysisIllegalPitch INSTANCE = new PacketAnalysisIllegalPitch();
 
@@ -29,21 +28,14 @@ public final class PacketAnalysisIllegalPitch extends ViolationModule
                                        .withDecay(200, 1).build();
     }
 
-    @Override
-    protected ModuleLoader createModuleLoader()
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event)
     {
-        val packetAdapter = PacketAdapterBuilder
-                .of(this, PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK)
-                .priority(ListenerPriority.LOW)
-                .onReceiving((event, user) -> {
-                    final IWrapperPlayClientLook lookWrapper = event::getPacket;
-                    if (!MathUtil.inRange(-90, 90, lookWrapper.getPitch())) {
-                        getManagement().flag(Flag.of(user).setAddedVl(150).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent illegal pitch value."));
-                    }
-                }).build();
+        val user = User.getUser(event.getPlayer().getUniqueId());
+        if (User.isUserInvalid(user, this) || event.getTo() == null) return;
 
-        return ModuleLoader.builder(this)
-                           .addPacketListeners(packetAdapter)
-                           .build();
+        if (!MathUtil.inRange(-90, 90, event.getTo().getPitch())) {
+            getManagement().flag(Flag.of(user).setAddedVl(150).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " sent illegal pitch value."));
+        }
     }
 }

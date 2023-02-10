@@ -55,7 +55,7 @@ public class LegacyServerEquipmentWrapper extends AbstractPacket implements IWra
     @Override
     public boolean isSlotSet(ItemSlot slot)
     {
-        return slotStackPairs.stream().anyMatch(pair -> pair.getFirst().equals(slot));
+        return slotStackPairs.stream().map(Pair::getFirst).anyMatch(slot::equals);
     }
 
     @Override

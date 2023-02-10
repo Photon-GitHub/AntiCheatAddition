@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.util.datastructure.kdtree;
 
 import de.photon.anticheataddition.util.mathematics.MathUtil;
-import lombok.val;
 import org.danilopianini.util.FlexibleQuadTree;
 import org.danilopianini.util.SpatialIndex;
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +53,10 @@ public abstract class QuadTreeCollection<T> extends AbstractCollection<QuadTreeC
         return getBackingCollection().remove(node);
     }
 
+    /**
+     * This method gets all the nodes in a square around the center node.
+     * The center node is not required to be in the {@link QuadTreeCollection}.
+     */
     public final List<Node<T>> querySquare(Node<T> center, double radius)
     {
         double[] first = new double[]{center.x - radius, center.y - radius};
@@ -63,10 +66,10 @@ public abstract class QuadTreeCollection<T> extends AbstractCollection<QuadTreeC
 
     public final List<Node<T>> queryCircle(Node<T> center, double radius)
     {
-        val squareList = querySquare(center, radius);
+        final var squareList = querySquare(center, radius);
 
-        val result = new ArrayList<Node<T>>();
-        val radiusSquared = radius * radius;
+        final var result = new ArrayList<Node<T>>();
+        final var radiusSquared = radius * radius;
         for (Node<T> node : squareList) {
             if (node.inRadius(center, radiusSquared)) result.add(node);
         }

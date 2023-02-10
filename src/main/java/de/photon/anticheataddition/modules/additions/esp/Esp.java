@@ -7,7 +7,6 @@ import de.photon.anticheataddition.util.config.Configs;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeQueue;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.visibility.PlayerVisibility;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -51,13 +50,13 @@ public final class Esp extends Module
     @NotNull
     private static Map<World, Integer> loadWorldTrackingRanges(ConfigurationSection worlds, Set<String> worldKeys)
     {
-        val playerTrackingRanges = new HashMap<World, Integer>();
+        final var playerTrackingRanges = new HashMap<World, Integer>();
         for (String key : worldKeys) {
             // Skip the default world range.
             if (DEFAULT_WORLD_NAME.equals(key)) continue;
 
             // Does the world exist?
-            val world = Bukkit.getWorld(key);
+            final var world = Bukkit.getWorld(key);
             if (world == null || !worlds.contains(key + ENTITY_TRACKING_RANGE_PLAYERS)) {
                 Log.severe(() -> "ESP | World " + key + " player tracking range could not be loaded, using default tracking range.");
                 continue;
@@ -75,13 +74,13 @@ public final class Esp extends Module
     protected void enable()
     {
         // ---------------------------------------------------- Auto-configuration ----------------------------------------------------- //
-        val worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
+        final var worlds = Configs.SPIGOT.getConfigurationRepresentation().getYamlConfiguration().getConfigurationSection("world-settings");
         if (worlds == null) {
             Log.severe(() -> "Cannot enable ESP as the world-settings in spigot.yml are not present.");
             return;
         }
 
-        val worldKeys = worlds.getKeys(false);
+        final var worldKeys = worlds.getKeys(false);
 
         final int defaultTrackingRange = loadDefaultTrackingRange(worlds);
         final Map<World, Integer> playerTrackingRanges = loadWorldTrackingRanges(worlds, worldKeys);
@@ -94,14 +93,14 @@ public final class Esp extends Module
             for (World world : Bukkit.getWorlds()) {
                 final int playerTrackingRange = playerTrackingRanges.getOrDefault(world, defaultTrackingRange);
 
-                val worldPlayers = world.getPlayers().stream()
-                                        .map(User::getUser)
-                                        .filter(user -> !User.isUserInvalid(user, this))
-                                        .filter(User::inAdventureOrSurvivalMode)
-                                        .map(User::getPlayer)
-                                        .collect(Collectors.toUnmodifiableSet());
+                final var worldPlayers = world.getPlayers().stream()
+                                              .map(User::getUser)
+                                              .filter(user -> !User.isUserInvalid(user, this))
+                                              .filter(User::inAdventureOrSurvivalMode)
+                                              .map(User::getPlayer)
+                                              .collect(Collectors.toUnmodifiableSet());
 
-                val playerQuadTree = new QuadTreeQueue<Player>();
+                final var playerQuadTree = new QuadTreeQueue<Player>();
                 for (Player player : worldPlayers) playerQuadTree.add(player.getLocation().getX(), player.getLocation().getZ(), player);
 
                 processWorldQuadTree(playerTrackingRange, worldPlayers, playerQuadTree);
@@ -111,12 +110,12 @@ public final class Esp extends Module
 
     private static void processWorldQuadTree(int playerTrackingRange, Set<Player> worldPlayers, QuadTreeQueue<Player> playerQuadTree)
     {
-        for (val observerNode : playerQuadTree) {
+        for (final var observerNode : playerQuadTree) {
             final Set<Player> equipHiddenPlayers = new HashSet<>(worldPlayers.size());
             final Set<Player> fullHiddenPlayers = new HashSet<>(worldPlayers);
             final Player observer = observerNode.element();
 
-            for (val playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
+            for (final var playerNode : playerQuadTree.queryCircle(observerNode, playerTrackingRange)) {
                 final Player watched = playerNode.element();
 
                 // Different worlds (might be possible if the player changed world in just the right moment)

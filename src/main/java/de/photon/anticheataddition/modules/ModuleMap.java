@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.modules;
 
-import lombok.val;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -26,9 +25,9 @@ public final class ModuleMap<T extends Module>
         return this.backingMap.get(moduleId);
     }
 
-    public void addModule(T module)
+    public synchronized void addModule(T module)
     {
-        val copyMap = new HashMap<>(backingMap);
+        final var copyMap = new HashMap<>(backingMap);
         copyMap.put(module.getModuleId(), module);
         backingMap = Map.copyOf(copyMap);
     }

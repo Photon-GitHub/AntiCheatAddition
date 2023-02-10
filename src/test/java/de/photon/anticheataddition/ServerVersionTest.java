@@ -59,7 +59,7 @@ class ServerVersionTest
     {
         final var expected = Arrays.stream(ServerVersion.values())
                                    .filter(ServerVersion::isSupported)
-                                   .collect(Collectors.toUnmodifiableSet());
+                                   .toList();
 
         Assertions.assertTrue(expected.containsAll(ServerVersion.ALL_SUPPORTED_VERSIONS), "ALL_SUPPORTED_VERSIONS contains unsupported version.");
         Assertions.assertTrue(ServerVersion.ALL_SUPPORTED_VERSIONS.containsAll(expected), "ALL_SUPPORTED_VERSIONS does not contain all supported versions.");

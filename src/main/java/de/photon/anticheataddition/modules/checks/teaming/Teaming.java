@@ -75,44 +75,42 @@ public final class Teaming extends ViolationModule implements Listener
         final int allowedSize = loadInt(".allowed_size", 1);
         Preconditions.checkArgument(allowedSize > 0, "The Teaming allowed_size must be greater than 0.");
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(
-                AntiCheatAddition.getInstance(),
-                () -> {
-                    final var quadTree = new QuadTreeSet<Player>();
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(AntiCheatAddition.getInstance(), () -> {
+            final var quadTree = new QuadTreeSet<Player>();
 
-                    for (World world : enabledWorlds) {
-                        for (Player player : world.getPlayers()) {
-                            final User user = User.getUser(player);
-                            if (!User.isUserInvalid(user, Esp.INSTANCE)
-                                // Correct game modes.
-                                && user.inAdventureOrSurvivalMode()
-                                // Not engaged in pvp.
-                                && user.getTimeMap().at(TimeKey.COMBAT).notRecentlyUpdated(noPvpTime))
-                            {
-                                final var loc = player.getLocation();
-                                // Not in a bypassed region.
-                                if (safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(loc))) quadTree.add(loc.getX(), loc.getZ(), player);
-                            }
-                        }
-
-                        while (!quadTree.isEmpty()) {
-                            // Use getAny() so the node itself is contained in the team below.
-                            final var firstNode = quadTree.getAny();
-                            final var team = quadTree.queryCircle(firstNode, proximityRange).stream()
-                                                     // Check for y-distance.
-                                                     .filter(node -> node.element().getLocation().distanceSquared(firstNode.element().getLocation()) <= proximityRangeSquared)
-                                                     .peek(quadTree::remove)
-                                                     .map(QuadTreeSet.Node::element)
-                                                     .collect(Collectors.toUnmodifiableSet());
-
-                            // Team is too big
-                            final int vl = team.size() - allowedSize;
-                            if (vl > 0) {
-                                for (Player player : team) this.getManagement().flag(Flag.of(player).setAddedVl(vl));
-                            }
-                        }
+            for (World world : enabledWorlds) {
+                for (Player player : world.getPlayers()) {
+                    final User user = User.getUser(player);
+                    if (!User.isUserInvalid(user, Esp.INSTANCE)
+                        // Correct game modes.
+                        && user.inAdventureOrSurvivalMode()
+                        // Not engaged in pvp.
+                        && user.getTimeMap().at(TimeKey.COMBAT).notRecentlyUpdated(noPvpTime))
+                    {
+                        final var loc = player.getLocation();
+                        // Not in a bypassed region.
+                        if (safeZones.stream().noneMatch(safeZone -> safeZone.isInsideRegion(loc))) quadTree.add(loc.getX(), loc.getZ(), player);
                     }
-                }, 1L, period);
+                }
+
+                while (!quadTree.isEmpty()) {
+                    // Use getAny() so the node itself is contained in the team below.
+                    final var firstNode = quadTree.getAny();
+                    final var team = quadTree.queryCircle(firstNode, proximityRange).stream()
+                                             // Check for y-distance.
+                                             .filter(node -> node.element().getLocation().distanceSquared(firstNode.element().getLocation()) <= proximityRangeSquared)
+                                             .peek(quadTree::remove)
+                                             .map(QuadTreeSet.Node::element)
+                                             .collect(Collectors.toUnmodifiableSet());
+
+                    // Team is too big
+                    final int vl = team.size() - allowedSize;
+                    if (vl > 0) {
+                        for (Player player : team) this.getManagement().flag(Flag.of(player).setAddedVl(vl));
+                    }
+                }
+            }
+        }, 1L, period);
     }
 
     @Override

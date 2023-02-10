@@ -20,7 +20,6 @@ import org.bukkit.event.Listener;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public final class Teaming extends ViolationModule implements Listener
 {
@@ -94,19 +93,18 @@ public final class Teaming extends ViolationModule implements Listener
                 }
 
                 while (!quadTree.isEmpty()) {
-                    // Use getAny() so the node itself is contained in the team below.
                     final var firstNode = quadTree.getAny();
-                    final var team = quadTree.queryCircle(firstNode, proximityRange).stream()
-                                             // Check for y-distance.
-                                             .filter(node -> node.element().getLocation().distanceSquared(firstNode.element().getLocation()) <= proximityRangeSquared)
-                                             .peek(quadTree::remove)
-                                             .map(QuadTreeSet.Node::element)
-                                             .collect(Collectors.toUnmodifiableSet());
+                    final var teamNodes = quadTree.queryCircle(firstNode, proximityRange).stream()
+                                                  // The queryCircle function does not check the y-coords of a player, we need to do that here manually.
+                                                  .filter(node -> node.element().getLocation().distanceSquared(firstNode.element().getLocation()) <= proximityRangeSquared)
+                                                  .toList();
+
+                    quadTree.removeAll(teamNodes);
 
                     // Team is too big
-                    final int vl = team.size() - allowedSize;
+                    final int vl = teamNodes.size() - allowedSize;
                     if (vl > 0) {
-                        for (Player player : team) this.getManagement().flag(Flag.of(player).setAddedVl(vl));
+                        for (final var node : teamNodes) this.getManagement().flag(Flag.of(node.element()).setAddedVl(vl));
                     }
                 }
             }

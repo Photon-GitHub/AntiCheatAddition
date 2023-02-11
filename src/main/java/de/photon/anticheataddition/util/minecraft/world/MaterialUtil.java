@@ -5,7 +5,6 @@ import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.exception.UnknownMinecraftException;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
 import lombok.experimental.UtilityClass;
-import lombok.val;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 
@@ -58,9 +57,9 @@ public final class MaterialUtil
                                                        Sets.immutableEnumSet(AIR);
 
     static {
-        val autoStepMaterials = EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST);
-        val bounceMaterials = EnumSet.of(SLIME_BLOCK);
-        val freeSpaceContainers = EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST);
+        final var autoStepMaterials = EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST);
+        final var bounceMaterials = EnumSet.of(SLIME_BLOCK);
+        final var freeSpaceContainers = EnumSet.of(CHEST, TRAPPED_CHEST, ENDER_CHEST);
 
         switch (ServerVersion.ACTIVE) {
             case MC18, MC112 -> {

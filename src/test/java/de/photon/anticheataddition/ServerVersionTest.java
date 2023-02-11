@@ -5,9 +5,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class ServerVersionTest
@@ -57,9 +57,8 @@ class ServerVersionTest
     @Test
     void allSupportedVersionsTest()
     {
-        final var expected = Arrays.stream(ServerVersion.values())
-                                   .filter(ServerVersion::isSupported)
-                                   .toList();
+        final var expected = EnumSet.noneOf(ServerVersion.class);
+        for (var sv : ServerVersion.values()) if (sv.isSupported()) expected.add(sv);
 
         Assertions.assertTrue(expected.containsAll(ServerVersion.ALL_SUPPORTED_VERSIONS), "ALL_SUPPORTED_VERSIONS contains unsupported version.");
         Assertions.assertTrue(ServerVersion.ALL_SUPPORTED_VERSIONS.containsAll(expected), "ALL_SUPPORTED_VERSIONS does not contain all supported versions.");

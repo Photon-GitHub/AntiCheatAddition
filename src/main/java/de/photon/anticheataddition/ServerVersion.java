@@ -50,7 +50,7 @@ public enum ServerVersion
      */
     @NotNull
     public static final ServerVersion ACTIVE = Arrays.stream(ServerVersion.values())
-                                                     .filter(serverVersion -> Bukkit.getVersion().contains(serverVersion.getVersionOutputString()))
+                                                     .filter(serverVersion -> Bukkit.getBukkitVersion().startsWith(serverVersion.getVersionOutputString()))
                                                      .findFirst()
                                                      .orElseThrow(UnknownMinecraftException::new);
 

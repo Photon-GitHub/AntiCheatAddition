@@ -78,11 +78,9 @@ public final class DamageIndicator extends Module
                         else if (event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) read = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
                         else throw new IllegalStateException("Unregistered packet type.");
 
-                        read.getMetadataIndex(EntityMetadataIndex.HEALTH).ifPresent(health -> {
-                            // Only set it if the entity is not yet dead to prevent problems on the clientside.
-                            // Set the health to 1.0F as that is the default value.
-                            if (((Float) health.getValue() > 0.0F)) health.setValue(1.0F);
-                        });
+                        // Only set it if the entity is not yet dead to prevent problems on the clientside.
+                        // Set the health to 1.0F as that is the default value.
+                        read.modifyMetadataIndex(EntityMetadataIndex.HEALTH, health -> (Float) health > 0.0F ? 1.0F : 0.0F);
                     }
                 }).build());
     }

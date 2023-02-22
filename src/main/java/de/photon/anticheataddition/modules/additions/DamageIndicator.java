@@ -11,7 +11,6 @@ import de.photon.anticheataddition.protocol.packetwrappers.MetadataPacket;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerEntityMetadata;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerNamedEntitySpawn;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
-import lombok.val;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
@@ -34,20 +33,20 @@ public final class DamageIndicator extends Module
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetTypes = ServerVersion.is18() ?
-                          // Only register NAMED_ENTITY_SPAWN on 1.8 as it doesn't work on newer versions.
-                          Set.of(PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN) :
-                          Set.of(PacketType.Play.Server.ENTITY_METADATA);
+        final var packetTypes = ServerVersion.is18() ?
+                                // Only register NAMED_ENTITY_SPAWN on 1.8 as it doesn't work on newer versions.
+                                Set.of(PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN) :
+                                Set.of(PacketType.Play.Server.ENTITY_METADATA);
 
         return ModuleLoader.of(this, PacketAdapterBuilder
                 .of(this, packetTypes)
                 .priority(ListenerPriority.HIGH)
                 .onSending((event, user) -> {
-                    val entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
+                    final var entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
                     // Clientside entities will be null in the world's entity list.
                     if (entity == null) return;
 
-                    val entityType = entity.getType();
+                    final var entityType = entity.getType();
 
                     // Should spoof?
                     // Entity has health to begin with.

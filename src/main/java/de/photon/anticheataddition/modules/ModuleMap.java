@@ -3,11 +3,11 @@ package de.photon.anticheataddition.modules;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class ModuleMap<T extends Module>
 {
@@ -27,9 +27,8 @@ public final class ModuleMap<T extends Module>
 
     public synchronized void addModule(T module)
     {
-        final var copyMap = new HashMap<>(backingMap);
-        copyMap.put(module.getModuleId(), module);
-        backingMap = Map.copyOf(copyMap);
+        this.backingMap = Stream.concat(this.values().stream(), Stream.of(module))
+                                .collect(Collectors.toUnmodifiableMap(Module::getModuleId, Function.identity()));
     }
 
     public int size()

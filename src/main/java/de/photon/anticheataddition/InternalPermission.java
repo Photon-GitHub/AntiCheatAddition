@@ -6,17 +6,17 @@ import org.bukkit.permissions.Permissible;
 public enum InternalPermission
 {
     NONE(null),
-    BYPASS("anticheataddition.bypass"),
-    DEBUG("anticheataddition.debug"),
-    INFO("anticheataddition.info"),
-    SETVL("anticheataddition.setvl"),
-    TABLISTREMOVE("anticheataddition.tablistremove");
+    BYPASS("bypass"),
+    DEBUG("debug"),
+    INFO("info"),
+    SETVL("setvl"),
+    TABLISTREMOVE("tablistremove");
 
     @Getter private final String realPermission;
 
     InternalPermission(final String realPermission)
     {
-        this.realPermission = realPermission;
+        this.realPermission = "anticheataddition." + realPermission;
     }
 
     /**

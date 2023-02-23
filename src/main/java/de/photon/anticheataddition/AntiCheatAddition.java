@@ -21,6 +21,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.floodgate.api.FloodgateApi;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Locale;
@@ -47,8 +48,8 @@ public class AntiCheatAddition extends JavaPlugin
     @Getter private static AntiCheatAddition instance;
 
     @Getter(lazy = true) private final FileConfiguration config = generateConfig();
-    private ViaAPI<?> viaAPI;
-    private FloodgateApi floodgateApi;
+    @Nullable private ViaAPI<?> viaAPI;
+    @Nullable private FloodgateApi floodgateApi;
 
     private boolean bungeecord = false;
 

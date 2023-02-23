@@ -4,9 +4,7 @@ import de.photon.anticheataddition.exception.UnknownMinecraftException;
 import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
 import lombok.Getter;
-import lombok.val;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -98,19 +96,6 @@ public enum ServerVersion
     public static boolean is18()
     {
         return ACTIVE == MC18;
-    }
-
-    /**
-     * Used to get the client version. Might only differ from {@link #ACTIVE} if ViaVersion is installed.
-     */
-    @NotNull
-    public static ServerVersion getClientServerVersion(final Player player)
-    {
-        if (player == null) return ACTIVE;
-        val viaAPI = AntiCheatAddition.getInstance().getViaAPI();
-        if (viaAPI == null) return ACTIVE;
-
-        return getByProtocolVersionNumber(viaAPI.getPlayerVersion(player.getUniqueId())).orElse(ACTIVE);
     }
 
     /**

@@ -4,6 +4,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.InternalPermission;
+import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.data.Data;
 import de.photon.anticheataddition.user.data.TimeKey;
@@ -14,12 +15,9 @@ import de.photon.anticheataddition.user.data.batch.TowerBatch;
 import de.photon.anticheataddition.user.data.subdata.LookPacketData;
 import de.photon.anticheataddition.util.datastructure.statistics.MovingDoubleStatistics;
 import de.photon.anticheataddition.util.mathematics.Hitbox;
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
-import lombok.val;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,7 +39,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class User implements Permissible
 {
@@ -64,21 +61,29 @@ public final class User implements Permissible
     private final MovingDoubleStatistics pingspoofPing = new MovingDoubleStatistics(4, 200D);
 
     /**
+     * This is the minecraft version of the client.
+     * It may differ from the active server version e.g. due to ViaVersion.
+     */
+    private final ServerVersion clientVersion;
+
+    /**
      * Creates an {@link User} from a {@link Player}.
      */
-    public static User createFromPlayer(Player player)
+    public User(Player player)
     {
-        val user = new User(player);
-        USERS.put(player.getUniqueId(), user);
+        this.player = player;
+        final var viaAPI = AntiCheatAddition.getInstance().getViaAPI();
+        this.clientVersion = viaAPI == null ? ServerVersion.ACTIVE : ServerVersion.getByProtocolVersionNumber(viaAPI.getPlayerVersion(this.player.getUniqueId())).orElse(ServerVersion.ACTIVE);
+
+        USERS.put(player.getUniqueId(), this);
 
         if (AntiCheatAddition.getInstance().getFloodgateApi() != null &&
             AntiCheatAddition.getInstance().getFloodgateApi().isFloodgateId(player.getUniqueId()))
         {
-            FLOODGATE_USERS.add(user);
+            FLOODGATE_USERS.add(this);
         }
 
-        if (InternalPermission.DEBUG.hasPermission(player)) DEBUG_USERS.add(user);
-        return user;
+        if (InternalPermission.DEBUG.hasPermission(player)) DEBUG_USERS.add(this);
     }
 
     public static User getUser(Player player)
@@ -346,7 +351,7 @@ public final class User implements Permissible
         @EventHandler(priority = EventPriority.LOWEST)
         public void onJoin(final PlayerJoinEvent event)
         {
-            final User user = createFromPlayer(event.getPlayer());
+            final User user = new User(event.getPlayer());
 
             // Login time
             user.timeMap.at(TimeKey.LOGIN_TIME).update();

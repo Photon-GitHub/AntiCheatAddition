@@ -63,7 +63,7 @@ public final class Dummy
      */
     public static User mockUser()
     {
-        return User.createFromPlayer(mockPlayer());
+        return new User(mockPlayer());
     }
 
     public static ViolationModule mockViolationModule(String configString)

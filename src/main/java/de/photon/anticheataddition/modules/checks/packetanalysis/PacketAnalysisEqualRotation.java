@@ -60,7 +60,7 @@ public final class PacketAnalysisEqualRotation extends ViolationModule
                                                        () -> !(user.isInLiquids() && MaterialUtil.BOUNCE_MATERIALS.contains(user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) &&
                                                              // Fixes false positives on versions 1.9+ because of changed hitboxes
                                                              !(ServerVersion.is18() &&
-                                                               ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC18 &&
+                                                               user.getClientVersion() != ServerVersion.MC18 &&
                                                                SetUtil.containsAny(user.getHitboxLocation().getPartiallyIncludedMaterials(), MaterialUtil.CHANGED_HITBOX_MATERIALS))))
                     {
                         // Cancelled packets may cause problems.

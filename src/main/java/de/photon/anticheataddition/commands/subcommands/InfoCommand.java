@@ -7,7 +7,6 @@ import de.photon.anticheataddition.commands.TabCompleteSupplier;
 import de.photon.anticheataddition.modules.ModuleManager;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
-import lombok.val;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -27,15 +26,15 @@ public class InfoCommand extends InternalCommand
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
         // Peek for better performance
-        val player = getPlayer(sender, arguments.peek());
+        final var player = getPlayer(sender, arguments.peek());
         if (player == null) return;
 
-        val moduleVls = ModuleManager.getViolationModuleMap().values().stream()
-                                     .map(vlm -> ModuleVl.of(vlm, player))
-                                     // Only the modules with above 0 vl are important.
-                                     .filter(ModuleVl::hasValidVl)
-                                     .sorted()
-                                     .toList();
+        final var moduleVls = ModuleManager.getViolationModuleMap().values().stream()
+                                           .map(vlm -> ModuleVl.of(vlm, player))
+                                           // Only the modules with above 0 vl are important.
+                                           .filter(ModuleVl::hasValidVl)
+                                           .sorted()
+                                           .toList();
 
         ChatMessage.sendMessage(sender, player.getName());
 

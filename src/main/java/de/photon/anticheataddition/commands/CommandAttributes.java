@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.val;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
@@ -156,7 +155,7 @@ public final class CommandAttributes
 
         public CommandAttributes build()
         {
-            val childCommands = this.childCommandsBuilder.build();
+            final var childCommands = this.childCommandsBuilder.build();
             if (!childCommands.isEmpty()) this.addCommandHelpLine("Subcommands of this command are: " + String.join(", ", childCommands.keySet()));
 
             return new CommandAttributes(childCommands, List.copyOf(commandHelp), permission, minArguments, maxArguments);

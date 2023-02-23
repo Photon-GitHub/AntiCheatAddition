@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.pluginmessage.labymod;
 import com.google.gson.JsonObject;
 import de.photon.anticheataddition.modules.sentinel.mods.LabyModSentinel;
 import lombok.Getter;
-import lombok.val;
 
 import java.util.Locale;
 
@@ -33,7 +32,7 @@ enum LabyModPermission
 
     private static JsonObject generatePermissionsJson()
     {
-        val json = new JsonObject();
+        final var json = new JsonObject();
         for (LabyModPermission value : LabyModPermission.values()) json.addProperty(value.name(), value.configValue);
         return json;
     }

@@ -7,7 +7,6 @@ import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,7 +27,7 @@ public final class AutoEat extends ViolationModule implements Listener
     @EventHandler
     public void onConsume(PlayerItemConsumeEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         // If the amount is 1, the last right click on a consumable will be perfect (bot-like), as the item disappears from the slot.
         if (User.isUserInvalid(user, this) || event.getItem().getAmount() <= 1) return;
 

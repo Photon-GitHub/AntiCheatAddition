@@ -9,7 +9,6 @@ import de.photon.anticheataddition.modules.additions.BrandHider;
 import de.photon.anticheataddition.util.pluginmessage.labymod.LabyProtocolUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
@@ -69,7 +68,7 @@ public final class AntiCheatAdditionApi
     public static boolean getStateOfModule(final String moduleId)
     {
         Preconditions.checkNotNull(moduleId, "Tried to get state of null moduleId.");
-        val module = ModuleManager.getModuleMap().getModule(moduleId);
+        final var module = ModuleManager.getModuleMap().getModule(moduleId);
         Preconditions.checkNotNull(module, "Tried to get state of unknown module.");
         return module.isEnabled();
     }
@@ -85,7 +84,7 @@ public final class AntiCheatAdditionApi
     public static void setStateOfModule(final String moduleId, final boolean enabled)
     {
         Preconditions.checkNotNull(moduleId, "Tried to set state of null moduleId.");
-        val module = ModuleManager.getModuleMap().getModule(moduleId);
+        final var module = ModuleManager.getModuleMap().getModule(moduleId);
         Preconditions.checkNotNull(module, "Tried to set state of unknown module.");
         module.setEnabled(enabled);
     }

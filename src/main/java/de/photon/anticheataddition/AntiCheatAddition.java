@@ -12,7 +12,6 @@ import de.photon.anticheataddition.util.messaging.Log;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.val;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
@@ -109,7 +108,7 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             getLogger().info("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608");
-            val metrics = new Metrics(this, BSTATS_PLUGIN_ID);
+            final var metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Plugin hooks                                              //

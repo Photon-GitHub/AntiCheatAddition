@@ -8,7 +8,6 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import de.photon.anticheataddition.protocol.packetwrappers.AbstractPacket;
-import lombok.val;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
@@ -43,9 +42,9 @@ public class WrapperPlayServerPlayerInfo extends AbstractPacket
      */
     public static void updatePlayerInformation(final PlayerInfoAction action, final WrappedGameProfile gameProfile, final int ping, final EnumWrappers.NativeGameMode gameMode, final WrappedChatComponent displayName, final Player affectedPlayer)
     {
-        val playerInfoData = new PlayerInfoData(gameProfile, ping, gameMode, displayName);
+        final var playerInfoData = new PlayerInfoData(gameProfile, ping, gameMode, displayName);
 
-        val playerInfoWrapper = new WrapperPlayServerPlayerInfo();
+        final var playerInfoWrapper = new WrapperPlayServerPlayerInfo();
         playerInfoWrapper.setAction(action);
         playerInfoWrapper.setData(Collections.singletonList(playerInfoData));
 

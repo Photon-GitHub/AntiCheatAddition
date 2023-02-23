@@ -5,7 +5,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -24,7 +23,7 @@ public final class ImpossibleChat extends ViolationModule implements Listener
     @EventHandler
     public void onAsyncChat(final AsyncPlayerChatEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         if (user.getPlayer().isSprinting() ||

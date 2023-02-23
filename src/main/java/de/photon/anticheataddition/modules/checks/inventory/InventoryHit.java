@@ -5,7 +5,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,7 +26,7 @@ public final class InventoryHit extends ViolationModule implements Listener
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event)
     {
         if (event.getDamager() instanceof Player) {
-            val user = User.getUser(event.getDamager().getUniqueId());
+            final var user = User.getUser(event.getDamager().getUniqueId());
             if (User.isUserInvalid(user, this)) return;
 
             // Is in Inventory (Detection)

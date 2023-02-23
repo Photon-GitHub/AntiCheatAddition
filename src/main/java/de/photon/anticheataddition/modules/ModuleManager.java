@@ -45,7 +45,6 @@ import de.photon.anticheataddition.util.config.ConfigUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.val;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +56,7 @@ public final class ModuleManager
     @Getter private static final ModuleMap<ViolationModule> violationModuleMap;
 
     static {
-        val moduleList = new ArrayList<>(Arrays.asList(
+        final var moduleList = new ArrayList<>(Arrays.asList(
                 // Additions
                 BrandHider.INSTANCE,
                 DamageIndicator.INSTANCE,

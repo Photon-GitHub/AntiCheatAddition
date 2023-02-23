@@ -3,7 +3,6 @@ package de.photon.anticheataddition.commands;
 import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -35,7 +34,7 @@ public final class TabCompleteSupplier
     public List<String> getTabPossibilities(final String partialArgument)
     {
         if (partialArgument == null) return getTabPossibilities();
-        val lowerCaseArgument = partialArgument.toLowerCase(Locale.ENGLISH);
+        final var lowerCaseArgument = partialArgument.toLowerCase(Locale.ENGLISH);
 
         return this.tabPossibilities.stream()
                                     .map(Supplier::get)
@@ -114,7 +113,7 @@ public final class TabCompleteSupplier
 
             if (!this.constants.isEmpty()) {
                 // Explicitly compute the constants here to make sure that we only compute this list once.
-                val immutableConstants = List.copyOf(this.constants);
+                final var immutableConstants = List.copyOf(this.constants);
                 this.supplierBuilder.add(() -> immutableConstants);
             }
             return new TabCompleteSupplier(this.supplierBuilder.build());

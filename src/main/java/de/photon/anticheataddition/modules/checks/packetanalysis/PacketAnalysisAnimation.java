@@ -11,7 +11,6 @@ import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.WrapperP
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 
 public final class PacketAnalysisAnimation extends ViolationModule
 {
@@ -38,11 +37,11 @@ public final class PacketAnalysisAnimation extends ViolationModule
          * 2) Entity use packet with attack.
          * 3) Arm Animation packet.
          * */
-        val packetAdapter = PacketAdapterBuilder
+        final var packetAdapter = PacketAdapterBuilder
                 .of(this, PacketType.Play.Client.USE_ENTITY, PacketType.Play.Client.ARM_ANIMATION)
                 .priority(ListenerPriority.LOW)
                 .onReceiving((event, user) -> {
-                    val packetType = event.getPacketType();
+                    final var packetType = event.getPacketType();
 
                     if (packetType == PacketType.Play.Client.ARM_ANIMATION) user.getData().bool.packetAnalysisAnimationExpected = false;
                     else if (packetType == PacketType.Play.Client.USE_ENTITY) {
@@ -53,7 +52,7 @@ public final class PacketAnalysisAnimation extends ViolationModule
                         }
 
                         // Make sure an arm animation packet is sent directly after an attack as it is the next packet in the client code.
-                        val useEntityWrapper = new WrapperPlayClientUseEntity(event.getPacket());
+                        final var useEntityWrapper = new WrapperPlayClientUseEntity(event.getPacket());
                         if (useEntityWrapper.getType() == EnumWrappers.EntityUseAction.ATTACK)
                             user.getData().bool.packetAnalysisAnimationExpected = true;
                     }

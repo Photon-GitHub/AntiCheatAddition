@@ -5,9 +5,9 @@ import de.photon.anticheataddition.util.datastructure.SetUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -56,16 +56,16 @@ public enum Hitbox
     {
         public Location[] getEspLocations()
         {
-            val cullX = (location.getBlockX() - (int) (location.getX() + hitbox.offsetX)) == 0 && (location.getBlockX() - (int) (location.getX() - hitbox.offsetX)) == 0;
-            val cullZ = (location.getBlockZ() - (int) (location.getZ() + hitbox.offsetZ)) == 0 && (location.getBlockZ() - (int) (location.getZ() - hitbox.offsetZ)) == 0;
-            val world = location.getWorld();
+            final boolean cullX = (location.getBlockX() - (int) (location.getX() + hitbox.offsetX)) == 0 && (location.getBlockX() - (int) (location.getX() - hitbox.offsetX)) == 0;
+            final boolean cullZ = (location.getBlockZ() - (int) (location.getZ() + hitbox.offsetZ)) == 0 && (location.getBlockZ() - (int) (location.getZ() - hitbox.offsetZ)) == 0;
+            final World world = location.getWorld();
 
-            val x = location.getX();
+            final double x = location.getX();
 
-            val lowerY = location.getY();
-            val upperY = lowerY + hitbox.height;
+            final double lowerY = location.getY();
+            final double upperY = lowerY + hitbox.height;
 
-            val z = location.getZ();
+            final double z = location.getZ();
 
             if (cullX && cullZ) return new Location[]{
                     new Location(world, x, lowerY, z),
@@ -131,14 +131,14 @@ public enum Hitbox
          */
         public List<Block> getPartiallyIncludedBlocks()
         {
-            val world = Preconditions.checkNotNull(location.getWorld(), "Tried to get blocks from null world.");
+            final var world = Preconditions.checkNotNull(location.getWorld(), "Tried to get blocks from null world.");
             return getPartiallyIncludedLocations().stream().map(world::getBlockAt).toList();
         }
 
         public List<Location> getPartiallyIncludedLocations()
         {
-            val locations = new ArrayList<Location>();
-            val world = location.getWorld();
+            final var locations = new ArrayList<Location>();
+            final var world = location.getWorld();
 
             // Iterate over all the blocks inside the hitbox.
             // Note: <= is used as min and max can be the same block, which should be included.

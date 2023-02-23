@@ -7,8 +7,8 @@ import de.photon.anticheataddition.util.pluginmessage.ByteBufUtil;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import de.photon.anticheataddition.util.reflection.FieldReflect;
 import de.photon.anticheataddition.util.reflection.Reflect;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -41,7 +41,7 @@ public final class BrandHider extends Module implements Listener
 
     private void updateBrand(final Player player)
     {
-        val buf = Unpooled.buffer();
+        final ByteBuf buf = Unpooled.buffer();
 
         ByteBufUtil.writeString(buf, Placeholders.replacePlaceholders(this.brand, player));
 

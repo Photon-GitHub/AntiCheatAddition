@@ -6,7 +6,6 @@ import de.photon.anticheataddition.commands.InternalPlayerCommand;
 import de.photon.anticheataddition.commands.TabCompleteSupplier;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
-import lombok.val;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -31,7 +30,7 @@ public class DebugCommand extends InternalPlayerCommand
     @Override
     protected void execute(Player sender, Queue<String> arguments)
     {
-        val user = User.getUser(sender.getUniqueId());
+        final var user = User.getUser(sender.getUniqueId());
         if (user == null) return;
 
         final String nextArgument = arguments.peek();

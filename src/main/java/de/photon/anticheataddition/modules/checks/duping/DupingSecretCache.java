@@ -10,7 +10,6 @@ import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -34,17 +33,17 @@ public final class DupingSecretCache extends ViolationModule implements Listener
         switch (event.getInventory().getType()) {
             // Check only chests and shulker boxes to prevent false positives.
             case CHEST, SHULKER_BOX -> {
-                val user = User.getUser(event.getPlayer().getUniqueId());
+                final var user = User.getUser(event.getPlayer().getUniqueId());
                 // Use .iterator().hasNext() to check if the inventory is empty, instead of isEmpty() as that method is not available on 1.8.8.
                 if (User.isUserInvalid(user, this) || !event.getInventory().iterator().hasNext()) return;
 
                 // Artificial plugin inventories might not have a location.
-                val loc = event.getInventory().getLocation();
+                final var loc = event.getInventory().getLocation();
                 if (loc == null) return;
 
                 // Make sure that opening an inventory twice does not trigger two violations.
                 if (user.getData().object.dupingSecretCacheCurrentlyCheckedLocations.add(loc)) {
-                    val block = loc.getBlock();
+                    final var block = loc.getBlock();
                     final Material oldMaterial = block.getType();
 
                     Log.finer(() -> "Checking secret cache for " + user.getPlayer().getName() +

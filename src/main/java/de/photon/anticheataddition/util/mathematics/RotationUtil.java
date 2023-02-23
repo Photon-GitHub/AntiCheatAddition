@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.util.mathematics;
 
 import lombok.experimental.UtilityClass;
-import lombok.val;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
@@ -34,14 +33,14 @@ public final class RotationUtil
     @SuppressWarnings("RedundantCast")
     public static Vector getDirection(final float yaw, final float pitch)
     {
-        val yawRadians = Math.toRadians((double) yaw);
-        val pitchRadians = Math.toRadians((double) pitch);
+        final double yawRadians = Math.toRadians((double) yaw);
+        final double pitchRadians = Math.toRadians((double) pitch);
 
-        val vector = new Vector();
+        final var vector = new Vector();
 
         vector.setY(-Math.sin(pitchRadians));
 
-        val xz = Math.cos(pitchRadians);
+        final double xz = Math.cos(pitchRadians);
 
         vector.setX(-xz * Math.sin(yawRadians));
         vector.setZ(xz * Math.cos(yawRadians));

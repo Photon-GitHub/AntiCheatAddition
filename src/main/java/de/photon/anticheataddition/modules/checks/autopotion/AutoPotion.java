@@ -9,7 +9,6 @@ import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,7 +34,7 @@ public final class AutoPotion extends ViolationModule implements Listener
     @EventHandler
     public void onMove(final PlayerMoveEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this) || event.getTo() == null) return;
 
         switch (user.getData().object.autoPotionState) {
@@ -80,7 +79,7 @@ public final class AutoPotion extends ViolationModule implements Listener
     @EventHandler
     public void onInteract(final PlayerInteractEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         // Timeout

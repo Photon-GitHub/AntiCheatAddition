@@ -12,7 +12,6 @@ import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.Getter;
-import lombok.val;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -54,7 +53,7 @@ public final class Scaffold extends ViolationModule implements Listener
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPreBlockPlace(final BlockPlaceEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         // To prevent too fast scaffolding -> Timeout
@@ -67,7 +66,7 @@ public final class Scaffold extends ViolationModule implements Listener
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(final BlockPlaceEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         final var blockPlaced = event.getBlockPlaced();
@@ -139,7 +138,7 @@ public final class Scaffold extends ViolationModule implements Listener
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val batchProcessor = new ScaffoldAverageBatchProcessor(this);
+        final var batchProcessor = new ScaffoldAverageBatchProcessor(this);
         return ModuleLoader.builder(this)
                            .batchProcessor(batchProcessor)
                            .build();

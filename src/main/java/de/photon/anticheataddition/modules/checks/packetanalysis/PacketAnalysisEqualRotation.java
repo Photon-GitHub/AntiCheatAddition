@@ -13,7 +13,6 @@ import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.block.BlockFace;
 
 import java.util.concurrent.TimeUnit;
@@ -30,7 +29,7 @@ public final class PacketAnalysisEqualRotation extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetAdapter = PacketAdapterBuilder
+        final var packetAdapter = PacketAdapterBuilder
                 .of(this, PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK)
                 .priority(ListenerPriority.LOW)
                 .onReceiving((event, user) -> {

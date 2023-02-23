@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.util.config.ConfigUtil;
-import lombok.val;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,8 +24,8 @@ public sealed interface ThresholdManagement permits EmptyThresholds, SingleThres
     static ThresholdManagement loadThresholds(String configPath)
     {
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
-        val keys = Preconditions.checkNotNull(ConfigUtil.loadKeys(configPath), "Config loading error: The keys loaded from " + configPath + " are null.");
-        val thresholds = keys.stream().map(key -> new Threshold(Integer.parseInt(key), ConfigUtil.loadImmutableStringOrStringList(configPath + '.' + key))).toList();
+        final var keys = Preconditions.checkNotNull(ConfigUtil.loadKeys(configPath), "Config loading error: The keys loaded from " + configPath + " are null.");
+        final var thresholds = keys.stream().map(key -> new Threshold(Integer.parseInt(key), ConfigUtil.loadImmutableStringOrStringList(configPath + '.' + key))).toList();
 
         return switch (thresholds.size()) {
             case 0 -> EMPTY;
@@ -40,7 +39,7 @@ public sealed interface ThresholdManagement permits EmptyThresholds, SingleThres
     {
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
         Preconditions.checkArgument(AntiCheatAddition.getInstance().getConfig().contains(configPath), "Config loading error: The commands at " + configPath + " could not be loaded or the path does not exist.");
-        val commands = ConfigUtil.loadImmutableStringOrStringList(configPath);
+        final var commands = ConfigUtil.loadImmutableStringOrStringList(configPath);
         return commands.isEmpty() ? EMPTY : new SingleThresholds(new Threshold(1, commands));
     }
 

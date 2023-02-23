@@ -6,7 +6,6 @@ import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -31,7 +30,7 @@ public final class PacketAnalysisIllegalPitch extends ViolationModule implements
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        final var user = User.getUser(event.getPlayer().getUniqueId());
         if (User.isUserInvalid(user, this) || event.getTo() == null) return;
 
         if (!MathUtil.inRange(-90, 90, event.getTo().getPitch())) {

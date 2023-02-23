@@ -8,7 +8,6 @@ import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.experimental.UtilityClass;
-import lombok.val;
 import org.bukkit.entity.Player;
 
 @UtilityClass
@@ -22,7 +21,7 @@ public class LabyProtocolUtil
      */
     public static void sendServerBanner(Player player, String imageUrl)
     {
-        val object = new JsonObject();
+        final var object = new JsonObject();
         object.addProperty("url", imageUrl); // Url of the image
         sendLabyModMessage(player, "server_banner", object);
     }
@@ -42,7 +41,7 @@ public class LabyProtocolUtil
      */
     public static void disableVoiceChat(Player player)
     {
-        val object = new JsonObject();
+        final var object = new JsonObject();
 
         // Disable the voice chat for this player
         object.addProperty("allowed", false);
@@ -60,7 +59,7 @@ public class LabyProtocolUtil
      */
     public static void sendLabyModMessage(Player player, String key, JsonElement messageContent)
     {
-        val payload = new WrapperPlayServerCustomPayload();
+        final var payload = new WrapperPlayServerCustomPayload();
         payload.setContents(getBytesToSend(key, messageContent.toString()));
         payload.setChannel(MessageChannel.LABYMOD_CHANNEL);
         payload.sendPacket(player);

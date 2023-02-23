@@ -2,7 +2,6 @@ package de.photon.anticheataddition.util.violationlevels.threshold;
 
 import com.google.common.collect.ImmutableSortedMap;
 import lombok.Getter;
-import lombok.val;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +14,7 @@ final class MultiThresholds implements ThresholdManagement
 
     public MultiThresholds(List<Threshold> thresholds)
     {
-        val builder = ImmutableSortedMap.<Integer, Threshold>naturalOrder();
+        final var builder = ImmutableSortedMap.<Integer, Threshold>naturalOrder();
         for (Threshold threshold : thresholds) builder.put(threshold.getVl(), threshold);
         thresholdMap = builder.build();
     }
@@ -23,7 +22,7 @@ final class MultiThresholds implements ThresholdManagement
     @Override
     public void executeThresholds(int fromVl, int toVl, @NotNull Player player)
     {
-        val toExecute = thresholdMap.subMap(fromVl, false, toVl, true).values();
+        final var toExecute = thresholdMap.subMap(fromVl, false, toVl, true).values();
         for (Threshold threshold : toExecute) threshold.executeCommandList(player);
     }
 }

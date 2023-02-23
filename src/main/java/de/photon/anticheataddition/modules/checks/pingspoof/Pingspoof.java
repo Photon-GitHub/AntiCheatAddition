@@ -17,7 +17,6 @@ import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -50,7 +49,7 @@ public final class Pingspoof extends ViolationModule implements Listener
         // Seconds -> Ticks
         final long tickInterval = TimeUtil.toTicks(TimeUnit.SECONDS, loadInt(".interval", 30));
 
-        val transactionPacket = new WrapperPlayServerTransaction();
+        final var transactionPacket = new WrapperPlayServerTransaction();
         transactionPacket.setAccepted(false);
         transactionPacket.setAccepted(false);
         transactionPacket.setActionNumber((short) 0);
@@ -67,8 +66,8 @@ public final class Pingspoof extends ViolationModule implements Listener
 
                 serverPing = PingProvider.INSTANCE.getPing(user.getPlayer());
 
-                val received = user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).getTime();
-                val sent = user.getTimeMap().at(TimeKey.PINGSPOOF_SENT_PACKET).getTime();
+                final long received = user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).getTime();
+                final long sent = user.getTimeMap().at(TimeKey.PINGSPOOF_SENT_PACKET).getTime();
 
                 if (sent > 0) {
                     if (received <= 0) {
@@ -107,7 +106,7 @@ public final class Pingspoof extends ViolationModule implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         // Update the received once to make sure the player is not initially flagged for not sending a received packet.

@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.minecraft.ping;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.reflection.ClassReflect;
 import de.photon.anticheataddition.util.reflection.Reflect;
-import lombok.val;
 import org.bukkit.entity.Player;
 
 final class LegacyPingProvider implements PingProvider
@@ -12,7 +11,7 @@ final class LegacyPingProvider implements PingProvider
 
     public int getPing(Player player)
     {
-        val craftPlayer = craftPlayerReflect.method("getHandle").invoke(player);
+        final var craftPlayer = craftPlayerReflect.method("getHandle").invoke(player);
         try {
             return craftPlayer.getClass().getDeclaredField("ping").getInt(craftPlayer);
         } catch (IllegalAccessException | NoSuchFieldException e) {

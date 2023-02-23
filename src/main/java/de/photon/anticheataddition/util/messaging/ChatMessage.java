@@ -2,7 +2,6 @@ package de.photon.anticheataddition.util.messaging;
 
 import de.photon.anticheataddition.AntiCheatAddition;
 import lombok.experimental.UtilityClass;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -35,7 +34,7 @@ public final class ChatMessage
      */
     public static void sendMessage(final Iterable<? extends CommandSender> senders, final String message)
     {
-        val prefixedMessage = ANTICHEAT_ADDITION_PREFIX + message;
+        final var prefixedMessage = ANTICHEAT_ADDITION_PREFIX + message;
         for (CommandSender cs : senders) cs.sendMessage(prefixedMessage);
     }
 

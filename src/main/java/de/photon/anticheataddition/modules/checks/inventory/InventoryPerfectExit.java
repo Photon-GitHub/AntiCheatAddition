@@ -9,7 +9,6 @@ import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -31,7 +30,7 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClose(final InventoryCloseEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        final var user = User.getUser(event.getPlayer().getUniqueId());
         if (User.isUserInvalid(user, this)) return;
 
         // Creative-clear might trigger this.

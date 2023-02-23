@@ -1,7 +1,5 @@
 package de.photon.anticheataddition.user.data;
 
-import lombok.val;
-
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -12,7 +10,7 @@ public final class TimestampMap
 
     public TimestampMap()
     {
-        val enumMap = new EnumMap<TimeKey, Timestamp>(TimeKey.class);
+        final var enumMap = new EnumMap<TimeKey, Timestamp>(TimeKey.class);
         for (TimeKey value : TimeKey.values()) enumMap.put(value, new Timestamp());
         this.map = enumMap;
     }

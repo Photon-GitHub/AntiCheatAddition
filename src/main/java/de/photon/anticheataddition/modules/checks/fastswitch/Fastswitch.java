@@ -10,7 +10,6 @@ import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -42,7 +41,7 @@ public final class Fastswitch extends ViolationModule implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onPlayerItemHeld(PlayerItemHeldEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this) ||
             // Tps are high enough
             !TPSProvider.INSTANCE.atLeastTPS(19) ||

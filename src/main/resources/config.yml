@@ -601,12 +601,10 @@ Tower:
   # Violation before AntiCheatAddition starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 6
-  # If you have false positives decrease this SLIGHTLY.
+  # If you have false positives decrease this SLIGHTLY (try for example 0.99).
   # The Tower check has its own leniency-curve which makes it very effective.
   # Therefore, please only touch this if you have false positives.
   tower_leniency: 1
-  # Special leniency which is only applied if the player has the levitation effect
-  levitation_leniency: 0.95
   # After a detection which surpasses cancel_vl AntiCheatAddition cancels all block placements in the given timeframe
   # to prevent further towering (in milliseconds)
   timeout: 6000

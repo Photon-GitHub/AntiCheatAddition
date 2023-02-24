@@ -91,6 +91,8 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
+            getLogger().info(() -> "Server version " + ServerVersion.ACTIVE.getVersionOutputString() + " detected.");
+
             if (!ServerVersion.ACTIVE.isSupported()) {
                 getLogger().severe("Server version is not supported.");
                 getLogger().severe(() -> "Supported versions: " + ServerVersion.ALL_SUPPORTED_VERSIONS.stream().map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")));

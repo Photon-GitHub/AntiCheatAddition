@@ -17,10 +17,11 @@ class CommandAttributesTest
     void testArgumentsOutOfRange()
     {
         final var player = Dummy.mockPlayer();
+        final var builder = CommandAttributes.builder();
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> CommandAttributes.builder().minArguments(-1));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> CommandAttributes.builder().maxArguments(-1));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> CommandAttributes.builder().exactArguments(-1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> builder.minArguments(-1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> builder.maxArguments(-1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> builder.exactArguments(-1));
 
         Assertions.assertFalse(CommandAttributes.builder().exactArguments(0).build().argumentsOutOfRange(0, player), "0 was tested as the given exact arg, but was classified as out of range.");
         Assertions.assertFalse(CommandAttributes.builder().minArguments(0).build().argumentsOutOfRange(0, player), "0 was tested as the given min arg, but was classified as out of range.");

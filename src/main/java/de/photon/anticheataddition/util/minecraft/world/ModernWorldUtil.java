@@ -99,8 +99,6 @@ final class ModernWorldUtil implements WorldUtil
         final var world = Preconditions.checkNotNull(one.getWorld(), "Tried to check chunks in null world.");
         if (!isChunkLoaded(world, one.getBlockX(), one.getBlockZ())) return false;
 
-        final boolean modifyX;
-
         final double totalXDistance = two.getX() - one.getX();
         final double totalZDistance = two.getZ() - one.getZ();
 
@@ -109,16 +107,16 @@ final class ModernWorldUtil implements WorldUtil
 
         final int steps;
 
-        if (Math.abs(totalXDistance) > Math.abs(totalZDistance)) {
-            modifyX = false;
+        final boolean modifyX = Math.abs(totalXDistance) > Math.abs(totalZDistance);
+
+        if (modifyX) {
+            steps = DoubleMath.roundToInt(Math.abs(totalZDistance), RoundingMode.CEILING);
+            xStep = totalXDistance / steps;
+            zStep = Math.signum(totalZDistance);
+        } else {
             steps = DoubleMath.roundToInt(Math.abs(totalXDistance), RoundingMode.CEILING);
             xStep = Math.signum(totalXDistance);
             zStep = totalZDistance / steps;
-        } else {
-            modifyX = true;
-            steps = DoubleMath.roundToInt(Math.abs(totalZDistance), RoundingMode.CEILING);
-            xStep = totalXDistance / Math.abs(totalZDistance);
-            zStep = Math.signum(totalZDistance);
         }
 
         double workingX = one.getX();

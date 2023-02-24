@@ -57,9 +57,9 @@ public abstract class MetadataPacket extends AbstractPacket
 
         var watch = watchOpt.get();
         if (watch instanceof WrappedDataValue value) {
-            value.setValue(function.apply(value));
+            value.setValue(function.apply(value.getValue()));
         } else if (watch instanceof WrappedWatchableObject object) {
-            object.setValue(function.apply(object));
+            object.setValue(function.apply(object.getValue()));
         }
     }
 

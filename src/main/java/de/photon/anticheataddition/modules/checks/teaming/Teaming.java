@@ -3,7 +3,6 @@ package de.photon.anticheataddition.modules.checks.teaming;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
-import de.photon.anticheataddition.modules.additions.esp.Esp;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
 import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
@@ -80,7 +79,7 @@ public final class Teaming extends ViolationModule implements Listener
             for (World world : enabledWorlds) {
                 for (Player player : world.getPlayers()) {
                     final User user = User.getUser(player);
-                    if (!User.isUserInvalid(user, Esp.INSTANCE)
+                    if (!User.isUserInvalid(user, Teaming.INSTANCE)
                         // Correct game modes.
                         && user.inAdventureOrSurvivalMode()
                         // Not engaged in pvp.

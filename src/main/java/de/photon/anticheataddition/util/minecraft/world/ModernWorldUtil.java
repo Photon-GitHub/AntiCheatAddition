@@ -107,7 +107,7 @@ final class ModernWorldUtil implements WorldUtil
 
         final int steps;
 
-        final boolean modifyX = Math.abs(totalXDistance) > Math.abs(totalZDistance);
+        final boolean modifyX = Math.abs(totalXDistance) <= Math.abs(totalZDistance);
 
         if (modifyX) {
             steps = DoubleMath.roundToInt(Math.abs(totalZDistance), RoundingMode.CEILING);

@@ -337,13 +337,10 @@ public final class AxisAlignedBB implements Cloneable
      */
     public boolean intersectsWith(AxisAlignedBB bb)
     {
-        if (bb.maxX > this.minX && bb.minX < this.maxX) {
-            if (bb.maxY > this.minY && bb.minY < this.maxY) {
-                return bb.maxZ > this.minZ && bb.minZ < this.maxZ;
-            }
-        }
+        return bb.maxX > this.minX && bb.minX < this.maxX &&
+               bb.maxY > this.minY && bb.minY < this.maxY &&
+               bb.maxZ > this.minZ && bb.minZ < this.maxZ;
 
-        return false;
     }
 
     /**

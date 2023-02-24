@@ -85,7 +85,7 @@ public final class Esp extends Module
         final int defaultTrackingRange = loadDefaultTrackingRange(worlds);
         final Map<World, Integer> playerTrackingRanges = loadWorldTrackingRanges(worlds, worldKeys);
 
-        Log.fine(() -> "ESP | OnlyFullHide: " + ONLY_FULL_HIDE);
+        Log.info(() -> "ESP | OnlyFullHide: " + ONLY_FULL_HIDE);
 
         // ----------------------------------------------------------- Task ------------------------------------------------------------ //
 

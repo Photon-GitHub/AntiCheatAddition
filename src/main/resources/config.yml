@@ -539,6 +539,25 @@ Scaffold:
     130: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Scaffold"
     200: "kick {player} Scaffold"
 
+# Shield detects cheats that influence the interaction with a shield.
+# This check is only available in minecraft 1.15+
+Shield:
+  # Do you want to enable the Shield check?
+  enabled: true
+  # Control the different parts of Shield
+  parts:
+    # This part detects when a player is blocking with a shield when hitting another player.
+    ShieldHit:
+      # Do you want to enable ShieldHit?
+      enabled: true
+      # Violation before AntiCheatAddition starts to cancel the hits.
+      # Set this to 0 to never cancel hits.
+      cancel_vl: 60
+  thresholds:
+    110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Shield"
+    160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Shield"
+    200: "kick {player} Shield"
+
 # Skinblinker detects cheats of the same name when the player sprints/sneaks.
 Skinblinker:
   # Do you want to enable the Skinblinker check?

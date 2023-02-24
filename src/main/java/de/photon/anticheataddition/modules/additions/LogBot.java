@@ -35,7 +35,7 @@ public final class LogBot extends Module
         taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(AntiCheatAddition.getInstance(), () -> {
             final long currentTime = System.currentTimeMillis();
             for (LogDeletionTime logDeletionTime : LOG_DELETION_TIMES) logDeletionTime.handleLog(currentTime);
-        }, 1, TimeUtil.toTicks(TimeUnit.DAYS, 1));
+        }, 1, TimeUtil.toTicks(1, TimeUnit.DAYS));
     }
 
     @Override

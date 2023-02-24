@@ -4,6 +4,7 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
@@ -17,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public final class DupingSecretCache extends ViolationModule implements Listener
@@ -25,7 +27,7 @@ public final class DupingSecretCache extends ViolationModule implements Listener
     private static final Set<Material> IGNORED_AROUND_INVENTORY = Stream.of(MaterialUtil.LIQUIDS, MaterialUtil.FREE_SPACE_CONTAINERS)
                                                                         .flatMap(Set::stream)
                                                                         .collect(SetUtil.toImmutableEnumSet());
-    private final long secretCacheCheckDelayTicks = 20L * 60L * loadLong(".check_delay", 10); // minutes to ticks
+    private final long secretCacheCheckDelayTicks = TimeUtil.toTicks(loadLong(".check_delay", 10), TimeUnit.MINUTES);
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)

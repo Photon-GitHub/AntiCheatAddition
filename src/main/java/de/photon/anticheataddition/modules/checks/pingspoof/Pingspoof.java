@@ -47,10 +47,9 @@ public final class Pingspoof extends ViolationModule implements Listener
     public void enable()
     {
         // Seconds -> Ticks
-        final long tickInterval = TimeUtil.toTicks(TimeUnit.SECONDS, loadInt(".interval", 30));
+        final long tickInterval = TimeUtil.toTicks(loadInt(".interval", 30), TimeUnit.SECONDS);
 
         final var transactionPacket = new WrapperPlayServerTransaction();
-        transactionPacket.setAccepted(false);
         transactionPacket.setAccepted(false);
         transactionPacket.setActionNumber((short) 0);
         transactionPacket.setWindowId(0);

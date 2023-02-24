@@ -128,9 +128,11 @@ final class ModernWorldUtil implements WorldUtil
         int chunkZ;
 
         // Cache the last and current chunk for faster processing.
-        // The last chunk is important as of the modifier.
-        final int[] currentChunkCoords = {toChunkCoordinate(workingX), toChunkCoordinate(workingZ)};
-        final int[] lastChunkCoords = {currentChunkCoords[0], currentChunkCoords[1]};
+        // The last chunk is important due to the modifier (inner loop) that checks any border behaviour and can have 2 chunks checked multiple times.
+        int lastChunkX = toChunkCoordinate(workingX);
+        int lastChunkZ = toChunkCoordinate(workingZ);
+        int lastLastChunkX = lastChunkX;
+        int lastLastChunkZ = lastChunkZ;
 
         for (int i = 0; i < steps; ++i) {
             workingX += xStep;
@@ -146,21 +148,19 @@ final class ModernWorldUtil implements WorldUtil
                     workingModifiedZ = workingZ + modifier;
                 }
 
-
                 chunkX = toChunkCoordinate(workingModifiedX);
                 chunkZ = toChunkCoordinate(workingModifiedZ);
 
-                // Check if the chunk has already been checked
-                if ((currentChunkCoords[0] != chunkX || currentChunkCoords[1] != chunkZ) &&
-                    (lastChunkCoords[0] != chunkX || lastChunkCoords[1] != chunkZ))
-                {
-                    lastChunkCoords[0] = currentChunkCoords[0];
-                    lastChunkCoords[1] = currentChunkCoords[1];
-                    currentChunkCoords[0] = chunkX;
-                    currentChunkCoords[1] = chunkZ;
+                // If we have already checked the chunk, skip it, as we know it is loaded.
+                if (lastChunkX == chunkX && lastChunkZ == chunkZ ||
+                    lastLastChunkX == chunkX && lastLastChunkZ == chunkZ) continue;
 
-                    if (!world.isChunkLoaded(chunkX, chunkZ)) return false;
-                }
+                lastLastChunkX = lastChunkX;
+                lastLastChunkZ = lastChunkZ;
+                lastChunkX = chunkX;
+                lastChunkZ = chunkZ;
+
+                if (!world.isChunkLoaded(chunkX, chunkZ)) return false;
             }
         }
 

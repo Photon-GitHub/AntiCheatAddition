@@ -25,6 +25,7 @@ import de.photon.anticheataddition.modules.checks.packetanalysis.PacketAnalysisE
 import de.photon.anticheataddition.modules.checks.packetanalysis.PacketAnalysisIllegalPitch;
 import de.photon.anticheataddition.modules.checks.pingspoof.Pingspoof;
 import de.photon.anticheataddition.modules.checks.scaffold.Scaffold;
+import de.photon.anticheataddition.modules.checks.shield.ShieldHit;
 import de.photon.anticheataddition.modules.checks.skinblinker.SkinBlinkerSprinting;
 import de.photon.anticheataddition.modules.checks.skinblinker.SkinBlinkerUnusedBit;
 import de.photon.anticheataddition.modules.checks.teaming.Teaming;
@@ -107,6 +108,9 @@ public final class ModuleManager
                 Scaffold.INSTANCE.getScaffoldSafewalkTiming(),
                 Scaffold.INSTANCE.getScaffoldSprinting(),
                 Scaffold.INSTANCE,
+
+                ShieldHit.INSTANCE,
+                ViolationModule.parentOf("Shield", ShieldHit.INSTANCE),
 
                 SkinBlinkerUnusedBit.INSTANCE,
                 SkinBlinkerSprinting.INSTANCE,

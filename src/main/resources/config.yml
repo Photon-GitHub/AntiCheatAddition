@@ -547,7 +547,7 @@ Shield:
   # Control the different parts of Shield
   parts:
     # This part detects when a player is blocking with a shield when hitting another player.
-    ShieldHit:
+    Hit:
       # Do you want to enable ShieldHit?
       enabled: true
       # Violation before AntiCheatAddition starts to cancel the hits.

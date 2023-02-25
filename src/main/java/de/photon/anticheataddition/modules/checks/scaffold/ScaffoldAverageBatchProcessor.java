@@ -8,6 +8,7 @@ import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 
 import java.util.List;
@@ -39,6 +40,8 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
 
         final double actualAverage = delays.get(0).getAverage();
         final double minExpectedAverage = delays.get(1).getAverage();
+
+        Log.finer(() -> "Scaffold-Debug | Player: %s min delay: %f | real: %f".formatted(user.getPlayer().getName(), minExpectedAverage, actualAverage));
 
         // delta-times are too low -> flag
         if (actualAverage < minExpectedAverage) {

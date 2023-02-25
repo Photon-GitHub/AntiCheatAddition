@@ -467,8 +467,8 @@ Scaffold:
         # This delay applies to all straight building techniques
         normal: 238
         # Constants used for building techniques which include sneaking
-        sneaking_addition: 30
-        sneaking_slow_addition: 40
+        sneaking_addition: 70
+        sneaking_slow_addition: 100
         # This delay applies to diagonal building
         diagonal: 138
     # This prevents jumping while scaffolding, which, even though theoretically possible, is extremely difficult

@@ -20,8 +20,8 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
     private static final Polynomial VL_CALCULATOR = new Polynomial(1.2222222, 20);
 
     public final double normalDelay = loadDouble(".parts.Average.delays.normal", 238);
-    public final double sneakingAddition = loadDouble(".parts.Average.delays.sneaking_addition", 30);
-    public final double sneakingSlowAddition = loadDouble(".parts.Average.delays.sneaking_slow_addition", 40);
+    public final double sneakingAddition = loadDouble(".parts.Average.delays.sneaking_addition", 70);
+    public final double sneakingSlowAddition = loadDouble(".parts.Average.delays.sneaking_slow_addition", 100);
     public final double diagonalDelay = loadDouble(".parts.Average.delays.diagonal", 138);
     private final int cancelVl = loadInt(".cancel_vl", 110);
 
@@ -69,7 +69,7 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
 
         // The player is sneaking.
         // The sneakingSlowAddition is applied for not building perfectly diagonal. This is not to be confused with the diagonalDelay in which the blocks do not form a straight line.
-        return normalDelay + swiftSneakModifier(current.swiftSneakLevel()) * (sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * current.location().getYaw()))));
+        return normalDelay + swiftSneakModifier(current.swiftSneakLevel()) * (sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2 * Math.toRadians(current.location().getYaw())))));
     }
 
     private static double swiftSneakModifier(int level)

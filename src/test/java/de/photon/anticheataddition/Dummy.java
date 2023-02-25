@@ -19,6 +19,7 @@ public final class Dummy
     // Mock the environment.
     static {
         final var bukkitMock = Mockito.mockStatic(Bukkit.class);
+        // ProtocolLib needs this method.
         bukkitMock.when(Bukkit::getVersion).thenReturn("This server is running CraftBukkit version 3661-Spigot-19641c7-8434e36 (MC: 1.19.3) (Implementing API version 1.19.3-R0.1-SNAPSHOT)");
         bukkitMock.when(Bukkit::getBukkitVersion).thenReturn("1.19.3-R0.1-SNAPSHOT");
 

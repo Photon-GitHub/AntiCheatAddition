@@ -42,6 +42,9 @@ class ServerVersionTest
 
         Assertions.assertIterableEquals(expected, actual);
 
+        Assertions.assertTrue(ServerVersion.MC18.activeIsLaterOrEqual());
+        Assertions.assertTrue(ServerVersion.MC119.activeIsLaterOrEqual());
+
         expected = Stream.of(ServerVersion.MC18, ServerVersion.MC19, ServerVersion.MC110, ServerVersion.MC111, ServerVersion.MC112)
                          .filter(ServerVersion::isSupported)
                          .map(ServerVersion::getVersionOutputString)

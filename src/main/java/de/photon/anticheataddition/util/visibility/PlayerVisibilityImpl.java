@@ -10,7 +10,7 @@ import java.util.Set;
 
 public final class PlayerVisibilityImpl implements PlayerVisibility
 {
-    private final PlayerInformationHider equipmentHider = ServerVersion.containsActive(ServerVersion.MC119.getSupVersionsFrom()) ? new ModernPlayerEquipmentHider() : new LegacyPlayerEquipmentHider();
+    private final PlayerInformationHider equipmentHider = ServerVersion.MC119.activeIsLaterOrEqual() ? new ModernPlayerEquipmentHider() : new LegacyPlayerEquipmentHider();
     private final PlayerInformationHider entityHider = new AncientPlayerHider();
 
     @Override

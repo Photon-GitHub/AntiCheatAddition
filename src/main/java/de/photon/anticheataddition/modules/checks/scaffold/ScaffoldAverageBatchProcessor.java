@@ -55,13 +55,24 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
 
     private double calculateMinExpectedDelay(ScaffoldBatch.ScaffoldBlockPlace old, ScaffoldBatch.ScaffoldBlockPlace current, boolean moonwalk)
     {
-        if (current.blockFace() == old.blockFace() || current.blockFace() == old.blockFace().getOppositeFace()) {
-            return !moonwalk && current.sneaked() && old.sneaked() ?
-                   // Sneaking handling
-                   normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * current.location().getYaw()))) :
-                   // Moonwalking.
-                   normalDelay;
-            // Not the same blockfaces means that something is built diagonally or a new build position which means higher actual delay anyway and can be ignored.
-        } else return diagonalDelay;
+        // Check if the player is building a straight line, or it follows a diagonal block pattern (which allows for faster placing.)
+        // X            X
+        // X  X  or  X  X
+        //    X      X
+        if (current.blockFace() != old.blockFace() && current.blockFace() != old.blockFace().getOppositeFace()) return diagonalDelay;
+
+        // If the player is not sneaking, the delay is the normal delay.
+        if (moonwalk || !current.sneaked() || !old.sneaked()) return normalDelay;
+
+        // The player is sneaking.
+        // The sneakingSlowAddition is applied for not building perfectly diagonal. This is not to be confused with the diagonalDelay in which the blocks do not form a straight line.
+        return normalDelay + swiftSneakModifier(current.swiftSneakLevel()) * (sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * current.location().getYaw()))));
+    }
+
+    private static double swiftSneakModifier(int level)
+    {
+        if (level <= 0) return 1;
+        else if (level < 5) return 1 - (0.2 * level);
+        else return 0;
     }
 }

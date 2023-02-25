@@ -9,7 +9,7 @@ import java.util.List;
 
 public sealed interface EntityUtil permits LegacyEntityUtil, ModernEntityUtil
 {
-    EntityUtil INSTANCE = ServerVersion.containsActive(ServerVersion.MC115.getSupVersionsTo()) ? new LegacyEntityUtil() : new ModernEntityUtil();
+    EntityUtil INSTANCE = ServerVersion.MC115.activeIsEarlierOrEqual() ? new LegacyEntityUtil() : new ModernEntityUtil();
 
     /**
      * Determines if a {@link LivingEntity} is gliding (i.e. flying with an elytra)

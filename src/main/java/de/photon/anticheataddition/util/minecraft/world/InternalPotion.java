@@ -196,7 +196,7 @@ public enum InternalPotion
 
     InternalPotion(ServerVersion addedInVersion)
     {
-        this.available = ServerVersion.containsActive(addedInVersion.getSupVersionsFrom());
+        this.available = addedInVersion.activeIsLaterOrEqual();
         this.mapping = PotionEffectType.getByName(this.name());
     }
 

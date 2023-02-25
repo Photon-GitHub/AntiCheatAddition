@@ -38,7 +38,7 @@ public abstract class MetadataPacket extends AbstractPacket
      */
     public Optional<? extends AbstractWrapper> getMetadataIndex(final int index)
     {
-        if (ServerVersion.containsActive(ServerVersion.MC119.getSupVersionsFrom())) {
+        if (ServerVersion.MC119.activeIsLaterOrEqual()) {
             for (WrappedDataValue watch : getMetadata()) {
                 if (index == watch.getIndex()) return Optional.of(watch);
             }

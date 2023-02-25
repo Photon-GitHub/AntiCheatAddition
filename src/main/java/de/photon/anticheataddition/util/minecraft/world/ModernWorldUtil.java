@@ -184,7 +184,7 @@ final class ModernWorldUtil implements WorldUtil
         if (MaterialUtil.FREE_SPACE_CONTAINERS.contains(block.getType())) {
             final Block aboveBlock = block.getRelative(BlockFace.UP);
 
-            if (ServerVersion.containsActive(ServerVersion.MC112.getSupVersionsTo())) {
+            if (ServerVersion.MC112.activeIsEarlierOrEqual()) {
                 // 1.8.8 and 1.12 doesn't provide isPassable.
                 // Make sure that the block above is not obstructed by blocks
                 // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.

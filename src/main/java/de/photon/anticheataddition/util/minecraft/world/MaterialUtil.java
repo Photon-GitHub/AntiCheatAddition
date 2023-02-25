@@ -52,7 +52,7 @@ public final class MaterialUtil
                                                                                                               getMaterial("THIN_GLASS"),
                                                                                                               getMaterial("IRON_FENCE")) : Set.of();
 
-    private static final Set<Material> AIR_MATERIALS = ServerVersion.containsActive(ServerVersion.MC116.getSupVersionsFrom()) ?
+    private static final Set<Material> AIR_MATERIALS = ServerVersion.MC116.activeIsLaterOrEqual() ?
                                                        Sets.immutableEnumSet(AIR, CAVE_AIR, VOID_AIR) :
                                                        Sets.immutableEnumSet(AIR);
 

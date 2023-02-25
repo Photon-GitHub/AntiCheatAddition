@@ -77,6 +77,22 @@ public enum ServerVersion
         this.protocolVersions = Set.of(protocolVersions);
     }
 
+    /**
+     * This method checks if the active server version is equal to or earlier than this version.
+     */
+    public boolean activeIsEarlierOrEqual()
+    {
+        return this.compareTo(ACTIVE) >= 0;
+    }
+
+    /**
+     * This method checks if the active server version is equal to or later than this version.
+     */
+    public boolean activeIsLaterOrEqual()
+    {
+        return this.compareTo(ACTIVE) <= 0;
+    }
+
     // Lazy getting as most versions are not supported or used.
     // Also, this is important to avoid loading errors (as the generate methods access values() when not fully loaded)
     /**

@@ -41,7 +41,6 @@ public enum ServerVersion
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = MC18.getSupVersionsFrom();
     public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = MC112.getSupVersionsTo();
     public static final ServerVersion NEW_EVENT_VERSION = MC114;
-    public static final Set<ServerVersion> LEGACY_EVENT_VERSIONS = MC113.getSupVersionsTo();
     public static final Set<ServerVersion> NON_188_VERSIONS = MC19.getSupVersionsFrom();
 
     /**

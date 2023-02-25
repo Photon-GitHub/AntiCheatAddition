@@ -9,14 +9,12 @@ import org.bukkit.command.CommandSender;
 @UtilityClass
 public final class ChatMessage
 {
-    public static final String ANTICHEAT_ADDITION_PREFIX = ChatColor.AQUA + "[AntiCheatAddition] " + ChatColor.GRAY;
-
     /**
      * Sends a message with the AntiCheatAddition prefix to a single recipient.
      */
     public static void sendMessage(CommandSender recipient, String message)
     {
-        recipient.sendMessage(ANTICHEAT_ADDITION_PREFIX + message);
+        recipient.sendMessage(AntiCheatAddition.ANTICHEAT_ADDITION_PREFIX + message);
     }
 
     /**
@@ -34,7 +32,7 @@ public final class ChatMessage
      */
     public static void sendMessage(final Iterable<? extends CommandSender> senders, final String message)
     {
-        final var prefixedMessage = ANTICHEAT_ADDITION_PREFIX + message;
+        final var prefixedMessage = AntiCheatAddition.ANTICHEAT_ADDITION_PREFIX + message;
         for (CommandSender cs : senders) cs.sendMessage(prefixedMessage);
     }
 

@@ -17,11 +17,11 @@ import java.util.function.Predicate;
 
 final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.ScaffoldBlockPlace>
 {
-    private static final Polynomial VL_CALCULATOR = new Polynomial(1.2222222, 20);
+    private static final Polynomial VL_CALCULATOR = new Polynomial(1.1, 5);
 
     public final double normalDelay = loadDouble(".parts.Average.delays.normal", 238);
-    public final double sneakingAddition = loadDouble(".parts.Average.delays.sneaking_addition", 70);
-    public final double sneakingSlowAddition = loadDouble(".parts.Average.delays.sneaking_slow_addition", 100);
+    public final double sneakingAddition = loadDouble(".parts.Average.delays.sneaking_addition", 90);
+    public final double sneakingSlowAddition = loadDouble(".parts.Average.delays.sneaking_slow_addition", 110);
     public final double diagonalDelay = loadDouble(".parts.Average.delays.diagonal", 138);
     private final int cancelVl = loadInt(".cancel_vl", 110);
 
@@ -74,8 +74,12 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
 
     private static double swiftSneakModifier(int level)
     {
-        if (level <= 0) return 1;
-        else if (level < 5) return 1 - (0.2 * level);
-        else return 0;
+        return switch (level) {
+            case 0 -> 1;
+            case 1 -> 0.6;
+            case 2 -> 0.25;
+            // As you can just spam click while sneaking, scaffolding with swift_sneak is much faster than the actual speed increase suggests.
+            default -> 0;
+        };
     }
 }

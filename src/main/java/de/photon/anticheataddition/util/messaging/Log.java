@@ -40,7 +40,7 @@ public class Log
         return Level.parse(value);
     }
 
-    private static final String PREFIX = "[AntiCheatAddition] ";
+    private static final String REPLACE_PREFIX = ChatColor.stripColor(AntiCheatAddition.ANTICHEAT_ADDITION_PREFIX);
 
     private static final DateTimeFormatter PREFIX_TIME_FORMATTER = DateTimeFormatter.ofPattern("'['HH:mm:ss.SSS']' ");
 
@@ -51,7 +51,7 @@ public class Log
         {
             return LocalDateTime.now().format(PREFIX_TIME_FORMATTER) +
                    // Do not use simple substring here as purpur uses a different format.
-                   ChatColor.stripColor(formatMessage(logRecord)).replace(PREFIX, "") +
+                   ChatColor.stripColor(formatMessage(logRecord)).replace(REPLACE_PREFIX, "") +
                    System.lineSeparator();
         }
     };

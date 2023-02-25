@@ -15,6 +15,7 @@ import lombok.Setter;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
@@ -43,6 +44,7 @@ public class AntiCheatAddition extends JavaPlugin
 
     private static final int BSTATS_PLUGIN_ID = 14608;
 
+    public static final String ANTICHEAT_ADDITION_PREFIX = ChatColor.AQUA + "[AntiCheatAddition] " + ChatColor.GRAY;
 
     @Setter(AccessLevel.PROTECTED)
     @Getter private static AntiCheatAddition instance;

@@ -3,6 +3,7 @@ package de.photon.anticheataddition.modules;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.InternalPermission;
+import de.photon.anticheataddition.util.messaging.Log;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -24,7 +25,11 @@ public abstract class Module implements ConfigLoading
     private Module(String configString, Set<Module> children)
     {
         Preconditions.checkNotNull(configString, "Tried to create Module with null configString.");
-        Preconditions.checkArgument(AntiCheatAddition.getInstance().getConfig().contains(configString), "Config path " + configString + " does not exist in the config. Please regenerate your config.");
+        if (!AntiCheatAddition.getInstance().getConfig().contains(configString)) {
+            final var message = "Config path " + configString + " does not exist in the config. Please regenerate your config. Further information can be found in the error below.";
+            Log.severe(() -> message);
+            throw new IllegalArgumentException(message);
+        }
         this.configString = configString;
         this.moduleId = "anticheataddition_" + configString.toLowerCase(Locale.ENGLISH);
         this.children = Set.copyOf(children);

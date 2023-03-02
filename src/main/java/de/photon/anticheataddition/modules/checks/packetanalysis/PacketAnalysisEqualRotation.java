@@ -13,7 +13,6 @@ import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.block.BlockFace;
 
 import java.util.concurrent.TimeUnit;
@@ -30,7 +29,7 @@ public final class PacketAnalysisEqualRotation extends ViolationModule
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetAdapter = PacketAdapterBuilder
+        final var packetAdapter = PacketAdapterBuilder
                 .of(this, PacketType.Play.Client.POSITION_LOOK, PacketType.Play.Client.LOOK)
                 .priority(ListenerPriority.LOW)
                 .onReceiving((event, user) -> {
@@ -54,13 +53,13 @@ public final class PacketAnalysisEqualRotation extends ViolationModule
                         user.hasMovedRecently(TimeKey.XZ_MOVEMENT, 100) &&
                         // 1.17 false positives
                         !(user.getTimeMap().at(TimeKey.HOTBAR_SWITCH).recentlyUpdated(3000) && user.hasSneakedRecently(3000)) &&
-                        !(user.getTimeMap().at(TimeKey.RIGHT_CLICK_ITEM_EVENT).recentlyUpdated(400)) &&
+                        user.getTimeMap().at(TimeKey.RIGHT_CLICK_ITEM_EVENT).notRecentlyUpdated(400) &&
                         PacketAdapterBuilder.checkSync(10, TimeUnit.SECONDS,
                                                        // False positive when jumping from great heights into a pool with slime blocks / beds on the bottom.
                                                        () -> !(user.isInLiquids() && MaterialUtil.BOUNCE_MATERIALS.contains(user.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType())) &&
                                                              // Fixes false positives on versions 1.9+ because of changed hitboxes
                                                              !(ServerVersion.is18() &&
-                                                               ServerVersion.getClientServerVersion(user.getPlayer()) != ServerVersion.MC18 &&
+                                                               user.getClientVersion() != ServerVersion.MC18 &&
                                                                SetUtil.containsAny(user.getHitboxLocation().getPartiallyIncludedMaterials(), MaterialUtil.CHANGED_HITBOX_MATERIALS))))
                     {
                         // Cancelled packets may cause problems.

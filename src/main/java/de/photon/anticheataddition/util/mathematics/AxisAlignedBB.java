@@ -80,25 +80,16 @@ public final class AxisAlignedBB implements Cloneable
         double maxZ = this.maxZ;
 
         // Manipulate x axis
-        if (x < 0) {
-            minX += x;
-        } else if (x > 0) {
-            maxX += x;
-        }
+        if (x < 0) minX += x;
+        else if (x > 0) maxX += x;
 
         // Manipulate y axis
-        if (y < 0) {
-            minY += y;
-        } else if (y > 0) {
-            maxY += y;
-        }
+        if (y < 0) minY += y;
+        else if (y > 0) maxY += y;
 
         // Manipulate z axis
-        if (z < 0) {
-            minZ += z;
-        } else if (z > 0) {
-            maxZ += z;
-        }
+        if (z < 0) minZ += z;
+        else if (z > 0) maxZ += z;
 
         return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
     }
@@ -216,14 +207,10 @@ public final class AxisAlignedBB implements Cloneable
     public double calculateXOffset(AxisAlignedBB bb, double x)
     {
         // Check if we are outside the Y bounds
-        if (bb.maxY <= this.minY || bb.minY >= this.maxY) {
-            return x;
-        }
+        if (bb.maxY <= this.minY || bb.minY >= this.maxY) return x;
 
         // Check if we are outside the Z bounds
-        if (bb.maxZ <= this.minZ || bb.minZ >= this.maxZ) {
-            return x;
-        }
+        if (bb.maxZ <= this.minZ || bb.minZ >= this.maxZ) return x;
 
         // Check if we have a positive default offset
         if (x > 0 && bb.maxX <= this.minX) {
@@ -257,14 +244,10 @@ public final class AxisAlignedBB implements Cloneable
     public double calculateYOffset(AxisAlignedBB bb, double y)
     {
         // Check if we are outside the X bounds
-        if (bb.maxX <= this.minX || bb.minX >= this.maxX) {
-            return y;
-        }
+        if (bb.maxX <= this.minX || bb.minX >= this.maxX) return y;
 
         // Check if we are outside the Z bounds
-        if (bb.maxZ <= this.minZ || bb.minZ >= this.maxZ) {
-            return y;
-        }
+        if (bb.maxZ <= this.minZ || bb.minZ >= this.maxZ) return y;
 
         // Check if we have a positive default offset
         if (y > 0 && bb.maxY <= this.minY) {
@@ -298,14 +281,10 @@ public final class AxisAlignedBB implements Cloneable
     public double calculateZOffset(AxisAlignedBB bb, double z)
     {
         // Check if we are outside the X bounds
-        if (bb.maxX <= this.minX || bb.minX >= this.maxX) {
-            return z;
-        }
+        if (bb.maxX <= this.minX || bb.minX >= this.maxX) return z;
 
         // Check if we are outside the Y bounds
-        if (bb.maxY <= this.minY || bb.minY >= this.maxY) {
-            return z;
-        }
+        if (bb.maxY <= this.minY || bb.minY >= this.maxY) return z;
 
         // Check if we have a positive default offset
         if (z > 0 && bb.maxZ <= this.minZ) {
@@ -337,13 +316,10 @@ public final class AxisAlignedBB implements Cloneable
      */
     public boolean intersectsWith(AxisAlignedBB bb)
     {
-        if (bb.maxX > this.minX && bb.minX < this.maxX) {
-            if (bb.maxY > this.minY && bb.minY < this.maxY) {
-                return bb.maxZ > this.minZ && bb.minZ < this.maxZ;
-            }
-        }
+        return bb.maxX > this.minX && bb.minX < this.maxX &&
+               bb.maxY > this.minY && bb.minY < this.maxY &&
+               bb.maxZ > this.minZ && bb.minZ < this.maxZ;
 
-        return false;
     }
 
     /**
@@ -355,9 +331,9 @@ public final class AxisAlignedBB implements Cloneable
      */
     public boolean isVectorInside(Vector vector)
     {
-        return !(vector.getX() <= this.minX || vector.getX() >= this.maxX) &&
-               !(vector.getY() <= this.minY || vector.getY() >= this.maxY) &&
-               (vector.getZ() > this.minZ || vector.getZ() < this.maxZ);
+        return vector.getX() > this.minX && vector.getX() < this.maxX &&
+               vector.getY() > this.minY && vector.getY() < this.maxY &&
+               vector.getZ() > this.minZ && vector.getZ() < this.maxZ;
     }
 
     /**

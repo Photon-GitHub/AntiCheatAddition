@@ -9,7 +9,6 @@ import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -39,7 +38,7 @@ public final class InventoryAverageHeuristic extends ViolationModule implements 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClick(InventoryClickEvent event)
     {
-        val user = User.getUser(event.getWhoClicked().getUniqueId());
+        final var user = User.getUser(event.getWhoClicked().getUniqueId());
         if (User.isUserInvalid(user, this)) return;
 
         // Make sure that we have normal click actions.
@@ -61,7 +60,7 @@ public final class InventoryAverageHeuristic extends ViolationModule implements 
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val batchProcessor = new AverageHeuristicBatchProcessor(this);
+        final var batchProcessor = new AverageHeuristicBatchProcessor(this);
         return ModuleLoader.builder(this)
                            .batchProcessor(batchProcessor)
                            .build();

@@ -12,7 +12,6 @@ import de.photon.anticheataddition.util.datastructure.batch.BatchProcessor;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import lombok.AllArgsConstructor;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -66,13 +65,13 @@ public final class ModuleLoader
             return false;
         }
 
-        val missingDependencies = pluginDependencies.stream().filter(dependency -> !Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)).sorted().collect(Collectors.joining(", "));
+        final var missingDependencies = pluginDependencies.stream().filter(dependency -> !Bukkit.getServer().getPluginManager().isPluginEnabled(dependency)).sorted().collect(Collectors.joining(", "));
         if (!missingDependencies.isEmpty()) {
             Log.info(() -> module.getConfigString() + " has been not been enabled as of missing dependencies. Missing: " + missingDependencies);
             return false;
         }
 
-        val loadedIncompatibilities = pluginIncompatibilities.stream().filter(incompatibility -> Bukkit.getServer().getPluginManager().isPluginEnabled(incompatibility)).sorted().collect(Collectors.joining(", "));
+        final var loadedIncompatibilities = pluginIncompatibilities.stream().filter(incompatibility -> Bukkit.getServer().getPluginManager().isPluginEnabled(incompatibility)).sorted().collect(Collectors.joining(", "));
         if (!loadedIncompatibilities.isEmpty()) {
             Log.info(() -> module.getConfigString() + " has been not been enabled as it is incompatible with another plugin on the server. Incompatible plugins: " + loadedIncompatibilities);
             return false;
@@ -185,7 +184,7 @@ public final class ModuleLoader
 
         public ModuleLoader build()
         {
-            val incomingChannels = incoming.build();
+            final var incomingChannels = incoming.build();
             Preconditions.checkArgument((module instanceof PluginMessageListener) == !(incomingChannels.isEmpty()), "Incoming channels have to be registered in a PluginMessageListener Module and cannot be registered otherwise.");
 
             if (module instanceof Listener listener) this.listeners.add(listener);

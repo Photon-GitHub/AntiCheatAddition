@@ -5,9 +5,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class ServerVersionTest
@@ -21,7 +21,7 @@ class ServerVersionTest
     @Test
     void serverVersionTest()
     {
-        Assertions.assertEquals(ServerVersion.MC118, ServerVersion.ACTIVE);
+        Assertions.assertEquals(ServerVersion.MC119, ServerVersion.ACTIVE);
     }
 
     @Test
@@ -42,6 +42,9 @@ class ServerVersionTest
 
         Assertions.assertIterableEquals(expected, actual);
 
+        Assertions.assertTrue(ServerVersion.MC18.activeIsLaterOrEqual());
+        Assertions.assertTrue(ServerVersion.MC119.activeIsLaterOrEqual());
+
         expected = Stream.of(ServerVersion.MC18, ServerVersion.MC19, ServerVersion.MC110, ServerVersion.MC111, ServerVersion.MC112)
                          .filter(ServerVersion::isSupported)
                          .map(ServerVersion::getVersionOutputString)
@@ -57,9 +60,8 @@ class ServerVersionTest
     @Test
     void allSupportedVersionsTest()
     {
-        final var expected = Arrays.stream(ServerVersion.values())
-                                   .filter(ServerVersion::isSupported)
-                                   .collect(Collectors.toUnmodifiableSet());
+        final var expected = EnumSet.noneOf(ServerVersion.class);
+        for (var sv : ServerVersion.values()) if (sv.isSupported()) expected.add(sv);
 
         Assertions.assertTrue(expected.containsAll(ServerVersion.ALL_SUPPORTED_VERSIONS), "ALL_SUPPORTED_VERSIONS contains unsupported version.");
         Assertions.assertTrue(ServerVersion.ALL_SUPPORTED_VERSIONS.containsAll(expected), "ALL_SUPPORTED_VERSIONS does not contain all supported versions.");

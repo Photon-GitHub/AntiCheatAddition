@@ -4,9 +4,7 @@ import de.photon.anticheataddition.exception.UnknownMinecraftException;
 import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
 import lombok.Getter;
-import lombok.val;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -42,7 +40,7 @@ public enum ServerVersion
 
     public static final Set<ServerVersion> ALL_SUPPORTED_VERSIONS = MC18.getSupVersionsFrom();
     public static final Set<ServerVersion> LEGACY_PLUGIN_MESSAGE_VERSIONS = MC112.getSupVersionsTo();
-    public static final Set<ServerVersion> LEGACY_EVENT_VERSIONS = MC113.getSupVersionsTo();
+    public static final ServerVersion NEW_EVENT_VERSION = MC114;
     public static final Set<ServerVersion> NON_188_VERSIONS = MC19.getSupVersionsFrom();
 
     /**
@@ -50,7 +48,7 @@ public enum ServerVersion
      */
     @NotNull
     public static final ServerVersion ACTIVE = Arrays.stream(ServerVersion.values())
-                                                     .filter(serverVersion -> Bukkit.getVersion().contains(serverVersion.getVersionOutputString()))
+                                                     .filter(serverVersion -> Bukkit.getBukkitVersion().startsWith(serverVersion.getVersionOutputString()))
                                                      .findFirst()
                                                      .orElseThrow(UnknownMinecraftException::new);
 
@@ -79,6 +77,22 @@ public enum ServerVersion
         this.protocolVersions = Set.of(protocolVersions);
     }
 
+    /**
+     * This method checks if the active server version is equal to or earlier than this version.
+     */
+    public boolean activeIsEarlierOrEqual()
+    {
+        return this.compareTo(ACTIVE) >= 0;
+    }
+
+    /**
+     * This method checks if the active server version is equal to or later than this version.
+     */
+    public boolean activeIsLaterOrEqual()
+    {
+        return this.compareTo(ACTIVE) <= 0;
+    }
+
     // Lazy getting as most versions are not supported or used.
     // Also, this is important to avoid loading errors (as the generate methods access values() when not fully loaded)
     /**
@@ -98,19 +112,6 @@ public enum ServerVersion
     public static boolean is18()
     {
         return ACTIVE == MC18;
-    }
-
-    /**
-     * Used to get the client version. Might only differ from {@link #ACTIVE} if ViaVersion is installed.
-     */
-    @NotNull
-    public static ServerVersion getClientServerVersion(final Player player)
-    {
-        if (player == null) return ACTIVE;
-        val viaAPI = AntiCheatAddition.getInstance().getViaAPI();
-        if (viaAPI == null) return ACTIVE;
-
-        return getByProtocolVersionNumber(viaAPI.getPlayerVersion(player.getUniqueId())).orElse(ACTIVE);
     }
 
     /**

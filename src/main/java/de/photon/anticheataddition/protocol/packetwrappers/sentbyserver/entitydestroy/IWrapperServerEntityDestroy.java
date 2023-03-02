@@ -13,7 +13,7 @@ public interface IWrapperServerEntityDestroy extends IWrapperPlayEntity
 
     static IWrapperServerEntityDestroy create()
     {
-        return ServerVersion.containsActive(ServerVersion.MC117.getSupVersionsTo()) ?
+        return ServerVersion.MC117.activeIsEarlierOrEqual() ?
                new LegacyWrapperPlayServerEntityDestroy() : new ModernWrapperPlayServerEntityDestroy();
     }
 

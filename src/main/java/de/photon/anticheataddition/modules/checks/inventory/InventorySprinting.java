@@ -8,7 +8,6 @@ import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,7 +27,7 @@ public final class InventorySprinting extends ViolationModule implements Listene
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClick(InventoryClickEvent event)
     {
-        val user = User.getUser(event.getWhoClicked().getUniqueId());
+        final var user = User.getUser(event.getWhoClicked().getUniqueId());
         if (User.isUserInvalid(user, this)) return;
 
         // Flight may trigger this

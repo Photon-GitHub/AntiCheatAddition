@@ -22,7 +22,7 @@ public class TimeUtil
         return millis / 50;
     }
 
-    public static long toTicks(TimeUnit previousUnit, long units)
+    public static long toTicks(long units, TimeUnit previousUnit)
     {
         return toTicks(previousUnit.toMillis(units));
     }

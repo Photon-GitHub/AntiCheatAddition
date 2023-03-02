@@ -2,7 +2,6 @@ package de.photon.anticheataddition.modules.sentinel;
 
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
-import lombok.val;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +31,7 @@ public class SentinelChannelModule extends SentinelModule implements ParsedPlugi
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val builder = ModuleLoader.builder(this);
+        final var builder = ModuleLoader.builder(this);
         loadStringList(".incoming_channels").stream().map(MessageChannel::of).forEach(builder::addIncomingMessageChannel);
         // No outgoing channels as the config does not allow for sending in a channel.
         return builder.build();

@@ -7,7 +7,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -34,7 +33,7 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
 
         final ItemStack pickupStack = event.getItem().getItemStack();
 
-        val user = User.getUser(event.getEntity().getUniqueId());
+        final var user = User.getUser(event.getEntity().getUniqueId());
         if (User.isUserInvalid(user, this)) return;
 
         final Material itemMaterial = pickupStack.getType();
@@ -61,10 +60,10 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        final var user = User.getUser(event.getPlayer().getUniqueId());
         if (User.isUserInvalid(user, this)) return;
 
-        val droppedStack = event.getItemDrop().getItemStack();
+        final var droppedStack = event.getItemDrop().getItemStack();
 
         if (droppedStack.getType() == user.getData().object.dupingDoubleDroppedMaterial) {
             user.getData().number.dupingDoubleItemsDropped += droppedStack.getAmount();
@@ -78,7 +77,7 @@ public final class DupingDoubleDropped extends ViolationModule implements Listen
     @EventHandler(ignoreCancelled = true)
     public void onBlockDropItem(BlockDropItemEvent event)
     {
-        val user = User.getUser(event.getPlayer().getUniqueId());
+        final var user = User.getUser(event.getPlayer().getUniqueId());
         if (User.isUserInvalid(user, this)) return;
 
         for (Item item : event.getItems()) {

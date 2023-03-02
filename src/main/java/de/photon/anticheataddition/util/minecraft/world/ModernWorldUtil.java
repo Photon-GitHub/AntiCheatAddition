@@ -99,8 +99,6 @@ final class ModernWorldUtil implements WorldUtil
         final var world = Preconditions.checkNotNull(one.getWorld(), "Tried to check chunks in null world.");
         if (!isChunkLoaded(world, one.getBlockX(), one.getBlockZ())) return false;
 
-        final boolean modifyX;
-
         final double totalXDistance = two.getX() - one.getX();
         final double totalZDistance = two.getZ() - one.getZ();
 
@@ -109,16 +107,16 @@ final class ModernWorldUtil implements WorldUtil
 
         final int steps;
 
-        if (Math.abs(totalXDistance) > Math.abs(totalZDistance)) {
-            modifyX = false;
+        final boolean modifyX = Math.abs(totalXDistance) <= Math.abs(totalZDistance);
+
+        if (modifyX) {
+            steps = DoubleMath.roundToInt(Math.abs(totalZDistance), RoundingMode.CEILING);
+            xStep = totalXDistance / steps;
+            zStep = Math.signum(totalZDistance);
+        } else {
             steps = DoubleMath.roundToInt(Math.abs(totalXDistance), RoundingMode.CEILING);
             xStep = Math.signum(totalXDistance);
             zStep = totalZDistance / steps;
-        } else {
-            modifyX = true;
-            steps = DoubleMath.roundToInt(Math.abs(totalZDistance), RoundingMode.CEILING);
-            xStep = totalXDistance / Math.abs(totalZDistance);
-            zStep = Math.signum(totalZDistance);
         }
 
         double workingX = one.getX();
@@ -130,9 +128,11 @@ final class ModernWorldUtil implements WorldUtil
         int chunkZ;
 
         // Cache the last and current chunk for faster processing.
-        // The last chunk is important as of the modifier.
-        final int[] currentChunkCoords = {toChunkCoordinate(workingX), toChunkCoordinate(workingZ)};
-        final int[] lastChunkCoords = {currentChunkCoords[0], currentChunkCoords[1]};
+        // The last chunk is important due to the modifier (inner loop) that checks any border behaviour and can have 2 chunks checked multiple times.
+        int lastChunkX = toChunkCoordinate(workingX);
+        int lastChunkZ = toChunkCoordinate(workingZ);
+        int lastLastChunkX = lastChunkX;
+        int lastLastChunkZ = lastChunkZ;
 
         for (int i = 0; i < steps; ++i) {
             workingX += xStep;
@@ -148,21 +148,19 @@ final class ModernWorldUtil implements WorldUtil
                     workingModifiedZ = workingZ + modifier;
                 }
 
-
                 chunkX = toChunkCoordinate(workingModifiedX);
                 chunkZ = toChunkCoordinate(workingModifiedZ);
 
-                // Check if the chunk has already been checked
-                if ((currentChunkCoords[0] != chunkX || currentChunkCoords[1] != chunkZ) &&
-                    (lastChunkCoords[0] != chunkX || lastChunkCoords[1] != chunkZ))
-                {
-                    lastChunkCoords[0] = currentChunkCoords[0];
-                    lastChunkCoords[1] = currentChunkCoords[1];
-                    currentChunkCoords[0] = chunkX;
-                    currentChunkCoords[1] = chunkZ;
+                // If we have already checked the chunk, skip it, as we know it is loaded.
+                if (lastChunkX == chunkX && lastChunkZ == chunkZ ||
+                    lastLastChunkX == chunkX && lastLastChunkZ == chunkZ) continue;
 
-                    if (!world.isChunkLoaded(chunkX, chunkZ)) return false;
-                }
+                lastLastChunkX = lastChunkX;
+                lastLastChunkZ = lastChunkZ;
+                lastChunkX = chunkX;
+                lastChunkZ = chunkZ;
+
+                if (!world.isChunkLoaded(chunkX, chunkZ)) return false;
             }
         }
 
@@ -186,7 +184,7 @@ final class ModernWorldUtil implements WorldUtil
         if (MaterialUtil.FREE_SPACE_CONTAINERS.contains(block.getType())) {
             final Block aboveBlock = block.getRelative(BlockFace.UP);
 
-            if (ServerVersion.containsActive(ServerVersion.MC112.getSupVersionsTo())) {
+            if (ServerVersion.MC112.activeIsEarlierOrEqual()) {
                 // 1.8.8 and 1.12 doesn't provide isPassable.
                 // Make sure that the block above is not obstructed by blocks
                 // Cannot check for cats on 1.8 and 1.12 as the server version doesn't provide the newer methods.

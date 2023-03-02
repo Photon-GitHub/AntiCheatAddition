@@ -10,7 +10,6 @@ import de.photon.anticheataddition.commands.TabCompleteSupplier;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerPlayerInfo;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
 import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -51,23 +50,25 @@ public class TabListRemoveCommand extends InternalCommand
          * [0] represents the the affected player
          * [1] represents the modified player
          */
-        val players = new Player[]{getPlayer(sender, arguments.remove()), getPlayer(sender, arguments.remove())};
+        final var playerTablistModified = getPlayer(sender, arguments.remove());
+        final var playerToRemove = getPlayer(sender, arguments.remove());
+
         // Error messages are already sent by the getPlayer() method.
-        for (Player player : players) if (player == null) return;
+        if (playerTablistModified == null || playerToRemove == null) return;
 
         // This prevents the crashing of the player.
-        if (players[0].getUniqueId().equals(players[1].getUniqueId())) {
+        if (playerTablistModified.getUniqueId().equals(playerToRemove.getUniqueId())) {
             ChatMessage.sendMessage(sender, "The affected player must not be the removed player.");
             return;
         }
 
-        val ticks = arguments.isEmpty() ? Long.valueOf(0) : parseLongElseSend(arguments.poll(), sender);
+        final Long ticks = arguments.isEmpty() ? Long.valueOf(0) : parseLongElseSend(arguments.poll(), sender);
         if (ticks == null) return;
 
-        sender.sendMessage(ChatColor.GOLD + "Removed player " + ChatColor.RED + players[1].getName() + ChatColor.GOLD + " from " + ChatColor.RED + players[0].getName() + ChatColor.GOLD + "'s tablist for " + ChatColor.RED + ticks + ChatColor.GOLD + " ticks.");
+        sender.sendMessage(ChatColor.GOLD + "Removed player " + ChatColor.RED + playerToRemove.getName() + ChatColor.GOLD + " from " + ChatColor.RED + playerTablistModified.getName() + ChatColor.GOLD + "'s tablist for " + ChatColor.RED + ticks + ChatColor.GOLD + " ticks.");
 
-        updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, players[0], players[1]);
-        if (ticks == 0) updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, players[0], players[1]);
-        else Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), () -> updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, players[0], players[1]), ticks);
+        updatePlayerInfo(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER, playerTablistModified, playerToRemove);
+        if (ticks == 0) updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, playerTablistModified, playerToRemove);
+        else Bukkit.getScheduler().runTaskLater(AntiCheatAddition.getInstance(), () -> updatePlayerInfo(EnumWrappers.PlayerInfoAction.ADD_PLAYER, playerTablistModified, playerToRemove), ticks);
     }
 }

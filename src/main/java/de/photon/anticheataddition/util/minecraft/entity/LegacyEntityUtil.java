@@ -1,6 +1,5 @@
 package de.photon.anticheataddition.util.minecraft.entity;
 
-import lombok.val;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +26,7 @@ final class LegacyEntityUtil implements EntityUtil
     @Override
     public List<Entity> getPassengers(@NotNull Entity entity)
     {
-        val passenger = entity.getPassenger();
+        final var passenger = entity.getPassenger();
         return passenger == null ? List.of() : List.of(passenger);
     }
 }

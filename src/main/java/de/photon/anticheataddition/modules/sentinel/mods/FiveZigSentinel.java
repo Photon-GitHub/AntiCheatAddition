@@ -6,13 +6,14 @@ import de.photon.anticheataddition.modules.sentinel.SentinelModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import io.netty.buffer.Unpooled;
-import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 public final class FiveZigSentinel extends SentinelModule implements Listener, PluginMessageListener
 {
@@ -24,8 +25,8 @@ public final class FiveZigSentinel extends SentinelModule implements Listener, P
     private static final byte[] MESSAGE;
 
     static {
-        val buf = Unpooled.buffer().writeInt(FIVE_ZIG_API_VERSION);
-        MESSAGE = buf.array();
+        final var buf = Unpooled.buffer().writeInt(FIVE_ZIG_API_VERSION);
+        MESSAGE = Arrays.copyOf(buf.array(), buf.array().length);
         buf.release();
     }
 
@@ -37,7 +38,7 @@ public final class FiveZigSentinel extends SentinelModule implements Listener, P
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         user.getPlayer().sendPluginMessage(AntiCheatAddition.getInstance(), REGISTER_SEND_CHANNEL, MESSAGE);

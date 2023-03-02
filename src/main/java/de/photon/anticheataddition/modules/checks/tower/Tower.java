@@ -10,7 +10,6 @@ import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,7 +31,7 @@ public final class Tower extends ViolationModule implements Listener
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(final BlockPlaceEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         // To prevent too fast towering -> Timeout
@@ -44,7 +43,7 @@ public final class Tower extends ViolationModule implements Listener
 
         // Not flying
         if (!user.getPlayer().isFlying()) {
-            val blockPlaced = event.getBlockPlaced();
+            final var blockPlaced = event.getBlockPlaced();
 
             // User must stand above the block (placed from above)1
             // Check if the block is tower-placed (Block belows)
@@ -73,7 +72,7 @@ public final class Tower extends ViolationModule implements Listener
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val batchProcessor = new TowerBatchProcessor(this);
+        final var batchProcessor = new TowerBatchProcessor(this);
         return ModuleLoader.builder(this)
                            .batchProcessor(batchProcessor)
                            .build();

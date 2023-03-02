@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -43,7 +42,7 @@ public abstract class InternalCommand
      */
     protected static Player getPlayer(CommandSender sender, String nameOfPlayer)
     {
-        val player = Bukkit.getServer().getPlayer(nameOfPlayer);
+        final var player = Bukkit.getServer().getPlayer(nameOfPlayer);
         if (player == null) ChatMessage.sendMessage(sender, "The specified player could not be found.");
         return player;
     }
@@ -56,7 +55,7 @@ public abstract class InternalCommand
     @Contract("null, _ , _ -> true; !null, _ , _ -> false")
     protected static boolean checkNotNullElseSend(final Object notNull, final CommandSender recipient, final String message)
     {
-        val n = notNull == null;
+        final boolean n = notNull == null;
         if (n) ChatMessage.sendMessage(recipient, message);
         return n;
     }
@@ -117,7 +116,7 @@ public abstract class InternalCommand
                 return;
             }
 
-            val childCommand = this.getChildCommand(nextArgument);
+            final var childCommand = this.getChildCommand(nextArgument);
             if (childCommand != null) {
                 // Remove the current command arg
                 arguments.remove();

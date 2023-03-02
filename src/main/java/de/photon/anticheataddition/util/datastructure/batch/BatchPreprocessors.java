@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
 import lombok.experimental.UtilityClass;
-import lombok.val;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -55,10 +54,10 @@ public final class BatchPreprocessors
     @SafeVarargs
     public static <T> List<DoubleStatistics> reducePairToDoubleStatistics(List<Pair<T, T>> input, ToDoubleBiFunction<T, T>... mappers)
     {
-        val statistics = new DoubleStatistics[mappers.length];
+        final var statistics = new DoubleStatistics[mappers.length];
         for (int i = 0; i < statistics.length; ++i) statistics[i] = new DoubleStatistics();
 
-        for (val pair : input) {
+        for (final var pair : input) {
             for (int i = 0; i < mappers.length; ++i) {
                 statistics[i].accept(mappers[i].applyAsDouble(pair.first(), pair.second()));
             }
@@ -74,7 +73,7 @@ public final class BatchPreprocessors
     @SafeVarargs
     public static <T> List<DoubleStatistics> zipReduceToDoubleStatistics(List<T> input, ToDoubleBiFunction<T, T>... mappers)
     {
-        val statistics = new DoubleStatistics[mappers.length];
+        final var statistics = new DoubleStatistics[mappers.length];
         for (int i = 0; i < statistics.length; ++i) statistics[i] = new DoubleStatistics();
 
         if (!input.isEmpty()) {

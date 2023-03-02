@@ -7,7 +7,6 @@ import de.photon.anticheataddition.util.datastructure.batch.Batch;
 import de.photon.anticheataddition.util.datastructure.dummy.DummyInventory;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
-import lombok.val;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -31,7 +30,7 @@ public final class InventoryBatch extends Batch<InventoryBatch.InventoryClick>
             Preconditions.checkNotNull(event, "Tried to create InventoryClick from null event.");
             Preconditions.checkNotNull(event.getClickedInventory(), "Tried to create InventoryClick from null event clickedInventory.");
 
-            val slotLocation = InventoryUtil.INSTANCE.locateSlot(event.getRawSlot(), event.getClickedInventory());
+            final var slotLocation = InventoryUtil.INSTANCE.locateSlot(event.getRawSlot(), event.getClickedInventory());
             return new InventoryClick(System.currentTimeMillis(), event.getInventory(), slotLocation.orElse(InventoryUtil.SlotLocation.DUMMY), event.getClick());
         }
 

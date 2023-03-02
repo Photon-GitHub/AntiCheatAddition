@@ -4,13 +4,13 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.SetUtil;
+import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -18,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public final class DupingSecretCache extends ViolationModule implements Listener
@@ -26,7 +27,7 @@ public final class DupingSecretCache extends ViolationModule implements Listener
     private static final Set<Material> IGNORED_AROUND_INVENTORY = Stream.of(MaterialUtil.LIQUIDS, MaterialUtil.FREE_SPACE_CONTAINERS)
                                                                         .flatMap(Set::stream)
                                                                         .collect(SetUtil.toImmutableEnumSet());
-    private final long secretCacheCheckDelayTicks = 20L * 60L * loadLong(".check_delay", 10); // minutes to ticks
+    private final long secretCacheCheckDelayTicks = TimeUtil.toTicks(loadLong(".check_delay", 10), TimeUnit.MINUTES);
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)
@@ -34,17 +35,17 @@ public final class DupingSecretCache extends ViolationModule implements Listener
         switch (event.getInventory().getType()) {
             // Check only chests and shulker boxes to prevent false positives.
             case CHEST, SHULKER_BOX -> {
-                val user = User.getUser(event.getPlayer().getUniqueId());
+                final var user = User.getUser(event.getPlayer().getUniqueId());
                 // Use .iterator().hasNext() to check if the inventory is empty, instead of isEmpty() as that method is not available on 1.8.8.
                 if (User.isUserInvalid(user, this) || !event.getInventory().iterator().hasNext()) return;
 
                 // Artificial plugin inventories might not have a location.
-                val loc = event.getInventory().getLocation();
+                final var loc = event.getInventory().getLocation();
                 if (loc == null) return;
 
                 // Make sure that opening an inventory twice does not trigger two violations.
                 if (user.getData().object.dupingSecretCacheCurrentlyCheckedLocations.add(loc)) {
-                    val block = loc.getBlock();
+                    final var block = loc.getBlock();
                     final Material oldMaterial = block.getType();
 
                     Log.finer(() -> "Checking secret cache for " + user.getPlayer().getName() +

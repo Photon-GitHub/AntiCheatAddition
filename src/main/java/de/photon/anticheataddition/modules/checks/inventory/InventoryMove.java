@@ -18,7 +18,6 @@ import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -46,7 +45,7 @@ public final class InventoryMove extends ViolationModule
     private static void cancelAction(User user, PacketEvent packetEvent)
     {
         final IWrapperPlayPosition positionWrapper = packetEvent::getPacket;
-        val knownPosition = user.getPlayer().getLocation();
+        final var knownPosition = user.getPlayer().getLocation();
 
         // Not many blocks moved to prevent exploits and world change problems.
         if (positionWrapper.toVector().distanceSquared(knownPosition.toVector()) < 4) {
@@ -75,8 +74,8 @@ public final class InventoryMove extends ViolationModule
                 .onReceiving((event, user) -> {
                     final IWrapperPlayPosition positionWrapper = event::getPacket;
 
-                    val knownPosition = user.getPlayer().getLocation();
-                    val moveTo = positionWrapper.toLocation(knownPosition.getWorld());
+                    final var knownPosition = user.getPlayer().getLocation();
+                    final var moveTo = positionWrapper.toLocation(knownPosition.getWorld());
 
                     // Check if this is a clientside movement:
                     // Position Vectors are not the same

@@ -2,7 +2,6 @@ package de.photon.anticheataddition.util.config;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.val;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,10 +55,10 @@ public final class ConfigurationRepresentation
         if (requestedChanges.isEmpty()) return;
 
         // Load the whole config.
-        val configLines = new ArrayList<>(Files.readAllLines(this.configFile.toPath()));
+        final var configLines = new ArrayList<>(Files.readAllLines(this.configFile.toPath()));
 
         for (ConfigChange requestedChange : requestedChanges) {
-            val value = requestedChange.value();
+            final var value = requestedChange.value();
 
             final int lineIndexOfKey = requestedChange.lineIndexOfPath(configLines);
             final String originalLine = configLines.get(lineIndexOfKey);
@@ -69,7 +68,7 @@ public final class ConfigurationRepresentation
             deleteLines(configLines, lineIndexOfKey + 1, affectedLines - 1);
 
             // +1 to add the otherwise removed ':' right back.
-            val replacementLine = new StringBuilder(originalLine.substring(0, originalLine.lastIndexOf(':') + 1));
+            final var replacementLine = new StringBuilder(originalLine.substring(0, originalLine.lastIndexOf(':') + 1));
 
             // Set the new value.
             if (value instanceof Boolean || value instanceof Number) replacementLine.append(' ').append(value);
@@ -77,7 +76,7 @@ public final class ConfigurationRepresentation
             else if (value instanceof List<?> list) {
                 if (list.isEmpty()) replacementLine.append(" []");
                 else {
-                    val preString = "- ".indent((int) ConfigUtil.depth(originalLine));
+                    final var preString = "- ".indent((int) ConfigUtil.depth(originalLine));
                     for (Object o : list) configLines.add(lineIndexOfKey + 1, preString + o);
                 }
             }
@@ -95,7 +94,7 @@ public final class ConfigurationRepresentation
          */
         public int lineIndexOfPath(@NotNull List<String> lines)
         {
-            val pathParts = path.trim().split("\\.");
+            final var pathParts = path.trim().split("\\.");
             int partIndex = 0;
 
             int lineIndex = 0;

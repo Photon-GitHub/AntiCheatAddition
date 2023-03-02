@@ -2,6 +2,7 @@ package de.photon.anticheataddition.protocol.packetwrappers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.AbstractWrapper;
 import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
@@ -10,6 +11,7 @@ import de.photon.anticheataddition.protocol.EntityMetadataIndex;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 public abstract class MetadataPacket extends AbstractPacket
 {
@@ -24,7 +26,9 @@ public abstract class MetadataPacket extends AbstractPacket
         super(handle, type);
     }
 
-    public abstract List<WrappedDataValue> getRawMetadata();
+    public abstract List<WrappedDataValue> getMetadata();
+
+    public abstract List<WrappedWatchableObject> getLegacyMetadata();
 
     /**
      * Searches for an index in the metadata as it is unsorted.
@@ -32,12 +36,31 @@ public abstract class MetadataPacket extends AbstractPacket
      *
      * @return the {@link WrappedWatchableObject} wrapped in an {@link Optional} or {@link Optional#empty()} if the index was not found.
      */
-    public Optional<WrappedDataValue> getMetadataIndex(final int index)
+    public Optional<? extends AbstractWrapper> getMetadataIndex(final int index)
     {
-        for (WrappedDataValue watch : getRawMetadata()) {
-            if (index == watch.getIndex()) return Optional.of(watch);
+        if (ServerVersion.MC119.activeIsLaterOrEqual()) {
+            for (WrappedDataValue watch : getMetadata()) {
+                if (index == watch.getIndex()) return Optional.of(watch);
+            }
+        } else {
+            for (WrappedWatchableObject watch : getLegacyMetadata()) {
+                if (index == watch.getIndex()) return Optional.of(watch);
+            }
         }
         return Optional.empty();
+    }
+
+    public void modifyMetadataIndex(final int index, UnaryOperator<Object> function)
+    {
+        final var watchOpt = getMetadataIndex(index);
+        if (watchOpt.isEmpty()) return;
+
+        var watch = watchOpt.get();
+        if (watch instanceof WrappedDataValue value) {
+            value.setValue(function.apply(value.getValue()));
+        } else if (watch instanceof WrappedWatchableObject object) {
+            object.setValue(function.apply(object.getValue()));
+        }
     }
 
     public static MetadataBuilder builder()

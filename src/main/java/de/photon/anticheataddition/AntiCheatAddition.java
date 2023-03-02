@@ -12,16 +12,17 @@ import de.photon.anticheataddition.util.messaging.Log;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.val;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.floodgate.api.FloodgateApi;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Locale;
@@ -43,13 +44,14 @@ public class AntiCheatAddition extends JavaPlugin
 
     private static final int BSTATS_PLUGIN_ID = 14608;
 
+    public static final String ANTICHEAT_ADDITION_PREFIX = ChatColor.AQUA + "[AntiCheatAddition] " + ChatColor.GRAY;
 
     @Setter(AccessLevel.PROTECTED)
     @Getter private static AntiCheatAddition instance;
 
     @Getter(lazy = true) private final FileConfiguration config = generateConfig();
-    private ViaAPI<?> viaAPI;
-    private FloodgateApi floodgateApi;
+    @Nullable private ViaAPI<?> viaAPI;
+    @Nullable private FloodgateApi floodgateApi;
 
     private boolean bungeecord = false;
 
@@ -91,6 +93,8 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
             //                                      Unsupported server version                                        //
             // ------------------------------------------------------------------------------------------------------ //
+            getLogger().info(() -> "Server version " + ServerVersion.ACTIVE.getVersionOutputString() + " detected.");
+
             if (!ServerVersion.ACTIVE.isSupported()) {
                 getLogger().severe("Server version is not supported.");
                 getLogger().severe(() -> "Supported versions: " + ServerVersion.ALL_SUPPORTED_VERSIONS.stream().map(ServerVersion::getVersionOutputString).collect(Collectors.joining(", ")));
@@ -109,7 +113,7 @@ public class AntiCheatAddition extends JavaPlugin
             // ------------------------------------------------------------------------------------------------------ //
 
             getLogger().info("Starting metrics. This plugin uses bStats metrics: https://bstats.org/plugin/bukkit/AntiCheatAddition/14608");
-            val metrics = new Metrics(this, BSTATS_PLUGIN_ID);
+            final var metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 
             // ------------------------------------------------------------------------------------------------------ //
             //                                              Plugin hooks                                              //

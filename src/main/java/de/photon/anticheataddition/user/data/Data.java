@@ -1,5 +1,6 @@
 package de.photon.anticheataddition.user.data;
 
+import de.photon.anticheataddition.modules.checks.autopotion.AutoPotion;
 import de.photon.anticheataddition.util.datastructure.statistics.DoubleStatistics;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,8 +22,6 @@ public final class Data
     {
         public volatile boolean allowedToJump = true;
 
-        public boolean autopotionAlreadyThrown = false;
-
         public boolean packetAnalysisAnimationExpected = false;
         public boolean packetAnalysisEqualRotationExpected = false;
 
@@ -34,8 +33,8 @@ public final class Data
 
     public static final class Floating
     {
-        public float autopotionLastSuddenPitch = 0F;
-        public float autopotionLastSuddenYaw = 0F;
+        public float autopotionBeforeLastSuddenPitch = 0F;
+        public float autopotionBeforeLastSuddenYaw = 0F;
 
         public volatile float lastPacketPitch = -1F;
         public volatile float lastPacketYaw = -1F;
@@ -72,6 +71,7 @@ public final class Data
     public static final class Object
     {
         public final DoubleStatistics autoFishConsistencyData = new DoubleStatistics();
+        public AutoPotion.AutoPotionState autoPotionState = AutoPotion.AutoPotionState.AWAIT_POTION_THROW;
 
         public Material dupingDoubleDroppedMaterial = Material.BEDROCK;
 

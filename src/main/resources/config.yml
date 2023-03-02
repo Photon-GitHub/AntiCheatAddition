@@ -201,7 +201,7 @@ AutoPotion:
   timeout: 1000
   # How fast the player must look in the initial direction once again to be regarded as having bot-like reaction speed
   # (in milliseconds).
-  look_restored_time: 150
+  look_restored_time: 200
   # When looking back, beyond what angle difference should someone be considered as legit?
   angle_offset: 5
   # How much someone has to suddenly look down to start the check (in degrees)
@@ -467,8 +467,8 @@ Scaffold:
         # This delay applies to all straight building techniques
         normal: 238
         # Constants used for building techniques which include sneaking
-        sneaking_addition: 30
-        sneaking_slow_addition: 40
+        sneaking_addition: 90
+        sneaking_slow_addition: 110
         # This delay applies to diagonal building
         diagonal: 138
     # This prevents jumping while scaffolding, which, even though theoretically possible, is extremely difficult
@@ -539,6 +539,25 @@ Scaffold:
     130: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Scaffold"
     200: "kick {player} Scaffold"
 
+# Shield detects cheats that influence the interaction with a shield.
+# This check is only available in minecraft 1.15+
+Shield:
+  # Do you want to enable the Shield check?
+  enabled: true
+  # Control the different parts of Shield
+  parts:
+    # This part detects when a player is blocking with a shield when hitting another player.
+    Hit:
+      # Do you want to enable ShieldHit?
+      enabled: true
+      # Violation before AntiCheatAddition starts to cancel the hits.
+      # Set this to 0 to never cancel hits.
+      cancel_vl: 60
+  thresholds:
+    110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Shield"
+    160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Shield"
+    200: "kick {player} Shield"
+
 # Skinblinker detects cheats of the same name when the player sprints/sneaks.
 Skinblinker:
   # Do you want to enable the Skinblinker check?
@@ -601,12 +620,10 @@ Tower:
   # Violation before AntiCheatAddition starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 6
-  # If you have false positives decrease this SLIGHTLY.
+  # If you have false positives decrease this SLIGHTLY (try for example 0.99).
   # The Tower check has its own leniency-curve which makes it very effective.
   # Therefore, please only touch this if you have false positives.
   tower_leniency: 1
-  # Special leniency which is only applied if the player has the levitation effect
-  levitation_leniency: 0.95
   # After a detection which surpasses cancel_vl AntiCheatAddition cancels all block placements in the given timeframe
   # to prevent further towering (in milliseconds)
   timeout: 6000

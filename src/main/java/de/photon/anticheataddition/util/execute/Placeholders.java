@@ -5,7 +5,6 @@ import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -29,10 +28,10 @@ public final class Placeholders
     {
         Preconditions.checkNotNull(player, "Tried to replace placeholders without player.");
 
-        val world = player.getWorld();
+        final var world = player.getWorld();
 
-        val placeholderBuilder = new StringBuilder();
-        val result = new StringBuilder();
+        final var placeholderBuilder = new StringBuilder();
+        final var result = new StringBuilder();
         boolean placeholderStarted = false;
 
         for (char c : original.toCharArray()) {

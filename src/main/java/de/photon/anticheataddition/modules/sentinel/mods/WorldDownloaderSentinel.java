@@ -5,7 +5,6 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.sentinel.SentinelModule;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
-import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +33,7 @@ public final class WorldDownloaderSentinel extends SentinelModule implements Plu
     public void onPluginMessageReceived(@NotNull final String channel, @NotNull final Player player, final byte[] message)
     {
         // This must not be empty as we defined our channel with both a full key and a legacy string.
-        val sendChannel = WDL_CONTROL_CHANNEL.getChannel().orElseThrow();
+        final var sendChannel = WDL_CONTROL_CHANNEL.getChannel().orElseThrow();
 
         /*Documentation:
          * https://github.com/Pokechu22/WorldDownloader-Serverside-Companion/blob/master/src/main/java/wdl/WDLPackets.java
@@ -44,12 +43,12 @@ public final class WorldDownloaderSentinel extends SentinelModule implements Plu
          * https://wiki.vg/User:Pokechu22/World_downloader
          *
          * The first packet specifies, whether new functions are allowed, the second what current functions are allowed.*/
-        val packetZero = ByteStreams.newDataOutput();
+        final var packetZero = ByteStreams.newDataOutput();
         packetZero.writeInt(0);
         packetZero.writeBoolean(!disableFuture);
         player.sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, packetZero.toByteArray());
 
-        val packetOne = ByteStreams.newDataOutput();
+        final var packetOne = ByteStreams.newDataOutput();
         packetOne.writeInt(1);
 
         packetOne.writeBoolean(!disable);

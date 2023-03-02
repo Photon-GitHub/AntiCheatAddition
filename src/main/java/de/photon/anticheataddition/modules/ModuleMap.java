@@ -1,14 +1,13 @@
 package de.photon.anticheataddition.modules;
 
-import lombok.val;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class ModuleMap<T extends Module>
 {
@@ -26,11 +25,10 @@ public final class ModuleMap<T extends Module>
         return this.backingMap.get(moduleId);
     }
 
-    public void addModule(T module)
+    public synchronized void addModule(T module)
     {
-        val copyMap = new HashMap<>(backingMap);
-        copyMap.put(module.getModuleId(), module);
-        backingMap = Map.copyOf(copyMap);
+        this.backingMap = Stream.concat(this.values().stream(), Stream.of(module))
+                                .collect(Collectors.toUnmodifiableMap(Module::getModuleId, Function.identity()));
     }
 
     public int size()

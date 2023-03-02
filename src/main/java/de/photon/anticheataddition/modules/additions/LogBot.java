@@ -7,20 +7,19 @@ import de.photon.anticheataddition.util.messaging.Log;
 import org.bukkit.Bukkit;
 
 import java.io.File;
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class LogBot extends Module
 {
     public static final LogBot INSTANCE = new LogBot();
 
-    private final Set<LogDeletionTime> logDeletionTimes = Stream.of(new LogDeletionTime("plugins/AntiCheatAddition/logs", ".AntiCheatAddition"),
-                                                                    new LogDeletionTime("logs", ".Server"))
-                                                                // Actually active.
-                                                                .filter(LogDeletionTime::isActive)
-                                                                .collect(Collectors.toUnmodifiableSet());
+    private static final List<LogDeletionTime> LOG_DELETION_TIMES = Stream.of(new LogDeletionTime("plugins/AntiCheatAddition/logs", ".AntiCheatAddition"),
+                                                                              new LogDeletionTime("logs", ".Server"))
+                                                                          // Actually active.
+                                                                          .filter(LogDeletionTime::isActive)
+                                                                          .toList();
 
     private int taskNumber;
 
@@ -35,8 +34,8 @@ public final class LogBot extends Module
         // Start a daily executed task to clean up the logs.
         taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(AntiCheatAddition.getInstance(), () -> {
             final long currentTime = System.currentTimeMillis();
-            for (LogDeletionTime logDeletionTime : logDeletionTimes) logDeletionTime.handleLog(currentTime);
-        }, 1, TimeUtil.toTicks(TimeUnit.DAYS, 1));
+            for (LogDeletionTime logDeletionTime : LOG_DELETION_TIMES) logDeletionTime.handleLog(currentTime);
+        }, 1, TimeUtil.toTicks(1, TimeUnit.DAYS));
     }
 
     @Override

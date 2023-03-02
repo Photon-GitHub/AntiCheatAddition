@@ -5,10 +5,11 @@ import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.sentinel.SentinelModule;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import io.netty.buffer.Unpooled;
-import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 // API_DOCS of BetterSprinting:
 /*
@@ -45,21 +46,21 @@ public final class BetterSprintingSentinel extends SentinelModule implements Plu
     {
         super("BetterSprinting");
 
-        val settingsBuffer = Unpooled.buffer();
+        final var settingsBuffer = Unpooled.buffer();
         settingsBuffer.writeByte(0);
 
         settingsBuffer.writeBoolean(!loadBoolean(".disable.survival_fly_boost", true));
         settingsBuffer.writeBoolean(!loadBoolean(".disable.enable_all_dirs", true));
 
-        this.settingsBufArray = settingsBuffer.array();
+        settingsBufArray = Arrays.copyOf(settingsBuffer.array(), settingsBuffer.array().length);
         settingsBuffer.release();
 
-        val disableBuffer = Unpooled.buffer();
+        final var disableBuffer = Unpooled.buffer();
         // Bypassed players are already filtered out.
         // The mod provides a method to disable it
-        val disableGeneral = loadBoolean(".disable.general", false);
+        final boolean disableGeneral = loadBoolean(".disable.general", false);
         disableBuffer.writeByte(disableGeneral ? 1 : 2);
-        this.disableBufArray = disableBuffer.array();
+        this.disableBufArray = Arrays.copyOf(disableBuffer.array(), disableBuffer.array().length);
         disableBuffer.release();
     }
 
@@ -68,7 +69,7 @@ public final class BetterSprintingSentinel extends SentinelModule implements Plu
     {
         detection(player);
 
-        val sendChannel = "BSprint".equals(channel) ? "BSM" : MessageChannel.BETTER_SPRINTING_CHANNEL.getChannel().orElseThrow();
+        final var sendChannel = "BSprint".equals(channel) ? "BSM" : MessageChannel.BETTER_SPRINTING_CHANNEL.getChannel().orElseThrow();
 
         player.sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, this.settingsBufArray);
         player.sendPluginMessage(AntiCheatAddition.getInstance(), sendChannel, this.disableBufArray);

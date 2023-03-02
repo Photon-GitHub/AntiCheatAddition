@@ -10,7 +10,6 @@ import de.photon.anticheataddition.util.mathematics.MathUtil;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -32,7 +31,7 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
     @EventHandler(ignoreCancelled = true)
     public void onPlayerFish(final PlayerFishEvent event)
     {
-        val user = de.photon.anticheataddition.user.User.getUser(event.getPlayer());
+        final var user = de.photon.anticheataddition.user.User.getUser(event.getPlayer());
         if (User.isUserInvalid(user, this)) return;
 
         switch (event.getState()) {
@@ -44,7 +43,7 @@ public final class AutoFishConsistency extends ViolationModule implements Listen
                     user.getTimeMap().at(TimeKey.AUTOFISH_DETECTION).getTime() != 0)
                 {
                     // Buffer the data.
-                    val consistencyData = user.getData().object.autoFishConsistencyData;
+                    final var consistencyData = user.getData().object.autoFishConsistencyData;
                     consistencyData.accept(user.getTimeMap().at(TimeKey.AUTOFISH_DETECTION).passedTime());
 
                     // Check that we have enough data.

@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 public sealed interface PingProvider permits LegacyPingProvider, ModernPingProvider
 {
-    PingProvider INSTANCE = ServerVersion.containsActive(ServerVersion.MC115.getSupVersionsTo()) ? new LegacyPingProvider() : new ModernPingProvider();
+    PingProvider INSTANCE = ServerVersion.MC115.activeIsEarlierOrEqual() ? new LegacyPingProvider() : new ModernPingProvider();
 
     /**
      * Tries to get the player ping via a ping command on the system.

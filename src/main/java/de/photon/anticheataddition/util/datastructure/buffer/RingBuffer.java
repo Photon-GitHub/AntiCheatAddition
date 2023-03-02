@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.util.datastructure.buffer;
 
 import de.photon.anticheataddition.util.mathematics.ModularInteger;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
@@ -156,7 +155,7 @@ public class RingBuffer<T> extends AbstractCollection<T> implements Collection<T
     @Override
     public Object @NotNull [] toArray()
     {
-        val elements = new Object[this.size];
+        final var elements = new Object[this.size];
         int i = 0;
         for (T t : this) elements[i++] = t;
         return elements;
@@ -166,7 +165,7 @@ public class RingBuffer<T> extends AbstractCollection<T> implements Collection<T
     @Override
     public <T1> T1 @NotNull [] toArray(T1[] a)
     {
-        val elements = a.length < size ? (T1[]) Array.newInstance(a.getClass().getComponentType(), size) : a;
+        final var elements = a.length < size ? (T1[]) Array.newInstance(a.getClass().getComponentType(), size) : a;
         int i = 0;
         for (T t : this) elements[i++] = (T1) t;
         if (a.length > size) elements[size - 1] = null;

@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.inventory;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
 import de.photon.anticheataddition.util.mathematics.MathUtil;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -77,8 +76,8 @@ public sealed interface InventoryUtil permits LegacyInventoryUtil, ModernInvento
      */
     static OptionalDouble distanceBetweenSlots(final int rawSlotOne, final int rawSlotTwo, @NotNull final Inventory inventory)
     {
-        val first = INSTANCE.locateSlot(rawSlotOne, inventory);
-        val second = INSTANCE.locateSlot(rawSlotTwo, inventory);
+        final var first = INSTANCE.locateSlot(rawSlotOne, inventory);
+        final var second = INSTANCE.locateSlot(rawSlotTwo, inventory);
 
         return first.isPresent() && second.isPresent() ? OptionalDouble.of(first.get().distance(second.get())) : OptionalDouble.empty();
     }

@@ -24,7 +24,7 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
 
     private final int cancelVl = loadInt(".cancel_vl", 6);
     private final double towerLeniency = loadDouble(".tower_leniency", 1);
-    private final double levitationLeniency = loadDouble(".levitation_leniency", 0.95);
+    private static final double LEVITATION_LENIENCY = 0.95;
 
     public TowerBatchProcessor(ViolationModule module)
     {
@@ -64,7 +64,7 @@ public final class TowerBatchProcessor extends AsyncBatchProcessor<TowerBatch.To
         // Levitation handling.
         if (levitation.isPresent()) {
             // 0.9 Blocks per second per levitation level.
-            return (900 / (levitation.get().getAmplifier() + 1D)) * towerLeniency * levitationLeniency;
+            return (900 / (levitation.get().getAmplifier() + 1D)) * towerLeniency * LEVITATION_LENIENCY;
         }
 
         // No Jump Boost, tested value.

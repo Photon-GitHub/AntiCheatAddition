@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.pluginmessage;
 import com.comphenix.protocol.wrappers.MinecraftKey;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.ServerVersion;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +27,7 @@ public interface MessageChannel
     @NotNull
     static MessageChannel of(final String channel)
     {
-        val splitNew = channel.split(":");
+        final var splitNew = channel.split(":");
         return splitNew.length == 2 ? MessageChannel.of(splitNew[0], splitNew[1]) : ofLegacy(channel);
     }
 

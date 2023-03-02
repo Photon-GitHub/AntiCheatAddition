@@ -22,7 +22,7 @@ public final class ClassReflect
 
     @Getter private final Class<?> clazz;
 
-    public static Field getDeclaredField(Class cls, String fieldName)
+    public static Field getDeclaredField(Class<?> cls, String fieldName)
     {
         Preconditions.checkNotNull(cls, "The class must not be null");
         Preconditions.checkNotNull(fieldName, "The field name must not be null");

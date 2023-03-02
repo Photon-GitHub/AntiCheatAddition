@@ -11,7 +11,6 @@ import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
 import de.photon.anticheataddition.util.minecraft.world.WorldUtil;
-import lombok.val;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.HumanEntity;
@@ -69,7 +68,7 @@ public final class DataUpdaterEvents implements Listener
 
     private static void userUpdate(UUID uuid, Consumer<User> userAction, TimeKey... update)
     {
-        val user = User.getUser(uuid);
+        final var user = User.getUser(uuid);
         if (user == null) return;
 
         userAction.accept(user);
@@ -109,8 +108,8 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onInteract(final PlayerInteractEvent event)
     {
-        val user = User.getUser(event.getPlayer());
-        val clickedBlock = event.getClickedBlock();
+        final var user = User.getUser(event.getPlayer());
+        final var clickedBlock = event.getClickedBlock();
 
         // Make sure that we right-click a block.
         // clickedBlock == null should be impossible when the action is RIGHT_CLICK_BLOCK, but better ensure that.
@@ -120,7 +119,7 @@ public final class DataUpdaterEvents implements Listener
         if (WorldUtil.INSTANCE.isInventoryOpenable(clickedBlock)) {
             // Make sure that the container is opened and the player doesn't just place a block next to it.
             // Check if the material is a placeable block
-            val blockInHand = InventoryUtil.INSTANCE.getHandContents(event.getPlayer()).stream().map(ItemStack::getType).anyMatch(Material::isBlock);
+            final var blockInHand = InventoryUtil.INSTANCE.getHandContents(event.getPlayer()).stream().map(ItemStack::getType).anyMatch(Material::isBlock);
 
             // If the player is sneaking and has a block in hand, they place the block instead of opening an inventory.
             if (!blockInHand || !event.getPlayer().isSneaking()) user.getTimeMap().at(TimeKey.INVENTORY_OPENED).update();
@@ -131,7 +130,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(priority = EventPriority.LOW)
     public void onInventoryClick(final InventoryClickEvent event)
     {
-        val user = User.getUser(event.getWhoClicked().getUniqueId());
+        final var user = User.getUser(event.getWhoClicked().getUniqueId());
         // Hotbar actions can be performed outside the inventory.
         if (user == null || event.getSlotType() == InventoryType.SlotType.QUICKBAR) return;
 
@@ -166,7 +165,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler
     public void onItemInteract(PlayerInteractEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (user == null) return;
 
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
@@ -184,7 +183,7 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onMove(final PlayerMoveEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (user == null || event.getTo() == null) return;
 
         // Head + normal movement
@@ -225,10 +224,10 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onToggleSneak(final PlayerToggleSneakEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (user == null) return;
 
-        val sneak = event.isSneaking();
+        final boolean sneak = event.isSneaking();
         user.getData().bool.sneaking = sneak;
         if (sneak) {
             user.getTimeMap().at(TimeKey.SNEAK_ENABLE).update();
@@ -243,10 +242,10 @@ public final class DataUpdaterEvents implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onToggleSprint(final PlayerToggleSprintEvent event)
     {
-        val user = User.getUser(event.getPlayer());
+        final var user = User.getUser(event.getPlayer());
         if (user == null) return;
 
-        val sprint = event.isSprinting();
+        final boolean sprint = event.isSprinting();
         user.getData().bool.sprinting = sprint;
         if (!sprint) user.getData().number.lastSprintDuration = user.getTimeMap().at(TimeKey.SPRINT_TOGGLE).passedTime();
         user.getTimeMap().at(TimeKey.SPRINT_TOGGLE).update();
@@ -271,7 +270,7 @@ public final class DataUpdaterEvents implements Listener
         @Override
         public void onPacketReceiving(final PacketEvent event)
         {
-            val user = User.safeGetUserFromPacketEvent(event);
+            final var user = User.safeGetUserFromPacketEvent(event);
             if (user == null) return;
 
             user.getTimeMap().at(TimeKey.VELOCITY_CHANGE).update();

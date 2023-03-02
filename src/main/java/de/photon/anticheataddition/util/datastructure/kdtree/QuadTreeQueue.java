@@ -1,7 +1,5 @@
 package de.photon.anticheataddition.util.datastructure.kdtree;
 
-import lombok.val;
-
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Queue;
@@ -29,7 +27,7 @@ public final class QuadTreeQueue<T> extends QuadTreeCollection<T>
     @Override
     public Node<T> removeAny()
     {
-        val any = nodes.poll();
+        final var any = nodes.poll();
         if (any != null) quadTree.remove(any, any.x(), any.y());
         return any;
     }

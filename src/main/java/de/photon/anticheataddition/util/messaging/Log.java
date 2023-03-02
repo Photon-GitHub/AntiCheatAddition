@@ -5,7 +5,6 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.datastructure.Pair;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -41,7 +40,7 @@ public class Log
         return Level.parse(value);
     }
 
-    private static final String PREFIX = "[AntiCheatAddition] ";
+    private static final String REPLACE_PREFIX = ChatColor.stripColor(AntiCheatAddition.ANTICHEAT_ADDITION_PREFIX);
 
     private static final DateTimeFormatter PREFIX_TIME_FORMATTER = DateTimeFormatter.ofPattern("'['HH:mm:ss.SSS']' ");
 
@@ -52,7 +51,7 @@ public class Log
         {
             return LocalDateTime.now().format(PREFIX_TIME_FORMATTER) +
                    // Do not use simple substring here as purpur uses a different format.
-                   ChatColor.stripColor(formatMessage(logRecord)).replace(PREFIX, "") +
+                   ChatColor.stripColor(formatMessage(logRecord)).replace(REPLACE_PREFIX, "") +
                    System.lineSeparator();
         }
     };
@@ -135,8 +134,8 @@ public class Log
 
     private void replaceDebugFileCycle()
     {
-        val now = LocalDateTime.now();
-        val oldHandler = currentHandler;
+        final var now = LocalDateTime.now();
+        final var oldHandler = currentHandler;
 
         // Create new handler.
         final String path = AntiCheatAddition.getInstance().getDataFolder().getPath() + File.separatorChar + "logs" + File.separatorChar + now.format(DateTimeFormatter.ISO_LOCAL_DATE) + ".log";
@@ -156,8 +155,8 @@ public class Log
 
         // Replace again the next day.
         // 5 seconds after the next day to prevent date problems.
-        val nextDay = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(0, 0, 5));
-        val difference = LocalDateTime.now().until(nextDay, ChronoUnit.MILLIS);
+        final var nextDay = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(0, 0, 5));
+        final long difference = LocalDateTime.now().until(nextDay, ChronoUnit.MILLIS);
         Bukkit.getScheduler().scheduleSyncDelayedTask(AntiCheatAddition.getInstance(), this::replaceDebugFileCycle, TimeUtil.toMillis(difference));
     }
 
@@ -174,7 +173,7 @@ public class Log
         {
             if (!isLoggable(logRecord)) return;
 
-            val msg = getFormatter().format(logRecord);
+            final var msg = getFormatter().format(logRecord);
             for (User debugUser : User.getDebugUsers()) debugUser.getPlayer().sendMessage(msg);
         }
 

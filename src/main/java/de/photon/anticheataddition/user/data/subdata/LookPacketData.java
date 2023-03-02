@@ -15,7 +15,6 @@ import de.photon.anticheataddition.util.mathematics.RotationUtil;
 import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
-import lombok.val;
 
 public final class LookPacketData
 {
@@ -117,13 +116,13 @@ public final class LookPacketData
         @Override
         public void onPacketReceiving(PacketEvent event)
         {
-            val user = User.safeGetUserFromPacketEvent(event);
+            final var user = User.safeGetUserFromPacketEvent(event);
             if (user == null) return;
 
             final IWrapperPlayClientLook lookWrapper = event::getPacket;
 
-            val rotationChange = new RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
-            val rotationQueue = user.getLookPacketData().rotationChangeQueue;
+            final var rotationChange = new RotationChange(lookWrapper.getYaw(), lookWrapper.getPitch());
+            final var rotationQueue = user.getLookPacketData().rotationChangeQueue;
 
             // Same tick -> merge
             synchronized (user.getLookPacketData().rotationChangeQueue) {

@@ -9,7 +9,6 @@ import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
-import lombok.val;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -32,7 +31,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
 
     private static OptionalDouble distanceToLastClickedSlot(User user, InventoryClickEvent event)
     {
-        val inventory = event.getClickedInventory();
+        final var inventory = event.getClickedInventory();
         return inventory == null ? OptionalDouble.empty() : InventoryUtil.distanceBetweenSlots(event.getRawSlot(), user.getData().number.lastRawSlotClicked, inventory);
     }
 
@@ -44,7 +43,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClick(InventoryClickEvent event)
     {
-        val user = User.getUser(event.getWhoClicked().getUniqueId());
+        final var user = User.getUser(event.getWhoClicked().getUniqueId());
         if (User.isUserInvalid(user, this) ||
             event.getClickedInventory() == null ||
             // Creative-clear might trigger this.

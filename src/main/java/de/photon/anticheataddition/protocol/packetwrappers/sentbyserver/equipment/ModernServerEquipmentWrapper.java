@@ -49,7 +49,7 @@ public class ModernServerEquipmentWrapper extends AbstractPacket implements IWra
 
     public boolean isSlotSet(ItemSlot slot)
     {
-        return handle.getSlotStackPairLists().read(0).stream().anyMatch(pair -> pair.getFirst().equals(slot));
+        return handle.getSlotStackPairLists().read(0).stream().map(Pair::getFirst).anyMatch(slot::equals);
     }
 
     public ItemStack getItem(ItemSlot slot)

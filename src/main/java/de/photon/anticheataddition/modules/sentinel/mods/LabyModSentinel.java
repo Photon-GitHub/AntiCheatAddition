@@ -6,7 +6,6 @@ import de.photon.anticheataddition.util.pluginmessage.ByteBufUtil;
 import de.photon.anticheataddition.util.pluginmessage.MessageChannel;
 import de.photon.anticheataddition.util.pluginmessage.labymod.LabyProtocolUtil;
 import io.netty.buffer.Unpooled;
-import lombok.val;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -28,8 +27,8 @@ public final class LabyModSentinel extends SentinelModule implements Listener, P
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] message)
     {
-        val byteBuf = Unpooled.wrappedBuffer(message);
-        val key = ByteBufUtil.readString(byteBuf);
+        final var byteBuf = Unpooled.wrappedBuffer(message);
+        final var key = ByteBufUtil.readString(byteBuf);
         //val json = ByteBufUtil.readString(byteBuf);
 
         // LabyMod user joins the server

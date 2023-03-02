@@ -8,6 +8,7 @@ import de.photon.anticheataddition.util.datastructure.batch.AsyncBatchProcessor;
 import de.photon.anticheataddition.util.datastructure.batch.BatchPreprocessors;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.mathematics.Polynomial;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 
 import java.util.List;
@@ -16,11 +17,11 @@ import java.util.function.Predicate;
 
 final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBatch.ScaffoldBlockPlace>
 {
-    private static final Polynomial VL_CALCULATOR = new Polynomial(1.2222222, 20);
+    private static final Polynomial VL_CALCULATOR = new Polynomial(1.1, 5);
 
     public final double normalDelay = loadDouble(".parts.Average.delays.normal", 238);
-    public final double sneakingAddition = loadDouble(".parts.Average.delays.sneaking_addition", 30);
-    public final double sneakingSlowAddition = loadDouble(".parts.Average.delays.sneaking_slow_addition", 40);
+    public final double sneakingAddition = loadDouble(".parts.Average.delays.sneaking_addition", 90);
+    public final double sneakingSlowAddition = loadDouble(".parts.Average.delays.sneaking_slow_addition", 110);
     public final double diagonalDelay = loadDouble(".parts.Average.delays.diagonal", 138);
     private final int cancelVl = loadInt(".cancel_vl", 110);
 
@@ -40,6 +41,8 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
         final double actualAverage = delays.get(0).getAverage();
         final double minExpectedAverage = delays.get(1).getAverage();
 
+        Log.finer(() -> "Scaffold-Debug | Player: %s min delay: %f | real: %f".formatted(user.getPlayer().getName(), minExpectedAverage, actualAverage));
+
         // delta-times are too low -> flag
         if (actualAverage < minExpectedAverage) {
             final int vlIncrease = Math.min(130, VL_CALCULATOR.apply(minExpectedAverage - actualAverage).intValue());
@@ -55,13 +58,28 @@ final class ScaffoldAverageBatchProcessor extends AsyncBatchProcessor<ScaffoldBa
 
     private double calculateMinExpectedDelay(ScaffoldBatch.ScaffoldBlockPlace old, ScaffoldBatch.ScaffoldBlockPlace current, boolean moonwalk)
     {
-        if (current.blockFace() == old.blockFace() || current.blockFace() == old.blockFace().getOppositeFace()) {
-            return !moonwalk && current.sneaked() && old.sneaked() ?
-                   // Sneaking handling
-                   normalDelay + sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2D * current.location().getYaw()))) :
-                   // Moonwalking.
-                   normalDelay;
-            // Not the same blockfaces means that something is built diagonally or a new build position which means higher actual delay anyway and can be ignored.
-        } else return diagonalDelay;
+        // Check if the player is building a straight line, or it follows a diagonal block pattern (which allows for faster placing.)
+        // X            X
+        // X  X  or  X  X
+        //    X      X
+        if (current.blockFace() != old.blockFace() && current.blockFace() != old.blockFace().getOppositeFace()) return diagonalDelay;
+
+        // If the player is not sneaking, the delay is the normal delay.
+        if (moonwalk || !current.sneaked() || !old.sneaked()) return normalDelay;
+
+        // The player is sneaking.
+        // The sneakingSlowAddition is applied for not building perfectly diagonal. This is not to be confused with the diagonalDelay in which the blocks do not form a straight line.
+        return normalDelay + swiftSneakModifier(current.swiftSneakLevel()) * (sneakingAddition + (sneakingSlowAddition * Math.abs(Math.cos(2 * Math.toRadians(current.location().getYaw())))));
+    }
+
+    private static double swiftSneakModifier(int level)
+    {
+        return switch (level) {
+            case 0 -> 1;
+            case 1 -> 0.6;
+            case 2 -> 0.25;
+            // As you can just spam click while sneaking, scaffolding with swift_sneak is much faster than the actual speed increase suggests.
+            default -> 0;
+        };
     }
 }

@@ -11,7 +11,6 @@ import de.photon.anticheataddition.protocol.packetwrappers.MetadataPacket;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerEntityMetadata;
 import de.photon.anticheataddition.protocol.packetwrappers.sentbyserver.WrapperPlayServerNamedEntitySpawn;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
-import lombok.val;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
@@ -34,20 +33,20 @@ public final class DamageIndicator extends Module
     @Override
     protected ModuleLoader createModuleLoader()
     {
-        val packetTypes = ServerVersion.is18() ?
-                          // Only register NAMED_ENTITY_SPAWN on 1.8 as it doesn't work on newer versions.
-                          Set.of(PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN) :
-                          Set.of(PacketType.Play.Server.ENTITY_METADATA);
+        final var packetTypes = ServerVersion.is18() ?
+                                // Only register NAMED_ENTITY_SPAWN on 1.8 as it doesn't work on newer versions.
+                                Set.of(PacketType.Play.Server.ENTITY_METADATA, PacketType.Play.Server.NAMED_ENTITY_SPAWN) :
+                                Set.of(PacketType.Play.Server.ENTITY_METADATA);
 
         return ModuleLoader.of(this, PacketAdapterBuilder
                 .of(this, packetTypes)
                 .priority(ListenerPriority.HIGH)
                 .onSending((event, user) -> {
-                    val entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
+                    final var entity = event.getPacket().getEntityModifier(event.getPlayer().getWorld()).read(0);
                     // Clientside entities will be null in the world's entity list.
                     if (entity == null) return;
 
-                    val entityType = entity.getType();
+                    final var entityType = entity.getType();
 
                     // Should spoof?
                     // Entity has health to begin with.
@@ -78,11 +77,9 @@ public final class DamageIndicator extends Module
                         else if (event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) read = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
                         else throw new IllegalStateException("Unregistered packet type.");
 
-                        read.getMetadataIndex(EntityMetadataIndex.HEALTH).ifPresent(health -> {
-                            // Only set it if the entity is not yet dead to prevent problems on the clientside.
-                            // Set the health to 1.0F as that is the default value.
-                            if (((Float) health.getValue() > 0.0F)) health.setValue(1.0F);
-                        });
+                        // Only set it if the entity is not yet dead to prevent problems on the clientside.
+                        // Set the health to 1.0F as that is the default value.
+                        read.modifyMetadataIndex(EntityMetadataIndex.HEALTH, health -> (Float) health > 0.0F ? 1.0F : 0.0F);
                     }
                 }).build());
     }

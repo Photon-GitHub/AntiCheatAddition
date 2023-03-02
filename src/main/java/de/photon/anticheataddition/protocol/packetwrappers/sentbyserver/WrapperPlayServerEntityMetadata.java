@@ -11,8 +11,7 @@ import java.util.List;
 
 public class WrapperPlayServerEntityMetadata extends MetadataPacket implements IWrapperPlayEntity
 {
-    public static final PacketType TYPE =
-            PacketType.Play.Server.ENTITY_METADATA;
+    public static final PacketType TYPE = PacketType.Play.Server.ENTITY_METADATA;
 
     public WrapperPlayServerEntityMetadata()
     {
@@ -27,27 +26,36 @@ public class WrapperPlayServerEntityMetadata extends MetadataPacket implements I
 
     /**
      * Retrieve Metadata.
+     * THIS IS ONLY VALID ON 1.19.3+
      *
      * @return The current Metadata
      */
+    @Override
     public List<WrappedDataValue> getMetadata()
     {
         return handle.getDataValueCollectionModifier().read(0);
     }
 
+    @Override
+    public List<WrappedWatchableObject> getLegacyMetadata()
+    {
+        return handle.getWatchableCollectionModifier().read(0);
+    }
+
+
     /**
      * Set Metadata.
+     * THIS IS ONLY VALID ON 1.19.3+
      *
      * @param value - new value.
      */
-    public void setMetadata(List<WrappedWatchableObject> value)
+    public void setMetadata(List<WrappedDataValue> value)
     {
-        handle.getWatchableCollectionModifier().write(0, value);
+        handle.getDataValueCollectionModifier().write(0, value);
     }
 
-    @Override
-    public List<WrappedDataValue> getRawMetadata()
+    public void setLegacyMetadata(List<WrappedWatchableObject> value)
     {
-        return getMetadata();
+        handle.getWatchableCollectionModifier().write(0, value);
     }
 }

@@ -18,8 +18,8 @@ class TimeUtilTest
     @Test
     void unitToTicksTest()
     {
-        Assertions.assertEquals(20, TimeUtil.toTicks(TimeUnit.SECONDS, 1));
-        Assertions.assertEquals(1, TimeUtil.toTicks(TimeUnit.MILLISECONDS, 50));
-        Assertions.assertEquals(20 * 60, TimeUtil.toTicks(TimeUnit.MINUTES, 1));
+        Assertions.assertEquals(20, TimeUtil.toTicks(1, TimeUnit.SECONDS));
+        Assertions.assertEquals(1, TimeUtil.toTicks(50, TimeUnit.MILLISECONDS));
+        Assertions.assertEquals(20 * 60, TimeUtil.toTicks(1, TimeUnit.MINUTES));
     }
 }

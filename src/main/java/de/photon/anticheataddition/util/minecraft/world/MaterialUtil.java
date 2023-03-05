@@ -14,6 +14,7 @@ import java.util.Set;
 
 import static org.bukkit.Material.AIR;
 import static org.bukkit.Material.ANVIL;
+import static org.bukkit.Material.BARRIER;
 import static org.bukkit.Material.CAVE_AIR;
 import static org.bukkit.Material.CHEST;
 import static org.bukkit.Material.ENDER_CHEST;
@@ -39,7 +40,7 @@ public final class MaterialUtil
     public static final Set<Material> AUTO_STEP_MATERIALS;
     public static final Material EXPERIENCE_BOTTLE;
     public static final Set<Material> SIGNS;
-    public static final Material SPAWNER;
+    public static final Material SPAWNER_MATERIAL;
     public static final Set<Material> LIQUIDS;
     /**
      * Contains all containers that need a free space of any kind above the container (e.g. chests with a stair above)
@@ -69,7 +70,7 @@ public final class MaterialUtil
                 freeSpaceContainers.addAll(getMaterialsEndingWith("SHULKER_BOK"));
                 EXPERIENCE_BOTTLE = getMaterial("EXP_BOTTLE");
                 SIGNS = getMaterialsEndingWith("SIGN");
-                SPAWNER = getMaterial("MOB_SPAWNER");
+                SPAWNER_MATERIAL = getMaterial("MOB_SPAWNER");
                 LIQUIDS = Sets.immutableEnumSet(WATER, LAVA, getMaterial("STATIONARY_WATER"), getMaterial("STATIONARY_LAVA"));
             }
 
@@ -79,7 +80,7 @@ public final class MaterialUtil
                 freeSpaceContainers.addAll(ofTags(Tag.SHULKER_BOXES));
                 EXPERIENCE_BOTTLE = Material.EXPERIENCE_BOTTLE;
                 SIGNS = ofTags(Tag.SIGNS, Tag.STANDING_SIGNS, Tag.WALL_SIGNS);
-                SPAWNER = Material.SPAWNER;
+                SPAWNER_MATERIAL = Material.SPAWNER;
                 LIQUIDS = Sets.immutableEnumSet(WATER, LAVA);
             }
 
@@ -112,10 +113,7 @@ public final class MaterialUtil
      */
     public static boolean isReallyOccluding(Material material)
     {
-        return switch (material) {
-            case BARRIER, SPAWNER -> false;
-            default -> material.isOccluding();
-        };
+        return material != SPAWNER_MATERIAL && material != BARRIER && material.isOccluding();
     }
 
     public static boolean isAir(Material material)

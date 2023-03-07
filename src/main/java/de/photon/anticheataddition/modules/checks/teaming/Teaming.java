@@ -5,7 +5,7 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
-import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
+import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeSet;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.minecraft.world.Region;

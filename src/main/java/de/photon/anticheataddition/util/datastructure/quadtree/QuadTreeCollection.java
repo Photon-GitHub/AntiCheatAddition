@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.util.datastructure.kdtree;
+package de.photon.anticheataddition.util.datastructure.quadtree;
 
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import org.danilopianini.util.FlexibleQuadTree;

@@ -84,6 +84,3 @@ permissions:
 
   anticheataddition.setvl:
     description: Allows the player to execute a command which will set the vl of another player, usually used for testing.
-
-  anticheataddition.tablistremove:
-    description: Allows the player to execute a command which will temporarily hide a player from another's tablist.

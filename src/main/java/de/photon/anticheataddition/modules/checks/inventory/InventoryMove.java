@@ -104,6 +104,8 @@ public final class InventoryMove extends ViolationModule
                         final boolean positiveVelocity = knownPosition.getY() < moveTo.getY();
                         final boolean noMovement = knownPosition.getY() == moveTo.getY();
 
+                        // A player is only allowed to jump once.
+                        // Now that the player is jumping, we can set the flag to false.
                         if (positiveVelocity != user.getData().bool.positiveVelocity) {
                             if (user.getData().bool.allowedToJump) {
                                 user.getData().bool.allowedToJump = false;

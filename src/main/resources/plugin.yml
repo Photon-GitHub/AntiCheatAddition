@@ -23,7 +23,6 @@ permissions:
       anticheataddition.debug: true
       anticheataddition.info: true
       anticheataddition.setvl: true
-      anticheataddition.tablistremove: true
     default: op
 
   anticheataddition.bypass.*:
@@ -35,6 +34,9 @@ permissions:
       anticheataddition.bypass.anticheataddition_autofish.parts.consistency: true
       anticheataddition.bypass.anticheataddition_autofish.parts.inhuman_reaction: true
       anticheataddition.bypass.anticheataddition_autopotion: true
+      anticheataddition.bypass.anticheataddition_duping: true
+      anticheataddition.bypass.anticheataddition_duping.parts.double_dropped: true
+      anticheataddition.bypass.anticheataddition_duping.parts.secretcache: true
       anticheataddition.bypass.anticheataddition_damageindicator: true
       anticheataddition.bypass.anticheataddition_enchantmenthider: true
       anticheataddition.bypass.anticheataddition_esp: true
@@ -63,7 +65,11 @@ permissions:
       anticheataddition.bypass.anticheataddition_scaffold.parts.safewalk.type1: true
       anticheataddition.bypass.anticheataddition_scaffold.parts.safewalk.type2: true
       anticheataddition.bypass.anticheataddition_scaffold.parts.sprinting: true
+      anticheataddition.bypass.anticheataddition_shield: true
+      anticheataddition.bypass.anticheataddition_shield.parts.hit: true
       anticheataddition.bypass.anticheataddition_skinblinker: true
+      anticheataddition.bypass.anticheataddition_skinblinker.parts.sprinting: true
+      anticheataddition.bypass.anticheataddition_skinblinker.parts.unusedbit: true
       anticheataddition.bypass.teaming: true
       anticheataddition.bypass.tower: true
 
@@ -78,6 +84,3 @@ permissions:
 
   anticheataddition.setvl:
     description: Allows the player to execute a command which will set the vl of another player, usually used for testing.
-
-  anticheataddition.tablistremove:
-    description: Allows the player to execute a command which will temporarily hide a player from another's tablist.

@@ -140,13 +140,11 @@ final class ModernWorldUtil implements WorldUtil
 
             // Modifier to make sure that border behaviour of BlockIterator is covered.
             for (int modifier = -1; modifier <= 1; ++modifier) {
-                if (modifyX) {
-                    workingModifiedX = workingX + modifier;
-                    workingModifiedZ = workingZ;
-                } else {
-                    workingModifiedX = workingX;
-                    workingModifiedZ = workingZ + modifier;
-                }
+                workingModifiedX = workingX;
+                workingModifiedZ = workingZ;
+
+                if (modifyX) workingModifiedX += modifier;
+                else workingModifiedZ += modifier;
 
                 chunkX = toChunkCoordinate(workingModifiedX);
                 chunkZ = toChunkCoordinate(workingModifiedZ);
@@ -155,12 +153,13 @@ final class ModernWorldUtil implements WorldUtil
                 if (lastChunkX == chunkX && lastChunkZ == chunkZ ||
                     lastLastChunkX == chunkX && lastLastChunkZ == chunkZ) continue;
 
+                // A new chunk, check if it is loaded.
+                if (!world.isChunkLoaded(chunkX, chunkZ)) return false;
+
                 lastLastChunkX = lastChunkX;
                 lastLastChunkZ = lastChunkZ;
                 lastChunkX = chunkX;
                 lastChunkZ = chunkZ;
-
-                if (!world.isChunkLoaded(chunkX, chunkZ)) return false;
             }
         }
 

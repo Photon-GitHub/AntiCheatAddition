@@ -4,7 +4,6 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.commands.subcommands.DebugCommand;
 import de.photon.anticheataddition.commands.subcommands.InfoCommand;
 import de.photon.anticheataddition.commands.subcommands.SetVlCommand;
-import de.photon.anticheataddition.commands.subcommands.TabListRemoveCommand;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,8 +27,7 @@ public class MainCommand extends InternalCommand implements CommandExecutor, Tab
                                                     .addCommandHelp("The main command of AntiCheatAddition", "To use a subcommands simply add it to the parent command:", "/anticheataddition <subcommand>")
                                                     .addChildCommands(new DebugCommand(),
                                                                       new InfoCommand(),
-                                                                      new SetVlCommand(),
-                                                                      new TabListRemoveCommand())
+                                                                      new SetVlCommand())
                                                     .build(), TabCompleteSupplier.builder());
     }
 

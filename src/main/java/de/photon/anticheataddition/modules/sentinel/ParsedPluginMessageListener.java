@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 public interface ParsedPluginMessageListener extends PluginMessageListener
 {
     @Override
-    default void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] message)
+    default void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] message)
     {
         String clientData;
         try {

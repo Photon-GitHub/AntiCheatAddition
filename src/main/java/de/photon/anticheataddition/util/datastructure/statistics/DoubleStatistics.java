@@ -77,7 +77,7 @@ public final class DoubleStatistics implements DoubleConsumer
      *
      * @return the count of values
      */
-    public final long getCount()
+    public long getCount()
     {
         return count;
     }
@@ -105,7 +105,7 @@ public final class DoubleStatistics implements DoubleConsumer
      * @apiNote Values sorted by increasing absolute magnitude tend to yield
      * more accurate results.
      */
-    public final double getSum()
+    public double getSum()
     {
         // Better error bounds to add both terms as the final sum
         double tmp = sum + sumCompensation;
@@ -129,7 +129,7 @@ public final class DoubleStatistics implements DoubleConsumer
      * value was NaN or {@code Double.POSITIVE_INFINITY} if no values were
      * recorded
      */
-    public final double getMin()
+    public double getMin()
     {
         return min;
     }
@@ -144,7 +144,7 @@ public final class DoubleStatistics implements DoubleConsumer
      * value was NaN or {@code Double.NEGATIVE_INFINITY} if no values were
      * recorded
      */
-    public final double getMax()
+    public double getMax()
     {
         return max;
     }
@@ -168,7 +168,7 @@ public final class DoubleStatistics implements DoubleConsumer
      * @apiNote Values sorted by increasing absolute magnitude tend to yield
      * more accurate results.
      */
-    public final double getAverage()
+    public double getAverage()
     {
         return getCount() > 0 ? getSum() / getCount() : 0.0d;
     }

@@ -9,8 +9,7 @@ public enum InternalPermission
     BYPASS("bypass"),
     DEBUG("debug"),
     INFO("info"),
-    SETVL("setvl"),
-    TABLISTREMOVE("tablistremove");
+    SETVL("setvl");
 
     @Getter private final String realPermission;
 

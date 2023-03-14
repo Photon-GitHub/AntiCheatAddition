@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.util.datastructure.kdtree;
+package de.photon.anticheataddition.util.datastructure.quadtree;
 
 import de.photon.anticheataddition.util.mathematics.MathUtil;
 import org.danilopianini.util.FlexibleQuadTree;
@@ -68,8 +68,8 @@ public abstract class QuadTreeCollection<T> extends AbstractCollection<QuadTreeC
     {
         final var squareList = querySquare(center, radius);
 
-        final var result = new ArrayList<Node<T>>();
-        final var radiusSquared = radius * radius;
+        final var result = new ArrayList<Node<T>>(squareList.size());
+        final double radiusSquared = radius * radius;
         for (Node<T> node : squareList) {
             if (node.inRadius(center, radiusSquared)) result.add(node);
         }

@@ -1,7 +1,6 @@
 package de.photon.anticheataddition.util.violationlevels.threshold;
 
 import com.google.common.collect.ImmutableSortedMap;
-import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +9,7 @@ import java.util.NavigableMap;
 
 final class MultiThresholds implements ThresholdManagement
 {
-    @Getter private final NavigableMap<Integer, Threshold> thresholdMap;
+    private final NavigableMap<Integer, Threshold> thresholdMap;
 
     public MultiThresholds(List<Threshold> thresholds)
     {

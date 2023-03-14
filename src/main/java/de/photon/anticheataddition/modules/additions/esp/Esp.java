@@ -4,7 +4,7 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.Module;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.config.Configs;
-import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeQueue;
+import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeQueue;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.visibility.PlayerVisibility;
 import org.bukkit.Bukkit;

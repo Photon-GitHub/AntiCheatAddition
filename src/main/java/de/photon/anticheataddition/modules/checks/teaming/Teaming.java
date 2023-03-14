@@ -5,7 +5,7 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
-import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
+import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeSet;
 import de.photon.anticheataddition.util.mathematics.TimeUtil;
 import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.minecraft.world.Region;
@@ -74,6 +74,7 @@ public final class Teaming extends ViolationModule implements Listener
         Preconditions.checkArgument(allowedSize > 0, "The Teaming allowed_size must be greater than 0.");
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(AntiCheatAddition.getInstance(), () -> {
+            // Set for fast removeAll calls.
             final var quadTree = new QuadTreeSet<Player>();
 
             for (World world : enabledWorlds) {
@@ -102,9 +103,9 @@ public final class Teaming extends ViolationModule implements Listener
 
                     // Team is too big
                     final int vl = teamNodes.size() - allowedSize;
-                    if (vl > 0) {
-                        for (final var node : teamNodes) this.getManagement().flag(Flag.of(node.element()).setAddedVl(vl));
-                    }
+                    if (vl <= 0) continue;
+
+                    for (final var node : teamNodes) this.getManagement().flag(Flag.of(node.element()).setAddedVl(vl));
                 }
             }
         }, 1L, period);

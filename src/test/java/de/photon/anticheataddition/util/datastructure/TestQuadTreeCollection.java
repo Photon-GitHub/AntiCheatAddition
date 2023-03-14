@@ -1,7 +1,7 @@
 package de.photon.anticheataddition.util.datastructure;
 
-import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeQueue;
-import de.photon.anticheataddition.util.datastructure.kdtree.QuadTreeSet;
+import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeQueue;
+import de.photon.anticheataddition.util.datastructure.quadtree.QuadTreeSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

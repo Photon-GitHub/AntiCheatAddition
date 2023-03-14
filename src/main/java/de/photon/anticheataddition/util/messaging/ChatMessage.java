@@ -3,7 +3,6 @@ package de.photon.anticheataddition.util.messaging;
 import de.photon.anticheataddition.AntiCheatAddition;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 @UtilityClass

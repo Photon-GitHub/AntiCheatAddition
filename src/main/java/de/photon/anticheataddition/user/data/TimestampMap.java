@@ -1,22 +1,18 @@
 package de.photon.anticheataddition.user.data;
 
-import java.util.EnumMap;
-import java.util.Map;
-
 public final class TimestampMap
 {
-    // As the map is not modified by a single thread, we can safely read without synchronization.
-    private final Map<TimeKey, Timestamp> map;
+    // We know that every enum has a non-null Timestamp as a value, so we can use an array instead of a map.
+    private final Timestamp[] values;
 
     public TimestampMap()
     {
-        final var enumMap = new EnumMap<TimeKey, Timestamp>(TimeKey.class);
-        for (TimeKey value : TimeKey.values()) enumMap.put(value, new Timestamp());
-        this.map = enumMap;
+        values = new Timestamp[TimeKey.values().length];
+        for (int i = 0; i < values.length; ++i) values[i] = new Timestamp();
     }
 
     public Timestamp at(TimeKey key)
     {
-        return map.get(key);
+        return values[key.ordinal()];
     }
 }

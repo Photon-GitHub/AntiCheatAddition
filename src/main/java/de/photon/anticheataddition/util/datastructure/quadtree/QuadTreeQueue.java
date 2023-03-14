@@ -1,4 +1,4 @@
-package de.photon.anticheataddition.util.datastructure.kdtree;
+package de.photon.anticheataddition.util.datastructure.quadtree;
 
 import java.util.ArrayDeque;
 import java.util.Collection;

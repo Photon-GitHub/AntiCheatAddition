@@ -2,8 +2,10 @@ package de.photon.anticheataddition;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,11 +13,19 @@ import org.bukkit.entity.Player;
 import org.mockito.Mockito;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @UtilityClass
 public final class Dummy
 {
+    private static final List<Player> mockedPlayers;
+    private static final List<User> mockedUsers;
+    private static final Map<String, AntiCheatAddition> mockedAntiCheatAdditionMap;
+
     // Mock the environment.
     static {
         final var bukkitMock = Mockito.mockStatic(Bukkit.class);
@@ -26,6 +36,10 @@ public final class Dummy
         final var protocolManager = Mockito.mock(ProtocolManager.class);
         final var protocolLibMock = Mockito.mockStatic(ProtocolLibrary.class);
         protocolLibMock.when(ProtocolLibrary::getProtocolManager).thenReturn(protocolManager);
+
+        mockedPlayers = new ArrayList<>();
+        mockedUsers = new ArrayList<>();
+        mockedAntiCheatAdditionMap = new HashMap<>();
     }
 
     /**
@@ -44,34 +58,101 @@ public final class Dummy
 
     public static void mockAntiCheatAddition(String configPath)
     {
-        final var config = YamlConfiguration.loadConfiguration(new File(configPath));
-        AntiCheatAddition mockAntiCheatAddition = Mockito.mock(AntiCheatAddition.class);
-        Mockito.when(mockAntiCheatAddition.getConfig()).thenReturn(config);
-        AntiCheatAddition.setInstance(mockAntiCheatAddition);
+        final var acaMock = mockedAntiCheatAdditionMap.computeIfAbsent(configPath, path -> {
+            final var config = YamlConfiguration.loadConfiguration(new File(path));
+            final var mockAntiCheatAddition = Mockito.mock(AntiCheatAddition.class);
+            Mockito.when(mockAntiCheatAddition.getConfig()).thenReturn(config);
+            return mockAntiCheatAddition;
+        });
+
+        AntiCheatAddition.setInstance(acaMock);
     }
 
-    public static Player mockPlayer()
+    private static void ensureMockedPlayers(int amount)
     {
-        Player player = Mockito.mock(Player.class);
-        final var uuid = UUID.randomUUID();
-        Mockito.when(player.getName()).thenReturn("TestPlayer");
-        Mockito.when(player.getUniqueId()).thenReturn(uuid);
-        return player;
+        while (mockedPlayers.size() < amount) {
+            final var uuid = UUID.randomUUID();
+            // Make sure we actually have a new UUID.
+            if (mockedPlayers.stream().anyMatch(p -> p.getUniqueId().equals(uuid))) continue;
+
+            final Player player = Mockito.mock(Player.class);
+            Mockito.when(player.getName()).thenReturn("TestPlayer " + uuid.toString().substring(0, 5));
+            Mockito.when(player.getUniqueId()).thenReturn(uuid);
+
+            mockedPlayers.add(player);
+        }
+    }
+
+    private static void ensureMockedUsers(int amount)
+    {
+        ensureMockedPlayers(amount);
+        final int toAdd = amount - mockedUsers.size();
+        for (int i = 0; i < toAdd; ++i) {
+            mockedUsers.add(new User(mockedPlayers.get(amount - i - 1)));
+        }
     }
 
     /**
-     * Mock User.
-     * Make sure to call mockEnvironment beforehand.
+     * Mock a {@link Player}.
+     * <p>
+     * Please note that there is no guarantee that two consecutive calls to this method will return two different players.
+     * Use {@link #mockDistinctPlayers(int)} for that.
+     */
+    public static Player mockPlayer()
+    {
+        ensureMockedPlayers(1);
+        return mockedPlayers.get(0);
+    }
+
+    /**
+     * This mocks a certain amount of {@link Player}s.
+     * <p>
+     * The method guarantees that all returned {@link Player}s are distinct.
+     */
+    public static Player[] mockDistinctPlayers(int amount)
+    {
+        ensureMockedPlayers(amount);
+        return mockedPlayers.stream().limit(amount).toArray(Player[]::new);
+    }
+
+    /**
+     * Mock a {@link User}.
+     * <p>
+     * Please note that there is no guarantee that two consecutive calls to this method will return two different users.
+     * Use {@link #mockDistinctUsers(int)} for that.
      */
     public static User mockUser()
     {
-        return new User(mockPlayer());
+        ensureMockedUsers(1);
+        return mockedUsers.get(0);
+    }
+
+    /**
+     * This mocks a certain amount of {@link User}s.
+     * <p>
+     * The method guarantees that all returned {@link User}s are distinct.
+     */
+    public static User[] mockDistinctUsers(int amount)
+    {
+        ensureMockedUsers(amount);
+        return mockedUsers.stream().limit(amount).toArray(User[]::new);
     }
 
     public static ViolationModule mockViolationModule(String configString)
     {
-        final var vlModule = Mockito.mock(ViolationModule.class);
-        Mockito.when(vlModule.getConfigString()).thenReturn(configString);
-        return vlModule;
+        return new ViolationModule(configString)
+        {
+            @Override
+            protected ViolationManagement createViolationManagement()
+            {
+                return null;
+            }
+
+            @Override
+            protected ModuleLoader createModuleLoader()
+            {
+                return null;
+            }
+        };
     }
 }

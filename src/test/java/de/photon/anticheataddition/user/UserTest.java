@@ -8,18 +8,17 @@ import org.junit.jupiter.api.Test;
 
 class UserTest
 {
-    private static User[] dummyUsers;
-
     @BeforeAll
     static void mockACA()
     {
         Dummy.mockAntiCheatAddition();
-        dummyUsers = new User[]{Dummy.mockUser(), Dummy.mockUser()};
     }
 
     @Test
     void userDataMaterialTest()
     {
+        final var dummyUsers = Dummy.mockDistinctUsers(2);
+
         final var obsidian = Material.OBSIDIAN;
         final var coalBlock = Material.COAL_BLOCK;
 
@@ -33,7 +32,8 @@ class UserTest
     @Test
     void counterTest()
     {
-        final var counter = dummyUsers[0].getData().counter.inventoryAverageHeuristicsMisclicks;
+        final var dummyUser = Dummy.mockUser();
+        final var counter = dummyUser.getData().counter.inventoryAverageHeuristicsMisclicks;
 
         counter.setToZero();
         Assertions.assertSame(0L, counter.getCounter());

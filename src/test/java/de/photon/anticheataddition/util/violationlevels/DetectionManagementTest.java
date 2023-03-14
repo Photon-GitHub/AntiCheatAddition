@@ -2,7 +2,6 @@ package de.photon.anticheataddition.util.violationlevels;
 
 import de.photon.anticheataddition.Dummy;
 import de.photon.anticheataddition.modules.ViolationModule;
-import de.photon.anticheataddition.user.User;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -16,7 +15,6 @@ class DetectionManagementTest
 {
     // Do not remove this unused variable, it is needed for initialization of mocking.
     private static final ViolationModule dummyVlModule = Dummy.mockViolationModule("Sentinel.LabyMod");
-    private static User dummy;
 
     private static DetectionManagement getDetectionManagement()
     {
@@ -31,13 +29,12 @@ class DetectionManagementTest
     static void setup()
     {
         Dummy.mockAntiCheatAddition();
-        dummy = Dummy.mockUser();
     }
 
     @Test
     void invalidVl()
     {
-        final var player = dummy.getPlayer();
+        final var player = Dummy.mockPlayer();
         final var management = getDetectionManagement();
 
         Assertions.assertDoesNotThrow(() -> management.setVL(player, 0));
@@ -66,33 +63,32 @@ class DetectionManagementTest
     @Test
     void testSetVl()
     {
-        final var player = dummy.getPlayer();
-        final var player2 = Dummy.mockPlayer();
+        final var players = Dummy.mockDistinctPlayers(2);
         final var management = getDetectionManagement();
 
-        management.setVL(player, 0);
-        management.setVL(player2, 0);
-        Assertions.assertEquals(0, management.getVL(player.getUniqueId()));
-        Assertions.assertEquals(0, management.getVL(player2.getUniqueId()));
-        management.setVL(player, 1);
-        Assertions.assertEquals(1, management.getVL(player.getUniqueId()));
-        Assertions.assertEquals(0, management.getVL(player2.getUniqueId()));
-        management.setVL(player2, 1);
-        Assertions.assertEquals(1, management.getVL(player.getUniqueId()));
-        Assertions.assertEquals(1, management.getVL(player2.getUniqueId()));
-        management.setVL(player, 0);
-        Assertions.assertEquals(0, management.getVL(player.getUniqueId()));
-        Assertions.assertEquals(1, management.getVL(player2.getUniqueId()));
-        management.setVL(player2, 0);
-        Assertions.assertEquals(0, management.getVL(player.getUniqueId()));
-        Assertions.assertEquals(0, management.getVL(player2.getUniqueId()));
+        management.setVL(players[0], 0);
+        management.setVL(players[1], 0);
+        Assertions.assertEquals(0, management.getVL(players[0].getUniqueId()));
+        Assertions.assertEquals(0, management.getVL(players[1].getUniqueId()));
+        management.setVL(players[0], 1);
+        Assertions.assertEquals(1, management.getVL(players[0].getUniqueId()));
+        Assertions.assertEquals(0, management.getVL(players[1].getUniqueId()));
+        management.setVL(players[1], 1);
+        Assertions.assertEquals(1, management.getVL(players[0].getUniqueId()));
+        Assertions.assertEquals(1, management.getVL(players[1].getUniqueId()));
+        management.setVL(players[0], 0);
+        Assertions.assertEquals(0, management.getVL(players[0].getUniqueId()));
+        Assertions.assertEquals(1, management.getVL(players[1].getUniqueId()));
+        management.setVL(players[1], 0);
+        Assertions.assertEquals(0, management.getVL(players[0].getUniqueId()));
+        Assertions.assertEquals(0, management.getVL(players[1].getUniqueId()));
     }
 
     @Test
     void testAddVl()
     {
         final var management = getDetectionManagement();
-        final var player = dummy.getPlayer();
+        final var player = Dummy.mockPlayer();
 
         management.setVL(player, 0);
         Assertions.assertEquals(0, management.getVL(player.getUniqueId()));

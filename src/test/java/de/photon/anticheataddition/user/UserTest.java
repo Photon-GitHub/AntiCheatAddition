@@ -1,6 +1,6 @@
-package de.photon.anticheataddition;
+package de.photon.anticheataddition.user;
 
-import de.photon.anticheataddition.user.User;
+import de.photon.anticheataddition.Dummy;
 import org.bukkit.Material;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

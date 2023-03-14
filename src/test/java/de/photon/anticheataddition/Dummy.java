@@ -14,14 +14,17 @@ import org.mockito.Mockito;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @UtilityClass
 public final class Dummy
 {
-    private static final List<Player> mockedPlayers = new ArrayList<>();
+    private static final List<Player> mockedPlayers;
+    private static final List<User> mockedUsers;
+    private static final Map<String, AntiCheatAddition> mockedAntiCheatAdditionMap;
 
     // Mock the environment.
     static {
@@ -33,6 +36,10 @@ public final class Dummy
         final var protocolManager = Mockito.mock(ProtocolManager.class);
         final var protocolLibMock = Mockito.mockStatic(ProtocolLibrary.class);
         protocolLibMock.when(ProtocolLibrary::getProtocolManager).thenReturn(protocolManager);
+
+        mockedPlayers = new ArrayList<>();
+        mockedUsers = new ArrayList<>();
+        mockedAntiCheatAdditionMap = new HashMap<>();
     }
 
     /**
@@ -51,10 +58,14 @@ public final class Dummy
 
     public static void mockAntiCheatAddition(String configPath)
     {
-        final var config = YamlConfiguration.loadConfiguration(new File(configPath));
-        AntiCheatAddition mockAntiCheatAddition = Mockito.mock(AntiCheatAddition.class);
-        Mockito.when(mockAntiCheatAddition.getConfig()).thenReturn(config);
-        AntiCheatAddition.setInstance(mockAntiCheatAddition);
+        final var acaMock = mockedAntiCheatAdditionMap.computeIfAbsent(configPath, path -> {
+            final var config = YamlConfiguration.loadConfiguration(new File(path));
+            final var mockAntiCheatAddition = Mockito.mock(AntiCheatAddition.class);
+            Mockito.when(mockAntiCheatAddition.getConfig()).thenReturn(config);
+            return mockAntiCheatAddition;
+        });
+
+        AntiCheatAddition.setInstance(acaMock);
     }
 
     private static void ensureMockedPlayers(int amount)
@@ -69,6 +80,15 @@ public final class Dummy
             Mockito.when(player.getUniqueId()).thenReturn(uuid);
 
             mockedPlayers.add(player);
+        }
+    }
+
+    private static void ensureMockedUsers(int amount)
+    {
+        ensureMockedPlayers(amount);
+        final int toAdd = amount - mockedUsers.size();
+        for (int i = 0; i < toAdd; ++i) {
+            mockedUsers.add(new User(mockedPlayers.get(amount - i - 1)));
         }
     }
 
@@ -103,7 +123,8 @@ public final class Dummy
      */
     public static User mockUser()
     {
-        return new User(mockPlayer());
+        ensureMockedUsers(1);
+        return mockedUsers.get(0);
     }
 
     /**
@@ -113,7 +134,8 @@ public final class Dummy
      */
     public static User[] mockDistinctUsers(int amount)
     {
-        return Arrays.stream(mockDistinctPlayers(amount)).map(User::new).toArray(User[]::new);
+        ensureMockedUsers(amount);
+        return mockedUsers.stream().limit(amount).toArray(User[]::new);
     }
 
     public static ViolationModule mockViolationModule(String configString)

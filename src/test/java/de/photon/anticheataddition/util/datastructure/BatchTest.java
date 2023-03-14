@@ -20,19 +20,16 @@ class BatchTest
 {
     private static final EventBus testBus = new EventBus();
 
-    // Do not remove this unused variable, it is needed for initialization of mocking.
-    private static User dummy;
-
     @BeforeAll
     static void setup()
     {
         Dummy.mockAntiCheatAddition();
-        dummy = Dummy.mockUser();
     }
 
     @Test
     void dummyBatchTest()
     {
+        final var dummy = Dummy.mockUser();
         Assertions.assertThrows(NullPointerException.class, () -> new Batch<>(testBus, dummy, 1, null));
         Assertions.assertThrows(NullPointerException.class, () -> new Batch<>(null, dummy, 1, "null"));
         Assertions.assertThrows(NullPointerException.class, () -> new Batch<String>(null, dummy, 1, null));
@@ -41,6 +38,7 @@ class BatchTest
     @Test
     void illegalCapacityBatchTest()
     {
+        final var dummy = Dummy.mockUser();
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(testBus, dummy, 0, ""));
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(testBus, dummy, -1, ""));
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Batch<>(testBus, dummy, Integer.MIN_VALUE, ""));
@@ -50,7 +48,7 @@ class BatchTest
     void peekingTest()
     {
         final int batchSize = 3;
-        final var batch = new Batch<>(testBus, dummy, batchSize, "");
+        final var batch = new Batch<>(testBus, Dummy.mockUser(), batchSize, "");
         Assertions.assertEquals("", batch.peekLastAdded());
 
         batch.addDataPoint("SomeString");
@@ -75,7 +73,7 @@ class BatchTest
 
         batchProcessor.enable();
 
-        final var batch = new Batch<>(testBus, dummy, batchSize, "");
+        final var batch = new Batch<>(testBus, Dummy.mockUser(), batchSize, "");
         testBus.register(batchProcessor);
 
         for (int i = 0, n = 2 * batchSize; i < n; ++i) batch.addDataPoint(String.valueOf(i));
@@ -106,7 +104,7 @@ class BatchTest
 
         batchProcessor.enable();
 
-        final var batch = new Batch<>(testBus, dummy, batchSize, "");
+        final var batch = new Batch<>(testBus, Dummy.mockUser(), batchSize, "");
         testBus.register(batchProcessor);
 
         for (int i = 0, n = 2 * batchSize; i < n; ++i) batch.addDataPoint(String.valueOf(i));

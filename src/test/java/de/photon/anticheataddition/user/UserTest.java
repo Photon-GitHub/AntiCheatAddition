@@ -32,8 +32,7 @@ class UserTest
     @Test
     void counterTest()
     {
-        final var dummyUser = Dummy.mockUser();
-        final var counter = dummyUser.getData().counter.inventoryAverageHeuristicsMisclicks;
+        final var counter = Dummy.mockUser().getData().counter.inventoryAverageHeuristicsMisclicks;
 
         counter.setToZero();
         Assertions.assertSame(0L, counter.getCounter());

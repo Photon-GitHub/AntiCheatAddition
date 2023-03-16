@@ -40,6 +40,7 @@ public final class ScaffoldBatch extends Batch<ScaffoldBatch.ScaffoldBlockPlace>
         {
             return switch (potionEffect.getAmplifier()) {
                 // These are tested values, where possible fast-bridging was used.
+                // When testing remember to sneak diagonally and use the click fast instead of continuously pressing the mouse button.
                 case 0 -> 1.03D;
                 case 1 -> 1.25D;
                 case 2 -> 1.15D;

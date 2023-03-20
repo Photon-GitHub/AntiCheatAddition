@@ -97,8 +97,7 @@ public final class PacketAdapterBuilder
     private void runPacketEventBiConsumer(PacketEvent event, BiConsumer<PacketEvent, User> biConsumer)
     {
         final User user = User.safeGetUserFromPacketEvent(event);
-        if (User.isUserInvalid(user, module)) return;
-        biConsumer.accept(event, user);
+        if (!User.isUserInvalid(user, module)) biConsumer.accept(event, user);
     }
 
     public PacketAdapter build()

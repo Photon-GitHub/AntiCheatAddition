@@ -41,31 +41,30 @@ public final class Tower extends ViolationModule implements Listener
             return;
         }
 
-        // Not flying
-        if (!user.getPlayer().isFlying()) {
-            final var blockPlaced = event.getBlockPlaced();
+        final var blockPlaced = event.getBlockPlaced();
 
-            // User must stand above the block (placed from above)1
+        // A flying player can easily tower.
+        if (!user.getPlayer().isFlying() &&
+            // User must stand above the block (placed from above)
             // Check if the block is tower-placed (Block belows)
-            if (event.getBlock().getFace(event.getBlockAgainst()) == BlockFace.DOWN &&
-                // The block is placed inside a 2 - block y-radius, this prevents false positives when building from a higher level
-                user.getPlayer().getLocation().getY() - blockPlaced.getY() < 2D &&
-                // Check if this check applies to the block
-                blockPlaced.getType().isSolid() &&
-                //
-                // Custom formula when setting -> Will return negative value when in protected timeframe.
-                user.getTimeMap().at(TimeKey.TOWER_BOUNCE).passedTime() > 0 &&
-                // Check if the block is placed against only one block (face).
-                // Only one block that is not a liquid is allowed (the one which the Block is placed against).
-                WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&
-                // User is not in water which can cause false positives due to faster swimming on newer versions.
-                !user.isInLiquids())
-            {
-                // Make sure that the player is still towering in the same position.
-                if (!event.getBlockAgainst().getLocation().equals(user.getTowerBatch().peekLastAdded().locationOfBlock())) user.getTowerBatch().clear();
+            event.getBlock().getFace(event.getBlockAgainst()) == BlockFace.DOWN &&
+            // The block is placed inside a 2 - block y-radius, this prevents false positives when building from a higher level
+            user.getPlayer().getLocation().getY() - blockPlaced.getY() < 2D &&
+            // Check if this check applies to the block
+            blockPlaced.getType().isSolid() &&
+            //
+            // Custom formula when setting -> Will return negative value when in protected timeframe.
+            user.getTimeMap().at(TimeKey.TOWER_BOUNCE).passedTime() > 0 &&
+            // Check if the block is placed against only one block (face).
+            // Only one block that is not a liquid is allowed (the one which the Block is placed against).
+            WorldUtil.INSTANCE.countBlocksAround(blockPlaced, WorldUtil.ALL_FACES, MaterialUtil.LIQUIDS) == 1 &&
+            // User is not in water which can cause false positives due to faster swimming on newer versions.
+            !user.isInLiquids())
+        {
+            // Make sure that the player is still towering in the same position.
+            if (!event.getBlockAgainst().getLocation().equals(user.getTowerBatch().peekLastAdded().locationOfBlock())) user.getTowerBatch().clear();
 
-                user.getTowerBatch().addDataPoint(new TowerBatch.TowerBlockPlace(blockPlaced.getLocation(), user.getPlayer()));
-            }
+            user.getTowerBatch().addDataPoint(new TowerBatch.TowerBlockPlace(blockPlaced.getLocation(), user.getPlayer()));
         }
     }
 

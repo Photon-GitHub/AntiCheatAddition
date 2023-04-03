@@ -21,10 +21,10 @@ import java.util.stream.Collectors;
 
 public final class Esp extends Module
 {
-    public static final Esp INSTANCE = new Esp();
+    public static final Esp ESP_INSTANCE = new Esp();
 
-    public static final long ESP_INTERVAL_TICKS = Esp.INSTANCE.loadLong(".interval_ticks", 2L);
-    private static final boolean ONLY_FULL_HIDE = Esp.INSTANCE.loadBoolean(".only_full_hide", false);
+    public static final long ESP_INTERVAL_TICKS = Esp.ESP_INSTANCE.loadLong(".interval_ticks", 2L);
+    private static final boolean ONLY_FULL_HIDE = Esp.ESP_INSTANCE.loadBoolean(".only_full_hide", false);
 
     private static final String ENTITY_TRACKING_RANGE_PLAYERS = ".entity-tracking-range.players";
     private static final String DEFAULT_WORLD_NAME = "default";

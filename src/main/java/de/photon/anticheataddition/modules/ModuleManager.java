@@ -62,7 +62,7 @@ public final class ModuleManager
                 BrandHider.INSTANCE,
                 DamageIndicator.INSTANCE,
                 EnchantmentHider.INSTANCE,
-                Esp.INSTANCE,
+                Esp.ESP_INSTANCE,
                 LogBot.INSTANCE,
 
                 // Checks

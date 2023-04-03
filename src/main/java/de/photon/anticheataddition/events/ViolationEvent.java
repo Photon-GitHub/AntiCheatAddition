@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class ViolationEvent extends ModulePlayerEvent
 {
-    private static final HandlerList handlers = new HandlerList();
 
     @Getter private final int vl;
 
@@ -37,10 +36,11 @@ public class ViolationEvent extends ModulePlayerEvent
         return ViolationEvent.handlers;
     }
 
-    @NotNull
-    @Override
-    public HandlerList getHandlers()
-    {
-        return ViolationEvent.handlers;
+        @NotNull
+        @Override
+        public HandlerList getHandlers() {
+            return handlers;
+        }
     }
-}
+
+

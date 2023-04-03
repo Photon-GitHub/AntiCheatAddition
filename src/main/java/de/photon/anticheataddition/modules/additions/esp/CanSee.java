@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public interface CanSee
 {
-    CanSee INSTANCE = Esp.INSTANCE.loadBoolean(".calculate_third_person_modes", false) ? new ThirdPersonCameraCanSee() : new SingleCameraCanSee();
+    CanSee INSTANCE = Esp.ESP_INSTANCE.loadBoolean(".calculate_third_person_modes", false) ? new ThirdPersonCameraCanSee() : new SingleCameraCanSee();
 
     // This cache reduces the required getBlock() calls.
     LoadingCache<Location, Boolean> BLOCK_CACHE = CacheBuilder.newBuilder()

@@ -49,42 +49,52 @@ public final class ConfigurationRepresentation
         this.requestedChanges.add(new ConfigChange(path, value));
     }
 
-    public synchronized void save() throws IOException
-    {
-        // Directly inject changes.
+    public synchronized void save() throws IOException {
         if (requestedChanges.isEmpty()) return;
 
-        // Load the whole config.
         final var configLines = new ArrayList<>(Files.readAllLines(this.configFile.toPath()));
 
         for (ConfigChange requestedChange : requestedChanges) {
-            final var value = requestedChange.value();
-
             final int lineIndexOfKey = requestedChange.lineIndexOfPath(configLines);
-            final String originalLine = configLines.get(lineIndexOfKey);
-            final int affectedLines = linesOfKey(configLines, lineIndexOfKey);
 
-            // We want to delete all lines after the initial one.
-            deleteLines(configLines, lineIndexOfKey + 1, affectedLines - 1);
+            String replacementLine = createReplacementLine(configLines, requestedChange, lineIndexOfKey);
+            configLines.set(lineIndexOfKey, replacementLine);
 
-            // +1 to add the otherwise removed ':' right back.
-            final var replacementLine = new StringBuilder(originalLine.substring(0, originalLine.lastIndexOf(':') + 1));
-
-            // Set the new value.
-            if (value instanceof Boolean || value instanceof Number) replacementLine.append(' ').append(value);
-            else if (value instanceof String str) replacementLine.append(' ').append('\"').append(str).append('\"');
-            else if (value instanceof List<?> list) {
-                if (list.isEmpty()) replacementLine.append(" []");
-                else {
-                    final var preString = "- ".indent((int) ConfigUtil.depth(originalLine));
-                    for (Object o : list) configLines.add(lineIndexOfKey + 1, preString + o);
-                }
+            if (requestedChange.value() instanceof List<?> list) {
+                handleListValue(configLines, list, lineIndexOfKey, requestedChange);
             }
-
-            configLines.set(lineIndexOfKey, replacementLine.toString());
         }
 
         Files.write(this.configFile.toPath(), configLines);
+    }
+
+    private String createReplacementLine(ArrayList<String> configLines, ConfigChange requestedChange, int lineIndexOfKey) {
+        final var value = requestedChange.value();
+        final String originalLine = configLines.get(lineIndexOfKey);
+        final int affectedLines = linesOfKey(configLines, lineIndexOfKey);
+
+        deleteLines(configLines, lineIndexOfKey + 1, affectedLines - 1);
+
+        final var replacementLine = new StringBuilder(originalLine.substring(0, originalLine.lastIndexOf(':') + 1));
+
+        if (value instanceof Boolean || value instanceof Number) {
+            replacementLine.append(' ').append(value);
+        } else if (value instanceof String str) {
+            replacementLine.append(' ').append('\"').append(str).append('\"');
+        } else if (value instanceof List<?>) {
+            replacementLine.append(" []");
+        }
+
+        return replacementLine.toString();
+    }
+
+    private void handleListValue(ArrayList<String> configLines, List<?> list, int lineIndexOfKey, ConfigChange requestedChange) {
+        if (!list.isEmpty()) {
+            final var preString = "- ".indent((int) ConfigUtil.depth(configLines.get(lineIndexOfKey)));
+            for (Object o : list) {
+                configLines.add(lineIndexOfKey + 1, preString + o);
+            }
+        }
     }
 
     private record ConfigChange(String path, Object value)

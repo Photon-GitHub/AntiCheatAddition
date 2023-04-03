@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class SentinelEvent extends ModulePlayerEvent
 {
-    private static final HandlerList handlers = new HandlerList();
 
     protected SentinelEvent(Player p, String moduleId)
     {
@@ -34,8 +33,8 @@ public class SentinelEvent extends ModulePlayerEvent
 
     @NotNull
     @Override
-    public HandlerList getHandlers()
-    {
-        return SentinelEvent.handlers;
+    public HandlerList getHandlers() {
+        return handlers;
     }
 }
+

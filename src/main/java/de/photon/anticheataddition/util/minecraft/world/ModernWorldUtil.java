@@ -150,8 +150,10 @@ final class ModernWorldUtil implements WorldUtil
                 chunkZ = toChunkCoordinate(workingModifiedZ);
 
                 // If we have already checked the chunk, skip it, as we know it is loaded.
-                if (lastChunkX == chunkX && lastChunkZ == chunkZ ||
-                    lastLastChunkX == chunkX && lastLastChunkZ == chunkZ) continue;
+                if (isLastChunkEqual(lastChunkX, lastChunkZ, chunkX, chunkZ) ||
+                        isLastLastChunkEqual(lastLastChunkX, lastLastChunkZ, chunkX, chunkZ)) {
+                    continue;
+                }
 
                 // A new chunk, check if it is loaded.
                 if (!world.isChunkLoaded(chunkX, chunkZ)) return false;
@@ -165,6 +167,15 @@ final class ModernWorldUtil implements WorldUtil
 
         return true;
     }
+
+    private boolean isLastChunkEqual(int lastChunkX, int lastChunkZ, int chunkX, int chunkZ) {
+        return lastChunkX == chunkX && lastChunkZ == chunkZ;
+    }
+
+    private boolean isLastLastChunkEqual(int lastLastChunkX, int lastLastChunkZ, int chunkX, int chunkZ) {
+        return lastLastChunkX == chunkX && lastLastChunkZ == chunkZ;
+    }
+
 
     @Override
     public boolean areLocationsInRange(Location firstLocation, Location secondLocation, double distance)

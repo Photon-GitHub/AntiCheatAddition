@@ -87,11 +87,10 @@ public final class InventoryMove extends ViolationModule implements Listener
         }
 
         final boolean positiveVelocity = event.getFrom().getY() < event.getTo().getY();
-        final boolean noMovement = event.getFrom().getY() == event.getTo().getY();
+        final boolean noYMovement = event.getFrom().getY() == event.getTo().getY();
 
-        // A player is only allowed to jump once.
-        // Now that the player is jumping, we can set the flag to false.
         if (positiveVelocity != user.getData().bool.positiveVelocity) {
+            // A player is only allowed to jump once.
             if (user.getData().bool.allowedToJump) {
                 user.getData().bool.allowedToJump = false;
                 return;
@@ -102,7 +101,7 @@ public final class InventoryMove extends ViolationModule implements Listener
 
             // Prevent bypasses by checking for positive velocity and the moved distance.
             // Distance is not the same as some packets are sent with 0 distance.
-            if ((positiveVelocity || noMovement) &&
+            if ((positiveVelocity || noYMovement) &&
                 // Jumping onto a stair or slabs false positive
                 checkLocationForMaterials(event.getFrom(), MaterialUtil.AUTO_STEP_MATERIALS)) return;
 
@@ -117,7 +116,7 @@ public final class InventoryMove extends ViolationModule implements Listener
         if (user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) ||
             // No Y change anymore. Anticheat and the rule above makes sure that people cannot jump again.
             // While falling down people can modify their inventories.
-            noMovement) return;
+            noYMovement) return;
 
         // The break period is longer with the speed effect.
         final long speedMillis = InternalPotion.SPEED.getPotionEffect(user.getPlayer())

@@ -64,80 +64,80 @@ public final class InventoryMove extends ViolationModule implements Listener
             // Do this here to prevent bypasses with setting allowedToJump to true
             event.getTo().distanceSquared(event.getFrom()) <= 0.005) return;
 
-
         // Not inside a vehicle
-        if (!user.getPlayer().isInsideVehicle() &&
+        if (user.getPlayer().isInsideVehicle() ||
             // Not flying (may trigger some fps)
-            !user.getPlayer().isFlying() &&
+            user.getPlayer().isFlying() ||
             // Not using an Elytra
-            !EntityUtil.INSTANCE.isFlyingWithElytra(user.getPlayer()) &&
+            EntityUtil.INSTANCE.isFlyingWithElytra(user.getPlayer()) ||
             // Player is in an inventory
-            user.hasOpenInventory() &&
+            !user.hasOpenInventory() ||
             // Player has not been hit recently
-            user.getPlayer().getNoDamageTicks() == 0 &&
+            user.getPlayer().getNoDamageTicks() != 0 ||
             // Recent teleports can cause bugs
-            !user.hasTeleportedRecently(teleportBypassTime) &&
-            !user.hasChangedWorldsRecently(worldChangeBypassTime) &&
+            user.hasTeleportedRecently(teleportBypassTime) ||
+            user.hasChangedWorldsRecently(worldChangeBypassTime) ||
             // Make sure the current chunk of the player is loaded so isInLiquids does not cause async entity world add errors.
             // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load errors.
-            WorldUtil.INSTANCE.isChunkLoaded(user.getPlayer().getLocation()) &&
+            !WorldUtil.INSTANCE.isChunkLoaded(user.getPlayer().getLocation()) ||
             // The player is currently not in a liquid (liquids push)
-            !user.getHitboxLocation().isInLiquids() &&
+            user.getHitboxLocation().isInLiquids() ||
             // Auto-Disable if TPS are too low
-            TPSProvider.INSTANCE.atLeastTPS(minTps))
+            !TPSProvider.INSTANCE.atLeastTPS(minTps))
         {
-            final boolean positiveVelocity = event.getFrom().getY() < event.getTo().getY();
-            final boolean noMovement = event.getFrom().getY() == event.getTo().getY();
+            user.getData().bool.allowedToJump = true;
+            return;
+        }
 
-            // A player is only allowed to jump once.
-            // Now that the player is jumping, we can set the flag to false.
-            if (positiveVelocity != user.getData().bool.positiveVelocity) {
-                if (user.getData().bool.allowedToJump) {
-                    user.getData().bool.allowedToJump = false;
-                    return;
-                }
+        final boolean positiveVelocity = event.getFrom().getY() < event.getTo().getY();
+        final boolean noMovement = event.getFrom().getY() == event.getTo().getY();
 
-                // Bouncing can lead to false positives.
-                if (checkLocationForMaterials(event.getFrom(), MaterialUtil.BOUNCE_MATERIALS)) return;
-
-                // Prevent bypasses by checking for positive velocity and the moved distance.
-                // Distance is not the same as some packets are sent with 0 distance.
-                if ((positiveVelocity || noMovement) &&
-                    // Jumping onto a stair or slabs false positive
-                    checkLocationForMaterials(event.getFrom(), MaterialUtil.AUTO_STEP_MATERIALS)) return;
-
-                getManagement().flag(Flag.of(user)
-                                         .setAddedVl(20)
-                                         .setCancelAction(cancelVl, () -> cancelAction(user, event))
-                                         .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory."));
+        // A player is only allowed to jump once.
+        // Now that the player is jumping, we can set the flag to false.
+        if (positiveVelocity != user.getData().bool.positiveVelocity) {
+            if (user.getData().bool.allowedToJump) {
+                user.getData().bool.allowedToJump = false;
                 return;
             }
 
-            // Make sure that the last jump is a little ago (same "breaking" effect that needs compensation.)
-            if (user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) ||
-                // No Y change anymore. Anticheat and the rule above makes sure that people cannot jump again.
-                // While falling down people can modify their inventories.
-                noMovement) return;
+            // Bouncing can lead to false positives.
+            if (checkLocationForMaterials(event.getFrom(), MaterialUtil.BOUNCE_MATERIALS)) return;
 
-            // The break period is longer with the speed effect.
-            final long speedMillis = InternalPotion.SPEED.getPotionEffect(user.getPlayer())
-                                                         .map(PotionEffect::getAmplifier)
-                                                         // If a speed effect exists calculate the speed millis, otherwise the speedMillis are 0.
-                                                         .map(amplifier -> Math.max(100, amplifier + 1) * 50L)
-                                                         .orElse(0L);
+            // Prevent bypasses by checking for positive velocity and the moved distance.
+            // Distance is not the same as some packets are sent with 0 distance.
+            if ((positiveVelocity || noMovement) &&
+                // Jumping onto a stair or slabs false positive
+                checkLocationForMaterials(event.getFrom(), MaterialUtil.AUTO_STEP_MATERIALS)) return;
 
-            if (user.notRecentlyOpenedInventory(240L + speedMillis + lenienceMillis) &&
-                // Do the entity pushing stuff here (performance impact)
-                // No nearby entities that could push the player
-                WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitboxLocation().hitbox(), 0.1D).isEmpty())
-            {
-                getManagement().flag(Flag.of(user)
-                                         .setAddedVl(5)
-                                         .setCancelAction(cancelVl, () -> cancelAction(user, event))
-                                         .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory."));
-            }
-        } else {
-            user.getData().bool.allowedToJump = true;
+            getManagement().flag(Flag.of(user)
+                                     .setAddedVl(20)
+                                     .setCancelAction(cancelVl, () -> cancelAction(user, event))
+                                     .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory."));
+            return;
+        }
+
+        // Make sure that the last jump is a little ago (same "breaking" effect that needs compensation.)
+        if (user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) ||
+            // No Y change anymore. Anticheat and the rule above makes sure that people cannot jump again.
+            // While falling down people can modify their inventories.
+            noMovement) return;
+
+        // The break period is longer with the speed effect.
+        final long speedMillis = InternalPotion.SPEED.getPotionEffect(user.getPlayer())
+                                                     .map(PotionEffect::getAmplifier)
+                                                     // If a speed effect exists calculate the speed millis, otherwise the speedMillis are 0.
+                                                     .map(amplifier -> Math.max(100, amplifier + 1) * 50L)
+                                                     .orElse(0L);
+
+        if (user.notRecentlyOpenedInventory(240L + speedMillis + lenienceMillis) &&
+            // Do the entity pushing stuff here (performance impact)
+            // No nearby entities that could push the player
+            WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitboxLocation().hitbox(), 0.1D).isEmpty())
+        {
+            getManagement().flag(Flag.of(user)
+                                     .setAddedVl(5)
+                                     .setCancelAction(cancelVl, () -> cancelAction(user, event))
+                                     .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory."));
         }
     }
 

@@ -59,12 +59,14 @@ public final class InventoryMove extends ViolationModule implements Listener
     public void onPlayerMove(PlayerMoveEvent event)
     {
         final var user = User.getUser(event.getPlayer());
-        if (User.isUserInvalid(user, this) || event.getTo() == null) return;
+        if (User.isUserInvalid(user, this) || event.getTo() == null ||
+            // Check that the player has actually moved.
+            // Do this here to prevent bypasses with setting allowedToJump to true
+            event.getTo().distanceSquared(event.getFrom()) <= 0.005) return;
 
-        // Check that the player has actually moved.
-        if (event.getTo().distanceSquared(event.getFrom()) > 0.005 &&
-            // Not inside a vehicle
-            !user.getPlayer().isInsideVehicle() &&
+
+        // Not inside a vehicle
+        if (!user.getPlayer().isInsideVehicle() &&
             // Not flying (may trigger some fps)
             !user.getPlayer().isFlying() &&
             // Not using an Elytra

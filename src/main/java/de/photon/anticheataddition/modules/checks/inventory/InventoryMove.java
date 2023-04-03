@@ -96,11 +96,11 @@ public final class InventoryMove extends ViolationModule implements Listener
             return;
         }
 
-        final boolean positiveVelocity = event.getFrom().getY() < event.getTo().getY();
+        final boolean movingUpwards = event.getFrom().getY() < event.getTo().getY();
         final boolean noYMovement = event.getFrom().getY() == event.getTo().getY();
 
-        if (positiveVelocity != user.getData().bool.positiveVelocity) {
-            handleJump(user, event, positiveVelocity, noYMovement);
+        if (movingUpwards != user.getData().bool.movingUpwards) {
+            handleJump(user, event, movingUpwards, noYMovement);
             return;
         }
 

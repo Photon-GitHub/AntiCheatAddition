@@ -194,8 +194,8 @@ public final class DataUpdaterEvents implements Listener
             {
                 final boolean movingUpwards = event.getFrom().getY() < event.getTo().getY();
 
-                if (movingUpwards != user.getData().bool.positiveVelocity) {
-                    user.getData().bool.positiveVelocity = movingUpwards;
+                if (movingUpwards != user.getData().bool.movingUpwards) {
+                    user.getData().bool.movingUpwards = movingUpwards;
                     user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).update();
                 }
             }

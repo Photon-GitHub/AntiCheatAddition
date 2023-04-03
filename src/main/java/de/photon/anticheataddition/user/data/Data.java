@@ -25,7 +25,7 @@ public final class Data
         public boolean packetAnalysisAnimationExpected = false;
         public boolean packetAnalysisEqualRotationExpected = false;
 
-        public volatile boolean positiveVelocity = false;
+        public volatile boolean movingUpwards = false;
 
         public volatile boolean sneaking = false;
         public volatile boolean sprinting = false;

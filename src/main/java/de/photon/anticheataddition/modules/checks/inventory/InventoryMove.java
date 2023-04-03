@@ -49,7 +49,7 @@ public final class InventoryMove extends ViolationModule implements Listener
         }
     }
 
-    private static boolean checkLocationForMaterials(Location location, Set<Material> materials)
+    private static boolean checkGroundMaterial(Location location, Set<Material> materials)
     {
         return materials.contains(location.getBlock().getType()) ||
                materials.contains(location.getBlock().getRelative(BlockFace.DOWN).getType());
@@ -107,13 +107,13 @@ public final class InventoryMove extends ViolationModule implements Listener
             }
 
             // Bouncing can lead to false positives.
-            if (checkLocationForMaterials(event.getFrom(), MaterialUtil.BOUNCE_MATERIALS)) return;
+            if (checkGroundMaterial(event.getFrom(), MaterialUtil.BOUNCE_MATERIALS)) return;
 
             // Prevent bypasses by checking for positive velocity and the moved distance.
             // Distance is not the same as some packets are sent with 0 distance.
             if ((positiveVelocity || noYMovement) &&
                 // Jumping onto a stair or slabs false positive
-                checkLocationForMaterials(event.getFrom(), MaterialUtil.AUTO_STEP_MATERIALS)) return;
+                checkGroundMaterial(event.getFrom(), MaterialUtil.AUTO_STEP_MATERIALS)) return;
 
             getManagement().flag(Flag.of(user)
                                      .setAddedVl(20)

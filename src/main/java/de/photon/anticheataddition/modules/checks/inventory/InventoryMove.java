@@ -100,25 +100,7 @@ public final class InventoryMove extends ViolationModule implements Listener
         final boolean noYMovement = event.getFrom().getY() == event.getTo().getY();
 
         if (positiveVelocity != user.getData().bool.positiveVelocity) {
-            // A player is only allowed to jump once.
-            if (user.getData().bool.allowedToJump) {
-                user.getData().bool.allowedToJump = false;
-                return;
-            }
-
-            // Bouncing can lead to false positives.
-            if (checkGroundMaterial(event.getFrom(), MaterialUtil.BOUNCE_MATERIALS)) return;
-
-            // Prevent bypasses by checking for positive velocity and the moved distance.
-            // Distance is not the same as some packets are sent with 0 distance.
-            if ((positiveVelocity || noYMovement) &&
-                // Jumping onto a stair or slabs false positive
-                checkGroundMaterial(event.getFrom(), MaterialUtil.AUTO_STEP_MATERIALS)) return;
-
-            getManagement().flag(Flag.of(user)
-                                     .setAddedVl(20)
-                                     .setCancelAction(cancelVl, () -> cancelAction(user, event))
-                                     .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory."));
+            handleJump(user, event, positiveVelocity, noYMovement);
             return;
         }
 
@@ -139,6 +121,29 @@ public final class InventoryMove extends ViolationModule implements Listener
                                      .setCancelAction(cancelVl, () -> cancelAction(user, event))
                                      .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " moved while having an open inventory."));
         }
+    }
+
+    private void handleJump(User user, PlayerMoveEvent event, boolean positiveVelocity, boolean noYMovement)
+    {
+        // A player is only allowed to jump once.
+        if (user.getData().bool.allowedToJump) {
+            user.getData().bool.allowedToJump = false;
+            return;
+        }
+
+        // Bouncing can lead to false positives.
+        if (checkGroundMaterial(event.getFrom(), MaterialUtil.BOUNCE_MATERIALS)) return;
+
+        // Prevent bypasses by checking for positive velocity and the moved distance.
+        // Distance is not the same as some packets are sent with 0 distance.
+        if ((positiveVelocity || noYMovement) &&
+            // Jumping onto a stair or slabs false positive
+            checkGroundMaterial(event.getFrom(), MaterialUtil.AUTO_STEP_MATERIALS)) return;
+
+        getManagement().flag(Flag.of(user)
+                                 .setAddedVl(20)
+                                 .setCancelAction(cancelVl, () -> cancelAction(user, event))
+                                 .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory."));
     }
 
     @Override

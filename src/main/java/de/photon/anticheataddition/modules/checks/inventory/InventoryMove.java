@@ -66,21 +66,18 @@ public final class InventoryMove extends ViolationModule implements Listener
 
         // Not inside a vehicle
         if (user.getPlayer().isInsideVehicle() ||
-            // Not flying (may trigger some fps)
+            // Not flying (vanilla or elytra) as it may trigger some fps
             user.getPlayer().isFlying() ||
-            // Not using an Elytra
             EntityUtil.INSTANCE.isFlyingWithElytra(user.getPlayer()) ||
-            // Player is in an inventory
+            // Player must be in an inventory
             !user.hasOpenInventory() ||
-            // Player has not been hit recently
+            // After being hit a player moves due to knock-back, so recent hits can cause false positives.
             user.getPlayer().getNoDamageTicks() != 0 ||
             // Recent teleports can cause bugs
             user.hasTeleportedRecently(teleportBypassTime) ||
             user.hasChangedWorldsRecently(worldChangeBypassTime) ||
-            // Make sure the current chunk of the player is loaded so isInLiquids does not cause async entity world add errors.
-            // Test this after user.getInventoryData().hasOpenInventory() to further decrease the chance of async load errors.
-            !WorldUtil.INSTANCE.isChunkLoaded(user.getPlayer().getLocation()) ||
             // The player is currently not in a liquid (liquids push)
+            // This would need to check for async chunk loads if done in packets (see history)
             user.getHitboxLocation().isInLiquids() ||
             // Auto-Disable if TPS are too low
             !TPSProvider.INSTANCE.atLeastTPS(minTps))

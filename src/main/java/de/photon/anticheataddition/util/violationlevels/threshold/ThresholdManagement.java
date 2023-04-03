@@ -9,6 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 public sealed interface ThresholdManagement permits EmptyThresholds, SingleThresholds, MultiThresholds
 {
+    /**
+     * Empty {@link ThresholdManagement} that doesn't have any {@link Threshold}s.
+     */
+    ThresholdManagement EMPTY = new EmptyThresholds();
 
     @NotNull
     static ThresholdManagement loadThresholds(ViolationModule module)
@@ -24,7 +28,7 @@ public sealed interface ThresholdManagement permits EmptyThresholds, SingleThres
         final var thresholds = keys.stream().map(key -> new Threshold(Integer.parseInt(key), ConfigUtil.loadImmutableStringOrStringList(configPath + '.' + key))).toList();
 
         return switch (thresholds.size()) {
-            case 0 -> EmptyThresholds.INSTANCE;
+            case 0 -> EMPTY;
             case 1 -> new SingleThresholds(thresholds.get(0));
             default -> new MultiThresholds(thresholds);
         };
@@ -36,7 +40,7 @@ public sealed interface ThresholdManagement permits EmptyThresholds, SingleThres
         Preconditions.checkNotNull(configPath, "Tried to load null config path.");
         Preconditions.checkArgument(AntiCheatAddition.getInstance().getConfig().contains(configPath), "Config loading error: The commands at " + configPath + " could not be loaded or the path does not exist.");
         final var commands = ConfigUtil.loadImmutableStringOrStringList(configPath);
-        return commands.isEmpty() ? EmptyThresholds.INSTANCE : new SingleThresholds(new Threshold(1, commands));
+        return commands.isEmpty() ? EMPTY : new SingleThresholds(new Threshold(1, commands));
     }
 
     /**

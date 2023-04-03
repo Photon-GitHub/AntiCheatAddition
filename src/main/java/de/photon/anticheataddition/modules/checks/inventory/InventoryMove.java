@@ -104,11 +104,10 @@ public final class InventoryMove extends ViolationModule implements Listener
             return;
         }
 
-        // Make sure that the last jump is a little ago (same "breaking" effect that needs compensation.)
-        if (user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) ||
-            // No Y change anymore. Anticheat and the rule above makes sure that people cannot jump again.
-            // While falling down people can modify their inventories.
-            noYMovement) return;
+        // Bypass a falling player after a jump in which they opened an inventory.
+        if (user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) &&
+            // If the y-movement is 0, the falling process is finished and there is no need for bypassing anymore.
+            !noYMovement) return;
 
         // The breaking is no longer affecting the user as they have opened their inventory long enough ago.
         if (user.notRecentlyOpenedInventory(breakingTime(user) + lenienceMillis) &&
@@ -134,8 +133,6 @@ public final class InventoryMove extends ViolationModule implements Listener
         // Bouncing can lead to false positives.
         if (checkGroundMaterial(event.getFrom(), MaterialUtil.BOUNCE_MATERIALS)) return;
 
-        // Prevent bypasses by checking for positive velocity and the moved distance.
-        // Distance is not the same as some packets are sent with 0 distance.
         if ((positiveVelocity || noYMovement) &&
             // Jumping onto a stair or slabs false positive
             checkGroundMaterial(event.getFrom(), MaterialUtil.AUTO_STEP_MATERIALS)) return;

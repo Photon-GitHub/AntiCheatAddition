@@ -55,6 +55,16 @@ public final class InventoryMove extends ViolationModule implements Listener
                materials.contains(location.getBlock().getRelative(BlockFace.DOWN).getType());
     }
 
+    private static long breakingTime(User user)
+    {
+        // 240 is the vanilla breaking time without a speed effect.
+        return 240L + InternalPotion.SPEED.getPotionEffect(user.getPlayer())
+                                          .map(PotionEffect::getAmplifier)
+                                          // If a speed effect exists calculate the speed millis, otherwise the speedMillis are 0.
+                                          .map(amplifier -> Math.max(100, amplifier + 1) * 50L)
+                                          .orElse(0L);
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerMove(PlayerMoveEvent event)
     {
@@ -118,14 +128,8 @@ public final class InventoryMove extends ViolationModule implements Listener
             // While falling down people can modify their inventories.
             noYMovement) return;
 
-        // The break period is longer with the speed effect.
-        final long speedMillis = InternalPotion.SPEED.getPotionEffect(user.getPlayer())
-                                                     .map(PotionEffect::getAmplifier)
-                                                     // If a speed effect exists calculate the speed millis, otherwise the speedMillis are 0.
-                                                     .map(amplifier -> Math.max(100, amplifier + 1) * 50L)
-                                                     .orElse(0L);
-
-        if (user.notRecentlyOpenedInventory(240L + speedMillis + lenienceMillis) &&
+        // The breaking is no longer affecting the user as they have opened their inventory long enough ago.
+        if (user.notRecentlyOpenedInventory(breakingTime(user) + lenienceMillis) &&
             // Do the entity pushing stuff here (performance impact)
             // No nearby entities that could push the player
             WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitboxLocation().hitbox(), 0.1D).isEmpty())

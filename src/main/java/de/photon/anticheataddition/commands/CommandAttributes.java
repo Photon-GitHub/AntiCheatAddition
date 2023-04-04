@@ -127,15 +127,6 @@ public final class CommandAttributes
         }
 
         /**
-         * Add a single line to the command help.
-         */
-        public Builder addCommandHelpLine(String line)
-        {
-            this.commandHelp.add(line);
-            return this;
-        }
-
-        /**
          * Directly sets the command help.
          */
         public Builder addChildCommands(final InternalCommand... commands)
@@ -156,7 +147,7 @@ public final class CommandAttributes
         public CommandAttributes build()
         {
             final var childCommands = this.childCommandsBuilder.build();
-            if (!childCommands.isEmpty()) this.addCommandHelpLine("Subcommands of this command are: " + String.join(", ", childCommands.keySet()));
+            if (!childCommands.isEmpty()) this.addCommandHelp("Subcommands of this command are: " + String.join(", ", childCommands.keySet()));
 
             return new CommandAttributes(childCommands, List.copyOf(commandHelp), permission, minArguments, maxArguments);
         }

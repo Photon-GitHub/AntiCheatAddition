@@ -9,7 +9,8 @@ public enum InternalPermission
     BYPASS("bypass"),
     DEBUG("debug"),
     INFO("info"),
-    SETVL("setvl");
+    SETVL("setvl"),
+    INTERNALTEST("internaltest");
 
     @Getter private final String realPermission;
 
@@ -42,4 +43,4 @@ public enum InternalPermission
     {
         return hasPermission(permissible, this.realPermission);
     }
-}
+    }

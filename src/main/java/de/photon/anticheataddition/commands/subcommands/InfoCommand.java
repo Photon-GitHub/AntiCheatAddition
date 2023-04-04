@@ -26,7 +26,7 @@ public class InfoCommand extends InternalCommand
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
         // Peek for better performance
-        final var player = getPlayer(sender, arguments.peek());
+        final var player = parsePlayer(sender, arguments.peek());
         if (player == null) return;
 
         final var moduleVls = ModuleManager.getViolationModuleMap().values().stream()

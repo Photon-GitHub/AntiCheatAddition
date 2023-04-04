@@ -22,6 +22,7 @@ permissions:
       anticheataddition.bypass.*: true
       anticheataddition.debug: true
       anticheataddition.info: true
+      anticheataddition.internaltest: true
       anticheataddition.setvl: true
     default: op
 
@@ -81,6 +82,9 @@ permissions:
 
   anticheataddition.info:
     description: Allows requesting an overview about a player's violation levels
+
+  anticheataddition.internaltest:
+    description: Allows testing various AntiCheatAddition checks by spoofing cheat behaviour. This is not intended for normal use and can be used to falsely flag players.
 
   anticheataddition.setvl:
     description: Allows the player to execute a command which will set the vl of another player, usually used for testing.

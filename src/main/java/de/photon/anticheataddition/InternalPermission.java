@@ -5,12 +5,12 @@ import org.bukkit.permissions.Permissible;
 
 public enum InternalPermission
 {
-    NONE(null),
     BYPASS("bypass"),
     DEBUG("debug"),
     INFO("info"),
-    SETVL("setvl"),
-    INTERNALTEST("internaltest");
+    INTERNALTEST("internaltest"),
+    NONE(null),
+    SETVL("setvl");
 
     @Getter private final String realPermission;
 
@@ -43,4 +43,4 @@ public enum InternalPermission
     {
         return hasPermission(permissible, this.realPermission);
     }
-    }
+}

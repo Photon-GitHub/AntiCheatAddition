@@ -4,6 +4,7 @@ import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.modules.ViolationModule;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.user.data.TimeKey;
+import de.photon.anticheataddition.util.messaging.Log;
 import de.photon.anticheataddition.util.minecraft.entity.EntityUtil;
 import de.photon.anticheataddition.util.minecraft.tps.TPSProvider;
 import de.photon.anticheataddition.util.minecraft.world.InternalPotion;
@@ -15,6 +16,7 @@ import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,10 +26,12 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 public final class InventoryMove extends ViolationModule implements Listener
 {
     public static final InventoryMove INSTANCE = new InventoryMove();
+    public static final double STANDING_STILL_THRESHOLD = 0.005;
 
     private final int cancelVl = loadInt(".cancel_vl", 60);
     private final double minTps = loadDouble(".min_tps", 19.5);
@@ -49,16 +53,22 @@ public final class InventoryMove extends ViolationModule implements Listener
         }
     }
 
+    /**
+     * This checks all 9 blocks centered on where the player stands as well as the 9 blocks below to reliably check for materials like slabs.
+     * Checking all those blocks is required a stepping up a slab does not mean the player's block-location is already the slab.
+     */
     private static boolean checkGroundMaterial(Location location, Set<Material> materials)
     {
-        return materials.contains(location.getBlock().getType()) ||
-               materials.contains(location.getBlock().getRelative(BlockFace.DOWN).getType());
+        return Stream.concat(WorldUtil.INSTANCE.getBlocksAround(location.getBlock(), WorldUtil.HORIZONTAL_FACES, Set.of()).stream(),
+                             WorldUtil.INSTANCE.getBlocksAround(location.getBlock().getRelative(BlockFace.DOWN), WorldUtil.HORIZONTAL_FACES, Set.of()).stream())
+                     .map(Block::getType)
+                     .anyMatch(materials::contains);
     }
 
     private static long breakingTime(User user)
     {
-        // 240 is the vanilla breaking time without a speed effect.
-        return 240L + InternalPotion.SPEED.getPotionEffect(user.getPlayer())
+        // 300 is the vanilla breaking time without a speed effect (derived from testing, especially slab jumping)
+        return 300L + InternalPotion.SPEED.getPotionEffect(user.getPlayer())
                                           .map(PotionEffect::getAmplifier)
                                           // If a speed effect exists calculate the speed millis, otherwise the speedMillis are 0.
                                           .map(amplifier -> Math.max(100, amplifier + 1) * 50L)
@@ -72,7 +82,7 @@ public final class InventoryMove extends ViolationModule implements Listener
         if (User.isUserInvalid(user, this) || event.getTo() == null ||
             // Check that the player has actually moved.
             // Do this here to prevent bypasses with setting allowedToJump to true
-            event.getTo().distanceSquared(event.getFrom()) <= 0.005) return;
+            event.getTo().distanceSquared(event.getFrom()) <= STANDING_STILL_THRESHOLD) return;
 
         // Not inside a vehicle
         if (user.getPlayer().isInsideVehicle() ||
@@ -104,13 +114,34 @@ public final class InventoryMove extends ViolationModule implements Listener
             return;
         }
 
-        // Bypass a falling player after a jump in which they opened an inventory.
-        if (user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) &&
+        final double yMovement = event.getTo().getY() - event.getFrom().getY();
+
+        Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " checking for falling: " + user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).passedTime() +
+                        " | y-velocity: " + yMovement);
+
+        // This bypasses players during a long fall from hundreds of blocks.
+        if (yMovement < -2.0 ||
+            // Bypass a falling player after a normal jump in which they opened an inventory.
+            user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) &&
             // If the y-movement is 0, the falling process is finished and there is no need for bypassing anymore.
-            !noYMovement) return;
+            !noYMovement)
+        {
+            user.getTimeMap().at(TimeKey.INVENTORY_MOVE_JUMP_END).update();
+            return;
+        }
+
+        Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " is not fall-bypassed with y-movement: " + yMovement);
+
+        final long totalBreakingTime = breakingTime(user) + lenienceMillis;
+
+        Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " breaking time: " + totalBreakingTime +
+                        " | inventory open passed time: " + user.getTimeMap().at(TimeKey.INVENTORY_OPENED).passedTime() +
+                        " | jump end passed time: " + user.getTimeMap().at(TimeKey.INVENTORY_MOVE_JUMP_END).passedTime());
 
         // The breaking is no longer affecting the user as they have opened their inventory long enough ago.
-        if (user.notRecentlyOpenedInventory(breakingTime(user) + lenienceMillis) &&
+        if (user.notRecentlyOpenedInventory(totalBreakingTime) &&
+            // If the player jumped, we need to check the breaking time after the jump ended.
+            user.getTimeMap().at(TimeKey.INVENTORY_MOVE_JUMP_END).notRecentlyUpdated(totalBreakingTime) &&
             // Do the entity pushing stuff here (performance impact)
             // No nearby entities that could push the player
             WorldUtil.INSTANCE.getLivingEntitiesAroundEntity(user.getPlayer(), user.getHitboxLocation().hitbox(), 0.1D).isEmpty())
@@ -124,21 +155,27 @@ public final class InventoryMove extends ViolationModule implements Listener
 
     private void handleJump(User user, PlayerMoveEvent event, boolean positiveVelocity, boolean noYMovement)
     {
+        Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " detected a jump.");
+
         // A player is only allowed to jump once.
         if (user.getData().bool.allowedToJump) {
             user.getData().bool.allowedToJump = false;
             return;
         }
 
+        Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " is not jump-bypassed.");
+
         // Bouncing can lead to false positives.
         if (checkGroundMaterial(event.getFrom(), MaterialUtil.BOUNCE_MATERIALS)) return;
 
+        Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " no bounce materials detected.");
+
         if ((positiveVelocity || noYMovement) &&
             // Jumping onto a stair or slabs false positive
-            checkGroundMaterial(event.getFrom(), MaterialUtil.AUTO_STEP_MATERIALS)) return;
+            checkGroundMaterial(event.getTo(), MaterialUtil.AUTO_STEP_MATERIALS)) return;
 
         getManagement().flag(Flag.of(user)
-                                 .setAddedVl(20)
+                                 .setAddedVl(25)
                                  .setCancelAction(cancelVl, () -> cancelAction(user, event))
                                  .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " jumped while having an open inventory."));
     }

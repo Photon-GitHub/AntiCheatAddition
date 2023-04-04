@@ -114,7 +114,7 @@ public final class InventoryMove extends ViolationModule implements Listener
             return;
         }
 
-        final double yMovement = event.getTo().getY() - event.getFrom().getY();
+        final double yMovement = event.getPlayer().getVelocity().getY();
 
         Log.finer(() -> "Inventory-Debug | Player " + user.getPlayer().getName() + " checking for falling: " + user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).passedTime() +
                         " | y-velocity: " + yMovement);

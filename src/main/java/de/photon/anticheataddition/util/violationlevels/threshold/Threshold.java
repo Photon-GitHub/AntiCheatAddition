@@ -3,22 +3,14 @@ package de.photon.anticheataddition.util.violationlevels.threshold;
 import com.google.common.base.Preconditions;
 import de.photon.anticheataddition.AntiCheatAddition;
 import de.photon.anticheataddition.util.execute.Placeholders;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
-@EqualsAndHashCode(doNotUseGetters = true, onlyExplicitlyIncluded = true)
-final class Threshold implements Comparable<Threshold>
+record Threshold(int vl, List<String> commandList) implements Comparable<Threshold>
 {
-    @Getter @EqualsAndHashCode.Include private final int vl;
-    @NotNull @Unmodifiable private final List<String> commandList;
-
     public Threshold(int vl, List<String> commandList)
     {
         Preconditions.checkNotNull(commandList, "Tried to define Threshold with null commands.");
@@ -55,5 +47,11 @@ final class Threshold implements Comparable<Threshold>
     public int compareTo(Threshold o)
     {
         return Integer.compare(vl, o.vl);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return vl;
     }
 }

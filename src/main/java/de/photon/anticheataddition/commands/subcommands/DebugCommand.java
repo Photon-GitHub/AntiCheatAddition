@@ -22,7 +22,8 @@ public class DebugCommand extends InternalPlayerCommand
         super("debug", CommandAttributes.builder()
                                         .minArguments(0)
                                         .maxArguments(1)
-                                        .addCommandHelpLine("Used to toggle debug messages on and off.")
+                                        .addCommandHelp("Used to toggle debug messages on and off.",
+                                                        "Syntax: /anticheataddition debug [on|off]")
                                         .setPermission(InternalPermission.DEBUG)
                                         .build(), TabCompleteSupplier.builder().constants("on", "off"));
     }

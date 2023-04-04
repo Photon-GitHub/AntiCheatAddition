@@ -26,7 +26,7 @@ public class SetVlCommand extends InternalCommand
     @Override
     protected void execute(CommandSender sender, Queue<String> arguments)
     {
-        final var player = getPlayer(sender, arguments.poll());
+        final var player = parsePlayer(sender, arguments.poll());
         if (player == null) return;
 
         final var module = ModuleManager.getViolationModuleMap().getModule(arguments.poll());
@@ -35,7 +35,7 @@ public class SetVlCommand extends InternalCommand
         final var vlString = arguments.poll();
         if (checkNotNullElseSend(vlString, sender, "Please specify the new vl you want to set for the module.")) return;
 
-        final Integer vl = parseIntElseSend(vlString, sender);
+        final Integer vl = parseIntElseSend(sender, vlString);
         if (vl == null) return;
 
         // Actually flag the player for debug messages.

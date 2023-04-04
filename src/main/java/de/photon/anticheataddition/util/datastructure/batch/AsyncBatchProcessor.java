@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public abstract class AsyncBatchProcessor<T> extends BatchProcessor<T>
+public abstract non-sealed class AsyncBatchProcessor<T> extends BatchProcessor<T>
 {
     private ExecutorService executor;
 

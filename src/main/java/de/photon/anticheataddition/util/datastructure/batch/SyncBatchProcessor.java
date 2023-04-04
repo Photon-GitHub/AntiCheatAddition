@@ -6,7 +6,7 @@ import de.photon.anticheataddition.modules.ViolationModule;
 
 import java.util.Set;
 
-public abstract class SyncBatchProcessor<T> extends BatchProcessor<T>
+public abstract non-sealed class SyncBatchProcessor<T> extends BatchProcessor<T>
 {
     protected SyncBatchProcessor(ViolationModule module, Set<EventBus> eventBuses)
     {

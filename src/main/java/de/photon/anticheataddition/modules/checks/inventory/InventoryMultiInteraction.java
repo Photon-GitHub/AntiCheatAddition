@@ -60,6 +60,7 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
         // Time in ms that will flag if it has not passed
         int enforcedTicks = 0;
 
+        //noinspection EnhancedSwitchMigration
         switch (event.getAction()) {
             // ------------------------------------------ Exemptions -------------------------------------------- //
             // Nothing happens, therefore exempted

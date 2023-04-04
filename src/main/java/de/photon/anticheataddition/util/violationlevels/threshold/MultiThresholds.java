@@ -14,7 +14,7 @@ final class MultiThresholds implements ThresholdManagement
     public MultiThresholds(List<Threshold> thresholds)
     {
         final var builder = ImmutableSortedMap.<Integer, Threshold>naturalOrder();
-        for (Threshold threshold : thresholds) builder.put(threshold.getVl(), threshold);
+        for (Threshold threshold : thresholds) builder.put(threshold.vl(), threshold);
         thresholdMap = builder.build();
     }
 

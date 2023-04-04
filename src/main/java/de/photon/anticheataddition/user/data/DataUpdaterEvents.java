@@ -1,12 +1,6 @@
 package de.photon.anticheataddition.user.data;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
 import de.photon.anticheataddition.AntiCheatAddition;
-import de.photon.anticheataddition.protocol.packetwrappers.IWrapperPlayPosition;
 import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.inventory.InventoryUtil;
 import de.photon.anticheataddition.util.minecraft.world.MaterialUtil;
@@ -48,10 +42,7 @@ public final class DataUpdaterEvents implements Listener
 {
     public static final DataUpdaterEvents INSTANCE = new DataUpdaterEvents();
 
-    private DataUpdaterEvents()
-    {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new VelocityChangeDataUpdater());
-    }
+    private DataUpdaterEvents() {}
 
     public void register()
     {
@@ -189,16 +180,25 @@ public final class DataUpdaterEvents implements Listener
         // Head + normal movement
         user.getTimeMap().at(TimeKey.HEAD_OR_OTHER_MOVEMENT).update();
 
-        // xz movement only
-        if (event.getFrom().getX() != event.getTo().getX() ||
-            event.getFrom().getZ() != event.getTo().getZ())
-        {
+        final boolean xzMovement = event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ();
+        final boolean xyzMovement = xzMovement || event.getFrom().getY() != event.getTo().getY();
+
+        if (xzMovement) user.getTimeMap().at(TimeKey.XZ_MOVEMENT).update();
+        if (xyzMovement) {
             user.getTimeMap().at(TimeKey.XYZ_MOVEMENT).update();
-            user.getTimeMap().at(TimeKey.XZ_MOVEMENT).update();
-        }
-        // Any non-head movement.
-        else if (event.getFrom().getY() != event.getTo().getY()) {
-            user.getTimeMap().at(TimeKey.XYZ_MOVEMENT).update();
+
+            // The player wasn't hurt and got velocity for that.
+            if (user.getPlayer().getNoDamageTicks() == 0
+                // Recent teleports can cause bugs
+                && !user.hasTeleportedRecently(1000))
+            {
+                final boolean movingUpwards = event.getFrom().getY() < event.getTo().getY();
+
+                if (movingUpwards != user.getData().bool.movingUpwards) {
+                    user.getData().bool.movingUpwards = movingUpwards;
+                    user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).update();
+                }
+            }
         }
 
         // Slime / Bed block -> Tower bounce jump
@@ -255,39 +255,5 @@ public final class DataUpdaterEvents implements Listener
     public void onWorldChange(final PlayerChangedWorldEvent event)
     {
         userUpdate(event.getPlayer().getUniqueId(), CLOSE_INVENTORY, TimeKey.TELEPORT, TimeKey.WORLD_CHANGE);
-    }
-
-    /**
-     * A singleton class to reduce the required {@link Listener}s to a minimum.
-     */
-    private static final class VelocityChangeDataUpdater extends PacketAdapter
-    {
-        private VelocityChangeDataUpdater()
-        {
-            super(AntiCheatAddition.getInstance(), ListenerPriority.MONITOR, PacketType.Play.Client.POSITION, PacketType.Play.Client.POSITION_LOOK);
-        }
-
-        @Override
-        public void onPacketReceiving(final PacketEvent event)
-        {
-            final var user = User.safeGetUserFromPacketEvent(event);
-            if (user == null) return;
-
-            user.getTimeMap().at(TimeKey.VELOCITY_CHANGE).update();
-
-            // The player wasn't hurt and got velocity for that.
-            if (user.getPlayer().getNoDamageTicks() == 0
-                // Recent teleports can cause bugs
-                && !user.hasTeleportedRecently(1000))
-            {
-                final IWrapperPlayPosition position = event::getPacket;
-                final boolean movingUpwards = user.getPlayer().getLocation().getY() < position.getY();
-
-                if (movingUpwards != user.getData().bool.positiveVelocity) {
-                    user.getData().bool.positiveVelocity = movingUpwards;
-                    user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).update();
-                }
-            }
-        }
     }
 }

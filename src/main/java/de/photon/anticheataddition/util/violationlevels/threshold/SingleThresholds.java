@@ -12,6 +12,6 @@ final class SingleThresholds implements ThresholdManagement
     @Override
     public void executeThresholds(int fromVl, int toVl, @NotNull Player player)
     {
-        if (fromVl < threshold.getVl() && toVl >= threshold.getVl()) threshold.executeCommandList(player);
+        if (fromVl < threshold.vl() && toVl >= threshold.vl()) threshold.executeCommandList(player);
     }
 }

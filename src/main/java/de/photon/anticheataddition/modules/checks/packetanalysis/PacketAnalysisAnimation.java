@@ -42,19 +42,19 @@ public final class PacketAnalysisAnimation extends ViolationModule
                 .priority(ListenerPriority.LOW)
                 .onReceiving((event, user) -> {
                     final var packetType = event.getPacketType();
+                    final var boolData = user.getData().bool;
 
-                    if (packetType == PacketType.Play.Client.ARM_ANIMATION) user.getData().bool.packetAnalysisAnimationExpected = false;
+                    if (packetType == PacketType.Play.Client.ARM_ANIMATION) boolData.packetAnalysisAnimationExpected = false;
                     else if (packetType == PacketType.Play.Client.USE_ENTITY) {
                         // Expected Animation after attack, but didn't arrive.
-                        if (user.getData().bool.packetAnalysisAnimationExpected) {
-                            user.getData().bool.packetAnalysisAnimationExpected = false;
+                        if (boolData.packetAnalysisAnimationExpected) {
+                            boolData.packetAnalysisAnimationExpected = false;
                             getManagement().flag(Flag.of(user).setAddedVl(30).setDebug(() -> "PacketAnalysisData-Debug | Player: " + user.getPlayer().getName() + " did not send animation packet after an attack."));
                         }
 
                         // Make sure an arm animation packet is sent directly after an attack as it is the next packet in the client code.
                         final var useEntityWrapper = new WrapperPlayClientUseEntity(event.getPacket());
-                        if (useEntityWrapper.getType() == EnumWrappers.EntityUseAction.ATTACK)
-                            user.getData().bool.packetAnalysisAnimationExpected = true;
+                        if (useEntityWrapper.getType() == EnumWrappers.EntityUseAction.ATTACK) boolData.packetAnalysisAnimationExpected = true;
                     }
                 }).build();
 

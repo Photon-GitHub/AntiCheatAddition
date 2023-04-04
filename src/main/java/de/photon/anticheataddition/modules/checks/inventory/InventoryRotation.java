@@ -1,16 +1,16 @@
 package de.photon.anticheataddition.modules.checks.inventory;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
-import de.photon.anticheataddition.modules.ModuleLoader;
 import de.photon.anticheataddition.modules.ViolationModule;
-import de.photon.anticheataddition.protocol.PacketAdapterBuilder;
-import de.photon.anticheataddition.protocol.packetwrappers.sentbyclient.IWrapperPlayClientLook;
+import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 
-public final class InventoryRotation extends ViolationModule
+public final class InventoryRotation extends ViolationModule implements Listener
 {
     public static final InventoryRotation INSTANCE = new InventoryRotation();
 
@@ -22,31 +22,27 @@ public final class InventoryRotation extends ViolationModule
         super("Inventory.parts.Rotation");
     }
 
-    @Override
-    protected ModuleLoader createModuleLoader()
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerMove(PlayerMoveEvent event)
     {
-        return ModuleLoader.of(this, PacketAdapterBuilder
-                .of(this, PacketType.Play.Client.LOOK, PacketType.Play.Client.POSITION_LOOK)
-                .priority(ListenerPriority.LOWEST)
-                .onReceiving((event, user) -> {
-                    final IWrapperPlayClientLook lookWrapper = event::getPacket;
+        final var user = User.getUser(event.getPlayer());
+        if (User.isUserInvalid(user, this) || event.getTo() == null) return;
 
-                    // Not flying (may trigger some fps)
-                    if (!user.getPlayer().getAllowFlight() &&
-                        // Player is in an inventory
-                        user.hasOpenInventory() &&
-                        // Head-Rotation has changed (detection)
-                        (user.getPlayer().getLocation().getYaw() != lookWrapper.getYaw() ||
-                         user.getPlayer().getLocation().getPitch() != lookWrapper.getPitch()) &&
-                        // No recently tp
-                        !user.hasTeleportedRecently(teleportTime) &&
-                        !user.hasChangedWorldsRecently(worldChangeTime) &&
-                        // The player has opened his inventory for at least one second.
-                        user.notRecentlyOpenedInventory(1000))
-                    {
-                        getManagement().flag(Flag.of(user).setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " sent new rotations while having an open inventory."));
-                    }
-                }).build());
+        // Not flying (may trigger some fps)
+        if (!user.getPlayer().getAllowFlight() &&
+            // Player is in an inventory
+            user.hasOpenInventory() &&
+            // Head-Rotation has changed (detection)
+            (event.getFrom().getYaw() != event.getTo().getYaw() ||
+             event.getFrom().getPitch() != event.getTo().getPitch()) &&
+            // No recently tp
+            !user.hasTeleportedRecently(teleportTime) &&
+            !user.hasChangedWorldsRecently(worldChangeTime) &&
+            // The player has opened his inventory for at least one second.
+            user.notRecentlyOpenedInventory(1000))
+        {
+            getManagement().flag(Flag.of(user).setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " sent new rotations while having an open inventory."));
+        }
     }
 
     @Override

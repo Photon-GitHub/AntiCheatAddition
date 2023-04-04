@@ -1,6 +1,7 @@
 package de.photon.anticheataddition.commands;
 
 import com.google.common.base.Preconditions;
+import de.photon.anticheataddition.user.User;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Queue;
@@ -40,11 +42,25 @@ public abstract class InternalCommand
     /**
      * Gets a {@link Player} from their name and sends a not found message if the {@link Player} could not be found.
      */
-    protected static Player getPlayer(CommandSender sender, String nameOfPlayer)
+    @Nullable
+    protected static Player parsePlayer(CommandSender sender, String nameOfPlayer)
     {
         final var player = Bukkit.getServer().getPlayer(nameOfPlayer);
         if (player == null) ChatMessage.sendMessage(sender, "The specified player could not be found.");
         return player;
+    }
+
+    /**
+     * Gets a {@link User} from their name and sends a not found message if the {@link User} could not be found.
+     */
+    @Nullable
+    protected static User parseUser(CommandSender sender, String nameOfUser)
+    {
+        final var player = parsePlayer(sender, nameOfUser);
+        if (player == null) return null;
+        final var user = User.getUser(player);
+        if (user == null) ChatMessage.sendMessage(sender, "The specified user could not be found.");
+        return user;
     }
 
     /**
@@ -65,7 +81,7 @@ public abstract class InternalCommand
      *
      * @return null if the string was not a valid integer, else the parsed value
      */
-    protected static Integer parseIntElseSend(final String toParse, final CommandSender recipient)
+    protected static Integer parseIntElseSend(final CommandSender recipient, final String toParse)
     {
         try {
             return Integer.parseInt(toParse);
@@ -80,7 +96,7 @@ public abstract class InternalCommand
      *
      * @return null if the string was not a valid long, else the parsed value
      */
-    protected static Long parseLongElseSend(final String toParse, final CommandSender recipient)
+    protected static Long parseLongElseSend(final CommandSender recipient, final String toParse)
     {
         try {
             return Long.parseLong(toParse);

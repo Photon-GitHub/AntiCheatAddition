@@ -7,6 +7,7 @@ import de.photon.anticheataddition.commands.TabCompleteSupplier;
 import de.photon.anticheataddition.commands.subcommands.InternalTestCommand;
 import de.photon.anticheataddition.user.data.DataUpdaterEvents;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
+import de.photon.anticheataddition.util.messaging.Log;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
@@ -50,6 +51,7 @@ public class TestInventoryClick extends InternalCommand
             DataUpdaterEvents.INSTANCE.onInventoryClick(new InventoryClickEvent(view, InventoryType.SlotType.CONTAINER, RANDOM.nextInt(27), ClickType.LEFT, InventoryAction.MOVE_TO_OTHER_INVENTORY));
         }
 
+        Log.fine(() -> "Executed internal inventory click test command affecting player " + user.getPlayer().getName());
         ChatMessage.sendMessage(sender, count + " internal clicks for player " + user.getPlayer().getName() + " executed.");
     }
 }

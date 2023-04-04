@@ -55,7 +55,7 @@ public final class InventoryMove extends ViolationModule implements Listener
 
     /**
      * This checks all 9 blocks centered on where the player stands as well as the 9 blocks below to reliably check for materials like slabs.
-     * Checking all those blocks is required a stepping up a slab does not mean the player's block-location is already the slab.
+     * Checking all those blocks is required because stepping up a slab does not mean the player's block-location is already the slab.
      */
     private static boolean checkGroundMaterial(Location location, Set<Material> materials)
     {

@@ -33,7 +33,7 @@ public class TestInventoryOpen extends InternalCommand
         final var view = InternalTestCommand.createInventoryView(user);
         DataUpdaterEvents.INSTANCE.onInventoryOpen(new InventoryOpenEvent(view));
 
-        Log.fine(() -> "Executed internal inventory open test command affecting player " + user.getPlayer().getName());
+        Log.fine(() -> "Executed internal inventory open test command affecting player " + user.getPlayer().getName() + " requested by " + sender.getName());
         ChatMessage.sendMessage(sender, "Internal opening for player " + user.getPlayer().getName() + " executed.");
     }
 }

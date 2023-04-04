@@ -51,7 +51,7 @@ public class TestInventoryClick extends InternalCommand
             DataUpdaterEvents.INSTANCE.onInventoryClick(new InventoryClickEvent(view, InventoryType.SlotType.CONTAINER, RANDOM.nextInt(27), ClickType.LEFT, InventoryAction.MOVE_TO_OTHER_INVENTORY));
         }
 
-        Log.fine(() -> "Executed internal inventory click test command affecting player " + user.getPlayer().getName());
+        Log.fine(() -> "Executed internal inventory click test command affecting player " + user.getPlayer().getName() + " requested by " + sender.getName());
         ChatMessage.sendMessage(sender, count + " internal clicks for player " + user.getPlayer().getName() + " executed.");
     }
 }

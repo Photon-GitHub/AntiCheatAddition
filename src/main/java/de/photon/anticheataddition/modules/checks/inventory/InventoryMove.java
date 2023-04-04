@@ -172,7 +172,7 @@ public final class InventoryMove extends ViolationModule implements Listener
 
         if ((positiveVelocity || noYMovement) &&
             // Jumping onto a stair or slabs false positive
-            checkGroundMaterial(event.getTo(), MaterialUtil.AUTO_STEP_MATERIALS)) return;
+            checkGroundMaterial(event.getFrom(), MaterialUtil.AUTO_STEP_MATERIALS)) return;
 
         getManagement().flag(Flag.of(user)
                                  .setAddedVl(25)

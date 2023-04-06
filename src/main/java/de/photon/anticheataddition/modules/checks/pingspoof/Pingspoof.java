@@ -43,63 +43,60 @@ public final class Pingspoof extends ViolationModule implements Listener
         super("Pingspoof");
     }
 
+    private static final WrapperPlayServerTransaction TRANSACTION_PACKET;
+
+    static {
+        TRANSACTION_PACKET = new WrapperPlayServerTransaction();
+        TRANSACTION_PACKET.setAccepted(false);
+        TRANSACTION_PACKET.setActionNumber((short) 0);
+        TRANSACTION_PACKET.setWindowId(0);
+    }
+
+    private static void sendNewTransaction(User user)
+    {
+        user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).setToZero();
+        TRANSACTION_PACKET.sendPacket(user.getPlayer());
+        user.getTimeMap().at(TimeKey.PINGSPOOF_SENT_PACKET).update();
+    }
+
+    private void checkUser(User user)
+    {
+        final long serverPing = PingProvider.INSTANCE.getPing(user.getPlayer());
+        final long received = user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).getTime();
+        final long sent = user.getTimeMap().at(TimeKey.PINGSPOOF_SENT_PACKET).getTime();
+
+        if (sent > 0) {
+            if (received <= 0) {
+                this.getManagement().flag(Flag.of(user).setAddedVl(35).setDebug(() -> "Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to bypass pingspoof check."));
+            } else {
+                user.getPingspoofPing().add(MathUtil.absDiff(received, sent));
+                final long echoPing = PingProvider.INSTANCE.getEchoPing(user);
+
+                // The player has not sent the received packet.
+                final long difference = MathUtil.absDiff(serverPing, echoPing);
+
+                if (difference > pingLeniency) {
+                    // Make sure we do not have continuous false positives due to floating point errors.
+                    user.getPingspoofPing().reloadData();
+
+                    this.getManagement().flag(Flag.of(user).setAddedVl(difference > 500 ?
+                                                                       VL_CALCULATOR_ABOVE_500.apply(difference).intValue() :
+                                                                       VL_CALCULATOR_BELOW_500.apply(difference).intValue()).setDebug(() -> "Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to spoof ping. Spoofed: " + serverPing + " | Actual: " + echoPing));
+                }
+            }
+        }
+    }
+
     @Override
     public void enable()
     {
-        // Seconds -> Ticks
-        final long tickInterval = TimeUtil.toTicks(loadInt(".interval", 30), TimeUnit.SECONDS);
-
-        final var transactionPacket = new WrapperPlayServerTransaction();
-        transactionPacket.setAccepted(false);
-        transactionPacket.setActionNumber((short) 0);
-        transactionPacket.setWindowId(0);
-
-
         pingSpoofTask = Bukkit.getScheduler().runTaskTimerAsynchronously(AntiCheatAddition.getInstance(), () -> {
-            long serverPing;
-            long echoPing;
-            long difference;
-
             for (User user : User.getUsersUnwrapped()) {
                 if (User.isUserInvalid(user, this)) continue;
-
-                serverPing = PingProvider.INSTANCE.getPing(user.getPlayer());
-
-                final long received = user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).getTime();
-                final long sent = user.getTimeMap().at(TimeKey.PINGSPOOF_SENT_PACKET).getTime();
-
-                if (sent > 0) {
-                    if (received <= 0) {
-                        this.getManagement().flag(Flag.of(user)
-                                                      .setAddedVl(35)
-                                                      .setDebug(() -> "Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to bypass pingspoof check."));
-                    } else {
-                        user.getPingspoofPing().add(MathUtil.absDiff(received, sent));
-                        echoPing = PingProvider.INSTANCE.getEchoPing(user);
-
-                        // The player has not sent the received packet.
-                        difference = MathUtil.absDiff(serverPing, echoPing);
-
-                        if (difference > pingLeniency) {
-                            // Make sure we do not have continuous false positives due to floating point errors.
-                            user.getPingspoofPing().reloadData();
-
-                            final long finalServerPing = serverPing;
-                            final long finalEchoPing = echoPing;
-                            this.getManagement().flag(Flag.of(user).setAddedVl(difference > 500 ?
-                                                                               VL_CALCULATOR_ABOVE_500.apply(difference).intValue() :
-                                                                               VL_CALCULATOR_BELOW_500.apply(difference).intValue())
-                                                          .setDebug(() -> "Pingspoof-Debug: Player " + user.getPlayer().getName() + " tried to spoof ping. Spoofed: " + finalServerPing + " | Actual: " + finalEchoPing));
-                        }
-                    }
-                }
-
-                // Send the new packet.
-                user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).setToZero();
-                transactionPacket.sendPacket(user.getPlayer());
-                user.getTimeMap().at(TimeKey.PINGSPOOF_SENT_PACKET).update();
+                checkUser(user);
+                sendNewTransaction(user);
             }
-        }, 600, tickInterval);
+        }, 600, TimeUtil.toTicks(loadInt(".interval", 30), TimeUnit.SECONDS));
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -126,8 +123,7 @@ public final class Pingspoof extends ViolationModule implements Listener
                            .addPacketListeners(PacketAdapterBuilder.of(this, PacketType.Play.Client.TRANSACTION)
                                                                    .priority(ListenerPriority.HIGH)
                                                                    // We have now received the answer.
-                                                                   .onReceiving((event, user) -> user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).update())
-                                                                   .build())
+                                                                   .onReceiving((event, user) -> user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).update()).build())
                            .build();
     }
 

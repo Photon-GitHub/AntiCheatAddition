@@ -31,21 +31,19 @@ public final class InventoryPerfectExit extends ViolationModule implements Liste
     public void onInventoryClose(final InventoryCloseEvent event)
     {
         final var user = User.getUser(event.getPlayer().getUniqueId());
-        if (User.isUserInvalid(user, this)) return;
-
-        // Creative-clear might trigger this.
-        if (user.inAdventureOrSurvivalMode() &&
+        if (User.isUserInvalid(user, this) ||
+            // Creative-clear might trigger this.
+            !user.inAdventureOrSurvivalMode() ||
             // Minimum TPS before the check is activated as of a huge amount of fps
-            TPSProvider.INSTANCE.atLeastTPS(minTps) &&
-            // Inventory is empty
-            InventoryUtil.isInventoryEmpty(event.getInventory()))
-        {
-            final long passedTime = user.getTimeMap().at(TimeKey.INVENTORY_CLICK_ON_ITEM).passedTime();
-            if (user.getData().counter.inventoryPerfectExitFails.conditionallyIncDec(passedTime <= 70)) {
-                this.getManagement().flag(Flag.of(user)
-                                              .setAddedVl(VL_CALCULATOR.apply(passedTime).intValue())
-                                              .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')'));
-            }
+            !TPSProvider.INSTANCE.atLeastTPS(minTps) ||
+            // The inventory has been completely cleared
+            !InventoryUtil.isInventoryEmpty(event.getInventory())) return;
+
+        final long passedTime = user.getTimeMap().at(TimeKey.INVENTORY_CLICK_ON_ITEM).passedTime();
+        if (user.getData().counter.inventoryPerfectExitFails.conditionallyIncDec(passedTime <= 70)) {
+            this.getManagement().flag(Flag.of(user)
+                                          .setAddedVl(VL_CALCULATOR.apply(passedTime).intValue())
+                                          .setDebug(() -> "Inventory-Debug | Player: " + user.getPlayer().getName() + " exits inventories in a bot-like way (D: " + passedTime + ')'));
         }
     }
 

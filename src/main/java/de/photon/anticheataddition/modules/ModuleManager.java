@@ -33,6 +33,7 @@ import de.photon.anticheataddition.modules.checks.tower.Tower;
 import de.photon.anticheataddition.modules.sentinel.SentinelChannelModule;
 import de.photon.anticheataddition.modules.sentinel.exploits.BookPageSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.CommandBlockSentinel;
+import de.photon.anticheataddition.modules.sentinel.exploits.CrashContainer;
 import de.photon.anticheataddition.modules.sentinel.exploits.CreativeKillPotionSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.SelfDamageSentinel;
 import de.photon.anticheataddition.modules.sentinel.exploits.TrollPotionSentinel;
@@ -123,6 +124,7 @@ public final class ModuleManager
                 // Sentinel
                 BookPageSentinel.INSTANCE,
                 CommandBlockSentinel.INSTANCE,
+                CrashContainer.INSTANCE,
                 CreativeKillPotionSentinel.INSTANCE,
                 SelfDamageSentinel.INSTANCE,
                 TrollPotionSentinel.INSTANCE,

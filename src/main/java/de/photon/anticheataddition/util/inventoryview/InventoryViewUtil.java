@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 public interface InventoryViewUtil
 {
-    InventoryViewUtil INSTANCE = ServerVersion.MC116.activeIsLaterOrEqual() ? new LegacyInventoryViewUtil() : new ModernInventoryViewUtil();
+    InventoryViewUtil INSTANCE = ServerVersion.MC115.activeIsLaterOrEqual() ? new LegacyInventoryViewUtil() : new ModernInventoryViewUtil();
 
     /**
      * Tries to create a test {@link InventoryView} for a {@link User}.

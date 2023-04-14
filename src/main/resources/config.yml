@@ -22,23 +22,23 @@
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
-# BrandHider allows you to modify the brand that is shown in the debug screen of minecraft.
-# This can be useful if you want to create a custom message or just hide your actual setup.
+# BrandHider allows you to modify the brand that is shown on Minecraft’s debug screen.
+# This can be useful for hiding your server software or creating a custom message.
 BrandHider:
   # Do you want to enable BrandHider?
   enabled: false
   # This is the replacement text for the brand.
-  # You can use the character & for color codes and all placeholders that are available in normal checks
+  # You can use the character ‘&’ for color codes and all placeholders that are available in normal checks.
   brand: "Some Spigot"
-  # If you want to display attributes that update over time, e.g. TPS, Ping, Time or Date this will update the values
-  # in the defined interval.
-  # Set to 0 to disable the refreshing (recommended if you only use static text or placeholders that do not change)
-  # Measured in ticks
+  # This will update the brand at regular intervals.
+  # Use this to display changing attributes, such as TPS, Ping, Time or Date.
+  # Set this to 0 to turn off refreshing if you only use static text or placeholders.
+  # Measured in ticks.
   refresh_rate: 0
 
-# This will spoof the health of all players on your server so that DamageIndicators (and any other mod to that tries
-# to show other players' health, like HealthTags and ESP) becomes useless.
-# This is a clientside spoof, meaning that your plugins are able to get the correct health.
+# This module spoofs the health of all players on your server, thus rendering DamageIndicators, HealthTags, and other
+# mods that try to display other players' health ineffective.
+# Other plugins can still get the accurate player health.
 DamageIndicator:
   # Do you want to enable DamageIndicator?
   enabled: true
@@ -48,11 +48,9 @@ DamageIndicator:
     monsters: true
     players: true
 
-# Various resource packs allow displaying enchantment information that a normal player would not be able to see, i.e.
-# the type and level of any enchantment.
-# EnchantmentHider replaces all enchantments in packets sent to a player with infinity, therefore obfuscating the
-# actual enchantments. Normal players can still see the enchantment glow, but players using ESP or texture packs will
-# not see any additional information.
+# Various resource packs and cheats display the type and level of enchantments, providing information a normal player cannot obtain.
+# EnchantmentHider obfuscates enchantments by replacing them on the packet level with the infinity enchantment.
+# Therefore, legit players can still see the enchantment's glow, but those using ESP or texture packs cannot gain any extra information.
 EnchantmentHider:
   # Do you want to enable EnchantmentHider?
   enabled: true
@@ -62,51 +60,47 @@ EnchantmentHider:
     players: true
     others: false
 
-# This module uses advanced mathematics to determine if players can see each other.
-# If the players cannot see each other several actions will be taken to hide information on packet-level.
-# Due to abysmal performance of block lookups on newer minecraft versions 1.13+ ESP does no longer actually check the
-# entire distance between two players. Instead, it will use a heuristic to check the most relevant blocks. This can
-# lead to players being shown even though they are not visible.
+# This module uses advanced mathematics to check player visibility.
+# If another player is not in view, the module conceals their information on the packet-level.
+# ESP does not scan the entire distance between two players to increase performance.
+# Instead, heuristics are used to check the most relevant blocks.
+# As a result, ESP can sometimes show otherwise invisible players.
 #
 # MAIN FUNCTIONS:
-# - Sneaking-Hider:  A sneaking player who cannot be directly seen by another player will be completely hidden from
-#                    the second player. (This will make esp / tracers / radar / similar useless if the player who
-#                    is supposed to be shown is sneaking)
+# - Sneaking-Hider:  Any sneaking player will be hidden from the other players if not seen directly.
+#                    This will render ESP, tracers, radar and related cheats ineffective in spotting sneaking players without line of sight.
 #
-# - Equipment-Hider: If a player cannot be directly seen by another player his equipment (hand, armour) will be hidden
-#                    from the observer. (This will make the life of cheaters harder because they cannot properly
-#                    estimate the combat strength of a player)
-#                    This part will automatically disable itself on servers with MC versions below 1.11.
+# - Equipment-Hider: If a player is not visible to another player, ESP will hide any equipment they are wearing or have in their hands.
+#                    Therefore, cheaters can no longer gauge a player's combat strength.
+#                    This part will automatically disable itself on servers with Minecraft versions below 1.11.
 Esp:
-  # Do you want to enable anti - ESP?
+  # Do you want to enable ESP?
   #
-  # If your server has a lot of players in one world within its render distance the ESP check will create a medium to
-  # high CPU load.
+  # If there are many players concentrated in one world, the ESP check may cause a high CPU load.
   #
-  # If you create new worlds make sure to restart your server to make ESP cover the new worlds.
+  # Please restart your server after creating new worlds to activate ESP in them.
   enabled: false
-  # How many ticks shall be waited between two ESP cycles. Setting this too low may result in performance issues,
-  # setting it too high may result in players being hidden too long and popping up.
+  # How many ticks shall separate two ESP cycles?
+  # Low values can cause performance issues, high values may cause players to be hidden for too long and pop up.
   interval_ticks: 2
-  # As defined above, only sneaking players are fully hidden from other players as otherwise one could see their
-  # location thanks to nametags. If you disable nametags or choose to ignore this vanilla behaviour, you can set
-  # this option to true which will cause all players to be fully hidden, even when not sneaking. Indeed, this will
-  # make Esp much more effective against eps, tracers and similar cheats.
+  # By default, only sneaking players are fully hidden from other players because nametags are visible through walls.
+  # If you disable nametags or choose to ignore this vanilla behaviour, you can set this option to true which will
+  # cause all players to be fully hidden, even when not sneaking.
   only_full_hide: false
-  # This determines whether minecraft's 3rd person modes should be considered for calculation as well.
-  # Disabling this will reduce the required number of block queries by two thirds.
-  # Especially useful if you have games in which players are not supposed to use the third person mode.
+  # Should Esp consider Minecraft’s 3rd person perspectives?
+  # Set this to false for a two-thirds reduction in block queries.
+  # This option is especially useful if you have games in which players are not supposed to use the third person mode.
   calculate_third_person_modes: false
 
-# This automatically deletes old log files of both AntiCheatAddition and the server.
-# It activates automatically on restart and after that in a 12-hour cycle.
+# LogBot clears old log files from both AntiCheatAddition and the server.
+# Upon restarting, it activates automatically, and then follows a 12-hour pattern.
 LogBot:
   # Do you want to enable LogBot?
   enabled: false
-  # After how many days should AntiCheatAddition logs be deleted
+  # After how many days should AntiCheatAddition logs be deleted?
   # Set to -1 to disable
   AntiCheatAddition: 10
-  # After how many days should server logs be deleted
+  # After how many days should server logs be deleted?
   # Set to -1 to disable
   Server: 10
 

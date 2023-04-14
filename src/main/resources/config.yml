@@ -687,19 +687,6 @@ Sentinel:
       commands:
         - "kick {player} Command block."
 
-    # The CrashContainer exploit allows a player to crash the server by placing a container (chest, hopper, etc.) that has a lot of nbt tags and then filling it up with additional crash containers.
-    # This creates containers with potentially millions of nbt tags, which can cause both players and the server to crash or lag.
-    # This sentinel will automatically delete any containers which have NBT data that is longer than a threshold.
-    CrashContainer:
-      # Do you want to enable the CrashContainer exploit detection?
-      enabled: true
-      # How long are the nbt tags of containers allowed to be on your server?
-      max_meta_length: 100000
-      # What commands will be executed if the mod is detected.
-      # Automatic banning can be considered.
-      commands:
-        - "kick {player} Crash container."
-
     # Various cheat clients allow for the creation of "creative kill potions", exploiting a bug in Minecraft in which
     # high instant health potion effects kill a player. Moreover, equally high instant damage potions can kill any
     # undead mobs. This Sentinel detects the creation and usage of such potions, cancels any effects, and tries to

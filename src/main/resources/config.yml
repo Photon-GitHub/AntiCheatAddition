@@ -683,8 +683,8 @@ Sentinel:
     TrollPotion:
       # Do you want to enable the TrollPotion exploit detection?
       enabled: true
-      # The minimum time in seconds of the effects to trigger a detection.
-      # Measured in seconds, must be greater than or equal to 0.
+      # The minimum time of the effects to trigger a detection.
+      # Must be greater than or equal to 0. (in seconds)
       min_effect_time: 500
       # What commands will be executed if an illegal potion is detected?
       # Automatic banning can be considered.

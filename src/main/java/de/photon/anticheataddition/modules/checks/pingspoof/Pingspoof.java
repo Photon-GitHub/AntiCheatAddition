@@ -17,6 +17,7 @@ import de.photon.anticheataddition.util.minecraft.ping.PingProvider;
 import de.photon.anticheataddition.util.violationlevels.Flag;
 import de.photon.anticheataddition.util.violationlevels.ViolationLevelManagement;
 import de.photon.anticheataddition.util.violationlevels.ViolationManagement;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -43,19 +44,22 @@ public final class Pingspoof extends ViolationModule implements Listener
         super("Pingspoof");
     }
 
-    private static final WrapperPlayServerTransaction TRANSACTION_PACKET;
+    // This needs to be done as newer versions of ProtocolLib do not support the transaction packet.
+    @Getter(lazy = true) private static final WrapperPlayServerTransaction TRANSACTION_PACKET = createTransactionPacket();
 
-    static {
-        TRANSACTION_PACKET = new WrapperPlayServerTransaction();
-        TRANSACTION_PACKET.setAccepted(false);
-        TRANSACTION_PACKET.setActionNumber((short) 0);
-        TRANSACTION_PACKET.setWindowId(0);
+    private static WrapperPlayServerTransaction createTransactionPacket()
+    {
+        final var packet = new WrapperPlayServerTransaction();
+        packet.setAccepted(false);
+        packet.setActionNumber((short) 0);
+        packet.setWindowId(0);
+        return packet;
     }
 
     private static void sendNewTransaction(User user)
     {
         user.getTimeMap().at(TimeKey.PINGSPOOF_RECEIVED_PACKET).setToZero();
-        TRANSACTION_PACKET.sendPacket(user.getPlayer());
+        getTRANSACTION_PACKET().sendPacket(user.getPlayer());
         user.getTimeMap().at(TimeKey.PINGSPOOF_SENT_PACKET).update();
     }
 

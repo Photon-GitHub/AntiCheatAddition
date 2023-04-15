@@ -30,7 +30,7 @@ BrandHider:
   # This is the replacement text for the brand.
   # You can use the character ‘&’ for color codes and all placeholders that are available in normal checks.
   brand: "Some Spigot"
-  # This will update the brand at regular intervals.
+  # This updates the brand at regular intervals.
   # Use this to display changing attributes, such as TPS, Ping, Time or Date.
   # Set this to 0 to turn off refreshing if you only use static text or placeholders.
   # Measured in ticks.
@@ -68,11 +68,11 @@ EnchantmentHider:
 #
 # MAIN FUNCTIONS:
 # - Sneaking-Hider:  Any sneaking player will be hidden from the other players if not seen directly.
-#                    This will render ESP, tracers, radar and related cheats ineffective in spotting sneaking players without line of sight.
+#                    This renders ESP, tracers, radar and related cheats ineffective in spotting sneaking players without line of sight.
 #
 # - Equipment-Hider: If a player is not visible to another player, ESP will hide any equipment they are wearing or have in their hands.
 #                    Therefore, cheaters can no longer gauge a player's combat strength.
-#                    This part will automatically disable itself on servers with Minecraft versions below 1.11.
+#                    This part automatically disables itself on servers with Minecraft versions below 1.11.
 Esp:
   # Do you want to enable ESP?
   #
@@ -84,8 +84,8 @@ Esp:
   # Low values can cause performance issues, high values may cause players to be hidden for too long and pop up.
   interval_ticks: 2
   # By default, only sneaking players are fully hidden from other players because nametags are visible through walls.
-  # If you disable nametags or choose to ignore this vanilla behaviour, you can set this option to true which will
-  # cause all players to be fully hidden, even when not sneaking.
+  # If you disable nametags or choose to ignore this vanilla behaviour, you can set this option to true which
+  # causes all players to be fully hidden, even when not sneaking.
   only_full_hide: false
   # Should Esp consider Minecraft’s 3rd person perspectives?
   # Set this to false for a two-thirds reduction in block queries.
@@ -152,7 +152,7 @@ AutoFish:
       human_reaction_time: 145.0
     # The consistency part detects the constant reaction times of simple fishing bots.
     # Human players have at least a minor variation in their reaction times.
-    # Depending on how precise the consistency is, players will receive between 1 and 160 VL.
+    # Depending on how precise the consistency is, players receive between 1 and 160 VL.
     consistency:
       # Do you want to enable the consistency part?
       enabled: true
@@ -190,7 +190,7 @@ AutoPotion:
   # How many degrees does a player have to look down to begin the check?
   initial_pitch_difference: 40
   # The minimum angle, measured in degrees, that is counted as looking down.
-  # Negative values will break the check. I recommended testing value changes as they have a major impact on the check.
+  # Negative values break the check. I recommended testing value changes as they have a major impact on the check.
   look_down_angle: 80
   # Map of violation levels to commands.
   thresholds:
@@ -202,7 +202,7 @@ AutoPotion:
 # Since this only recognizes patterns, it is not entirely precise and may overlook cases of duping.
 # However, it can often alert moderators to investigate any suspicions.
 #
-# To help with investigations, this check will log both the world and the exact location of any suspicious
+# To help with investigations, this check logs both the world and the exact location of any suspicious
 # behaviour in AntiCheatAddition’s log file.
 Duping:
   # Do you want to enable Duping?
@@ -284,7 +284,7 @@ Inventory:
       # Set this to -1 to disable
       max_ping: 400
       # This part is only active if the server has the required minimum TPS.
-      # Low TPS will cause an extreme amount of false positives.
+      # Low TPS cause an extreme amount of false positives.
       min_tps: 18.5
     # This part detects hitting while the inventory is open.
     # Adds 20 VL.
@@ -303,7 +303,7 @@ Inventory:
       # Set this to 0 to never cancel movement.
       cancel_vl: 60
       # This part is only active if the server has the required minimum TPS.
-      # Low TPS will cause an extreme amount of false positives.
+      # Low TPS cause an extreme amount of false positives.
       min_tps: 19.5
       # The part will not check a player for this time after a teleport.
       # Increase this to avoid false positives with high-ping players after teleports.
@@ -326,7 +326,7 @@ Inventory:
       # Set this to -1 to disable
       max_ping: 400
       # This part is only active if the server has the required minimum TPS.
-      # Low TPS will cause an extreme amount of false positives.
+      # Low TPS cause an extreme amount of false positives.
       min_tps: 18.5
     # This part detects chest stealers, which automatically close empty inventories with perfect timing.
     # Adds 20 to 40 VL.
@@ -334,7 +334,7 @@ Inventory:
       # Do you want to enable the PerfectExit part?
       enabled: true
       # This part is only active if the server has the required minimum TPS.
-      # Low TPS will cause an extreme amount of false positives.
+      # Low TPS cause an extreme amount of false positives.
       min_tps: 18.5
       # How many suspicious interactions should Inventory count as legit?
       # The value must be greater or equal to 0.
@@ -378,7 +378,7 @@ PacketAnalysis:
       # Do you want to enable the Animation part?
       enabled: true
     # EqualRotation scans for invalid rotation packets, identical to the last rotation.
-    # This will catch some Scaffold, Tower, Killaura and Aimbot cheats.
+    # This catches some Scaffold, Tower, Killaura and Aimbot cheats.
     # Adds 5 VL.
     EqualRotation:
       # Do you want to enable the EqualRotation part?
@@ -432,7 +432,7 @@ Scaffold:
     # This part is always enabled, as it provides the basic framework.
     # Adds 20 to 130 VLs.
     Average:
-      # The minimum delays between block placements that will be enforced by AntiCheatAddition (in milliseconds)
+      # The minimum delays between block placements that are enforced by AntiCheatAddition (in milliseconds)
       delays:
         # This delay covers all straight building techniques.
         normal: 238
@@ -558,7 +558,7 @@ Teaming:
   # What is the maximum distance between players for them to be considered teaming? (in blocks)
   proximity_range: 4.5
   # If you wish to limit teams to a certain amount of players, adjust this value accordingly.
-  # Setting this to 1 will flag all teams.
+  # Setting this to 1 flags all teams.
   allowed_size: 1
   # How much time must pass before not attacking a close player is regarded as teaming? (in milliseconds)
   no_pvp_time: 6000
@@ -615,7 +615,7 @@ Sentinel:
   Exploits:
     # Books can be dangerous in Minecraft. Not only can overly long books lag your server, but they allow unprecedented
     # actions when created in creative mode: Opening files, executing commands and more.
-    # This sentinel will eliminate any books on your server that correspond to the categories listed below.
+    # This sentinel eliminates any books on your server that correspond to the categories listed below.
     BookPage:
       # Do you want to enable the BookPage exploit detection?
       enabled: true
@@ -623,7 +623,7 @@ Sentinel:
       # Vanilla clients have a 100-page limit when writing with a book and quill.
       # Increase this number if the server uses custom books with more pages.
       max_page_count: 100
-      # Should books with a ClickAction that open a local file on your PC will be erased?
+      # Should books with a ClickAction that open a local file on your PC be erased?
       disallow_open_file: true
       # All Books with a ClickAction that executes a command listed below will be deleted.
       disallowed_commands:
@@ -634,7 +634,7 @@ Sentinel:
         - "permissions"
         - "perms"
         - "perm"
-      # What commands will be executed if an illegal book is detected.
+      # What commands will be executed if an illegal book is detected?
       # Automatic banning can be considered.
       commands:
         - "kick {player} Maliciously modified book."
@@ -645,19 +645,18 @@ Sentinel:
     CommandBlock:
       # Do you want to enable the CommandBlock exploit detection?
       enabled: true
-      # What commands will be executed if the mod is detected.
+      # What commands will be executed if the mod is detected?
       # Automatic banning can be considered.
       commands:
         - "kick {player} Command block."
 
-    # Various cheat clients allow for the creation of "creative kill potions", exploiting a bug in Minecraft in which
-    # high instant health potion effects kill a player. Moreover, equally high instant damage potions can kill any
-    # undead mobs. This Sentinel detects the creation and usage of such potions, cancels any effects, and tries to
-    # delete the potions from the inventory and world on interaction.
+    # Various cheat clients allow creating “creative kill potions”, exploiting a bug in Minecraft in which high
+    # instant health potion effects kill a player. Moreover, equally high instant damage potions can kill any undead mobs.
+    # This Sentinel detects the use of such potions, neutralizes their effects, and removes them from the inventory.
     CreativeKillPotion:
       # Do you want to enable the CreativeKillPotion exploit detection?
       enabled: true
-      # What commands will be executed if an illegal potion is detected.
+      # What commands will be executed if an illegal potion is detected?
       # Automatic banning can be considered.
       commands:
         - "kick {player} Illegal Potion."
@@ -667,25 +666,27 @@ Sentinel:
     SelfDamage:
       # Do you want to enable the SelfDamage exploit detection?
       enabled: true
-      # What commands will be executed if a self-attack is detected.
+      # What commands will be executed if a self-attack is detected?
       # Automatic banning can be considered.
       commands:
         - "kick {player} Self damage."
 
-    # This sentinel detects all potions that have one of the following features:
+    # This Sentinel detects potions with one of the following features:
+    #
     # + Blindness for at least min_effect_time seconds
     # + Darkness (on minecraft 1.19+) for at least min_effect_time seconds
     # + Nausea for at least min_effect_time seconds
-    # Such potions are not available by brewing and unless a core feature on your server, should not be available to
-    # your players due to the detrimental effect on a player's experience. This detects the creation and usage of such
-    # potions, cancels any effects, and tries to delete the potions from the inventory.
+    #
+    # Brewing these potions is not possible. Unless they are a necessary part of the server, players should not be able
+    # to access them, as this can lead to a poor gaming experience.
+    # This Sentinel detects the use of such potions, neutralizes their effects, and removes them from the inventory.
     TrollPotion:
       # Do you want to enable the TrollPotion exploit detection?
       enabled: true
       # The minimum time in seconds of the effects to trigger a detection.
       # Measured in seconds, must be greater than or equal to 0.
       min_effect_time: 500
-      # What commands will be executed if an illegal potion is detected.
+      # What commands will be executed if an illegal potion is detected?
       # Automatic banning can be considered.
       commands:
         - "kick {player} Troll Potion"
@@ -694,7 +695,7 @@ Sentinel:
   5Zig:
     # Do you want to enable 5Zig?
     enabled: false
-    # What commands will be executed if the mod is detected.
+    # What commands will be executed if the mod is detected?
     commands:
       - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses 5Zig"
 
@@ -704,21 +705,18 @@ Sentinel:
     enabled: true
     # This mod provides a method to disable parts of it.
     disable:
-      # The mod provides a method to disable it.
+      # Set this to true to completely disable the mod.
       # Other options will be ignored if this is set to true.
-      # If you want to completely disable the mod set this to true.
       general: false
       # This gives players a configurable speed boost when flying in creative or survival mode.
       survival_fly_boost: true
       enable_all_dirs: true
-    # What commands will be executed if the mod is detected.
+    # What commands will be executed if the mod is detected?
     commands:
       - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses BetterSprinting"
 
-  # This covers the latest version of LabyMod.
-  # A very popular PvP modification similar to 5zig but with more features and TS3 support
-  #
-  # If enabled Sentinel will override the config options of the LabyModAPI plugin.
+  # This Sentinel is for the up-to-date version of LabyMod, a popular PvP mod similar to 5zig, but with more features and TS3 support.
+  # If activated, the Sentinel will override the config options of the LabyModAPI plugin that is needed for this Sentinel to work.
   LabyMod:
     # Do you want to enable LabyMod-Sentinel?
     enabled: false
@@ -735,48 +733,41 @@ Sentinel:
     # This mod provides a method to disable parts of it.
     # Set the corresponding value to true if you want to block a part of the mod
     disable:
-      # Fixes a rendering bug in minecraft with fast lava placement (ghost blocks)
-      # This can be seen as semi-cheat-like if lava plays a major role on your server
+      # Fixes a rendering bug in Minecraft with fast lava placement (ghost blocks).
+      # This may be considered a form of cheating if lava is a prominent part of your server.
       improved_lava: false
-      # Fixes a rendering bug in minecraft with fast head movement which makes the crosshair fall slightly behind
-      # This can be seen as semi-cheat-like as it grants a minor aiming advantage in fights.
+      # Resolves an issue in Minecraft with quick head movements that causes the crosshair to lag slightly behind.
+      # This can be seen as semi-cheat-like, as it grants a minor aiming advantage in fights.
       crosshair_sync: false
-      # This fixes some inventory bugs to improved pot and soup refill.
-      # This is regarded as cheat-like behaviour as it grants a major reliability bonus.
+      # This fixes some inventory bugs improving pot and soup refill.
+      # Many consider this a form of cheating, as it gives a large reliability bonus.
       refill_fix: true
-      # General GUI adjustments inside the mod, such as position, direction and current system time
-      # Not recommended to disable as it is a purely cosmetic feature
+      # Purely aesthetic modifications to the GUI, including coordinates, orientation and the current time.
       gui_all: false
-      # This renders the potion effect of the player on the display in form of a HUD
+      # This renders the potion effects of the player on the display in form of a HUD.
       gui_potion_effects: false
-      # This displays the current armour of a player (including durability) in a HUD
+      # This displays the current armour of a player (including durability) in a HUD.
       gui_armor_hud: false
-      # This allows the client to additionally render the current weapon as well as the number of arrows in one's inventory.
+      # This displays a player’s weapon and their arrow count in a HUD.
       gui_item_hud: false
-      # Brings back old building animations
-      # Not recommended to disable as it is a purely cosmetic feature
+      # A purely aesthetic feature that changes the building animations.
       blockbuild: false
       # Various cosmetic features
       tags: false
-      # Adds additional features such as different channels or filters to the chat (only clientsided)
-      # This is semi-cheat-like behaviour as chat also contains an AutoText module (write predefined messages instantly)
-      # as well as special characters (chat-filter bypass).
+      # This adds channels and filters to enhance chat experience (client-sided).
+      # This is akin to cheating, since it includes an AutoText module that lets you write predetermined messages quickly,
+      # plus exclusive symbols (bypassing chat filters).
       chat: false
-      # Purely cosmetic feature to switch back to the old animations of MC 1.7
-      # Not recommended to disable as it is a purely cosmetic feature
+      # A purely aesthetic feature that changes the arm animations.
       animations: false
-      # This renders the saturation of a player additional to the current food.
-      # Even though this is sometimes considered as an unfair advantage it is often just handy information
-      # which is not really affecting the gameplay.
+      # This renders the player’s saturation, sometimes seen as an unfair advantage.
       saturation_bar: false
-    # What commands will be executed if the mod is detected.
+    # What commands will be executed if the mod is detected?
     commands:
       - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses LabyMod"
 
-  # A mod that lets you display (clientside) holograms to improve building, but also has
-  # a module to download worlds.
-  #
-  # The mod itself is quite old and therefore this Sentinel only works on minecraft versions 1.8 - 1.12.
+  # A mod that projects (client-side) holograms to simplify building, but also has a module for downloading worlds.
+  # This Sentinel only activates on Minecraft versions 1.8-1.12 because of the mod’s age.
   Schematica:
     # Do you want to enable Schematica-Sentinel?
     enabled: false
@@ -784,81 +775,75 @@ Sentinel:
     # Set the corresponding value to true if you want to block a part of the mod
     disable:
       # Automatically builds based on a schematic.
-      # This is also called a building-bot sometimes.
+      # This is sometimes called a building-bot.
       printer: true
-      # This saves a part of the world as a schematic for later use thus being a small version
-      # of the full WorldDownloader mod.
+      # This saves a part of the world as a schematic like a limited WorldDownloader mod.
       save: true
       # This allows to load a schematic on your server for printing or a hologram.
       load: false
-    # What commands will be executed if the mod is detected.
+    # What commands will be executed if the mod is detected?
     commands:
       - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses Schematica"
 
-  # Vape is a very popular ghost-client, often seen in ranked pvp gameplay and optimized to be especially hard to find
-  # in screenshares
-  # This will only detect some cracked versions of the client.
-  #
-  # This Sentinel is not compatible with minecraft 1.13+ as the cracked client is version 1.8 and there have been
-  # large API changes in 1.13.
+  # Vape is a widely used ghost-client, regularly seen in ranked PvP gameplay and tailored to be especially difficult
+  # to uncover in screen-shares. The Sentinel only identifies some cracked client versions.
+  # This Sentinel won't work with Minecraft 1.13+ since the cracked version is 1.8 and 1.13 has seen massive API alterations.
   Vape:
     # Do you want to enable Vape-Sentinel?
     enabled: true
-    # What commands will be executed if the mod is detected.
+    # What commands will be executed if the mod is detected?
     # Automatic banning can be considered.
     commands:
       - "kick {player} Illegal client modification"
 
-  # WorldDownloader is a popular modification to get the maps of a server
+  # WorldDownloader is a popular modification to retrieve the maps of a server.
   WorldDownloader:
     # Do you want to enable WorldDownloader-Sentinel?
     enabled: false
     # This mod provides a method to disable parts of it.
     disable:
-      # The mod provides a method to disable it.
+      # Set this to true to completely disable the mod.
       # Other options will be ignored if this is set to true.
-      # If you want to completely disable the mod set this to true.
       general: true
-      # This will disable future features of the mod not yet included in the server api.
+      # This disables future features of the mod not yet included in the server api.
       # It is recommended to set this to true.
       future: true
-      # This indicates the distance from the player chunks can be saved from.
-      # -1 means allowing all distances. This is a square distance, not a circle or a diamond.
-      # Only applies if chunk caching is disabled.
+      # This sets the chunk range to download from a player’s location.
+      # -1 indicates an infinite range. The ranges form is a square, not a circle.
+      # Only applicable if chunk caching is disabled.
       save_radius: 0
-      # This will disable chunk caching which allows the player to save all chunks he has moved through.
+      # This disables chunk caching which allows the player to save all chunks he has moved through.
       chunk_caching: true
-      # This will disable saving entities.
+      # This disables saving entities.
       entity_saving: true
-      # This will disable saving tile entities.
+      # This disables saving tile entities.
       tile_entity_saving: true
-      # This will disable saving containers and their inventories.
+      # This disables saving containers and their inventories.
       # If tile_entity_saving is disabled, this has no effect.
       container_saving: true
-    # What commands will be executed if the mod is detected.
+    # What commands will be executed if the mod is detected?
     commands:
       - "kick {player} WorldDownloader"
 
-  # Here you can easily define your own simple Sentinel checks.
-  # These checks are automatically generated, please make sure that you use NO SPECIAL CHARACTERS and NO DUPLICATE
-  # NAMES to define a check (special characters are obviously fine as channel names and in "contains").
+  # Here, you can define your own simple Sentinel checks.
+  # Please ensure that you use NO SPECIAL CHARACTERS and NO DUPLICATE NAMES for the check name.
+  # Special characters are permissible in channel names and “contains”.
   #
-  # Simple step-by-step manual to create your own check:
+  # A basic guide for creating your own check:
   # (1) Copy the section of PXMod
   # (2) Rename the section from PXMod to <NAME_OF_YOUR_CUSTOM_CHECK>
-  # (3) Add the channels you want to listen to in incoming channels (e.g. minecraft:brand)
-  #     AntiCheatAddition will automatically try to generate the legacy channel name and listen for that as well (in this
-  #     case MC|Brand). Generally, if you know the legacy name, add it as well and AntiCheatAddition will automatically
-  #     choose the correct one for your server version.
-  # (4) If needed, define what the message need to contain to trigger the check. E.g. if you are listening to
-  #     minecraft:brand and superspecialmod:version to detect a mod you could define containsAny as:
-  #     containsAll: ["SSM", "ssm"]
-  #     Note: that is a purely fictional example, the channels and messages will differ for each mod, and many mods
-  #     will not send any message (especially if they are used to cheat).
+  # (3) Add the channels you want to listen to in incoming channels (e.g. “minecraft:brand”).
+  #     AntiCheatAddition automatically tries to generate the legacy channel names and listens to those as well
+  #     (in this case, “MC|Brand”). If you know the legacy name, add it and AntiCheatAddition will choose the
+  #     correct one for your server version.
+  # (4) If needed, clarify what the message should include to trigger the check. E.g. if you are listening to
+  #     “minecraft:brand” and superspecialmod:version to detect a mod you could define containsAny as: [“SSM”, “ssm”].
+  #     Note: This is a purely fictional example. Mods have different channels and messages.
+  #     Many do not communicate, especially cheat clients.
   # (5) Define the commands you want to execute when the mod is detected. The commands are executed exactly once right
   #     after player join. This allows you to e.g. disallow a certain mod on your server by kicking players on join.
   Custom:
-    # This will detect Forge.
+    # This detects Forge.
     Forge:
       # Do you want to enable Forge-Sentinel?
       enabled: false
@@ -866,17 +851,17 @@ Sentinel:
       incoming_channels:
         - "minecraft:brand"
         - "MC|Brand"
-      # All strings in this list will need to be included in the message sent in the channels above to trigger the
-      # commands. An empty list defined as [ ] means any message is accepted by containsAll.
+      # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
       containsAll: [ ]
-      # At least one string in this list will need to be included in the message sent in the channels above to trigger
-      # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
+      # The message must include at least one of the strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
       containsAny: [ "forge", "fml" ]
-      # What commands will be executed if the mod is detected.
+      # What commands will be executed if the mod is detected?
       commands:
         - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses Forge"
 
-    # This will detect Liteloader.
+    # This detects Liteloader.
     LiteLoader:
       # Do you want to enable LiteLoader-Sentinel?
       enabled: false
@@ -884,17 +869,17 @@ Sentinel:
       incoming_channels:
         - "minecraft:brand"
         - "MC|Brand"
-      # All strings in this list will need to be included in the message sent in the channels above to trigger the
-      # commands. An empty list defined as [ ] means any message is accepted by containsAll.
+      # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
       containsAll: [ ]
-      # At least one string in this list will need to be included in the message sent in the channels above to trigger
-      # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
+      # The message must include at least one of the strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
       containsAny: [ "LiteLoader", "Liteloader" ]
-      # What commands will be executed if the mod is detected.
+      # What commands will be executed if the mod is detected?
       commands:
         - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses LiteLoader"
 
-    # This will detect PixelClient.
+    # This detects the PixelClient.
     PixelClient:
       # Do you want to enable PixelClient-Sentinel?
       enabled: false
@@ -902,17 +887,17 @@ Sentinel:
       incoming_channels:
         - "mc:pixel"
         - "MC|PIXEL"
-      # All strings in this list will need to be included in the message sent in the channels above to trigger the
-      # commands. An empty list defined as [ ] means any message is accepted by containsAll.
+      # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
       containsAll: [ ]
-      # At least one string in this list will need to be included in the message sent in the channels above to trigger
-      # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
+      # The message must include at least one of the strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
       containsAny: [ ]
-      # What commands will be executed if the mod is detected.
+      # What commands will be executed if the mod is detected?
       commands:
         - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses PixelClient"
 
-    # This will detect PXMod.
+    # This detects the PXMod.
     PXMod:
       # Do you want to enable PXMod-Sentinel?
       enabled: false
@@ -920,17 +905,17 @@ Sentinel:
       incoming_channels:
         - "px:version"
         - "PX|Version"
-      # All strings in this list will need to be included in the message sent in the channels above to trigger the
-      # commands. An empty list defined as [ ] means any message is accepted by containsAll.
+      # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
       containsAll: [ ]
-      # At least one string in this list will need to be included in the message sent in the channels above to trigger
-      # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
+      # The message must include at least one of the strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
       containsAny: [ ]
-      # What commands will be executed if the mod is detected.
+      # What commands will be executed if the mod is detected?
       commands:
         - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses PXMod"
 
-    # This will detect Rift.
+    # This detects Rift.
     Rift:
       # Do you want to enable Rift-Sentinel?
       enabled: false
@@ -938,17 +923,17 @@ Sentinel:
       incoming_channels:
         - "minecraft:brand"
         - "MC|Brand"
-      # All strings in this list will need to be included in the message sent in the channels above to trigger the
-      # commands. An empty list defined as [ ] means any message is accepted by containsAll.
+      # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
       containsAll: [ ]
-      # At least one string in this list will need to be included in the message sent in the channels above to trigger
-      # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
+      # The message must include at least one of the strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
       containsAny: [ "rift" ]
-      # What commands will be executed if the mod is detected.
+      # What commands will be executed if the mod is detected?
       commands:
         - "<YOUR_STAFFCHAT_COMMAND> {player} in {world} uses Rift"
 
-    # This will detect Winterware.
+    # This detects Winterware.
     Winterware:
       # Do you want to enable Winterware-Sentinel?
       enabled: true
@@ -956,13 +941,13 @@ Sentinel:
       incoming_channels:
         - "lc:brand"
         - "LC|Brand"
-      # All strings in this list will need to be included in the message sent in the channels above to trigger the
-      # commands. An empty list defined as [ ] means any message is accepted by containsAll.
+      # The message must include all strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
       containsAll: [ ]
-      # At least one string in this list will need to be included in the message sent in the channels above to trigger
-      # the commands. An empty list defined as [ ] means any message is accepted by containsAny.
+      # The message must include at least one of the strings in the list to trigger a detection. [ ] is an empty list.
+      # If the list is empty, all messages are accepted.
       containsAny: [ ]
-      # What commands will be executed if the mod is detected.
+      # What commands will be executed if the mod is detected?
       # Automatic banning can be considered.
       commands:
         - "kick {player} Illegal Client Modifications"
@@ -975,17 +960,15 @@ Sentinel:
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
 
-# Allows defining where to send debug messages to. Please note that when reporting bugs, you will need to provide the
-# debug file of AntiCheatAddition with at least "FINE" level of messages.
+# Defines the debug log levels.
+# Possible values are: "OFF", "SEVERE", "WARNING", "INFO", "FINE", "FINER", "FINEST", "ALL" among others.
+# Default is "INFO", setting any value to "FINE" causes debug for violations to be logged.
+# "OFF" disables logging, "FINER" causes various debug messages be logged and "ALL" or "FINEST" enable spammy debug messages.
 Debug:
-  # These are the logging levels of AntiCheatAddition.
-  # Possible values are: "OFF", "SEVERE", "WARNING", "INFO", "FINE", "FINER", "FINEST", "ALL" among others.
-  # Default is "INFO", setting any value to "FINE" will cause debug for violations to be logged.
-  # "OFF" will disable logging, "FINER" will cause various debug messages be logged and "ALL" or "FINEST "will enable
-  # very spammy debug messages.
   # The logging level for the console.
   console_level: "INFO"
   # The logging level for the log file.
+  # For submitting bug reports, it is imperative that the file log level is at least "FINE".
   file_level: "FINE"
   # The logging level for the players with debug permission. They can still disable them by using the debug command
   # even when this is not "OFF".

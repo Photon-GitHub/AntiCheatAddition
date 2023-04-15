@@ -152,7 +152,7 @@ AutoFish:
       human_reaction_time: 145.0
     # The consistency part detects the constant reaction times of simple fishing bots.
     # Human players have at least a minor variation in their reaction times.
-    # Depending on how precise the consistency is, players receive between 1 and 160 VL.
+    # Adds 1 to 160 VL.
     consistency:
       # Do you want to enable the consistency part?
       enabled: true

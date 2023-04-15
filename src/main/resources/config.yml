@@ -60,8 +60,8 @@ EnchantmentHider:
     players: true
     others: false
 
-# This module uses advanced mathematics to check player visibility.
-# If another player is not in view, the module conceals their information on the packet-level.
+# ESP uses advanced mathematics to check player visibility.
+# If another player is not in view, ESP conceals their information on the packet-level.
 # ESP does not scan the entire distance between two players to increase performance.
 # Instead, heuristics are used to check the most relevant blocks.
 # As a result, ESP can sometimes show otherwise invisible players.
@@ -111,152 +111,138 @@ LogBot:
 #                                              \___|_||_\___\__|_\_\/__/                                              #
 #                                                                                                                     #
 # ------------------------------------------------------------------------------------------------------------------- #
-
-# This check detects AutoEat bots that will automatically eat for a player with perfect timing.
-# Please note that one VL from AutoEat decays only every 5 minutes to make sure that cheats can be detected even if
-# eating sessions are several minutes apart.
-# Adds 20 vl.
+# This module detects AutoEat bots that automatically consume food.
+# AutoEat VL decreases only every 5 minutes to identify cheats, no matter how spaced out eating sessions are.
+# Adds 20 VL.
 AutoEat:
-  # Do you want to enable the AutoEat check?
+  # Do you want to enable AutoEat?
   enabled: true
-  # Violation before AntiCheatAddition starts to cancel the consume events.
-  # Set this to 0 to never cancel the events.
+  # The violation level at which AntiCheatAddition starts to cancel consume events.
+  # Set this to 0 to never cancel events.
   cancel_vl: 80
-  # After a detection which surpasses cancel_vl AntiCheatAddition cancels all attempts to consume an item for the
-  # duration of timeout (in milliseconds).
+  # A detection exceeding cancel_vl stops all eating for this time (in milliseconds).
   timeout: 5000
-  # Map of violation levels to command
+  # Map of violation levels to commands.
   thresholds:
     60: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoEat"
     120: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoEat"
     200: "kick {player} AutoEat"
 
-# AutoFish detects cheats that are named just like the check - automatic fishing bots which can yield a lot of
-# treasure and food for those who use them.
+# AutoFish detects automatic fishing bots which can yield a lot of treasure and food for those who use them.
 #
-# If you have modified fishing time and/or behaviour please test if this check is compatible with your setup.
-# This check does only work on minecraft versions 1.11 and beyond due to changes in the spigot API compared to older
-# versions and auto-disables itself accordingly.
+# If you have modified fishing time and/or behaviour, please test if this check is compatible with your setup.
+# This check automatically disables itself on Minecraft versions below 1.11 because of changes to the Spigot API.
 AutoFish:
-  # Do you want to enable the AutoFish check?
+  # Do you want to enable AutoFish?
   enabled: true
-  # Violation before AntiCheatAddition starts to cancel the fishing.
-  # Please think of potential luck, because of this I do not recommend setting this to a value smaller than 7.
+  # The violation level at which AntiCheatAddition starts to cancel fishing.
+  # Please think of potential luck. Therefore, I advise against setting this to a value smaller than 70.
   # Set this to 0 to never cancel fishing.
   cancel_vl: 100
-  # Control the different parts of AutoFish
+  # Control the different parts of AutoFish.
   parts:
     # The inhuman reaction part recognizes very fast reaction speeds to detect AutoFishing mods.
     # This might cause some false positives with experienced fishers.
-    # Adds up to 60 vl, depending on the reaction speed.
+    # Adds up to 60 VL, depending on the reaction speed.
     inhuman_reaction:
       # Do you want to enable the inhuman reaction part?
       enabled: true
-      # How many milliseconds should have passed before a fishing action counts as legit.
-      # This also influences the given vl according to a linear distribution - the faster and more inhuman someone
-      # reacts, the more vl they will get.
+      # How many milliseconds must elapse for a fishing action to count as legit?
+      # Beyond this limit, the VL increases linearly with faster, more inhuman reactions.
       human_reaction_time: 145.0
-    # The consistency part recognizes unchanging times between a successful catch and fishing again as simple bots have
-    # constant reaction times, whereas human players' reaction varies a little each time they fish.
-    # Depending on how accurate the consistency is players will receive between 1 and 160 vl.
+    # The consistency part detects the constant reaction times of simple fishing bots.
+    # Human players have at least a minor variation in their reaction times.
+    # Depending on how precise the consistency is, players will receive between 1 and 160 VL.
     consistency:
       # Do you want to enable the consistency part?
       enabled: true
-      # How many fishing attempts should be checked by the consistency check
+      # How many fishing attempts in a row should be checked by the consistency check?
       fishing_attempt_count: 5
-      # The minimum variation a player has to have in their reaction times to count as non-cheating (in milliseconds)
+      # The minimum variation a player has to have in their reaction times to count as legit (in milliseconds)
       min_variation: 30
-      # After how many failed attempts to fish between two successful attempts should a player be exempted from the
-      # consistency part?
-      #
-      # This is a countermeasure for afk fishing farm false positives.
-      # Do not extensively lower this value because bots with a custom fail-rate might not be detected.
-      #
-      # If you do not allow afk fishing farms on your server set this to 0.
-      # Values
+      # How many unsuccessful attempts at fishing should a player have before they are exempt from the consistency part?
+      # This prevents AFK fishing farm false positives.
+      # Do not substantially reduce this value, or bots with a custom failure rate won't be detected.
+      # If you forbid AFK fishing farms on your server, set this to 0.
       maximum_fails: 12
-  # Map of violation levels to command
+  # Map of violation levels to commands.
   thresholds:
     90: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoFish"
     140: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoFish"
     200: "kick {player} AutoFish"
 
-# AutoPotion detects automated bots which splash the player with potions, e.g. when player health is low.
-# This check does only work on minecraft versions 1.11 and beyond and auto-disables itself on other versions.
-# Adds 50 vl.
+# AutoPotion recognizes bots that throw potions at the player, such as when the player's health is running low.
+# This check automatically disables itself on Minecraft versions below 1.11 because of changes to the Spigot API.
+# Adds 50 VL.
 AutoPotion:
-  # Do you want to enable the AutoPotion check?
+  # Do you want to enable AutoPotion?
   enabled: true
-  # Violation before AntiCheatAddition starts to cancel throwing potions.
+  # The violation level at which AntiCheatAddition starts to cancel potion throws.
   # Set this to 0 to never cancel throwing potions.
   cancel_vl: 2
-  # After a detection which surpasses cancel_vl AntiCheatAddition cancels all potion throws to effectively prevent the
-  # cheat (in milliseconds)
+  # A detection exceeding cancel_vl stops all potion throws for this time (in milliseconds).
   timeout: 1000
   # How fast the player must look in the initial direction once again to be regarded as having bot-like reaction speed
   # (in milliseconds).
   look_restored_time: 200
   # When looking back, beyond what angle difference should someone be considered as legit?
   angle_offset: 5
-  # How much someone has to suddenly look down to start the check (in degrees)
+  # How many degrees does a player have to look down to begin the check?
   initial_pitch_difference: 40
-  # The minimum angle, measured in degrees, that is counted as looking down
-  # Negative values represent looking upwards in Spigot and will break the check
-  # It is strongly recommended to test value changes as they have a huge impact on the check
+  # The minimum angle, measured in degrees, that is counted as looking down.
+  # Negative values will break the check. I recommended testing value changes as they have a major impact on the check.
   look_down_angle: 80
-  # Map of violation levels to command
+  # Map of violation levels to commands.
   thresholds:
     50: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for AutoPotion"
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for AutoPotion"
     200: "kick {player} AutoPotion"
 
-# Duping uses various heuristics to detect common behaviour patterns during duping items.
-# As this only detects common behaviour patterns, it is not 100% accurate, and can miss cases of duping.
-# However, it can be useful for admins to investigate any suspicions.
+# Through heuristics, duping can pick out familiar behaviour patterns when duplicating items.
+# Since this only recognizes patterns, it is not entirely precise and may overlook cases of duping.
+# However, it can often alert moderators to investigate any suspicions.
 #
-# To help with any investigations this check will log both the world and the exact location of any suspicious
-# behaviour.
+# To help with investigations, this check will log both the world and the exact location of any suspicious
+# behaviour in AntiCheatAddition’s log file.
 Duping:
-  # Do you want to enable the Duping check?
+  # Do you want to enable Duping?
   enabled: true
   # Control the different parts of Duping
   parts:
-    # The duping part detects picking up exactly twice the item count one dropped.
+    # The DoubleDropped part detects picking up exactly twice the item count one dropped.
     DoubleDropped:
       # Do you want to enable the DoubleDropped part?
       enabled: true
-    # Secret cache tries to spot the creation of secret caches which are completely surrounded by other blocks
-    # Duping players often create multiple secret caches at the same time to allow alt accounts to gather them
-    # later.
+    # Secret cache tries to spot the creation of secret caches which are engulfed by other blocks.
+    # Duping players often create multiple secret caches at once to allow alt accounts to gather the items later on.
     SecretCache:
       # Do you want to enable the SecretCache part?
       enabled: true
-      # How many minutes after the closing of a chest or shulker box should AntiCheatAddition check if it is a
-      # secret cache (in minutes)?
+      # How much time should pass after a chest or shulker box is closed before AntiCheatAddition looks to see
+      # if it is a secret cache (in minutes)?
       check_delay: 10
-  # Map of violation levels to command
+  # Map of violation levels to commands.
   thresholds:
     50: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} might be duping items."
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for duping items."
     200: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for duping items."
 
-# The Fastswitch check prevents players from switching their hotbar-selection too quickly which can detect some
-# killauras or scaffolds.
-# The check will automatically disable itself if the server is lagging.
-# Adds 25 vl.
+# Fastswitch detects players switching their hotbar-selection too quickly.
+# This is a typical behaviour when cheaters simultaneously use Killaura and Scaffold.
+# The check will self-disable when the server has low TPS.
+# Adds 25 VL.
 Fastswitch:
-  # Do you want to enable the Fastswitch check?
+  # Do you want to enable Fastswitch?
   enabled: true
-  # Violation before AntiCheatAddition starts to cancel the hotbar selections.
+  # The violation level at which AntiCheatAddition starts to hotbar selections.
   # Set this to 0 to never cancel hotbar selections.
   cancel_vl: 50
-  # If a player has a ping higher than this value he bypasses the check
-  # Please make sure that you have some pingspoof protection enabled while using this feature
+  # If a player's ping surpasses this value, they will be exempted from the check.
   # Set this to -1 to disable
   max_ping: 400
-  # The minimum time between switches that are not considered scrolling (in milliseconds)
+  # The minimum time enforced between switches that are not considered scrolling (in milliseconds)
   switch_milliseconds: 50
-  # Map of violation levels to command
+  # Map of violation levels to commands.
   thresholds:
     30: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Fastswitch"
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Fastswitch"
@@ -264,15 +250,15 @@ Fastswitch:
 
 # ImpossibleChat check detects sending chat messages while being in an inventory, blocking, sprinting and other illegal
 # situations.
-# Adds 25 vl.
+# Adds 25 VL.
 ImpossibleChat:
   # Do you want to enable the ImpossibleChat check?
   # Disabled by default as some servers might allow auto-chat modifications.
   enabled: false
-  # Violation before AntiCheatAddition starts to cancel the messages.
+  # The violation level at which AntiCheatAddition starts to cancel the messages.
   # Set this to 0 to never cancel messages.
   cancel_vl: 75
-  # Map of violation levels to command
+  # Map of violation levels to commands.
   thresholds:
     50: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for ImpossibleChat"
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for ImpossibleChat"
@@ -288,34 +274,33 @@ Inventory:
     # This is supposed to detect simple chest stealer bots which do not randomize the click delays.
     # NOTE: If you allow inventory sorting mods of any kind make sure to disable this part.
     #
-    # This part will add 20-70 vl (this check is quite slow and is only processed every 16 clicks on items) depending on
+    # This part will add 20-70 VL (this check is quite slow and is only processed every 16 clicks on items) depending on
     # the amount of misclicks and the time between. This will ensure that players which click excessively fast - e.g. in
-    # the beginning of SurvivalGames will not get as many vls as they click on a lot of empty slots. Slow clicking
-    # also results in less vl as a slow click rate does not give you a huge advantage and is likely a false positive.
+    # the beginning of SurvivalGames will not get as many VLs as they click on a lot of empty slots. Slow clicking
+    # also results in less VL as a slow click rate does not give you a huge advantage and is likely a false positive.
     AverageHeuristic:
       # Do you want to enable the AverageHeuristic part?
       enabled: true
-      # If a player has a ping higher than this value he bypasses the check
-      # Please make sure that you have some pingspoof protection enabled if you use this feature
+      # If a player's ping surpasses this value, they will be exempted from the check.
       # Set this to -1 to disable
       max_ping: 400
       # The minimum TPS the server must have to activate this check
       # Low TPS will cause an extreme amount of false positives.
       min_tps: 18.5
     # This part flags hitting while the inventory is open.
-    # This part will add 20 vl.
+    # This part will add 20 VL.
     Hit:
       # Do you want to enable the Hit part?
       enabled: true
-      # Violation before AntiCheatAddition starts to cancel the hits.
+      # The violation level at which AntiCheatAddition starts to cancel the hits.
       # Set this to 0 to never cancel hits.
       cancel_vl: 60
     # The move part detects movement when a player is still in his inventory.
-    # This part will add 5 vl when a player moves illegally and 20 vl when a player jumps illegally.
+    # This part will add 5 VL when a player moves illegally and 20 VL when a player jumps illegally.
     Move:
       # Do you want to enable the Move part?
       enabled: true
-      # Violation before AntiCheatAddition starts to cancel the movement.
+      # The violation level at which AntiCheatAddition starts to cancel the movement.
       # Set this to 0 to never cancel movement.
       cancel_vl: 60
       # The minimum TPS the server must have to activate this check
@@ -333,15 +318,14 @@ Inventory:
       # Normal connections are already covered by the default values and are internally exempt for 240ms.
       lenience_millis: 0
     # The MultiInteraction part prevents players from moving items too fast.
-    # This part will add 1 to 8 vl, depending on the severity of the violation.
+    # This part will add 1 to 8 VL, depending on the severity of the violation.
     MultiInteraction:
       # Do you want to enable the MultiInteraction part?
       enabled: true
-      # Violation before AntiCheatAddition starts to cancel the inventory interactions.
+      # The violation level at which AntiCheatAddition starts to cancel the inventory interactions.
       # Set this to 0 to never cancel interacts.
       cancel_vl: 25
-      # If a player has a ping higher than this value he bypasses the check
-      # Please make sure that you have some pingspoof protection enabled if you use this feature
+      # If a player's ping surpasses this value, they will be exempted from the check.
       # Set this to -1 to disable
       max_ping: 400
       # The minimum TPS the server must have to activate this check
@@ -349,7 +333,7 @@ Inventory:
       min_tps: 18.5
     # This part will detect perfectly closed inventories to detect chest stealers which automatically close an inventory
     # once it is empty.
-    # This part will add 20 to 40 vl depending on the severity of the violation.
+    # This part will add 20 to 40 VL depending on the severity of the violation.
     PerfectExit:
       # Do you want to enable the PerfectExit part?
       enabled: true
@@ -360,7 +344,7 @@ Inventory:
       # The value must be greater or equal to 0.
       violation_threshold: 5
     # The rotation part detects head movement while having an open inventory.
-    # This part will add 1 vl.
+    # This part will add 1 VL.
     Rotation:
       # Do you want to enable the Rotation part?
       enabled: true
@@ -372,14 +356,14 @@ Inventory:
       # Analogous to the option above this only applies to world changes which usually take more time to process.
       world_change_bypass_time: 2000
     # This part detects inventory interactions while a player is sprinting or sneaking.
-    # This part will add 30 vl.
+    # This part will add 30 VL.
     Sprinting:
       # Do you want to enable the Sprinting part?
       enabled: true
-      # Violation before AntiCheatAddition starts to cancel the inventory interactions.
+      # The violation level at which AntiCheatAddition starts to cancel the inventory interactions.
       # Set this to 0 to never cancel inventory interactions.
       cancel_vl: 110
-  # Map of violation levels to command
+  # Map of violation levels to commands.
   thresholds:
     110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for inventory cheats."
     160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for inventory cheats."
@@ -394,22 +378,22 @@ PacketAnalysis:
   parts:
     # This part checks if after an attack the client sends an arm animation packet.
     # This only flags the worst killauras.
-    # This part will add 30 vl.
+    # This part will add 30 VL.
     Animation:
       # Do you want to enable the Animation part?
       enabled: true
     # EqualRotation checks for invalid rotation packets which have the rotation of the last packet as content
     # This will catch several scaffold, tower, killaura and aimbot modifications.
-    # Adds 5 vl
+    # Adds 5 VL
     EqualRotation:
       # Do you want to enable the EqualRotation part?
       enabled: true
     # This checks for illegal pitches that a legit client is not able to send.
-    # This part will add 150 vl.
+    # This part will add 150 VL.
     IllegalPitch:
       # Do you want to enable the IllegalPitch part?
       enabled: true
-  # Map of violation levels to command
+  # Map of violation levels to commands.
   thresholds:
     110: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected by PacketAnalysis"
     160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected by PacketAnalysis"
@@ -417,7 +401,7 @@ PacketAnalysis:
 
 # Pingspoof tries to detect modifications that trick the server into believing the player has a higher or lower ping
 # than they actually have to partially bypass anticheats or get other advantages.
-# Adds up to 70 vl, depending on the severity of the violation.
+# Adds up to 70 VL, depending on the severity of the violation.
 Pingspoof:
   # Do you want to enable the Pingspoof check?
   enabled: true
@@ -426,7 +410,7 @@ Pingspoof:
   # How often should the ping be checked?
   # Measured in seconds.
   interval: 30
-  # Map of violation levels to command
+  # Map of violation levels to commands.
   thresholds:
     60: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Pingspoof"
     140: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Pingspoof"
@@ -436,16 +420,15 @@ Pingspoof:
 Scaffold:
   # Do you want to enable the Scaffold check?
   enabled: true
-  # Violation before AntiCheatAddition starts to cancel block placement.
+  # The violation level at which AntiCheatAddition starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 110
-  # After a detection which surpasses cancel_vl AntiCheatAddition cancels all attempts to place a block in the given
-  # time window to prevent further scaffolding (in milliseconds)
+  # A detection exceeding cancel_vl stops all block placements for this time (in milliseconds).
   timeout: 1000
   # Control the different parts of Scaffold
   parts:
     # This part detects suspicious angles when the player places blocks.
-    # Adds 15 vl.
+    # Adds 15 VL.
     Angle:
       # Do you want to enable Angle?
       enabled: true
@@ -467,7 +450,7 @@ Scaffold:
         diagonal: 138
     # This prevents jumping while scaffolding, which, even though theoretically possible, is extremely difficult
     # and unstable to achieve without having a scaffold cheat.
-    # Adds 20 vl.
+    # Adds 20 VL.
     Jumping:
       # Do you want to enable Jumping?
       enabled: true
@@ -475,25 +458,25 @@ Scaffold:
       # The value must be greater or equal to 0.
       violation_threshold: 4
     # This part detects suspicious placement positions.
-    # Adds 30 vl.
+    # Adds 30 VL.
     Position:
       # Do you want to enable Position?
       enabled: true
     # This part analyzes the rotations of a player while scaffolding
     Rotation:
       # This checks the player's rotation's derivative.
-      # Adds 10 vl.
+      # Adds 10 VL.
       Derivative:
         # Do you want to enable Derivative?
         enabled: true
       # FastChange checks if a player has frequent, sudden spikes in their looking direction.
       # This module can detect combinations of Killaura and Scaffold especially fast.
-      # Adds 15 vl.
+      # Adds 15 VL.
       FastChange:
         # Do you want to enable FastChange?
         enabled: true
       # This checks the player's rotation's second derivative.
-      # Adds 5 vl.
+      # Adds 5 VL.
       SecondDerivative:
         # Do you want to enable SecondDerivative?
         enabled: true
@@ -504,14 +487,14 @@ Scaffold:
     Safewalk:
       # What types of this part should be enabled
       # Disabling all types will disable the part.
-      # Position will add 15 vl
+      # Position will add 15 VL
       Position:
         # Do you want to enable Safewalk Position?
         enabled: true
         # How many suspicious positions should Scaffold count as legit?
         # The value must be greater or equal to 0.
         violation_threshold: 3
-      # Timing will add 20 vl
+      # Timing will add 20 VL
       Timing:
         # Do you want to enable Safewalk Timing?
         enabled: true
@@ -519,7 +502,7 @@ Scaffold:
         # The value must be greater or equal to 0.
         violation_threshold: 2
     # This part detects sprinting between block placements.
-    # The sprinting check always adds 45 vl.
+    # The sprinting check always adds 45 VL.
     Sprinting:
       # Do you want to enable Sprinting?
       enabled: true
@@ -527,7 +510,7 @@ Scaffold:
       # This is needed as sprinting can be perfectly legit e.g. when starting to place blocks.
       # The value must be greater or equal to 0.
       violation_threshold: 4
-  # Map of violation levels to command
+  # Map of violation levels to commands.
   thresholds:
     90: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Scaffold"
     130: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Scaffold"
@@ -544,7 +527,7 @@ Shield:
     Hit:
       # Do you want to enable ShieldHit?
       enabled: true
-      # Violation before AntiCheatAddition starts to cancel the hits.
+      # The violation level at which AntiCheatAddition starts to cancel the hits.
       # Set this to 0 to never cancel hits.
       cancel_vl: 60
   thresholds:
@@ -559,7 +542,7 @@ Skinblinker:
   # Control the different parts of Skinblinker
   parts:
     # This flags settings packets that are sent while sprinting or sneaking which is not possible to do in the game.
-    # Adds 50 vl.
+    # Adds 50 VL.
     Sprinting:
       # Do you want to enable Sprinting?
       enabled: true
@@ -568,7 +551,7 @@ Skinblinker:
     UnusedBit:
       # Do you want to enable UnusedBit?
       enabled: true
-  # Map of violation levels to command
+  # Map of violation levels to commands.
   thresholds:
     100: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Skinblinker"
     200: "kick {player} Skinblinker"
@@ -599,7 +582,8 @@ Teaming:
   safe_zones:
     - "world -15 -15 15 15"
   # These ViolationLevel are cumulative for a team.
-  # That means that every team member gets (actual team size) - (allowed team size) vl per interval.
+  # That means that every team member gets (actual team size) - (allowed team size) VL per interval.
+  # Map of violation levels to commands.
   thresholds:
     4: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} may be Teaming"
     10: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} are suspected for Teaming"
@@ -607,21 +591,20 @@ Teaming:
 
 # The Tower check detects cheats of the same name, modifications which allow you to build straight up (towering)
 # very fast.
-# Adds up to 1000 vl depending on the severity of the violation.
+# Adds up to 1000 VL depending on the severity of the violation.
 Tower:
   # Do you want to enable the Tower check?
   enabled: true
-  # Violation before AntiCheatAddition starts to cancel the block placements.
+  # The violation level at which AntiCheatAddition starts to cancel the block placements.
   # Set this to 0 to never cancel block placement.
   cancel_vl: 6
   # If you have false positives decrease this SLIGHTLY (try for example 0.99).
   # The Tower check has its own leniency-curve which makes it very effective.
   # Therefore, please only touch this if you have false positives.
   tower_leniency: 1
-  # After a detection which surpasses cancel_vl AntiCheatAddition cancels all block placements in the given timeframe
-  # to prevent further towering (in milliseconds)
+  # A detection exceeding cancel_vl stops all block placements for this time (in milliseconds).
   timeout: 6000
-  # Map of violation levels to command
+  # Map of violation levels to commands.
   thresholds:
     80: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Tower"
     200: "kick {player} Tower"

@@ -4,8 +4,8 @@ import de.photon.anticheataddition.InternalPermission;
 import de.photon.anticheataddition.commands.CommandAttributes;
 import de.photon.anticheataddition.commands.InternalCommand;
 import de.photon.anticheataddition.commands.TabCompleteSupplier;
-import de.photon.anticheataddition.commands.subcommands.InternalTestCommand;
 import de.photon.anticheataddition.user.data.DataUpdaterEvents;
+import de.photon.anticheataddition.util.inventoryview.InventoryViewUtil;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
 import de.photon.anticheataddition.util.messaging.Log;
 import org.bukkit.command.CommandSender;
@@ -30,7 +30,7 @@ public class TestInventoryOpen extends InternalCommand
         final var user = parseUser(sender, arguments.peek());
         if (user == null) return;
 
-        final var view = InternalTestCommand.createInventoryView(user);
+        final var view = InventoryViewUtil.INSTANCE.createTestView(user);
         DataUpdaterEvents.INSTANCE.onInventoryOpen(new InventoryOpenEvent(view));
 
         Log.fine(() -> "Executed internal inventory open test command affecting player " + user.getPlayer().getName() + " requested by " + sender.getName());

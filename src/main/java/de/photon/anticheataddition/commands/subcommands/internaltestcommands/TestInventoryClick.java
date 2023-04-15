@@ -4,8 +4,8 @@ import de.photon.anticheataddition.InternalPermission;
 import de.photon.anticheataddition.commands.CommandAttributes;
 import de.photon.anticheataddition.commands.InternalCommand;
 import de.photon.anticheataddition.commands.TabCompleteSupplier;
-import de.photon.anticheataddition.commands.subcommands.InternalTestCommand;
 import de.photon.anticheataddition.user.data.DataUpdaterEvents;
+import de.photon.anticheataddition.util.inventoryview.InventoryViewUtil;
 import de.photon.anticheataddition.util.messaging.ChatMessage;
 import de.photon.anticheataddition.util.messaging.Log;
 import org.bukkit.command.CommandSender;
@@ -45,7 +45,7 @@ public class TestInventoryClick extends InternalCommand
             if (parsedCount != null) count = parsedCount;
         }
 
-        final var view = InternalTestCommand.createInventoryView(user);
+        final var view = InventoryViewUtil.INSTANCE.createTestView(user);
 
         for (int i = 0; i < count; ++i) {
             DataUpdaterEvents.INSTANCE.onInventoryClick(new InventoryClickEvent(view, InventoryType.SlotType.CONTAINER, RANDOM.nextInt(27), ClickType.LEFT, InventoryAction.MOVE_TO_OTHER_INVENTORY));

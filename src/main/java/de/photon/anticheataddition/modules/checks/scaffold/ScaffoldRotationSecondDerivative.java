@@ -18,11 +18,11 @@ final class ScaffoldRotationSecondDerivative extends Module
         super("Scaffold.parts.Rotation.SecondDerivative");
     }
 
-    public int getVl(User user, LookPacketData.AngleInformation angleInformation)
+    public int getVl(User user, LookPacketData.ScaffoldAngleInfo scaffoldAngleInfo)
     {
         if (!this.isEnabled()) return 0;
 
-        if (angleInformation.offsetSum() > ANGLE_OFFSET_SUM_THRESHOLD) {
+        if (scaffoldAngleInfo.offsetSum() > ANGLE_OFFSET_SUM_THRESHOLD) {
             Log.fine(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotations. Type 3");
             return 5;
         }

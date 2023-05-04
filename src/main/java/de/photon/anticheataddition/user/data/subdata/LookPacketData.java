@@ -24,12 +24,9 @@ public final class LookPacketData
 
     private final RingBuffer<RotationChange> rotationChangeQueue = new RingBuffer<>(20, new RotationChange(0, 0));
 
-    public record AngleInformation(double changeSum, double offsetSum) {}
+    public record ScaffoldAngleInfo(double changeSum, double offsetSum) {}
 
-    /**
-     * Calculates the total rotation change in the last time.
-     */
-    public AngleInformation getAngleInformation()
+    public ScaffoldAngleInfo getAngleInformation()
     {
         final RotationChange[] changes;
 
@@ -59,10 +56,10 @@ public final class LookPacketData
         }
 
         // Just immediately return the [0,0] array here to avoid dividing by 0.
-        if (rotationCount == 0 && gapFillers == 0) return new AngleInformation(0, 0);
+        if (rotationCount == 0 && gapFillers == 0) return new ScaffoldAngleInfo(0, 0);
 
         // Compute the difference of angleSum and angleSum * (rotationCount / (rotationCount + gapFillers))
-        return new AngleInformation(angleSum, MathUtil.absDiff((angleSum / (rotationCount + gapFillers)) * rotationCount, angleSum));
+        return new ScaffoldAngleInfo(angleSum, MathUtil.absDiff((angleSum / (rotationCount + gapFillers)) * rotationCount, angleSum));
     }
 
     @Value

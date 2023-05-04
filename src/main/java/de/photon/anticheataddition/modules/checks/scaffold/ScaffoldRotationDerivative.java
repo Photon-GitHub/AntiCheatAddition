@@ -20,11 +20,11 @@ final class ScaffoldRotationDerivative extends Module
         super("Scaffold.parts.Rotation.Derivative");
     }
 
-    public int getVl(User user, LookPacketData.AngleInformation angleInformation)
+    public int getVl(User user, LookPacketData.ScaffoldAngleInfo scaffoldAngleInfo)
     {
         if (!this.isEnabled()) return 0;
 
-        if (angleInformation.changeSum() > ANGLE_CHANGE_SUM_THRESHOLD) {
+        if (scaffoldAngleInfo.changeSum() > ANGLE_CHANGE_SUM_THRESHOLD) {
             Log.fine(() -> "Scaffold-Debug | Player: " + user.getPlayer().getName() + " sent suspicious rotation changes.");
             return 10;
         }

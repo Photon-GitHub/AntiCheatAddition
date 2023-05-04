@@ -44,6 +44,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         }
 
         varianceTest(user, timeOffsets, misClickCounter);
+        kolmogorowSmirnowTest(user, timeOffsets);
     }
 
     private void varianceTest(User user, long[] timeOffsets, ViolationCounter misClickCounter)

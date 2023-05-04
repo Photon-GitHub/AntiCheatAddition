@@ -50,37 +50,39 @@ public final class DamageIndicator extends Module
 
                     // Should spoof?
                     // Entity has health to begin with.
-                    if (entityType.isAlive() &&
+                    if (!entityType.isAlive() ||
                         // Bossbar problems
                         // Cannot use Boss interface as that doesn't exist on 1.8.8
-                        entityType != EntityType.ENDER_DRAGON &&
-                        entityType != EntityType.WITHER &&
+                        entityType == EntityType.ENDER_DRAGON ||
+                        entityType == EntityType.WITHER ||
 
-                        // Entity must be living to have health; all categories extend LivingEntity.
-                        ((entityType == EntityType.PLAYER && spoofPlayers) ||
-                         (entity instanceof Monster && spoofMonsters) ||
-                         (entity instanceof Animals && spoofAnimals)) &&
+                        entityType == EntityType.PLAYER && !spoofPlayers ||
+                        entity instanceof Monster && !spoofMonsters ||
+                        entity instanceof Animals && !spoofAnimals ||
 
                         // Not the player himself.
                         // Offline mode servers have name-based UUIDs, so that should be no problem.
-                        event.getPlayer().getEntityId() != entity.getEntityId() &&
+                        event.getPlayer().getEntityId() == entity.getEntityId() ||
 
                         // Entity has no passengers.
-                        EntityUtil.INSTANCE.getPassengers(entity).isEmpty())
+                        !EntityUtil.INSTANCE.getPassengers(entity).isEmpty())
                     {
-                        // Clone the packet to prevent a serversided connection of the health.
-                        event.setPacket(event.getPacket().deepClone());
-
-                        final MetadataPacket read;
-
-                        if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) read = new WrapperPlayServerEntityMetadata(event.getPacket());
-                        else if (event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) read = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
-                        else throw new IllegalStateException("Unregistered packet type.");
-
-                        // Only set it if the entity is not yet dead to prevent problems on the clientside.
-                        // Set the health to 1.0F as that is the default value.
-                        read.modifyMetadataIndex(EntityMetadataIndex.HEALTH, health -> (Float) health > 0.0F ? 1.0F : 0.0F);
+                        return;
                     }
+
+
+                    // Clone the packet to prevent a serversided connection of the health.
+                    event.setPacket(event.getPacket().deepClone());
+
+                    final MetadataPacket metadata;
+
+                    if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) metadata = new WrapperPlayServerEntityMetadata(event.getPacket());
+                    else if (event.getPacketType() == PacketType.Play.Server.NAMED_ENTITY_SPAWN) metadata = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
+                    else throw new IllegalStateException("Unregistered packet type.");
+
+                    // Only set it if the entity is not yet dead to prevent problems on the clientside.
+                    // Set the health to 1.0F as that is the default value.
+                    metadata.modifyMetadataIndex(EntityMetadataIndex.HEALTH, health -> (Float) health > 0.0F ? 1.0F : 0.0F);
                 }).build());
     }
 }

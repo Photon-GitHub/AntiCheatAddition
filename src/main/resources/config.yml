@@ -394,21 +394,6 @@ PacketAnalysis:
     160: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected by PacketAnalysis"
     200: "kick {player} Suspicious packets"
 
-# Pingspoof detects ping alterations that often allow partially bypassing anti-cheats.
-# Adds 1 to 70 VL.
-Pingspoof:
-  # Do you want to enable Pingspoof?
-  enabled: true
-  # What is the maximum permissible difference between the player's ping and the tested ping? (in milliseconds)
-  ping_leniency: 150
-  # How regularly should the ping be monitored? (in seconds)
-  interval: 30
-  # Map of violation levels to commands.
-  thresholds:
-    60: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is suspected for Pingspoof"
-    140: "<YOUR_STAFFCHAT_COMMAND> {player} in {world} is highly suspected for Pingspoof"
-    200: "kick {player} Pingspoof"
-
 # Scaffold detects cheats that place blocks below the player to rapidly construct bridges.
 Scaffold:
   # Do you want to enable Scaffold?

@@ -39,12 +39,12 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         }
 
         final double averageMillis = DataUtil.average(timeOffsets);
-        final double squaredErrorsSum = DataUtil.squaredError(averageMillis, timeOffsets);
+        final double variance = DataUtil.squaredError(averageMillis, timeOffsets);
 
         // One time 2 ticks offset and 2 times 1 tick offset * 15 minimum vl = 168750
         // 2500 error sum is legit achievable.
         // +1 to avoid division by 0
-        double vl = 40000 / (squaredErrorsSum + 1);
+        double vl = 40000 / (variance + 1);
 
         // Average below 1 tick is considered inhuman and increases vl.
         // / 50 to make sure the coefficients are big enough to avoid precision bugs.
@@ -62,7 +62,7 @@ public final class AverageHeuristicBatchProcessor extends AsyncBatchProcessor<In
         final int finalVl = (int) Math.min(vl, 70);
         this.getModule().getManagement().flag(Flag.of(user)
                                                   .setAddedVl(finalVl)
-                                                  .setDebug(() -> "Inventory-Debug | Player: %s has bot-like click delays. (SE: %f | A: %f | MC: %d | VLU: %d)".formatted(user.getPlayer().getName(), squaredErrorsSum, averageMillis, misClickCounter.getCounter(), finalVl)));
+                                                  .setDebug(() -> "Inventory-Debug | Player: %s has bot-like click delays. (SE: %f | A: %f | MC: %d | VLU: %d)".formatted(user.getPlayer().getName(), variance, averageMillis, misClickCounter.getCounter(), finalVl)));
 
         misClickCounter.setToZero();
     }

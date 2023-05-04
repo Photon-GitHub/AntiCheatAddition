@@ -48,7 +48,6 @@ public final class DamageIndicator extends Module
 
                     final var entityType = entity.getType();
 
-                    // Should spoof?
                     // Entity has health to begin with.
                     if (!entityType.isAlive() ||
                         // Bossbar problems
@@ -65,11 +64,10 @@ public final class DamageIndicator extends Module
                         event.getPlayer().getEntityId() == entity.getEntityId() ||
 
                         // Entity has no passengers.
-                        !EntityUtil.INSTANCE.getPassengers(entity).isEmpty())
+                        EntityUtil.INSTANCE.hasPassengers(entity))
                     {
                         return;
                     }
-
 
                     // Clone the packet to prevent a serversided connection of the health.
                     event.setPacket(event.getPacket().deepClone());

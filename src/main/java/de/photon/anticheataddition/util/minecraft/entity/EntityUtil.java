@@ -26,4 +26,14 @@ public sealed interface EntityUtil permits LegacyEntityUtil, ModernEntityUtil
      * This method solves the compatibility issues of the newer APIs with server version 1.8.8
      */
     List<Entity> getPassengers(@NotNull final Entity entity);
+
+    /**
+     * Checks if an entity has passengers.
+     *
+     * @return true if the entity has no passengers, else false.
+     */
+    default boolean hasPassengers(@NotNull final Entity entity)
+    {
+        return !getPassengers(entity).isEmpty();
+    }
 }

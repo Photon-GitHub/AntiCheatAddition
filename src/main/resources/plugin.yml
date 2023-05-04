@@ -55,7 +55,6 @@ permissions:
       anticheataddition.bypass.anticheataddition_packetanalysis.parts.animation: true
       anticheataddition.bypass.anticheataddition_packetanalysis.parts.equalrotation: true
       anticheataddition.bypass.anticheataddition_packetanalysis.parts.illegalpitch: true
-      anticheataddition.bypass.anticheataddition_pingspoof: true
       anticheataddition.bypass.anticheataddition_scaffold: true
       anticheataddition.bypass.anticheataddition_scaffold.parts.angle: true
       anticheataddition.bypass.anticheataddition_scaffold.parts.jumping: true

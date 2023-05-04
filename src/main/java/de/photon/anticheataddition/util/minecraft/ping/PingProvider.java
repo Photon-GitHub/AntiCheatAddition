@@ -1,22 +1,11 @@
 package de.photon.anticheataddition.util.minecraft.ping;
 
 import de.photon.anticheataddition.ServerVersion;
-import de.photon.anticheataddition.user.User;
 import org.bukkit.entity.Player;
 
 public sealed interface PingProvider permits LegacyPingProvider, ModernPingProvider
 {
     PingProvider INSTANCE = ServerVersion.MC115.activeIsEarlierOrEqual() ? new LegacyPingProvider() : new ModernPingProvider();
-
-    /**
-     * Tries to get the player ping via a ping command on the system.
-     *
-     * @return the floating average of the ping of the player. If the player has just joined, 200ms are the default value for the ping.
-     */
-    default long getEchoPing(User user)
-    {
-        return (long) user.getPingspoofPing().getAverage();
-    }
 
     /**
      * Reflects the real ping of a {@link Player} from the CraftPlayer class or uses the .getPing() method on newer versions.

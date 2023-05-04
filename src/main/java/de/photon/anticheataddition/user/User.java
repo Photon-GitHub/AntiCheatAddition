@@ -13,7 +13,6 @@ import de.photon.anticheataddition.user.data.batch.InventoryBatch;
 import de.photon.anticheataddition.user.data.batch.ScaffoldBatch;
 import de.photon.anticheataddition.user.data.batch.TowerBatch;
 import de.photon.anticheataddition.user.data.subdata.LookPacketData;
-import de.photon.anticheataddition.util.datastructure.statistics.MovingDoubleStatistics;
 import de.photon.anticheataddition.util.mathematics.Hitbox;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -57,8 +56,6 @@ public final class User implements Permissible
     private final TowerBatch towerBatch = new TowerBatch(this);
 
     private final LookPacketData lookPacketData = new LookPacketData();
-
-    private final MovingDoubleStatistics pingspoofPing = new MovingDoubleStatistics(4, 200D);
 
     /**
      * This is the minecraft version of the client.

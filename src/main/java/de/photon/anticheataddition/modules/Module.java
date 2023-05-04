@@ -13,7 +13,7 @@ import java.util.Set;
 
 @EqualsAndHashCode(cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY, onlyExplicitlyIncluded = true)
 @ToString
-public abstract class Module implements ConfigLoading, Submodules
+public abstract class Module implements ConfigLoading
 {
     @Getter protected final String configString;
     @Getter @EqualsAndHashCode.Include private final String moduleId;
@@ -50,7 +50,7 @@ public abstract class Module implements ConfigLoading, Submodules
         if (this.enabled) return;
 
         if (this.getModuleLoader().load()) {
-            this.enableChildren();
+            for (Module child : children) child.activate();
             this.enabled = true;
             this.enable();
         }
@@ -59,7 +59,7 @@ public abstract class Module implements ConfigLoading, Submodules
     public void deactivate()
     {
         this.getModuleLoader().unload();
-        this.disableChildren();
+        for (Module child : children) child.deactivate();
         this.enabled = false;
         this.disable();
     }

@@ -43,7 +43,7 @@ public final class ViolationLevelManagement extends ViolationManagement
         Preconditions.checkNotNull(flag.getPlayer(), "Tried to flag null player.");
         if (!ViolationEvent.build(flag.getPlayer(), this.module.getModuleId(), flag.getAddedVl()).call().isCancelled()) {
             this.addVL(flag.getPlayer(), flag.getAddedVl());
-            flag.callNotCancelledActions(this.getVL(flag.getPlayer().getUniqueId()));
+            flag.runApplicableActions(this.getVL(flag.getPlayer().getUniqueId()));
         }
     }
 

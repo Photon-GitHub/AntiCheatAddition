@@ -98,7 +98,7 @@ public final class InventoryMove extends ViolationModule implements Listener
             user.hasChangedWorldsRecently(worldChangeBypassTime) ||
             // The player is currently not in a liquid (liquids push)
             // This would need to check for async chunk loads if done in packets (see history)
-            user.getHitboxLocation().isInLiquids() ||
+            user.isInLiquids() ||
             // Auto-Disable if TPS are too low
             !TPSProvider.INSTANCE.atLeastTPS(minTps))
         {
@@ -122,7 +122,7 @@ public final class InventoryMove extends ViolationModule implements Listener
         // This bypasses players during a long fall from hundreds of blocks.
         if (yMovement < -2.0 ||
             // Bypass a falling player after a normal jump in which they opened an inventory.
-            user.getTimeMap().at(TimeKey.VELOCITY_CHANGE_NO_EXTERNAL_CAUSES).recentlyUpdated(1850) &&
+            user.hasJumpedRecently(1850) &&
             // If the y-movement is 0, the falling process is finished and there is no need for bypassing anymore.
             !noYMovement)
         {

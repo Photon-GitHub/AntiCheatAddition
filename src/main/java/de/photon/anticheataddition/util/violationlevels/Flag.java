@@ -87,7 +87,7 @@ public final class Flag
     /**
      * This method will execute the runnables when applicable.
      */
-    public void callNotCancelledActions(int currentVl)
+    public void runApplicableActions(int currentVl)
     {
         if (this.debug != null) Log.fine(this.debug);
         if (this.cancelVl >= 0 && currentVl >= this.cancelVl) this.onCancel.run();

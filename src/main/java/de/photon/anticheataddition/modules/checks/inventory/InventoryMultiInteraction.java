@@ -55,9 +55,9 @@ public final class InventoryMultiInteraction extends ViolationModule implements 
             // False positive: Click-spamming on the same slot
             event.getRawSlot() == user.getData().number.lastRawSlotClicked) return;
 
-        // Default vl to 6
+        // Default vl is 6
         int addedVl = 6;
-        // Time in ms that will flag if it has not passed
+        // Time in ticks that have to pass to not be flagged by this check for too fast inventory interactions.
         int enforcedTicks = 0;
 
         //noinspection EnhancedSwitchMigration

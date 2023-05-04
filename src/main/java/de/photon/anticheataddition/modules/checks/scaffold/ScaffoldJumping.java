@@ -12,9 +12,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
  */
 final class ScaffoldJumping extends Module
 {
-    ScaffoldJumping(String scaffoldConfigString)
+    public static final ScaffoldJumping INSTANCE = new ScaffoldJumping();
+
+    private ScaffoldJumping()
     {
-        super(scaffoldConfigString + ".parts.Jumping");
+        super("Scaffold.parts.Jumping");
     }
 
     public int getVl(User user, BlockPlaceEvent event)

@@ -13,11 +13,13 @@ import org.bukkit.event.block.BlockPlaceEvent;
  */
 final class ScaffoldSafewalkPosition extends Module
 {
+    public static final ScaffoldSafewalkPosition INSTANCE = new ScaffoldSafewalkPosition();
+
     private static final int MIN_SNEAK_BYPASS_MILLIS = 148;
 
-    ScaffoldSafewalkPosition(String scaffoldConfigString)
+    private ScaffoldSafewalkPosition()
     {
-        super(scaffoldConfigString + ".parts.Safewalk.Position");
+        super("Scaffold.parts.Safewalk.Position");
     }
 
     public int getVl(User user, BlockPlaceEvent event)

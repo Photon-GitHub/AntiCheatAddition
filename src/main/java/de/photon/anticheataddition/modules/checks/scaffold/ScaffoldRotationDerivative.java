@@ -10,11 +10,13 @@ import de.photon.anticheataddition.util.messaging.Log;
  */
 final class ScaffoldRotationDerivative extends Module
 {
+    public static final ScaffoldRotationDerivative INSTANCE = new ScaffoldRotationDerivative();
+
     private static final double ANGLE_CHANGE_SUM_THRESHOLD = 7D;
 
-    ScaffoldRotationDerivative(String scaffoldConfigString)
+    private ScaffoldRotationDerivative()
     {
-        super(scaffoldConfigString + ".parts.Rotation.Derivative");
+        super("Scaffold.parts.Rotation.Derivative");
     }
 
     public int getVl(User user, double angleInformation)

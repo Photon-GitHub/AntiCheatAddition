@@ -32,6 +32,7 @@ public final class ModernPlayerHider extends PlayerInformationHider
     @Override
     protected Set<ServerVersion> getSupportedVersions()
     {
-        return ServerVersion.MC112.getSupVersionsFrom();
+        // Before 1.19, the hidePlayer method also hid the player in the tab list.
+        return ServerVersion.MC119.getSupVersionsFrom();
     }
 }
